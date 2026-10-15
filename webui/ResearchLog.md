@@ -55,6 +55,14 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Fanagoria Decanter background remnants, 2026-10-16
+
+The previous Rkatsiteli 2019 cutout contained opaque gray and white stripes outside the right contour.
+The earlier alpha, border and geometry checks did not detect this defect.
+A transparent border can surround an image that still contains an opaque background remnant.
+Regenerate from the original source. Inspect the complete outline on contrasting flat backgrounds.
+Use the original catalog image as the edit target. Do not use the defective derivative as the source.
+
 ## Product image backgrounds, 2026-10-16
 
 An alpha channel alone does not prove that a photo has no background. Three 5000 scene images had only a few transparent corner pixels.
@@ -898,3 +906,11 @@ The product search samples up to eight candidates per idea. It does not prove fu
 An independent code review found an incorrect fixed wine-color reason and overly broad preparation matching.
 Removed the fixed color assertion. Excluded salted fish and pickled mushrooms from baking ideas.
 Try a second candidate when the first detail record becomes unavailable or fails validation.
+
+### Static image metadata, 2026-10-16
+
+Nitro embeds static file size and ETag metadata in the server build.
+An image copied directly into `.output/public` retained its old Content-Length.
+The browser request reported a parse error because the new file body was longer.
+Rebuild the application and restart the server after a public asset replacement.
+The rebuilt server returned the new image hash in both browser engines.

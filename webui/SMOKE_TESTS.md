@@ -446,3 +446,8 @@ Select Monte Garu rose semi-sweet. Confirm that the bottle scale matches the oth
 On mobile, open and close the product popup. Confirm that the map position and selection remain unchanged.
 Check one edited image in each of the six producers listed in `docs/validation/product-image-cutouts.md`.
 Check the two source-conflict placeholders. The Fanagoria catalog link remains available. The gray 5000 product still has no portal link.
+
+Open `/lineup/fanagoria?wine=fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135`.
+Check the complete Rkatsiteli 2019 outline on flat light and dark backgrounds.
+Confirm that no opaque gray or white stripe remains outside the right contour.
+Repeat in the desktop detail panel and mobile popup.

@@ -112,3 +112,10 @@ Unedited images retain their previous bytes. Original edited-image bytes remain 
 The generic `ona-skazala-da` snapshot photo shows a wedding scene with several bottles labeled WEDDING Bliss.
 The photo does not establish this product package. The map uses the labeled image placeholder.
 The product node and its catalog link remain available. The crosswalk preserves the source filename and hash.
+
+### Rkatsiteli 2019 correction, 2026-10-16
+
+The first Decanter Rkatsiteli 2019 derivative contained opaque stripe remnants beside the bottle.
+A new built-in imagegen edit uses the original catalog image. The asset URL is unchanged.
+The manifest preserves the rejected derivative hashes and prompt under `superseded_outputs`.
+Flat light and dark composites are required in addition to alpha and border checks.

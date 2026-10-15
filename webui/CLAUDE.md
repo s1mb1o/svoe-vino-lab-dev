@@ -82,3 +82,4 @@ Run `npm run test:line-map` with the documented browser environment after map in
 An alpha channel does not prove that the background is removed. Inspect alpha coverage and the visible outline.
 Nearly transparent outer pixels can reduce bottle scale under CSS max-width. Verify the final image at the actual desktop and mobile sizes.
 Imagegen display derivatives can change fine print. Keep original hashes and exact prompts in the producer provenance. Do not use generated microtext as product evidence.
+A transparent border can surround an image with opaque stripe remnants. Composite every edited image on flat light and dark backgrounds. Inspect the complete contour before acceptance.

@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-16",
+  "status": "passed",
+  "operation": "background-extraction",
+  "tool": "image_gen",
+  "mode": "built-in",
+  "asset": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135.webp",
+  "source_sha256": "d0b25046830788457bc508657512dc0e3dbcd6d7a1a8f9e60c687a1eddb137ff",
+  "output_sha256": "08b95a8af675fc9a41f200547fda16c63a5164e2df9073ce98fafff396b4a6c5",
+  "map_tests_passed": 65,
+  "production_build": "passed",
+  "visual_review": "The complete outline was checked on flat light and dark backgrounds at large, desktop and mobile sizes. No opaque stripe or rectangular background remnant remains.",
+  "physical_device_test": false,
+  "browser_checks": [
+    {
+      "engine": "chromium",
+      "status": "passed",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135.webp",
+      "sha256": "08b95a8af675fc9a41f200547fda16c63a5164e2df9073ce98fafff396b4a6c5",
+      "cases": [
+        {
+          "width": 1440,
+          "theme": "light",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 1440,
+          "theme": "dark",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 390,
+          "theme": "dark",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "status": "passed",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135.webp",
+      "sha256": "08b95a8af675fc9a41f200547fda16c63a5164e2df9073ce98fafff396b4a6c5",
+      "cases": [
+        {
+          "width": 1440,
+          "theme": "light",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 1440,
+          "theme": "dark",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 390,
+          "theme": "light",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        },
+        {
+          "width": 390,
+          "theme": "dark",
+          "status": "passed",
+          "alpha": {
+            "width": 216,
+            "height": 732,
+            "outside": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "foil": 252,
+            "label": 253
+          }
+        }
+      ]
+    }
+  ]
+}

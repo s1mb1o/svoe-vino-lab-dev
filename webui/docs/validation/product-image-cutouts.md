@@ -44,7 +44,7 @@ Faint transparent outliers can leave an excessively wide image frame.
 A frame from alpha values of at least 128 removes these outer fields from the crop calculation.
 The crop adds 8 source pixels around that frame. The crop does not change alpha values inside the frame.
 The conversion fits the cropped image into 720 px height. The conversion adds 6 px transparent padding on every side.
-WebP uses quality 88 and alpha quality 100. The 82 files total 2,149,084 bytes.
+WebP uses quality 88 and alpha quality 100. The 82 files total 2,149,756 bytes after the Rkatsiteli correction below.
 This conversion preserves the generated alpha and reduces mobile transfer size.
 
 ## Rejected source photos
@@ -95,3 +95,22 @@ Each producer has a separate image commit. The branch was not pushed.
 | `koktebel` | `bbb06f3a` |
 | `fanagoria` | `d6b82dd6` |
 | `kuban-vino` | `6565d343` |
+
+## Fanagoria Rkatsiteli correction, 2026-10-16
+
+The user reported opaque gray and white stripes beside the Decanter Rkatsiteli 2019 bottle.
+The earlier alpha, border and geometry checks did not detect the stripe remnants.
+A new built-in imagegen edit uses the original catalog image from `89aa3780`.
+The producer manifest records the new prompt and hashes. It retains the rejected derivative under `superseded_outputs`.
+The asset URL is unchanged. The new WebP is 20,844 bytes.
+
+Flat light and dark composites show the complete outline at large, desktop and mobile sizes.
+Chromium and WebKit each passed four cases: desktop and mobile in light and dark themes.
+The checks verify the served SHA-256, transparent samples outside the contour, foil and label visibility, selection, portal link and mobile popup return.
+All 65 map and registry tests passed with the full catalog snapshot. The production build passed.
+The local server was rebuilt and restarted on port 18553.
+Read [fanagoria-decanter-cutout.json](fanagoria-decanter-cutout.json) for the saved checks.
+
+Nitro embeds static file size and ETag metadata in the server build.
+Replacing `.output/public` bytes alone can produce an incorrect Content-Length.
+Rebuild the application and restart the local server after an asset replacement.

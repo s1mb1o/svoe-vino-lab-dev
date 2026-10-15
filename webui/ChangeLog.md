@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Fanagoria Decanter background correction
+
+- Regenerate the Rkatsiteli 2019 cutout from the original catalog image.
+- Remove the visible stripe remnants outside the bottle. Keep the existing asset URL.
+- Preserve the rejected output hashes and record the replacement prompt.
+- Pass 65 map tests and eight Chromium and WebKit desktop and mobile checks. Rebuild and restart the local preview.
+
 ## 2026-10-16 — Bottle image validation
 
 - Audit all referenced producer images and document the background-extraction workflow.
