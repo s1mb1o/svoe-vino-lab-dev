@@ -423,3 +423,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/kuban-vino?wine=aristov-anima-millesimato`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Мысхако map
+
+Open `/lineup/myskhako?wine=glera-manno`.
+Check the selected catalog wine, a gray product, and the mobile popup.

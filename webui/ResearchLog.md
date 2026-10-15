@@ -55,6 +55,13 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Мысхако, 2026-10-16
+
+The map covers 92 exact catalog slugs from 2026-09-17.
+The map adds 5 verified products without a catalog match.
+0 products have no verified local image and use the explicit placeholder.
+Read `docs/product-line-maps/myskhako/sources.md` for collection evidence and limits.
+
 ## Кубань-Вино, 2026-10-16
 
 The map covers 97 exact catalog slugs from 2026-09-17.

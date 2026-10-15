@@ -1,0 +1,2784 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "myskhako",
+    "name": "Мысхако",
+    "aliases": [
+      "Мысхако",
+      "Myskhako",
+      "Quintessence",
+      "Квинтэссенция"
+    ],
+    "slug_prefixes": [
+      "myskhako-",
+      "myshako-",
+      "quintessence-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "mys-official",
+      "label": "Мысхако: официальный каталог тихих вин",
+      "url": "https://myskhako.ru/catalog/vina-tihie/"
+    },
+    {
+      "id": "mys-sparkling",
+      "label": "Мысхако: официальный каталог игристых вин",
+      "url": "https://myskhako.ru/catalog/vina-igristye/"
+    },
+    {
+      "id": "mys-215",
+      "label": "Крафт. Совиньон Блан — Шардоне",
+      "url": "https://myskhako.ru/catalog/vina-tihie/vina-tihie_215.html"
+    },
+    {
+      "id": "mys-216",
+      "label": "Крафт. Семильон — Русан",
+      "url": "https://myskhako.ru/catalog/vina-tihie/vina-tihie_216.html"
+    },
+    {
+      "id": "mys-217",
+      "label": "Крафт. Каберне Фран — Каладок",
+      "url": "https://myskhako.ru/catalog/vina-tihie/vina-tihie_217.html"
+    },
+    {
+      "id": "mys-218",
+      "label": "Крафт. Достойный — Саперави",
+      "url": "https://myskhako.ru/catalog/vina-tihie/vina-tihie_218.html"
+    },
+    {
+      "id": "mys-200",
+      "label": "Noble Age. 6 урожаев. Шардоне",
+      "url": "https://myskhako.ru/catalog/vina-tihie/vina-tihie_200.html"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "special",
+      "label": "Специальные и авторские коллекции",
+      "rank": 3,
+      "description": "Редакционное положение специальных серий. Сравнение относится к коллекции; точные цены не установлены.",
+      "price_label": "Выше основного ориентира",
+      "source_ids": [
+        "mys-official"
+      ]
+    },
+    {
+      "id": "core",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Редакционный ориентир для основных серий производителя. Внутри серии могут быть разные стили и цены.",
+      "price_label": "Основной ориентир",
+      "source_ids": [
+        "mys-official"
+      ]
+    },
+    {
+      "id": "accessible",
+      "label": "Повседневные коллекции",
+      "rank": 1,
+      "description": "Редакционный ориентир для серий повседневного потребления. Актуальная цена зависит от продавца и выпуска.",
+      "price_label": "Доступный ориентир",
+      "source_ids": [
+        "mys-official"
+      ]
+    },
+    {
+      "id": "unranked",
+      "label": "Без ценового сравнения",
+      "rank": 0,
+      "description": "Для этих серий нет достаточного основания сравнивать цены. Положение в этом разделе не означает низкую цену или качество.",
+      "price_label": "Не сопоставляется",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "grandreserve",
+      "name": "Grand Reserve",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Каберне, Мерло и Шардоне Grand Reserve. Карточки сохранены из каталога; общий срок и ёмкость выдержки не установлены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "qreserve",
+      "name": "Quintessence Reserve",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Резервная серия Quintessence: Пино Нуар и Рислинг. Данные каждого продукта сохранены из снимка; порядок группы является редакционным.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "reserve",
+      "name": "Reserve: купажи",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Купажи Reserve: Пино Нуар — Карменер, Примитиво — Блауфранкиш и Семильон — Алиготе. Список сортов из каталога сохранён, даже если он короче названия.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "noble",
+      "name": "Noble Age. 6 урожаев",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Отдельная серия, объединяющая несколько урожаев. Официальная карточка Шардоне указывает годы 2018–2024; сравнительная позиция группы редакционная.",
+      "source_ids": [
+        "mys-200"
+      ]
+    },
+    {
+      "id": "craft",
+      "name": "Крафт",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Четыре тихих купажа. Технологии различаются: для отдельных вин производитель указывает частичную выдержку или ферментацию в дубе.",
+      "source_ids": [
+        "mys-215",
+        "mys-216",
+        "mys-217",
+        "mys-218"
+      ]
+    },
+    {
+      "id": "quintessence",
+      "name": "Quintessence",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Коллекция «Квинтэссенция» включает тихие и игристые вина из разных сортов. New Generation, Reserve и Storm выделены в самостоятельные группы.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "qnew",
+      "name": "Quintessence New Generation",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Серия New Generation: сортовые вина и игристые выпуски. Названия Brut White, Semi-Dry Rose и Semi-Sweet White сохранены точно по каталогу.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "qstorm",
+      "name": "Quintessence Storm",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Три карточки серии: Мерло, Пино Нуар и Шираз. Варианты написания Storm и Shtorm сохранены в названиях отдельных продуктов.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "cuvee",
+      "name": "Кюве",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Серия сортовых вин и купажей с названием «Кюве». Группа содержит разные стили; единый способ производства не установлен.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "mode",
+      "name": "Mode",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Технологическая серия Mode с разными стилями, включая Appassimento, Kabinett, Cold Style и PetNat. Название серии не задаёт единую технологию всем продуктам.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "out",
+      "name": "Black Out и Blanc Out",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Две связанные именованные серии: красные Black Out и белые Blanc Out. Сахар и стиль определяются для каждой карточки отдельно.",
+      "source_ids": [
+        "mys-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "green",
+      "name": "Green Cape",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Серия Green Cape объединяет разные стили. В снимке представлены Рислинг, Совиньон Блан и игристое Шардоне; они не подменяются текущими одноимёнными релизами.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "flute",
+      "name": "Flûte",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Отдельная коллекция игристых вин. Четыре карточки снимка сохранены с исходными названиями и описаниями.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sesto",
+      "name": "Sesto Senso",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Серия «Взрыв»: Фруктовый, Тропический и Ягодный. Две карточки Тропического взрыва имеют разные сорта и остаются отдельными узлами.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "mono",
+      "name": "Моносортовые вина",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Вина с общим сортовым названием на основной этикетке Мысхако. Варианты карточек и бутылок сохранены; точная коллекция и ценовое сравнение не подтверждены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "author",
+      "name": "Авторская технология",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Карточки с явным указанием «авторская технология» или «авторское моно» в названии. Эти записи не объединены с похожими сортовыми карточками.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "colors",
+      "name": "Чёрное из чёрного и другие специальные вина",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "«Чёрное из чёрного», «Чёрное из красного», «Чёрный удар» и «Оранжевое из белого». Официальный каталог подтверждает отдельные вина; их не следует считать одним способом производства.",
+      "source_ids": [
+        "mys-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rootstock",
+      "name": "Rootstock",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "В сохранённом каталоге представлено игристое «Русток Глера Ru 140». Другие одноимённые сортовые вина не добавлены без отдельной проверки.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "manno",
+      "name": "Manno",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "В карте представлена карточка «Глера Манно». Текущий официальный каталог также содержит другие вина Manno, но они не считаются эквивалентами Глеры.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Мысхако: другие игристые",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Белое брют, белое полусладкое, Blanc de Blancs, Rose de Noirs и Rouge de Noirs. Для общего ценового сравнения и точной коллекции данных недостаточно.",
+      "source_ids": [
+        "mys-official",
+        "mys-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-glera-manno",
+      "group_id": "manno",
+      "name": "Глера Манно",
+      "variant": "",
+      "wine_slug": "glera-manno",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Глера"
+      ],
+      "description": "Вино демонстрирует яркий, свежий и элегантный профиль с гладкой, обволакивающей текстурой: в аромате доминируют сочные цитрусовые и косточковые фрукты, дополненные тонкими оттенками белых цветов, а во вкусе раскрываются ноты лимонной цедры и ароматной груши с деликатными кремовыми нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-green-cape-risling",
+      "group_id": "green",
+      "name": "Green Cape Рислинг",
+      "variant": "",
+      "wine_slug": "green-cape-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-green-cape-risling.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Ркацители"
+      ],
+      "description": "Аромат нежный с легкими оттенками зеленого яблока, луговых цветов и разнотравья. Вкус чистый, свежий, с приятной лимонной нотой, с цветочными оттенками и утонченной минеральностью и изящным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-green-cape-sovinon-blan",
+      "group_id": "green",
+      "name": "Green Cape Совиньон Блан",
+      "variant": "",
+      "wine_slug": "green-cape-sovinon-blan",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-green-cape-sovinon-blan.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Аромат элегантный, деликатный аромат с цветочными и растительными элементами и некоторыми фруктовыми тонами, возможны легкие ноты хлебной корочки. Вкус яркий, сбалансированный, с тонкими фруктовыми штрихами, выраженной кислотностью и сочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-myshako-green-cape-shardone-beloe-bryut",
+      "group_id": "green",
+      "name": "Мысхако Green Cape Шардоне белое брют",
+      "variant": "",
+      "wine_slug": "myshako-green-cape-shardone-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-myshako-green-cape-shardone-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "Цвет нежный, светло-золотистый с устойчивым перляжем. Аромат яркий, свежий, с едва уловимыми яблочно-травяными нотами и полутонами ананаса и цитрусовых фруктов. Вкус бодрящий, гармоничный, с деликатными минеральными нюансами и умеренной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-myshako-igristoe-beloe-bryut",
+      "group_id": "sparkling",
+      "name": "Мысхако игристое белое брют",
+      "variant": "",
+      "wine_slug": "myshako-igristoe-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-myshako-igristoe-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Шардоне"
+      ],
+      "description": "Гармоничный аромат вина раскрывается оттенками цветов винограда. Вкус многогранный, наполнен нотками винограда, груши и яблока. Вино является прекрасным аперитивом, хорошо сочетается с морепродуктами, белым мясом, ризотто и рыбными блюдами. Это новинка компании Мысхако, освежающее белое игристое вино из линейки Квинтэссенция, созданное из винограда сорта Совиньон Блан, который выращивается в защищенном географическом регионе Кубань. По окончании сбора урожая плоды подвергаются традиционной винификации при контролируемой температуре в стальных чанах. В дальнейшем игристое вино производится в соответствии с итальянским методом Шарма, который предполагает проведение вторичной ферментации в герметичных автоклавах, где полученное ранее базовое вино бродит с сахаром и дрожжами. Игристое вино идеально в качестве аперитива, а также в паре с легкими блюдами и закусками, рыбой, морепродуктами, устрицами, белым мясом под нежным соусом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-myshako-igristoe-beloe-polusladkoe",
+      "group_id": "sparkling",
+      "name": "Мысхако игристое белое полусладкое",
+      "variant": "",
+      "wine_slug": "myshako-igristoe-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-myshako-igristoe-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат яркий и развитый, демонстрирует щедрые и объемные фруктово-ягодные тона, подчеркнутые нюансами цветов. Вкус легкий, гармоничный и утонченный, наполнен нотами зрелых фруктов и сочных ягод в обрамлении цветочных оттенков. Вино станет прекрасным дополнением к легким блюдам, белому мясу, молодым сырам, салатам, фруктам и бисквиту. Освежающее и сбалансированное белое игристое вино, изготовленное из винограда сортов Шардоне и Совиньон Блан, который выращивается на виноградниках компании. Урожай собирается по достижении ягодами оптимального уровня зрелости. Игристое вино производится резервуарным методом Шарма. Составит прекрасную пару всевозможным легким блюдам, свежим фруктам и десертам. Вкус и аромат игристого вина полностью раскрываются при температуре 10-12С.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-rustok-glera-ru-140",
+      "group_id": "rootstock",
+      "name": "Русток Глера Ru 140",
+      "variant": "",
+      "wine_slug": "rustok-glera-ru-140",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-rustok-glera-ru-140.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Глера"
+      ],
+      "description": "В аромате нежные цветочные тона изящно сплетаются с фруктовым букетом, где звучат желтое яблоко, груша, персик и абрикос. Вкус освежающий, мягкий и чистый: в нем преобладают яркие фруктовые акценты и цветочные штрихи, которые дополняются тонкими минеральными нюансами и завершаются приятным, освежающим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-aligote-vione-kyuve-beloe-polusladkoe-125",
+      "group_id": "cuvee",
+      "name": "Алиготе – Вионье. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-aligote-vione-kyuve-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-aligote-vione-kyuve-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Фруктовый, джем, цветы, светлые садовые ягоды. Ноты крыжовника, яблочного повидла, флердоранжа, ревеня, персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-blanc-de-blancs-shardone-beloe-bryut-121",
+      "group_id": "sparkling",
+      "name": "Blanc de Blancs",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-blanc-de-blancs-shardone-beloe-bryut-121",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-blanc-de-blancs-shardone-beloe-bryut-121.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Мягкий, чистый с фруктово-минеральными акцентами и утонченной кислинкой в приятном послевкусии. Ноты белой акации, ванили и сдобной выпечки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-chernoe-iz-chernogo-appassimento-kaberne-sovinon-krasnoe-suhoe-15",
+      "group_id": "colors",
+      "name": "Черное из Черного. Аппассименто",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-chernoe-iz-chernogo-appassimento-kaberne-sovinon-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-chernoe-iz-chernogo-appassimento-kaberne-sovinon-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, с фруктово-бальзамическими оттенками и долгим послевкусием. Оттенки спелых черных ягод, сухофруктов и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-chernoe-iz-krasnogo-appassimento-kaberne-sovinon-krasnoe-polusuhoe-15",
+      "group_id": "colors",
+      "name": "Черное из Красного. Аппассименто",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-chernoe-iz-krasnogo-appassimento-kaberne-sovinon-krasnoe-polusuhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-chernoe-iz-krasnogo-appassimento-kaberne-sovinon-krasnoe-polusuhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, округлый с фруктово-пряными оттенками, спелая вишня, черные ягоды, сухофрукты, пряности. Оттенки спелой вишни, черных ягод, сухофруктов и пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-chernyy-udar-marselan-krasnoe-suhoe-162",
+      "group_id": "colors",
+      "name": "Черный Удар",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-chernyy-udar-marselan-krasnoe-suhoe-162",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-chernyy-udar-marselan-krasnoe-suhoe-162.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Спелые, красные и черные фрукты, послевкусие древесно-пряное. Ноты вишни, сливы и смородины, сопровождающимися оттенками дуба, специй, цветов, табака и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-flute-blaufrankish-rozovoe-bryut-126",
+      "group_id": "flute",
+      "name": "Flute Блауфранкиш",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-flute-blaufrankish-rozovoe-bryut-126",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-flute-blaufrankish-rozovoe-bryut-126.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Блауфранкиш"
+      ],
+      "description": "Вкус: Вкус округлый, свежий, красные ягоды, клубника, вишня, сладкий грейпфрут. Хорошая кислотность, плотное тело, хорошая структура, уверенное, прекрасно сбалансированное, гастрономичное. Красные ягоды, вишня, клубника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-flute-bryut-beloe-shardone-11",
+      "group_id": "flute",
+      "name": "Flute брют белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-flute-bryut-beloe-shardone-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-flute-bryut-beloe-shardone-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Мягкий, чистый, с фруктово-минеральными акцентами и пикантной кислинкой в сбалансированном послевкусии. Белые цветы, яблоки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-flute-gevyurtstraminer-sovinon-blan-beloe-bryut-122",
+      "group_id": "flute",
+      "name": "Flute Гевюрцтраминер Совиньон Блан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-flute-gevyurtstraminer-sovinon-blan-beloe-bryut-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-flute-gevyurtstraminer-sovinon-blan-beloe-bryut-122.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Яркий с оттенком леденцов монпансье, выразительной минеральностью и долгим послевкусием, в котором ощущается засахаренная цедра апельсина. Тропические фрукты, мёд и спелый розовый персик.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-flute-vione-aligote-beloe-bryut-12",
+      "group_id": "flute",
+      "name": "Flute Вионье Алиготе",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-flute-vione-aligote-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-flute-vione-aligote-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Свежий, аккуратный с легкими тонами засахаренного лимона и нюансами орехов. Цитрусовые и нюансы белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-gevyurtstraminer-kyuve-bryut-beloe-123",
+      "group_id": "cuvee",
+      "name": "Гевюрцтраминер Кюве брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-gevyurtstraminer-kyuve-bryut-beloe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-gevyurtstraminer-kyuve-bryut-beloe-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Насыщенный, чистый, питкий, с нотами айвы, экзотических фруктов и жимолости, утонченной кислинкой и долгим, интригующим послевкусием. Оттенки спелой груши, белых цветов, леденцов и карамели.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-gevyurtstraminer-mode-petnat-beloe-bryut-118",
+      "group_id": "mode",
+      "name": "Гевюрцтраминер Mode Петнат",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-gevyurtstraminer-mode-petnat-beloe-bryut-118",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-gevyurtstraminer-mode-petnat-beloe-bryut-118.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Сочный, фруктовый. Жасмин, лили, розы, спелый сладкий персик.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-fran-avtorskaya-tehnologiya-krasnoe-suhoe-142",
+      "group_id": "author",
+      "name": "Каберне Фран авторская технология",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-fran-avtorskaya-tehnologiya-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-fran-avtorskaya-tehnologiya-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Насыщенный, полный, бархатистый с длительным послевкусием. Ноты сухофруктов, уволенных черных ягод, терна, шелковицы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-fran-krasnoe-suhoe-142",
+      "group_id": "mono",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-fran-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-fran-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Округлый, сбалансированный, с бархатистой текстурой, фруктовыми оттенками и шелковистыми танинами в долгом послевкусии. Ноты сухофруктов, подвяленных черных ягод, тёрна и шелковицы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-myshako-grand-rezerv-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "grandreserve",
+      "name": "Каберне Мысхако Гранд Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-myshako-grand-rezerv-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-myshako-grand-rezerv-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, сбалансированный, умеренными танинами, фруктовым наполнением. Тона красных фруктов, паслёновых, шоколада, табака.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-sovinon-black-out-krasnoe-polusuhoe-16",
+      "group_id": "out",
+      "name": "Каберне Совиньон. Black Out",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-sovinon-black-out-krasnoe-polusuhoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-sovinon-black-out-krasnoe-polusuhoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Округлый, бархатистый, мягкий, с фруктово-пряным профилем, шелковистыми танинами и долгим, сбалансированным послевкусием. Оттенки черной смородины, вишни, сливы, черешни, пряностей и сладких специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-sovinon-krasnoe-suhoe-138",
+      "group_id": "mono",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-sovinon-krasnoe-suhoe-138",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-sovinon-krasnoe-suhoe-138.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Гармоничный, мягкий, хорошо сбалансированные танины, оставляют долгое послевкусие. Оттенки ягод черной смородины, ежевики, чернослива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-kaberne-sovinon-merlo-kyuve-krasnoe-suhoe-142",
+      "group_id": "cuvee",
+      "name": "Каберне Совиньон – Мерло. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-kaberne-sovinon-merlo-kyuve-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-kaberne-sovinon-merlo-kyuve-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сбалансированный, мягкий, с оттенками спелых темных ягод и фруктов, легкими сдобы, послевкусие длительное, ягодное. Оттенки черных ягод, сафьяна и фиалки, с легкими джемовыми тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-marselan-avtorskaya-tehnologiya-krasnoe-suhoe-144",
+      "group_id": "author",
+      "name": "Марселан. Авторская технология",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-marselan-avtorskaya-tehnologiya-krasnoe-suhoe-144",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-marselan-avtorskaya-tehnologiya-krasnoe-suhoe-144.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Гармоничный, полный вкус с бархатистыми танинами, комплексным послевкусием. Красные ягоды, слива, ежевика, увяленные фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+      "group_id": "mono",
+      "name": "Марселан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-marselan-krasnoe-suhoe-143.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Полный, бархатистый, со сложным послевкусием. Красные ягоды, сливы, ежевика, инжир и увяленные фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-marselan-krasnoe-suhoe-144",
+      "group_id": "mono",
+      "name": "Марселан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-marselan-krasnoe-suhoe-144",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-marselan-krasnoe-suhoe-144.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Полный, округлый вкус с бархатистой текстурой, фруктово-пряными акцентами и долгим послевкусием с приятными танинами. Оттенки спелых красных ягод, вишни, ежевики, сливы, подвяленных фруктов и инжира.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-marselan-mode-appassimento-krasnoe-suhoe-146",
+      "group_id": "mode",
+      "name": "Марселан Mode Appassimento",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-marselan-mode-appassimento-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-marselan-mode-appassimento-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Среднее тело, ноты вишни, сливы, послевкусие с легкими оттенками шоколада. Ноты вишни, ежевики, чернослива, вишневого ликёра и дымными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-marselan-mode-krasnoe-suhoe-145",
+      "group_id": "mode",
+      "name": "Марселан Mode",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-marselan-mode-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-marselan-mode-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Полный, бархатистый, с мягкими танинами. Красные ягоды, слива, ежевика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-merlo-black-out-krasnoe-sladkoe-14",
+      "group_id": "out",
+      "name": "Мерло. Black Out",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-merlo-black-out-krasnoe-sladkoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-merlo-black-out-krasnoe-sladkoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Сладкий, сбалансированный, богатый, с фруктово-шоколадным профилем, нюансами пряностей и долгим, обволакивающим послевкусием. Темные фрукты, шоколад, специй, ваниль и дуб.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-merlo-grand-rezerv-krasnoe-suhoe-142",
+      "group_id": "grandreserve",
+      "name": "Мерло Гранд Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-merlo-grand-rezerv-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-merlo-grand-rezerv-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Округлый с бархатистой текстурой, фруктово-пряными оттенками и долгим послевкусием. Фруктово-ванильные оттенки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-merlo-tempranilo-kyuve-krasnoe-polusladkoe-135",
+      "group_id": "cuvee",
+      "name": "Мерло – Темпранильо. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-merlo-tempranilo-kyuve-krasnoe-polusladkoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-merlo-tempranilo-kyuve-krasnoe-polusladkoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Округлый, мягкий, в меру сладкий, с фруктовым профилем, тонкими пряными нюансами и длительным послевкусием. Оттенки вишни, смородины, черники и сладких специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-merlo-zinfandel-kyuve-rozovoe-suhoe-128",
+      "group_id": "cuvee",
+      "name": "Мерло – Зинфандель. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-merlo-zinfandel-kyuve-rozovoe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-merlo-zinfandel-kyuve-rozovoe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Мягкий, свежий, сочный, хорошо сбалансированный с яркими фруктово-ягодными акцентами, легкой танинной терпкостью, живой кислотностью и сухим, приятным послевкусием с легкими минеральными штрихами. Ноты красных ягод, спелых фруктов и белых цветов, дополненных тончайшими, едва уловимыми нюансами специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-muskat-avtorskaya-tehnologiya-mono-beloe-suhoe-128",
+      "group_id": "author",
+      "name": "Мускат. Авторская технология. Моно",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-muskat-avtorskaya-tehnologiya-mono-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-muskat-avtorskaya-tehnologiya-mono-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус: Освежающий, лёгкий фруктовый вкус с оттенками лайма в послевкусии. Оттенки цветов акации, персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-myshako-kyuve-rozovoe-pino-nuar-bryut-123",
+      "group_id": "cuvee",
+      "name": "Мысхако Кюве Розовое",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-myshako-kyuve-rozovoe-pino-nuar-bryut-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-myshako-kyuve-rozovoe-pino-nuar-bryut-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Мягкий, чистый, с фруктово-ягодными тонами и утонченной кислинкой в свежем послевкусии. Фруктово-ягодный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-oranzhevoe-iz-belogo-gevyurtstraminer-krasnoe-suhoe-142",
+      "group_id": "colors",
+      "name": "Оранжевое из Белого",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-oranzhevoe-iz-belogo-gevyurtstraminer-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-oranzhevoe-iz-belogo-gevyurtstraminer-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Оранжевое вино",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Сочный, сочетающий сладость тропических фруктов и свежие цитрусовые оттенки, в сопровождении пикантного имбирного послевкусия. Цветочные ноты, спелые, желтые фрукты, мед.",
+      "release_status": "catalog",
+      "badges": [
+        "Данные источника расходятся"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123",
+      "group_id": "mono",
+      "name": "Пино Гриджио",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Гармоничный, свежий, с мягкой кислотностью и приятным послевкусием. Фрукты, цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-pino-nuar-karmener-reserve-krasnoe-suhoe-138",
+      "group_id": "reserve",
+      "name": "Пино Нуар - Карменер Reserve",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-pino-nuar-karmener-reserve-krasnoe-suhoe-138",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-pino-nuar-karmener-reserve-krasnoe-suhoe-138.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Мягкие танины и пряные акценты в долгом послевкусии. Спелые фрукты, ягоды, пряности.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-primitivo-blaufrankish-reserve-krasnoe-suhoe-142",
+      "group_id": "reserve",
+      "name": "Примитиво - Блауфранкиш Reserve",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-primitivo-blaufrankish-reserve-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-primitivo-blaufrankish-reserve-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Примитиво"
+      ],
+      "description": "Вкус: Бархатистые танины и едва уловимая сладость в послевкусии. Фрукты, спелая вишня и чернослив, пряности.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-aligote-beloe-suhoe-128",
+      "group_id": "quintessence",
+      "name": "Quintessence. Алиготе",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-aligote-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-aligote-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Полный, округлый вкус с фруктово-цветочными оттенками и долгим послевкусием. Тропические фрукты, персик, сухофрукты и карамель.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-blaufrankish-rozovoe-bryut-115",
+      "group_id": "quintessence",
+      "name": "Quintessence. Блауфранкиш",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-blaufrankish-rozovoe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-blaufrankish-rozovoe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Блауфранкиш"
+      ],
+      "description": "Вкус: Легкий, гармоничный, с сочными тонами спелой клубники, живой кислотностью и приятными нотками ягодной карамели в стойком послевкусии. Розовые ягоды и леденцы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-brut-muskat-muskat-belyy-beloe-bryut-12",
+      "group_id": "quintessence",
+      "name": "Quintessence Brut. Мускат",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-brut-muskat-muskat-belyy-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-brut-muskat-muskat-belyy-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Свежий, гармоничный наполнен тонами спелых фруктов и оттенками меда. Цитрусовые, косточковые фрукты, белые цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-brut-vione-beloe-bryut-115",
+      "group_id": "quintessence",
+      "name": "Quintessence Brut. Вионье",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-brut-vione-beloe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-brut-vione-beloe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Освежающий, тонкий и гармоничный вкус с приятной фруктовостью, округлой минеральностью и живой кислинкой в сухом, стойком послевкусии. Тона свежих летних фруктов, трав и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-gevyurtstraminer-beloe-suhoe-128",
+      "group_id": "quintessence",
+      "name": "Quintessence. Гевюрцтраминер",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-gevyurtstraminer-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-gevyurtstraminer-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Свежий, гармоничный, сбалансированный с фруктово-цветочными акцентами и деликатной пряной ноткой, живой кислотностью и продолжительным, сухим послевкусием. Цветочные тона и экзотические ноты личи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-kaberne-sovinon-ripasso-krasnoe-suhoe-152",
+      "group_id": "quintessence",
+      "name": "Quintessence. Каберне Совиньон Ripasso",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-kaberne-sovinon-ripasso-krasnoe-suhoe-152",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-kaberne-sovinon-ripasso-krasnoe-suhoe-152.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Округлый, полный с фруктово-ягодными оттенками и приятными танинами в долгом, шелковистом послевкусии. Оттенки черных ягод, фруктов и сливочно-кофейными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-karmener-krasnoe-suhoe-146",
+      "group_id": "quintessence",
+      "name": "Quintessence. Карменер",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-karmener-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-karmener-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Карменер"
+      ],
+      "description": "Вкус: Полный, с яркой палитрой фруктов, тонкими нотами ванили и шоколадных оттенков. Темные ягоды, зрелые фрукты, кофейные ноты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-brut-white-shardone-beloe-bryut-11",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Brut White",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-brut-white-shardone-beloe-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-brut-white-shardone-beloe-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Сбалансированный с приятным послевкусием с фруктово-цитрусовыми оттенками. Ноты крыжовника, смородины, шелковицы, оттенки цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-kaberne-fran-krasnoe-suhoe-145",
+      "group_id": "qnew",
+      "name": "Quintessence. New Generation. Каберне Фран",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-kaberne-fran-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-kaberne-fran-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Средние зелёные танины, среднетелый, короткое послевкусие, земляника, войлочная вишня, зелёные травы, томатная ботва. Земляника, войлочная вишня, зелёные травы, томатная ботва.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-risling-zekt-beloe-bryut-125",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Рислинг Зект",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-risling-zekt-beloe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-risling-zekt-beloe-bryut-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Структурное, сбалансированное, с хрустящей свежестью Фрукты, цветы, минеральность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-semi-dry-rose-pino-nuar-rozovoe-polusuhoe-11",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Semi-Dry Rose",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-semi-dry-rose-pino-nuar-rozovoe-polusuhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-semi-dry-rose-pino-nuar-rozovoe-polusuhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Гармоничный с приятным сбалансированным послевкусием. Джем из малины и клубники, сыроватый камень, сырой мел, пудра, красная роза,",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-semi-sweet-white-vione-beloe-polusladkoe-11",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Semi-Sweet White",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-semi-sweet-white-vione-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-semi-sweet-white-vione-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Свежий, хорошо сбалансированный вкус с приятным послевкусием с фруктово-цитрусовыми оттенками. Ноты крыжовника, смородины, шелковицы, оттенками цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-sovinon-blan-beloe-suhoe-122",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Совиньон Блан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-sovinon-blan-beloe-suhoe-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-sovinon-blan-beloe-suhoe-122.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Насыщенный, свежий и гармоничный, с оттенками тропических фруктов, трав и минералов, хорошо сбалансированной кислотностью и приятным, долгим послевкусием. Ноты спелых экзотических фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-tempranilo-krasnoe-suhoe-134",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Темпранильо.",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-tempranilo-krasnoe-suhoe-134",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-tempranilo-krasnoe-suhoe-134.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Среднетелый, вишня, сливы, почва, травы, увяленные ягоды, легкие животные нотки, горчинка. Вишня, темная слива, почва, травы, увяленные ягоды, легкие животные нотки, еле-ощутимые бузинно-овощные нотки, цветы, специи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-new-generation-zinfandel-rozovoe-polusuhoe-115",
+      "group_id": "qnew",
+      "name": "Quintessence New Generation. Зинфандель",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-new-generation-zinfandel-rozovoe-polusuhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-new-generation-zinfandel-rozovoe-polusuhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Зинфандель"
+      ],
+      "description": "Вкус: Сочный, фруктово-ягодные акценты. В послевкусии ощущается приятная, ненавязчивая фруктовая сладость. Красные ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-reserve-pino-nuar-krasnoe-suhoe-148",
+      "group_id": "qreserve",
+      "name": "Quintessence Reserve. Пино Нуар",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-reserve-pino-nuar-krasnoe-suhoe-148",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-reserve-pino-nuar-krasnoe-suhoe-148.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Структурированный, с фруктово-ягодными оттенками, дополненными древесно-пряными штрихами, отлично интегрированными танинами, умеренной кислотностью, бархатистой текстурой и долгим, сухим послевкусием. Ноты спелых красных ягод, подлеска, влажной земли и пряных специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-reserve-risling-krasnoe-suhoe-131",
+      "group_id": "qreserve",
+      "name": "Quintessence Reserve. Рислинг",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-reserve-risling-krasnoe-suhoe-131",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-reserve-risling-krasnoe-suhoe-131.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Стиль уточняется",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Мягкий, чистый вкус с маслянистой текстурой, фруктово-цитрусовыми оттенками и пикантной кислинкой в минеральном послевкусии. Фруктовые и цитрусовые оттенки, белые цветы, травы и минералы.",
+      "release_status": "catalog",
+      "badges": [
+        "Данные источника расходятся"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-shtorm-merlo-krasnoe-sladkoe-147",
+      "group_id": "qstorm",
+      "name": "Quintessence Shtorm. Мерло",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-shtorm-merlo-krasnoe-sladkoe-147",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-shtorm-merlo-krasnoe-sladkoe-147.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Полный, округлый. Послевкусие продолжительное, многогранное, обволакивающее, с фруктово-пряными акцентами. Фруктовые тона, оттенками темных ягод, сухофруктов, цветов и перечными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-sovinon-blan-bryut-beloe-115",
+      "group_id": "quintessence",
+      "name": "Quintessence. Совиньон Блан брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-sovinon-blan-bryut-beloe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-sovinon-blan-bryut-beloe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Чистый, питкий, освежающий, фруктовый, с яркой кислотностью и стойким, живым послевкусием. Фрукты и цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-storm-pino-nuar-beloe-suhoe-128",
+      "group_id": "qstorm",
+      "name": "Quintessence Storm. Пино Нуар",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-storm-pino-nuar-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-storm-pino-nuar-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Насыщенный, с фруктово-ягодными тонами, свежей кислотностью и округлым, сбалансированным послевкусием. Тона красных ягод, косточковых и цитрусовых фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-storm-shiraz-krasnoe-polusuhoe-15",
+      "group_id": "qstorm",
+      "name": "Quintessence Storm. Шираз",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-storm-shiraz-krasnoe-polusuhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-storm-shiraz-krasnoe-polusuhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус: Полный, мягкий, шелковистый, с отличным балансом, тонкой фруктовой кислинкой, насыщенными нотами ежевики и сливы. Округлые танины пронизывают долгое, приятное послевкусие с ненавязчивой, едва заметной фруктовой сладостью. Тона темных ягод, специй, табака.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-vione-beloe-suhoe-128",
+      "group_id": "quintessence",
+      "name": "Quintessence. Вионье",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-vione-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-vione-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Гармоничный, тонкий, фруктовый с пронзительной кислотностью, деликатной терпкой ноткой и аппетитной солоноватостью в послевкусии. Тона белых и желтых фруктов (яблоко, абрикос, персик, груша, цитрусовые), оттенки влажного камня, соломы и сухих горных трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-quintessence-zinfandel-krasnoe-suhoe-155",
+      "group_id": "quintessence",
+      "name": "Quintessence. Зинфандель",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-quintessence-zinfandel-krasnoe-suhoe-155",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-quintessence-zinfandel-krasnoe-suhoe-155.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Зинфандель"
+      ],
+      "description": "Вкус: Полный, округлый, с шелковистыми танинами, нотами фруктового пирога и продолжительным послевкусием. Ноты ежевики, вишни, черных ягод, кофе и дыма.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-risling-beloe-suhoe-123",
+      "group_id": "mono",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-risling-beloe-suhoe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-risling-beloe-suhoe-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Свежий, округлый, гармоничный, легкий, с фруктовой кислинкой и элегантным послевкусием. Полевые цветы, груша, лимонная корка, белая смородина и персик.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-risling-blanc-out-beloe-suhoe-145",
+      "group_id": "out",
+      "name": "Рислинг. Blanc Out",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-risling-blanc-out-beloe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-risling-blanc-out-beloe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Сбалансированный, умеренно насыщенный, слегка маслянистый, фруктовый, с живой кислотностью и освежающим характерно минеральным послевкусием. Тона спелых цитрусовых фруктов с тонкими пряными и минеральными штрихами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-risling-kyuve-bryut-beloe-126",
+      "group_id": "cuvee",
+      "name": "Рислинг Кюве брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-risling-kyuve-bryut-beloe-126",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-risling-kyuve-bryut-beloe-126.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, с цитрусово-минеральным профилем и утонченной кислинкой в продолжительном послевкусии. Оттенки белого персика, яблока, груши, цитрусовых и хлебной корочки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-risling-mode-kabinett-beloe-polusuhoe-126",
+      "group_id": "mode",
+      "name": "Рислинг Mode Kabinett",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-risling-mode-kabinett-beloe-polusuhoe-126",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-risling-mode-kabinett-beloe-polusuhoe-126.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Свежий, гармоничный вкус со сбалансированной кислотностью, приятным послевкусием. Белые цветы, спелые белые фрукты, оттенки цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-rose-de-noirs-pino-nuar-rozovoe-bryut-123",
+      "group_id": "sparkling",
+      "name": "Rose De Noirs",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-rose-de-noirs-pino-nuar-rozovoe-bryut-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-rose-de-noirs-pino-nuar-rozovoe-bryut-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Мягкий, чистый, с нотами красных ягод и ванильного крема, пикантной кислинкой и свежим послевкусием. Ноты спелых ягод и фруктов, которые гармонично дополняются ванильными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-rouge-de-noirs-merlo-krasnoe-bryut-13",
+      "group_id": "sparkling",
+      "name": "Rouge de Noirs",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-rouge-de-noirs-merlo-krasnoe-bryut-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-rouge-de-noirs-merlo-krasnoe-bryut-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Комплексный, округлый вкус с фруктово-ягодными акцентами и приятным послевкусием. Ноты ежевики, вишни и барбариса.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-semilon-aligote-reserve-beloe-suhoe-126",
+      "group_id": "reserve",
+      "name": "Семильон - Алиготе Reserve",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-semilon-aligote-reserve-beloe-suhoe-126",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-semilon-aligote-reserve-beloe-suhoe-126.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Семильон"
+      ],
+      "description": "Вкус: Мягкий, медовые оттенки спелой груши и айвы, ваниль. Горные травы, цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sesto-senso-fruktovyy-vzryv-kaberne-sovinon-krasnoe-suhoe-155",
+      "group_id": "sesto",
+      "name": "Sesto Senso. Фруктовый взрыв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sesto-senso-fruktovyy-vzryv-kaberne-sovinon-krasnoe-suhoe-155",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sesto-senso-fruktovyy-vzryv-kaberne-sovinon-krasnoe-suhoe-155.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, бархатистый, с мягкими танинами. Красные ягоды, слива, ежевика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-gevyurtstraminer-beloe-suhoe-12",
+      "group_id": "sesto",
+      "name": "Sesto Senso. Тропический взрыв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-gevyurtstraminer-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-gevyurtstraminer-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Яркий, насыщенный, сочный со сбалансированной кислотностью, длительным фруктовым послевкусием. Тропические фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-sovinon-blan-beloe-suhoe-12",
+      "group_id": "sesto",
+      "name": "Sesto Senso. Тропический Взрыв. Совиньон Блан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-sovinon-blan-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sesto-senso-tropicheskiy-vzryv-sovinon-blan-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Тонкий, выразительный, свежий, с легкой пикантной игристостью, минеральными нотами и целым взрывом сочных фруктовых оттенков, с долгим и затягивающим послевкусием. Цитрусовые и экзотические фрукты, белые цветы и травв.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sesto-senso-yagodnyy-vzryv-merlo-rozovoe-suhoe-122",
+      "group_id": "sesto",
+      "name": "Sesto Senso. Ягодный взрыв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sesto-senso-yagodnyy-vzryv-merlo-rozovoe-suhoe-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sesto-senso-yagodnyy-vzryv-merlo-rozovoe-suhoe-122.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Мягкий, свежий, сбалансированный вкус с нотами красных ягод, оттенками леденцов в послевкусии. Спелые ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shardone-aligote-kyuve-beloe-suhoe-125",
+      "group_id": "cuvee",
+      "name": "Шардоне – Алиготе. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shardone-aligote-kyuve-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shardone-aligote-kyuve-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Насыщенный, обладает сливочной текстурой и пикантной кислотностью, нотами белого грейпфрута и яблока, белой смородины и лимона, подчеркнутыми утонченными минеральными нюансами. Послевкусие приятное и продолжительное. Оттенки орехов, цветов и меда, жасмин и травы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155",
+      "group_id": "author",
+      "name": "Шардоне авторская технология",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Мягкий, чистый с маслянистой текстурой, нотами белых ягод и спелых фруктов. Послевкусие долгое и свежее. Оттенки цветов и леденцов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shardone-beloe-suhoe-123",
+      "group_id": "mono",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shardone-beloe-suhoe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shardone-beloe-suhoe-123.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Вкус интенсивный и полный, хорошо слаженный, с длительным и стойким послевкусием. Фрукты, сливки, ваниль, садовые цветы, цитрусы, мед.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shardone-beloe-suhoe-145",
+      "group_id": "mono",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shardone-beloe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shardone-beloe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий, округлый, гармоничный, легкий, минеральный, с доминантой грушевых нот, нюансами тропических фруктов и цитрусовых. Медово-цветочные ноты, оттенки засахаренной цедры лимона, грейпфрута и апельсина.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shardone-myshako-grand-rezerv-beloe-suhoe-125",
+      "group_id": "grandreserve",
+      "name": "Шардоне Мысхако Гранд Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shardone-myshako-grand-rezerv-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shardone-myshako-grand-rezerv-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Структурный, маслянистый, с хорошим долгим послевкусием. Цветы, цитрусы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shiraz-black-out-krasnoe-suhoe-152",
+      "group_id": "out",
+      "name": "Шираз. Black Out",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shiraz-black-out-krasnoe-suhoe-152",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shiraz-black-out-krasnoe-suhoe-152.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус: Концентрированный и гармоничный, со спелыми, округлыми и чуть пыльными танинами с фруктово-пряными оттенками в ягодном послевкусии. Джем, шоколад, спелые красные ягоды, черная смородина, кофе, специи и ваниль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-shiraz-krasnoe-suhoe-146",
+      "group_id": "mono",
+      "name": "Шираз",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-shiraz-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-shiraz-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус: Сильный, с чекой танинной структурой и мягкой текстурой. Терпкость сглаживается сочными тонами фруктов. Тона вишни, кизила и чернослива, которые украшают нюансы дубовой древесины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sira-marselan-kyuve-krasnoe-suhoe-136",
+      "group_id": "cuvee",
+      "name": "Сира – Марселан. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sira-marselan-kyuve-krasnoe-suhoe-136",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sira-marselan-kyuve-krasnoe-suhoe-136.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Насыщенный вкус с умеренной танинной структурой, нотами зрелых фруктов и нюансами специй. Послевкусие продолжительное, терпкое, с яркой горчинкой и нюансами дубовой древесины. Ноты зрелых черных ягод (черная смородина, ежевика), фиалка и молотый перец.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-avtorskaya-tehnologiya-mono-beloe-suhoe-128",
+      "group_id": "author",
+      "name": "Совиньон Блан. Авторская технология. Моно",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-avtorskaya-tehnologiya-mono-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-avtorskaya-tehnologiya-mono-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Округлый, мбалансированный с нотами манго и цитрусовых, приятной кислинкой и долгим послевкусием. Тропические фрукты и цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-beloe-suhoe-122",
+      "group_id": "mono",
+      "name": "Совиньон Блан",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-beloe-suhoe-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-beloe-suhoe-122.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Интенсивный, хорошо слаженный, полный, с хорошей терпкостью и долгим приятным послевкусием. Оттенки полевых цветов и цитрусовые ноты на фоне тропических фруктов и плодовых тонов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-blanc-out-beloe-suhoe-138",
+      "group_id": "out",
+      "name": "Совиньон Блан. Blanc Out",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-blanc-out-beloe-suhoe-138",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-blanc-out-beloe-suhoe-138.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Ноты грейпфрута, маракуйи и лайма, хрустящая кислинка и послевкусие с минеральными нюансами. Оттенки зеленого яблока, лимона, крыжовника и зеленых трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-kyuve-beloe-suhoe-134",
+      "group_id": "cuvee",
+      "name": "Совиньон Блан Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-kyuve-beloe-suhoe-134",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-kyuve-beloe-suhoe-134.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Мягкий, гармоничный с ягодно-кремовым букетом. Фрукты, цитрусы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-mode-cold-style-beloe-suhoe-122",
+      "group_id": "mode",
+      "name": "Совиньон Блан Mode Cold Style",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-mode-cold-style-beloe-suhoe-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-mode-cold-style-beloe-suhoe-122.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Гармоничный вкус со сбалансированной кислотностью, освежающим послевкусием. Белые цветы, тропические фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-mode-petnat-beloe-bryut-12",
+      "group_id": "mode",
+      "name": "Совиньон Блан Mode Петнат",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-mode-petnat-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-mode-petnat-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Яркий, сочный вкус с высокой кислотностью, оттенками зеленых фруктов в послевкусии. Зеленые фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-blan-vione-kyuve-beloe-suhoe-125",
+      "group_id": "cuvee",
+      "name": "Совиньон Блан – Вионье. Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-blan-vione-kyuve-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-blan-vione-kyuve-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Свежий и сбалансированный вкус с фруктово-цветочными нотами, мягкой, сливочной текстурой, хрустящей кислотностью и приятным, сухим, минеральным послевкусием. Ноты спелых белых фруктов, луговых цветов, трав и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-sovinon-semilon-kyuve-sovinon-blan-beloe-suhoe-132",
+      "group_id": "cuvee",
+      "name": "Совиньон Семильон Кюве",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-sovinon-semilon-kyuve-sovinon-blan-beloe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-sovinon-semilon-kyuve-sovinon-blan-beloe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Сбалансированный и гармоничный, обладает мягкой текстурой, соблазнительными тонами тропических фруктов. Послевкусие приятное и продолжительное, с легкими нюансами минералов. Фрукты, цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-tempranilo-rozovoe-suhoe-134",
+      "group_id": "mono",
+      "name": "Темпранильо",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-tempranilo-rozovoe-suhoe-134",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-tempranilo-rozovoe-suhoe-134.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Минерально-ягодный, малина, шиповник, слива, грейпфрут, сливки. Клубника, ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-zinfandel-mode-krasnoe-suhoe-148",
+      "group_id": "mode",
+      "name": "Зинфандель Mode",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-zinfandel-mode-krasnoe-suhoe-148",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-zinfandel-mode-krasnoe-suhoe-148.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Зинфандель"
+      ],
+      "description": "Вкус: Полный, насыщенный, с приятным послевкусием, ягоды, пряности. Спелые фрукты, оттенки специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-myshako-zinfandel-mode-petnat-rozovoe-polusuhoe-12",
+      "group_id": "mode",
+      "name": "Зинфандель Mode Петнат",
+      "variant": "",
+      "wine_slug": "vinodelnya-myshako-zinfandel-mode-petnat-rozovoe-polusuhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/wine-vinodelnya-myshako-zinfandel-mode-petnat-rozovoe-polusuhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Зинфандель"
+      ],
+      "description": "Вкус: Округлый, с приятной кислотностью. Садовые ягоды, дикая ежевика, заизюмленная вишня.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "mys-official",
+        "mys-sparkling"
+      ]
+    },
+    {
+      "id": "official-mys-215",
+      "group_id": "craft",
+      "name": "Крафт. Совиньон Блан — Шардоне",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/official-mys-215.webp",
+        "source_id": "mys-215"
+      },
+      "category": "Тихое вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Купаж равных долей Совиньон Блан и Шардоне. По данным производителя, 15% вина выдерживается в дубовой бочке второго пассажа. В аромате тропические фрукты, травы и минералы.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "mys-215"
+      ]
+    },
+    {
+      "id": "official-mys-216",
+      "group_id": "craft",
+      "name": "Крафт. Семильон — Русан",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/official-mys-216.webp",
+        "source_id": "mys-216"
+      },
+      "category": "Тихое вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Семильон",
+        "Русан"
+      ],
+      "description": "Купаж Семильона и Русана в соотношении 80/20. В аромате белые косточковые фрукты, травы и весенние цветы. Вкус гладкий и фруктовый. Производитель рекомендует моллюсков и мягкие сыры.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "mys-216"
+      ]
+    },
+    {
+      "id": "official-mys-217",
+      "group_id": "craft",
+      "name": "Крафт. Каберне Фран — Каладок",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/official-mys-217.webp",
+        "source_id": "mys-217"
+      },
+      "category": "Тихое вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Фран",
+        "Каладок"
+      ],
+      "description": "Купаж Каберне Фран и Каладока в соотношении 70/30. По данным производителя, 15% вина выдерживается в дубовой бочке третьего пассажа. В аромате тёмные ягоды и перечные оттенки.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "mys-217"
+      ]
+    },
+    {
+      "id": "official-mys-218",
+      "group_id": "craft",
+      "name": "Крафт. Достойный — Саперави",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/official-mys-218.webp",
+        "source_id": "mys-218"
+      },
+      "category": "Тихое вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Достойный",
+        "Саперави"
+      ],
+      "description": "Купаж равных долей Достойного и Саперави. Производитель указывает ферментацию в дубовой бочке и короткую выдержку в бутылке. Вкус насыщенный, с вишней, пряностями и смородиной.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "mys-218"
+      ]
+    },
+    {
+      "id": "official-mys-200",
+      "group_id": "noble",
+      "name": "Noble Age. 6 урожаев. Шардоне",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/myskhako/official-mys-200.webp",
+        "source_id": "mys-200"
+      },
+      "category": "Тихое вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Шардоне серии «Ноубл Эйдж. 6 урожаев». Официальная карточка указывает годы урожая 2018–2024. В аромате спелые косточковые фрукты и ваниль; вкус кремовый, с лимонными и хлебными оттенками.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "mys-200"
+      ]
+    }
+  ]
+}

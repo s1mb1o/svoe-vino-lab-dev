@@ -262,3 +262,9 @@ It does not claim complete live assortment coverage.
 Read [kuban-vino sources](product-line-maps/kuban-vino/sources.md).
 The map includes 97 snapshot cards and 6 verified additions in 26 groups.
 It does not claim complete live assortment coverage.
+
+## Мысхако extension, 2026-10-16
+
+Read [myskhako sources](product-line-maps/myskhako/sources.md).
+The map includes 92 snapshot cards and 5 verified additions in 20 groups.
+It does not claim complete live assortment coverage.
