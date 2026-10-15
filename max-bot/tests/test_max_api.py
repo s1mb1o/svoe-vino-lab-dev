@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import itertools
 import json
@@ -558,3 +559,65 @@ async def test_late_wakeup_moves_the_deadline_from_the_actual_time():
     # The second operation woke up late, at 0.8 s. The next one waits until 0.8 + 0.5.
     assert marked == pytest.approx(0.8)
     assert limiter.wait_time(marked) == pytest.approx(0.5)
+
+
+class VirtualTime:
+    """A clock that moves only when the test moves it. A sleeper waits for its wake time."""
+
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.sleepers: list[tuple[float, asyncio.Future[None]]] = []
+
+    async def sleep(self, delay: float) -> None:
+        future = asyncio.get_running_loop().create_future()
+        self.sleepers.append((self.now + delay, future))
+        await future
+
+    def advance(self, moment: float) -> None:
+        self.now = moment
+        for wake, future in list(self.sleepers):
+            if wake <= moment:
+                self.sleepers.remove((wake, future))
+                future.set_result(None)
+
+
+async def test_a_waiting_request_is_not_overtaken_by_a_new_request():
+    clock = VirtualTime()
+    order: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        order.append(request.url.params["chat_id"])
+        return message_answer()
+
+    api = MaxApi(
+        TOKEN,
+        httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        base_url=BASE,
+        global_rate=10.0,
+        chat_rate=1000.0,
+        sleep=clock.sleep,
+        clock=lambda: clock.now,
+    )
+    await api.send_message(1, text="first")
+    waiter = asyncio.create_task(api.send_message(2, text="waits for the global slot"))
+    for _ in range(20):
+        await asyncio.sleep(0)
+    assert len(clock.sleepers) == 1
+
+    async def drive_time() -> None:
+        while True:
+            await asyncio.sleep(0)
+            if clock.sleepers:
+                clock.advance(min(wake for wake, _ in clock.sleepers))
+
+    # The global slot is free again, but the waiter has not run yet. A new request arrives
+    # in this moment, as after synchronous work that held the event loop.
+    clock.advance(0.1)
+    driver = asyncio.create_task(drive_time())
+    try:
+        await api.send_message(3, text="new request")
+        await waiter
+    finally:
+        driver.cancel()
+
+    assert order == ["1", "2", "3"]
