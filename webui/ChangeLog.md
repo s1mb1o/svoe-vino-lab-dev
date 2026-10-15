@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Bottle image validation
+
+- Audit all referenced producer images and document the background-extraction workflow.
+- Verify 82 edited images in Chromium and WebKit. Pass 48 desktop and mobile screen and interaction cases.
+- Verify 231 tests with the full catalog snapshot, type checks, and the production build.
+- Record the two unverified source photos and preserve their existing product-link behavior.
+
 ## 2026-10-16 — Kuban Vino bottle cutouts
 
 - Replace 50 background images with reviewed transparent imagegen display assets.

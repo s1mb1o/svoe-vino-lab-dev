@@ -55,6 +55,15 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Product image backgrounds, 2026-10-16
+
+An alpha channel alone does not prove that a photo has no background. Three 5000 scene images had only a few transparent corner pixels.
+The full image audit found 84 backgrounds among 638 referenced files.
+The user selected built-in imagegen. The accepted result contains 82 cutouts and two labeled placeholders for unverified source photos.
+Imagegen can change fine print and reflections. Review must check the main bottle identity before acceptance.
+A wide field of nearly transparent pixels can reduce bottle scale under CSS max-width. Frame the output from visible alpha and verify the actual desktop and mobile sizes.
+Read `docs/validation/product-image-cutouts.md` for the decisions, exact prompt manifests, source conflicts, and checks.
+
 ## Producer map verification, 2026-10-16
 
 The ten new maps contain 595 products in 132 groups.

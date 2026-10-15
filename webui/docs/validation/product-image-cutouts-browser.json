@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "producer_count": 6,
+  "edited_asset_count": 82,
+  "screen_and_interaction_cases_per_engine": 24,
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "theme": "light"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "dark"
+    }
+  ],
+  "checks": [
+    "Downloaded SHA-256 matches repository bytes and provenance for all 82 assets in each engine run.",
+    "All 82 assets decode with meaningful transparency and visible bottle pixels in each browser.",
+    "Selected product and linked portal URL match map data. Gray products have no portal link.",
+    "Mobile details stay closed on entry. Toolbar and product tap open the native popup. Return and Escape preserve map scroll and zoom.",
+    "The Monte Garu rose and 5000 Chardonnay cutouts render with transparency.",
+    "The Fanagoria lifestyle and Derbent 5000 Cabernet Sauvignon products show labeled image placeholders. The Fanagoria portal link remains available.",
+    "No document horizontal overflow, broken images, browser errors, or hydration errors were found."
+  ],
+  "errors": [],
+  "date": "2026-10-16",
+  "physical_device_test": false
+}

@@ -436,3 +436,13 @@ Run `npm run test:producer-maps` in Chromium and WebKit.
 Check the largest groups at 320 px and 1440 px.
 Open a map from a controlled scanner result. Keep the recognized marker after another selection.
 Simulate an image HTTP 404. Confirm the placeholder and the original portal link.
+
+## Transparent product images
+
+Open `/lineup/derbent-vino?wine=monte-garu-beloe-bryut`.
+Check Monte Garu on the canvas and in the selected-wine panel. Confirm that no white rectangle surrounds the bottle.
+Repeat at 1440 px in light theme and 390 px in dark theme.
+Select Monte Garu rose semi-sweet. Confirm that the bottle scale matches the other bottles.
+On mobile, open and close the product popup. Confirm that the map position and selection remain unchanged.
+Check one edited image in each of the six producers listed in `docs/validation/product-image-cutouts.md`.
+Check the two source-conflict placeholders. The Fanagoria catalog link remains available. The gray 5000 product still has no portal link.

@@ -76,3 +76,9 @@ Keep explicit Tab cycling inside the mobile popup. WebKit can reach the underlyi
 Keep popup content scrollable and actions reachable in short viewports.
 Record the clicked dialog opener through `event.currentTarget`. WebKit may not focus clicked buttons.
 Run `npm run test:line-map` with the documented browser environment after map interaction changes.
+
+### Product image checks
+
+An alpha channel does not prove that the background is removed. Inspect alpha coverage and the visible outline.
+Nearly transparent outer pixels can reduce bottle scale under CSS max-width. Verify the final image at the actual desktop and mobile sizes.
+Imagegen display derivatives can change fine print. Keep original hashes and exact prompts in the producer provenance. Do not use generated microtext as product evidence.

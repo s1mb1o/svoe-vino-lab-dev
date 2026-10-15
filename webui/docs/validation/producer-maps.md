@@ -39,7 +39,7 @@ The scanner labels the actual recognized product separately from the current map
 - `npm run build`: passed, including map validation in `prebuild`.
 - Every map JSON is registered. Exact slugs and aliases have no cross-producer collisions.
 - Each map matches its independent catalog extract and its crosswalk.
-- All 638 referenced image files match the production output bytes.
+- The initial build verified 638 referenced image files. The later background-extraction pass references 636 files; see [product-image-cutouts.md](product-image-cutouts.md).
 - `git diff --check`: passed.
 
 ## Browser checks
@@ -85,7 +85,7 @@ These checks use emulated mobile viewports. No physical device test was performe
 Claude Opus 5.5 with effort max reviewed the plan and implementation.
 The implementation findings were resolved or documented. The reviewer did not rerun the final build.
 Read the review records and resolution in `docs/reviews/`.
-Nine catalog products lack a confirmed local image. The UI uses a labeled placeholder.
+After image review, ten catalog products and one official addition use a labeled placeholder. The two new exclusions and the image checks are recorded in [product-image-cutouts.md](product-image-cutouts.md).
 The shared map chunk is 763.86 kB before compression and 113.86 kB with gzip.
 Vite reports its chunk-size advisory. The build succeeds.
 
