@@ -6585,3 +6585,14 @@ The 454-vector local MPS audit changes no ranking boundary or metric outcome.
 Keep standard ranking as the default recommendation.
 The full report is <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
 The evidence is <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/.
+
+
+## 2026-10-15T03:29:57+0300 — Review every failed positive my patch match
+
+Review all 303 distinct weighted Top-1 misses in the experiment checkout. These photos represent 316 failed positive assignments.
+Record image evidence and measured ranking evidence for each case. Preserve frozen labels, masks, gallery, embeddings, and scores.
+The case audit passes for all 303 source hashes, 376 reference-input hashes, 1,515 asset links, score arithmetic, and frozen protocol files.
+The image report uses four separate image elements per case. JavaScript syntax passes. Browser policy rejects the local HTML preview.
+Report: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/failure-review/REPORT.md.
+Summary: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+No pipeline, catalogue, configuration, or service change.
