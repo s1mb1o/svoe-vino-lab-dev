@@ -1,0 +1,621 @@
+{
+  "catalog_snapshot": "official-2026-09-17",
+  "source_path": "svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl",
+  "source_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "producer": "Фанагория",
+  "expected_count": 102,
+  "records": [
+    {
+      "slug": "cru-lermont-risling",
+      "name": "Cru Lermont Рислинг",
+      "description": "В аромате вина присутствует сложный букет хвои, минералов и грейпфрута, оттененный нотками лимонной цедры и полевых трав.",
+      "grapes": "Рислинг Рейнский"
+    },
+    {
+      "slug": "fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135",
+      "name": "100 оттенков красного. Каберне",
+      "description": "В аромате спелая вишня, чёрная смородина, лёгкая пряность. Вкус плотный, гармоничный, с мягкими танинами и ягодным послевкусием.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "name": "100 оттенков красного. Пино Нуар",
+      "description": "Стройный развитый аромат с нотами брусники, вяленых лесных ягод, гранатовых зерен, пастилы, тонкими животными нюансами. Вкус легкий и волнующий, многослойный. Все элементы вина находятся в балансе. Тонко, свежо, элегантно.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-100-ottenkov-krasnogo-saperavi-krasnoe-suhoe-14",
+      "name": "100 оттенков красного. Саперави",
+      "description": "В аромате тона ежевики, черники, тёмной вишни, оттенки специй. Вкус насыщенный, сбалансированный, с бархатными танинами.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-100-ottenkov-shardone-beloe-suhoe-14",
+      "name": "100 оттенков. Шардоне",
+      "description": "В аромате яблоко, груша, цитрус, лёгкие цветочные ноты. Вкус свежий, гармоничный, с минеральными нотами и цитрусовыми оттенками.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14",
+      "name": "101 оттенок красного. Каберне",
+      "description": "В аромате чёрная смородина, ежевика, слива, лёгкие древесные ноты. Вкус насыщенный, гармоничный, с округлыми танинами и пряными оттенками.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-101-ottenok-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "name": "101 оттенок красного. Пино нуар",
+      "description": "В аромате черника, малина, ежевика, корица, подлесок. Вкус освежающий, объемный.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-101-ottenok-krasnogo-saperavi-krasnoe-suhoe-14",
+      "name": "101 оттенок красного. Саперави",
+      "description": "В аромате ежевика, чёрная вишня, специи, оттенки фиалки. Вкус глубокий, бархатный, с сочной ягодной структурой и лёгкой терпкостью.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-5-elements-bryut-beloe-pino-gri-igristoe-bryut-beloe-125",
+      "name": "5 elements Брют белое",
+      "description": "В аромате цветы, фрукты, цитрусы. Вкус свежий, чистый, гармоничный, фруктовый.",
+      "grapes": "Пино Гри, Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-5-elements-bryut-rozovoe-saperavi-igristoe-bryut-rozovoe-125",
+      "name": "5 elements Брют розовое",
+      "description": "В аромате ягодные ноты, малина, клубника, красная смородина и нотки цветущей вербы. Вкус свежий, бодрящий, живая кислотность.",
+      "grapes": "Каберне Совиньон, Мерло, Саперави"
+    },
+    {
+      "slug": "fanagoriya-alta-qortis-saperavi-krasnoe-suhoe-145",
+      "name": "Alta Qortis",
+      "description": "В аромате кизил, гранат, тёрн, сафьяновая кожа, свежемолотые специи. Вкус объёмный, с бархатистыми танинами и долгим послевкусием.",
+      "grapes": "Каберне Совиньон, Саперави"
+    },
+    {
+      "slug": "fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12",
+      "name": "Alveus Ultra Cuvee Brut",
+      "description": "В аромате цветущая акация, белые семечковые и цитрусовые плоды. Вкус освежающий и мягкий, фруктовый, оживленный приятной природной кислотностью.",
+      "grapes": "Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-alveus-ultra-cuvee-bryut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "name": "Alveus Ultra Cuvee. Брют розовое",
+      "description": "В аромате белая черешня, шелковица, красные ягоды и фрукты, смородина, яблоки. Вкус свежий, ягодный, гармоничный, с приятными травянистыми нотками и освежающим длительным послевкусием.",
+      "grapes": "Мерло, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-alveus-ultra-cuvee-ekstra-bryut-beloe-risling-reynskiy-12",
+      "name": "Alveus Ultra Cuvee. Экстра брют белое",
+      "description": "В аромате цветочно-медовые оттенки, нотки зеленого яблока, груши и лайма. Вкус свежий, фруктовый, с солоноватым минеральным послевкусием.",
+      "grapes": "Рислинг Рейнский, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-alveus-ultra-cuvee-ekstra-bryut-rozovoe-merlo-12",
+      "name": "Alveus Ultra Cuvee. Экстра брют розовое",
+      "description": "В аромате груша, красное яблоко, спелая красная слива, цветочные оттенки и сливочные ноты. Вкус освежающий вкус с тонами фруктов и послевкусие с минеральными оттенками.",
+      "grapes": "Мерло, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-beloe-polusladkoe",
+      "name": "Фанагория белое полусладкое",
+      "description": "Яркий аромат вина доносит ноты цветочного нектара, меда, свежего винограда и луговых трав. Вино легко пьется благодаря гармоничному, мягкому вкусу. В нем сбалансированы кислотность, легкая горчинка и сочные фруктовые оттенки. В палитре вкуса можно почувствовать ноты яблока, груши, грейпфрута, цветов и винограда.",
+      "grapes": "Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12",
+      "name": "Blanc de Blancs",
+      "description": "Игра пузырьков изящная и утонченная — непрерывный жемчужный перляж. Аромат элегантный и тонкий, завораживающий. Вначале раскрывается нотами легких белых цветов и прохладой цветущего утреннего сада. Затем проявляются сочные оттенки мякоти белых фруктов и розового персика, свежие нотки грейпфрута и легкий травяной акцент. Фоном звучит тонкий оттенок миндального пралине. Вкус изящный, свежий и ажурный. Прекрасно сбалансированная, стройная кислотность отлично гармонирует с тонкой сливочностью и ведет к чистому и стройному послевкусию. Идеальный аперитив.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-blanc-de-noir-mene-extra-brut-2019-pino-nuar-beloe-ekstra-bryut-12",
+      "name": "Blanc de Noir Mene Extra Brut 2019",
+      "description": "В аромате персик, слива, яблоки, с кремовыми нотами и бриошью. Вкус свежий, минеральный, фруктовый.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12",
+      "name": "Blanc de Noirs Менье",
+      "description": "Игра пузырьков тонкая и элегантная. Аромат деликатный и свежий. Раскрывается мягкими тонами красной смородины, белой и желтой черешни, вишни, легкими акцентами белых цветов и розового грейпфрута. Затем проявляются сдержанные, но узнаваемые нюансы десерта — клубники со сливками, добавляющие букету нежности и мягкой сладости. Вкус свежий и гармоничный, с выразительной кислотностью и ягодными нотами. Послевкусие легкое, с приятной фруктовой горчинкой. Идеальный аперитив.",
+      "grapes": "Пино Менье"
+    },
+    {
+      "slug": "fanagoriya-brule-cabernet-franc-polusuhoe-rozovoe-kaberne-fran-12",
+      "name": "Brule Cabernet Franc Полусухое Розовое",
+      "description": "В аромате клубника, малина и вишня. Вкус свежий, с лёгкой кислинкой.",
+      "grapes": "Каберне Фран"
+    },
+    {
+      "slug": "fanagoriya-brule-cabernet-sauvignon-polusladkoe-krasnoe-kaberne-sovinon-125",
+      "name": "Brule Cabernet Sauvignon Полусладкое Красное",
+      "description": "В аромате вишня, смородина, специи. Вкус насыщенный, сладкий, с балансом кислотности.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "name": "Brule Cuvée Brut Розовое",
+      "description": "В аромате красные ягоды и цветы. Вкус яркий, освежающий, фруктово-ягодный.",
+      "grapes": "Мерло, Пино Блан, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
+      "name": "Brule Frizzante Brut Белое",
+      "description": "В аромате цитрусовые, яблоки, спелые фрукты. Вкус лёгкий, освежающий, фруктово-цитрусовый.",
+      "grapes": "Пино Нуар, Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115",
+      "name": "Brule Frizzante Brut Розовое",
+      "description": "В аромате земляника, красная смородина, цветы. Вкус свежий, гармоничный, цветочно-ягодный.",
+      "grapes": "Каберне Фран, Мерло, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11",
+      "name": "Brule Frizzante Полусладкое Белое",
+      "description": "В аромате цветы и фрукты. Вкус мягкий, сладковатый, с тонами яблока, груши и медовыми нюансами.",
+      "grapes": "Пино Нуар, Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-brule-muscat-ottonel-brut-muskat-ottonel-beloe-polusladkoe-12",
+      "name": "Brule Muscat Ottonel Brut",
+      "description": "В аромате фрукты, мёд, цитрусы, цветы и спелый виноград. Вкус лёгкий, освежающий, с фруктовым послевкусием.",
+      "grapes": "Мускат Оттонель"
+    },
+    {
+      "slug": "fanagoriya-brule-muscat-ottonel-polusladkoe-muskat-ottonel-beloe-115",
+      "name": "Brule Muscat Ottonel Полусладкое",
+      "description": "В аромате фрукты, мёд, цветы и спелый виноград. Вкус мягкий, сладковатый, гармоничный, фруктовый.",
+      "grapes": "Мускат Оттонель"
+    },
+    {
+      "slug": "fanagoriya-brule-saperavi-saperavi-igristoe-sladkoe-krasnoe-bryut-125",
+      "name": "Brule Saperavi",
+      "description": "В аромате спелые ягоды, сливы и специи. Вкус фруктово-ягодный, свежий, полный, обволакивающий, с длительным послевкусием.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-brule-sauvignon-blanc-brut-sovinon-blan-beloe-bryut-12",
+      "name": "Brule Sauvignon Blanc Brut",
+      "description": "В аромате зелёное яблоко и цитрусы. Вкус свежий, сбалансированный, с цитрусовыми нотами.",
+      "grapes": "Совиньон Блан"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-cabernet-franc-kaberne-fran-krasnoe-suhoe-13",
+      "name": "Cru Lermont Cabernet Franc",
+      "description": "В аромате вяленая вишня, чернослив, лакрица. Вкус сочный, бархатистый, ягодно-пряный.",
+      "grapes": "Каберне Фран"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-13",
+      "name": "Cru Lermont Cabernet Sauvignon",
+      "description": "В аромате смородина, чернослив, вишня, специи, табак. Вкус бархатистый, хорошо структурированный, с мягкими танинами, оттенками пряностей, шоколада, увяленных черных ягод.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-chardonnay-shardone-beloe-suhoe-14",
+      "name": "Cru Lermont Chardonnay",
+      "description": "В аромате спелые фрукты, ваниль. Вкус полный, мягкий, длительное послевкусие.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-merlo-merlo-krasnoe-suhoe-14",
+      "name": "Cru Lermont Merlo",
+      "description": "В аромате лесные ягоды, болгарский перец, ваниль, замша, специи. Вкус мягкий, бархатистые танины, спелые чёрные ягоды, пряное ягодное послевкусие.",
+      "grapes": "Мерло"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-petit-verdot-pti-verdo-krasnoe-suhoe-13",
+      "name": "Cru Lermont Petit Verdot",
+      "description": "В аромате увяленная вишня, лакрица, фиалка, тёмные фрукты. Вкус сочный, структурированный, вишневое послевкусие.",
+      "grapes": "Пти Вердо"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-pinot-noir-pino-nuar-krasnoe-suhoe-13",
+      "name": "Cru Lermont Pinot Noir",
+      "description": "В аромате лесные ягоды, тёмные фрукты, осенний лес. Вкус мягкий, вишневый, пряный, бархатистый.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-rubinovyy-magaracha-krasnoe-suhoe-13",
+      "name": "Cru Lermont Рубиновый Магарача",
+      "description": "В аромате выдержка, засахаренные фрукты, пряности, шоколад. Во вкусе сочное, структурированное, бархатистое послевкусие.",
+      "grapes": "Рубиновый Магарача"
+    },
+    {
+      "slug": "fanagoriya-cru-lermont-saperavi-saperavi-krasnoe-suhoe-135",
+      "name": "Cru Lermont Saperavi",
+      "description": "В аромате черные ягоды, табак, кожа, специи. Вкус полный, округлый, шоколадно-сливовое послевкусие.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135",
+      "name": "Декантер Chardonnay 2020",
+      "description": "В аромате минеральность, кремовые акценты, белые фрукты (персик, груша), засахаренные экзотические фрукты. Вкус фруктовый, насыщенный, маслянистый, минерально-кремовый финиш.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-dekanter-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "name": "Декантер. Формула Q",
+      "description": "В аромате чёрные ягоды, специи, дубовые ноты. Вкус богатый, бархатистый, сбалансированный.",
+      "grapes": "Каберне Совиньон, Красностоп, Мерло, Саперави"
+    },
+    {
+      "slug": "fanagoriya-dekanter-kaberne-fran-2019-krasnoe-suhoe-13",
+      "name": "Декантер. Каберне Фран 2019",
+      "description": "В аромате бутылочная выдержка, дубовые ноты, пряности. Вкус сочный, насыщенный, с гармоничным балансом.",
+      "grapes": "Каберне Фран"
+    },
+    {
+      "slug": "fanagoriya-dekanter-kaberne-sovinon-2018-krasnoe-suhoe-14",
+      "name": "Декантер. Каберне Совиньон 2018",
+      "description": "В аромате черника, ежевика, чернослив, специи, ваниль. Вкус богатый, сбалансированный, с бархатистыми танинами.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-dekanter-merlo-2018-krasnoe-suhoe-14",
+      "name": "Декантер. Мерло 2018",
+      "description": "В аромате красные ягоды, перец, ваниль, специи. Вкус мягкий, с бархатистыми танинами.",
+      "grapes": "Мерло"
+    },
+    {
+      "slug": "fanagoriya-dekanter-pino-nuar-2020-krasnoe-suhoe-135",
+      "name": "Декантер. Пино нуар 2020",
+      "description": "В аромате осенний лес, ягоды, земляника. Вкус мягкий, бархатистый, с оттенками вишни.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+      "name": "Декантер Riesling 2020",
+      "description": "В аромате бензольные ноты, лайм, абрикос, липа, маракуйя, мед. Вкус фруктово-леденцовый, сбалансированный, цитрусовое продолжительное послевкусие.",
+      "grapes": "Рислинг Рейнский"
+    },
+    {
+      "slug": "fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
+      "name": "Декантер. Ркацители 2019",
+      "description": "В аромате цитрусовые, яблоки, цветы, мёд. Вкус фруктовый, гармоничный, минеральный.",
+      "grapes": "Ркацители"
+    },
+    {
+      "slug": "fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
+      "name": "Декантер. Саперави 2017",
+      "description": "В аромате ягоды, вишня, шелковица, фиалка. Вкус бархатистый, плотный, с приятной терпкостью.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12",
+      "name": "Fanagoria Extra Brut Rose 2019",
+      "description": "В аромате красные ягоды, цитрус, бриошь. Вкус свежий, с ягодно-сливочным послевкусием.",
+      "grapes": "Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13",
+      "name": "Фанагория. Blanc de Blancs. Белое из белого",
+      "description": "В аромате ноты экзотических фруктов, цветов крокуса и медовые оттенки. Вкус мягкий, свежий, с нюансами спелых летних фруктов, сдобной булки , медовых оттенков.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-blanc-de-noirs-beloe-iz-chyornogo-merlo-igristoe-bryut-beloe-11-13",
+      "name": "Фанагория. Blanc de Noirs. Белое из чёрного",
+      "description": "В аромате тона ягод, кремовые ноты и тона сдобы. Вкус свежий, округлый, с длительным сливочным послевкусием.",
+      "grapes": "Мерло, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13",
+      "name": "Фанагория. Брют белое",
+      "description": "В аромате подсолнух и спелые белые фрукты. Вкус свежий, с фруктово-цитрусовыми оттенками и хорошим уровнем кислотности.",
+      "grapes": "Алиготе, Мерло, Пино Нуар, Рисус, Совиньон Блан, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13",
+      "name": "Фанагория. Брют розовое",
+      "description": "В аромате ноты земляники, багульника и цветущей вербы. Вкус вкус свежий, гармоничный, ягодный.",
+      "grapes": "Мерло, Пино Нуар, Рисус, Совиньон Блан, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13",
+      "name": "Фанагория Хей Бэй Шардоне",
+      "description": "Аромат с нотами спелых яблок, персика и лёгкими цветочными оттенками; вкус сбалансированный, с хорошей кислотностью и фруктовым послевкусием. К рыбным блюдам, нежирным сырам.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+      "name": "Фанагория. Полусладкое розовое",
+      "description": "Аромат свежий, цветочно-ягодный со сливочно-клубничными оттенками. Вкус мягкий, с нотами спелой клубники и земляники. послевкусие нежное, цитрусовое с оттенками лесных ягод.",
+      "grapes": "Мерло, Пино Нуар, Совиньон Блан, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-rose-de-noirs-roze-de-nuar-merlo-igristoe-bryut-rozovoe-11-13",
+      "name": "Фанагория. Rose de Noirs. Розе де Нуар",
+      "description": "В аромате свежие и яркие ягоды. Во вкусе тона красных фруктов и ягод, живая кислотность и стойкое послевкусие.",
+      "grapes": "Каберне Фран, Мерло"
+    },
+    {
+      "slug": "fanagoriya-fanagoriya-sakra-sennoy-krasnostop-krasnoe-suhoe-135",
+      "name": "Фанагория Сакра Сенной",
+      "description": "Аромат сложный — тёмные ягоды, терновник, нотки специй и дуба; вкус плотный, полнотелый, с хорошей структурой и долгим тёмно-ягодным послевкусием. К красному мясу, выдержанным сырам.",
+      "grapes": "Красностоп, Рубиновый Магарача, Саперави"
+    },
+    {
+      "slug": "fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "name": "Формула Q",
+      "description": "Аромат выразительный и многослойный: ноты черники, черной смородины, вишни, сливового джема, пряностей, сухой листвы. Вкус полный, сочный, с приятной округлостью. Яркая кислотность задает тон, танин мягко обволакивает. В послевкусии щедрые пряно-ягодны ноты. Ярко, сочно, согревающе.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-formula-q-saperavi-krasnoe-suhoe-135",
+      "name": "Formula Q",
+      "description": "В аромате черника, смородина, вишня, тёрн, сливочные оттенки. Вкус сочный, с длительным пряным послевкусием.",
+      "grapes": "Каберне Совиньон, Красностоп Золотовский, Мерло, Саперави"
+    },
+    {
+      "slug": "fanagoriya-ice-wine-kaberne-kaberne-sovinon-krasnoe-sladkoe-11",
+      "name": "Ice Wine Каберне",
+      "description": "В аромате тёмные ягоды, варенье, шоколад. Вкус полный, насыщенный, с бархатными танинами.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10",
+      "name": "Ice Wine Мерло розовое",
+      "description": "В аромате красные ягоды, цветочные тона. Вкус мягкий, с длительным послевкусием.",
+      "grapes": "Мерло"
+    },
+    {
+      "slug": "fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10",
+      "name": "Ice Wine Рислинг тихое",
+      "description": "В аромате тонкие петрольные ноты, цитрусы, мёд. Вкус фруктово-леденцовый.",
+      "grapes": "Рислинг"
+    },
+    {
+      "slug": "fanagoriya-ice-wine-saperavi-tihoe-krasnoe-sladkoe-10",
+      "name": "Ice Wine Саперави тихое",
+      "description": "В аромате ежевика, шелковица, фиалка, шоколад. Вкус плотный, бархатистый.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11",
+      "name": "Ледяное вино. Мускат",
+      "description": "Аромат сдержанный, но узнаваемый: цветочные нотки жасмина, нарцисса и акации, сладкие тона белых персиков, желтых груш, зрелой айвы и цукатов из лайма. Во вкусе продолжение богатой фруктовой палитры. Достойная, хорошо выраженная кислотность помогает вину сохранить баланс и маскирует заметную сладость и плотность. Долгое фруктовое послевкусие.",
+      "grapes": "Мускат Оттонель"
+    },
+    {
+      "slug": "fanagoriya-ona-skazala-da-beloe-bryut",
+      "name": "Фанагория Она сказала Да! белое брют",
+      "description": "Вкус вина легкий, гармоничный, с хорошо интегрированной кислотность, свежим фруктовым характером, тонами персика, яблока, мякоти плодов граната. В послевкусии остается пикантная горчинка яблочных семечек. Аромат вина похож на цветущий фруктовый сад. В нем ноты белых цветов дополняются оттенками леденцов \"Дюшес\", персика и деликатными нюансами свежеиспеченной яблочной шарлотки. Вино светло-соломенного цвета с серебристым оттенком и нежным перляжем.",
+      "grapes": "Пино Блан, Пино Гриджио, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-ona-skazala-da-beloe-polusladkoe",
+      "name": "Фанагория Она сказала Да! белое полусладкое",
+      "description": "Аромат изящный, с тонами сортовых особенностей винограда. Вкус свежий с хорошей структурой и длительным послевкусием.",
+      "grapes": "Мерло, Пино Нуар, Рислинг, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125",
+      "name": "Par Amour",
+      "description": "В аромате тропические фрукты, белые цветы, цитрус. Вкус свежий, гармоничный, сладковатый.",
+      "grapes": "Бианка, Первенец Магарача"
+    },
+    {
+      "slug": "fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125",
+      "name": "Par Amour",
+      "description": "В аромате садовые ягоды, лёгкий цитрус. Вкус свежий, минеральный, сбалансированный.",
+      "grapes": "Бианка, Первенец Магарача"
+    },
+    {
+      "slug": "fanagoriya-par-amour-pervenets-magaracha-rozovoe-polusuhoe-105-125",
+      "name": "Par Amour",
+      "description": "В аромате цветочно-фруктовый букет. Вкус свежий, сочный, сбалансированный.",
+      "grapes": "Бианка, Каберне Совиньон, Первенец Магарача"
+    },
+    {
+      "slug": "fanagoriya-par-amour-rubin-golodrigi-krasnoe-polusladkoe-105-125",
+      "name": "Par Amour",
+      "description": "В аромате спелые тёмные ягоды и фрукты. Вкус экстрактивный, бархатистый, сладковатый.",
+      "grapes": "Мерло, Молдова, Рубин Голодриги"
+    },
+    {
+      "slug": "fanagoriya-pelle-calda-saperavi-krasnoe-suhoe-155",
+      "name": "Pelle Calda",
+      "description": "В аромате зрелые красные ягоды, слива, специи. Вкус плотный, округлый, бархатные танины, длительное ягодно-пряное послевкусие.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12",
+      "name": "Primum Alveus Blanc de Blancs 2017",
+      "description": "В аромате сливочно-кремовые ноты, цветы шиповника, акации, спелый персик, ананас и сдобная булочка с маслом. Вкус мягкий, округлый, гастрономичный, со сливочно-фруктовым послевкусием.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13",
+      "name": "Primum Alveus Blanc De Blancs Экстра Брют 2019",
+      "description": "В аромате сливочно-кремовые ноты, цветы шиповника, акации, спелый персик, ананас. Вкус мягкий, округлый, гастрономичный, со сливочно-фруктовым послевкусием.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-blanc-de-noirs-meunier-ekstra-bryut-2019-mene-beloe-11-13",
+      "name": "Primum Alveus. Blanc de Noirs. Meunier. Экстра брют 2019",
+      "description": "В аромате ягоды, фрукты, цветы, выпечка. Вкус мягкий, гармоничный. с длительным послевкусием.",
+      "grapes": "Менье"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+      "name": "Primum Alveus Brut 2014",
+      "description": "В аромате цветы, яблоко, миндаль. Вкус свежий, хорошо сбалансированный. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12",
+      "name": "Primum Alveus Brut 2016",
+      "description": "В аромате цитрус, яблоко. Вкус свежий, округлый, сбалансированный с легкой пикантной горчинкой и длительным кремовым послевкусием.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12",
+      "name": "Primum Alveus Brut 2017",
+      "description": "В аромате оттенки халвы, цветов, яблок и груши. Вкус мягкий, гармоничный, с длительным послевкусием.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-brut-2021-shardone-beloe-bryut-11-13",
+      "name": "Primum Alveus. Brut 2021",
+      "description": "В аромате зеленое яблоко, кремовые ноты, бриошь и халва. Вкус свежий, гармоничный, с мягкой кремово-сливочной текстурой и длительным минеральным послевкусием.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-bryut-2019-pino-nuar-igristoe-bryut-rozovoe-11-13",
+      "name": "Primum Alveus. Брют 2019",
+      "description": "В аромате красные ягоды, цветы. Вкус мягкий, гармоничный, с приятным продолжительным послевкусием.",
+      "grapes": "Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13",
+      "name": "Primum Alveus. Экстра-брют 2017",
+      "description": "В аромате полевые цветы, фрукты. Вкус свежий, сбалансированный с нотами свежей сдобы и халвы. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12",
+      "name": "Primum Alveus Extra Brut 2014",
+      "description": "В аромате цветы, груша. Вкус свежий, хорошо сбалансированный. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "grapes": "Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12",
+      "name": "Primum Alveus Extra Brut 2016",
+      "description": "В аромате фрукты и полевые цветы. Вкус свежий, хорошо сбалансированный с нотами свежей сдобы и халвы.",
+      "grapes": "Менье, Пино Нуар, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12",
+      "name": "Primum Alveus Extra Brut Rose 2014",
+      "description": "В аромате ягоды, цитрусы. Вкус сухой, минеральный.",
+      "grapes": "Менье, Пино Нуар"
+    },
+    {
+      "slug": "fanagoriya-q-blanc-sovinon-blan-beloe-suhoe-14",
+      "name": "Q Blanc",
+      "description": "В аромате ананас, персик, грейпфрут, виноград, вяленый манго, ваниль. Вкус гармоничный, фруктовый, с кремово-сливочным послевкусием.",
+      "grapes": "Алиготе, Совиньон Блан, Шардоне"
+    },
+    {
+      "slug": "fanagoriya-q-bordeaux-blend-kaberne-sovinon-krasnoe-suhoe-135",
+      "name": "Q Bordeaux Blend",
+      "description": "В аромате чёрная смородина, черника, ежевика, спелая вишня, ноты черного шоколада, тона специй и кожи, ваниль. Вкус гармоничный, сочный, ягодный с шелковистыми танинами.",
+      "grapes": "Каберне Совиньон, Каберне Фран, Мерло, Пти Вердо"
+    },
+    {
+      "slug": "fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13",
+      "name": "Rose. Каберне Фран",
+      "description": "В аромате клубника со сливками, вишня, красная смородина, ваниль, выпечка. Вкус свежий, с приятным длительным послевкусием.",
+      "grapes": "Каберне Фран"
+    },
+    {
+      "slug": "fanagoriya-rose-kaberne-sovinon-rozovoe-polusuhoe-13",
+      "name": "Rose. Каберне Совиньон",
+      "description": "В аромате ягодно-фруктовый, клубничные оттенки. Вкус сочный, мягкий, с продолжительным послевкусием.",
+      "grapes": "Каберне Совиньон"
+    },
+    {
+      "slug": "fanagoriya-rose-saperavi-rozovoe-polusuhoe-125",
+      "name": "Rose. Саперави",
+      "description": "В аромате брусника, черешня, багульник. Вкус мягкий, с длительным ягодным послевкусием.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-rs-noir-saperavi-krasnoe-polusladkoe-125",
+      "name": "RS. Noir",
+      "description": "Аромат яркий, с оттенками голубики, черники, зрелой вишни, чернослива. Вкус ягодный, полусладкий. Длительное и приятное ягодное послевкусие.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-saqra-saperavi-krasnoe-suhoe-135",
+      "name": "SAQRA",
+      "description": "Аромат наполнен нотами черных ягод, спелой сливы, джема, аниса и шоколада. Вкус полный, сочный, с податливым телом, живой кислотностью и шероховатым танином. В насыщенном послевкусии ягодная спелость.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-solera-moscatel-oro-muskat-ottonel-beloe-suhoe-16",
+      "name": "Solera. Moscatel Oro",
+      "description": "В аромате лепестки роз, курага, кориандр, пряности, цедра апельсина. Во вкусе курага, цедра апельсина, кориандр в послевкусии.",
+      "grapes": "Мускат Оттонель"
+    },
+    {
+      "slug": "fanagoriya-solera-porto-negro-saperavi-krasnoe-suhoe-15",
+      "name": "Solera. Porto Negro",
+      "description": "В аромате пряности, ваниль, шоколад. Вкус сочный, хорошо сбалансированный, длительное мягкое послевкусие.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-solera-rkatsiteli-ambra-rkatsiteli-beloe-suhoe-15",
+      "name": "Solera. Rkatsiteli Ambra",
+      "description": "В аромате засахаренная айва, курага, инжир, цитрусовая цедра. ВО вкусе мёд с цитрусами, длительное послевкусие.",
+      "grapes": "Ркацители"
+    },
+    {
+      "slug": "fanagoriya-solera-saperavi-ruby-saperavi-krasnoe-suhoe-16",
+      "name": "Solera. Saperavi Ruby",
+      "description": "В аромате красные ягоды, ягодный конфитюр, пряности. Вкус хорошо сбалансированный, мягкий, продолжительное послевкусие.",
+      "grapes": "Каберне Совиньон, Рубин Голодриги, Саперави"
+    },
+    {
+      "slug": "fanagoriya-sur-lie-chardonnay-shardone-beloe-suhoe-135",
+      "name": "Sur Lie Chardonnay",
+      "description": "В аромате спелые яблоки (голден), цветочные ноты. Вкус свежий, сочный, минеральный.",
+      "grapes": "Шардоне"
+    },
+    {
+      "slug": "fanagoriya-sur-lie-clairet-saperavi-krasnoe-suhoe-13",
+      "name": "Sur Lie Clairet",
+      "description": "В аромате ягоды: малина, вишня, красная смородина. Вкус сбалансированный, мягкие танины, освежающая кислотность.",
+      "grapes": "Каберне Совиньон, Каберне Фран, Саперави"
+    },
+    {
+      "slug": "fanagoriya-sur-lie-vi-vi-aligote-beloe-suhoe-125",
+      "name": "Sur Lie Vi Vi",
+      "description": "В аромате полевые цветы, цитрус, абрикос, персик, жёлтая слива. Во вкуск хрустящая кислотность, минеральный финиш.",
+      "grapes": "Алиготе, Вионье, Рислинг"
+    },
+    {
+      "slug": "fanagoriya-tochka-saperavi-krasnoe-suhoe-14",
+      "name": "Точка",
+      "description": "В аромате тона увяленных, засахаренных красных ягод, черники, тёрна, чернослива, шоколада, пряностей, эвкалипта. Вкус насыщенный, гармоничный с мягкими бархатистыми танинами с длительным послевкусем.",
+      "grapes": "Саперави"
+    },
+    {
+      "slug": "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
+      "name": "Velvet Season",
+      "description": "В аромате медово-цветочный, абрикос, тропические фрукты, роза. Вкус сладкий, с оттенками абрикосового джема и орехов.",
+      "grapes": "Мускат Оттонель"
+    },
+    {
+      "slug": "fanagoriya-velvet-season-risling-beloe-sladkoe-12",
+      "name": "Velvet Season",
+      "description": "В аромате цветочный, цитрус, фруктовый джем. Вкус сладкий, свежий, с цитрусовой кислотностью.",
+      "grapes": "Рислинг"
+    },
+    {
+      "slug": "fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11",
+      "name": "Зелёное вино. Рислинг - Цитронный Магарача",
+      "description": "В аромате цитрус, зелёное яблоко, травяные ноты. Вкус свежий, гармоничный, с минеральными тонами и цитрусовой кислинкой.",
+      "grapes": "Рислинг, Цитронный Магарача"
+    },
+    {
+      "slug": "fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-merlo-rozovoe-polusuhoe-11",
+      "name": "Зелёное вино. Рислинг - Цитронный Магарача - Мерло",
+      "description": "В аромате клубника, цитрус, лёгкие цветочные ноты. Вкус свежий, лёгкий, с нотами красных ягод и цитрусов.",
+      "grapes": "Мерло, Рислинг, Цитронный Магарача"
+    },
+    {
+      "slug": "ona-skazala-da",
+      "name": "Она сказала Да!",
+      "description": "Метод Шарма с частичной выдержкой в дубовой бочке. Остановка брожения холодом на заданном уровне сахара.",
+      "grapes": "Каберне Совиньон, Мерло, Саперави"
+    },
+    {
+      "slug": "rozovoe-polusladkoe",
+      "name": "Розовое полусладкое",
+      "description": "Вино нежного лососево-розового цвета. Аромат вина свежий, цветочно-ягодный, с преобладающими сливочными и клубничными оттенками. Вино обладает гармоничным, мягким вкусом с нотами спелой клубники и земляники. Послевкусие нежное, с оттенками цитрусовых фруктов и лесных ягод.",
+      "grapes": "Пино Нуар, Цимлянский черный, Шардоне"
+    }
+  ]
+}

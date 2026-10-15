@@ -1,0 +1,3216 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "fanagoria",
+    "name": "Фанагория",
+    "aliases": [
+      "Фанагория",
+      "Fanagoria",
+      "ОАО АПФ Фанагория"
+    ],
+    "slug_prefixes": [
+      "fanagoria-",
+      "fanagoriya-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "fan-official",
+      "label": "Фанагория: официальный ассортимент",
+      "url": "https://www.fanagoria.ru/assortiment"
+    },
+    {
+      "id": "fan-group-cru-lermont",
+      "label": "Фанагория: Cru Lermont",
+      "url": "https://www.fanagoria.ru/collection/cru-lermont"
+    },
+    {
+      "id": "fan-group-primum-alveus",
+      "label": "Фанагория: Primum Alveus",
+      "url": "https://www.fanagoria.ru/collection/primum-alveus"
+    },
+    {
+      "id": "fan-group-100-ottenkov",
+      "label": "Фанагория: 100 и 101 оттенок",
+      "url": "https://www.fanagoria.ru/collection/100-ottenkov"
+    },
+    {
+      "id": "fan-group-sur-lie",
+      "label": "Фанагория: Sur Lie",
+      "url": "https://www.fanagoria.ru/collection/sur-lie"
+    },
+    {
+      "id": "fan-group-alveus-ultra-cuvee",
+      "label": "Фанагория: Alveus Ultra Cuvée",
+      "url": "https://www.fanagoria.ru/collection/alveus-ultra-cuvee"
+    },
+    {
+      "id": "fan-group-brule",
+      "label": "Фанагория: Brûlé",
+      "url": "https://www.fanagoria.ru/collection/brule"
+    },
+    {
+      "id": "fan-group-solera",
+      "label": "Фанагория: Solera",
+      "url": "https://www.fanagoria.ru/collection/solera"
+    },
+    {
+      "id": "fan-group-petnat",
+      "label": "Фанагория: PetNat",
+      "url": "https://www.fanagoria.ru/collection/petnat"
+    },
+    {
+      "id": "fan-5-elements-aligote-shardone-sovinon",
+      "label": "5 Elements. Алиготе — Шардоне — Совиньон",
+      "url": "https://www.fanagoria.ru/collection/avtorskij-stil-fanagoria/5-elements-aligote-shardone-sovinon"
+    },
+    {
+      "id": "fan-5-elements-kaberne-rubin",
+      "label": "5 Elements. Каберне — Рубин",
+      "url": "https://www.fanagoria.ru/collection/avtorskij-stil-fanagoria/5-elements-kaberne-rubin"
+    },
+    {
+      "id": "fan-hay-bay-risling",
+      "label": "Hay Bay. Рислинг",
+      "url": "https://www.fanagoria.ru/collection/avtorskij-stil-fanagoria/hay-bay-risling"
+    },
+    {
+      "id": "fan-the-lines-petnat-kaberne-fran",
+      "label": "PetNat. Каберне Фран",
+      "url": "https://www.fanagoria.ru/collection/petnat/the-lines-petnat-kaberne-fran"
+    },
+    {
+      "id": "fan-the-lines-petnat-kaberne-sovinon",
+      "label": "PetNat. Каберне Совиньон",
+      "url": "https://www.fanagoria.ru/collection/petnat/the-lines-petnat-kaberne-sovinon"
+    },
+    {
+      "id": "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj",
+      "label": "PetNat. Совиньон Блан — Алиготе — Менье",
+      "url": "https://www.fanagoria.ru/collection/petnat/the-lines-petnat-sovinon-blan-aligote-pino-seryj"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальные и коллекционные",
+      "rank": 4,
+      "description": "Редакционное положение премиальных и коллекционных серий внутри линейки. Это не оценка качества каждой бутылки.",
+      "price_label": "Верхний ориентир",
+      "source_ids": [
+        "fan-official"
+      ]
+    },
+    {
+      "id": "special",
+      "label": "Специальные и авторские коллекции",
+      "rank": 3,
+      "description": "Редакционное положение специальных серий. Сравнение относится к коллекции; точные цены не установлены.",
+      "price_label": "Выше основного ориентира",
+      "source_ids": [
+        "fan-official"
+      ]
+    },
+    {
+      "id": "core",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Редакционный ориентир для основных серий производителя. Внутри серии могут быть разные стили и цены.",
+      "price_label": "Основной ориентир",
+      "source_ids": [
+        "fan-official"
+      ]
+    },
+    {
+      "id": "accessible",
+      "label": "Повседневные коллекции",
+      "rank": 1,
+      "description": "Редакционный ориентир для серий повседневного потребления. Актуальная цена зависит от продавца и выпуска.",
+      "price_label": "Доступный ориентир",
+      "source_ids": [
+        "fan-official"
+      ]
+    },
+    {
+      "id": "unranked",
+      "label": "Без ценового сравнения",
+      "rank": 0,
+      "description": "Для этих серий нет достаточного основания сравнивать цены. Положение в этом разделе не означает низкую цену или качество.",
+      "price_label": "Не сопоставляется",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "shades",
+      "name": "100 и 101 оттенок",
+      "tier_id": "premium",
+      "method": "Выдержка в дубе и бутылке",
+      "description": "Премиальные вина с ручным сбором. Выдержка в дубе — не менее 12 месяцев, затем не менее 6 месяцев в бутылке. «101 оттенок» разливают без фильтрации.",
+      "source_ids": [
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "primum",
+      "name": "Primum Alveus",
+      "tier_id": "premium",
+      "method": "Классический метод",
+      "description": "Коллекционные игристые вина отдельных винтажей. Производитель указывает классический метод и выдержку в бутылке не менее трёх лет.",
+      "source_ids": [
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "cru",
+      "name": "Cru Lermont",
+      "tier_id": "special",
+      "method": "Выдержка в дубе или стали",
+      "description": "Моносортовая премиальная коллекция из европейских и автохтонных сортов. Виноград собирают вручную; вина выдерживают в дубе или стальных ёмкостях.",
+      "source_ids": [
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "decanter",
+      "name": "Декантер",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Коллекция объединяет сортовые вина и Formula Q. В карте сохранены отдельные карточки и указанные в их названиях винтажи.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "q",
+      "name": "Коллекция Q",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Купажная коллекция: Formula Q, Q Blanc и Q Bordeaux Blend. Две карточки Formula Q сохранены отдельно, поскольку их каталожные данные различаются.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "tochka",
+      "name": "Точка",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Отдельное вино из Саперави. Каталог описывает насыщенный вкус, бархатистые танины и оттенки увяленных ягод.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "surlie",
+      "name": "Sur Lie",
+      "tier_id": "special",
+      "method": "Не указан в источнике",
+      "description": "Производитель относит эти сухие вина к премиальной коллекции с более свежим стилем. На карте представлены три карточки сохранённого каталога.",
+      "source_ids": [
+        "fan-group-sur-lie"
+      ]
+    },
+    {
+      "id": "alveus",
+      "name": "Alveus Ultra Cuvée",
+      "tier_id": "core",
+      "method": "Классический метод",
+      "description": "Молодая классика: белые и розовые брюты и экстра-брюты. Выдержка на дрожжевом осадке в бутылке составляет не менее девяти месяцев.",
+      "source_ids": [
+        "fan-group-alveus-ultra-cuvee"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Фанагория: игристые вина",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Брюты, полусладкие вина, Blanc de Blancs, Blanc de Noirs и Rose de Noirs. Похожие названия сохранены отдельными карточками; метод каждой позиции требует отдельного подтверждения.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rose",
+      "name": "Розе",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Розовые сортовые вина из Каберне Фран, Каберне Совиньон и Саперави. Коллекция отделена от розовых игристых вин.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "brule",
+      "name": "Brûlé",
+      "tier_id": "accessible",
+      "method": "Резервуарные методы",
+      "description": "Молодые игристые вина, Cuvée и Frizzante. Для моносортовых вин применяют однократное брожение, для Cuvée — метод Шарма; технологии внутри коллекции различаются.",
+      "source_ids": [
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "elements",
+      "name": "5 Elements",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "В сохранённом каталоге представлены два брюта. Официальный ассортимент также подтверждает тихие купажи Алиготе — Шардоне — Совиньон и Каберне — Рубин.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "haybay",
+      "name": "Hay Bay",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Сортовые сухие вина для повседневного выбора. Каталожное Шардоне дополнено официально подтверждённым Рислингом.",
+      "source_ids": [
+        "fan-official",
+        "fan-hay-bay-risling"
+      ]
+    },
+    {
+      "id": "green",
+      "name": "Зелёное вино",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Лёгкая коллекция «Зелёное вино». Две карточки сохранены отдельно; точный метод и ценовой диапазон в снимке не указаны.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "yes",
+      "name": "Она сказала Да!",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Коллекция игристых вин. Сохранены три разные карточки; указанная для одной позиции технология не переносится автоматически на остальные.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "petnat",
+      "name": "PetNat",
+      "tier_id": "unranked",
+      "method": "Ансестраль",
+      "description": "Натуральные игристые вина: брожение начинается в стальной ёмкости и завершается в бутылке. Производитель не применяет фильтрацию и оклейку.",
+      "source_ids": [
+        "fan-group-petnat"
+      ]
+    },
+    {
+      "id": "icewine",
+      "name": "Ice Wine",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Отдельная коллекция сладких вин из Каберне, Мерло, Рислинга, Саперави и Муската. Не сравнивается напрямую с основными сухими сериями.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "solera",
+      "name": "Solera",
+      "tier_id": "unranked",
+      "method": "Солера",
+      "description": "Выдержанные ликёрные вина. Солерный метод соединяет вина разных урожаев после выдержки в дубовых бочках.",
+      "source_ids": [
+        "fan-group-solera"
+      ]
+    },
+    {
+      "id": "paramour",
+      "name": "PAR AMOUR",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Коллекция PAR AMOUR объединяет четыре карточки сохранённого каталога. Для относительного ценового ранга данных недостаточно.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "pellecalda",
+      "name": "Pelle Calda",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Отдельная коллекция с вином из Саперави. Каталог описывает плотный вкус, бархатистые танины и ягодно-пряное послевкусие.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "saqra",
+      "name": "SAQRA",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Сохранены отдельные карточки SAQRA и «Фанагория Сакра Сенной». Состав винограда в каталоге различается, поэтому эти позиции не объединены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rs",
+      "name": "RS",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "В карте представлено RS. Noir из Саперави. Каталог указывает полусладкий ягодный вкус; сравнительная цена не установлена.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "velvet",
+      "name": "Velvet Season",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Коллекция Velvet Season представлена двумя карточками. Сравнительное положение по цене не подтверждено.",
+      "source_ids": [
+        "fan-official",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "alta",
+      "name": "Alta Qortis",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Отдельное купажное вино из Каберне Совиньон и Саперави. Связь с другими коллекциями и ценовой уровень не подтверждены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "unassigned",
+      "name": "Коллекция не уточнена",
+      "tier_id": "unranked",
+      "method": "Не указан в источнике",
+      "description": "Карточка с общим названием «Розовое полусладкое». Подтверждённого основания объединить её с другой карточкой нет.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-cru-lermont-risling",
+      "group_id": "cru",
+      "name": "Cru Lermont Рислинг",
+      "variant": "",
+      "wine_slug": "cru-lermont-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-cru-lermont-risling.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате вина присутствует сложный букет хвои, минералов и грейпфрута, оттененный нотками лимонной цедры и полевых трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "shades",
+      "name": "100 оттенков красного. Каберне",
+      "variant": "",
+      "wine_slug": "fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате спелая вишня, чёрная смородина, лёгкая пряность. Вкус плотный, гармоничный, с мягкими танинами и ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "group_id": "shades",
+      "name": "100 оттенков красного. Пино Нуар",
+      "variant": "",
+      "wine_slug": "fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Стройный развитый аромат с нотами брусники, вяленых лесных ягод, гранатовых зерен, пастилы, тонкими животными нюансами. Вкус легкий и волнующий, многослойный. Все элементы вина находятся в балансе. Тонко, свежо, элегантно.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-100-ottenkov-krasnogo-saperavi-krasnoe-suhoe-14",
+      "group_id": "shades",
+      "name": "100 оттенков красного. Саперави",
+      "variant": "",
+      "wine_slug": "fanagoriya-100-ottenkov-krasnogo-saperavi-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-saperavi-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате тона ежевики, черники, тёмной вишни, оттенки специй. Вкус насыщенный, сбалансированный, с бархатными танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-100-ottenkov-shardone-beloe-suhoe-14",
+      "group_id": "shades",
+      "name": "100 оттенков. Шардоне",
+      "variant": "",
+      "wine_slug": "fanagoriya-100-ottenkov-shardone-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-shardone-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате яблоко, груша, цитрус, лёгкие цветочные ноты. Вкус свежий, гармоничный, с минеральными нотами и цитрусовыми оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "shades",
+      "name": "101 оттенок красного. Каберне",
+      "variant": "",
+      "wine_slug": "fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате чёрная смородина, ежевика, слива, лёгкие древесные ноты. Вкус насыщенный, гармоничный, с округлыми танинами и пряными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-101-ottenok-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "group_id": "shades",
+      "name": "101 оттенок красного. Пино нуар",
+      "variant": "",
+      "wine_slug": "fanagoriya-101-ottenok-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате черника, малина, ежевика, корица, подлесок. Вкус освежающий, объемный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-101-ottenok-krasnogo-saperavi-krasnoe-suhoe-14",
+      "group_id": "shades",
+      "name": "101 оттенок красного. Саперави",
+      "variant": "",
+      "wine_slug": "fanagoriya-101-ottenok-krasnogo-saperavi-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-saperavi-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ежевика, чёрная вишня, специи, оттенки фиалки. Вкус глубокий, бархатный, с сочной ягодной структурой и лёгкой терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-100-ottenkov"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-5-elements-bryut-beloe-pino-gri-igristoe-bryut-beloe-125",
+      "group_id": "elements",
+      "name": "5 elements Брют белое",
+      "variant": "",
+      "wine_slug": "fanagoriya-5-elements-bryut-beloe-pino-gri-igristoe-bryut-beloe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-5-elements-bryut-beloe-pino-gri-igristoe-bryut-beloe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цветы, фрукты, цитрусы. Вкус свежий, чистый, гармоничный, фруктовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-5-elements-bryut-rozovoe-saperavi-igristoe-bryut-rozovoe-125",
+      "group_id": "elements",
+      "name": "5 elements Брют розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-5-elements-bryut-rozovoe-saperavi-igristoe-bryut-rozovoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-5-elements-bryut-rozovoe-saperavi-igristoe-bryut-rozovoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Саперави"
+      ],
+      "description": "В аромате ягодные ноты, малина, клубника, красная смородина и нотки цветущей вербы. Вкус свежий, бодрящий, живая кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-alta-qortis-saperavi-krasnoe-suhoe-145",
+      "group_id": "alta",
+      "name": "Alta Qortis",
+      "variant": "",
+      "wine_slug": "fanagoriya-alta-qortis-saperavi-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-alta-qortis-saperavi-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Саперави"
+      ],
+      "description": "В аромате кизил, гранат, тёрн, сафьяновая кожа, свежемолотые специи. Вкус объёмный, с бархатистыми танинами и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12",
+      "group_id": "alveus",
+      "name": "Alveus Ultra Cuvee Brut",
+      "variant": "",
+      "wine_slug": "fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цветущая акация, белые семечковые и цитрусовые плоды. Вкус освежающий и мягкий, фруктовый, оживленный приятной природной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-alveus-ultra-cuvee"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-alveus-ultra-cuvee-bryut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "group_id": "alveus",
+      "name": "Alveus Ultra Cuvee. Брют розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-alveus-ultra-cuvee-bryut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-bryut-rozovoe-merlo-igristoe-bryut-rozovoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "В аромате белая черешня, шелковица, красные ягоды и фрукты, смородина, яблоки. Вкус свежий, ягодный, гармоничный, с приятными травянистыми нотками и освежающим длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-alveus-ultra-cuvee"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-beloe-risling-reynskiy-12",
+      "group_id": "alveus",
+      "name": "Alveus Ultra Cuvee. Экстра брют белое",
+      "variant": "",
+      "wine_slug": "fanagoriya-alveus-ultra-cuvee-ekstra-bryut-beloe-risling-reynskiy-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-beloe-risling-reynskiy-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский",
+        "Шардоне"
+      ],
+      "description": "В аромате цветочно-медовые оттенки, нотки зеленого яблока, груши и лайма. Вкус свежий, фруктовый, с солоноватым минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-alveus-ultra-cuvee"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-rozovoe-merlo-12",
+      "group_id": "alveus",
+      "name": "Alveus Ultra Cuvee. Экстра брют розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-alveus-ultra-cuvee-ekstra-bryut-rozovoe-merlo-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-rozovoe-merlo-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "В аромате груша, красное яблоко, спелая красная слива, цветочные оттенки и сливочные ноты. Вкус освежающий вкус с тонами фруктов и послевкусие с минеральными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-alveus-ultra-cuvee"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-beloe-polusladkoe",
+      "group_id": "classic",
+      "name": "Фанагория белое полусладкое",
+      "variant": "",
+      "wine_slug": "fanagoriya-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Яркий аромат вина доносит ноты цветочного нектара, меда, свежего винограда и луговых трав. Вино легко пьется благодаря гармоничному, мягкому вкусу. В нем сбалансированы кислотность, легкая горчинка и сочные фруктовые оттенки. В палитре вкуса можно почувствовать ноты яблока, груши, грейпфрута, цветов и винограда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12",
+      "group_id": "classic",
+      "name": "Blanc de Blancs",
+      "variant": "",
+      "wine_slug": "fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Игра пузырьков изящная и утонченная — непрерывный жемчужный перляж. Аромат элегантный и тонкий, завораживающий. Вначале раскрывается нотами легких белых цветов и прохладой цветущего утреннего сада. Затем проявляются сочные оттенки мякоти белых фруктов и розового персика, свежие нотки грейпфрута и легкий травяной акцент. Фоном звучит тонкий оттенок миндального пралине. Вкус изящный, свежий и ажурный. Прекрасно сбалансированная, стройная кислотность отлично гармонирует с тонкой сливочностью и ведет к чистому и стройному послевкусию. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-blanc-de-noir-mene-extra-brut-2019-pino-nuar-beloe-ekstra-bryut-12",
+      "group_id": "classic",
+      "name": "Blanc de Noir Mene Extra Brut 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-blanc-de-noir-mene-extra-brut-2019-pino-nuar-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-noir-mene-extra-brut-2019-pino-nuar-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате персик, слива, яблоки, с кремовыми нотами и бриошью. Вкус свежий, минеральный, фруктовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12",
+      "group_id": "classic",
+      "name": "Blanc de Noirs Менье",
+      "variant": "",
+      "wine_slug": "fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Менье"
+      ],
+      "description": "Игра пузырьков тонкая и элегантная. Аромат деликатный и свежий. Раскрывается мягкими тонами красной смородины, белой и желтой черешни, вишни, легкими акцентами белых цветов и розового грейпфрута. Затем проявляются сдержанные, но узнаваемые нюансы десерта — клубники со сливками, добавляющие букету нежности и мягкой сладости. Вкус свежий и гармоничный, с выразительной кислотностью и ягодными нотами. Послевкусие легкое, с приятной фруктовой горчинкой. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-cabernet-franc-polusuhoe-rozovoe-kaberne-fran-12",
+      "group_id": "brule",
+      "name": "Brule Cabernet Franc Полусухое Розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-cabernet-franc-polusuhoe-rozovoe-kaberne-fran-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cabernet-franc-polusuhoe-rozovoe-kaberne-fran-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате клубника, малина и вишня. Вкус свежий, с лёгкой кислинкой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-cabernet-sauvignon-polusladkoe-krasnoe-kaberne-sovinon-125",
+      "group_id": "brule",
+      "name": "Brule Cabernet Sauvignon Полусладкое Красное",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-cabernet-sauvignon-polusladkoe-krasnoe-kaberne-sovinon-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cabernet-sauvignon-polusladkoe-krasnoe-kaberne-sovinon-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате вишня, смородина, специи. Вкус насыщенный, сладкий, с балансом кислотности.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "group_id": "brule",
+      "name": "Brule Cuvée Brut Розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Пино Блан",
+        "Пино Нуар"
+      ],
+      "description": "В аромате красные ягоды и цветы. Вкус яркий, освежающий, фруктово-ягодный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
+      "group_id": "brule",
+      "name": "Brule Frizzante Brut Белое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрусовые, яблоки, спелые фрукты. Вкус лёгкий, освежающий, фруктово-цитрусовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115",
+      "group_id": "brule",
+      "name": "Brule Frizzante Brut Розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран",
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "В аромате земляника, красная смородина, цветы. Вкус свежий, гармоничный, цветочно-ягодный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11",
+      "group_id": "brule",
+      "name": "Brule Frizzante Полусладкое Белое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цветы и фрукты. Вкус мягкий, сладковатый, с тонами яблока, груши и медовыми нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-muscat-ottonel-brut-muskat-ottonel-beloe-polusladkoe-12",
+      "group_id": "brule",
+      "name": "Brule Muscat Ottonel Brut",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-muscat-ottonel-brut-muskat-ottonel-beloe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-muscat-ottonel-brut-muskat-ottonel-beloe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "В аромате фрукты, мёд, цитрусы, цветы и спелый виноград. Вкус лёгкий, освежающий, с фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-muscat-ottonel-polusladkoe-muskat-ottonel-beloe-115",
+      "group_id": "brule",
+      "name": "Brule Muscat Ottonel Полусладкое",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-muscat-ottonel-polusladkoe-muskat-ottonel-beloe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-muscat-ottonel-polusladkoe-muskat-ottonel-beloe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "В аромате фрукты, мёд, цветы и спелый виноград. Вкус мягкий, сладковатый, гармоничный, фруктовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-saperavi-saperavi-igristoe-sladkoe-krasnoe-bryut-125",
+      "group_id": "brule",
+      "name": "Brule Saperavi",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-saperavi-saperavi-igristoe-sladkoe-krasnoe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-saperavi-saperavi-igristoe-sladkoe-krasnoe-bryut-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате спелые ягоды, сливы и специи. Вкус фруктово-ягодный, свежий, полный, обволакивающий, с длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-brule-sauvignon-blanc-brut-sovinon-blan-beloe-bryut-12",
+      "group_id": "brule",
+      "name": "Brule Sauvignon Blanc Brut",
+      "variant": "",
+      "wine_slug": "fanagoriya-brule-sauvignon-blanc-brut-sovinon-blan-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-sauvignon-blanc-brut-sovinon-blan-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате зелёное яблоко и цитрусы. Вкус свежий, сбалансированный, с цитрусовыми нотами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-brule"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-cabernet-franc-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "cru",
+      "name": "Cru Lermont Cabernet Franc",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-cabernet-franc-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-cabernet-franc-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате вяленая вишня, чернослив, лакрица. Вкус сочный, бархатистый, ягодно-пряный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-13",
+      "group_id": "cru",
+      "name": "Cru Lermont Cabernet Sauvignon",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате смородина, чернослив, вишня, специи, табак. Вкус бархатистый, хорошо структурированный, с мягкими танинами, оттенками пряностей, шоколада, увяленных черных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-chardonnay-shardone-beloe-suhoe-14",
+      "group_id": "cru",
+      "name": "Cru Lermont Chardonnay",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-chardonnay-shardone-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-chardonnay-shardone-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате спелые фрукты, ваниль. Вкус полный, мягкий, длительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-merlo-merlo-krasnoe-suhoe-14",
+      "group_id": "cru",
+      "name": "Cru Lermont Merlo",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-merlo-merlo-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-merlo-merlo-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате лесные ягоды, болгарский перец, ваниль, замша, специи. Вкус мягкий, бархатистые танины, спелые чёрные ягоды, пряное ягодное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-petit-verdot-pti-verdo-krasnoe-suhoe-13",
+      "group_id": "cru",
+      "name": "Cru Lermont Petit Verdot",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-petit-verdot-pti-verdo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-petit-verdot-pti-verdo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пти Вердо"
+      ],
+      "description": "В аромате увяленная вишня, лакрица, фиалка, тёмные фрукты. Вкус сочный, структурированный, вишневое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-pinot-noir-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "cru",
+      "name": "Cru Lermont Pinot Noir",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-pinot-noir-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-pinot-noir-pino-nuar-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате лесные ягоды, тёмные фрукты, осенний лес. Вкус мягкий, вишневый, пряный, бархатистый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-rubinovyy-magaracha-krasnoe-suhoe-13",
+      "group_id": "cru",
+      "name": "Cru Lermont Рубиновый Магарача",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-rubinovyy-magaracha-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-rubinovyy-magaracha-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Рубиновый Магарача"
+      ],
+      "description": "В аромате выдержка, засахаренные фрукты, пряности, шоколад. Во вкусе сочное, структурированное, бархатистое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-cru-lermont-saperavi-saperavi-krasnoe-suhoe-135",
+      "group_id": "cru",
+      "name": "Cru Lermont Saperavi",
+      "variant": "",
+      "wine_slug": "fanagoriya-cru-lermont-saperavi-saperavi-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-saperavi-saperavi-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате черные ягоды, табак, кожа, специи. Вкус полный, округлый, шоколадно-сливовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-cru-lermont"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135",
+      "group_id": "decanter",
+      "name": "Декантер Chardonnay 2020",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате минеральность, кремовые акценты, белые фрукты (персик, груша), засахаренные экзотические фрукты. Вкус фруктовый, насыщенный, маслянистый, минерально-кремовый финиш.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "decanter",
+      "name": "Декантер. Формула Q",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-formula-q-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп",
+        "Мерло",
+        "Саперави"
+      ],
+      "description": "В аромате чёрные ягоды, специи, дубовые ноты. Вкус богатый, бархатистый, сбалансированный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-kaberne-fran-2019-krasnoe-suhoe-13",
+      "group_id": "decanter",
+      "name": "Декантер. Каберне Фран 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-kaberne-fran-2019-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-kaberne-fran-2019-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате бутылочная выдержка, дубовые ноты, пряности. Вкус сочный, насыщенный, с гармоничным балансом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-kaberne-sovinon-2018-krasnoe-suhoe-14",
+      "group_id": "decanter",
+      "name": "Декантер. Каберне Совиньон 2018",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-kaberne-sovinon-2018-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-kaberne-sovinon-2018-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате черника, ежевика, чернослив, специи, ваниль. Вкус богатый, сбалансированный, с бархатистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-merlo-2018-krasnoe-suhoe-14",
+      "group_id": "decanter",
+      "name": "Декантер. Мерло 2018",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-merlo-2018-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-merlo-2018-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате красные ягоды, перец, ваниль, специи. Вкус мягкий, с бархатистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-pino-nuar-2020-krasnoe-suhoe-135",
+      "group_id": "decanter",
+      "name": "Декантер. Пино нуар 2020",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-pino-nuar-2020-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-pino-nuar-2020-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате осенний лес, ягоды, земляника. Вкус мягкий, бархатистый, с оттенками вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+      "group_id": "decanter",
+      "name": "Декантер Riesling 2020",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате бензольные ноты, лайм, абрикос, липа, маракуйя, мед. Вкус фруктово-леденцовый, сбалансированный, цитрусовое продолжительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
+      "group_id": "decanter",
+      "name": "Декантер. Ркацители 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате цитрусовые, яблоки, цветы, мёд. Вкус фруктовый, гармоничный, минеральный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
+      "group_id": "decanter",
+      "name": "Декантер. Саперави 2017",
+      "variant": "",
+      "wine_slug": "fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ягоды, вишня, шелковица, фиалка. Вкус бархатистый, плотный, с приятной терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12",
+      "group_id": "classic",
+      "name": "Fanagoria Extra Brut Rose 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате красные ягоды, цитрус, бриошь. Вкус свежий, с ягодно-сливочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Blanc de Blancs. Белое из белого",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате ноты экзотических фруктов, цветов крокуса и медовые оттенки. Вкус мягкий, свежий, с нюансами спелых летних фруктов, сдобной булки , медовых оттенков.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-blanc-de-noirs-beloe-iz-chyornogo-merlo-igristoe-bryut-beloe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Blanc de Noirs. Белое из чёрного",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-blanc-de-noirs-beloe-iz-chyornogo-merlo-igristoe-bryut-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-blanc-de-noirs-beloe-iz-chyornogo-merlo-igristoe-bryut-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "В аромате тона ягод, кремовые ноты и тона сдобы. Вкус свежий, округлый, с длительным сливочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Брют белое",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Мерло",
+        "Пино Нуар",
+        "Рисус",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате подсолнух и спелые белые фрукты. Вкус свежий, с фруктово-цитрусовыми оттенками и хорошим уровнем кислотности.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Брют розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар",
+        "Рисус",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате ноты земляники, багульника и цветущей вербы. Вкус вкус свежий, гармоничный, ягодный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13",
+      "group_id": "haybay",
+      "name": "Фанагория Хей Бэй Шардоне",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат с нотами спелых яблок, персика и лёгкими цветочными оттенками; вкус сбалансированный, с хорошей кислотностью и фруктовым послевкусием. К рыбным блюдам, нежирным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official",
+        "fan-hay-bay-risling"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Полусладкое розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, цветочно-ягодный со сливочно-клубничными оттенками. Вкус мягкий, с нотами спелой клубники и земляники. послевкусие нежное, цитрусовое с оттенками лесных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-rose-de-noirs-roze-de-nuar-merlo-igristoe-bryut-rozovoe-11-13",
+      "group_id": "classic",
+      "name": "Фанагория. Rose de Noirs. Розе де Нуар",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-rose-de-noirs-roze-de-nuar-merlo-igristoe-bryut-rozovoe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-rose-de-noirs-roze-de-nuar-merlo-igristoe-bryut-rozovoe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран",
+        "Мерло"
+      ],
+      "description": "В аромате свежие и яркие ягоды. Во вкусе тона красных фруктов и ягод, живая кислотность и стойкое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-fanagoriya-sakra-sennoy-krasnostop-krasnoe-suhoe-135",
+      "group_id": "saqra",
+      "name": "Фанагория Сакра Сенной",
+      "variant": "",
+      "wine_slug": "fanagoriya-fanagoriya-sakra-sennoy-krasnostop-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-sakra-sennoy-krasnostop-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп",
+        "Рубиновый Магарача",
+        "Саперави"
+      ],
+      "description": "Аромат сложный — тёмные ягоды, терновник, нотки специй и дуба; вкус плотный, полнотелый, с хорошей структурой и долгим тёмно-ягодным послевкусием. К красному мясу, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "q",
+      "name": "Формула Q",
+      "variant": "",
+      "wine_slug": "fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат выразительный и многослойный: ноты черники, черной смородины, вишни, сливового джема, пряностей, сухой листвы. Вкус полный, сочный, с приятной округлостью. Яркая кислотность задает тон, танин мягко обволакивает. В послевкусии щедрые пряно-ягодны ноты. Ярко, сочно, согревающе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-formula-q-saperavi-krasnoe-suhoe-135",
+      "group_id": "q",
+      "name": "Formula Q",
+      "variant": "",
+      "wine_slug": "fanagoriya-formula-q-saperavi-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-formula-q-saperavi-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Мерло",
+        "Саперави"
+      ],
+      "description": "В аромате черника, смородина, вишня, тёрн, сливочные оттенки. Вкус сочный, с длительным пряным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ice-wine-kaberne-kaberne-sovinon-krasnoe-sladkoe-11",
+      "group_id": "icewine",
+      "name": "Ice Wine Каберне",
+      "variant": "",
+      "wine_slug": "fanagoriya-ice-wine-kaberne-kaberne-sovinon-krasnoe-sladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-kaberne-kaberne-sovinon-krasnoe-sladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате тёмные ягоды, варенье, шоколад. Вкус полный, насыщенный, с бархатными танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10",
+      "group_id": "icewine",
+      "name": "Ice Wine Мерло розовое",
+      "variant": "",
+      "wine_slug": "fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате красные ягоды, цветочные тона. Вкус мягкий, с длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10",
+      "group_id": "icewine",
+      "name": "Ice Wine Рислинг тихое",
+      "variant": "",
+      "wine_slug": "fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате тонкие петрольные ноты, цитрусы, мёд. Вкус фруктово-леденцовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ice-wine-saperavi-tihoe-krasnoe-sladkoe-10",
+      "group_id": "icewine",
+      "name": "Ice Wine Саперави тихое",
+      "variant": "",
+      "wine_slug": "fanagoriya-ice-wine-saperavi-tihoe-krasnoe-sladkoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-saperavi-tihoe-krasnoe-sladkoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ежевика, шелковица, фиалка, шоколад. Вкус плотный, бархатистый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11",
+      "group_id": "icewine",
+      "name": "Ледяное вино. Мускат",
+      "variant": "",
+      "wine_slug": "fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "Аромат сдержанный, но узнаваемый: цветочные нотки жасмина, нарцисса и акации, сладкие тона белых персиков, желтых груш, зрелой айвы и цукатов из лайма. Во вкусе продолжение богатой фруктовой палитры. Достойная, хорошо выраженная кислотность помогает вину сохранить баланс и маскирует заметную сладость и плотность. Долгое фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ona-skazala-da-beloe-bryut",
+      "group_id": "yes",
+      "name": "Фанагория Она сказала Да! белое брют",
+      "variant": "",
+      "wine_slug": "fanagoriya-ona-skazala-da-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ona-skazala-da-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан",
+        "Пино Гриджио",
+        "Шардоне"
+      ],
+      "description": "Вкус вина легкий, гармоничный, с хорошо интегрированной кислотность, свежим фруктовым характером, тонами персика, яблока, мякоти плодов граната. В послевкусии остается пикантная горчинка яблочных семечек. Аромат вина похож на цветущий фруктовый сад. В нем ноты белых цветов дополняются оттенками леденцов \"Дюшес\", персика и деликатными нюансами свежеиспеченной яблочной шарлотки. Вино светло-соломенного цвета с серебристым оттенком и нежным перляжем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-ona-skazala-da-beloe-polusladkoe",
+      "group_id": "yes",
+      "name": "Фанагория Она сказала Да! белое полусладкое",
+      "variant": "",
+      "wine_slug": "fanagoriya-ona-skazala-da-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-ona-skazala-da-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мерло",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат изящный, с тонами сортовых особенностей винограда. Вкус свежий с хорошей структурой и длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125",
+      "group_id": "paramour",
+      "name": "Par Amour",
+      "variant": "",
+      "wine_slug": "fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Бианка",
+        "Первенец Магарача"
+      ],
+      "description": "В аромате тропические фрукты, белые цветы, цитрус. Вкус свежий, гармоничный, сладковатый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125",
+      "group_id": "paramour",
+      "name": "Par Amour",
+      "variant": "",
+      "wine_slug": "fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Бианка",
+        "Первенец Магарача"
+      ],
+      "description": "В аромате садовые ягоды, лёгкий цитрус. Вкус свежий, минеральный, сбалансированный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-par-amour-pervenets-magaracha-rozovoe-polusuhoe-105-125",
+      "group_id": "paramour",
+      "name": "Par Amour",
+      "variant": "",
+      "wine_slug": "fanagoriya-par-amour-pervenets-magaracha-rozovoe-polusuhoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-rozovoe-polusuhoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Бианка",
+        "Каберне Совиньон",
+        "Первенец Магарача"
+      ],
+      "description": "В аромате цветочно-фруктовый букет. Вкус свежий, сочный, сбалансированный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-par-amour-rubin-golodrigi-krasnoe-polusladkoe-105-125",
+      "group_id": "paramour",
+      "name": "Par Amour",
+      "variant": "",
+      "wine_slug": "fanagoriya-par-amour-rubin-golodrigi-krasnoe-polusladkoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-rubin-golodrigi-krasnoe-polusladkoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло",
+        "Молдова",
+        "Рубин Голодриги"
+      ],
+      "description": "В аромате спелые тёмные ягоды и фрукты. Вкус экстрактивный, бархатистый, сладковатый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-pelle-calda-saperavi-krasnoe-suhoe-155",
+      "group_id": "pellecalda",
+      "name": "Pelle Calda",
+      "variant": "",
+      "wine_slug": "fanagoriya-pelle-calda-saperavi-krasnoe-suhoe-155",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-pelle-calda-saperavi-krasnoe-suhoe-155.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате зрелые красные ягоды, слива, специи. Вкус плотный, округлый, бархатные танины, длительное ягодно-пряное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Blanc de Blancs 2017",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате сливочно-кремовые ноты, цветы шиповника, акации, спелый персик, ананас и сдобная булочка с маслом. Вкус мягкий, округлый, гастрономичный, со сливочно-фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13",
+      "group_id": "primum",
+      "name": "Primum Alveus Blanc De Blancs Экстра Брют 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате сливочно-кремовые ноты, цветы шиповника, акации, спелый персик, ананас. Вкус мягкий, округлый, гастрономичный, со сливочно-фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-blanc-de-noirs-meunier-ekstra-bryut-2019-mene-beloe-11-13",
+      "group_id": "primum",
+      "name": "Primum Alveus. Blanc de Noirs. Meunier. Экстра брют 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-blanc-de-noirs-meunier-ekstra-bryut-2019-mene-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-noirs-meunier-ekstra-bryut-2019-mene-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье"
+      ],
+      "description": "В аромате ягоды, фрукты, цветы, выпечка. Вкус мягкий, гармоничный. с длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Brut 2014",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате цветы, яблоко, миндаль. Вкус свежий, хорошо сбалансированный. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Brut 2016",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрус, яблоко. Вкус свежий, округлый, сбалансированный с легкой пикантной горчинкой и длительным кремовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Brut 2017",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате оттенки халвы, цветов, яблок и груши. Вкус мягкий, гармоничный, с длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-brut-2021-shardone-beloe-bryut-11-13",
+      "group_id": "primum",
+      "name": "Primum Alveus. Brut 2021",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-brut-2021-shardone-beloe-bryut-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2021-shardone-beloe-bryut-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате зеленое яблоко, кремовые ноты, бриошь и халва. Вкус свежий, гармоничный, с мягкой кремово-сливочной текстурой и длительным минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-bryut-2019-pino-nuar-igristoe-bryut-rozovoe-11-13",
+      "group_id": "primum",
+      "name": "Primum Alveus. Брют 2019",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-bryut-2019-pino-nuar-igristoe-bryut-rozovoe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-bryut-2019-pino-nuar-igristoe-bryut-rozovoe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате красные ягоды, цветы. Вкус мягкий, гармоничный, с приятным продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13",
+      "group_id": "primum",
+      "name": "Primum Alveus. Экстра-брют 2017",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате полевые цветы, фрукты. Вкус свежий, сбалансированный с нотами свежей сдобы и халвы. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Extra Brut 2014",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате цветы, груша. Вкус свежий, хорошо сбалансированный. послевкусие длительное со сливочными нотами и нюансами подсолнуха.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Extra Brut 2016",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В аромате фрукты и полевые цветы. Вкус свежий, хорошо сбалансированный с нотами свежей сдобы и халвы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12",
+      "group_id": "primum",
+      "name": "Primum Alveus Extra Brut Rose 2014",
+      "variant": "",
+      "wine_slug": "fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Менье",
+        "Пино Нуар"
+      ],
+      "description": "В аромате ягоды, цитрусы. Вкус сухой, минеральный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-primum-alveus"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-q-blanc-sovinon-blan-beloe-suhoe-14",
+      "group_id": "q",
+      "name": "Q Blanc",
+      "variant": "",
+      "wine_slug": "fanagoriya-q-blanc-sovinon-blan-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-q-blanc-sovinon-blan-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате ананас, персик, грейпфрут, виноград, вяленый манго, ваниль. Вкус гармоничный, фруктовый, с кремово-сливочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-q-bordeaux-blend-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "q",
+      "name": "Q Bordeaux Blend",
+      "variant": "",
+      "wine_slug": "fanagoriya-q-bordeaux-blend-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-q-bordeaux-blend-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло",
+        "Пти Вердо"
+      ],
+      "description": "В аромате чёрная смородина, черника, ежевика, спелая вишня, ноты черного шоколада, тона специй и кожи, ваниль. Вкус гармоничный, сочный, ягодный с шелковистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13",
+      "group_id": "rose",
+      "name": "Rose. Каберне Фран",
+      "variant": "",
+      "wine_slug": "fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате клубника со сливками, вишня, красная смородина, ваниль, выпечка. Вкус свежий, с приятным длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-rose-kaberne-sovinon-rozovoe-polusuhoe-13",
+      "group_id": "rose",
+      "name": "Rose. Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "fanagoriya-rose-kaberne-sovinon-rozovoe-polusuhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-kaberne-sovinon-rozovoe-polusuhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате ягодно-фруктовый, клубничные оттенки. Вкус сочный, мягкий, с продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-rose-saperavi-rozovoe-polusuhoe-125",
+      "group_id": "rose",
+      "name": "Rose. Саперави",
+      "variant": "",
+      "wine_slug": "fanagoriya-rose-saperavi-rozovoe-polusuhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-saperavi-rozovoe-polusuhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате брусника, черешня, багульник. Вкус мягкий, с длительным ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-rs-noir-saperavi-krasnoe-polusladkoe-125",
+      "group_id": "rs",
+      "name": "RS. Noir",
+      "variant": "",
+      "wine_slug": "fanagoriya-rs-noir-saperavi-krasnoe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-rs-noir-saperavi-krasnoe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Аромат яркий, с оттенками голубики, черники, зрелой вишни, чернослива. Вкус ягодный, полусладкий. Длительное и приятное ягодное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-saqra-saperavi-krasnoe-suhoe-135",
+      "group_id": "saqra",
+      "name": "SAQRA",
+      "variant": "",
+      "wine_slug": "fanagoriya-saqra-saperavi-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-saqra-saperavi-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Аромат наполнен нотами черных ягод, спелой сливы, джема, аниса и шоколада. Вкус полный, сочный, с податливым телом, живой кислотностью и шероховатым танином. В насыщенном послевкусии ягодная спелость.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-solera-moscatel-oro-muskat-ottonel-beloe-suhoe-16",
+      "group_id": "solera",
+      "name": "Solera. Moscatel Oro",
+      "variant": "",
+      "wine_slug": "fanagoriya-solera-moscatel-oro-muskat-ottonel-beloe-suhoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-moscatel-oro-muskat-ottonel-beloe-suhoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "В аромате лепестки роз, курага, кориандр, пряности, цедра апельсина. Во вкусе курага, цедра апельсина, кориандр в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-solera"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-solera-porto-negro-saperavi-krasnoe-suhoe-15",
+      "group_id": "solera",
+      "name": "Solera. Porto Negro",
+      "variant": "",
+      "wine_slug": "fanagoriya-solera-porto-negro-saperavi-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-porto-negro-saperavi-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате пряности, ваниль, шоколад. Вкус сочный, хорошо сбалансированный, длительное мягкое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-solera"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-solera-rkatsiteli-ambra-rkatsiteli-beloe-suhoe-15",
+      "group_id": "solera",
+      "name": "Solera. Rkatsiteli Ambra",
+      "variant": "",
+      "wine_slug": "fanagoriya-solera-rkatsiteli-ambra-rkatsiteli-beloe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-rkatsiteli-ambra-rkatsiteli-beloe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате засахаренная айва, курага, инжир, цитрусовая цедра. ВО вкусе мёд с цитрусами, длительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-solera"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-solera-saperavi-ruby-saperavi-krasnoe-suhoe-16",
+      "group_id": "solera",
+      "name": "Solera. Saperavi Ruby",
+      "variant": "",
+      "wine_slug": "fanagoriya-solera-saperavi-ruby-saperavi-krasnoe-suhoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-saperavi-ruby-saperavi-krasnoe-suhoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Рубин Голодриги",
+        "Саперави"
+      ],
+      "description": "В аромате красные ягоды, ягодный конфитюр, пряности. Вкус хорошо сбалансированный, мягкий, продолжительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-solera"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-sur-lie-chardonnay-shardone-beloe-suhoe-135",
+      "group_id": "surlie",
+      "name": "Sur Lie Chardonnay",
+      "variant": "",
+      "wine_slug": "fanagoriya-sur-lie-chardonnay-shardone-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-chardonnay-shardone-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате спелые яблоки (голден), цветочные ноты. Вкус свежий, сочный, минеральный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-sur-lie"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-sur-lie-clairet-saperavi-krasnoe-suhoe-13",
+      "group_id": "surlie",
+      "name": "Sur Lie Clairet",
+      "variant": "",
+      "wine_slug": "fanagoriya-sur-lie-clairet-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-clairet-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Саперави"
+      ],
+      "description": "В аромате ягоды: малина, вишня, красная смородина. Вкус сбалансированный, мягкие танины, освежающая кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-sur-lie"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-sur-lie-vi-vi-aligote-beloe-suhoe-125",
+      "group_id": "surlie",
+      "name": "Sur Lie Vi Vi",
+      "variant": "",
+      "wine_slug": "fanagoriya-sur-lie-vi-vi-aligote-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-vi-vi-aligote-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Вионье",
+        "Рислинг"
+      ],
+      "description": "В аромате полевые цветы, цитрус, абрикос, персик, жёлтая слива. Во вкуск хрустящая кислотность, минеральный финиш.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-group-sur-lie"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-tochka-saperavi-krasnoe-suhoe-14",
+      "group_id": "tochka",
+      "name": "Точка",
+      "variant": "",
+      "wine_slug": "fanagoriya-tochka-saperavi-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-tochka-saperavi-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате тона увяленных, засахаренных красных ягод, черники, тёрна, чернослива, шоколада, пряностей, эвкалипта. Вкус насыщенный, гармоничный с мягкими бархатистыми танинами с длительным послевкусем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
+      "group_id": "velvet",
+      "name": "Velvet Season",
+      "variant": "",
+      "wine_slug": "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "В аромате медово-цветочный, абрикос, тропические фрукты, роза. Вкус сладкий, с оттенками абрикосового джема и орехов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-velvet-season-risling-beloe-sladkoe-12",
+      "group_id": "velvet",
+      "name": "Velvet Season",
+      "variant": "",
+      "wine_slug": "fanagoriya-velvet-season-risling-beloe-sladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-velvet-season-risling-beloe-sladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате цветочный, цитрус, фруктовый джем. Вкус сладкий, свежий, с цитрусовой кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11",
+      "group_id": "green",
+      "name": "Зелёное вино. Рислинг - Цитронный Магарача",
+      "variant": "",
+      "wine_slug": "fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Цитронный Магарача"
+      ],
+      "description": "В аромате цитрус, зелёное яблоко, травяные ноты. Вкус свежий, гармоничный, с минеральными тонами и цитрусовой кислинкой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-merlo-rozovoe-polusuhoe-11",
+      "group_id": "green",
+      "name": "Зелёное вино. Рислинг - Цитронный Магарача - Мерло",
+      "variant": "",
+      "wine_slug": "fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-merlo-rozovoe-polusuhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-merlo-rozovoe-polusuhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Рислинг",
+        "Цитронный Магарача"
+      ],
+      "description": "В аромате клубника, цитрус, лёгкие цветочные ноты. Вкус свежий, лёгкий, с нотами красных ягод и цитрусов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fan-official"
+      ]
+    },
+    {
+      "id": "wine-ona-skazala-da",
+      "group_id": "yes",
+      "name": "Она сказала Да!",
+      "variant": "",
+      "wine_slug": "ona-skazala-da",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-ona-skazala-da.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Саперави"
+      ],
+      "description": "Метод Шарма с частичной выдержкой в дубовой бочке. Остановка брожения холодом на заданном уровне сахара.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-rozovoe-polusladkoe",
+      "group_id": "unassigned",
+      "name": "Розовое полусладкое",
+      "variant": "",
+      "wine_slug": "rozovoe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-rozovoe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар",
+        "Цимлянский черный",
+        "Шардоне"
+      ],
+      "description": "Вино нежного лососево-розового цвета. Аромат вина свежий, цветочно-ягодный, с преобладающими сливочными и клубничными оттенками. Вино обладает гармоничным, мягким вкусом с нотами спелой клубники и земляники. Послевкусие нежное, с оттенками цитрусовых фруктов и лесных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "official-fan-5-elements-aligote-shardone-sovinon",
+      "group_id": "elements",
+      "name": "5 Elements. Алиготе — Шардоне — Совиньон",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-5-elements-aligote-shardone-sovinon.webp",
+        "source_id": "fan-5-elements-aligote-shardone-sovinon"
+      },
+      "category": "Тихое вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Алиготе",
+        "Шардоне",
+        "Совиньон Блан"
+      ],
+      "description": "Тихий сухой купаж с цветочными, травяными и лаймовыми оттенками. Вкус свежий, с продолжительным послевкусием. Производитель рекомендует речную рыбу, салаты и морепродукты.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-5-elements-aligote-shardone-sovinon"
+      ]
+    },
+    {
+      "id": "official-fan-5-elements-kaberne-rubin",
+      "group_id": "elements",
+      "name": "5 Elements. Каберне — Рубин",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-5-elements-kaberne-rubin.webp",
+        "source_id": "fan-5-elements-kaberne-rubin"
+      },
+      "category": "Тихое вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Рубин Голодриги"
+      ],
+      "description": "Тихий сухой купаж с ароматом тёмных ягод и зелёного чая. Во вкусе умеренная терпкость и продолжительное фруктовое послевкусие. Подходит к мясу на гриле и молодым сырам.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-5-elements-kaberne-rubin"
+      ]
+    },
+    {
+      "id": "official-fan-hay-bay-risling",
+      "group_id": "haybay",
+      "name": "Hay Bay. Рислинг",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-hay-bay-risling.webp",
+        "source_id": "fan-hay-bay-risling"
+      },
+      "category": "Тихое вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Сухое белое вино из вручную собранного Рислинга. В аромате цитрусы, липовый цвет и медовые оттенки. Во вкусе свежесть и цитрусовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-hay-bay-risling"
+      ]
+    },
+    {
+      "id": "official-fan-the-lines-petnat-kaberne-fran",
+      "group_id": "petnat",
+      "name": "PetNat. Каберне Фран",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-kaberne-fran.webp",
+        "source_id": "fan-the-lines-petnat-kaberne-fran"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое экстра-брют",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Игристое вино метода ансестраль. Брожение завершается в бутылке; фильтрация и оклейка не применяются. Аромат напоминает шиповник и барбарис, вкус свежий и ягодный.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-the-lines-petnat-kaberne-fran"
+      ]
+    },
+    {
+      "id": "official-fan-the-lines-petnat-kaberne-sovinon",
+      "group_id": "petnat",
+      "name": "PetNat. Каберне Совиньон",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-kaberne-sovinon.webp",
+        "source_id": "fan-the-lines-petnat-kaberne-sovinon"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое экстра-брют",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Игристое вино метода ансестраль без фильтрации и оклейки. В аромате клубника и оттенки тропических фруктов. Производитель рекомендует подачу при 6–8 °C.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-the-lines-petnat-kaberne-sovinon"
+      ]
+    },
+    {
+      "id": "official-fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj",
+      "group_id": "petnat",
+      "name": "PetNat. Совиньон Блан — Алиготе — Менье",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj.webp",
+        "source_id": "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj"
+      },
+      "category": "Игристое вино",
+      "style": "Белое экстра-брют",
+      "grapes": [
+        "Совиньон Блан",
+        "Алиготе",
+        "Менье"
+      ],
+      "description": "Игристый купаж метода ансестраль без фильтрации и оклейки. В аромате белые ягоды и цитрусовые оттенки; вкус свежий и округлый.",
+      "release_status": "catalog",
+      "badges": [
+        "Подтверждено производителем"
+      ],
+      "price": null,
+      "source_ids": [
+        "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj"
+      ]
+    }
+  ]
+}

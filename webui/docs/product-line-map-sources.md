@@ -250,3 +250,9 @@ It does not claim complete live assortment coverage.
 Read [koktebel sources](product-line-maps/koktebel/sources.md).
 The map includes 26 snapshot cards and 2 verified additions in 10 groups.
 It does not claim complete live assortment coverage.
+
+## Фанагория extension, 2026-10-16
+
+Read [fanagoria sources](product-line-maps/fanagoria/sources.md).
+The map includes 102 snapshot cards and 6 verified additions in 25 groups.
+It does not claim complete live assortment coverage.

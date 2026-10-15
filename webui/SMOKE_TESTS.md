@@ -413,3 +413,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/koktebel?wine=koktebel-casa-belyj-kupazh`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Фанагория map
+
+Open `/lineup/fanagoria?wine=cru-lermont-risling`.
+Check the selected catalog wine, a gray product, and the mobile popup.

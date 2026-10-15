@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Фанагория map
+
+- Add 25 groups and 108 product nodes in `fanagoria.json`.
+- Cover all 102 saved catalog cards. Add 6 verified products without catalog links.
+- Record collection sources, exact catalog crosswalks, and asset provenance.
+
 ## 2026-10-16 — ЗМВ Коктебель map
 
 - Add 10 groups and 28 product nodes in `koktebel.json`.
