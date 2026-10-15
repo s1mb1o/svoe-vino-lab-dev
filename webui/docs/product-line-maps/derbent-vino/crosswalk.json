@@ -1,0 +1,607 @@
+{
+  "producer_id": "derbent-vino",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Дербент Вино",
+  "entries": [
+    {
+      "wine_slug": "caucasian-dzharag",
+      "product_id": "wine-caucasian-dzharag",
+      "group_id": "caucasian",
+      "catalog_name": "Caucasian Джарагъ",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Caucasian_Dzharag_300681b16f.webp",
+      "asset_sha256": "5f600c9e1136bcd3d55a71cd5a52880c921c132d59c17853811bb37296370869"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-kaberne-fran-krasnoe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-kaberne-fran-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Каберне Фран",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Kaberne_Fran_d35065b98b.webp",
+      "asset_sha256": "6eb6122d3bee31edbefd8f35e017b241b8bbc18ce3d7d0cfc76164b7d1b43e03"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Каберне Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Kaberne_Sovinon_92912df82f.webp",
+      "asset_sha256": "82204d08c6d154fcd70e607c9810efe67a855e8beb4eede849abbd195868437b"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-merlo-krasnoe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-merlo-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Мерло",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Merlo_8f58649b26.webp",
+      "asset_sha256": "195889eda685cc497f6095157fdb05d5d5f3e306ae468f1d0ed333002b958bc5"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-risling-beloe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-risling-beloe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Рислинг",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Risling_b70f2d30ac.webp",
+      "asset_sha256": "9e710f84b8c2b463ce082e986feb56e5075492f037a0c175d9c6c2f4e20cf6e8"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-risling-ekstra-bryut-beloe-105-125",
+      "product_id": "wine-derbent-vino-desono-risling-ekstra-bryut-beloe-105-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Рислинг экстра брют",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_desono_risling_ekstra_bryut_beloe_105_125_724cf52ff8.webp",
+      "asset_sha256": "9223fe1f9cec2d614022a9800e19320f148ba49f0f9ca1f82746c86792d9f082"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-rkatsiteli-oranzh-beloe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-rkatsiteli-oranzh-beloe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Ркацители оранж",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Rkacziteli_orandzh_a572c088a4.webp",
+      "asset_sha256": "5544c85b74acb96e56d5aae0efbe5256ad1c1518ff7b549f66519587d1f9fe12"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-saperavi-krasnoe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-saperavi-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Saperavi_606c582da8.webp",
+      "asset_sha256": "4566007d1bd8d3cee6d4e6a074d3e2df297180128e2179315af701469e164871"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-saperavi-roze-rozovoe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-saperavi-roze-rozovoe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Саперави розе",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Saperavi_roze_a6f976b72e.webp",
+      "asset_sha256": "c02900bb38ce870b7c7b9713b10deab8609f5c02c4a40615af0ff47fa56d874b"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-shardone-beloe-suhoe-125",
+      "product_id": "wine-derbent-vino-desono-shardone-beloe-suhoe-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Шардоне",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Desono_Shardone_46ac5a58e0.webp",
+      "asset_sha256": "d39f3e850796b2eef852990d7dccb4852f656b2f625514bef278bc31899d5282"
+    },
+    {
+      "wine_slug": "derbent-vino-desono-sovinon-ekstra-bryut-sovinon-blan-beloe-105-125",
+      "product_id": "wine-derbent-vino-desono-sovinon-ekstra-bryut-sovinon-blan-beloe-105-125",
+      "group_id": "desono",
+      "catalog_name": "Дэсоно Совиньон экстра брют",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_desono_sovinon_ekstra_bryut_sovinon_blan_beloe_105_125_756134dcb1.webp",
+      "asset_sha256": "d0f5ff598f631f7c40b6eabdbc681cae157de2a80655a268b6f3a703292a8908"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10",
+      "product_id": "wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10",
+      "group_id": "fiori",
+      "catalog_name": "Ди Каспико Фиори ди Маре Верде",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_fiori_di_mare_verde_avgustin_rozovoe_polusuhoe_10_e9fa99da2f.webp",
+      "asset_sha256": "faa7d0c91a2148e88a0b0c6a8ab9470bb767fa71757b2c7986931b5364fdb5c7"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-kaberne-sovinon-krasnoe-suhoe-135",
+      "product_id": "wine-derbent-vino-di-kaspiko-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Каберне Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_kaberne_sovinon_krasnoe_suhoe_135_cb62d5c61d.webp",
+      "asset_sha256": "78306a0337ca77473f0b0b32838e6a9f25471f14698304ad1447334ecb6e735c"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "product_id": "wine-derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_merlo_krasnoe_polusladkoe_11_fe0af35587.webp",
+      "asset_sha256": "ceaef809c63e6a756f680a4d969ea33167ddb4663d55560169bdc86cd2fed8b5"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-merlo-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-di-kaspiko-merlo-krasnoe-suhoe-13",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Мерло",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_merlo_krasnoe_suhoe_13_955108cf50.webp",
+      "asset_sha256": "2a52b5a4ce85a36455f7e8c8d23b8b25b4fb5f5f6c6ba85763ad0f36a3d3f7e4"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-risling-beloe-suhoe-12",
+      "product_id": "wine-derbent-vino-di-kaspiko-risling-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Рислинг",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_risling_beloe_suhoe_12_4811c15318.webp",
+      "asset_sha256": "c316d11a3f773e47c6331362c3e2b33158444eba69b71a9d7725a8b5d0f335e6"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+      "product_id": "wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_rkatsiteli_beloe_polusladkoe_11_0f1d01c9b8.webp",
+      "asset_sha256": "c79cd7e8989222804e0ccc83cb0aad5cedb019b2fdbef77db3e262dae1e47385"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-rkatsiteli-beloe-suhoe-12",
+      "product_id": "wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Ркацители",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_rkatsiteli_beloe_suhoe_12_bb2cf4506e.webp",
+      "asset_sha256": "2b779eb2020c69f462a6acd4a7be9750d5755560df210a7edf717ca6ecaf4dfc"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-roze-shardone-rozovoe-suhoe-12",
+      "product_id": "wine-derbent-vino-di-kaspiko-roze-shardone-rozovoe-suhoe-12",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Розе",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_roze_shardone_rozovoe_suhoe_12_9bae135964.webp",
+      "asset_sha256": "6fe043e8cd53e4bf2adf1ebe46f968d218e4ac22af027c59d69ebf7b6652a43e"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-saperavi-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-di-kaspiko-saperavi-krasnoe-suhoe-13",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_saperavi_krasnoe_suhoe_13_753016cd3a.webp",
+      "asset_sha256": "459ae225c8cafbefef5dc5006ed157e9e1b7822d435e11e78803e0c42e279df6"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_shardone_beloe_bryut_105_125_4d786338c5.webp",
+      "asset_sha256": "6c8f16e654b9555432f9786e07d6f251c2dbcba9f2b0b6775cfd0c5b538fe2cd"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125",
+      "product_id": "wine-derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DK_bel_plsl_ebdebaedce.webp",
+      "asset_sha256": "45120b222f9c4ef72ca7594de6b57e480bffbab6c79c4e582aa7fad362961fc9"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-suhoe-125",
+      "product_id": "wine-derbent-vino-di-kaspiko-shardone-beloe-suhoe-125",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Шардоне",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_di_kaspiko_shardone_beloe_suhoe_125_f909d0b705.webp",
+      "asset_sha256": "2f5b5c1083a49dbb1fcfa6677dc63790110c343718cf25e1c507a1560aa58b76"
+    },
+    {
+      "wine_slug": "derbent-vino-di-kaspiko-sovinon-sovinon-blan-beloe-suhoe-12",
+      "product_id": "wine-derbent-vino-di-kaspiko-sovinon-sovinon-blan-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DK_bel_sovinon_105c5fad6a.webp",
+      "asset_sha256": "4935d6914ef720db86cd42f862631c96dc101f062e1040f13b4209e0acb763b8"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-aligote-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-aligote-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Алиготе",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_aligote_beloe_bryut_105_125_9c9d02efb2.webp",
+      "asset_sha256": "4be4886237667d2860bd02e688d1550b9adec602cc1ceec2fa96923505468188"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-kaberne-fran-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-endemy-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Каберне Фран",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_kaberne_fran_krasnoe_suhoe_13_6351c14f55.webp",
+      "asset_sha256": "df3605c3e57dc6684c0b32314ef781661cd80488b80c18dbe82ed9ff28221e1f"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-kaberne-sovinon-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-endemy-kaberne-sovinon-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Каберне Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Endemy_Kaberne_Sovinon_4c5c1ced59.webp",
+      "asset_sha256": "c129ee2bcb293c436882d80e5e6c3993ef69be0a58b5bb8d8aabb8f0e475b2bb"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-kaberne-sovinon-rozovoe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-kaberne-sovinon-rozovoe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Каберне Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_kaberne_sovinon_rozovoe_bryut_105_125_2b46752cd4.webp",
+      "asset_sha256": "71a99d7f86b766827e87ff49c652688b41cebeb704124adc43cd248ca57f0b94"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-merlo-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-endemy-merlo-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Мерло",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_merlo_krasnoe_suhoe_13_36ebced038.webp",
+      "asset_sha256": "d0ae2c5b4aabaffa4bdf53e5ff20a61f2359a77ccdbd579eb44f3ecc72cd1407"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-pino-nuar-rozovoe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-pino-nuar-rozovoe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Пино Нуар",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_pino_nuar_rozovoe_bryut_105_125_d889dc6335.webp",
+      "asset_sha256": "814ef8be8b6b011f2f994f9c6a6d9401a77b44203bd2d672b0be295f374561d4"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-risling-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-risling-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Рислинг",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_risling_beloe_bryut_105_125_ab6f76cf0a.webp",
+      "asset_sha256": "f71fe22410b14f1461e2786d9761eeac6ae9df14de039ef0a56543df21d4e6d0"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-saperavi-krasnoe-suhoe-13",
+      "product_id": "wine-derbent-vino-endemy-saperavi-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_saperavi_krasnoe_suhoe_13_1e6d4109d5.webp",
+      "asset_sha256": "d0ae2c5b4aabaffa4bdf53e5ff20a61f2359a77ccdbd579eb44f3ecc72cd1407"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Шардоне",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_shardone_beloe_bryut_105_125_0050dd60c9.webp",
+      "asset_sha256": "49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "product_id": "wine-derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Шардоне",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_shardone_beloe_suhoe_13_62a14e694a.webp",
+      "asset_sha256": "49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a"
+    },
+    {
+      "wine_slug": "derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_endemy_sovinon_beloe_bryut_105_125_7117449f6c.webp",
+      "asset_sha256": "70a686e978f1b75b7e3bad55ced6bc3025fb20326d11b78c44514fc1fecd376f"
+    },
+    {
+      "wine_slug": "derbent-vino-graf-vorontsov-beloe-polusladkoe-sovinon-blan-105-125",
+      "product_id": "wine-derbent-vino-graf-vorontsov-beloe-polusladkoe-sovinon-blan-105-125",
+      "group_id": "graf-vorontsov",
+      "catalog_name": "Граф Воронцов. Белое полусладкое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_graf_vorontsov_beloe_polusladkoe_sovinon_blan_105_125_5bcfddfbc1.webp",
+      "asset_sha256": "f6889237c8b4fb3375ea46ea9b5493148848060c040cd76e3217110350bddf75"
+    },
+    {
+      "wine_slug": "derbent-vino-graf-vorontsov-bryut-beloe-sovinon-blan-105-125",
+      "product_id": "wine-derbent-vino-graf-vorontsov-bryut-beloe-sovinon-blan-105-125",
+      "group_id": "graf-vorontsov",
+      "catalog_name": "Граф Воронцов. Брют белое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_graf_vorontsov_bryut_beloe_sovinon_blan_105_125_75497fccb3.webp",
+      "asset_sha256": "8354342072ab4e58df785aa5971a607fc780b13654bd9d0c4e70ea6dc1a22905"
+    },
+    {
+      "wine_slug": "derbent-vino-graf-vorontsov-bryut-rozovoe-pervenets-magaracha-105-125",
+      "product_id": "wine-derbent-vino-graf-vorontsov-bryut-rozovoe-pervenets-magaracha-105-125",
+      "group_id": "graf-vorontsov",
+      "catalog_name": "Граф Воронцов. Брют розовое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_graf_vorontsov_bryut_rozovoe_pervenets_magaracha_105_125_080d855e21.webp",
+      "asset_sha256": "568559d2d20521b9dcba3c73fa9a711d4129a35c3e14d03c2896b20226c275e2"
+    },
+    {
+      "wine_slug": "derbent-vino-kavkazian-dzharauli-moldova-krasnoe-polusladkoe-11",
+      "product_id": "wine-derbent-vino-kavkazian-dzharauli-moldova-krasnoe-polusladkoe-11",
+      "group_id": "caucasian",
+      "catalog_name": "Кавказиан Джараули",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_kavkazian_dzharauli_moldova_krasnoe_polusladkoe_11_79f7379ec0.webp",
+      "asset_sha256": "b100a7f07ed86abb7173b807a5e38328542bd203c47df4f3cfa1657a841a6406"
+    },
+    {
+      "wine_slug": "derbent-vino-kavkazian-merlo-krasnoe-polusladkoe-105-125",
+      "product_id": "wine-derbent-vino-kavkazian-merlo-krasnoe-polusladkoe-105-125",
+      "group_id": "caucasian",
+      "catalog_name": "Кавказиан",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_kavkazian_merlo_krasnoe_polusladkoe_105_125_d2973b5f66.webp",
+      "asset_sha256": "7fc708386923d9afad3027d940b8867c270affc4156c64d6c0914af638fec79e"
+    },
+    {
+      "wine_slug": "derbent-vino-kavkazian-rkatsiteli-beloe-bryut-105-125",
+      "product_id": "wine-derbent-vino-kavkazian-rkatsiteli-beloe-bryut-105-125",
+      "group_id": "caucasian",
+      "catalog_name": "Кавказиан",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Beloe_bryut_85d083f446.webp",
+      "asset_sha256": "4ef5d26898987de8278bfd03c8db2cda34b5ffc137e210fb151a3f708a6364e7"
+    },
+    {
+      "wine_slug": "derbent-vino-kavkazian-rkatsiteli-beloe-suhoe-12",
+      "product_id": "wine-derbent-vino-kavkazian-rkatsiteli-beloe-suhoe-12",
+      "group_id": "caucasian",
+      "catalog_name": "Кавказиан Ркацители",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_kavkazian_rkatsiteli_beloe_suhoe_12_88da97ff68.webp",
+      "asset_sha256": "b7488a90a78da348aa96b08d61dce1aa29f312ef7154578a119f95a73b441569"
+    },
+    {
+      "wine_slug": "derbent-vino-kavkazian-saperavi-krasnoe-suhoe-105-125",
+      "product_id": "wine-derbent-vino-kavkazian-saperavi-krasnoe-suhoe-105-125",
+      "group_id": "caucasian",
+      "catalog_name": "Кавказиан Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "derbent_vino_kavkazian_saperavi_krasnoe_suhoe_105_125_f6bb126efc.webp",
+      "asset_sha256": "ecbfb49262fd942d5efe0880b8dd9349ef490d879d764dd3bd39fae0963538bb"
+    },
+    {
+      "wine_slug": "di-caspico-rozovoe-bryut",
+      "product_id": "wine-di-caspico-rozovoe-bryut",
+      "group_id": "di-caspico",
+      "catalog_name": "Di Caspico розовое брют",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_Pv_EK_1_Fhd_Y8_N_Chl65_03i_I_Rbe662_P_Itcwol_Ea035_C3g_Q_Vz_Ms_L6_Qa_Ptitt_N_Ij_G_Pfq_Ow_6227b012ea.webp",
+      "asset_sha256": "40e4d1808da205a873a0047e1a38b0ae901dd9c98c9a804ecfd12cae15b15386"
+    },
+    {
+      "wine_slug": "di-kaspiko-di-caspico-fiori-di-mare-verde",
+      "product_id": "wine-di-kaspiko-di-caspico-fiori-di-mare-verde",
+      "group_id": "fiori",
+      "catalog_name": "Ди Каспико (Di Caspico Fiori di Mare Verde)",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "FDM_verde_white_4012edf5ad.webp",
+      "asset_sha256": "839bdaa3e9334daed0234d4056bad5202dc3e379722d5fbffcb8fe6c817d6f25"
+    },
+    {
+      "wine_slug": "endemy-saperavi",
+      "product_id": "wine-endemy-saperavi",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Endemy_Saperavi_e63474ff4b.webp",
+      "asset_sha256": "8deb3cba743518f9da03a2166794f9490a0ea2a76bb7849688dd0e97bb2ef04d"
+    },
+    {
+      "wine_slug": "fiori-di-mare-krasnoe-polusuhoe",
+      "product_id": "wine-fiori-di-mare-krasnoe-polusuhoe",
+      "group_id": "fiori",
+      "catalog_name": "Fiori di Mare красное полусухое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Derbent_Vino_Fori_di_Mare_Di_Kaspiko_d67089804b.webp",
+      "asset_sha256": "01ddd6e71eeecb9fd3f9355ebe2ed6656b4ba16e4e21f9b46677d4c47252029b"
+    },
+    {
+      "wine_slug": "igristoe-vino-bryut-beloe-di-caspico",
+      "product_id": "wine-igristoe-vino-bryut-beloe-di-caspico",
+      "group_id": "di-caspico",
+      "catalog_name": "Игристое вино брют белое Di Caspico",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DK_bel_bryut_88b2830c23.webp",
+      "asset_sha256": "d855ab8303077cda5a085e146b920e5de95531cebfb1531014d9ae8bbff57b6f"
+    },
+    {
+      "wine_slug": "igristoe-vino-bryut-beloe-di-kaspiko-blan-de-blan-di-caspico-blanc-de-blancs",
+      "product_id": "wine-igristoe-vino-bryut-beloe-di-kaspiko-blan-de-blan-di-caspico-blanc-de-blancs",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Блан де Блан",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DI_CASPICO_Bd_B_51a07c38ef.webp",
+      "asset_sha256": "143d3961d079799d87dc214ad1b32ca76903bc20b9ca280688463ddbda597a4d"
+    },
+    {
+      "wine_slug": "igristoe-vino-bryut-rozovoe-di-kaspiko-blan-de-nuar-di-caspico-blanc-de-noirs",
+      "product_id": "wine-igristoe-vino-bryut-rozovoe-di-kaspiko-blan-de-nuar-di-caspico-blanc-de-noirs",
+      "group_id": "di-caspico",
+      "catalog_name": "Ди Каспико Блан де Нуар",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DI_CASPICO_Bd_N_468dd912ff.webp",
+      "asset_sha256": "61b92e4bf6fcd52649288773eac61cfe142f1c7691158435742048d679b381c7"
+    },
+    {
+      "wine_slug": "igristoe-vino-ekstra-bryut-beloe-di-caspico",
+      "product_id": "wine-igristoe-vino-ekstra-bryut-beloe-di-caspico",
+      "group_id": "di-caspico",
+      "catalog_name": "Игристое вино экстра брют белое Di Caspico",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "DK_bel_eks_bryut_1ef4fd40dc.webp",
+      "asset_sha256": "aaf13bdcfc08e639fab7b2641a10bf29defaf545ca5dc71d442f5f035999f06b"
+    },
+    {
+      "wine_slug": "igristoe-vino-endemy-bianka-bryut-beloe",
+      "product_id": "wine-igristoe-vino-endemy-bianka-bryut-beloe",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Бианка брют белое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Endemy_Bianka_7cf66eca8c.webp",
+      "asset_sha256": "cdd9e53561d5147afc3328e42c8af336bc885a1045f9417a988069a2ef9b19d2",
+      "catalog_style": "Розовое",
+      "correction": "Use white brut sparkling wine, as stated by the official product page and snapshot name.",
+      "evidence_url": "https://derbentwine.ru/catalog/endemy/igristye/bianka/"
+    },
+    {
+      "wine_slug": "igristoe-vino-endemy-pino-blan-bryut-beloe",
+      "product_id": "wine-igristoe-vino-endemy-pino-blan-bryut-beloe",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Пино Блан брют белое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "Endemy_Pino_Blan_8bad757c21.webp",
+      "asset_sha256": "92dd357ba43481f343e07066d500834793a250ead07d5251c33b905bb45d0873"
+    },
+    {
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "product_id": "wine-igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "catalog_name": "Игристое жемчужное вино полусладкое белое \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "bel_plsl_16457d7b78.webp",
+      "asset_sha256": "2370737ac2720e50843a6a95e7623335de7cf302f6f9d4193978ca786ced5a61"
+    },
+    {
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "product_id": "wine-igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "catalog_name": "Игристое жемчужное вино полусладкое розовое \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "roz_plsl_besczv_03_02_2026_6c352de785.webp",
+      "asset_sha256": "09dd74c26a8c334460314e3bef36c8b31835796f65861fbb41aa5b07b87ac8a0"
+    },
+    {
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "product_id": "wine-igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "catalog_name": "Игристое жемчужное вино полусухое красное \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "krasn_plsh_b83ae42a4f.webp",
+      "asset_sha256": "677dbd725b5d0d731d08c6f625287e3a8d03a94c6960e614d1c75ed791c55953"
+    },
+    {
+      "wine_slug": "monte-garu-beloe-bryut",
+      "product_id": "wine-monte-garu-beloe-bryut",
+      "group_id": "monte-garu",
+      "catalog_name": "Monte Garu белое брют",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "ru_pim_78722001001_01_a64f7241c9.webp",
+      "asset_sha256": "1920838c0f8a438c4daf300edc2e84e9f40c5bb91cbaa63747feaa2428cd88a8"
+    },
+    {
+      "wine_slug": "monte-garu-beloe-polusladkoe",
+      "product_id": "wine-monte-garu-beloe-polusladkoe",
+      "group_id": "monte-garu",
+      "catalog_name": "Monte Garu белое полусладкое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "ru_pim_78716001001_01_3c2f0c7afe.webp",
+      "asset_sha256": "fc5704543921c9a0776812971182fe68f530c3782103752d90006f40ba5f75a2"
+    },
+    {
+      "wine_slug": "rozovoe-bryut",
+      "product_id": "wine-rozovoe-bryut",
+      "group_id": "monte-garu",
+      "catalog_name": "Розовое брют Monte Garu",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_G_Lfwi_SE_8_H5cq_Xo_T_Ec1_yac_Fq_C67_G_Bdpq_E3_H_Xb_Aj_Cyq73a90_Q8_Kp_BC_64_Bcw_S_Wo_Q_a100d7b92b.webp",
+      "asset_sha256": "94f5b51c66ebb3be2ef8b290af3df8436694a14dbef86483a9dffe32c064c291"
+    },
+    {
+      "wine_slug": "vino-suhoe-beloe-endemy-shardone",
+      "product_id": "wine-vino-suhoe-beloe-endemy-shardone",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Шардоне",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "TV_Endemy_Shardone_67f5af65c9.webp",
+      "asset_sha256": "4b239c43d099337a97246ae2ef02104ff05f53d31aee63273145a7b64331b64c"
+    },
+    {
+      "wine_slug": "vino-suhoe-beloe-endemy-sovinon",
+      "product_id": "wine-vino-suhoe-beloe-endemy-sovinon",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Совиньон",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "TV_Endemy_Sovinon_5c280667ff.webp",
+      "asset_sha256": "2fa3d388bff4ed940cfc02a77b782b2f74fe6624d4336c3fab63a0a6f0d081e4"
+    },
+    {
+      "wine_slug": "vino-suhoe-krasnoe-endemy-saperavi",
+      "product_id": "wine-vino-suhoe-krasnoe-endemy-saperavi",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Саперави",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "TV_Endemy_Saperavi_588c1f136e.webp",
+      "asset_sha256": "5bc6d51a59601b367b649646e25fd6fff99d65a155fd1721ebc7290430344382"
+    },
+    {
+      "wine_slug": "vino-suhoe-rozovoe-endemy-kaberne-sovinon",
+      "product_id": "wine-vino-suhoe-rozovoe-endemy-kaberne-sovinon",
+      "group_id": "endemy",
+      "catalog_name": "Эндемы Каберне Совиньон розовое",
+      "catalog_producer": "Дербент Вино",
+      "source_image": "TV_Endemy_Kaberne_Sovinon_roz_da300d3d2e.webp",
+      "asset_sha256": "fb0cb1936980727a64f202fe85f85f7e8b24d146d1fc1f338ddba918a3098335"
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-5000-chardonnay",
+      "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
+      "image_url": "https://derbentwine.ru/upload/iblock/3d5/3d53a74ac69bea380e1124aff9121564.png",
+      "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
+      "asset_sha256": "4fa2f0846a779b53092e46c210792b950a6ff32e2cfacbd843d4c16f449db626"
+    },
+    {
+      "product_id": "official-5000-saperavi-rose",
+      "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
+      "image_url": "https://derbentwine.ru/upload/iblock/0a2/0a21979490a5eb3ea1d8fa3e78b4cb92.png",
+      "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
+      "asset_sha256": "1d630f369413f66d508062130c9bd49d18b5fd433256205e7d8cc49200a3ff56"
+    },
+    {
+      "product_id": "official-5000-cabernet-sauvignon",
+      "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
+      "image_url": "https://derbentwine.ru/upload/iblock/cf9/cf999e54fd2184fe276b03b31b415116.png",
+      "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
+      "asset_sha256": "d19e02deb574b957b3620f4414b421669c4bb666d4d0e9decee1e5836e4d1ef3"
+    },
+    {
+      "product_id": "official-monte-garu-rose-semisweet",
+      "source_url": "https://derbentwine.ru/catalog/spetsproekt/",
+      "image_url": "https://derbentwine.ru/images/photo/mg_rps.jpg",
+      "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
+      "asset_sha256": "139a95046df6d95c47842cc910464311dba6645aa443cb26d12778169248110b"
+    }
+  ]
+}

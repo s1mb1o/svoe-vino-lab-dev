@@ -378,3 +378,8 @@ Closing each dialog restores its opener and the saved map/page scroll state.
 The final browser runs reported no browser errors or hydration warnings.
 The 176 unit tests, type checks, and production build passed.
 Screenshots use browser emulation. These checks do not replace physical-device testing.
+
+## Дербент Вино map
+
+Open `/lineup/derbent-vino?wine=caucasian-dzharag`.
+Check the selected catalog wine, a gray product, and the mobile popup.

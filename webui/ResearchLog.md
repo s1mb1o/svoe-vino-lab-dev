@@ -55,6 +55,13 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Дербент Вино, 2026-10-16
+
+The map covers 63 exact catalog slugs from 2026-09-17.
+The map adds 4 verified products without a catalog match.
+0 products have no verified local image and use the explicit placeholder.
+Read `docs/product-line-maps/derbent-vino/sources.md` for collection evidence and limits.
+
 ## Additional producer maps, 2026-10-16
 
 The owner requested ten producer maps and one commit per producer.

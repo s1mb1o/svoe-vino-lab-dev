@@ -208,3 +208,9 @@ A source name with a directory belongs to the sheet directory.
 | `abrau-light-zero-pink-bottle.webp` | `official-abrau-catalog-2025-assets/selected/abrau-light-zero-pink-bottle.png` | `official-catalog-2025` | 142 × 480 |
 | `abrau-light-zero-purple-can.webp` | `official-abrau-catalog-2025-assets/selected/abrau-light-zero-purple-can.png` | `official-catalog-2025` | 119 × 287 |
 | `abrau-light-zero-pink-can.webp` | `official-abrau-catalog-2025-assets/selected/abrau-light-zero-pink-can.png` | `official-catalog-2025` | 117 × 288 |
+
+## Дербент Вино extension, 2026-10-16
+
+Read [derbent-vino sources](product-line-maps/derbent-vino/sources.md).
+The map includes 63 snapshot cards and 4 verified additions in 8 groups.
+It does not claim complete live assortment coverage.

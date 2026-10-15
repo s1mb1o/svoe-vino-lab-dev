@@ -1,0 +1,1948 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "derbent-vino",
+    "name": "Дербент Вино",
+    "aliases": [
+      "Дербент Вино",
+      "ООО «Дербент Вино»"
+    ],
+    "slug_prefixes": [
+      "derbent-vino-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "derbent-catalog",
+      "label": "Дербент Вино: каталог",
+      "url": "https://derbentwine.ru/catalog/"
+    },
+    {
+      "id": "di-caspico",
+      "label": "Di Caspico",
+      "url": "https://derbentwine.ru/catalog/dicaspico/"
+    },
+    {
+      "id": "fiori",
+      "label": "Di Caspico Fiori di Mare",
+      "url": "https://derbentwine.ru/catalog/dicaspico/fiori-di-mare/"
+    },
+    {
+      "id": "endemy",
+      "label": "Эндемы: коллекции",
+      "url": "https://derbentwine.ru/catalog/endemy/"
+    },
+    {
+      "id": "endemy-sparkling",
+      "label": "Эндемы: премиальные игристые",
+      "url": "https://derbentwine.ru/catalog/endemy/igristye/"
+    },
+    {
+      "id": "desono",
+      "label": "Desono",
+      "url": "https://derbentwine.ru/catalog/desono/"
+    },
+    {
+      "id": "caucasian",
+      "label": "Caucasian",
+      "url": "https://derbentwine.ru/catalog/Caucasian/"
+    },
+    {
+      "id": "special",
+      "label": "Дербент Вино: специальные проекты",
+      "url": "https://derbentwine.ru/catalog/spetsproekt/"
+    },
+    {
+      "id": "five-thousand",
+      "label": "Вино с историей в 5000 лет",
+      "url": "https://derbentwine.ru/catalog/spetsproekt/5000/"
+    },
+    {
+      "id": "graf",
+      "label": "Граф Воронцов",
+      "url": "https://grafvorontsov.ru/"
+    },
+    {
+      "id": "endemy-bianca",
+      "label": "«Эндемы Бианка»: официальная карточка",
+      "url": "https://derbentwine.ru/catalog/endemy/igristye/bianka/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальные коллекции",
+      "rank": 3,
+      "description": "Премиальное позиционирование подтверждено для игристой линейки «Эндемы». Объединение коллекции на одном уровне — редакционный ориентир.",
+      "price_label": "Выше базовой линейки",
+      "source_ids": [
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "selection",
+      "label": "Отборные коллекции",
+      "rank": 2,
+      "description": "Коллекции с отбором винограда. Уровень отражает редакционное позиционирование, а не сравнение текущих цен.",
+      "price_label": "Отборная коллекция",
+      "source_ids": [
+        "desono"
+      ]
+    },
+    {
+      "id": "classic",
+      "label": "Основные коллекции",
+      "rank": 1,
+      "description": "Основные коллекции для знакомства с производителем. Цены отдельных вин не сравнивались.",
+      "price_label": "Основной ассортимент",
+      "source_ids": [
+        "di-caspico",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "formats",
+      "label": "Специальные коллекции",
+      "rank": 0,
+      "description": "Специальные выпуски и отдельные форматы. Надёжного сравнения их цен нет.",
+      "price_label": "Без ценового ранга",
+      "source_ids": [
+        "special",
+        "five-thousand",
+        "graf",
+        "fiori"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "endemy",
+      "name": "Эндемы",
+      "tier_id": "premium",
+      "method": "Не указан в источнике",
+      "description": "Моносортовая коллекция: игристые, тихие и выдержанные вина.",
+      "source_ids": [
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "desono",
+      "name": "Desono",
+      "tier_id": "selection",
+      "method": "Не указан в источнике",
+      "description": "Коллекция с ручным отбором винограда и этикетками о природе Дагестана.",
+      "source_ids": [
+        "desono"
+      ]
+    },
+    {
+      "id": "di-caspico",
+      "name": "Di Caspico",
+      "tier_id": "classic",
+      "method": "Не указан в источнике",
+      "description": "Основная коллекция тихих и игристых вин.",
+      "source_ids": [
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "caucasian",
+      "name": "Caucasian",
+      "tier_id": "classic",
+      "method": "Не указан в источнике",
+      "description": "Коллекция тихих и игристых вин, посвящённая Дагестану.",
+      "source_ids": [
+        "caucasian"
+      ]
+    },
+    {
+      "id": "fiori",
+      "name": "Di Caspico Fiori di Mare",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Жемчужные вина и вина Verde в отдельной коллекции.",
+      "source_ids": [
+        "fiori"
+      ]
+    },
+    {
+      "id": "monte-garu",
+      "name": "Monte Garu",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Игристые вина из раздела специальных проектов.",
+      "source_ids": [
+        "special"
+      ]
+    },
+    {
+      "id": "graf-vorontsov",
+      "name": "Граф Воронцов",
+      "tier_id": "formats",
+      "method": "Шарма",
+      "description": "Игристая коллекция: белый брют, белое полусладкое и розовый брют.",
+      "source_ids": [
+        "graf"
+      ]
+    },
+    {
+      "id": "five-thousand",
+      "name": "5000",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Лимитированная коллекция Desono с отдельным художественным оформлением.",
+      "source_ids": [
+        "five-thousand"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-caucasian-dzharag",
+      "group_id": "caucasian",
+      "name": "Caucasian Джарагъ",
+      "variant": "",
+      "wine_slug": "caucasian-dzharag",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-caucasian-dzharag.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Яркое и тёплое вино с выразительным характером, вдохновлённое жаром южного солнца - в нём чувствуются специи и зрелые ягоды. Цвет насыщенный соломенно-золотистый. Аромат интенсивный, с яркими цветочно-медовыми нотками. Вкус с оттенками косточковых фруктов и айвы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-kaberne-fran-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Каберне Фран",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-kaberne-fran-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-kaberne-fran-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате кондитерский мак, вишня, заизюмленный инжир. Вкус мягкий, бархатистый, с легким послевкусием спелой вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате специи, горная фиалка и ноты перечности. Вкус плотный, терпкий, раскрывающийся терновой нотой и длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-merlo-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Мерло",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-merlo-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-merlo-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате спелая черешня и кофе. Вкус мягкий, в меру терпкий вкус, с хорошим балансом танинов и полноты, содержит джемовые нотки в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-risling-beloe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Рислинг",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-risling-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-risling-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат фруктовый с нотами спелого яблока и лайма, лёгкой медовостью и нюансами пчелиного воска. Вкус свежий, сочный, наполненный фруктовыми оттенками, со сбалансированной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-risling-ekstra-bryut-beloe-105-125",
+      "group_id": "desono",
+      "name": "Дэсоно Рислинг экстра брют",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-risling-ekstra-bryut-beloe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-risling-ekstra-bryut-beloe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате оттенки лайма и спелой груши. Во вкусе освежающие ноты цитрусовых и зелёного яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-rkatsiteli-oranzh-beloe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Ркацители оранж",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-rkatsiteli-oranzh-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-rkatsiteli-oranzh-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате ваниль, урюк, персик. Вкус комплексный с мягкими танинами, приятный свежий, структурный, в послевкусии легкая терпкость белой хурмы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-saperavi-krasnoe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Саперави",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-saperavi-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-saperavi-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате перезрелые красные плоды, горький шоколад, мак. Вкус полный, округлый, терпкий, с гармоничной кислотностью и приятным ежевичным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-saperavi-roze-rozovoe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Саперави розе",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-saperavi-roze-rozovoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-saperavi-roze-rozovoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ноты малины в сахаре, зимняя ягода с лёгкими нотами ванили. Вкус гармоничный, свежий, в послевкусии лёгкая горчинка красной ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-shardone-beloe-suhoe-125",
+      "group_id": "desono",
+      "name": "Дэсоно Шардоне",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате экзотические фрукты и белая слива. Вкус свежий, с лёгким послевкусием спелого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-desono-sovinon-ekstra-bryut-sovinon-blan-beloe-105-125",
+      "group_id": "desono",
+      "name": "Дэсоно Совиньон экстра брют",
+      "variant": "",
+      "wine_slug": "derbent-vino-desono-sovinon-ekstra-bryut-sovinon-blan-beloe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-desono-sovinon-ekstra-bryut-sovinon-blan-beloe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате оттенки крыжовника, белого персика и листа черной смородины. Вкус цитрусовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "desono"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10",
+      "group_id": "fiori",
+      "name": "Ди Каспико Фиори ди Маре Верде",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Августин",
+        "Молдова",
+        "Первенец Магарача",
+        "Ркацители"
+      ],
+      "description": "В аромате зимние ягоды. Вкус яркий с нотами карамели \"монпансье\" и приятным ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате вишня и черная смородина. Во вкусе ежевичный джем, растительные нюансы томатного листа и черного перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Аромат фруктовый, с нотками спелой черешни. Вкус мягкий, в меру терпкий с приятным джемовым послевкусием",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-merlo-krasnoe-suhoe-13",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Мерло",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате ноты ванили, гвоздики, смородины, ежевики, шелковицы и сливы. Вкус сбалансированный с нотами варенья из темных ягод, ванили и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-risling-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Рислинг",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-risling-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-risling-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате полевые цветы и белые фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат цветочный с нотками меда и цветущего абрикоса. Вкус легкий, гармоничный с кремовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Ркацители",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-rkatsiteli-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-rkatsiteli-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате белые цветы, сенные нотки, дикая груша. Вкус хрустящий, минеральный с легкой кислинкой в длительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-roze-shardone-rozovoe-suhoe-12",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Розе",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-roze-shardone-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-roze-shardone-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Бианка",
+        "Мерло",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате красные ягоды, лёгкие цветочные нюансы. Во вкусе ноты малины и клубники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-saperavi-krasnoe-suhoe-13",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Саперави",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ежевика и черная смородина. Вкус глубокий, согревающий, с длительным, слегка вяжущим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат приятный цветочный аромат с узнаваемыми оттенками лимонной цедры и зеленого яблока. Во вкусе оттенки зелёных фруктов - яблока и груши, а также цитрусовых, фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат освежающий, сочный, с палитрой ярких фруктовых и легких цветочных оттенков. Вкус сбалансированный, мягкий, с фруктовыми нотами и легкой кислинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-shardone-beloe-suhoe-125",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Шардоне",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате персик, груша, лимон и грейпфрут. Во вкусе ноты яблока, груши, нектарина и лимона.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-di-kaspiko-sovinon-sovinon-blan-beloe-suhoe-12",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-di-kaspiko-sovinon-sovinon-blan-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-sovinon-sovinon-blan-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате маракуйя, персик, дыня. Вкус мягкий, свежий с цитрусовыми нюансами и минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-aligote-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Алиготе",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-aligote-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-aligote-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "В аромате белые цветы и медоносы, зелёное яблоко. Во вкусе груша, персик, липовый мёд. Послевкусие чистое, фруктовое, с приятной игристой свежестью и живой, сочной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "name": "Эндемы Каберне Фран",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате оттенки горького шоколада, какао бобов, оттенки мака, табака, ноты зерен кофе. Вкус сбалансированный, бархатистый, жирный, округлый, многослойный, приятное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-kaberne-sovinon-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "name": "Эндемы Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-kaberne-sovinon-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-kaberne-sovinon-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате чернослив, ежевичный джем, ноты ванили и шоколада. яркие фруктовые и джемовые тона, оттенки кожи, дыма и специй. Во вкусе вино округлое, полнотелое, сбалансированное, с крепкими бархатистыми танинами и минеральными нотами в долгом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-kaberne-sovinon-rozovoe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-kaberne-sovinon-rozovoe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-kaberne-sovinon-rozovoe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате красная смородина. Во вкусе живая кислотность, длительное послевкусие свежих садовых ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-merlo-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "name": "Эндемы Мерло",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате красные и черные ягоды, фиалка, лакрица, чернослив, специи и маслины. Вкус полный, развитый, объемный, хорошо структурированный, с шелковистыми танинами и оттенками малины и жареного фундука в долгом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-pino-nuar-rozovoe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Пино Нуар",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-pino-nuar-rozovoe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-pino-nuar-rozovoe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате фрукты и ягоды. Вкус полный, развитый, свежий, с хорошо сбалансированной кислотностью, приятной бархатистостью, нотами спелых ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-risling-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Рислинг",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-risling-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-risling-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате оттенки лайма и зеленого яблока. Вкус  чистый, освежающий с нотами цитрусовых и зеленого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-saperavi-krasnoe-suhoe-13",
+      "group_id": "endemy",
+      "name": "Эндемы Саперави",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате тона сушеной вишни, ежевики и оттенки чёрного перца. Во вкусе вино округлое, с гармоничной кислотностью и нотками ванили в продолжительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Шардоне",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-shardone-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате айва, желтые яблоки и ананас. Вкус полный, чистый раскрывается тонами спелых фруктов и медовых оттенков.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "group_id": "endemy",
+      "name": "Эндемы Шардоне",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-shardone-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате белые цветы, садовые фрукты, анис, зрелый ананас. Вкус полный, развитый, элегантный и стройный, с маслянистой текстурой, нежной кислотностью и минеральными оттенками в длительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "group_id": "endemy",
+      "name": "Эндемы Совиньон",
+      "variant": "",
+      "wine_slug": "derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-sovinon-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон"
+      ],
+      "description": "Аромат фруктово-ягодный с оттенками крыжовника и белого персика. Во вкусе ноты ягод черной смородины, крыжовника, дыни и персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-graf-vorontsov-beloe-polusladkoe-sovinon-blan-105-125",
+      "group_id": "graf-vorontsov",
+      "name": "Граф Воронцов. Белое полусладкое",
+      "variant": "",
+      "wine_slug": "derbent-vino-graf-vorontsov-beloe-polusladkoe-sovinon-blan-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-graf-vorontsov-beloe-polusladkoe-sovinon-blan-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Первенец Магарача",
+        "Ркацители",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате фруктовые нотки. Во вкусе цветочные и фруктовые нюансы и мягкая сладость.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "graf"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-graf-vorontsov-bryut-beloe-sovinon-blan-105-125",
+      "group_id": "graf-vorontsov",
+      "name": "Граф Воронцов. Брют белое",
+      "variant": "",
+      "wine_slug": "derbent-vino-graf-vorontsov-bryut-beloe-sovinon-blan-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-graf-vorontsov-bryut-beloe-sovinon-blan-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Первенец Магарача",
+        "Ркацители",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате белые фрукты и цветы. Вкус гармоничный с яркими фруктово-цветочными оттенками и деликатной кислинкой, оставляющей свежее и продолжительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "graf"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-graf-vorontsov-bryut-rozovoe-pervenets-magaracha-105-125",
+      "group_id": "graf-vorontsov",
+      "name": "Граф Воронцов. Брют розовое",
+      "variant": "",
+      "wine_slug": "derbent-vino-graf-vorontsov-bryut-rozovoe-pervenets-magaracha-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-graf-vorontsov-bryut-rozovoe-pervenets-magaracha-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Молдова",
+        "Первенец Магарача",
+        "Ркацители"
+      ],
+      "description": "В аромате спелые красные фрукты и сочные ягоды. Вкус гармоничный с приятным и длительным ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "graf"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-kavkazian-dzharauli-moldova-krasnoe-polusladkoe-11",
+      "group_id": "caucasian",
+      "name": "Кавказиан Джараули",
+      "variant": "",
+      "wine_slug": "derbent-vino-kavkazian-dzharauli-moldova-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-kavkazian-dzharauli-moldova-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло",
+        "Молдова",
+        "Саперави"
+      ],
+      "description": "Аромат насыщенный, с нотками спелых чёрных фруктов, бузины и шоколада. Вкус насыщенный с ягодными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-kavkazian-merlo-krasnoe-polusladkoe-105-125",
+      "group_id": "caucasian",
+      "name": "Кавказиан",
+      "variant": "",
+      "wine_slug": "derbent-vino-kavkazian-merlo-krasnoe-polusladkoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-kavkazian-merlo-krasnoe-polusladkoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Молдова"
+      ],
+      "description": "В аромате джем и варенье. Во вкусе ноты компота сливы вишни терпкое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-kavkazian-rkatsiteli-beloe-bryut-105-125",
+      "group_id": "caucasian",
+      "name": "Кавказиан",
+      "variant": "",
+      "wine_slug": "derbent-vino-kavkazian-rkatsiteli-beloe-bryut-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-kavkazian-rkatsiteli-beloe-bryut-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Аромат цветочный. Во вкусе оттенки свежих фруктов, нюансы полевых трав, сладковатое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-kavkazian-rkatsiteli-beloe-suhoe-12",
+      "group_id": "caucasian",
+      "name": "Кавказиан Ркацители",
+      "variant": "",
+      "wine_slug": "derbent-vino-kavkazian-rkatsiteli-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-kavkazian-rkatsiteli-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате оттенки мёда, сухофрукты и ананас. Вкус сбалансированный, нотки мёда и миндаля.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-derbent-vino-kavkazian-saperavi-krasnoe-suhoe-105-125",
+      "group_id": "caucasian",
+      "name": "Кавказиан Саперави",
+      "variant": "",
+      "wine_slug": "derbent-vino-kavkazian-saperavi-krasnoe-suhoe-105-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-derbent-vino-kavkazian-saperavi-krasnoe-suhoe-105-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Аромат зимних ягод и специй. Вкус ягодный, со свежей кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "caucasian"
+      ]
+    },
+    {
+      "id": "wine-di-caspico-rozovoe-bryut",
+      "group_id": "di-caspico",
+      "name": "Di Caspico розовое брют",
+      "variant": "",
+      "wine_slug": "di-caspico-rozovoe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-di-caspico-rozovoe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Бианка",
+        "Мерло",
+        "Первенец Магарача",
+        "Ркацители"
+      ],
+      "description": "В насыщенном фруктовом букете раскрываются тона спелого персика, груши и красных ягод. Прекрасно сбалансированное, освежающее вино.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-di-kaspiko-di-caspico-fiori-di-mare-verde",
+      "group_id": "fiori",
+      "name": "Ди Каспико (Di Caspico Fiori di Mare Verde)",
+      "variant": "",
+      "wine_slug": "di-kaspiko-di-caspico-fiori-di-mare-verde",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-di-kaspiko-di-caspico-fiori-di-mare-verde.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Августин",
+        "Бианка",
+        "Первенец Магарача"
+      ],
+      "description": "Di Caspico Fiori di Mare — лёгкое сухое вино с освежающим характером и тонкой природной гармонией, навеянное морским бризом и мягкой прохладой прибрежных виноградников.\n\n\nВ бокале — светлый оттенок с едва заметным зеленоватым отблеском, подчёркивающий свежесть и чистоту стиля. Визуально вино создаёт ощущение лёгкости и прозрачности, словно отражение солнечного света на воде.\n\n\nАромат раскрывается деликатно и свежо: в нем переплетаются цитрусово-фруктовые ноты с легкими травянистыми оттенками, создавая живой и сбалансированный букет.\n\n\nВо вкусе вино яркое и освежающее, с цветочными нюансами и нотами белых фруктов. Приятная кислинка придаёт ему живость и делает вкус гармоничным, переходящим в мягкое и чистое послевкусие.\n\n\nFiori di Mare прекрасно сочетается с рыбой, морепродуктами, белым мясом, свежими салатами и мягкими сырами, подчеркивая их деликатность и добавляя свежие акценты.\n\n\nЭто вино — идеальный выбор для тёплых дней и легких встреч, когда хочется ощутить свежесть, свободу и атмосферу беззаботного отдыха у моря.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-endemy-saperavi",
+      "group_id": "endemy",
+      "name": "Эндемы Саперави",
+      "variant": "",
+      "wine_slug": "endemy-saperavi",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-endemy-saperavi.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Эндемы Саперави — элегантное игристое вино, в котором свежесть и ягодный характер раскрываются особенно тонко.\nВ бокале — нежно-розовый цвет с деликатными малиновыми оттенками. Аромат чистый и яркий, с выразительными тонами красных ягод, крыжовника, брусники и спелой малины. Во вкусе — сочная фруктовая палитра, живая свежесть и гармоничная кислотность, переходящая в приятное, освежающее послевкусие.\n\n\nНа этикетке — один из редких эндемиков Каспийского побережья, символ хрупкой красоты и уникальной природы Дагестана. Как и сама коллекция «Эндемы», это вино передаёт характер региона через современный стиль и выразительную индивидуальность.\nИгристое станет прекрасным сопровождением к свежим овощным салатам, лёгким фруктовым закускам, ягодным десертам и нежной выпечке, подчёркивая их свежесть и деликатную сладость.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-fiori-di-mare-krasnoe-polusuhoe",
+      "group_id": "fiori",
+      "name": "Fiori di Mare красное полусухое",
+      "variant": "",
+      "wine_slug": "fiori-di-mare-krasnoe-polusuhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-fiori-di-mare-krasnoe-polusuhoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло",
+        "Молдова",
+        "Пино Нуар"
+      ],
+      "description": "В свежем аромате гармонично переплетаются нежные ягодные и цветочные ноты. В легком, питком, манящем вкусе преобладают цитрусовые тона, дополненные мягкой перечной ноткой и тонкой сладостью красных ягод из сиропа. Выраженная кислотность прекрасно балансирует остаточный сахар и дарит свежее, стойкое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-bryut-beloe-di-caspico",
+      "group_id": "di-caspico",
+      "name": "Игристое вино брют белое Di Caspico",
+      "variant": "",
+      "wine_slug": "igristoe-vino-bryut-beloe-di-caspico",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-bryut-beloe-di-caspico.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Di Caspico брют белое — игристое вино с бодрым, свежим характером и лёгким южным настроением Каспийского побережья.  \nВ его основе — гармоничный купаж сортов Первенец Магарача, Ркацители и Совиньон Блан, который формирует чистый, элегантный профиль и подчёркивает природную яркость вина. Светло-соломенный цвет с блестящими отблесками и тонкая игра пузырьков добавляют ощущение живости и праздника.  \nАромат раскрывается нотами зелёного яблока, цитрусов и белых цветов, дополняясь лёгкими фруктовыми нюансами. Во вкусе — сухое, собранное и освежающее: аккуратная кислотность, выраженные фруктовые акценты и чистое, долгое послевкусие с приятной пикантной свежестью.  \nDi Caspico брют белое — отличный выбор для аперитива, морепродуктов и лёгких закусок, а также для встреч, где важны лёгкость, стиль и настроение.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-bryut-beloe-di-kaspiko-blan-de-blan-di-caspico-blanc-de-blancs",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Блан де Блан",
+      "variant": "",
+      "wine_slug": "igristoe-vino-bryut-beloe-di-kaspiko-blan-de-blan-di-caspico-blanc-de-blancs",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-bryut-beloe-di-kaspiko-blan-de-blan-di-caspico-blanc-de-blancs.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Di Caspico Blanc de Blancs — элегантное игристое вино, созданное исключительно из белых сортов винограда, воплощающее чистоту стиля и изысканную свежесть в каждом глотке.\n\nВ бокале — светло-соломенный оттенок с тонкой игрой пузырьков, придающей вину утончённый и праздничный характер. Аромат деликатный и свежий, раскрывается нотами белых цветов, зелёного яблока и цитрусовой цедры, создавая ощущение лёгкости и прозрачности.\n\nВо вкусе — гармония и баланс: освежающая кислотность подчёркивает фруктовые нюансы, плавно переходя в чистое, аккуратное послевкусие с лёгкими минеральными акцентами.\n\nDi Caspico Blanc de Blancs — идеальный выбор для аперитива, лёгких закусок и особых моментов, когда хочется подчеркнуть атмосферу утончённости и свежести.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-bryut-rozovoe-di-kaspiko-blan-de-nuar-di-caspico-blanc-de-noirs",
+      "group_id": "di-caspico",
+      "name": "Ди Каспико Блан де Нуар",
+      "variant": "",
+      "wine_slug": "igristoe-vino-bryut-rozovoe-di-kaspiko-blan-de-nuar-di-caspico-blanc-de-noirs",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-bryut-rozovoe-di-kaspiko-blan-de-nuar-di-caspico-blanc-de-noirs.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Di Caspico Blanc de Noir — изысканное игристое вино, созданное из тёмных сортов винограда по белой технологии, в котором сочетаются выразительность характера и утончённая свежесть.\n\nВ бокале — светлый соломенно-золотистый оттенок с мягким сиянием и тонкой игрой пузырьков. Аромат яркий и многогранный: лёгкие ноты спелых красных ягод переплетаются с оттенками белых цветов и едва уловимой сливочной нежностью.\n\nВо вкусе — гармония и глубина: деликатная ягодная структура поддерживается освежающей кислотностью, создавая объёмное и чистое послевкусие с тонкими фруктовыми нюансами.\n\nDi Caspico Blanc de Noir — идеальный выбор для особых встреч, камерных ужинов и моментов, когда хочется подчеркнуть стиль, индивидуальность и лёгкую игривость настроения.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-ekstra-bryut-beloe-di-caspico",
+      "group_id": "di-caspico",
+      "name": "Игристое вино экстра брют белое Di Caspico",
+      "variant": "",
+      "wine_slug": "igristoe-vino-ekstra-bryut-beloe-di-caspico",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-ekstra-bryut-beloe-di-caspico.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Первенец Магарача",
+        "Ркацители",
+        "Совиньон Блан"
+      ],
+      "description": "Di Caspico экстра брют белое — игристое вино с выразительной свежестью и точным, современным стилем, вдохновлённым лёгким морским дыханием Каспийского побережья.  \nВ основе — тщательно подобранный купаж белых сортов, который формирует чистый, строгий профиль и подчёркивает природную элегантность вина. Светло-соломенный цвет с холодными блестящими отблесками и тонкая игра пузырьков задают настроение с первых секунд.  \nАромат раскрывается нотами зелёного яблока, цитрусовой цедры и белых цветов, дополняясь лёгкими минеральными нюансами. Во вкусе — сухое, собранное и энергичное: яркая кислотность, хрустящая фруктовость и очень чистое, освежающее послевкусие без лишней сладости.  \nDi Caspico экстра брют белое — отличный выбор для аперитива, морепродуктов и лёгких закусок, а также для тех моментов, когда хочется идеальной свежести, ясности и безупречного баланса.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "di-caspico"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-endemy-bianka-bryut-beloe",
+      "group_id": "endemy",
+      "name": "Эндемы Бианка брют белое",
+      "variant": "",
+      "wine_slug": "igristoe-vino-endemy-bianka-bryut-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-endemy-bianka-bryut-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое · брют",
+      "grapes": [
+        "Бианка"
+      ],
+      "description": "Эндемы Бианка — моносортовое вино, отражающее природную гармонию и мягкий характер уникального сорта в его аутентичном звучании.\n\nВ бокале — светлый соломенно-золотистый оттенок с прозрачным блеском, подчёркивающим чистоту стиля. Аромат деликатный и многослойный: раскрываются ноты спелого яблока и груши, белой сливы и луговых цветов, дополненные тонкими медовыми и лёгкими ореховыми нюансами.\n\nВо вкусе — мягкость и округлость, свойственные сорту Бианка. Фруктовые оттенки абрикоса и сочной груши гармонично переплетаются с умеренной, освежающей кислотностью. Текстура гладкая, сбалансированная, с аккуратной минеральной линией, переходящей в чистое, спокойное послевкусие с лёгким цветочным акцентом.\nНа этикетке — образ редкого природного символа региона, подчёркивающий идею эндемичности и уникальности. Бианка, как и истинные природные эндемики, раскрывается особенно ярко в своём родном терруаре, демонстрируя устойчивость, выразительность и природную силу.\n\nЭто вино для тех, кто ценит мягкую элегантность, естественную гармонию и честное звучание одного сорта — без лишних акцентов, с вниманием к деталям и уважением к природе.",
+      "release_status": "catalog",
+      "badges": [
+        "Цвет уточнён по данным производителя"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling",
+        "endemy-bianca"
+      ]
+    },
+    {
+      "id": "wine-igristoe-vino-endemy-pino-blan-bryut-beloe",
+      "group_id": "endemy",
+      "name": "Эндемы Пино Блан брют белое",
+      "variant": "",
+      "wine_slug": "igristoe-vino-endemy-pino-blan-bryut-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-vino-endemy-pino-blan-bryut-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Эндемы Пино Блан Брют — моносортовое игристое вино, отражающее чистоту сорта и благородную сдержанность характера.\n\nВ бокале — светло-соломенный цвет с прозрачным блеском и тонкой, живой игрой пузырьков. Аромат деликатный и утончённый: ноты белых цветов, сочной груши и зелёного яблока переплетаются с лёгкими цитрусовыми штрихами. Вкус свежий и гармоничный, с яркой, но мягко интегрированной кислотностью, аккуратной текстурой и оттенками спелых садовых фруктов, переходящих в чистое, минеральное послевкусие. Элегантный перляж подчёркивает природную изысканность вина.\n\nНа этикетке — гепард, редкий и стремительный хищник, символ природной силы и грации. Как и этот удивительный эндем, Пино Блан раскрывается точно и стремительно, демонстрируя ясность линии, баланс и внутреннюю энергию в своём чистом моносортовом исполнении.\n\nЭто игристое — как мгновение, когда гепард замирает перед рывком: сосредоточенность, красота и совершенство формы. Вино для тех, кто ценит утончённость, характер и живую динамику вкуса.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "name": "Игристое жемчужное вино полусладкое белое \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "variant": "",
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Цитронный Магарача"
+      ],
+      "description": "Di Caspico Fiori di Mare — лёгкое жемчужное вино с морским настроением и солнечным характером, созданное для моментов безмятежности и радости.\nВ бокале — оттенок среза лимона с деликатным блеском, подчёркивающий свежесть и живость вина. Аромат яркий и сочный: палитра цитрусовых нот переплетается с нюансами весеннего мёда, создавая ощущение тёплого бриза и цветущего побережья.\nВо вкусе — чистый, сбалансированный профиль с освежающей кислотностью и приятной сладостью в послевкусии, которое мягко задерживается, приглашая к следующему глотку.\nDi Caspico Fiori di Mare — идеальный выбор для лёгких встреч, летних вечеров и тех случаев, когда хочется добавить в день немного моря, света и цветущего настроения.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "name": "Игристое жемчужное вино полусладкое розовое \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "variant": "",
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Di Caspico Fiori di Mare — нежное жемчужное вино с лёгким морским настроением и ягодной свежестью, созданное для моментов радости и спонтанных встреч.\nВ бокале — утончённый нежно-розовый оттенок, подчёркивающий его воздушный характер. Аромат выразительный и свежий, с сочными ягодными акцентами, которые сразу создают ощущение лета.\nВо вкусе — гармоничный баланс: ноты свежих ягод мягко переходят в тонкое сладкое послевкусие, оставляя ощущение лёгкости и беззаботности.\nDi Caspico Fiori di Mare — идеальный выбор для тёплых вечеров, прогулок у воды и тех случаев, когда хочется добавить в день немного розового настроения и морского бриза.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "group_id": "fiori",
+      "name": "Игристое жемчужное вино полусухое красное \"Ди Каспико Фиори ди Маре\" (Di Caspico Fiori di Mare)",
+      "variant": "",
+      "wine_slug": "igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [],
+      "description": "Di Caspico Fiori di Mare — яркое жемчужное вино с сочным ягодным характером и морской свежестью, созданное для живых эмоций и лёгких, непринуждённых моментов.\nВ бокале — выразительный ягодно-красный цвет, подчёркивающий насыщенность и молодость вина. Аромат сбалансированный, с нотками свежих ягод и тонкими сладкими нюансами, создающими ощущение спелого летнего сада у моря.\nВо вкусе — яркая свежесть, приятная кислотность и лёгкая игристая структура, переходящая в деликатное, освежающее послевкусие.\nDi Caspico Fiori di Mare — идеальный выбор для дружеских встреч, пикников и тех случаев, когда хочется добавить в день немного моря, ягод и свободы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "fiori"
+      ]
+    },
+    {
+      "id": "wine-monte-garu-beloe-bryut",
+      "group_id": "monte-garu",
+      "name": "Monte Garu белое брют",
+      "variant": "",
+      "wine_slug": "monte-garu-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-monte-garu-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Первенец Магарача",
+        "Рислинг",
+        "Ркацители"
+      ],
+      "description": "Блестящий светло-соломенный цвет. В аромате вино раскрывается нотками косточковых фруктов и белых цветов. Вкус освежающий и сбалансированный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "special"
+      ]
+    },
+    {
+      "id": "wine-monte-garu-beloe-polusladkoe",
+      "group_id": "monte-garu",
+      "name": "Monte Garu белое полусладкое",
+      "variant": "",
+      "wine_slug": "monte-garu-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-monte-garu-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Первенец Магарача",
+        "Рислинг",
+        "Ркацители"
+      ],
+      "description": "Блестящий светло-соломенный цвет. В аромате вино раскрывается нотками косточковых фруктов и белых цветов. Вкус освежающий и сбалансированный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "special"
+      ]
+    },
+    {
+      "id": "wine-rozovoe-bryut",
+      "group_id": "monte-garu",
+      "name": "Розовое брют Monte Garu",
+      "variant": "",
+      "wine_slug": "rozovoe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-rozovoe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Бианка",
+        "Мерло",
+        "Первенец Магарача",
+        "Ркацители"
+      ],
+      "description": "Насыщенный виноградный вкус дополняется умеренным перляжом. Игристые пузырьки подчеркивают гладкую текстуру и энергичное фруктово-цветочное послевкусие. В бокале вино раскрывается мягким розовым цветом, под солнечными лучами дополняемым фиолетовыми бликами. Аромат не менее глубокий, в нем звучат аккорды черной смородины, сладость инжира, терпкость зрелой вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "special"
+      ]
+    },
+    {
+      "id": "wine-vino-suhoe-beloe-endemy-shardone",
+      "group_id": "endemy",
+      "name": "Эндемы Шардоне",
+      "variant": "",
+      "wine_slug": "vino-suhoe-beloe-endemy-shardone",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-vino-suhoe-beloe-endemy-shardone.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино из Шардоне отличается гармоничным и мягким характером. \n\nВ аромате раскрываются ноты спелого яблока, груши и персика с лёгкими цитрусовыми оттенками. \n\nВкус округлый, сбалансированный, с деликатной свежестью и приятным, чистым послевкусием.\n\nГастрономические сочетания: молодые сыры, запечённые овощи, блюда из белого мяса и рыбы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vino-suhoe-beloe-endemy-sovinon",
+      "group_id": "endemy",
+      "name": "Эндемы Совиньон",
+      "variant": "",
+      "wine_slug": "vino-suhoe-beloe-endemy-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-vino-suhoe-beloe-endemy-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вино из Совиньон Блан отличается ярким ароматическим профилем и выразительной свежестью. \n\nВ аромате — цитрусовые, крыжовник, зелёное яблоко и лёгкие травянистые оттенки. \n\nВкус живой, с хорошей кислотностью, минеральными нюансами и освежающим послевкусием. \n\nГастрономические сочетания:\nсалаты, морепродукты, мягкие сыры, овощные блюда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vino-suhoe-krasnoe-endemy-saperavi",
+      "group_id": "endemy",
+      "name": "Эндемы Саперави",
+      "variant": "",
+      "wine_slug": "vino-suhoe-krasnoe-endemy-saperavi",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-vino-suhoe-krasnoe-endemy-saperavi.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Моносортовое вино из Саперави отличается насыщенным цветом и глубоким характером. \n\nВ аромате и вкусе — ноты чёрной вишни, ежевики и сливы с лёгкими пряными оттенками. Вино обладает хорошей кислотностью, выразительными танинами и длительным ягодным послевкусием.\n\nГастрономические сочетания: телятина, баранина, говядина на гриле, блюда с насыщенными соусами, выдержанные сыры, мясные закуски.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vino-suhoe-rozovoe-endemy-kaberne-sovinon",
+      "group_id": "endemy",
+      "name": "Эндемы Каберне Совиньон розовое",
+      "variant": "",
+      "wine_slug": "vino-suhoe-rozovoe-endemy-kaberne-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/wine-vino-suhoe-rozovoe-endemy-kaberne-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Розовое вино из Каберне Совиньон привлекает нежным розовым оттенком и свежим ягодным ароматом. \n\nВ букете — клубника, малина и красная смородина. \n\nВкус лёгкий, сочный, с приятной кислотностью и чистым, освежающим послевкусием.\n\nГастрономические сочетания: блюда из лосося, лёгкие салаты, закуски, мягкие сыры.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "endemy",
+        "endemy-sparkling"
+      ]
+    },
+    {
+      "id": "official-5000-chardonnay",
+      "group_id": "five-thousand",
+      "name": "5000 · Desono Шардоне",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/official-5000-chardonnay.webp",
+        "source_id": "five-thousand"
+      },
+      "category": "Вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Лимитированный выпуск Desono с оформлением по мотивам мифов Кавказа. Отдельная упаковка коллекции «5000».",
+      "release_status": "limited",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "five-thousand"
+      ]
+    },
+    {
+      "id": "official-5000-saperavi-rose",
+      "group_id": "five-thousand",
+      "name": "5000 · Desono Саперави розе",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/official-5000-saperavi-rose.webp",
+        "source_id": "five-thousand"
+      },
+      "category": "Вино",
+      "style": "Розовое сухое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Лимитированный выпуск Desono с художественной этикеткой коллекции «5000». Розовое сухое вино.",
+      "release_status": "limited",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "five-thousand"
+      ]
+    },
+    {
+      "id": "official-5000-cabernet-sauvignon",
+      "group_id": "five-thousand",
+      "name": "5000 · Desono Каберне Совиньон",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
+        "source_id": "five-thousand"
+      },
+      "category": "Вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Лимитированный выпуск Desono в отдельном оформлении коллекции «5000». Красное сухое вино.",
+      "release_status": "limited",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "five-thousand"
+      ]
+    },
+    {
+      "id": "official-monte-garu-rose-semisweet",
+      "group_id": "monte-garu",
+      "name": "Monte Garu розовое полусладкое",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/derbent-vino/official-monte-garu-rose-semisweet.webp",
+        "source_id": "special"
+      },
+      "category": "Вино",
+      "style": "Розовое полусладкое",
+      "grapes": [],
+      "description": "Розовое полусладкое игристое вино. Этот вариант указан в официальном разделе специальных проектов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "special"
+      ]
+    }
+  ]
+}
