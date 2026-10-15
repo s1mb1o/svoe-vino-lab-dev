@@ -504,11 +504,20 @@
       "catalog_name": "Locantita Sauvignon Blanc-Chardonnay",
       "catalog_producer": "Alma Valley",
       "source_image": "ru_pim_263023001001_01_d63898ec2e.webp",
-      "asset_sha256": "06734f2b6f6f6973ffe13a01e54f23121983ac474d0dd1cb9f827d96b9a0323d",
+      "asset_sha256": "a5109c5794c8f5eda6e9a3f988c4d026f4e432b4890a07ea839f288cfbc585f2",
       "group_source_ids": [
         "svoe-vino-2026-09-17"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "06734f2b6f6f6973ffe13a01e54f23121983ac474d0dd1cb9f827d96b9a0323d",
+        "output_asset_sha256": "a5109c5794c8f5eda6e9a3f988c4d026f4e432b4890a07ea839f288cfbc585f2",
+        "record": "imagegen-cutouts.json"
+      }
     }
   ],
   "official_additions": [

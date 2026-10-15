@@ -1,0 +1,23 @@
+{
+  "producer_id": "alma-valley",
+  "date": "2026-10-16",
+  "scope": "Display derivatives only. Product facts remain sourced from the catalog and official pages.",
+  "fine_print_limit": "Imagegen resamples fine print and reflections. These derivatives are not evidence for label microtext. Original asset bytes remain in Git revision 89aa3780.",
+  "assets": [
+    {
+      "product_id": "wine-locantita-sauvignon-blanc-chardonnay",
+      "asset": "/product-line-maps/alma-valley/wine-locantita-sauvignon-blanc-chardonnay.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "06734f2b6f6f6973ffe13a01e54f23121983ac474d0dd1cb9f827d96b9a0323d",
+      "generated_png_sha256": "2f20c0f74d5d5bbe0783bf5bc7d9238adb9aedb050d8543bb70c80b710eb64a6",
+      "output_asset_sha256": "a5109c5794c8f5eda6e9a3f988c4d026f4e432b4890a07ea839f288cfbc585f2",
+      "prompt": "Use case: background-extraction. Edit the supplied product photograph only. Remove only the surrounding white background and floor shadow, replacing them with true transparent alpha. Keep the entire original bottle, exact silhouette, height/width ratio, cap, glass color, lighting, reflections, label placement, artwork, fonts and printed colors unchanged. This is a factual catalog asset, not a redesigned product render. Do not translate, rewrite, redraw, invent, beautify or sharpen any text. Keep tiny unreadable print unreadable. Do not reconstruct hidden areas. Preserve all visible source details. Output one upright complete bottle with a small transparent margin, no other objects, no background, no checkerboard pixels, no new shadow. The key visible label text must remain exactly in its source language and typography: 2023; БЕЛОЕ СУХОЕ; locantita.МОРЕ; СОВИНЬОН БЛАН-ШАРДОНЕ.",
+      "review": "Accepted after visual comparison. Main brand, grape text, 2023 vintage, label art, bottle shape and cap are preserved. Product identity and main label art at the current UI display size. Exact source pixels are not preserved.",
+      "generated_frame": "570x2063+91+33",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    }
+  ]
+}

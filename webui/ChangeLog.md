@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Alma Valley bottle cutouts
+
+- Replace 1 background images with reviewed transparent imagegen display assets.
+- Fit the bottle frame and optimize WebP transfer size for desktop and mobile.
+- Record exact prompts, source hashes, output hashes, and imagegen limitations.
+
 ## 2026-10-16 — Zolotaya Balka bottle cutouts
 
 - Replace 10 background images with reviewed transparent imagegen display assets.
