@@ -17,8 +17,8 @@ Official premium statements support the relevant group descriptions. Other tier 
 
 ## Catalog and image checks
 
-The builder selects the exact producer field. It preserves every selected slug. Each local WebP is copied without re-encoding. The crosswalk records its SHA-256 hash.
-Official bottle images use only the exact product page or product PDF. The asset preparation uses proportional resizing and WebP encoding. It does not replace the bottle or edit the label.
+The builder selects the exact producer field. It preserves every selected slug. The initial import copied each local WebP without re-encoding. The crosswalk records current SHA-256 hashes and later transformations.
+Official bottle images use only the exact product page or product PDF. The initial asset preparation used proportional resizing and WebP encoding. Later background extraction is documented below.
 
 ## Grouping notes
 
@@ -97,3 +97,18 @@ Every check compared the official product with all 102 rows for the exact produc
 - Absence basis: No PetNat collection or ancestral-method card occurs among the 102 producer records. The official page confirms Meunier; the historical URL spelling is not used to infer grapes.
 - Image: https://www.fanagoria.ru/storage/resize/400/storage/app/uploads/public/65c/f1c/b75/65cf1cb75b904898363233.png
 - Preparation: Proportional resize to at most 480 pixels. WebP encoding. No retouching.
+
+## Background extraction, 2026-10-16
+
+14 display images use transparent cutouts from the built-in `image_gen` tool.
+Read [imagegen-cutouts.json](imagegen-cutouts.json) for every exact prompt, source hash, generated PNG hash, output hash, and review note.
+The review checks product identity, main label text, cap, color, and artwork at the UI display size.
+Imagegen resamples fine print and reflections. The generated images are not evidence for label microtext.
+The product facts remain sourced from the catalog and official pages.
+The final frame excludes faint transparent outliers. The conversion preserves alpha and fits the cropped image into 720 px height before padding.
+The WebP quality is 88. The alpha quality is 100. Each file has 6 px transparent padding.
+Unedited images retain their previous bytes. Original edited-image bytes remain in Git revision `89aa3780`.
+
+The generic `ona-skazala-da` snapshot photo shows a wedding scene with several bottles labeled WEDDING Bliss.
+The photo does not establish this product package. The map uses the labeled image placeholder.
+The product node and its catalog link remain available. The crosswalk preserves the source filename and hash.

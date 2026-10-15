@@ -241,9 +241,18 @@
       "catalog_name": "Brule Cuvée Brut Розовое",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_brule_cuve_brut_rozovoe_merlo_igristoe_bryut_rozovoe_12_af9727f341.webp",
-      "asset_sha256": "1debbc29e52e66d34bfd4fc710cf4323306265e222c3e414a4a430791fe3bc25",
+      "asset_sha256": "a2d7a13b377a8d089d98bfead4dc8565951927a43b63276249bc225c90e2d7fc",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_brule_cuve_brut_rozovoe_merlo_igristoe_bryut_rozovoe_12_af9727f341.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_brule_cuve_brut_rozovoe_merlo_igristoe_bryut_rozovoe_12_af9727f341.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "1debbc29e52e66d34bfd4fc710cf4323306265e222c3e414a4a430791fe3bc25",
+        "output_asset_sha256": "a2d7a13b377a8d089d98bfead4dc8565951927a43b63276249bc225c90e2d7fc",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
@@ -494,9 +503,18 @@
       "catalog_name": "Декантер. Ркацители 2019",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_dekanter_rkatsiteli_2019_beloe_suhoe_135_e7a61d6050.webp",
-      "asset_sha256": "d0b25046830788457bc508657512dc0e3dbcd6d7a1a8f9e60c687a1eddb137ff",
+      "asset_sha256": "e1b23f0390c6abb5768c96e9b62e7ee6959c19e85336ec7641d85a53c8315bdb",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_dekanter_rkatsiteli_2019_beloe_suhoe_135_e7a61d6050.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_dekanter_rkatsiteli_2019_beloe_suhoe_135_e7a61d6050.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "d0b25046830788457bc508657512dc0e3dbcd6d7a1a8f9e60c687a1eddb137ff",
+        "output_asset_sha256": "e1b23f0390c6abb5768c96e9b62e7ee6959c19e85336ec7641d85a53c8315bdb",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
@@ -505,9 +523,18 @@
       "catalog_name": "Декантер. Саперави 2017",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_dekanter_saperavi_2017_krasnoe_suhoe_135_1eb1ee94fa.webp",
-      "asset_sha256": "06bf1ab6ebad73c36e756a17677dc9e369aa666b87d6c073debb1036ffdb7010",
+      "asset_sha256": "8affe828b0c1faa116045c01af53bb5ada6cd67226f30cf55f364d21e27f70ee",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_dekanter_saperavi_2017_krasnoe_suhoe_135_1eb1ee94fa.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_dekanter_saperavi_2017_krasnoe_suhoe_135_1eb1ee94fa.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "06bf1ab6ebad73c36e756a17677dc9e369aa666b87d6c073debb1036ffdb7010",
+        "output_asset_sha256": "8affe828b0c1faa116045c01af53bb5ada6cd67226f30cf55f364d21e27f70ee",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12",
@@ -549,9 +576,18 @@
       "catalog_name": "Фанагория. Брют белое",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_fanagoriya_bryut_beloe_sovinon_blan_igristoe_bryut_beloe_11_13_3b08e056cc.webp",
-      "asset_sha256": "b2ab9851464ae3b50916a27a1524bdb1e234e5f3e1cc7d72f1c88a517aa2e1f5",
+      "asset_sha256": "9644b10767706fe9d06ab3403686da66b769172bcae42649b2ac4f1ffb7e102b",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_fanagoriya_bryut_beloe_sovinon_blan_igristoe_bryut_beloe_11_13_3b08e056cc.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_fanagoriya_bryut_beloe_sovinon_blan_igristoe_bryut_beloe_11_13_3b08e056cc.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "b2ab9851464ae3b50916a27a1524bdb1e234e5f3e1cc7d72f1c88a517aa2e1f5",
+        "output_asset_sha256": "9644b10767706fe9d06ab3403686da66b769172bcae42649b2ac4f1ffb7e102b",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13",
@@ -560,9 +596,18 @@
       "catalog_name": "Фанагория. Брют розовое",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_fanagoriya_bryut_rozovoe_sovinon_blan_igristoe_bryut_rozovoe_11_13_88695c0088.webp",
-      "asset_sha256": "5f820cc1285069f3eb3a772fc4ba402d2e44bbcfdd8469d6a90a7684a7caff0f",
+      "asset_sha256": "5fe373f0cdfc8d12f559422036fd3e5b5062196c986a0dc3a42a393c9fe90d21",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_fanagoriya_bryut_rozovoe_sovinon_blan_igristoe_bryut_rozovoe_11_13_88695c0088.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_fanagoriya_bryut_rozovoe_sovinon_blan_igristoe_bryut_rozovoe_11_13_88695c0088.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "5f820cc1285069f3eb3a772fc4ba402d2e44bbcfdd8469d6a90a7684a7caff0f",
+        "output_asset_sha256": "5fe373f0cdfc8d12f559422036fd3e5b5062196c986a0dc3a42a393c9fe90d21",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13",
@@ -648,9 +693,18 @@
       "catalog_name": "Ice Wine Мерло розовое",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_ice_wine_merlo_rozovoe_sladkoe_10_f04efb1e6f.webp",
-      "asset_sha256": "1276ed4fd22bdd3d895d2ede6305ec0f438410962702369ee3da589afafe6f8d",
+      "asset_sha256": "db77b30e12e7fe5c38685eda2cd3effb07b84bc2de28d70b228458c4fca0e457",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_ice_wine_merlo_rozovoe_sladkoe_10_f04efb1e6f.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_ice_wine_merlo_rozovoe_sladkoe_10_f04efb1e6f.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "1276ed4fd22bdd3d895d2ede6305ec0f438410962702369ee3da589afafe6f8d",
+        "output_asset_sha256": "db77b30e12e7fe5c38685eda2cd3effb07b84bc2de28d70b228458c4fca0e457",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10",
@@ -714,9 +768,18 @@
       "catalog_name": "Par Amour",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_par_amour_pervenets_magaracha_beloe_polusladkoe_105_125_937ddaffd1.webp",
-      "asset_sha256": "f2c79e80ef154756e760844dd29876770bd147c4e3ac0b5f4ec5ba02288cecd8",
+      "asset_sha256": "2eda4ec82aaf8812e290b8982bfd741098eb6f7dce3fa5ffe99e97b304d3980d",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_par_amour_pervenets_magaracha_beloe_polusladkoe_105_125_937ddaffd1.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_par_amour_pervenets_magaracha_beloe_polusladkoe_105_125_937ddaffd1.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "f2c79e80ef154756e760844dd29876770bd147c4e3ac0b5f4ec5ba02288cecd8",
+        "output_asset_sha256": "2eda4ec82aaf8812e290b8982bfd741098eb6f7dce3fa5ffe99e97b304d3980d",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125",
@@ -769,9 +832,18 @@
       "catalog_name": "Primum Alveus Blanc de Blancs 2017",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_blanc_de_blancs_2017_shardone_igristoe_bryut_beloe_12_1cb2145fb9.webp",
-      "asset_sha256": "7b274ad9a2a6d8c1ebfd448dcd25dd1b2e1c5546b2f5c0299217ca3f684fd919",
+      "asset_sha256": "ac97cf4eaf07651a4ad02c665c5f0a835611a422bd040874ebdb21472bb6b090",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_blanc_de_blancs_2017_shardone_igristoe_bryut_beloe_12_1cb2145fb9.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_blanc_de_blancs_2017_shardone_igristoe_bryut_beloe_12_1cb2145fb9.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "7b274ad9a2a6d8c1ebfd448dcd25dd1b2e1c5546b2f5c0299217ca3f684fd919",
+        "output_asset_sha256": "ac97cf4eaf07651a4ad02c665c5f0a835611a422bd040874ebdb21472bb6b090",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13",
@@ -802,9 +874,18 @@
       "catalog_name": "Primum Alveus Brut 2014",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_brut_2014_shardone_igristoe_bryut_beloe_12_9cc32014b2.webp",
-      "asset_sha256": "99cfa74163a998593ead6e5e6cc4b9bfc4962d8c26a3220828bf7000d6a7b4cc",
+      "asset_sha256": "0e90ed50238f430f0b5c1442e1c08edb377cec7df2da9d267db8740b10f43e7e",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_brut_2014_shardone_igristoe_bryut_beloe_12_9cc32014b2.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_brut_2014_shardone_igristoe_bryut_beloe_12_9cc32014b2.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "99cfa74163a998593ead6e5e6cc4b9bfc4962d8c26a3220828bf7000d6a7b4cc",
+        "output_asset_sha256": "0e90ed50238f430f0b5c1442e1c08edb377cec7df2da9d267db8740b10f43e7e",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12",
@@ -813,9 +894,18 @@
       "catalog_name": "Primum Alveus Brut 2016",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_brut_2016_shardone_igristoe_bryut_beloe_12_003b2ef29a.webp",
-      "asset_sha256": "8b0b0cc411f280080efbcedcf95fab5ebfc7c66e541df4f685c0acabc1cf5b90",
+      "asset_sha256": "a6764ab2af729ce9c9795a2ed600ec02b31096081f7a6b45f9be864dd961ad18",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_brut_2016_shardone_igristoe_bryut_beloe_12_003b2ef29a.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_brut_2016_shardone_igristoe_bryut_beloe_12_003b2ef29a.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8b0b0cc411f280080efbcedcf95fab5ebfc7c66e541df4f685c0acabc1cf5b90",
+        "output_asset_sha256": "a6764ab2af729ce9c9795a2ed600ec02b31096081f7a6b45f9be864dd961ad18",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12",
@@ -857,9 +947,18 @@
       "catalog_name": "Primum Alveus. Экстра-брют 2017",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_ekstra_bryut_2017_pino_nuar_beloe_11_13_278cb95a09.webp",
-      "asset_sha256": "92d46f4a3fc5db7ddc5005c1f00947d993e4adf2f58ff6de4040b1f17c7da51b",
+      "asset_sha256": "e8de0ebdf1519831ebdaa530b10a16335fa070ff7fdcda02c5e5b16852645355",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_ekstra_bryut_2017_pino_nuar_beloe_11_13_278cb95a09.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_ekstra_bryut_2017_pino_nuar_beloe_11_13_278cb95a09.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "92d46f4a3fc5db7ddc5005c1f00947d993e4adf2f58ff6de4040b1f17c7da51b",
+        "output_asset_sha256": "e8de0ebdf1519831ebdaa530b10a16335fa070ff7fdcda02c5e5b16852645355",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12",
@@ -868,9 +967,18 @@
       "catalog_name": "Primum Alveus Extra Brut 2014",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_extra_brut_2014_pino_nuar_beloe_bryut_12_06194497ba.webp",
-      "asset_sha256": "fb69988ba5df5c7cf9e1caa8ed4615661cd868684e320ba7cbff8b4f7ffe0443",
+      "asset_sha256": "4fcdf175ed783c0637ee969011e5c7135f84f3033fd18f45157f1221c5975a4b",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_extra_brut_2014_pino_nuar_beloe_bryut_12_06194497ba.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_extra_brut_2014_pino_nuar_beloe_bryut_12_06194497ba.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "fb69988ba5df5c7cf9e1caa8ed4615661cd868684e320ba7cbff8b4f7ffe0443",
+        "output_asset_sha256": "4fcdf175ed783c0637ee969011e5c7135f84f3033fd18f45157f1221c5975a4b",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12",
@@ -879,9 +987,18 @@
       "catalog_name": "Primum Alveus Extra Brut 2016",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_primum_alveus_extra_brut_2016_shardone_beloe_bryut_12_b865355639.webp",
-      "asset_sha256": "848479f54ab065270a75d63b21d4a5871a329a0460ba7dcaee2b668c39d5565f",
+      "asset_sha256": "aec5b2371864c3d49a46c1c8552e6b01c26162bbe6bf7558a88962cbd5a7d7e4",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_extra_brut_2016_shardone_beloe_bryut_12_b865355639.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_primum_alveus_extra_brut_2016_shardone_beloe_bryut_12_b865355639.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "848479f54ab065270a75d63b21d4a5871a329a0460ba7dcaee2b668c39d5565f",
+        "output_asset_sha256": "aec5b2371864c3d49a46c1c8552e6b01c26162bbe6bf7558a88962cbd5a7d7e4",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12",
@@ -1055,9 +1172,18 @@
       "catalog_name": "Точка",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_tochka_saperavi_krasnoe_suhoe_14_85b003f862.webp",
-      "asset_sha256": "9a3efb4238fb65973f926478dc682c8de580b78fd6e341d7198ce690308f7801",
+      "asset_sha256": "bbad09188139495eedd563dd89ec0a42e42087d3de236d7b656e6019b8303919",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-tochka-saperavi-krasnoe-suhoe-14",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_tochka_saperavi_krasnoe_suhoe_14_85b003f862.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_tochka_saperavi_krasnoe_suhoe_14_85b003f862.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "9a3efb4238fb65973f926478dc682c8de580b78fd6e341d7198ce690308f7801",
+        "output_asset_sha256": "bbad09188139495eedd563dd89ec0a42e42087d3de236d7b656e6019b8303919",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
@@ -1110,9 +1236,17 @@
       "catalog_name": "Она сказала Да!",
       "catalog_producer": "Фанагория",
       "source_image": "Generated_Image_June_22_2026_10_44_PM_1_6fd1a74a1b.webp",
-      "asset_sha256": "f7dedb8b3922dbaa56a0c63535e99b569208a06b782483022f085061eeebbabd",
+      "asset_sha256": null,
       "catalog_url": "https://vino-svoe.ru/wines/ona-skazala-da",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/Generated_Image_June_22_2026_10_44_PM_1_6fd1a74a1b.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/Generated_Image_June_22_2026_10_44_PM_1_6fd1a74a1b.webp",
+      "rejected_image": {
+        "date": "2026-10-16",
+        "original_asset": "/product-line-maps/fanagoria/wine-ona-skazala-da.webp",
+        "input_asset_sha256": "f7dedb8b3922dbaa56a0c63535e99b569208a06b782483022f085061eeebbabd",
+        "reason": "The snapshot image is a multi-bottle wedding scene. Its visible labels say WEDDING Bliss. It does not establish the exact product package.",
+        "source_git_revision": "89aa3780",
+        "replacement": "The existing labeled placeholder. Keep the product and its catalog link."
+      }
     },
     {
       "wine_slug": "rozovoe-polusladkoe",
@@ -1220,11 +1354,12 @@
     "exact_slug_set_match": true,
     "catalog_descriptions_preserved": true,
     "catalog_grapes_preserved": true,
-    "catalog_assets_byte_identical": true,
+    "catalog_assets_byte_identical": false,
     "official_additions": 6,
     "all_asset_paths_present": true,
     "schema_validator": "validateProductLineMap from webui/shared/product-line-map.ts",
-    "schema_errors": []
+    "schema_errors": [],
+    "catalog_asset_note": "Unedited assets retain source bytes. imagegen-cutouts.json records generated display derivatives and source hashes."
   },
   "official_absence_search": {
     "absent_name_description_tokens": [
