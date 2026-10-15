@@ -1,0 +1,83 @@
+{
+  "producer_id": "derbent-vino",
+  "date": "2026-10-16",
+  "scope": "Display derivatives only. Product facts remain sourced from the catalog and official pages.",
+  "fine_print_limit": "Imagegen resamples fine print and reflections. These derivatives are not evidence for label microtext. Original asset bytes remain in Git revision 89aa3780.",
+  "assets": [
+    {
+      "product_id": "wine-monte-garu-beloe-bryut",
+      "asset": "/product-line-maps/derbent-vino/wine-monte-garu-beloe-bryut.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "1920838c0f8a438c4daf300edc2e84e9f40c5bb91cbaa63747feaa2428cd88a8",
+      "generated_png_sha256": "c805a44899cddb9560125ce93db9785927d29eedddaa66157ea3553c5f37e846",
+      "output_asset_sha256": "010776dcb5d0788adb17cb85b672ddaae62d16160d23b6e438894a4bd8857eef",
+      "prompt": "Use case: background-extraction. Edit target: the supplied real Monte Garu white brut bottle product photo. Remove only the white background, including the small white gaps around the wire cage. Return one clean isolated bottle on actual transparency. Preserve the complete bottle from cork to base, its exact silhouette, aspect ratio, glass color, cork and wire cage, reflections, original white label, blue bottom label band, all typography and tiny printed text exactly as in the source. Do not redraw, relabel, enhance, reinterpret, add, or remove any part of the bottle. No new shadow, no backdrop, no checkerboard painted into pixels. Keep the bottle upright and centered with minimal transparent margins. Intended use: a factual wine catalog asset shown on both light and dark UI backgrounds. Only background removal is authorized.",
+      "review": "The bottle identity, main label text, colors, and silhouette match the source at catalog display size. The output has real alpha. Imagegen resampled fine print and reflections. Do not treat the derivative as source evidence for fine print.",
+      "generated_frame": "540x2001+92+82",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    },
+    {
+      "product_id": "official-monte-garu-rose-semisweet",
+      "asset": "/product-line-maps/derbent-vino/official-monte-garu-rose-semisweet.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "139a95046df6d95c47842cc910464311dba6645aa443cb26d12778169248110b",
+      "generated_png_sha256": "a78cb98f1860aa05ae051f6a752ce2ea853896b750a542774c36c00189744113",
+      "output_asset_sha256": "e888dc3aa03d6fe93b24e04c20c462158971e41947590e9130a60417862bb9e7",
+      "prompt": "Use case: background-extraction. Edit target: the supplied real Monte Garu bottle product photo. Remove only the white background, including gaps around the wire cage. Return a single isolated bottle on actual transparency, upright, entire cork-to-base silhouette visible, tightly framed with minimal transparent padding. Preserve exactly the original bottle shape and aspect ratio, glass color, cork, wire, reflections, label design, every printed word and numeral, and all colors. Preserve the pink bottom label band, black Monte Garu lettering, the Made in Dagestan text, the existing neck band, and the rose semi-sweet identity. Preserve the amber/rose wine color. No redraw, no invented lettering, no beauty retouch, no reconstruction of label details, no new shadow, no backdrop, no checkerboard painted in pixels. Use the original image as a factual catalog asset; only background removal is authorized.",
+      "review": "The bottle identity, main label text, colors, and silhouette match the source at catalog display size. The output has real alpha. Imagegen resampled fine print and reflections. Do not treat the derivative as source evidence for fine print.",
+      "generated_frame": "365x1259+439+1",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    },
+    {
+      "product_id": "wine-monte-garu-beloe-polusladkoe",
+      "asset": "/product-line-maps/derbent-vino/wine-monte-garu-beloe-polusladkoe.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "fc5704543921c9a0776812971182fe68f530c3782103752d90006f40ba5f75a2",
+      "generated_png_sha256": "cc103f99f62b7aa5ace4e8d20dd153d8a13058d97f2905d3005c4c96a7e10fe9",
+      "output_asset_sha256": "178147f8a3154754e918ac2ced8df3559288a4d09b9f325015c43dd25285ef78",
+      "prompt": "Use case: background-extraction. Remove only white background from this ORIGINAL Monte Garu white semi-sweet bottle photograph. Preserve entire bottle, shape, dark green glass, wire and cork, label, gold band and all text exactly. Existing text MUST stay verbatim: \"SPARKLING WINE\", \"Monte Garu\", \"БЕЛОЕ ПОЛУСЛАДКОЕ\". Do NOT translate the Russian label into English. No \"SEMI-SWEET WHITE\". Do not invent microprint. Same original handwritten gold logo and gold bottom band. Return actual transparent background, no shadow, no drawn checkerboard, bottle upright, 3% clear margin. Only remove background; no other alterations.",
+      "review": "The bottle identity, main label text, colors, and silhouette match the source at catalog display size. The output has real alpha. Imagegen resampled fine print and reflections. Do not treat the derivative as source evidence for fine print.",
+      "generated_frame": "542x1996+92+85",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    },
+    {
+      "product_id": "official-5000-chardonnay",
+      "asset": "/product-line-maps/derbent-vino/official-5000-chardonnay.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "4fa2f0846a779b53092e46c210792b950a6ff32e2cfacbd843d4c16f449db626",
+      "generated_png_sha256": "7af25bbe8777d2a3ad2e598c50a609c683f2deef85ebb250465ac49c38e3a3b2",
+      "output_asset_sha256": "3d985977318544d223b87f8e4b33a96166d443b244e4d8c4e567adbddeb3adbe",
+      "prompt": "Use case: background-extraction.\nInput: the sole photo is the exact edit target. Extract only this exact bottle from the promotional scene. Remove the dark background, rocks, floor and all foreground props. Make them genuinely transparent. Keep the actual photographed bottle, complete silhouette, wax cap, reflections and original label. Do not redesign or replace the bottle.\nCritical correction from prior attempt: the printed bottom label text MUST remain exactly \"DESONO / шардоне / белое сухое\". Keep the large orange number \"5000\" and the original original pink-and-cream mountain landscape, winding white river, yellow field, small red sun. Preserve the original Russian typography, layout and soft fine print. Do not introduce Italian words, geographic origin claims, new brand names or the word \"виноделие\". Do not change the grape. Do not invent unreadable letters.\nOutput is an isolated product cutout with true alpha outside its silhouette. Preserve original dark green glass, ochre wax cap, colors, proportions and perspective. Remove all rocks from in front and behind. Keep the original bottle base shape with no rock residue. No shadow, backdrop, surface, white halo, recoloring, relighting, sharpening or unrelated new elements.",
+      "review": "Accepted after visual comparison at UI display size on a dark background. Main brand, product name, grape, year and type remain consistent where visible. Label layout and primary artwork match. Fine print, foil texture and reflections were resampled. This display derivative MUST NOT be used as source evidence for label microtext. Transparent alpha was verified. Attempt2 preserves the literal grape line from the source. All rocks and background props are removed. The bottle base has a generated completion where foreground rocks obscured the source.",
+      "generated_frame": "414x1482+321+5",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    },
+    {
+      "product_id": "official-5000-saperavi-rose",
+      "asset": "/product-line-maps/derbent-vino/official-5000-saperavi-rose.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "1d630f369413f66d508062130c9bd49d18b5fd433256205e7d8cc49200a3ff56",
+      "generated_png_sha256": "86b07267039acd2ee9ddc93151a901bb9260cc017438edb21240813562f30eb7",
+      "output_asset_sha256": "64c754b0dcd4e8b9bf7749f99f4abf3f9677b4d0cf718a0aae65a2314272e588",
+      "prompt": "Use case: background-extraction.\nInput: the sole photo is the exact edit target. Extract only this exact bottle from the promotional scene. Remove the dark background, rocks, floor and all foreground props. Make them genuinely transparent. Keep the actual photographed bottle, complete silhouette, wax cap, reflections and original label. Do not redesign or replace the bottle.\nCritical correction from prior attempt: the printed bottom label text MUST remain exactly \"DESONO / саперави розе / розовое сухое\". Keep the large orange number \"5000\" and the original original intricate multicolor folk-art figures and ornamental circular sun motif. Preserve the original Russian typography, layout and soft fine print. Do not introduce Italian words, geographic origin claims, new brand names or the word \"виноделие\". Do not change the grape. Do not invent unreadable letters.\nOutput is an isolated product cutout with true alpha outside its silhouette. Preserve original dark green glass, ochre wax cap, colors, proportions and perspective. Remove all rocks from in front and behind. Keep the original bottle base shape with no rock residue. No shadow, backdrop, surface, white halo, recoloring, relighting, sharpening or unrelated new elements.",
+      "review": "Accepted after visual comparison at UI display size on a dark background. Main brand, product name, grape, year and type remain consistent where visible. Label layout and primary artwork match. Fine print, foil texture and reflections were resampled. This display derivative MUST NOT be used as source evidence for label microtext. Transparent alpha was verified. Attempt2 preserves the literal grape line from the source. All rocks and background props are removed. The bottle base has a generated completion where foreground rocks obscured the source.",
+      "generated_frame": "388x1446+331+25",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    }
+  ]
+}

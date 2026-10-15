@@ -1905,10 +1905,7 @@
       "variant": "",
       "wine_slug": null,
       "wine_slug_aliases": [],
-      "image": {
-        "src": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
-        "source_id": "five-thousand"
-      },
+      "image": null,
       "category": "Вино",
       "style": "Красное сухое",
       "grapes": [

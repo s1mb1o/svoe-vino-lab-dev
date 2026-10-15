@@ -517,7 +517,16 @@
       "catalog_name": "Monte Garu белое брют",
       "catalog_producer": "Дербент Вино",
       "source_image": "ru_pim_78722001001_01_a64f7241c9.webp",
-      "asset_sha256": "1920838c0f8a438c4daf300edc2e84e9f40c5bb91cbaa63747feaa2428cd88a8"
+      "asset_sha256": "010776dcb5d0788adb17cb85b672ddaae62d16160d23b6e438894a4bd8857eef",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "1920838c0f8a438c4daf300edc2e84e9f40c5bb91cbaa63747feaa2428cd88a8",
+        "output_asset_sha256": "010776dcb5d0788adb17cb85b672ddaae62d16160d23b6e438894a4bd8857eef",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "monte-garu-beloe-polusladkoe",
@@ -526,7 +535,16 @@
       "catalog_name": "Monte Garu белое полусладкое",
       "catalog_producer": "Дербент Вино",
       "source_image": "ru_pim_78716001001_01_3c2f0c7afe.webp",
-      "asset_sha256": "fc5704543921c9a0776812971182fe68f530c3782103752d90006f40ba5f75a2"
+      "asset_sha256": "178147f8a3154754e918ac2ced8df3559288a4d09b9f325015c43dd25285ef78",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "fc5704543921c9a0776812971182fe68f530c3782103752d90006f40ba5f75a2",
+        "output_asset_sha256": "178147f8a3154754e918ac2ced8df3559288a4d09b9f325015c43dd25285ef78",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "rozovoe-bryut",
@@ -580,28 +598,63 @@
       "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
       "image_url": "https://derbentwine.ru/upload/iblock/3d5/3d53a74ac69bea380e1124aff9121564.png",
       "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
-      "asset_sha256": "4fa2f0846a779b53092e46c210792b950a6ff32e2cfacbd843d4c16f449db626"
+      "asset_sha256": "3d985977318544d223b87f8e4b33a96166d443b244e4d8c4e567adbddeb3adbe",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "4fa2f0846a779b53092e46c210792b950a6ff32e2cfacbd843d4c16f449db626",
+        "output_asset_sha256": "3d985977318544d223b87f8e4b33a96166d443b244e4d8c4e567adbddeb3adbe",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "product_id": "official-5000-saperavi-rose",
       "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
       "image_url": "https://derbentwine.ru/upload/iblock/0a2/0a21979490a5eb3ea1d8fa3e78b4cb92.png",
       "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
-      "asset_sha256": "1d630f369413f66d508062130c9bd49d18b5fd433256205e7d8cc49200a3ff56"
+      "asset_sha256": "64c754b0dcd4e8b9bf7749f99f4abf3f9677b4d0cf718a0aae65a2314272e588",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "1d630f369413f66d508062130c9bd49d18b5fd433256205e7d8cc49200a3ff56",
+        "output_asset_sha256": "64c754b0dcd4e8b9bf7749f99f4abf3f9677b4d0cf718a0aae65a2314272e588",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "product_id": "official-5000-cabernet-sauvignon",
       "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
       "image_url": "https://derbentwine.ru/upload/iblock/cf9/cf999e54fd2184fe276b03b31b415116.png",
       "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
-      "asset_sha256": "d19e02deb574b957b3620f4414b421669c4bb666d4d0e9decee1e5836e4d1ef3"
+      "asset_sha256": null,
+      "rejected_image": {
+        "date": "2026-10-16",
+        "original_asset": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
+        "input_asset_sha256": "d19e02deb574b957b3620f4414b421669c4bb666d4d0e9decee1e5836e4d1ef3",
+        "reason": "The official page caption says Cabernet Sauvignon. The supplied bottle label says Cabernet Franc. Do not use this image as the Cabernet Sauvignon package.",
+        "source_git_revision": "89aa3780",
+        "replacement": "The existing labeled placeholder. Keep the product and its catalog link."
+      }
     },
     {
       "product_id": "official-monte-garu-rose-semisweet",
       "source_url": "https://derbentwine.ru/catalog/spetsproekt/",
       "image_url": "https://derbentwine.ru/images/photo/mg_rps.jpg",
       "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
-      "asset_sha256": "139a95046df6d95c47842cc910464311dba6645aa443cb26d12778169248110b"
+      "asset_sha256": "e888dc3aa03d6fe93b24e04c20c462158971e41947590e9130a60417862bb9e7",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "139a95046df6d95c47842cc910464311dba6645aa443cb26d12778169248110b",
+        "output_asset_sha256": "e888dc3aa03d6fe93b24e04c20c462158971e41947590e9130a60417862bb9e7",
+        "record": "imagegen-cutouts.json"
+      }
     }
   ]
 }

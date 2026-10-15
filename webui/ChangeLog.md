@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Derbent Vino bottle cutouts
+
+- Replace 5 background images with reviewed transparent imagegen display assets.
+- Fit the bottle frame and optimize WebP transfer size for desktop and mobile.
+- Record exact prompts, source hashes, output hashes, and imagegen limitations.
+- Use the labeled placeholder for the official Cabernet Sauvignon photo whose label reads Cabernet Franc.
+
 ## 2026-10-16 — Producer map validation
 
 - Validate all map data before the production build.

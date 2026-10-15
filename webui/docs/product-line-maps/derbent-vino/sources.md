@@ -26,7 +26,23 @@ Special releases and formats use a neutral tier. No numeric price is asserted. `
 
 ## Assets
 
-Existing WebP assets are copied without change. Their SHA-256 values are in the crosswalk. Official PNG and JPEG additions are converted to WebP without crop, label reconstruction, background replacement, or color changes. Source files remain in the temporary evidence directory.
+The initial import copied existing WebP assets without change. The initial import converted official PNG and JPEG additions to WebP. The current display derivatives are documented below. Original asset bytes remain in Git revision `89aa3780`.
 
 The special-project page states the Charmat-Martinotti method for Vento del Caspio.
 It does not establish that method for Monte Garu. The Monte Garu method stays unknown.
+
+## Background extraction, 2026-10-16
+
+5 display images use transparent cutouts from the built-in `image_gen` tool.
+Read [imagegen-cutouts.json](imagegen-cutouts.json) for every exact prompt, source hash, generated PNG hash, output hash, and review note.
+The review checks product identity, main label text, cap, color, and artwork at the UI display size.
+Imagegen resamples fine print and reflections. The generated images are not evidence for label microtext.
+The product facts remain sourced from the catalog and official pages.
+The final frame excludes faint transparent outliers. The conversion preserves alpha and fits the cropped image into 720 px height before padding.
+The WebP quality is 88. The alpha quality is 100. Each file has 6 px transparent padding.
+Unedited images retain their previous bytes. Original edited-image bytes remain in Git revision `89aa3780`.
+
+The two accepted 5000 cutouts remove rocks and the backdrop. Imagegen reconstructs the small occluded base regions.
+The official 5000 page labels its red wine Cabernet Sauvignon. Its supplied bottle image reads Cabernet Franc.
+The map keeps the official product name and uses the labeled image placeholder for this conflicting photo.
+The crosswalk preserves the rejected photo URL and hash.
