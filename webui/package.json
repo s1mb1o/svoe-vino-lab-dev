@@ -17,7 +17,8 @@
     "test:presentation": "node scripts/check-presentation-browser.mjs",
     "postinstall": "nuxt prepare",
     "test:line-map": "node scripts/check-product-line-map-browser.mjs",
-    "test:producer-maps": "node scripts/check-producer-maps-browser.mjs"
+    "test:producer-maps": "node scripts/check-producer-maps-browser.mjs",
+    "prebuild": "vitest run tests/product-line-registry.test.ts tests/product-line-map.test.ts"
   },
   "dependencies": {
     "nuxt": "4.5.2",

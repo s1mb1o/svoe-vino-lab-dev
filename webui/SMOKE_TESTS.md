@@ -428,3 +428,11 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/myskhako?wine=glera-manno`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Expanded producer validation
+
+Read `docs/validation/producer-maps.md` for the latest complete check.
+Run `npm run test:producer-maps` in Chromium and WebKit.
+Check the largest groups at 320 px and 1440 px.
+Open a map from a controlled scanner result. Keep the recognized marker after another selection.
+Simulate an image HTTP 404. Confirm the placeholder and the original portal link.

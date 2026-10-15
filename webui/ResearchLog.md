@@ -55,6 +55,23 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Producer map verification, 2026-10-16
+
+The ten new maps contain 595 products in 132 groups.
+562 nodes preserve exact snapshot cards. 33 nodes are verified official additions.
+Nine snapshot products have no confirmed local image.
+A missing image and a missing catalog link are independent states.
+A controlled HTTP 404 image probe passed in Chromium and WebKit at mobile and desktop sizes.
+The selected product and portal link remain unchanged when its image fails.
+Read `docs/validation/producer-maps.md` for the full verification scope.
+Read `docs/reviews/2026-10-16-producer-maps-resolution.md` for review decisions.
+
+Wrong: use `import.meta.glob` in the shared map module.
+Right: use explicit JSON imports in the shared map registry.
+Nitro preserves the glob call in its server output and returns HTTP 500.
+Unit tests alone did not detect this server integration failure.
+
+
 ## Мысхако, 2026-10-16
 
 The map covers 92 exact catalog slugs from 2026-09-17.

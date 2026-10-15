@@ -53,6 +53,11 @@ Preserve the evaluator contract for single-bottle prediction.
 
 Read `docs/plans/01_product-line-map.md` and `docs/product-line-map-sources.md`.
 Keep one JSON file per producer in `shared/data/product-line-maps/`.
+Register each JSON through an explicit import in `shared/data/product-line-maps/index.ts`.
+Do not use `import.meta.glob` in this shared module. Nitro does not transform it in the server build.
+Keep each producer's independent catalog extract, crosswalk, and source provenance in `docs/product-line-maps/`.
+Run `npm run test:producer-maps` for new producers in addition to the Abrau regression suite.
+A null or failed image MUST use the labeled placeholder. Image availability MUST NOT change catalog link availability.
 Use `group_id` as the authoritative containment relation.
 Keep `wine_slug` nullable. A null slug MUST NOT produce a portal link.
 Keep recognized selection separate from current selection.

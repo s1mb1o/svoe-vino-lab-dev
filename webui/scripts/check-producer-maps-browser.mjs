@@ -27,6 +27,33 @@ async function openProduct(page, product) {
   await assertSelected(page, product.id)
 }
 async function assertLayout(page, label) {
+  // Lazy images must finish before a visual assertion. Ignore images outside clipped regions.
+  await page.waitForFunction(() => [...document.images].every(image => {
+    const bounds = image.getBoundingClientRect()
+    const style = getComputedStyle(image)
+    if (!bounds.width || !bounds.height || style.visibility === 'hidden') return true
+    let left = Math.max(0, bounds.left)
+    let top = Math.max(0, bounds.top)
+    let right = Math.min(innerWidth, bounds.right)
+    let bottom = Math.min(innerHeight, bounds.bottom)
+    for (let parent = image.parentElement; parent; parent = parent.parentElement) {
+      const parentStyle = getComputedStyle(parent)
+      const clip = parent.getBoundingClientRect()
+      if (/(hidden|auto|scroll|clip)/.test(parentStyle.overflowX)) {
+        left = Math.max(left, clip.left)
+        right = Math.min(right, clip.right)
+      }
+      if (/(hidden|auto|scroll|clip)/.test(parentStyle.overflowY)) {
+        top = Math.max(top, clip.top)
+        bottom = Math.min(bottom, clip.bottom)
+      }
+    }
+    return right <= left || bottom <= top || (image.complete && image.naturalWidth > 0)
+  }))
+  await page.evaluate(async () => {
+    await Promise.all([...document.images].filter(image => image.complete && image.naturalWidth).map(image => image.decode()))
+    await document.fonts.ready
+  })
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: horizontal page overflow`)
   const broken = await page.locator('img').evaluateAll(images => images.filter(image => image.complete && !image.naturalWidth).map(image => image.src))
   assert.deepEqual(broken, [], `${label}: broken images`)

@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Producer map validation
+
+- Validate all map data before the production build.
+- Wait for visible images before browser screenshots.
+- Verify 198 unit tests, type checks, the build, and both browser suites.
+- Record source review, scanner integration checks, and production asset checks.
+
 ## 2026-10-16 — Мысхако map
 
 - Add 20 groups and 97 product nodes in `myskhako.json`.
