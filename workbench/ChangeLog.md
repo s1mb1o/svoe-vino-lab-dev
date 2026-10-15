@@ -7469,3 +7469,18 @@ Keep saved runs and annotations intact. No inference request or migration is nee
 Stop the private preview and close the temporary verification tabs.
 Evidence: internal/run-comparison-20261015/rollout.json, installed-checks.log,
 browser-verification.json, claude-review.json, and live-comparison.jpg at repository root.
+
+
+## 2026-10-15 — Testsets from filtered run comparisons
+
+- Add New testset… to Compare runs. Select all filtered cases across every page.
+- Let the user select run A or B as the annotation source. Preserve wine slugs,
+  photo columns, photo comments, and relevant complete variant groups.
+- Retain additional positive assignments for shared-image accepted answers.
+- Preview counts and source conflicts. Reject stale previews and existing names.
+  Create the complete set in one transaction. Preserve source entries and saved runs.
+- Parse saved runs before the database write lock. Discard stale search responses.
+- Pass 143 scoped checks, including 25 Node.js UI checks, with no skips.
+  Verify a 125-case browser copy in a temporary database from the second page.
+  Verify the live dialog and cancel. Restart idle port 8168 with SIGTERM.
+  Preserve schema version 36 and the real testset names.

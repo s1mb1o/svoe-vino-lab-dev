@@ -1306,6 +1306,59 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/testset-from-compare:
+    get:
+      tags: [testsets, runs]
+      operationId: previewTestsetFromCompare
+      summary: Preview a new testset from every case in the current comparison filter.
+      description: >-
+        Uses the same saved-run compatibility, group, rank, and search rules as
+        run-compare. Pagination is not accepted. Source B is the default annotation
+        source. Changed or missing source assignments block creation. Extra positive
+        assignments preserve every accepted wine slug of a selected image.
+      parameters:
+        - { name: a, in: query, required: true, schema: { type: string } }
+        - { name: b, in: query, required: true, schema: { type: string } }
+        - { name: group, in: query, schema: { type: string, default: differences, enum: [differences, both_succeed, regressions, improvements, both_fail, all, errors, unscored, not_compared] } }
+        - { name: k, in: query, schema: { type: integer, enum: [1, 5, 10], default: 1 } }
+        - { name: common, in: query, schema: { type: integer, enum: [0, 1], default: 0 } }
+        - { name: q, in: query, schema: { type: string, maxLength: 1000 } }
+        - { name: source, in: query, schema: { type: string, enum: [a, b], default: b } }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [testsets, runs]
+      operationId: createTestsetFromCompare
+      summary: Copy the previewed filtered cases with unchanged source annotations.
+      description: >-
+        All selection values use strings. Send the exact preview selection and token.
+        Revalidates saved runs and source annotations in one write transaction.
+        Rejects a stale preview or an existing name with HTTP 409. Copies all photo
+        columns, photo comments, and relevant complete variant groups. Keeps image
+        objects and shared image tags. Changes no source entry or saved run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [a, b, name, token]
+              properties:
+                a: { type: string }
+                b: { type: string }
+                group: { type: string, default: differences, enum: [differences, both_succeed, regressions, improvements, both_fail, all, errors, unscored, not_compared] }
+                k: { type: string, enum: ["1", "5", "10"], default: "1" }
+                common: { type: string, enum: ["0", "1"], default: "0" }
+                q: { type: string, maxLength: 1000 }
+                source: { type: string, enum: [a, b], default: b }
+                name: { type: string, pattern: '^[a-z0-9_-]+$' }
+                token: { type: string, minLength: 64, maxLength: 64 }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/run:
     get:
       tags: [runs]

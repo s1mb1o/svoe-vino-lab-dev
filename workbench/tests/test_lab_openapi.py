@@ -122,6 +122,8 @@ POST /api/testset-upload
 POST /api/testset-fetch
 GET /api/testset-from-run
 POST /api/testset-from-run
+GET /api/testset-from-compare
+POST /api/testset-from-compare
 POST /api/testset-new
 POST /api/testset-rename
 GET /api/runs

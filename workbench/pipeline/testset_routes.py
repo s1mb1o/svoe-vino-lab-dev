@@ -42,6 +42,8 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
                                   run, the proposed name, the counts of the misses
     POST /api/testset-from-run    {run, misses, name}; misses r1 or r5: a new set from
                                   the misses of the run (plan 44, `testset_from_run.py`)
+    GET  /api/testset-from-compare  preview all filtered comparison cases
+    POST /api/testset-from-compare  copy the preview into a new testset
     POST /api/testset-new         {name}: a new empty set (plan 57, `Add new testset …`)
     POST /api/testset-rename      {set, name}: rename a test set
 
@@ -56,6 +58,7 @@ from contextlib import closing
 import lab_pages
 import remote_images
 import testset_from_run
+import testset_from_compare
 import testset_autotag
 import testsets
 import testset_duplicate
@@ -67,6 +70,7 @@ API = "/api/testset"
 UPLOAD = "/api/testset-upload"
 FETCH = "/api/testset-fetch"
 FROM_RUN = "/api/testset-from-run"
+FROM_COMPARE = "/api/testset-from-compare"
 NEW = "/api/testset-new"
 RENAME = "/api/testset-rename"
 AUTOTAG = "/api/testset-autotag"
@@ -104,7 +108,7 @@ WRITES = {
     # `respond` puts the directory of the runs of the server before these keys.
     FROM_RUN: (testset_from_run.build, ("run", "misses", "name")),
 }
-ROUTES = frozenset((PAGE_ROUTE, API, AUTOTAG) + tuple(WRITES))
+ROUTES = frozenset((PAGE_ROUTE, API, AUTOTAG, FROM_COMPARE) + tuple(WRITES))
 
 
 def handles(route):
@@ -182,6 +186,36 @@ def respond(server, method, path, read_body, open_database, card_images):
                     conn, testset_from_run.runs_dir_of(server), run_id))
             except testsets.TestsetError as exc:
                 return _error(exc.code, str(exc))
+    if route == FROM_COMPARE:
+        if method not in ("GET", "HEAD", "POST"):
+            return _error(405, "The route answers GET and POST only.")
+        body = None
+        if method == "POST":
+            body, error = _body(read_body)
+            if error:
+                return error
+        directory = testset_from_run.runs_dir_of(server)
+        try:
+            params = (testset_from_compare.body_parameters(body) if method == "POST" else
+                      urllib.parse.parse_qs(parts.query, keep_blank_values=True))
+            prepared = testset_from_compare.prepare(directory, params)
+        except testsets.TestsetError as exc:
+            return _error(exc.code, str(exc))
+        with closing(open_database(server.db_path, write=method == "POST")) as conn:
+            conn.isolation_level = None
+            conn.execute("PRAGMA foreign_keys = ON")
+            conn.execute("BEGIN IMMEDIATE" if method == "POST" else "BEGIN")
+            try:
+                answer = (testset_from_compare.build(conn, directory, body, prepared) if method == "POST"
+                          else testset_from_compare.preview(conn, directory, params, prepared))
+                conn.execute("COMMIT")
+                return _json(200, answer)
+            except testsets.TestsetError as exc:
+                conn.execute("ROLLBACK")
+                return _error(exc.code, str(exc))
+            except BaseException:
+                conn.execute("ROLLBACK")
+                raise
     if route == AUTOTAG:
         if method in ("GET", "HEAD"):
             set_name = (urllib.parse.parse_qs(parts.query).get("set") or [None])[0]

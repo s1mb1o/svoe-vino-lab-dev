@@ -347,7 +347,9 @@ def compare(
     query="",
     offset=0,
     limit=50,
+    all_rows=False,
 ):
+    """Compare saved cases. `all_rows` is for internal testset creation only."""
     if not a_id or not b_id or a_id == b_id:
         raise CompareError(400, "Select two different runs.")
     if (
@@ -444,7 +446,7 @@ def compare(
         return search in " ".join(texts).casefold()
 
     filtered = [row for row in eligible if selected(row)]
-    page = filtered[offset : offset + limit]
+    page = filtered if all_rows else filtered[offset : offset + limit]
     images_error = _photos(db_path, page)
     if any(
         tuple(signature(p) for p in run["paths"]) != run["signature"] for run in (a, b)
@@ -513,11 +515,11 @@ def compare(
     }
 
 
-def respond(runs_dir, db_path, params):
-    """Validate the read-only API query and return an HTTP status and object."""
+def parameters(params):
+    """Validate API parameters. Return arguments for `compare`."""
     allowed = {"a", "b", "group", "k", "common", "q", "offset", "limit"}
     if set(params) - allowed or any(len(values) != 1 for values in params.values()):
-        return 400, {"error": "Unknown or repeated comparison parameters."}
+        raise CompareError(400, "Unknown or repeated comparison parameters.")
 
     def one(key, default=""):
         return params.get(key, [default])[0]
@@ -528,23 +530,26 @@ def respond(runs_dir, db_path, params):
             int(one("offset", "0")),
             int(one("limit", "50")),
         )
-    except (ValueError, TypeError):
-        return 400, {"error": "Invalid numeric comparison parameters."}
+    except (ValueError, TypeError) as exc:
+        raise CompareError(400, "Invalid numeric comparison parameters.") from exc
+    if one("common", "0") not in ("0", "1") or len(one("q")) > 1000:
+        raise CompareError(400, "Invalid common-case option or search text.")
+    return dict(
+        a_id=one("a"),
+        b_id=one("b"),
+        group=one("group", "differences"),
+        k=rank,
+        common=one("common", "0") == "1",
+        query=one("q"),
+        offset=offset,
+        limit=limit,
+    )
+
+
+def respond(runs_dir, db_path, params):
+    """Validate the read-only API query and return an HTTP status and object."""
     try:
-        if one("common", "0") not in ("0", "1") or len(one("q")) > 1000:
-            raise CompareError(400, "Invalid common-case option or search text.")
-        return 200, compare(
-            runs_dir,
-            db_path,
-            one("a"),
-            one("b"),
-            group=one("group", "differences"),
-            k=rank,
-            common=one("common", "0") == "1",
-            query=one("q"),
-            offset=offset,
-            limit=limit,
-        )
+        return 200, compare(runs_dir, db_path, **parameters(params))
     except CompareError as exc:
         return exc.code, {"error": str(exc)}
     except (ValueError, TypeError):

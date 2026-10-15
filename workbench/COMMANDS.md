@@ -1416,7 +1416,7 @@ The HTTP tests create temporary databases and localhost servers.
 The tests make no inference request and change no saved run.
 
 ```sh
-PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_run_compare test_run_compare_ui test_run_routes test_run_charts test_lab_openapi test_lab_pages
+PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_run_compare test_run_compare_ui test_testset_from_compare test_testset_from_run test_testset_routes test_run_routes test_run_charts test_lab_openapi test_lab_pages
 ```
 
 Read [the comparison test notes](docs/testing/run-comparison.md).

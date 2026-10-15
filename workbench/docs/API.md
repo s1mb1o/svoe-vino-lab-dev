@@ -1472,3 +1472,37 @@ The comparison sends no inference request. It changes no saved run or annotation
 Errors: `400` for invalid parameters or the same run twice; `404` for an unknown
 run; `409` for an unfinished run or a file that changes during the read; `422`
 for an absent or invalid saved snapshot, ambiguous identity, or invalid JSON.
+
+
+### New testset from Compare runs
+
+`GET /api/testset-from-compare` accepts `a`, `b`, `group`, `k`, `common`, `q`,
+and `source` (`a` or `b`, default `b`). It uses the comparison rules above.
+It selects all matching cases across every page. It rejects pagination fields.
+The preview returns `selected`, `photos`, `support_photos`, `photo_comments`,
+`variant_slugs`, `source`, `source_side`, `name`, `token`, `conflicts`,
+`conflict_examples`, and `can_create`.
+
+The user selects one run as the annotation source. Each selected assignment MUST
+still exist in that run's source testset with the same image, slug, label, and
+accepted answers. A missing or changed assignment blocks the whole copy.
+A case absent from the selected run also blocks the copy. There is no fallback.
+Use another source or refine the filter when the preview reports a conflict.
+
+`POST /api/testset-from-compare` accepts the exact preview selection fields,
+`token`, and `name`. All selection values use strings, including `k` and `common`.
+The name permits only `a-z`, `0-9`, `_`, and `-`.
+Run parsing occurs before the database write lock.
+The write validates source annotations and run signatures inside one transaction.
+A stale preview or an existing name returns `409`. No partial set remains.
+
+The new set keeps all columns of each source photo assignment. It keeps photo
+comments with their timestamps and sources. It keeps each relevant complete
+variant group and the source set note. Image bytes and image tags remain shared.
+Additional positive assignments preserve accepted wine slugs when the filter
+selects only one assignment of a shared image. The preview reports this count.
+The response holds `ok`, `set`, `source`, `selected`, `photos`, `support_photos`,
+`photo_comments`, and `variant_slugs`. Source entries and saved runs stay unchanged.
+
+Historical `variant` and `unlabelled` snapshot labels cannot be validated by the
+current scored-run query builder. The preview reports a specific conflict.

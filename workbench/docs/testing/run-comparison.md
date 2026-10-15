@@ -30,3 +30,18 @@ The cache has entry and byte limits. Run files remain unchanged.
 A query snapshot and a result record are required for each scored comparison.
 An unavailable image-store object does not prevent result comparison.
 Use COMMANDS.md for the test command.
+
+
+New testset copies use temporary databases and local HTTP servers.
+Check all-page selection, every group, search, rank, source A/B, compatibility,
+No Match, negative labels, shared-image accepted answers, annotation columns,
+comments, variant groups, stale previews, existing names, and transaction rollback.
+The dialog freezes the loaded filter. Pending search disables the action.
+Source changes discard stale preview responses. Cancel creates no set.
+Verify live previews without creating test data in the shared catalogue.
+
+Run parsing MUST finish before the database write lock.
+A run file changed after preparation MUST still block creation.
+The search debounce MUST discard an earlier in-flight comparison response.
+A stale preview MUST require refresh. An existing name MUST permit a name edit.
+A create error MUST remain visible if the dialog closes during the request.

@@ -39,6 +39,11 @@ th { background:var(--panel-2); } th:first-child { width:30%; } th:not(:first-ch
 td ol { padding-left:23px; margin:5px 0; } td details { margin:7px 0; }
 .pager { justify-content:flex-end; margin-top:14px; } .empty { padding:28px; text-align:center; color:var(--muted); }
 .run-heading { font-size:12px; font-weight:400; margin-top:4px; }
+dialog { color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:10px; width:min(560px,calc(100vw - 28px)); padding:22px; overflow-wrap:anywhere; }
+dialog::backdrop { background:#0009; } dialog h2 { margin:0 0 12px; font-size:20px; }
+dialog label { display:block; margin:14px 0; } dialog input,dialog select { width:100%; margin-top:5px; }
+dialog .actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20px; flex-wrap:wrap; }
+#new-testset { margin-left:auto; } #new-error { color:var(--exc); }
 [hidden] { display:none !important; }
 @media(max-width:740px) { header,main { padding:12px; } .pickers label { flex-basis:100%; } table { min-width:720px; } .query { display:block; } }
 </style>
@@ -54,7 +59,7 @@ td ol { padding-left:23px; margin:5px 0; } td details { margin:7px 0; }
 <main>
   <div class="controls"><label>Testset<select id="testset" aria-label="Testset"></select></label>
     <label>Success<select id="rank" aria-label="Success criterion"><option value="1">Correct at rank 1</option><option value="5">Correct in Top 5</option><option value="10">Correct in Top 10</option></select></label>
-    <label>Search<input id="search" type="search" placeholder="Wine slug or photo filename"></label></div>
+    <label>Search<input id="search" type="search" placeholder="Wine slug or photo filename"></label><button id="new-testset" type="button" disabled>New testset…</button></div>
   <section id="compatibility" aria-label="Dataset compatibility" hidden></section>
   <div id="groups" class="groups" aria-label="Comparison groups"></div>
   <p class="note">Positive cases accept any saved expected wine. No Match succeeds only when no wine is returned.
@@ -63,6 +68,19 @@ td ol { padding-left:23px; margin:5px 0; } td details { margin:7px 0; }
   <section id="results" hidden><div class="table-wrap"><table aria-label="Run comparison cases"><thead><tr><th>Query / expected answer</th><th>A · baseline<div id="heading-a" class="run-heading"></div></th><th>B · candidate<div id="heading-b" class="run-heading"></div></th></tr></thead><tbody id="cases"></tbody></table></div>
     <div class="pager"><button id="prev" type="button">← Previous</button><span id="page-info"></span><button id="next" type="button">Next →</button></div></section>
 </main>
+<dialog id="new-dialog" aria-labelledby="new-title" aria-describedby="new-summary">
+  <form id="new-form">
+    <h2 id="new-title">New testset from comparison</h2>
+    <p id="new-summary"></p>
+    <p class="note">Includes all matching cases across every page. Source testsets and saved runs stay unchanged.</p>
+    <label>Copy annotations from<select id="new-source"><option value="b">B · candidate</option><option value="a">A · baseline</option></select></label>
+    <p id="new-preview" role="status" aria-live="polite"></p>
+    <p class="note">Keeps wine slugs, labels, boxes, proposals, provenance, photo comments, and relevant variant groups. Image tags remain shared.</p>
+    <label>New testset name<input id="new-name" required pattern="[a-z0-9_-]+" maxlength="200" autocomplete="off"></label>
+    <p id="new-error" role="alert"></p>
+    <div class="actions"><button id="new-refresh" type="button">Refresh preview</button><button id="new-cancel" type="button">Cancel</button><button id="new-create" type="submit" disabled>Create testset</button></div>
+  </form>
+</dialog>
 <script>
 const RunCompare = (() => {
   const labels = {differences:"Differences",both_succeed:"Both succeed",regressions:"Regressions · A only",improvements:"Improvements · B only",both_fail:"Both fail",all:"All compared",errors:"Errors / missing results",unscored:"Unscored",not_compared:"Not compared"};
@@ -95,10 +113,11 @@ const RunCompare = (() => {
   }
   return {labels,esc,eligible,title,parameters,row};
 })();
-/* Page state uses only the saved-run APIs. */
+/* Page state uses saved comparison filters. Testset writes require a preview. */
 const $ = s=>document.querySelector(s),esc=RunCompare.esc;
 const initial = new URLSearchParams(location.search);
 let runs=[],serial=0,controller=null,total=0,searchTimer=null;
+let loadedSelection=null,newSelection=null,newPreview=null,newSerial=0,creating=false;
 let state={a:initial.get("a")||"",b:initial.get("b")||"",group:initial.get("group")||"differences",k:Number(initial.get("k")||1),common:initial.get("common")==="1",q:initial.get("q")||"",offset:0};
 if (!RunCompare.labels[state.group]) state.group="differences";
 if (![1,5,10].includes(state.k)) state.k=1;
@@ -106,7 +125,11 @@ function saveURL() {
   const params=RunCompare.parameters(state);params.delete("offset");params.delete("limit");params.set("set",$("#testset").value);
   history.replaceState(null,"",location.pathname+"?"+params);
 }
+function clearSelection() {
+  loadedSelection=null;$("#new-testset").disabled=true;
+}
 function invalidate() {
+  clearSelection();
   clearTimeout(searchTimer);serial++;controller?.abort();$("#results").hidden=true;$("#compatibility").hidden=true;$("#groups").innerHTML="";
   $("#status").textContent="Select two runs and compare.";$("#status").className="";
 }
@@ -138,6 +161,8 @@ function compatibility(data) {
 }
 function show(data) {
   compatibility(data);
+  loadedSelection=data.total>0&&(data.comparison_enabled||state.group==="not_compared")?Object.fromEntries([...RunCompare.parameters(state)].filter(([key])=>!["offset","limit"].includes(key))):null;
+  $("#new-testset").disabled=!loadedSelection;
   $("#groups").innerHTML=Object.entries(RunCompare.labels).map(([key,label])=>`<button type="button" data-group="${key}" aria-pressed="${state.group===key}" ${!data.comparison_enabled&&key!=="not_compared"?"disabled":""}>${esc(label)}<strong>${data.counts[key]||0}</strong></button>`).join("");
   const names=[data.a,data.b].map(r=>`${r.configuration||"Unnamed pipeline"} · ${r.started||r.id} · cache ${r.use_cache==null?"not recorded":r.use_cache?"on":"off"} · barcode ${r.use_barcode==null?"not recorded":r.use_barcode?"on":"off"}`);
   $("#heading-a").textContent=names[0];$("#heading-b").textContent=names[1];
@@ -148,6 +173,7 @@ function show(data) {
   $("#prev").disabled=state.offset===0;$("#next").disabled=state.offset+50>=total;
 }
 async function load() {
+  clearSelection();
   clearTimeout(searchTimer);state.q=$("#search").value;
   const active=document.activeElement;
   const focusGroup=active?.dataset?.group,focusID=["prev","next","common"].includes(active?.id)?active.id:null;
@@ -171,10 +197,58 @@ for (const key of ["a","b"]) $("#run-"+key).addEventListener("change",()=>{state
 $("#testset").addEventListener("change",()=>{state.common=false;state.offset=0;invalidate();choices();});
 $("#swap").addEventListener("click",()=>{[state.a,state.b]=[state.b,state.a];$("#run-a").value=state.a;$("#run-b").value=state.b;state.offset=0;load();});
 $("#rank").addEventListener("change",()=>{state.k=Number($("#rank").value);state.offset=0;load();});
-$("#search").addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{state.q=$("#search").value;state.offset=0;load();},250);});
+$("#search").addEventListener("input",()=>{serial++;controller?.abort();clearSelection();clearTimeout(searchTimer);searchTimer=setTimeout(()=>{state.q=$("#search").value;state.offset=0;load();},250);});
 $("#groups").addEventListener("click",event=>{const button=event.target.closest("[data-group]");if(!button||button.disabled)return;state.group=button.dataset.group;state.offset=0;load();});
 $("#prev").addEventListener("click",()=>{state.offset=Math.max(0,state.offset-50);load();});
 $("#next").addEventListener("click",()=>{state.offset+=50;load();});
+async function previewNew() {
+  const version=++newSerial;newPreview=null;$("#new-create").disabled=true;
+  $("#new-error").textContent="";$("#new-preview").textContent="Checking source photos and annotations…";
+  const params={...newSelection,source:$("#new-source").value};
+  try {
+    const response=await fetch("/api/testset-from-compare?"+new URLSearchParams(params),{cache:"no-store"}),data=await response.json();
+    if(version!==newSerial||!$("#new-dialog").open)return;
+    if(!response.ok)throw Error(data.error||`HTTP ${response.status}`);
+    newPreview={...params,token:data.token};
+    if(!$("#new-name").value)$("#new-name").value=data.name;
+    $("#new-preview").textContent=`Source: ${data.source} · ${data.selected} filtered cases · ${data.photos} photo entries · ${data.photo_comments} photo comments`+(data.support_photos?` · includes ${data.support_photos} additional positive assignment(s) to preserve accepted wine slugs`:"");
+    $("#new-create").disabled=!data.can_create;
+    if(!data.can_create)$("#new-error").textContent=data.conflicts?`${data.conflicts} case(s) cannot be copied. ${data.conflict_examples.join("; ")}. Choose the other source or refine the comparison filter.`:"No cases can be copied from this selection.";
+  } catch(error) {if(version===newSerial){$("#new-preview").textContent="";$("#new-error").textContent=error.message;}}
+}
+$("#new-testset").addEventListener("click",()=>{
+  if(!loadedSelection||creating)return;
+  newSelection={...loadedSelection};newPreview=null;$("#new-name").value="";$("#new-source").value="b";
+  $("#new-source").disabled=false;$("#new-cancel").disabled=false;
+  $("#new-summary").textContent=`${RunCompare.labels[newSelection.group]} · rank ${newSelection.k}${newSelection.q?` · Search: ${newSelection.q}`:""}${newSelection.common==="1"?" · unchanged cases only":""}`;
+  $("#new-dialog").showModal();$("#new-name").focus();previewNew();
+});
+$("#new-source").addEventListener("change",previewNew);
+$("#new-refresh").addEventListener("click",previewNew);
+$("#new-cancel").addEventListener("click",()=>{if(creating)return;newSerial++;$("#new-dialog").close();$("#new-testset").focus();});
+$("#new-dialog").addEventListener("cancel",event=>{if(creating)event.preventDefault();else newSerial++;});
+$("#new-form").addEventListener("submit",async event=>{
+  event.preventDefault();if(creating||!newPreview||$("#new-create").disabled)return;
+  creating=true;$("#new-create").disabled=true;$("#new-source").disabled=true;$("#new-cancel").disabled=true;$("#new-refresh").disabled=true;$("#new-error").textContent="";
+  try {
+    const response=await fetch("/api/testset-from-compare",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...newPreview,name:$("#new-name").value.trim()})}),data=await response.json();
+    if(!response.ok) {
+      const error=Error(data.error||`HTTP ${response.status}`);
+      error.stale=response.status===409&&!String(data.error).includes("already exists");
+      throw error;
+    }
+    $("#new-dialog").close();newSerial++;
+    $("#status").className="";
+    $("#status").innerHTML=`Created <a href="/testset?set=${encodeURIComponent(data.set)}">${esc(data.set)}</a> · ${data.photos} photo entries from ${data.selected} filtered cases.`;
+    $("#new-testset").focus();
+  } catch(error) {
+    $("#new-error").textContent=error.message;
+    if(error.stale){newPreview=null;if($("#new-dialog").open)$("#new-refresh").focus();}
+    $("#new-create").disabled=!newPreview;
+    if(!$("#new-dialog").open){$("#status").className="error";$("#status").textContent=error.message;}
+  }
+  finally {$("#new-refresh").disabled=false;creating=false;$("#new-source").disabled=false;$("#new-cancel").disabled=false;}
+});
 (async function init(){
   try {
     const response=await fetch("/api/runs",{cache:"no-store"});if(!response.ok)throw Error(`Cannot read runs: HTTP ${response.status}`);
