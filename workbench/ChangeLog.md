@@ -6596,3 +6596,14 @@ The image report uses four separate image elements per case. JavaScript syntax p
 Report: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/failure-review/REPORT.md.
 Summary: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
 No pipeline, catalogue, configuration, or service change.
+
+
+## 2026-10-15T03:50:25+0300 — Explain all 66 patch-weight regressions
+
+Review all 66 distinct regression photos and 70 assignments against cropped SigLIP2.
+The experiment report records exact score reversals, query-only controls, reference-only controls, glass controls, and 198 inspected patch views.
+Cached-vector controls reproduce all 1,320 selected corrections exactly. Independent float64 controls change no ranking.
+Check query masks, 396 image assets, 3,549 cached-input hashes, and frozen protocol files.
+Keep scores, embeddings, masks, labels, source data, and production code unchanged. No inference request or service restart.
+Report: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/regression-review/REPORT.md.
+Summary: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
