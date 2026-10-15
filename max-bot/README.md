@@ -63,7 +63,7 @@ MAX is not Telegram. The bot keeps the behavior where the platform permits it.
 | Topic | Telegram bot | MAX bot |
 |---|---|---|
 | Album | One message per photo with `media_group_id` | One message with two or more images or videos |
-| Rejection of an album photo | One reply per photo | One reply per message |
+| Age-gate, rate-limit, or queue-capacity rejection of an album | One reply per photo | One reply per message. A moderation rejection still gives one illustration per photo |
 | Private chat | Chat ID equals user ID | `chat_type == "dialog"`; the chat ID differs |
 | Start | `/start` | `bot_started` («Начать», deep link) and the text `/start` |
 | Privacy deep link | `t.me/ChtoZaVinoBot?start=privacy` | `max.ru/se14697933_bot?start=privacy` |

@@ -221,6 +221,9 @@ class PhotoJob:
     # The path is taken when the retry enters the queue: processing clears the moderation
     # fields that `Repository.safe_source` needs.
     local_path: str | None = None
+    # The first receipt time of the request. A retry keeps the date directory of its files, so
+    # retention and user deletion find every copy. None means `received_at`.
+    stored_at: int | None = None
     delivery_enabled: bool = True
     completion: asyncio.Future[None] | None = None
 
@@ -340,7 +343,7 @@ class PhotoProcessor:
             image_dhash = difference_hash(body)
         with self._timed_step(job, "image_storage"):
             relative_path, digest = self._services.store.save(
-                job.request_id, job.received_at, body, moderation.accepted
+                job.request_id, _storage_time(job), body, moderation.accepted
             )
         self._services.repository.update(
             job.request_id,
@@ -653,7 +656,7 @@ class PhotoProcessor:
         rows = persist_artifacts(
             self._services.artifact_store,
             request_id=job.request_id,
-            received_at=job.received_at,
+            received_at=_storage_time(job),
             artifacts=artifacts,
         )
         now = int(time.time())
@@ -891,6 +894,10 @@ class PhotoProcessor:
             return
         if reply_markup:
             self._remember_message(job, message, text=text, text_format=HTML, photo_token=None)
+
+
+def _storage_time(job: PhotoJob) -> int:
+    return job.stored_at if job.stored_at is not None else job.received_at
 
 
 def _reply_target(message_id: str | None) -> str | None:
@@ -1497,7 +1504,13 @@ async def handle_result_feedback(
         await replies.answer("Эта оценка недоступна.")
         return
     already_saved = result == "already_saved"
-    if parts[1] == "no":
+    negative = parts[1] == "no"
+    if already_saved:
+        # A stale keyboard can show the other button. Restore the keyboard of the stored value.
+        record = services.repository.admin_request(request_id)
+        if record is not None and record.feedback_match is not None:
+            negative = not record.feedback_match
+    if negative:
         alternatives = [
             (candidate.rank, candidate_wine(candidate))
             for candidate in services.repository.candidates(request_id)
@@ -1958,6 +1971,7 @@ def enqueue_admin_retries(
             feedback_enabled=request.feedback_enabled,
             status_enabled=True,
             local_path=request.local_path,
+            stored_at=request.stored_at,
         )
         try:
             work_queue.submit(job)
@@ -2002,6 +2016,7 @@ def restore_pending_jobs(repository: Repository, work_queue: WorkQueue[PhotoJob]
                 feedback_enabled=request.feedback_enabled,
                 status_enabled=request.feedback_enabled,
                 local_path=request.local_path,
+                stored_at=request.stored_at,
             ),
             restore=True,
         )

@@ -249,3 +249,17 @@ The implementation now has these changes:
 7. `/users` with a huge page number and `/reset_limit` with a huge user ID answer instead of
    failing. The Telegram bot has the same defects.
 8. Command arguments start after any whitespace, the same as aiogram.
+
+## Commit review changes
+
+Codex reviewed the commits on 2026-10-16. The implementation now has these changes:
+
+1. An administration retry keeps the date directory of the first receipt for its source copy and
+   its artifacts. Before, a retry on another UTC day wrote files under the retry date, and
+   retention and user deletion did not find them. The Telegram bot has the same defect.
+2. The client checks and marks the chat limit and the global limit together at the send time.
+   A late wakeup marks the actual time.
+3. A repeated feedback press follows the stored value. A stale "❌ Не совпало" button after a
+   saved positive answer removes the keyboard instead of showing alternatives that cannot be
+   saved. The Telegram bot has the same defect.
+4. The README states that a moderation rejection still gives one illustration per album photo.

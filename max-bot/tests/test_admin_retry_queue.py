@@ -151,6 +151,8 @@ def test_admin_retry_job_keeps_the_max_source_and_asks_for_the_local_copy(reposi
             status_enabled=True,
             # The test request has no accepted copy, so the retry downloads the image.
             local_path=None,
+            # The files keep the date of the first receipt (1000), not the retry time (1200).
+            stored_at=1000,
         )
     ]
     assert queue.restore_flags == [False]
@@ -219,6 +221,7 @@ def test_restart_restores_pending_max_requests(repository):
             status_message_id=None,
             feedback_enabled=True,
             status_enabled=True,
+            stored_at=1000,
         ),
         PhotoJob(
             request_id=album,
@@ -234,6 +237,7 @@ def test_restart_restores_pending_max_requests(repository):
             status_message_id=None,
             feedback_enabled=False,
             status_enabled=False,
+            stored_at=1001,
         ),
         PhotoJob(
             request_id=received,
@@ -249,6 +253,7 @@ def test_restart_restores_pending_max_requests(repository):
             status_message_id=None,
             feedback_enabled=True,
             status_enabled=True,
+            stored_at=1002,
         ),
     ]
 
@@ -402,3 +407,57 @@ def test_restart_downloads_an_interrupted_first_attempt_again(repository):
 
     # The same as the Telegram bot: a first attempt downloads the image again.
     assert queue.jobs[0].local_path is None
+
+
+async def test_admin_retry_on_another_day_keeps_the_date_directory_of_the_files(
+    repository, tmp_path
+):
+    request_id = reserve(repository)
+    api = FakeMaxApi()
+    api.downloads[image(1).url] = jpeg()
+    services = SimpleNamespace(
+        settings=SimpleNamespace(
+            max_image_bytes=20 * 1024 * 1024,
+            match_min_score=0.70,
+            match_min_margin=0.015,
+            admin_user_id=700,
+        ),
+        repository=repository,
+        store=ImageStore(tmp_path / "images"),
+        artifact_store=ArtifactStore(tmp_path / "images"),
+        moderator=CountingSafeModerator(),
+        quality_inspector=UnavailableQualityInspector(),
+        matcher=ConfidentMatcher(),
+        image_loader=None,
+        rejection_image=b"unused",
+    )
+    processor = PhotoProcessor(services, api)
+    await processor.process(
+        PhotoJob(
+            request_id=request_id,
+            chat_id=DIALOG_CHAT_ID,
+            user_id=USER_ID,
+            source_message_id="mid.source",
+            received_at=1000,
+            photo_id=9001,
+            photo_url=image(1).url,
+            status_enabled=False,
+        )
+    )
+    first_path = repository.safe_source(request_id)[1]
+    retry_time = 1000 + 3 * 86400
+
+    assert repository.request_retry(request_id, retry_time) == "requested"
+    queue = FakeQueue()
+    assert enqueue_admin_retries(repository, queue) == 1
+    job = queue.jobs[0]
+    assert (job.received_at, job.stored_at) == (retry_time, 1000)
+    await processor.process(job)
+
+    # Retention and user deletion use the first receipt date. The retry writes no file under
+    # the retry date, so no copy escapes them.
+    assert repository.safe_source(request_id)[1] == first_path
+    assert first_path.startswith("accepted/1970/01/01/")
+    assert not (tmp_path / "images" / "accepted" / "1970" / "01" / "04").exists()
+    assert not (tmp_path / "images" / "artifacts" / "1970" / "01" / "04").exists()
+    assert (tmp_path / "images" / "artifacts" / "1970" / "01" / "01" / request_id).is_dir()

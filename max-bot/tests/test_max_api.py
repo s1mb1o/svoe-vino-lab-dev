@@ -1,4 +1,5 @@
 import hashlib
+import itertools
 import json
 import ssl
 
@@ -509,3 +510,51 @@ async def test_global_slot_is_taken_after_the_chat_wait():
 
     # "b" waits for its chat. "c" then still keeps the global interval of 0.5 s after "b".
     assert dispatched == [0.0, 1.0, 1.5]
+
+
+async def test_chat_spacing_holds_when_the_global_limit_is_busy():
+    now = [0.0]
+    dispatched: list[tuple[str, float]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        dispatched.append((request.url.params["chat_id"], now[0]))
+        return message_answer()
+
+    async def sleep(delay: float) -> None:
+        now[0] += delay
+
+    api = MaxApi(
+        TOKEN,
+        httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        base_url=BASE,
+        global_rate=2.5,
+        chat_rate=2.0,
+        sleep=sleep,
+        clock=lambda: now[0],
+    )
+
+    for chat_id in (1, 2, 1, 1):
+        await api.send_message(chat_id, text="x")
+
+    chat_one = [moment for chat, moment in dispatched if chat == "1"]
+    every = [moment for _, moment in dispatched]
+    # Chat 1 keeps 0.5 s between its operations, and all operations keep 0.4 s.
+    assert chat_one == pytest.approx([0.0, 0.8, 1.3])
+    assert all(b - a >= 0.4 - 1e-9 for a, b in itertools.pairwise(every))
+
+
+async def test_late_wakeup_moves_the_deadline_from_the_actual_time():
+    now = [0.0]
+
+    async def late_sleep(delay: float) -> None:
+        now[0] += delay + 0.3
+
+    limiter = RateLimiter(2, clock=lambda: now[0], sleep=late_sleep)
+
+    await limiter.acquire()
+    await limiter.acquire()
+    marked = now[0]
+
+    # The second operation woke up late, at 0.8 s. The next one waits until 0.8 + 0.5.
+    assert marked == pytest.approx(0.8)
+    assert limiter.wait_time(marked) == pytest.approx(0.5)

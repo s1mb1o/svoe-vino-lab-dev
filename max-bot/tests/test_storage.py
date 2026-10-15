@@ -433,6 +433,7 @@ def test_pending_requests_are_restored_in_received_order(tmp_path):
             photo_url=photo_url("mid.1"),
             photo_source="body",
             feedback_enabled=True,
+            stored_at=1000,
         ),
         PendingRequest(
             request_id=second.request_id,
@@ -446,6 +447,7 @@ def test_pending_requests_are_restored_in_received_order(tmp_path):
             photo_url=photo_url("mid.2", 1),
             photo_source="forward",
             feedback_enabled=True,
+            stored_at=1001,
         ),
     ]
     reopened.close()

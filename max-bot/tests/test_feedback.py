@@ -645,3 +645,52 @@ async def test_feedback_callback_is_handled_through_the_router(tmp_path):
     assert api.calls_of("edit_message") == [edit(RESULT_CAPTION, [photo(RESULT_TOKEN)], "html")]
     assert repository.admin_request(request_id).feedback_match is True
     repository.close()
+
+
+async def test_stale_negative_button_after_positive_feedback_removes_the_keyboard(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    request_id = recognized_request(repository)
+    add_candidates(repository, request_id)
+    remember_result(repository, request_id)
+    # The positive answer is saved, but its keyboard removal failed, so both buttons stay.
+    assert (
+        repository.save_feedback(request_id=request_id, user_id=USER_ID, matched=True, now=1100)
+        == "saved"
+    )
+    api = FakeMaxApi()
+
+    await handle_result_feedback(
+        callback(f"feedback:no:{request_id}", source=result_message()),
+        make_services(repository),
+        api,
+    )
+
+    # The stored value decides. A positive answer has no alternatives to show.
+    assert notifications(api) == ["Оценка уже сохранена."]
+    [edited] = api.calls_of("edit_message")
+    assert keyboard_buttons(edited["attachments"]) == []
+    assert repository.admin_request(request_id).feedback_match is True
+    repository.close()
+
+
+async def test_stale_positive_button_after_negative_feedback_restores_alternatives(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    request_id = recognized_request(repository)
+    add_candidates(repository, request_id)
+    remember_result(repository, request_id)
+    assert (
+        repository.save_feedback(request_id=request_id, user_id=USER_ID, matched=False, now=1100)
+        == "saved"
+    )
+    api = FakeMaxApi()
+
+    await handle_result_feedback(
+        callback(f"feedback:yes:{request_id}", source=result_message()),
+        make_services(repository),
+        api,
+    )
+
+    assert notifications(api) == ["Оценка уже сохранена. Показываю варианты."]
+    [edited] = api.calls_of("edit_message")
+    assert len(keyboard_buttons(edited["attachments"])) == 4
+    repository.close()

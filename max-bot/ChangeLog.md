@@ -19,3 +19,6 @@
   callbacks repair a stale keyboard; the global rate limit applies at the send time; huge
   `/users` pages and `/reset_limit` IDs get an answer; command arguments after a line break
   are read.
+- Fixed after the commit review: retry files keep the first receipt date, so retention and
+  user deletion find them; both rate limits are checked at the send time; a stale feedback
+  button follows the stored answer; the README describes album moderation rejections correctly.

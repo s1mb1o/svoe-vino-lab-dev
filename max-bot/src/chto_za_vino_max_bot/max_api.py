@@ -105,19 +105,41 @@ class RateLimiter:
     ) -> None:
         if rate <= 0:
             raise ValueError("rate must be positive")
-        self._interval = 1.0 / rate
+        self.interval = 1.0 / rate
         self._clock = clock
         self._sleep = sleep
         self._next_at = float("-inf")
-        self._lock = asyncio.Lock()
+
+    def wait_time(self, now: float) -> float:
+        return max(0.0, self._next_at - now)
+
+    def mark(self, now: float) -> None:
+        """Record an operation at the actual time `now`."""
+        self._next_at = now + self.interval
 
     async def acquire(self) -> None:
-        async with self._lock:
-            now = self._clock()
-            start = max(now, self._next_at)
-            if start > now:
-                await self._sleep(start - now)
-            self._next_at = start + self._interval
+        await acquire_all((self,), clock=self._clock, sleep=self._sleep)
+
+
+async def acquire_all(
+    limiters: Sequence[RateLimiter],
+    *,
+    clock: Callable[[], float],
+    sleep: Sleep,
+) -> None:
+    """Wait until every limiter permits an operation, then mark all of them at the same time.
+
+    The check and the mark have no await between them, so they are atomic in the event loop.
+    A late wakeup marks the actual time, so a deadline never comes from a stale estimate.
+    """
+    while True:
+        now = clock()
+        wait = max(limiter.wait_time(now) for limiter in limiters)
+        if wait <= 0:
+            for limiter in limiters:
+                limiter.mark(now)
+            return
+        await sleep(wait)
 
 
 def callback_button(text: str, payload: str) -> dict[str, object]:
@@ -250,11 +272,14 @@ class MaxApi:
         chat_id: int | None,
         timeout: float,
     ) -> Any:
-        # The chat slot comes first. The global slot is taken just before the request goes out,
-        # so a request that waits for its chat does not use a stale global slot.
-        if chat_id is not None:
-            await self._chat_limiter(chat_id).acquire()
-        await self._global_limiter.acquire()
+        # Both limits are checked and marked together at the send time. A request that waits
+        # for one limit cannot use a stale slot of the other limit.
+        limiters = (
+            (self._chat_limiter(chat_id), self._global_limiter)
+            if chat_id is not None
+            else (self._global_limiter,)
+        )
+        await acquire_all(limiters, clock=self._clock, sleep=self._sleep)
         query = {
             key: _query_value(value) for key, value in (params or {}).items() if value is not None
         }

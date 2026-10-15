@@ -93,6 +93,8 @@ class PendingRequest:
     feedback_enabled: bool
     # The accepted local copy of an administration retry. Other requests download the image.
     local_path: str | None = None
+    # The first receipt time. Files of every attempt use its date, so retention finds them.
+    stored_at: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1171,8 +1173,8 @@ class Repository:
                 """
                 SELECT
                     request_id, chat_id, chat_type, user_id, message_id, photo_index,
-                    received_at, max_photo_id, max_photo_url, photo_source, feedback_enabled,
-                    retry_count, storage_path
+                    received_at, received_at AS stored_at, max_photo_id, max_photo_url,
+                    photo_source, feedback_enabled, retry_count, storage_path
                 FROM requests
                 WHERE status IN ('received', 'queued', 'processing')
                   AND request_source = 'max'
@@ -1191,6 +1193,7 @@ class Repository:
             message_id=str(row["message_id"]),
             photo_index=int(row["photo_index"]),
             received_at=int(row["received_at"]),
+            stored_at=int(row["stored_at"]),
             photo_id=int(row["max_photo_id"]) if row["max_photo_id"] is not None else None,
             photo_url=str(row["max_photo_url"]),
             photo_source=str(row["photo_source"]),
@@ -1599,8 +1602,8 @@ class Repository:
                 SELECT
                     request_id, chat_id, chat_type, user_id, message_id, photo_index,
                     COALESCE(retry_requested_at, received_at) AS received_at,
-                    max_photo_id, max_photo_url, photo_source, feedback_enabled,
-                    retry_count, storage_path
+                    received_at AS stored_at, max_photo_id, max_photo_url, photo_source,
+                    feedback_enabled, retry_count, storage_path
                 FROM requests
                 WHERE status = 'retry_requested'
                   AND (moderation_safe = 1 OR
