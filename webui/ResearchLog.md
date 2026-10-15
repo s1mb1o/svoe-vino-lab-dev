@@ -55,6 +55,17 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Additional producer maps, 2026-10-16
+
+The owner requested ten producer maps and one commit per producer.
+The scope includes 562 exact catalog slugs from the 2026-09-17 snapshot.
+Nine source cards have no local image path. A null image is separate from a null wine_slug.
+A null image shows an explicit placeholder. It does not disable the product or its portal link.
+Official product pages supply additional products and collection evidence.
+The maps do not claim to cover each complete live assortment.
+Read `docs/plans/02_add-producer-maps.md` for scope and verification.
+Each producer has source notes and an exact catalog crosswalk under `docs/product-line-maps/`.
+
 ## Mobile wine popup, 2026-10-16
 
 The owner replaced the mobile bottom card with a popup widget.

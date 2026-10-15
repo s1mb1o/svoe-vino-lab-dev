@@ -39,6 +39,17 @@ The presentation files and video remain byte-identical to the previous release.
 - Block the external Metrika loader. Confirm that the page and navigation still work.
 - Confirm the existing age gate, service health, and presentation artifacts.
 
+## Additional producer maps
+
+1. Open `/lineup/<producer-id>?wine=<exact-slug>` for each registered producer.
+2. Confirm that the exact product is selected and its collection is expanded.
+3. Confirm that a gray product opens details without a portal link.
+4. Confirm that a product with no image shows «Нет изображения».
+5. Change the producer with the preview selector. Confirm that old selection and popup state are cleared.
+6. At 390 px, open details, return to the map, and confirm that the map position is preserved.
+7. Repeat in light and dark themes. Check the 320 px layout and desktop side card.
+8. Run `npm run test:line-map` and `npm run test:producer-maps` with `PORTAL_ORIGIN` and `PLAYWRIGHT_MODULE` set.
+
 ## Hackathon direct URL
 
 Release `0c2f964` passed the checks below on staging and production on 2026-09-29.

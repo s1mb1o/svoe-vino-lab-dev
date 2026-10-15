@@ -37,6 +37,15 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Additional producer map support
+
+- Load each producer JSON from the map data directory.
+- Validate producer names, slug prefixes, and exact slugs across maps.
+- Resolve exact catalog identities before producer metadata.
+- Show an explicit placeholder when a verified image is unavailable.
+- Add producer selection to the preview and reset map state on producer navigation.
+- Test graph registration, exact lookup, local assets, and catalog crosswalks.
+
 ## 2026-10-16 — Mobile wine popup
 
 - Replace the mobile bottom card with a centered modal popup.

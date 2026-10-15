@@ -2,6 +2,10 @@
 import { PRODUCT_LINE_MAPS, findLineProduct } from '#shared/product-line-map'
 
 const route = useRoute()
+const router = useRouter()
+function changeProducer(event: Event) {
+  router.push(`/lineup/${(event.target as HTMLSelectElement).value}`)
+}
 const line = computed(() => PRODUCT_LINE_MAPS.find(item => item.producer.id === route.params.producer))
 const title = computed(() => line.value ? `Карта линейки ${line.value.producer.name} — Что за вино?` : 'Карта производителя не найдена — Что за вино?')
 const initialSlug = computed(() => typeof route.query.wine === 'string' ? route.query.wine : undefined)
@@ -17,8 +21,9 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
       <div><p class="step-label">ПУТЕВОДИТЕЛЬ ПО ПРОИЗВОДИТЕЛЮ</p><h1>Карта линейки {{ line.producer.name }}</h1><p>{{ line.scope.label }}. Выберите линейку, затем познакомьтесь с конкретным продуктом.</p></div>
       <NuxtLink to="/" class="button secondary">К сканеру<AppIcon name="arrow" /></NuxtLink>
     </header>
+    <label class="lineup-producer-picker"><span>Производитель</span><select :value="line.producer.id" aria-label="Выбрать производителя" @change="changeProducer"><option v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label>
     <p v-if="initialSlug" class="lineup-context">{{ unknownSlug ? 'Вино по этой ссылке не найдено в карте. Вы можете изучить линейки производителя.' : 'Вино выбрано по ссылке, без распознавания.' }}</p>
-    <ProductLineMap :key="initialSlug || 'overview'" :line="line" :initial-slug="initialSlug" :recognized="false" />
+    <ProductLineMap :key="`${line.producer.id}:${initialSlug || 'overview'}`" :line="line" :initial-slug="initialSlug" :recognized="false" />
     </template>
     <section v-else class="lineup-heading"><div><h1>Карта производителя пока не подготовлена</h1><p>Выберите доступную карту.</p><NuxtLink v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :to="`/lineup/${item.producer.id}`" class="button secondary">{{ item.producer.name }}</NuxtLink></div></section>
   </main>
@@ -31,6 +36,9 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
 .lineup-heading p:not(.step-label), .lineup-context { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .lineup-heading .button { flex-shrink: 0; width: auto; }
 .lineup-context { margin: 0 0 16px; }
+.lineup-producer-picker { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+.lineup-producer-picker select { min-width: 0; max-width: 100%; padding: 10px 36px 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; }
+.lineup-producer-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (max-width: 767px) {
   .lineup-page { width: calc(100% - 24px); margin: 24px auto; }
   .lineup-heading { align-items: start; flex-direction: column; gap: 8px; margin-bottom: 12px; }

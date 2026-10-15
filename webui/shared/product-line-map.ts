@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import abrauData from './data/product-line-maps/abrau-durso.json'
 import type { Wine } from './catalog'
 import { sourceWineUrl } from './catalog'
@@ -12,7 +13,7 @@ export interface LineProduct {
   variant: string
   wine_slug: string | null
   wine_slug_aliases: string[]
-  image: { src: string; source_id: string }
+  image: { src: string; source_id: string } | null
   category: string
   style: string
   grapes: string[]
@@ -35,7 +36,9 @@ export interface ProductLineMapData {
 export interface LineEdge { source: string; target: string; type: 'contains' }
 
 export const ABRAU_PRODUCT_LINE = abrauData as ProductLineMapData
-export const PRODUCT_LINE_MAPS: ProductLineMapData[] = [ABRAU_PRODUCT_LINE]
+const producerFiles = import.meta.glob<ProductLineMapData>('./data/product-line-maps/*.json', { eager: true, import: 'default' })
+export const PRODUCT_LINE_MAPS: ProductLineMapData[] = Object.values(producerFiles)
+  .sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru'))
 
 const normalizedProducer = (value: string) => value.toLocaleLowerCase('ru').replace(/[^a-zа-яё0-9]/g, '')
 
@@ -45,9 +48,10 @@ export function findLineProduct(line: ProductLineMapData, slug?: string): LinePr
 }
 
 export function findProducerLine(wine: Pick<Wine, 'producer' | 'slug'>): ProductLineMapData | undefined {
-  return PRODUCT_LINE_MAPS.find(line => findLineProduct(line, wine.slug)
-    || line.producer.slug_prefixes.some(prefix => wine.slug.startsWith(prefix))
-    || [line.producer.name, ...line.producer.aliases].some(name => normalizedProducer(name) === normalizedProducer(wine.producer)))
+  return PRODUCT_LINE_MAPS.find(line => findLineProduct(line, wine.slug))
+    || PRODUCT_LINE_MAPS.find(line => [line.producer.name, ...line.producer.aliases]
+      .some(name => normalizedProducer(name) === normalizedProducer(wine.producer)))
+    || PRODUCT_LINE_MAPS.find(line => line.producer.slug_prefixes.some(prefix => wine.slug.startsWith(prefix)))
 }
 
 export type ProductLineResolution =
@@ -115,8 +119,8 @@ export function validateProductLineMap(line: ProductLineMapData): string[] {
   for (const product of line.products) {
     if (!groups.has(product.group_id)) errors.push(`Unknown group: ${product.id}`)
     if (!product.name || !product.description || !product.style) errors.push(`Incomplete product: ${product.id}`)
-    if (!product.image.src.startsWith(`/product-line-maps/${line.producer.id}/`) || !/^[a-z0-9/.-]+\.webp$/.test(product.image.src) || product.image.src.includes('..')) errors.push(`Unsafe image path: ${product.id}`)
-    checkSources([...product.source_ids, product.image.source_id], product.id)
+    if (product.image !== null && (!product.image.src.startsWith(`/product-line-maps/${line.producer.id}/`) || !/^[a-z0-9/.-]+\.webp$/.test(product.image.src) || product.image.src.includes('..'))) errors.push(`Unsafe image path: ${product.id}`)
+    checkSources([...product.source_ids, ...(product.image ? [product.image.source_id] : [])], product.id)
     if (product.wine_slug === null && product.wine_slug_aliases.length) errors.push(`Unlinked product has aliases: ${product.id}`)
     for (const slug of [product.wine_slug, ...product.wine_slug_aliases]) {
       if (slug === null) continue
@@ -130,7 +134,39 @@ export function validateProductLineMap(line: ProductLineMapData): string[] {
   return errors
 }
 
-for (const line of PRODUCT_LINE_MAPS) {
-  const errors = validateProductLineMap(line)
-  if (errors.length) throw new Error(`Invalid product-line map ${line.producer.id}: ${errors.join('; ')}`)
+export function validateProductLineMaps(lines: ProductLineMapData[]): string[] {
+  const errors = lines.flatMap(line => validateProductLineMap(line).map(error => `${line.producer.id}: ${error}`))
+  const producers = new Set<string>()
+  const slugs = new Map<string, string>()
+  const names = new Map<string, string>()
+  const prefixes = new Map<string, string>()
+  for (const line of lines) {
+    const id = line.producer.id
+    if (producers.has(id)) errors.push(`Duplicate producer: ${id}`)
+    producers.add(id)
+    for (const name of [line.producer.name, ...line.producer.aliases]) {
+      const key = normalizedProducer(name)
+      if (!key) errors.push(`Empty producer name: ${id}`)
+      if (names.has(key) && names.get(key) !== id) errors.push(`Ambiguous producer name: ${name}`)
+      names.set(key, id)
+    }
+    for (const prefix of line.producer.slug_prefixes) {
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*-$/.test(prefix)) errors.push(`Invalid producer prefix: ${id}`)
+      for (const [other, owner] of prefixes) {
+        if (owner !== id && (other.startsWith(prefix) || prefix.startsWith(other))) errors.push(`Ambiguous producer prefix: ${prefix}`)
+      }
+      prefixes.set(prefix, id)
+    }
+    for (const product of line.products) {
+      for (const slug of [product.wine_slug, ...product.wine_slug_aliases]) {
+        if (slug === null) continue
+        if (slugs.has(slug) && slugs.get(slug) !== id) errors.push(`Ambiguous producer slug: ${slug}`)
+        slugs.set(slug, id)
+      }
+    }
+  }
+  return errors
 }
+
+const mapErrors = validateProductLineMaps(PRODUCT_LINE_MAPS)
+if (mapErrors.length) throw new Error(`Invalid product-line maps: ${mapErrors.join('; ')}`)

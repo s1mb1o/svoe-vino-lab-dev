@@ -80,7 +80,7 @@ describe('producer product-line graph', () => {
 
   it('ships every product image as a real local WebP', () => {
     for (const product of line.products) {
-      const bytes = readFileSync(new URL(`../public${product.image.src}`, import.meta.url))
+      const bytes = readFileSync(new URL(`../public${product.image!.src}`, import.meta.url))
       expect(bytes.subarray(0, 4).toString('ascii'), product.id).toBe('RIFF')
       expect(bytes.subarray(8, 12).toString('ascii'), product.id).toBe('WEBP')
     }
@@ -91,7 +91,7 @@ describe('producer product-line graph', () => {
     broken.products[0]!.group_id = 'missing-group'
     broken.groups[0]!.tier_id = 'missing-tier'
     broken.products[1]!.wine_slug_aliases.push(broken.products[0]!.wine_slug!)
-    broken.products[2]!.image.src = '/product-line-maps/abrau-durso/../secret.webp'
+    broken.products[2]!.image!.src = '/product-line-maps/abrau-durso/../secret.webp'
     broken.sources[0]!.url = 'javascript:alert(1)'
     const errors = validateProductLineMap(broken)
     expect(errors).toContain('Ambiguous wine slug or alias')
