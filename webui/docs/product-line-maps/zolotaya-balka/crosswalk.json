@@ -1,0 +1,578 @@
+{
+  "producer_id": "zolotaya-balka",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Золотая Балка",
+  "entries": [
+    {
+      "wine_slug": "balaklava-bryut-rezerv",
+      "product_id": "wine-balaklava-bryut-rezerv",
+      "group_id": "balaklava",
+      "catalog_name": "Балаклава Брют Резерв",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Balaklava_belyj_bryut_fotor_bg_remover_2026012323611_f20c51312d.webp",
+      "asset_sha256": "02570c4e319c874c43698731f8467087167431c2368c2ec076e16cfe2f1886e1",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "balaklava-muskat",
+      "product_id": "wine-balaklava-muskat",
+      "group_id": "balaklava",
+      "catalog_name": "Балаклава Мускат",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Muskat_4b2f12e649.webp",
+      "asset_sha256": "c59711139f04ef5484bb1c1bf880cbce819f4893443e066f2a365c133efa7d2e",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "balaklava-muskat-beloe-polusladkoe",
+      "product_id": "wine-balaklava-muskat-beloe-polusladkoe",
+      "group_id": "balaklava",
+      "catalog_name": "Балаклава Мускат белое полусладкое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Balaklava_Muskat_beloe_polusladkoe_0e4a6563a4.webp",
+      "asset_sha256": "9f1197c43537deebe54f7b7e849d6e22445538a6bc101425d00d14e498ea0494",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "balaklava-pino-nuar",
+      "product_id": "wine-balaklava-pino-nuar",
+      "group_id": "balaklava",
+      "catalog_name": "Балаклава Пино Нуар",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Pino_Nuar_c7e769ab8f.webp",
+      "asset_sha256": "ccc2eed527e003522e73d6de8d3724bbe4da27a4cdedb11f80bafea2c8ffd86f",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "bryut-beloe-zolotaya-balka",
+      "product_id": "wine-bryut-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Брют Белое Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Bryut_beloe_fotor_bg_remover_20260123231541_242c08153f.webp",
+      "asset_sha256": "7893892fcc4547059f38304a951508a19fe318907714b84070234ac699af151b",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "bryut-rozovoe-zolotaya-balka",
+      "product_id": "wine-bryut-rozovoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Брют Розовое Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Bryut_rozovoe_0ab1422bb8.webp",
+      "asset_sha256": "6254ab8ea754f5e385964a544489995f1eda9b09e2f4d138e6254dd5fcbeae3a",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "cuvee-de-vitmer-brut",
+      "product_id": "wine-cuvee-de-vitmer-brut",
+      "group_id": "cuvee-de-vitmer",
+      "catalog_name": "Cuvee de Vitmer Brut",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Vitmer_belyj_bryut_1_840eb810c0.webp",
+      "asset_sha256": "9a60e6c81d1affb57b414e21a3fd38e252172af02ea803af0d56747b9aa00594",
+      "group_source_ids": [
+        "official-cuvee-de-vitmer"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusladkoe-beloe-zolotaya-balka",
+      "product_id": "wine-polusladkoe-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Полусладкое Белое Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Polusladkoe_beloe_7d49885ec0.webp",
+      "asset_sha256": "3cee7bd8d5e75fa5d5efda407c1ba217346a0df3bc679defb21f3df6057528c1",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusladkoe-krasnoe-zb-vajn-frizzante",
+      "product_id": "wine-polusladkoe-krasnoe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "catalog_name": "Полусладкое красное ЗБ вайн Фриззанте",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-frizzante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusladkoe-krasnoe-zolotaya-balka",
+      "product_id": "wine-polusladkoe-krasnoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Полусладкое Красное Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusladkoe-rozovoe-zolotaya-balka",
+      "product_id": "wine-polusladkoe-rozovoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Полусладкое Розовое Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusuhoe-beloe-zolotaya-balka",
+      "product_id": "wine-polusuhoe-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "catalog_name": "Полусухое Белое Золотая Балка",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Polusuhoe_beloe_b1d39f3c20.webp",
+      "asset_sha256": "e92b7947aa8271b010250788383eda206a73a5f96374cec0db60e64b75f035b4",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "polusuhoe-rozovoe-zb-vajn-frizzante",
+      "product_id": "wine-polusuhoe-rozovoe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "catalog_name": "Полусухое розовое ЗБ вайн Фриззанте",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-frizzante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "rozovoe-bryut-1",
+      "product_id": "wine-rozovoe-bryut-1",
+      "group_id": "zb-classic",
+      "catalog_name": "Розовое брют",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_FBPZSZMWHW_C96_w_Sl_B_Ivm4j7_Som_Vif_Cn_Wb_Cxb_VPT_4yr_DB_1uyf_ORJ_Yphzw_KV_Ywj_Q_f45fac7d4e.webp",
+      "asset_sha256": "57247abf668873d04a5a9e72809d3554ca63a0b26bdfbc29cf8f4bfebd290c79",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "rozovoe-bryut-spumante",
+      "product_id": "wine-rozovoe-bryut-spumante",
+      "group_id": "zb-spumante",
+      "catalog_name": "Розовое брют Спуманте",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_Ldza_JNH_1_Hv9_W_Or_Hokzv1ehc6k_Ky_O_Sa_NL_81_Blk2_Wzh_W9_BBPU_9ky_PHC_Zl_Df_I0_Sstz_Q_7a31558363.webp",
+      "asset_sha256": "8843be347a2d3c55ae2f5abd46b185cacbc076327a1d5747c661a32ed7d1c414",
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "rozovoe-polusladkoe-1",
+      "product_id": "wine-rozovoe-polusladkoe-1",
+      "group_id": "zb-classic",
+      "catalog_name": "Розовое полусладкое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_D_v_EZB_Mijp_NGR_Wvy6u_Ifxk_Fr_Yqzmn_Hkb_TDN_Sql_Q_Sk_M5nnryrf3_Sd_Jnv_NIRGZKU_e_Q_03b44d8031.webp",
+      "asset_sha256": "76afe74f8c2d9bcaf160dc29929296dd991ab3777b702801cc95f4da43cf5ecc",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "shardone-balaklava",
+      "product_id": "wine-shardone-balaklava",
+      "group_id": "balaklava",
+      "catalog_name": "Шардоне Балаклава",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Shardone_ada18c9eae.webp",
+      "asset_sha256": "f9062fdea891497b172baf518f362635ffcc6af4f7c7d12c0f5e591398c49314",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "suhoe-beloe-zb-vajn-frizzante",
+      "product_id": "wine-suhoe-beloe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "catalog_name": "Сухое белое ЗБ вайн Фриззанте",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-frizzante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "wine",
+      "product_id": "wine-wine",
+      "group_id": "balaklava",
+      "catalog_name": "Балаклава Брют Резерв Розе",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "rozovyj_bryut_fotor_bg_remover_20260123185139_1309ba3fe0.webp",
+      "asset_sha256": "266df1cdb7db927be17c53206c46f382b348950aa39cb9ad885f0cf0efebae42",
+      "group_source_ids": [
+        "official-balaklava"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-moskato-polusladkoe-beloe",
+      "product_id": "wine-zb-vajn-moskato-polusladkoe-beloe",
+      "group_id": "zb-moscato",
+      "catalog_name": "ЗБ вайн МОСКАТО полусладкое белое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Moskato_beloe_polusladkoe_bce522a309.webp",
+      "asset_sha256": "7d5336cb738ecd8b242cc548f36d7d37aae46505bf136c6cc2c9c96f46594783",
+      "group_source_ids": [
+        "official-zb-moscato"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-moskato-polusladkoe-rozovoe",
+      "product_id": "wine-zb-vajn-moskato-polusladkoe-rozovoe",
+      "group_id": "zb-moscato",
+      "catalog_name": "ЗБ вайн МОСКАТО полусладкое розовое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Moskato_Rozovyj_11e3beb581.webp",
+      "asset_sha256": "de79c567c3ec7f728d46824fa0a49f9d5ed8dd04ffc18b4dbd6bf01902da7d78",
+      "group_source_ids": [
+        "official-zb-moscato"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-risling-polusuhoe-beloe",
+      "product_id": "wine-zb-vajn-risling-polusuhoe-beloe",
+      "group_id": "zb-still",
+      "catalog_name": "ЗБ вайн РИСЛИНГ Полусухое белое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-roze-suhoe-rozovoe",
+      "product_id": "wine-zb-vajn-roze-suhoe-rozovoe",
+      "group_id": "zb-still",
+      "catalog_name": "ЗБ вайн РОЗЕ сухое розовое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-spumante-bryut-beloe",
+      "product_id": "wine-zb-vajn-spumante-bryut-beloe",
+      "group_id": "zb-spumante",
+      "catalog_name": "ЗБ вайн СПУМАНТЕ Брют белое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Spumante_belyj_bryut_d34e854a7b.webp",
+      "asset_sha256": "8fa20dbf26c2e8e697fcd7f978ffa7e57b077d167bc17b7bf6532a315a8ec688",
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-spumante-bryut-rozovoe",
+      "product_id": "wine-zb-vajn-spumante-bryut-rozovoe",
+      "group_id": "zb-spumante",
+      "catalog_name": "ЗБ вайн СПУМАНТЕ Брют розовое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Spumante_rozovyj_bryut_3e35043a8d.webp",
+      "asset_sha256": "20d350f3865ce975cd531c099e4869cd12da1fff058a4a211702292265c221bb",
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-spumante-polusuhoe-beloe",
+      "product_id": "wine-zb-vajn-spumante-polusuhoe-beloe",
+      "group_id": "zb-spumante",
+      "catalog_name": "ЗБ вайн СПУМАНТЕ Полусухое белое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-vajn-vajt-suhoe-beloe",
+      "product_id": "wine-zb-vajn-vajt-suhoe-beloe",
+      "group_id": "zb-still",
+      "catalog_name": "ЗБ вайн ВАЙТ сухое белое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "convertio_in_L1002571_8cf9459a5e.webp",
+      "asset_sha256": "5cc76f5d1d3b784050b7542474fd56b7beb74d8f6e3e23654c4eb83245b690a9",
+      "group_source_ids": [
+        "official-zb-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zb-wine-moscato-beloe-polusladkoe",
+      "product_id": "wine-zb-wine-moscato-beloe-polusladkoe",
+      "group_id": "zb-moscato",
+      "catalog_name": "ZB Wine Moscato белое полусладкое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "ZB_VAJN_Moskato_beloe_polusladkoe_68f4d64b83.webp",
+      "asset_sha256": "7e66b7908e108b75af0e4fd6fd2052d6a36ae04d7acf505195c43e1150ffc444",
+      "group_source_ids": [
+        "official-zb-moscato"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125",
+      "product_id": "wine-zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125",
+      "group_id": "black-prince",
+      "catalog_name": "Black Prince Crimea Prestige Cuvee Extra Brut Limited Edition",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_black_prince_crimea_prestige_cuvee_extra_brut_limited_edition_shardone_beloe_ekstra_bryut_125_93ec57c2e6.webp",
+      "asset_sha256": "619c811e5723a47d5e1abd896e7036cbc9334b2efcf8ae3b83d0b67d87a61424",
+      "group_source_ids": [
+        "official-black-prince"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125",
+      "product_id": "wine-zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125",
+      "group_id": "loco-cimbali",
+      "catalog_name": "Blanc De Neige",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_blanc_de_neige_shardone_beloe_suhoe_125_33030faa53.webp",
+      "asset_sha256": "3d612ce37f75c32d2b6b2f33ee64f9e04614d8f7d43177049253901aa57eca3c",
+      "group_source_ids": [
+        "official-loco-menu"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12",
+      "product_id": "wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12",
+      "group_id": "black-prince",
+      "catalog_name": "Черный Принц",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_chernyy_prints_shardone_igristoe_ekstra_bryut_beloe_12_30208d11d0.webp",
+      "asset_sha256": "cd5d3f62c589b89131cef802bf9d4eb8a786f25211327f48a836708a32965034",
+      "group_source_ids": [
+        "official-black-prince"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12",
+      "product_id": "wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12",
+      "group_id": "cuvee-de-vitmer",
+      "catalog_name": "Cuvee de Vitmer rose",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_cuvee_de_vitmer_rose_pino_blan_igristoe_bryut_rozovoe_12_5b002e17b2.webp",
+      "asset_sha256": "22f05729b89c95e416b1d01b9ee970f5c389eb89beffea7f8a36e2cf12f6c9ea",
+      "group_source_ids": [
+        "official-cuvee-de-vitmer"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-igristoe-krasnoe-polusladkoe",
+      "product_id": "wine-zolotaya-balka-igristoe-krasnoe-polusladkoe",
+      "group_id": "zb-classic",
+      "catalog_name": "Золотая Балка игристое красное полусладкое",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "Zolotaya_Balka_igristoe_krasnoe_polusladkoe_8604608e59.webp",
+      "asset_sha256": "1e61e3bb1078135b537a03c0f550fe5f0a8d1cf6049d4eef0073a53cf5e80003",
+      "group_source_ids": [
+        "official-zb-classic"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-pink-sira-rozovoe-suhoe-13",
+      "product_id": "wine-zolotaya-balka-pink-sira-rozovoe-suhoe-13",
+      "group_id": "loco-cimbali",
+      "catalog_name": "Pink",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_pink_sira_rozovoe_suhoe_13_81a00fb2ab.webp",
+      "asset_sha256": "c01eddffc526599fdd8d68f75dd7e9bac9041252e30f361d466196d258a83e60",
+      "group_source_ids": [
+        "official-loco-menu"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10",
+      "product_id": "wine-zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10",
+      "group_id": "zb-frizzante",
+      "catalog_name": "ZB Frizzante Dry",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_frizzante_dry_risling_beloe_suhoe_10_992e8ffb9f.webp",
+      "asset_sha256": "6ec6aed0f07d333373c0b71c4d9a58b644955921d23d12b734cc7245a68f5c7b",
+      "group_source_ids": [
+        "official-zb-frizzante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10",
+      "product_id": "wine-zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10",
+      "group_id": "zb-frizzante",
+      "catalog_name": "ZB Frizzante Semi-Dry Rose",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_frizzante_semi_dry_rose_risling_rozovoe_polusuhoe_10_462381c9b4.webp",
+      "asset_sha256": "7cf33a9c1e03624e8a45bae4a7b04cf2566af055c65e8d4c25bcbfdc7f63c1b5",
+      "group_source_ids": [
+        "official-zb-frizzante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9",
+      "product_id": "wine-zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9",
+      "group_id": "zb-moscato",
+      "catalog_name": "ZB Moscato Semi-Sweet Rose",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_moscato_semi_sweet_rose_muskat_yantarnyy_rozovoe_polusladkoe_9_25026eb2e3.webp",
+      "asset_sha256": "7eadbe3ee025c7306ac54b99d6a429ac1fd3083859c1d9670789ce23cc1b8ab5",
+      "group_source_ids": [
+        "official-zb-moscato"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125",
+      "product_id": "wine-zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125",
+      "group_id": "zb-spumante",
+      "catalog_name": "ZB Spumante Brut",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_spumante_brut_risling_beloe_bryut_125_624bd4301a.webp",
+      "asset_sha256": "b41e6c78d7b43a6d646827a0f26ab14dc5db3f5e58170bd836b0958606759bc0",
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125",
+      "product_id": "wine-zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125",
+      "group_id": "zb-spumante",
+      "catalog_name": "ZB Spumante Semi-Dry",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_spumante_semi_dry_risling_beloe_polusuhoe_125_b4807ef6ee.webp",
+      "asset_sha256": "84df34b843a9517752a7cbe09d91f93e2d82d354fb3b4b51411e05003040556d",
+      "group_source_ids": [
+        "official-zb-spumante"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115",
+      "product_id": "wine-zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115",
+      "group_id": "zb-still",
+      "catalog_name": "ZB Wine Riesling",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_wine_riesling_risling_beloe_polusuhoe_115_1b10f56379.webp",
+      "asset_sha256": "c2e82793865fc1c5bf05fcce5fd2fa9da8c424a10eaf215777a3f3b70b11b589",
+      "group_source_ids": [
+        "official-zb-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125",
+      "product_id": "wine-zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125",
+      "group_id": "zb-still",
+      "catalog_name": "ZB Wine Sauvignon Blanc",
+      "catalog_producer": "Золотая Балка",
+      "source_image": "zolotaya_balka_zb_wine_sauvignon_blanc_sovinon_blan_beloe_suhoe_125_f910ea40b7.webp",
+      "asset_sha256": "a55afa97b952c5fe6dc960d0b0a629f9183f00c8362c261638223467110bd801",
+      "group_source_ids": [
+        "official-zb-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-more-nebo-red-semi-dry",
+      "wine_slug": null,
+      "official_url": "https://zolotayabalka.ru/product/more-nebo/more-nebo-polusukhoe-krasnoe/",
+      "official_image_url": "https://zolotayabalka.ru/upload/resize_cache/iblock/cfc/800_800_0/nvjnssh23cmwtfk2xssu0jvro95mlj9k.jpg",
+      "absence_basis": "No Zolotaya Balka catalog card names the More & Nebo collection. The full 2,103-row search only finds an unrelated Locantita More card from Skalisty Bereg. Syrah alone does not identify this product.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "8ce8a24b33ee2f4e7f790abcd207a14f8cc1caefecb4e4c0aedc8606a62cf729",
+      "original_image_sha256": "00ead17dff1358d117afd1ff69fb683db65e7c6c02832258d48d8bdd0d50d6f8",
+      "image_dimensions": [
+        218,
+        800
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    },
+    {
+      "product_id": "official-more-nebo-white-brut",
+      "wine_slug": null,
+      "official_url": "https://zolotayabalka.ru/product/more-nebo/more-nebo-bryut-beloe/",
+      "official_image_url": "https://zolotayabalka.ru/upload/resize_cache/iblock/beb/800_800_0/qz5af68fwwyxn9crel1nuxkimqdm94ae.jpg",
+      "absence_basis": "The More & Nebo collection is absent from all 41 producer cards. Other white bruts have different brand labels. No equivalent identity is asserted.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "150490a12d5d3b4933bafae6c0a2531db9216b5bb989dccc64f41009d571498e",
+      "original_image_sha256": "b35336689c33efcd3f258326f28e358beb9b49f11d79b70e8fb8f4cf70b32ebc",
+      "image_dimensions": [
+        229,
+        800
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    }
+  ],
+  "mapping_notes": [
+    "Two generic rose cards use the base Zolotaya Balka labels. The local label images confirm this assignment.",
+    "Blanc de Neige and Pink appear as Loco Cimbali in the official restaurant PDF. The PDF is evidence for collection identity only. Restaurant prices are not copied or used as current retail prices.",
+    "The historical Moscato, Spumante, Frizzante, and Balaklava cards remain separate. Similar names do not establish equivalent slugs.",
+    "The neutral tier contains Frizzante, Loco Cimbali, and More & Nebo. Their current retail position is not verified."
+  ]
+}

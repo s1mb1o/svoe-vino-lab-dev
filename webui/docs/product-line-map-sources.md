@@ -214,3 +214,9 @@ A source name with a directory belongs to the sheet directory.
 Read [derbent-vino sources](product-line-maps/derbent-vino/sources.md).
 The map includes 63 snapshot cards and 4 verified additions in 8 groups.
 It does not claim complete live assortment coverage.
+
+## Золотая Балка extension, 2026-10-16
+
+Read [zolotaya-balka sources](product-line-maps/zolotaya-balka/sources.md).
+The map includes 41 snapshot cards and 2 verified additions in 10 groups.
+It does not claim complete live assortment coverage.

@@ -1,0 +1,1338 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "zolotaya-balka",
+    "name": "Золотая Балка",
+    "aliases": [
+      "Zolotaya Balka"
+    ],
+    "slug_prefixes": [
+      "zolotaya-balka-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Официальная винная карта «Золотой Балки»",
+      "url": "https://zolotayabalka.ru/product/"
+    },
+    {
+      "id": "official-black-prince",
+      "label": "«Золотая Балка»: black-prince",
+      "url": "https://zolotayabalka.ru/product/black-prince/"
+    },
+    {
+      "id": "official-cuvee-de-vitmer",
+      "label": "«Золотая Балка»: cuvee-de-vitmer",
+      "url": "https://zolotayabalka.ru/product/cuvee-de-vitmer/"
+    },
+    {
+      "id": "official-balaklava",
+      "label": "«Золотая Балка»: balaklava",
+      "url": "https://zolotayabalka.ru/product/balaklava/"
+    },
+    {
+      "id": "official-zb-classic",
+      "label": "«Золотая Балка»: zb-classic",
+      "url": "https://zolotayabalka.ru/product/zolotaya-balka/"
+    },
+    {
+      "id": "official-zb-spumante",
+      "label": "«Золотая Балка»: zb-spumante",
+      "url": "https://zolotayabalka.ru/product/zb-spumante/"
+    },
+    {
+      "id": "official-zb-moscato",
+      "label": "«Золотая Балка»: zb-moscato",
+      "url": "https://zolotayabalka.ru/product/zb-moscato/"
+    },
+    {
+      "id": "official-zb-frizzante",
+      "label": "«Золотая Балка»: zb-frizzante",
+      "url": "https://zolotayabalka.ru/product/zb-frizzante/"
+    },
+    {
+      "id": "official-zb-still",
+      "label": "«Золотая Балка»: zb-still",
+      "url": "https://zolotayabalka.ru/product/zbwine/"
+    },
+    {
+      "id": "official-more-nebo",
+      "label": "«Золотая Балка»: more-nebo",
+      "url": "https://zolotayabalka.ru/product/more-nebo/"
+    },
+    {
+      "id": "official-loco-menu",
+      "label": "Официальная винная карта ресторана: Loco Cimbali",
+      "url": "https://zolotayabalka.ru/pdf/zb_wines_06-2025.pdf"
+    },
+    {
+      "id": "official-more-nebo-red",
+      "label": "Официальная карточка: Море & Небо · красное полусухое",
+      "url": "https://zolotayabalka.ru/product/more-nebo/more-nebo-polusukhoe-krasnoe/"
+    },
+    {
+      "id": "official-more-nebo-white",
+      "label": "Официальная карточка: Море & Небо · белое брют",
+      "url": "https://zolotayabalka.ru/product/more-nebo/more-nebo-bryut-beloe/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальные игристые",
+      "rank": 4,
+      "description": "Чёрный Принц имеет официальное премиальное позиционирование. Относительная ступень задана редакционно.",
+      "price_label": "Премиальный ориентир · ₽₽₽₽",
+      "source_ids": [
+        "official-black-prince"
+      ]
+    },
+    {
+      "id": "reserve",
+      "label": "Коллекционные игристые",
+      "rank": 3,
+      "description": "Бутылочный метод и коллекционное позиционирование Cuvée de Vitmer. Относительная ступень задана редакционно.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-cuvee-de-vitmer"
+      ]
+    },
+    {
+      "id": "selected",
+      "label": "Отобранные участки",
+      "rank": 2,
+      "description": "Балаклава: отбор винограда и продолжительная выдержка на осадке. Относительная ступень задана редакционно.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "everyday",
+      "label": "Знакомство с винодельней",
+      "rank": 1,
+      "description": "Базовая коллекция и линейки ZB. Ценовое положение служит редакционным ориентиром.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-zb-classic",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие стили и коллекции",
+      "rank": 0,
+      "description": "Разные стили и коллекции без подтверждённого ценового сравнения.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-collections",
+        "official-loco-menu"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "black-prince",
+      "name": "Чёрный Принц",
+      "tier_id": "premium",
+      "method": "Классический метод",
+      "description": "Миллезимные игристые вина с продолжительной выдержкой в бутылке. В официальном каталоге коллекция обозначена как премиальная.",
+      "source_ids": [
+        "official-black-prince"
+      ]
+    },
+    {
+      "id": "cuvee-de-vitmer",
+      "name": "Cuvée de Vitmer",
+      "tier_id": "reserve",
+      "method": "Классический метод",
+      "description": "Коллекционные игристые вина из винограда ручного сбора. Белые и розовые кюве объединены бутылочной выдержкой и происхождением с отобранных участков.",
+      "source_ids": [
+        "official-cuvee-de-vitmer"
+      ]
+    },
+    {
+      "id": "balaklava",
+      "name": "Балаклава",
+      "tier_id": "selected",
+      "method": "Метод Шарма, выдержка на осадке",
+      "description": "Игристые вина из винограда ручного сбора с двойной селекцией. В коллекции есть сортовые брюты, Reserve и полусладкий Мускат.",
+      "source_ids": [
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "zb-classic",
+      "name": "Золотая Балка",
+      "tier_id": "everyday",
+      "method": "Метод Шарма-Мартинотти",
+      "description": "Базовая игристая коллекция. Белые, розовые и красные вина различаются сладостью и сортовым составом; официальный каталог описывает её как вина на каждый день.",
+      "source_ids": [
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "zb-spumante",
+      "name": "ZB Spumante",
+      "tier_id": "everyday",
+      "method": "Метод Шарма",
+      "description": "Резервуарная игристая коллекция с белыми и розовыми вариантами. В снимке сохранены разные карточки и варианты оформления.",
+      "source_ids": [
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "zb-moscato",
+      "name": "ZB Moscato / Мускатные",
+      "tier_id": "everyday",
+      "method": "Не указан в источнике",
+      "description": "Мускатная игристая коллекция. Белые и розовые полусладкие вина с выраженным сортовым ароматом.",
+      "source_ids": [
+        "official-zb-moscato"
+      ]
+    },
+    {
+      "id": "zb-still",
+      "name": "ZB Wine · тихие вина",
+      "tier_id": "everyday",
+      "method": "Тихие вина",
+      "description": "Коллекция из собственного винограда ручного сбора. В карте представлены белые сортовые вина и сухое розовое.",
+      "source_ids": [
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "zb-frizzante",
+      "name": "ZB Frizzante / Жемчужные",
+      "tier_id": "neutral",
+      "method": "Фриззанте",
+      "description": "Жемчужные вина с менее интенсивной игрой пузырьков. Сухое белое, полусухое розовое и полусладкое красное представлены отдельными карточками.",
+      "source_ids": [
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "loco-cimbali",
+      "name": "Loco Cimbali",
+      "tier_id": "neutral",
+      "method": "Тихие вина",
+      "description": "Blanc de Neige и Pink указаны как Loco Cimbali в официальной винной карте ресторана. Текущая ценовая ступень для этих карточек не подтверждена.",
+      "source_ids": [
+        "official-loco-menu"
+      ]
+    },
+    {
+      "id": "more-nebo",
+      "name": "Море & Небо",
+      "tier_id": "neutral",
+      "method": "Тихие вина и метод Шарма-Мартинотти",
+      "description": "Коллекция объединяет тихие и игристые вина. Здесь добавлены подтверждённые на сайте красное полусухое из Сира и белое игристое брют.",
+      "source_ids": [
+        "official-more-nebo"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-balaklava-bryut-rezerv",
+      "group_id": "balaklava",
+      "name": "Балаклава Брют Резерв",
+      "variant": "",
+      "wine_slug": "balaklava-bryut-rezerv",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, слегка минеральный, с нотками тостов, ванили и имбиря в послевкусии. Вкус тонкий, с переплетением оттенков луговых и полевых трав, цукатов, белых пряностей и выпечки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-balaklava-muskat",
+      "group_id": "balaklava",
+      "name": "Балаклава Мускат",
+      "variant": "",
+      "wine_slug": "balaklava-muskat",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-balaklava-muskat.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус насыщенный, гармоничный с шелковистой текстурой, освежающей кислотностью и фруктовыми нотками в послевкусии.  \n\nВ аромате экзотические фрукты: ананас, личи, маракуйя, с тонкими оттенками абрикоса и крымского персика, шлейфом из лепестков чайной розы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-balaklava-muskat-beloe-polusladkoe",
+      "group_id": "balaklava",
+      "name": "Балаклава Мускат белое полусладкое",
+      "variant": "",
+      "wine_slug": "balaklava-muskat-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-balaklava-muskat-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый",
+        "Мускат Оттонель",
+        "Мускат Янтарный"
+      ],
+      "description": "Благородный яркий мускатный аромат с тончайшими фруктовыми оттенками абрикоса и персика, дополняется ноткой лепестков чайной розы с лёгкими цитрусовыми тонами. \nИгристое вино хорошо сочетается со свежими ягодами и фруктами, бисквитами, десертами и безе. Кроме того, вино - отличный дижестив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-balaklava-pino-nuar",
+      "group_id": "balaklava",
+      "name": "Балаклава Пино Нуар",
+      "variant": "",
+      "wine_slug": "balaklava-pino-nuar",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-balaklava-pino-nuar.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат яркий, гармоничный, с длительным ягодно-грейпфрутовым послевкусием. \n\nВкус интенсивный и яркий с тонами красных ягод: земляники и малины, с легким цитрусовым оттенком и нотой сливочной карамели.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-bryut-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Брют Белое Золотая Балка",
+      "variant": "",
+      "wine_slug": "bryut-beloe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "В аромате гармонично переплетаются ноты весенних цветов, белых косточковых фруктов и цитрусовых.  Вкус деликатный, с хорошо сбалансированной кислотностью. Создано методом Шарма-Мартинотти.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-bryut-rozovoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Брют Розовое Золотая Балка",
+      "variant": "",
+      "wine_slug": "bryut-rozovoe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-bryut-rozovoe-zolotaya-balka.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Яркий цветочный аромат, с нотками ягод клубники и малины, персика и абрикоса. Во вкусе умеренная кислотность, легкая цитрусовость и тонкое сливочное послевкусие. Создано методом Шарма-Мартинотти",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-cuvee-de-vitmer-brut",
+      "group_id": "cuvee-de-vitmer",
+      "name": "Cuvee de Vitmer Brut",
+      "variant": "",
+      "wine_slug": "cuvee-de-vitmer-brut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-cuvee-de-vitmer-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан",
+        "Пино Нуар",
+        "Шардоне"
+      ],
+      "description": "В первичном аромате раскрываются изящные тона лимонного курда, груши, айвы и желтой черешни. Во второй волне появляются ноты миндального печенья. Благодаря длительной выдержке доминируют третичные ароматы: булочка бриошь, сливки, орехи, мед, конфитюр из цитрусовых. \n\nВкус свежий, глубокий, с хорошей кислотностью, которая ощущается очень мягко и сочно. Тонкая минеральность и длительное орехово-медовое послевкусие",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cuvee-de-vitmer"
+      ]
+    },
+    {
+      "id": "wine-polusladkoe-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Полусладкое Белое Золотая Балка",
+      "variant": "",
+      "wine_slug": "polusladkoe-beloe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-beloe-zolotaya-balka.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Медовый аромат переплетается со сладким ароматом груши и персика. Яркий вкус с преобладанием оттенков спелых белых фруктов и нежной, ненавязчивой сладостью.  Создано методом Шарма-Мартинотти.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-polusladkoe-krasnoe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "name": "Полусладкое красное ЗБ вайн Фриззанте",
+      "variant": "",
+      "wine_slug": "polusladkoe-krasnoe-zb-vajn-frizzante",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Богатый аромат спелых ягод с нотами граната. Вкус мягкий, бархатистый, яркий и запоминающийся. Итальянский метод Frizzante.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "wine-polusladkoe-krasnoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Полусладкое Красное Золотая Балка",
+      "variant": "",
+      "wine_slug": "polusladkoe-krasnoe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Аромат красных ягод и сладких фруктов, слегка оттененных специями.  Вкус сложный, многогранный, с ярким фруктовым послевкусием.  Создано методом Шарма-Мартинотти.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-polusladkoe-rozovoe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Полусладкое Розовое Золотая Балка",
+      "variant": "",
+      "wine_slug": "polusladkoe-rozovoe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат невероятно свежий аромат слегка засахаренных красных ягод — малины, красной смородины. Вкус элегантный, слегка освежающий мягкий вкус в сочетании с приятной деликатной сладостью. Создано методом Шарма-Мартинотти.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-polusuhoe-beloe-zolotaya-balka",
+      "group_id": "zb-classic",
+      "name": "Полусухое Белое Золотая Балка",
+      "variant": "",
+      "wine_slug": "polusuhoe-beloe-zolotaya-balka",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusuhoe-beloe-zolotaya-balka.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате ярко отзываются летние и осенние травы-медоносы, а также спелый персик, нектарин и груша. Вино обладает хорошо сбалансированным вкусом с ненавязчивой сладостью и долгим послевкусием спелых белых фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-polusuhoe-rozovoe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "name": "Полусухое розовое ЗБ вайн Фриззанте",
+      "variant": "",
+      "wine_slug": "polusuhoe-rozovoe-zb-vajn-frizzante",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат спелых красных ягод: малины, земляники, смородины и вишни, с полутонами лепестков чайной розы.  Вкус нежный, легкий с приятным долгим послевкусием. Итальянский метод Frizzante.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "wine-rozovoe-bryut-1",
+      "group_id": "zb-classic",
+      "name": "Розовое брют",
+      "variant": "",
+      "wine_slug": "rozovoe-bryut-1",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-bryut-1.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе",
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Блан",
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Вино с ярким цветочным ароматом с нотками ягод клубники и малины, полевых цветов, персика и абрикоса, с тонким сливочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-rozovoe-bryut-spumante",
+      "group_id": "zb-spumante",
+      "name": "Розовое брют Спуманте",
+      "variant": "",
+      "wine_slug": "rozovoe-bryut-spumante",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-bryut-spumante.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе",
+        "Каберне Совиньон",
+        "Пино Блан",
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Вино изящного розового цвета с легким лососевым оттенком. У него нежный и легкий вкус с приятным долгим послевкусием. В аромате преобладают нежные ягодные тона малины и клубники, с вкраплениями фруктов - крымского персика и нектарина, а также цитрусовых - грейпфрута и помело.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-rozovoe-polusladkoe-1",
+      "group_id": "zb-classic",
+      "name": "Розовое полусладкое",
+      "variant": "",
+      "wine_slug": "rozovoe-polusladkoe-1",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-polusladkoe-1.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "Свежий аромат вина наполнен тонами слегка засахаренных красных ягод (малина, красная смородина). Вино обладает элегантным, ярким, сочным, хорошо сбалансированным, освежающим, мягким вкусом с приятной, деликатной сладостью и яркими фруктово-ягодными оттенками в послевкусии. Сочетается с мясными блюдами под кисло-сладким соусом, создаст прекрасный союз с запеченной уткой, легкими салатами, фруктовыми десертами и ягодами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-shardone-balaklava",
+      "group_id": "balaklava",
+      "name": "Шардоне Балаклава",
+      "variant": "",
+      "wine_slug": "shardone-balaklava",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-shardone-balaklava.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус освежающий, с высокой кислотностью и ощутимой минеральностью. Аромат деликатный и тонкий, с преобладанием зеленого яблока, груши Дюшес, цитрусовых, с вкраплениями нот выпечки и цветущей акации.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-suhoe-beloe-zb-vajn-frizzante",
+      "group_id": "zb-frizzante",
+      "name": "Сухое белое ЗБ вайн Фриззанте",
+      "variant": "",
+      "wine_slug": "suhoe-beloe-zb-vajn-frizzante",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Яркий аромат крымских фруктов — спелого персика и абрикоса, груши Дюшес, белой черешни, с переплетением цитрусовых и цветочных нот. Во вкусе спелый персик и абрикос, груша Дюшес",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "wine-wine",
+      "group_id": "balaklava",
+      "name": "Балаклава Брют Резерв Розе",
+      "variant": "",
+      "wine_slug": "wine",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-wine.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "В аромате красные ягоды и легкий тон фиалки резонируют с цитрусовыми тонами мандарина, кумквата и сливок. Вкус яркий, стройный, развитый, с минерально-цитрусовым послевкусием",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-balaklava"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-moskato-polusladkoe-beloe",
+      "group_id": "zb-moscato",
+      "name": "ЗБ вайн МОСКАТО полусладкое белое",
+      "variant": "",
+      "wine_slug": "zb-vajn-moskato-polusladkoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-moskato-polusladkoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Благородный мускатный аромат с тонкими фруктовыми оттенками абрикоса и персика и изящной нотой лепестков чайной розы. Насыщенный, узнаваемый мускатный, элегантный, ненавязчиво сладкий.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-moscato"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-moskato-polusladkoe-rozovoe",
+      "group_id": "zb-moscato",
+      "name": "ЗБ вайн МОСКАТО полусладкое розовое",
+      "variant": "",
+      "wine_slug": "zb-vajn-moskato-polusladkoe-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-moskato-polusladkoe-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Яркий аромат свежего винограда и клубники в сочетании со сливочными полутонами и нежным шлейфом лепестков розы. Сочный и яркий вкус с природной ненавязчивой сладостью и богатой палитрой мускатных тонов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-moscato"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-risling-polusuhoe-beloe",
+      "group_id": "zb-still",
+      "name": "ЗБ вайн РИСЛИНГ Полусухое белое",
+      "variant": "",
+      "wine_slug": "zb-vajn-risling-polusuhoe-beloe",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Отличается утонченным ароматом белых цветов, абрикоса и нектарина, а также цитрусовых с легкой минеральной нотой. Нежный вкус с хорошей освежающей кислотностью и тонким минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-roze-suhoe-rozovoe",
+      "group_id": "zb-still",
+      "name": "ЗБ вайн РОЗЕ сухое розовое",
+      "variant": "",
+      "wine_slug": "zb-vajn-roze-suhoe-rozovoe",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате ягодные ноты, оттенки спелой клубники и земляники, барбариса и кизила, и нежность лепестков роз, и легкая\n сливочность. Вкус и аромат переходят в послевкусие с ягодной россыпью и тонами цитрусовых",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-spumante-bryut-beloe",
+      "group_id": "zb-spumante",
+      "name": "ЗБ вайн СПУМАНТЕ Брют белое",
+      "variant": "",
+      "wine_slug": "zb-vajn-spumante-bryut-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-bryut-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Изысканный букет цитрусовых, с легким нюансом аромата весенних цветов и белых фруктов. Элегантный, деликатный вкус с хорошо сбалансированной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-spumante-bryut-rozovoe",
+      "group_id": "zb-spumante",
+      "name": "ЗБ вайн СПУМАНТЕ Брют розовое",
+      "variant": "",
+      "wine_slug": "zb-vajn-spumante-bryut-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-bryut-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "В аромате преобладают нежные ягодные тона малины и клубники, с вкраплениями фруктов — крымского персика и нектарина, а также цитрусовых — грейпфрута и помело. Нежный и легкий с приятным долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-spumante-polusuhoe-beloe",
+      "group_id": "zb-spumante",
+      "name": "ЗБ вайн СПУМАНТЕ Полусухое белое",
+      "variant": "",
+      "wine_slug": "zb-vajn-spumante-polusuhoe-beloe",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Роскошный букет степных цветов-медоносов с нотками спелого персика и груши. Яркий, хорошо сбалансированный с преобладанием оттенков спелых белых фруктов и ненавязчивой сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-zb-vajn-vajt-suhoe-beloe",
+      "group_id": "zb-still",
+      "name": "ЗБ вайн ВАЙТ сухое белое",
+      "variant": "",
+      "wine_slug": "zb-vajn-vajt-suhoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-vajt-suhoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Аромат спелых желтых фруктов: персика, яблока, абрикоса, айвы и груши со шлейфом из упоительных нот белой акации и флердоранжа. Вкус мягкий с тонким лаймово-медовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "wine-zb-wine-moscato-beloe-polusladkoe",
+      "group_id": "zb-moscato",
+      "name": "ZB Wine Moscato белое полусладкое",
+      "variant": "",
+      "wine_slug": "zb-wine-moscato-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-wine-moscato-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый",
+        "Мускат Янтарный"
+      ],
+      "description": "Игристое вино обладает ярким, мускатным ароматом с оттенками персика, абрикоса и лепестков чайной розы. Игристое вино демонстрирует сладковатый, но не приторный вкус с нотами грейпфрута и тропических фруктов, бархатистой текстурой и долгим послевкусием",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-moscato"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125",
+      "group_id": "black-prince",
+      "name": "Black Prince Crimea Prestige Cuvee Extra Brut Limited Edition",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Сложный многослойный аромат: сливочная бриошь, лимонная цедра, тона масла, ореховые нюансы, абрикос и зелёное яблоко. Вкус с освежающей кислотностью, обволакивающий, с долгим сливочным послевкусием. Выдержка methodе champenoise.\nПрекрасно само по себе; в гастрономии — к морепродуктам, нежирной рыбе, птице, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-black-prince"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125",
+      "group_id": "loco-cimbali",
+      "name": "Blanc De Neige",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан",
+        "Шардоне"
+      ],
+      "description": "Деликатный аромат с тонами акации, цитрусовых, подсолнечника и зелёного яблока, с нюансами мелиссы и имбиря. Вкус освежающий, с живой кислотностью и чистым послевкусием.\nИдеален как аперитив, к лёгким закускам, рыбным блюдам, морепродуктам и мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-loco-menu"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12",
+      "group_id": "black-prince",
+      "name": "Черный Принц",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат деликатный, свежий, изящный, с оттенками белых фруктов,зеленого яблока, персика, с легкой утонченной дымностью и аккуратными нотами миндального печенья. Вкус стройный и утонченный, с приятной кислотностью и свежим мягким послевкусием. Отличный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-black-prince"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12",
+      "group_id": "cuvee-de-vitmer",
+      "name": "Cuvee de Vitmer rose",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Тончайшая и элегантная игра пузырьков, выстраивающихся в жемчужные нити. Аромат легкий, изящный, раскрывается нотами сушеной малины, клюквы, конфитюра из вишни, с освежающими акцентами грейпфрута и цукатов из апельсина. Фоном звучит тонкий оттенок песочного печенья с малиной. Вкус сбалансированный, с филигранной кислотностью и свежим ягодным послевкусием со шлейфом легкой горчинки грейпфрута. Прекрасный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cuvee-de-vitmer"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-igristoe-krasnoe-polusladkoe",
+      "group_id": "zb-classic",
+      "name": "Золотая Балка игристое красное полусладкое",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-igristoe-krasnoe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-igristoe-krasnoe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Саперави"
+      ],
+      "description": "Бархатистое, полное, округлое, очень нежное игристое вино со сложной, многогранной вкусовой палитрой, с очень ярким фруктовым послевкусием и ароматом красных ягод и сладких фруктов, слегка оттененных специями.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-classic"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-pink-sira-rozovoe-suhoe-13",
+      "group_id": "loco-cimbali",
+      "name": "Pink",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-pink-sira-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-pink-sira-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран",
+        "Сира"
+      ],
+      "description": "Свежий аромат с нотами красных ягод, оттенками мелиссы и лёгким морским бризом. Вкус свежий, с приятной кислотностью, палитрой клубники и красной смородины, мягким послевкусием со сливочным оттенком.\nПревосходный аперитив, отлично дополняет белое мясо, рыбу, креветки, зелёные салаты и лёгкие закуски.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-loco-menu"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10",
+      "group_id": "zb-frizzante",
+      "name": "ZB Frizzante Dry",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Янтарный",
+        "Рислинг",
+        "Ркацители"
+      ],
+      "description": "В аромате тона крымского персика, яблока и груши. Вкус свежий, ажурный, мягкий, с лёгкими медово-мускатными тонами, нотками айвы с мёдом, абрикоса и цитруса, освежающей кислотностью.\nИдеальный аперитив, отлично сочетается с фруктами, лёгкими десертами и морепродуктами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10",
+      "group_id": "zb-frizzante",
+      "name": "ZB Frizzante Semi-Dry Rose",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе",
+        "Бастардо Магарачский",
+        "Каберне Совиньон",
+        "Мускат Гамбургский",
+        "Пино Нуар",
+        "Рислинг",
+        "Ркацители",
+        "Саперави",
+        "Шардоне"
+      ],
+      "description": "Гармоничный аромат ягодных тонов — вишни, чёрной смородины и малины. Вкус деликатный и мягкий, с нежными оттенками земляники и вишни, лёгкая пузырьковая игра оставляет сливочное послевкусие.\nОтличный аперитив, хорошо сочетается с лёгкими закусками, фруктами, ягодными десертами и в формате вечеринки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-frizzante"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9",
+      "group_id": "zb-moscato",
+      "name": "ZB Moscato Semi-Sweet Rose",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат Гамбургский",
+        "Мускат Янтарный"
+      ],
+      "description": "Изысканный мускатный аромат с нотами розы, клубники и экзотических фруктов. Вкус нежный, сочный, ароматный, с характерными мускатными тонами и деликатной сладостью.\nПрекрасно сочетается с лесной земляникой, клубникой, малиной, персиками, фруктовыми десертами и мягкими пирожными.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-moscato"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125",
+      "group_id": "zb-spumante",
+      "name": "ZB Spumante Brut",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Изысканный букет цитрусовых, весенних цветов и белых фруктов. Вкус свежий, тонкий, с хорошей кислотностью — классический стиль Charmat.\nПрекрасен как аперитив, к морепродуктам, рыбе, птице, мягким сырам и фруктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125",
+      "group_id": "zb-spumante",
+      "name": "ZB Spumante Semi-Dry",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат тонких цитрусовых, белых цветов и спелых фруктов. Вкус лёгкий, освежающий, с деликатной природной сладостью и хорошей кислотностью.\nХорошо как аперитив, к морепродуктам, рыбе, белому мясу, лёгким десертам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-spumante"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115",
+      "group_id": "zb-still",
+      "name": "ZB Wine Riesling",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат переплетает ноты ананаса, айвы и манго с вкраплениями гречишного мёда и апельсинового конфитюра. Вкус: деликатная природная сладость переплетается с лёгкой кислотностью.\nОтлично к рыбным блюдам, морепродуктам, блюдам азиатской кухни; достоин украсить торжественный стол.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "wine-zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125",
+      "group_id": "zb-still",
+      "name": "ZB Wine Sauvignon Blanc",
+      "variant": "",
+      "wine_slug": "zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Яркий аромат: лайм, грейпфрут, свежескошенная трава, цветки смородины, ананас и манго. Вкус гармоничный и изящный, с хорошей сортовой кислотностью.\nИдеален к морепродуктам, устрицам, рыбе на гриле, салатам с зелёными травами, козьим сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zb-still"
+      ]
+    },
+    {
+      "id": "official-more-nebo-red-semi-dry",
+      "group_id": "more-nebo",
+      "name": "Море & Небо · красное полусухое",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/official-more-nebo-red-semi-dry.webp",
+        "source_id": "official-more-nebo-red"
+      },
+      "category": "Тихое вино",
+      "style": "Красное · полусухое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вино из Сира с ягодным ароматом: ежевика, барбарис и красная смородина. Мягкая текстура сочетается с живой кислотностью и умеренной сладостью. Производитель рекомендует блюда из говядины и телятины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-more-nebo-red"
+      ]
+    },
+    {
+      "id": "official-more-nebo-white-brut",
+      "group_id": "more-nebo",
+      "name": "Море & Небо · белое брют",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/official-more-nebo-white-brut.webp",
+        "source_id": "official-more-nebo-white"
+      },
+      "category": "Игристое вино",
+      "style": "Белое · брют",
+      "grapes": [
+        "Ркацители",
+        "Кокур Белый"
+      ],
+      "description": "Игристое из Ркацители и Кокура Белого. В аромате белый персик, айва, груша и травы. Подходит к рыбе и морепродуктам, а также как аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-more-nebo-white"
+      ]
+    }
+  ]
+}

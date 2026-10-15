@@ -383,3 +383,8 @@ Screenshots use browser emulation. These checks do not replace physical-device t
 
 Open `/lineup/derbent-vino?wine=caucasian-dzharag`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Золотая Балка map
+
+Open `/lineup/zolotaya-balka?wine=balaklava-bryut-rezerv`.
+Check the selected catalog wine, a gray product, and the mobile popup.
