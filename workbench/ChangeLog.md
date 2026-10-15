@@ -6636,3 +6636,7 @@ Add a fixed cap, neck, shoulder, and label-coverage guard to experimental query 
 Fresh frozen my Top1 baseline/previous/guarded is 2049/2045/2046 of 2374. Top5 is 2327/2326/2326. Top10 is 2347 for all. Named negative errors stay 80 of 534. The guard restores four previous hits and loses three previous rotation gains. It remains three assignment hits below zero-margin Cropped SigLIP2. All 70 patch tests and focused Ruff checks pass. The independent audit verifies 15155 files and all results. Review all 15 changed positive photos with 90 separate query and reference images. Reuse only exact verified input pixels and vectors. No new inference, reference change, rotated patch bundle, or live selector change.
 
 Report: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md. Private evidence: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/partial-label-min5-20261015/.
+
+## 2026-10-15T08:40:15+03:00 — Show failure-review wine slugs
+
+Update the private experiment failure-review page and its generator. Show accepted and returned wine_slugs in case text. Show exact reference wine_slugs in image captions. Verify all 303 case cards and preserve frozen data and scores. JavaScript syntax, escaping, pagination, slug search, and case navigation pass. No inference or service restart. Evidence: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/failure-review/slug-ui-20261015/audit.json.
