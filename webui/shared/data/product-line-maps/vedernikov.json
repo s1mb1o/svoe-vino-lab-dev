@@ -1,0 +1,1335 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "vedernikov",
+    "name": "Ведерниковъ",
+    "aliases": [
+      "Винодельня Ведерниковъ",
+      "Винодельня Ведерников"
+    ],
+    "slug_prefixes": [
+      "vinodelnya-vedernikov-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "vedernikov-catalog",
+      "label": "Ведерниковъ: коллекции",
+      "url": "https://vedernikovwine.ru/vino/"
+    },
+    {
+      "id": "vedernikov-core",
+      "label": "Винодельня Ведерниковъ",
+      "url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov/"
+    },
+    {
+      "id": "vedernikov-reserve",
+      "label": "Винодельня Ведерниковъ Резерв",
+      "url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov-rezerv/"
+    },
+    {
+      "id": "vedernikov-hard-sign",
+      "label": "Твердый Знак",
+      "url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov-tverdyy-znak/vinodelnya-vedernikov-tverdyy-znak1/"
+    },
+    {
+      "id": "vedernikov-hard-sign-2",
+      "label": "Твердый Знак №2",
+      "url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov-tverdyy-znak/vinodelnya-vedernikov-tverdyy-znak-2/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "flagship",
+      "label": "Флагманская коллекция",
+      "rank": 3,
+      "description": "Флагманское позиционирование коллекции «Твердый Знак» указано производителем.",
+      "price_label": "Флагман",
+      "source_ids": [
+        "vedernikov-catalog"
+      ]
+    },
+    {
+      "id": "reserve",
+      "label": "Премиальная коллекция",
+      "rank": 2,
+      "description": "Производитель относит коллекцию «Резерв» к премиальным выдержанным винам.",
+      "price_label": "Премиальный ориентир",
+      "source_ids": [
+        "vedernikov-catalog",
+        "vedernikov-reserve"
+      ]
+    },
+    {
+      "id": "core",
+      "label": "Основная коллекция",
+      "rank": 1,
+      "description": "Основная коллекция производителя. Размещение ниже резерва — редакционный ориентир.",
+      "price_label": "Основной ассортимент",
+      "source_ids": [
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "formats",
+      "label": "Другие серии и форматы",
+      "rank": 0,
+      "description": "Серии из сохранённого каталога и отдельные форматы без подтверждённого сравнения цен.",
+      "price_label": "Без ценового ранга",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "hard-sign",
+      "name": "Твердый Знак",
+      "tier_id": "flagship",
+      "method": "Выдержка в дубе и бутылке",
+      "description": "Флагманские бленды молодых и резервных вин.",
+      "source_ids": [
+        "vedernikov-catalog",
+        "vedernikov-hard-sign",
+        "vedernikov-hard-sign-2"
+      ]
+    },
+    {
+      "id": "reserve",
+      "name": "Винодельня Ведерниковъ Резерв",
+      "tier_id": "reserve",
+      "method": "Выдержка в дубе",
+      "description": "Выдержанные вина коллекции «Резерв».",
+      "source_ids": [
+        "vedernikov-reserve"
+      ]
+    },
+    {
+      "id": "core",
+      "name": "Основная линейка и другие вина",
+      "tier_id": "core",
+      "method": "Не указан в источнике",
+      "description": "Основная коллекция производителя и отдельные карточки снимка каталога без уточнённой серии. Для таких карточек принадлежность основной коллекции не подтверждена; выпуски сохранены отдельно.",
+      "source_ids": [
+        "vedernikov-core",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "gubernatorskoe",
+      "name": "Губернаторское",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Серия из снимка каталога «Свое Вино». Текущая иерархия производителя не уточнена.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "gubernatorskoe-reserve",
+      "name": "Губернаторский Резерв",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Резервные выпуски серии «Губернаторское» из сохранённого каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "phantom",
+      "name": "Фантом",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Три самостоятельных выпуска: 30/70, 50/50 и 70/30.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "pravoberezhnoe",
+      "name": "Правобережное",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Белое и красное вино серии из сохранённого каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "dolina-dona",
+      "name": "Долина Дона",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Серия «Ведерниковъ Долина Дона» из сохранённого каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "pet-nat",
+      "name": "Пет-Нат",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Отдельные продукты Пет-Нат, указанные в названиях карточек. Ценовой ранг не установлен.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Игристые из каталога",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Группа для навигации по игристым карточкам. Принадлежность отдельных выпусков к текущим коллекциям не подтверждена.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-rkacziteli-beloe-suhoe",
+      "group_id": "core",
+      "name": "Ркацители белое сухое",
+      "variant": "",
+      "wine_slug": "rkacziteli-beloe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-rkacziteli-beloe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Нос вина интенсивный, свежий, комплексный, с доминантой белых цветов и фруктов, которые раскрываются тропическими тонами бананов, дыни, груши дюшес, красных яблок и сочетают в себе сливки, ваниль и выраженную минеральную основу. Вино полнотелое, округлое, умеренно-свежее, с нюансами бананов, цукатов, выпечки и кедровых орешков. Послевкусие длительное, сливочное, с тонами выпечки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12",
+      "group_id": "sparkling",
+      "name": "50/50 Цимлянский-Сибирьковый Экстра брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Сибирьковый",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате минеральные ноты мела и кремния, тона выпечки и тостов с конфитюром. Вкус чистый, хрустящий, свежий с элегантной текстурой, фруктовыми и минеральными оттенками, живой кислотностью и бодрящим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "phantom",
+      "name": "Фантом 30/70",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ягоды, специи, конфитюр, темные сливы, кожа, тлеющие угольки, черемуха, розмарин, ментол, полынь и канифоль. Вкус свежий, элегантный, с фруктово-минеральными тонами и долгим, теплым, угольно-пряным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "phantom",
+      "name": "Фантом 50/50",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате черная смородина, чернослив и ягоды мирабель, с нюансами лаврового листа и угля. Тона фиалки и нюхательного табака. Вкус яркий, округлый с гладкой текстурой, фруктовыми и пряными оттенками, высокой кислотностью и долгим послевкусием с ореховыми нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15",
+      "group_id": "phantom",
+      "name": "Фантом 70/30",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате древесные нюансы, пряные ноты, тёмные ягоды и фрукты. Вкус в балансе между фруктовой и древесно-пряной, танинной и кислотной составляющими. Послевкусие долгое, мягкое, приятное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12",
+      "group_id": "gubernatorskoe-reserve",
+      "name": "Губернаторский Резерв. Белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Ркацители"
+      ],
+      "description": "В аромате фруктовые и растительные ноты. Вкус сбалансированный, с деликатной фруктово-медовой сладостью, хорошо интегрированной кислотностью и цитрусовой горчинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14",
+      "group_id": "gubernatorskoe-reserve",
+      "name": "Губернаторский Резерв. Красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате тона спелых красных и черных ягод, черной смородины и аронии, чернослив и легкие оттенки дыма. Вкус насыщенный, округлый, гармоничный, с отличным балансом, сочетанием оттенков черной смородины, терна и вишни. Послевкусие длительное, с фруктово-ягодными и пряными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11",
+      "group_id": "gubernatorskoe",
+      "name": "Губернаторское. Голубок",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Голубок",
+        "Каберне Совиньон",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате ноты черной смородины, ежевики, вишни, сливы и пряных специй. Вкус мягкий, шелковистый, фруктовый, с хорошо сбалансированной кислотностью, элегантными танинами и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12",
+      "group_id": "gubernatorskoe",
+      "name": "Губернаторское. Каберне",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "Я аромате спелые красные фрукты и ягоды, шиповник и специи. Вкус мягкий, шелковистый вкус с фруктовыми оттенками, округлыми танинами и пикантной терпкостью в продолжительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12",
+      "group_id": "gubernatorskoe",
+      "name": "Губернаторское. Рислинг",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "И аромате цитрусовые и белые фрукты (груши, желтое яблоко), минералы и специи. Вкус чистый, освежающий с минеральными и цветочными оттенками, гладкой текстурой и пикантной кислинкой в сдержанном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13",
+      "group_id": "gubernatorskoe",
+      "name": "Губернаторское. Ркацители",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате зрелый абрикос, цитрусовые фрукты, цветы акации и ощутимая минеральность. Вкус насыщенный, округлый, с высокой кислотностью, нотами цитрусовых фруктов, легкой минеральностью и длительным, бодрящим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11",
+      "group_id": "gubernatorskoe",
+      "name": "Губернаторское. Розовое",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате оттенки клубники и розы. Вкус насыщенный, округлый, свежий, сбалансированный, с яркими тонами красных садовых ягод и барбариса. В послевкусии умеренной длины остаются нюансы клубники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате ноты черной смородины, красных ягод, сушеной вишни, выделанной кожи, копченостей, кедра, розмарина, черного перца, ванильной выпечки и яркими животными нюансами. Вкус Насыщенный, округлый, с сочными танинами, нотами чернослива, вишневого варенья, черной смородины, пряностей и кожи. В послевкусии нюансы ягодного конфитюра и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "group_id": "core",
+      "name": "Красностоп Золотовский",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате тона вишни, тутовника, сливы, спелых ягод, легкие оттенки копоти и пряностей. Вкус округлый, хорошо сбалансированный, с легкой терпкостью, свежей кислотностью, бархатистыми танинами, нотами ягодного варенья, шелковицы, вишни и специй. Послевкусие продолжительное, с нотками подвяленных черных ягод и нюансами дымка.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "name": "Красностоп Золотовский Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате нюансы лесных ягод, темной вишни, специй и древесины с дымом. Во вкусе яркие ягодные и пряные ноты, оттенки темных фруктов и легкая горчинка, ощутимая танинность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-reserve"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12",
+      "group_id": "core",
+      "name": "Красностоп Золотовский розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате тона клубники со сливками, зефира, ягодного сорбета и душистого пиона. Вкус свежий, гладкий, невесомый, с гармоничной кислотностью, оттенками красных ягод и цветов и ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13",
+      "group_id": "pravoberezhnoe",
+      "name": "Правобережное белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "В аромате свежескошенная трава, крыжовник, манго и минералы. Вкус полнотелый, округлый, очень свежий, с легкой минеральностью, нотами крыжовника, зеленого яблока. Послевкусие долгое, свежее.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145",
+      "group_id": "pravoberezhnoe",
+      "name": "Правобережное красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате оттенки черной смородины, вишни, сливы, черного перца, свежескошенной травы, легких нюансов кедра, дыма и деликатных бальзамических ноток. Вкус округлый с яркими нотами вишни, смородины, сливы, черноплодной рябины и оттенками специй, лакрицы, кедра. Хорошая кислотность, сдержанная танинность и длительное приятное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13",
+      "group_id": "core",
+      "name": "Ркацители",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате сухофрукты с тонами запечённого яблока, фундука, мёда и хлебной корочки. Вкус маслянистый, тельный, с правильной кислотностью и тонами айвового варенья, миндаля, вяленых на дыму ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117",
+      "group_id": "sparkling",
+      "name": "Сибирьковый-Алиготе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Сибирьковый"
+      ],
+      "description": "В аромате ноты белых цветов, желтого яблока, груши и алычи с легкими оттенками меда, цедры лимона, трав и ощутимой минеральностью. Вкус свежий, с нюансами белых фруктов и цветов, пикантной кислинкой, легкими оттенками луговых трав, сочного яблока и цукатов. Минеральные тона в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11",
+      "group_id": "core",
+      "name": "Сибирьковый",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Сибирьковый"
+      ],
+      "description": "В аромате тона цветов акации, лайма, зеленого яблока, тропических фруктов, с легкими сливочными нюансами и яркой минеральностью. Вкус насыщенный, свежий, с нотами зеленого яблока, скошенной травы, минеральными тонами и легкой грейпфрутовой горчинкой. В послевкусии нюансы цукатов и грейпфрута.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117",
+      "group_id": "sparkling",
+      "name": "Сибирьковый экстра брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Сибирьковый"
+      ],
+      "description": "В аромате оттенки свежескошенного луга, белого персика, тимьяна, нотками красного яблока, желтых цветов, манго, маракуйи, дыни, корочки хлеба и яркие минеральные нюансы. Вкус нежный, округлый, хорошо сбалансированный и структурированный, с гармоничной кислотностью, тонами зеленого яблока и нюансами фруктовых цукатов в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117",
+      "group_id": "sparkling",
+      "name": "Цимлянский Черный Blanc de Noirs",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат травянистый с нотками белых цветов, желтого яблока, груши, алычи, минеральными тонами. Вкус сбалансированный с тонами зеленого яблока, абрикоса, белой шелковицы, хрустящей кислотностью и продолжительным минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129",
+      "group_id": "sparkling",
+      "name": "Цимлянский Черный брют розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "В аромате оттенки красных фруктов, подлеска и минералов. Вкус интенсивный, свежий, с фруктово-ягодными акцентами и приятной кислинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14",
+      "group_id": "sparkling",
+      "name": "Цимлянский Черный брют розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Игра пузырьков тонкая и продолжительная, с мелким жемчужным перляжем. Аромат яркий и сочный, с самобытным характером. Доминируют ноты красной смородины, малины и фруктовой пастилы, которые переходят в более сложные оттенки свежеиспеченного ягодного пирога с черной смородиной и легкими акцентами тимьяна и спелой сливы. Вкус насыщенный, округлый и жизнерадостный. Яркая фруктовая основа идеально сбалансирована свежей кислотностью, что создает сочное и гармоничное впечатление. Послевкусие мягкое, с ягодными нотами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145",
+      "group_id": "reserve",
+      "name": "Цимлянский Черный Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "В аромате спелые темные ягоды и фрукты, пряности, шоколад и черный перец. Вкус полнотелый, сбалансированный, округлый, с шелковистой текстурой, фруктово-древесным профилем и тонкими танинами в строгом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-reserve"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125",
+      "group_id": "core",
+      "name": "Цимлянский Черный розовый",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "В аромате малина, клубника, розы, сливочная нотка и выраженная минеральность. Вкус полнотелый, округлый, свежий с яркой гаммой красных ягод и барбариса. Послевкусие с тонами клубники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12",
+      "group_id": "dolina-dona",
+      "name": "Ведерниковъ Долина Дона Белое Сухое",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Рислинг",
+        "Ркацители",
+        "Сибирьковый"
+      ],
+      "description": "Аромат свежий, с нотами цитруса, белых цветов и лёгкими травянистыми нюансами; вкус лёгкий, с хорошей кислотностью и минеральным послевкусием. К рыбным блюдам, птице, лёгким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125",
+      "group_id": "dolina-dona",
+      "name": "Ведерниковъ Долина Дона Красное Сухое",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "Аромат фруктовый — красные ягоды, вишня, лёгкие пряные нотки; вкус средней полноты, с хорошей кислотностью и ягодным послевкусием. К мясным блюдам, птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115",
+      "group_id": "gubernatorskoe",
+      "name": "Ведерниковъ Губернаторское «Голубок»",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Голубок",
+        "Каберне Совиньон",
+        "Цимлянский черный"
+      ],
+      "description": "Аромат фруктовый — красные ягоды, вишня с лёгкими пряными акцентами; вкус средней полноты, с мягкими танинами и ягодным послевкусием. К мясным блюдам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "gubernatorskoe-reserve",
+      "name": "Ведерниковъ Губернаторское Резерв",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Красностоп Золотовский",
+        "Цимлянский черный"
+      ],
+      "description": "Аромат сложный — тёмные ягоды, чёрная смородина, кедр и пряности; вкус полнотелый, с плотной структурой, мягкими танинами и долгим тёмно-ягодным послевкусием. К красному мясу, дичи, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145",
+      "group_id": "core",
+      "name": "Ведерниковъ Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат классический — чёрная смородина, вишня, лёгкие ноты кедра и специй; вкус полнотелый, с хорошей структурой, зрелыми танинами и долгим послевкусием. К красному мясу, стейкам, твёрдым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "core",
+      "name": "Ведерниковъ Красностоп Золотовский",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "Аромат яркий — красные и тёмные ягоды, лёгкие тона специй и земли; вкус гармоничный, с мягкими танинами, свежей кислотностью и длительным ягодным послевкусием. К красному мясу, шашлыку, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145",
+      "group_id": "core",
+      "name": "Ведерниковъ Красностоп Золотовский (магнум)",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "Аромат яркий — красные и тёмные ягоды, лёгкие тона специй и земли; вкус гармоничный, с мягкими танинами, свежей кислотностью и длительным ягодным послевкусием. К красному мясу, шашлыку, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13",
+      "group_id": "pet-nat",
+      "name": "Ведерниковъ Пет-Нат «Голубок» Красный Брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Голубок"
+      ],
+      "description": "Аромат свежий, с нотами красных ягод, вишни и лёгкой дрожжевой нотой; вкус питкий, с живой кислотностью и природной игристостью. К мясным блюдам и сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10",
+      "group_id": "pet-nat",
+      "name": "Ведерниковъ Пет-Нат «Платовский-Алиготе» Брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Платовский"
+      ],
+      "description": "Аромат свежий, с нотами яблока, груши и лёгкой цветочной нотой; вкус лёгкий, с природной игристостью и освежающей кислотностью. К рыбным блюдам, птице, лёгким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12",
+      "group_id": "core",
+      "name": "Ведерниковъ Пухляковский",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пухляковский",
+        "Сибирьковый"
+      ],
+      "description": "Аромат свежий, с нотами белых цветов, груши и лёгкой минеральностью; вкус лёгкий, с хорошей кислотностью и чистым послевкусием. К рыбным блюдам, птице, лёгким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12",
+      "group_id": "sparkling",
+      "name": "Ведерниковъ Цимлянский Чёрный Брют Розе 2",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат свежий — красные ягоды, малина, барбарис и лёгкая цветочная нота; вкус свежий, с приятной кислотностью и ягодным послевкусием. К морепродуктам, лёгким закускам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12",
+      "group_id": "sparkling",
+      "name": "Ведерниковъ Цимлянский Чёрный Брют Розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат свежий — красные ягоды, малина, барбарис и лёгкая цветочная нота; вкус свежий, с приятной кислотностью и ягодным послевкусием. К морепродуктам, лёгким закускам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12",
+      "group_id": "sparkling",
+      "name": "Ведерниковъ Цимлянский Чёрный Брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат свежий, с нотами белых цветов и лёгкой минеральностью; вкус сухой, с живой кислотностью и чистым послевкусием. К морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14",
+      "group_id": "core",
+      "name": "Ведерниковъ Цимлянский Чёрный",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат насыщенный — тёмные ягоды, ежевика, нотки перца и дуба; вкус полнотелый, с хорошей структурой, зрелыми танинами и долгим ягодно-пряным послевкусием. К красному мясу, баранине, зрелым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "vedernikov-core"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12",
+      "group_id": "pet-nat",
+      "name": "Винодельня Ведерниковъ Пет-Нат Розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Цимлянский черный"
+      ],
+      "description": "Аромат свежий, с нотами красных ягод, цветов граната и лёгкой дрожжевой нотой; вкус питкий, с живой кислотностью и природной игристостью, ягодным послевкусием. К морепродуктам, птице, нежирным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13",
+      "group_id": "sparkling",
+      "name": "Винодельня Ведерниковъ Цимлянский Черный-Сибирьковый Экстра Брют",
+      "variant": "",
+      "wine_slug": "vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Сибирьковый",
+        "Цимлянский черный"
+      ],
+      "description": "Аромат свежий — зелёное яблоко, цитрус, лёгкие травянистые ноты автохтонных сортов Дона; вкус сухой, с живой кислотностью, минеральностью и чистым освежающим послевкусием. К рыбным блюдам, морепродуктам, закускам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "official-hard-sign",
+      "group_id": "hard-sign",
+      "name": "Винодельня Ведерниковъ. Твердый Знак",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/official-hard-sign.webp",
+        "source_id": "vedernikov-hard-sign"
+      },
+      "category": "Вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Красностоп Золотовский",
+        "Цимлянский Чёрный",
+        "Каберне Совиньон"
+      ],
+      "description": "Флагманский бленд: 70% Красностопа Золотовского, 20% Цимлянского Чёрного и 10% Каберне Совиньона. Средняя выдержка — 24 месяца в дубе и 9 месяцев в бутылке.",
+      "release_status": "limited",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "vedernikov-hard-sign",
+        "vedernikov-catalog",
+        "vedernikov-hard-sign-2"
+      ]
+    },
+    {
+      "id": "official-hard-sign-2",
+      "group_id": "hard-sign",
+      "name": "Винодельня Ведерниковъ. Твердый Знак №2",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/vedernikov/official-hard-sign-2.webp",
+        "source_id": "vedernikov-hard-sign-2"
+      },
+      "category": "Вино",
+      "style": "Красное сухое",
+      "grapes": [
+        "Красностоп Золотовский",
+        "Каберне Совиньон"
+      ],
+      "description": "Бленд Красностопа Золотовского и Каберне Совиньона в равных долях. Средняя выдержка — 18 месяцев в дубе и 5 месяцев в бутылке.",
+      "release_status": "limited",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "vedernikov-hard-sign-2",
+        "vedernikov-catalog",
+        "vedernikov-hard-sign"
+      ]
+    }
+  ]
+}

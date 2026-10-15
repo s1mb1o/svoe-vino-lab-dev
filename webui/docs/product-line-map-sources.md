@@ -238,3 +238,9 @@ It does not claim complete live assortment coverage.
 Read [massandra sources](product-line-maps/massandra/sources.md).
 The map includes 44 snapshot cards and 2 verified additions in 9 groups.
 It does not claim complete live assortment coverage.
+
+## Ведерниковъ extension, 2026-10-16
+
+Read [vedernikov sources](product-line-maps/vedernikov/sources.md).
+The map includes 43 snapshot cards and 2 verified additions in 10 groups.
+It does not claim complete live assortment coverage.

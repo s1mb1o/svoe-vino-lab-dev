@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Ведерниковъ map
+
+- Add 10 groups and 45 product nodes in `vedernikov.json`.
+- Cover all 43 saved catalog cards. Add 2 verified products without catalog links.
+- Record collection sources, exact catalog crosswalks, and asset provenance.
+
 ## 2026-10-16 — Массандра map
 
 - Add 9 groups and 46 product nodes in `massandra.json`.

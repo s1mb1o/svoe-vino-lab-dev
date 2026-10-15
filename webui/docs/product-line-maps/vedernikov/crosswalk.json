@@ -1,0 +1,410 @@
+{
+  "producer_id": "vedernikov",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Ведерниковъ",
+  "entries": [
+    {
+      "wine_slug": "rkacziteli-beloe-suhoe",
+      "product_id": "wine-rkacziteli-beloe-suhoe",
+      "group_id": "core",
+      "catalog_name": "Ркацители белое сухое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_HX_Ipy_m_U_Tr_Wd50_Scq_Gjhv_Z2m_AVX_4zqqc_ETZ_Rz075dvr_A_Xeagyogp_Hml_Zh_I3_IH_Jb_Q_3b5c66876c.webp",
+      "asset_sha256": "5a2f544ffe6549bbbf1ab2e5a0338f7c2f8022654cd2ac4c5d8debf4a9f9a1bd"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12",
+      "product_id": "wine-vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12",
+      "group_id": "sparkling",
+      "catalog_name": "50/50 Цимлянский-Сибирьковый Экстра брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_5050_tsimlyanskiy_sibirkovyy_ekstra_bryut_beloe_12_9cb05a5a09.webp",
+      "asset_sha256": "d170734923b84910b81dac0429954dec5553e7acc4b21ac9e43ff90d9be4ea29"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "phantom",
+      "catalog_name": "Фантом 30/70",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_fantom_3070_krasnostop_zolotovskiy_krasnoe_suhoe_145_6c9dfe89bd.webp",
+      "asset_sha256": "134194b5c0c5104cb268e1d7301ccb66040ac51e2588b49d40031a7b042425bd"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "phantom",
+      "catalog_name": "Фантом 50/50",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_fantom_5050_krasnostop_zolotovskiy_krasnoe_suhoe_145_54e6aa9638.webp",
+      "asset_sha256": "55db09bd9220e1738e4885008b1cfc9a6aaa0ddd73e3f5824faaca39f3ae775b"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15",
+      "product_id": "wine-vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15",
+      "group_id": "phantom",
+      "catalog_name": "Фантом 70/30",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_fantom_7030_krasnostop_zolotovskiy_krasnoe_suhoe_15_4431943ad0.webp",
+      "asset_sha256": "5ab3795c8798409c6055b89bd1494d4660d7eb09dc76eed93a4c862d2eeeb61f"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12",
+      "group_id": "gubernatorskoe-reserve",
+      "catalog_name": "Губернаторский Резерв. Белое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskiy_rezerv_beloe_risling_suhoe_12_280641b281.webp",
+      "asset_sha256": "23e3c13dee8acd74ee2e3512db210b1fbaa1cbd0e7a52a89f7fcaf2ca3e41964"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14",
+      "group_id": "gubernatorskoe-reserve",
+      "catalog_name": "Губернаторский Резерв. Красное",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskiy_rezerv_krasnoe_kaberne_sovinon_suhoe_14_35b1c6ebda.webp",
+      "asset_sha256": "0b1f8a3cc85435c645a80ee0afccc5795deb85538d3b410e9d768d81c1f820f3"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Губернаторское. Голубок",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskoe_golubok_krasnoe_suhoe_11_35f666fa86.webp",
+      "asset_sha256": "6c782e3dee025dfe65fd08802550eb73ce94641db59102c10835781c7c10fdb6"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Губернаторское. Каберне",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskoe_kaberne_krasnostop_zolotovskiy_krasnoe_suhoe_12_62ddf16cc6.webp",
+      "asset_sha256": "d079d069289662b40beb095d8cf796fd518b2520685b3ac07984db3a0a1b8838"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Губернаторское. Рислинг",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskoe_risling_beloe_suhoe_12_43f9820281.webp",
+      "asset_sha256": "c70d16c3d8fcdf1a0ce1a66dbbf6338ae4f8bef7558a88188f1c54e9f94473bb"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Губернаторское. Ркацители",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskoe_rkatsiteli_beloe_suhoe_13_3e2b70fdee.webp",
+      "asset_sha256": "976909af1f776fcdea8db35f066eec73fc3f34415cb420d86b41f9f905581556"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11",
+      "product_id": "wine-vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Губернаторское. Розовое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_gubernatorskoe_rozovoe_tsimlyanskiy_chernyy_suhoe_11_46e399ed48.webp",
+      "asset_sha256": "1d769b495692b6d667e0417df0108bdae613046b0023b8f8ca9f46e9c2590fdc"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "catalog_name": "Каберне Совиньон",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_kaberne_sovinon_krasnoe_suhoe_14_bf65626333.webp",
+      "asset_sha256": "f5d3c44217950e4e684a698c822bddc9cdc44f3637f5726157ae88d504d303a8"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "product_id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Красностоп Золотовский",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_krasnostop_zolotovskiy_krasnoe_suhoe_13_a05fcccc58.webp",
+      "asset_sha256": "8fdc7861f61d393bf128c4f7665b14ab5a1ad6dfd5af258e710c980019c237d4"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15",
+      "product_id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "catalog_name": "Красностоп Золотовский Резерв",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_krasnostop_zolotovskiy_rezerv_krasnoe_suhoe_15_d809aa8af8.webp",
+      "asset_sha256": "6b241b5faa1ce3db515d23f96b505f01df3365b1a9ea159e105c267d25777ea9"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12",
+      "group_id": "core",
+      "catalog_name": "Красностоп Золотовский розе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_krasnostop_zolotovskiy_roze_rozovoe_suhoe_12_eb54b43c4b.webp",
+      "asset_sha256": "865ef20ed024bd1aedafce9638dd8cfa498f3ddf5485679d53a2e1e35b8831f1"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13",
+      "product_id": "wine-vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13",
+      "group_id": "pravoberezhnoe",
+      "catalog_name": "Правобережное белое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_pravoberezhnoe_beloe_aligote_suhoe_13_bc8750c1c8.webp",
+      "asset_sha256": "de19f22ef32138338f868adcb2382aa4b7f5a8192e4bcdd1648cce40e1409774"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145",
+      "group_id": "pravoberezhnoe",
+      "catalog_name": "Правобережное красное",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_pravoberezhnoe_krasnoe_kaberne_sovinon_suhoe_145_75edc6fd6c.webp",
+      "asset_sha256": "79f7e8e4e4ec5ede2855e2f4ea79cf65d6400af4bcb5fd395d3ea00ae029aeff"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13",
+      "product_id": "wine-vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Ркацители",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_rkatsiteli_beloe_suhoe_13_f4d5d4e613.webp",
+      "asset_sha256": "3f81a6a9af516f34f5d22a64c6e1e45db95492b3751f35e87b11b30de8960531"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117",
+      "product_id": "wine-vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117",
+      "group_id": "sparkling",
+      "catalog_name": "Сибирьковый-Алиготе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_sibirkovyy_aligote_beloe_bryut_117_e6cc15c360.webp",
+      "asset_sha256": "7489f6b19624884b9f2c4e5d779049b128e60b863bbec4ecb011e7c5657b08b3"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11",
+      "product_id": "wine-vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11",
+      "group_id": "core",
+      "catalog_name": "Сибирьковый",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_sibirkovyy_beloe_suhoe_11_1b751f8d90.webp",
+      "asset_sha256": "9f021f9134d3cb4ae53fe278dfec5a67ddcdf483eea0f4de3c859c5ca420f447"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117",
+      "product_id": "wine-vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117",
+      "group_id": "sparkling",
+      "catalog_name": "Сибирьковый экстра брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_sibirkovyy_ekstra_bryut_beloe_117_5f7d82bd4f.webp",
+      "asset_sha256": "897fff64e784f53215dd6d17799e4996b3b92a1af5500d740a98f96d8db7018a"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117",
+      "group_id": "sparkling",
+      "catalog_name": "Цимлянский Черный Blanc de Noirs",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_tsimlyanskiy_chernyy_blanc_de_noirs_beloe_bryut_117_eb7b9970f8.webp",
+      "asset_sha256": "82ec70fe6534f1b1d3a64a0a0a4659a8c6166cfa283e90837a7f2b787c1e2940"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129",
+      "group_id": "sparkling",
+      "catalog_name": "Цимлянский Черный брют розе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_tsimlyanskiy_chernyy_bryut_roze_rozovoe_129_075d159ef0.webp",
+      "asset_sha256": "89834b423003764562b575e03e7f5f58a21a98139fca3166e61244a09410df9c"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14",
+      "group_id": "sparkling",
+      "catalog_name": "Цимлянский Черный брют розе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_tsimlyanskiy_chernyy_bryut_roze_igristoe_bryut_rozovoe_14_5478e43eff.webp",
+      "asset_sha256": "f7cae3b4a4f117cecb14c95812e3190178060850ac6ada9647e4994d4e368cb9"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145",
+      "group_id": "reserve",
+      "catalog_name": "Цимлянский Черный Резерв",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_tsimlyanskiy_chernyy_rezerv_krasnoe_suhoe_145_c7141a2860.webp",
+      "asset_sha256": "96795581b0931200f7c242af81f210c8e864779ccaba2c5341d00a4c40e9a324"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125",
+      "group_id": "core",
+      "catalog_name": "Цимлянский Черный розовый",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_tsimlyanskiy_chernyy_rozovyy_rozovoe_suhoe_125_c3e94b0098.webp",
+      "asset_sha256": "7fba2296c0d2531cc484c6981ec2fdd4d94801e38823aa92f8a1274703f7bf90"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12",
+      "group_id": "dolina-dona",
+      "catalog_name": "Ведерниковъ Долина Дона Белое Сухое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_dolina_dona_beloe_suhoe_aligote_12_e8c5795ff3.webp",
+      "asset_sha256": "3cf3ceae9aa3096f7b589fbc550ff7e46abc2ee52a89a72f4bf6e1fb996dc0fb"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125",
+      "group_id": "dolina-dona",
+      "catalog_name": "Ведерниковъ Долина Дона Красное Сухое",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_dolina_dona_krasnoe_suhoe_kaberne_sovinon_125_61017e5b54.webp",
+      "asset_sha256": "c5c8a53755ed53787d018013eea6a25ceed70bb18029f8e19e01fe9de3bd4f2d"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115",
+      "group_id": "gubernatorskoe",
+      "catalog_name": "Ведерниковъ Губернаторское «Голубок»",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_gubernatorskoe_golubok_krasnoe_suhoe_115_8c9f5c5b2a.webp",
+      "asset_sha256": "2f9480b77c09427aef1903f0da21369290d1919e3a821b4a1809967b340a114a"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "gubernatorskoe-reserve",
+      "catalog_name": "Ведерниковъ Губернаторское Резерв",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_gubernatorskoe_rezerv_kaberne_sovinon_krasnoe_suhoe_14_89b77c35e7.webp",
+      "asset_sha256": "94c6143776506aad9dd62a5d3a28cc7030662ee76f1a9b82929db27a9128c2df"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145",
+      "group_id": "core",
+      "catalog_name": "Ведерниковъ Каберне Совиньон",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_kaberne_sovinon_krasnoe_suhoe_145_1833c3f20b.webp",
+      "asset_sha256": "eb33a4fbb3e0142c97081882b8f873959b4f1c7a7d71cd7b5cd3552fcd40104e"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+      "group_id": "core",
+      "catalog_name": "Ведерниковъ Красностоп Золотовский",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_krasnostop_zolotovskiy_krasnoe_suhoe_145_07aa21a458.webp",
+      "asset_sha256": "24812bd507ceaf132b11a4d631781994db9a5c58d01f5024f0e8610b50803f17"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145",
+      "group_id": "core",
+      "catalog_name": "Ведерниковъ Красностоп Золотовский (магнум)",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_krasnostop_zolotovskiy_magnum_krasnoe_suhoe_145_8e7ef2fb06.webp",
+      "asset_sha256": "55fbd00cba156f1d795b3c08e2c182ee1c7f6e20f6eb2c9f5de77e51d509417f"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13",
+      "group_id": "pet-nat",
+      "catalog_name": "Ведерниковъ Пет-Нат «Голубок» Красный Брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_pet_nat_golubok_krasnyy_bryut_krasnoe_suhoe_13_59ca83550f.webp",
+      "asset_sha256": "785d5c0d669ef5e53d8979390a0c7ea2bce2f8495dcb5b93ae64e1bd35346f02"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10",
+      "group_id": "pet-nat",
+      "catalog_name": "Ведерниковъ Пет-Нат «Платовский-Алиготе» Брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_pet_nat_platovskiy_aligote_bryut_beloe_suhoe_10_d5c01e9bdf.webp",
+      "asset_sha256": "b72bffa42236624a8da8747d02925bea086ca7c9978b6c9d6f3f1307cdda6308"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12",
+      "group_id": "core",
+      "catalog_name": "Ведерниковъ Пухляковский",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_puhlyakovskiy_beloe_suhoe_12_f332a8999d.webp",
+      "asset_sha256": "ea81cb223bdc4748cc82b6f81e6b10f104e0adc372a1d64f3a26229776d02779"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12",
+      "group_id": "sparkling",
+      "catalog_name": "Ведерниковъ Цимлянский Чёрный Брют Розе 2",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_tsimlyanskiy_chyornyy_bryut_roze_2_tsimlyanskiy_chernyy_rozovoe_12_f890d2ca11.webp",
+      "asset_sha256": "4718a70912cc5074dd5ece37e73667ba09fe2d8722c86a0bab199459901eff9f"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12",
+      "group_id": "sparkling",
+      "catalog_name": "Ведерниковъ Цимлянский Чёрный Брют Розе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_tsimlyanskiy_chyornyy_bryut_roze_tsimlyanskiy_chernyy_rozovoe_12_62efb1454a.webp",
+      "asset_sha256": "f8fb2d9961468c3f12acdb022bb8c8e7b347a76b50d5b5c348ff1daa01144932"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12",
+      "group_id": "sparkling",
+      "catalog_name": "Ведерниковъ Цимлянский Чёрный Брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vedernikov_tsimlyanskiy_chyornyy_bryut_tsimlyanskiy_chernyy_beloe_12_94126ea6cf.webp",
+      "asset_sha256": "8793a5c16a5969570d05e785defbcbf0a179180d6b3d6f47ae6396f27fe63110"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14",
+      "product_id": "wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14",
+      "group_id": "core",
+      "catalog_name": "Ведерниковъ Цимлянский Чёрный",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "f_Kq_In_Kw3d7b_LF_Oe_Fn_M_Gnh_Lwyz_Yv_B_J0l_a_Gu_P9_ZF_Xxs3w_BR_5_ETC_Fr5mq_RB_9_Vo_Fg_It8d5h6_B_or_Hdxex_T8_Tw4cw_OQ_5x0g_Q_Yny_Gw_Sca_Gr8npum_ZHI_4mid_Pd_Whec_Nq_1854d79859.webp",
+      "asset_sha256": "da09faf2e03be91269a8fae322aadd24a101963c920e74d244b38a2e20adf72d"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12",
+      "product_id": "wine-vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12",
+      "group_id": "pet-nat",
+      "catalog_name": "Винодельня Ведерниковъ Пет-Нат Розе",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vinodelnya_vedernikov_pet_nat_roze_tsimlyanskiy_chernyy_rozovoe_suhoe_12_647e4c90d6.webp",
+      "asset_sha256": "f79b20f2b6f345e1b8d629a5a8428d54398f573119457bf43e4daf025c3457a1"
+    },
+    {
+      "wine_slug": "vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13",
+      "product_id": "wine-vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13",
+      "group_id": "sparkling",
+      "catalog_name": "Винодельня Ведерниковъ Цимлянский Черный-Сибирьковый Экстра Брют",
+      "catalog_producer": "Ведерниковъ",
+      "source_image": "vinodelnya_vedernikov_vinodelnya_vedernikov_tsimlyanskiy_chernyy_sibirkovyy_ekstra_bryut_beloe_13_8299616071.webp",
+      "asset_sha256": "dbe9f9146ff4a544482095f534827b845522217066204cc1b3da8c254eddf5ad"
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-hard-sign",
+      "source_url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov-tverdyy-znak/vinodelnya-vedernikov-tverdyy-znak1/",
+      "image_url": "https://vedernikovwine.ru/upload/iblock/2f8/1okdirwei558dr48exwneigk6lknxcn0/cplg8ov504pcz40wzym3q9f6oucwu97b.webp",
+      "absence_check": "All 43 producer cards inspected. No name or slug identifies Tverdy Znak or VV hard-sign flagship packages. Phantom cards remain separate.",
+      "asset_sha256": "eb4b533388af5728672abc9285e7dd856915f6aef7c0a82185cdd5ce110ee4c1"
+    },
+    {
+      "product_id": "official-hard-sign-2",
+      "source_url": "https://vedernikovwine.ru/vino/vinodelnya-vedernikov-tverdyy-znak/vinodelnya-vedernikov-tverdyy-znak-2/",
+      "image_url": "https://vedernikovwine.ru/upload/iblock/d44/t1liwj4cqonilfucv5sbko42domtrea1/ryuop6ls0g9pmhzgx1zfpgh5gmgqfs1m.webp",
+      "absence_check": "All 43 producer cards inspected. No name or slug identifies Tverdy Znak or VV hard-sign flagship packages. Phantom cards remain separate.",
+      "asset_sha256": "75f367fe9bcfe9c548f665cd98241b44dac4691dab22567e959e4461c55db36e"
+    }
+  ]
+}

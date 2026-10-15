@@ -403,3 +403,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/massandra?wine=aligote-avtorskoe`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Ведерниковъ map
+
+Open `/lineup/vedernikov?wine=rkacziteli-beloe-suhoe`.
+Check the selected catalog wine, a gray product, and the mobile popup.
