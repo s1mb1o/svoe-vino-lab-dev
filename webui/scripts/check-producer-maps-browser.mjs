@@ -12,6 +12,10 @@ const report = `reports/producer-maps/${browserName}`
 await mkdir(report, { recursive: true })
 const errors = []
 const checks = []
+const producerMaps = maps.filter(line => line.producer.id !== 'abrau-durso')
+let status = 'failed'
+let failure
+let activeCase
 
 async function viewportState(page) {
   return page.locator('[data-map-viewport]').evaluate(element => ({ left: element.scrollLeft, top: element.scrollTop }))
@@ -59,14 +63,42 @@ async function assertLayout(page, label) {
   assert.deepEqual(broken, [], `${label}: broken images`)
 }
 
+async function imageFailureBeforeHydration() {
+  activeCase = 'image-failure-before-hydration'
+  const line = producerMaps.find(line => line.products.some(product => product.wine_slug && product.image))
+  const product = line.products.find(product => product.wine_slug && product.image)
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' })
+  let releaseScripts
+  const scriptsReady = new Promise(resolve => { releaseScripts = resolve })
+  try {
+    await context.addInitScript(() => localStorage.setItem('svoe-vino.age-confirmed.v1', 'yes'))
+    const page = await context.newPage()
+    const pageErrors = []
+    page.on('pageerror', error => pageErrors.push(error.message))
+    await page.route('**/_nuxt/*.js', async route => { await scriptsReady; await route.continue() })
+    await page.route(`**${product.image.src}`, route => route.fulfill({ status: 404, body: '' }))
+    await page.goto(`${origin}/lineup/${line.producer.id}?wine=${encodeURIComponent(product.wine_slug)}`, { waitUntil: 'commit' })
+    await page.waitForFunction(src => [...document.querySelectorAll('img[data-map-image]')].some(image => image.dataset.mapImage === src && image.complete && image.naturalWidth === 0), product.image.src)
+    releaseScripts()
+    await page.locator('.plm-detail-image .plm-image-placeholder').waitFor({ state: 'visible' })
+    await page.waitForFunction(src => ![...document.querySelectorAll('img[data-map-image]')].some(image => image.dataset.mapImage === src), product.image.src)
+    assert.deepEqual(pageErrors, [])
+    checks.push(activeCase)
+  } finally {
+    releaseScripts()
+    await context.close()
+  }
+}
+
 try {
-  for (const line of maps.filter(line => line.producer.id !== 'abrau-durso')) {
+  for (const [lineIndex, line] of producerMaps.entries()) {
     const initial = line.products.find(product => product.wine_slug)
     const gray = line.products.find(product => product.wine_slug === null)
     assert(initial && gray, `${line.producer.id}: linked and unlinked evidence required`)
     for (const [width, theme] of [[1440, 'light'], [1440, 'dark'], [390, 'light'], [320, 'dark']]) {
       const mobile = width < 768
       const label = `${line.producer.id}-${width}-${theme}`
+      activeCase = label
       const context = await browser.newContext({ viewport: { width, height: mobile ? 844 : 1000 }, colorScheme: theme, isMobile: mobile, hasTouch: mobile, reducedMotion: 'reduce', serviceWorkers: 'block' })
       await context.addInitScript(() => {
         localStorage.setItem('svoe-vino.age-confirmed.v1', 'yes')
@@ -80,6 +112,7 @@ try {
       assert.equal(await page.locator(`[data-group-id="${initial.group_id}"]`).getAttribute('aria-expanded'), 'true')
       const details = page.locator('[data-product-detail]')
       if (mobile) {
+        await page.locator('[data-product-dialog]').waitFor({ state: 'attached' })
         assert.equal(await details.getAttribute('open'), null, `${label}: popup must stay closed on entry`)
         const before = await viewportState(page)
         await page.getByRole('button', { name: 'О выбранном вине', exact: true }).click()
@@ -96,6 +129,12 @@ try {
       assert(await page.locator(`[data-product-id="${gray.id}"]`).evaluate(element => element.classList.contains('is-unavailable')))
       assert.equal(await details.locator('.plm-portal-link').count(), 0)
       assert(await details.locator('.plm-detail-description').innerText())
+      const grayGroup = line.groups.find(group => group.id === gray.group_id)
+      assert.equal(await details.locator('.plm-detail-group-description').innerText(), grayGroup.description)
+      assert.equal(await page.locator(`[data-group-container="${gray.group_id}"] .plm-group-description`).innerText(), grayGroup.description)
+      assert.equal(await page.locator(`[data-product-id="${gray.id}"] .plm-unavailable-marker`).innerText(), 'Нет карточки')
+      const methodFact = details.locator('.plm-facts > div').filter({ has: page.locator('dt', { hasText: 'Производство в группе' }) })
+      assert.equal(await methodFact.count(), /^(?:Метод )?не указан/i.test(grayGroup.method.trim()) ? 0 : 1)
       if (!gray.image) assert.equal(await details.locator('.plm-image-placeholder').innerText(), 'Нет изображения')
       if (mobile) assert.equal(await details.getAttribute('open'), '')
       await assertLayout(page, label)
@@ -108,19 +147,45 @@ try {
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${missingImage.wine_slug}`)
         if (mobile) await page.keyboard.press('Escape')
       }
-      const next = maps.find(other => other.producer.id !== line.producer.id)
-      await page.getByRole('combobox', { name: 'Выбрать производителя', exact: true }).selectOption(next.producer.id)
+      if (['fanagoria', 'kuban-vino'].includes(line.producer.id) && ((width === 1440 && theme === 'light') || (width === 320 && theme === 'dark'))) {
+        await page.getByRole('button', { name: 'Открыть все', exact: true }).click()
+        await page.waitForFunction(count => {
+          const groups = [...document.querySelectorAll('[data-group-id]')]
+          return groups.length === count && groups.every(group => group.getAttribute('aria-expanded') === 'true')
+        }, line.groups.length)
+        await assertLayout(page, `${label}-expanded`)
+        await page.getByRole('button', { name: 'Свернуть все', exact: true }).click()
+        await page.waitForFunction(count => {
+          const groups = [...document.querySelectorAll('[data-group-id]')]
+          return groups.length === count && groups.every(group => group.getAttribute('aria-expanded') === 'false')
+        }, line.groups.length)
+        await assertLayout(page, `${label}-collapsed`)
+        checks.push(`${label}-expand-collapse-all`)
+      }
+      const next = producerMaps[(lineIndex + 1) % producerMaps.length]
+      await page.getByRole('combobox', { name: 'Производитель', exact: true }).selectOption(next.producer.id)
+      assert.equal(new URL(page.url()).pathname, `/lineup/${line.producer.id}`, 'Changing the producer selection must not navigate before submission')
+      await page.getByRole('button', { name: 'Открыть карту', exact: true }).click()
       await page.waitForURL(`**/lineup/${next.producer.id}`)
-      assert.equal(await page.locator('[data-product-detail]').getAttribute('data-selected-product'), '')
+      await page.waitForFunction(id => document.querySelector('.product-line-map')?.dataset.producerId === id && document.querySelector('[data-product-detail]')?.getAttribute('data-selected-product') === '', next.producer.id)
+      if (mobile) await page.locator('[data-product-dialog]').waitFor({ state: 'attached' })
       assert.equal(await page.locator('[data-product-dialog][open]').count(), 0)
       await assertLayout(page, `${label}-navigation`)
       checks.push(label)
       await context.close()
     }
   }
+  await imageFailureBeforeHydration()
   assert.deepEqual(errors, [])
-  await writeFile(`${report}/results.json`, JSON.stringify({ browser: browserName, checks, errors }, null, 2) + '\n')
-  console.log(JSON.stringify({ browser: browserName, checks: checks.length, errors }, null, 2))
+  status = 'passed'
+  console.log(JSON.stringify({ browser: browserName, status, checks: checks.length, errors }, null, 2))
+} catch (error) {
+  failure = { case: activeCase, message: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }
+  throw error
 } finally {
-  await browser.close()
+  try {
+    await writeFile(`${report}/results.json`, JSON.stringify({ browser: browserName, status, checks, errors, failure }, null, 2) + '\n')
+  } finally {
+    await browser.close()
+  }
 }

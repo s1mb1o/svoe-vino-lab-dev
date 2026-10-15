@@ -101,6 +101,14 @@ describe('producer product-line graph', () => {
     expect(errors.some(error => error.startsWith('Unsafe source URL:'))).toBe(true)
   })
 
+  it('rejects ambiguous premium ranks and empty tiers', () => {
+    const broken = structuredClone(line)
+    broken.tiers[1]!.rank = broken.tiers[0]!.rank
+    broken.tiers.push({ ...broken.tiers[0]!, id: 'empty-tier', rank: 99 })
+    expect(validateProductLineMap(broken)).toContain('Duplicate premium tier rank')
+    expect(validateProductLineMap(broken)).toContain('Empty tier: empty-tier')
+  })
+
   it('rejects duplicate node IDs and aliases on an unlinked product', () => {
     const broken = structuredClone(line)
     broken.products[1]!.id = broken.products[0]!.id

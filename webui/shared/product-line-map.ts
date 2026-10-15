@@ -36,7 +36,7 @@ export interface ProductLineMapData {
 export interface LineEdge { source: string; target: string; type: 'contains' }
 
 export const ABRAU_PRODUCT_LINE = abrauData as ProductLineMapData
-export const PRODUCT_LINE_MAPS: ProductLineMapData[] = (registeredProducerMaps as ProductLineMapData[])
+export const PRODUCT_LINE_MAPS: ProductLineMapData[] = ([...registeredProducerMaps] as ProductLineMapData[])
   .sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru'))
 
 const normalizedProducer = (value: string) => value.toLocaleLowerCase('ru').replace(/[^a-zа-яё0-9]/g, '')
@@ -106,7 +106,10 @@ export function validateProductLineMap(line: ProductLineMapData): string[] {
   for (const source of line.sources) {
     if (source.url && !/^https:\/\//.test(source.url)) errors.push(`Unsafe source URL: ${source.id}`)
   }
+  const rankedTiers = line.tiers.filter(tier => tier.rank !== 0).map(tier => tier.rank)
+  if (new Set(rankedTiers).size !== rankedTiers.length) errors.push('Duplicate premium tier rank')
   for (const tier of line.tiers) {
+    if (!line.groups.some(group => group.tier_id === tier.id)) errors.push(`Empty tier: ${tier.id}`)
     if (!Number.isFinite(tier.rank)) errors.push(`Invalid tier rank: ${tier.id}`)
     checkSources(tier.source_ids, tier.id)
   }

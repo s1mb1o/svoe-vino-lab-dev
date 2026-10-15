@@ -13,6 +13,7 @@ const mapId = useId()
 const CANVAS_WIDTH = 1120
 const MIN_ZOOM = .6
 const MAX_ZOOM = 1.4
+const mapRoot = ref<HTMLElement>()
 const viewport = ref<HTMLElement>()
 const canvas = ref<HTMLElement>()
 const detailHeading = ref<HTMLElement>()
@@ -20,6 +21,11 @@ const detailPanel = ref<HTMLElement>()
 const failedImages = ref(new Set<string>())
 function imageFailed(src?: string) {
   if (src) failedImages.value = new Set([...failedImages.value, src])
+}
+function recoverFailedImages() {
+  for (const image of mapRoot.value?.querySelectorAll<HTMLImageElement>('img[data-map-image]') || []) {
+    if (image.complete && image.naturalWidth === 0) imageFailed(image.dataset.mapImage)
+  }
 }
 const zoom = ref(1)
 const canvasHeight = ref(1800)
@@ -58,6 +64,10 @@ const selectionIsInitial = computed(() => selectedProduct.value?.id === initialP
 const sourceDate = computed(() => {
   const value = props.line.scope.as_of
   return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('.') : value
+})
+const catalogSnapshotDate = computed(() => {
+  const date = props.line.scope.catalog_snapshot.match(/\d{4}-\d{2}-\d{2}/)?.[0]
+  return date ? date.split('-').reverse().join('.') : props.line.scope.catalog_snapshot
 })
 const surfaceStyle = computed(() => ({ width: `${CANVAS_WIDTH * zoom.value}px`, height: `${canvasHeight.value * zoom.value}px` }))
 const canvasStyle = computed(() => ({ width: `${CANVAS_WIDTH}px`, transform: `scale(${zoom.value})` }))
@@ -187,6 +197,15 @@ function productCountLabel(count: number) {
   const last = count % 10
   const suffix = count % 100 >= 11 && count % 100 <= 14 ? 'позиций' : last === 1 ? 'позиция' : last >= 2 && last <= 4 ? 'позиции' : 'позиций'
   return `${count} ${suffix}`
+}
+function groupCountLabel(count: number) {
+  const last = count % 10
+  const suffix = count % 100 >= 11 && count % 100 <= 14 ? 'групп' : last === 1 ? 'группа' : last >= 2 && last <= 4 ? 'группы' : 'групп'
+  return `${count} ${suffix}`
+}
+function groupMethod(group?: LineGroup) {
+  const method = group?.method.trim()
+  return method && !/^(?:Метод )?не указан/i.test(method) ? method : undefined
 }
 function isUnavailable(product: LineProduct) { return product.wine_slug === null }
 function isInitial(product: LineProduct) { return initialProduct.value?.id === product.id }
@@ -379,6 +398,7 @@ watch([() => props.line, () => props.initialSlug, () => props.unmatchedWine], as
 }, { immediate: true })
 
 onMounted(async () => {
+  recoverFailedImages()
   mobileMedia = window.matchMedia('(max-width: 767px)')
   mobileMedia.addEventListener('change', updateMobileLayout)
   await updateMobileLayout()
@@ -399,17 +419,17 @@ defineExpose({ centerInitial })
 </script>
 
 <template>
-  <section class="plm product-line-map" aria-label="Путеводитель по линейке производителя">
-    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ selectedName ? `Выбрано: ${selectedName}${selectedProduct && isUnavailable(selectedProduct) ? '. Нет карточки на Свое Вино' : ''}` : 'Выберите коллекцию и вино на карте' }}</p>
+  <section ref="mapRoot" class="plm product-line-map" :data-producer-id="line.producer.id" aria-label="Путеводитель по линейке производителя">
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ selectedName ? `Выбрано: ${selectedName}${selectedProduct && isUnavailable(selectedProduct) ? '. Нет карточки на Свое Вино' : ''}` : 'Выберите группу и вино на карте' }}</p>
     <div class="plm-intro">
-      <div><p class="plm-kicker">{{ line.groups.length }} КОЛЛЕКЦИЙ · {{ productCountLabel(line.products.length).toLocaleUpperCase('ru') }}</p><p class="plm-intro-copy">От особого случая до повседневного знакомства.</p></div>
-      <p class="plm-source">Материалы на {{ sourceDate }}<span>Серые позиции — без карточки на «Свое Вино»</span></p>
+      <div><p class="plm-kicker">{{ groupCountLabel(line.groups.length).toLocaleUpperCase('ru') }} · {{ productCountLabel(line.products.length).toLocaleUpperCase('ru') }}</p><p class="plm-intro-copy">От особого случая до повседневного знакомства.</p></div>
+      <p class="plm-source">Материалы на {{ sourceDate }}<span>Серые позиции — без карточки на «Свое Вино» в снимке от {{ catalogSnapshotDate }}</span></p>
     </div>
 
     <div class="plm-workspace" :class="{ 'plm-details-collapsed': !showDetails }">
       <div class="plm-map-column">
         <div class="plm-toolbar">
-          <label class="plm-group-picker"><span class="sr-only">Перейти к коллекции</span><select :value="navigationGroup" aria-label="Перейти к коллекции" @change="jumpToGroup"><option disabled value="">Выберите коллекцию</option><optgroup v-for="tier in tiers" :key="tier.id" :label="tier.label"><option v-for="group in groupsForTier(tier.id)" :key="group.id" :value="group.id">{{ group.name }}</option></optgroup></select><AppIcon name="chevron" /></label>
+          <label class="plm-group-picker"><span class="sr-only">Перейти к группе</span><select :value="navigationGroup" aria-label="Перейти к группе" @change="jumpToGroup"><option disabled value="">Выберите группу</option><optgroup v-for="tier in tiers" :key="tier.id" :label="tier.label"><option v-for="group in groupsForTier(tier.id)" :key="group.id" :value="group.id">{{ group.name }}</option></optgroup></select><AppIcon name="chevron" /></label>
           <div class="plm-controls" role="group" aria-label="Масштаб и положение карты">
             <button type="button" aria-label="Уменьшить карту" :disabled="zoom <= MIN_ZOOM" @click="changeZoom(-.1)"><AppIcon name="minus" /></button>
             <output class="plm-zoom" aria-label="Масштаб карты">{{ Math.round(zoom * 100) }}%</output>
@@ -418,8 +438,8 @@ defineExpose({ centerInitial })
           </div>
         </div>
         <button v-if="isMobile" ref="mobileDetailsTrigger" type="button" class="plm-mobile-details-trigger" :disabled="!selectedProduct && !activeUnknown" aria-haspopup="dialog" :aria-expanded="mobileDetailsOpen" :aria-controls="`${mapId}-details`" @click="reopenDetails">О выбранном вине<AppIcon name="arrow" /></button>
-        <p :id="`${mapId}-navigation-help`" class="plm-navigation-help"><span><AppIcon name="map" />Перемещайте карту · откройте коллекцию</span><span class="plm-overview-controls"><button type="button" :aria-expanded="allGroupsOpen" :aria-controls="`${mapId}-canvas`" @click="toggleAllGroups">{{ allGroupsOpen ? 'Свернуть все' : 'Открыть все' }}</button><button type="button" class="plm-fit" aria-label="Обзор карты" title="Обзор карты в читаемом масштабе" @click="fitWidth"><AppIcon name="fullscreen" /><span>Обзор</span></button></span></p>
-        <div ref="viewport" data-map-viewport class="plm-viewport" :class="{ 'is-dragging': isDragging }" tabindex="0" role="region" aria-label="Холст с коллекциями и винами" :aria-describedby="`${mapId}-navigation-help`" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd" @click.capture="suppressDraggedClick" @keydown="keyboardPan" @dragstart.prevent>
+        <p :id="`${mapId}-navigation-help`" class="plm-navigation-help"><span><AppIcon name="map" />Перемещайте карту · откройте группу</span><span class="plm-overview-controls"><button type="button" :aria-expanded="allGroupsOpen" :aria-controls="`${mapId}-canvas`" @click="toggleAllGroups">{{ allGroupsOpen ? 'Свернуть все' : 'Открыть все' }}</button><button type="button" class="plm-fit" aria-label="Обзор карты" title="Обзор карты в читаемом масштабе" @click="fitWidth"><AppIcon name="fullscreen" /><span>Обзор</span></button></span></p>
+        <div ref="viewport" data-map-viewport class="plm-viewport" :class="{ 'is-dragging': isDragging }" tabindex="0" role="region" aria-label="Холст с группами и винами" :aria-describedby="`${mapId}-navigation-help`" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd" @click.capture="suppressDraggedClick" @keydown="keyboardPan" @dragstart.prevent>
           <div class="plm-surface" :style="surfaceStyle">
             <div ref="canvas" :id="`${mapId}-canvas`" data-map-canvas class="plm-canvas" :style="canvasStyle">
               <section v-for="tier in tiers" :key="tier.id" class="plm-tier" :class="{ 'plm-tier-neutral': tier.rank === 0 }" :data-tier-id="tier.id">
@@ -429,11 +449,12 @@ defineExpose({ centerInitial })
                     <button class="plm-group-toggle" :data-group-id="group.id" type="button" :aria-expanded="expandedGroups.has(group.id)" :aria-controls="`${mapId}-products-${group.id}`" @click="toggleGroup(group)">
                       <span class="plm-group-heading"><strong>{{ group.name }}</strong><span>{{ productCountLabel(groupProducts(group).length) }}<span v-if="recognized && initialProduct?.group_id === group.id" class="plm-group-current"> · Ваше вино</span></span></span><span class="plm-group-toggle-icon"><AppIcon :name="expandedGroups.has(group.id) ? 'minus' : 'plus'" /></span>
                     </button>
-                    <p v-if="group.method && group.method !== 'Не указан в источнике'" class="plm-group-method">{{ group.method }}</p>
-                    <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть коллекцию ${group.name}`" @click="toggleGroup(group, true)"><template v-for="product in groupProducts(group).slice(0, 4)" :key="product.id"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async"><span v-else class="plm-image-placeholder" :aria-label="`${product.name}: нет изображения`"><AppIcon name="image" /><span>Нет изображения</span></span></template><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button><p class="plm-group-description">{{ group.description }}</p></template>
-                    <div v-show="expandedGroups.has(group.id)" :id="`${mapId}-products-${group.id}`" class="plm-products" role="group" :aria-label="`Вина коллекции ${group.name}`">
+                    <p v-if="groupMethod(group)" class="plm-group-method">{{ groupMethod(group) }}</p>
+                    <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть группу ${group.name}`" @click="toggleGroup(group, true)"><template v-for="product in groupProducts(group).slice(0, 4)" :key="product.id"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async"><span v-else class="plm-image-placeholder" :aria-label="`${product.name}: нет изображения`"><AppIcon name="image" /><span>Нет изображения</span></span></template><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button></template>
+                    <p class="plm-group-description">{{ group.description }}</p>
+                    <div v-show="expandedGroups.has(group.id)" :id="`${mapId}-products-${group.id}`" class="plm-products" role="group" :aria-label="`Вина группы ${group.name}`">
                       <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product, $event)">
-                        <span class="plm-product-bottle"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет в каталоге</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
+                        <span class="plm-product-bottle"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет карточки</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
                       </button>
                     </div>
                   </article>
@@ -449,22 +470,22 @@ defineExpose({ centerInitial })
         <template v-if="(isMobile || showDetails) && (selectedProduct || activeUnknown)">
           <div v-if="isMobile" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
           <div class="plm-detail-scroll">
-          <div class="plm-detail-summary"><div class="plm-detail-image"><img v-if="selectedImage" :src="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
+          <div class="plm-detail-summary"><div class="plm-detail-image"><img v-if="selectedImage" :src="selectedImage" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
           <div class="plm-detail-content">
             <template v-if="selectedProduct">
               <div class="plm-detail-badges"><span v-if="selectedTier">{{ selectedTier.label }}</span><span v-if="releaseLabel(selectedProduct)">{{ releaseLabel(selectedProduct) }}</span><span v-for="badge in selectedProduct.badges" :key="badge">{{ badge }}</span></div>
-              <p class="plm-tier-disclaimer">Позиционирование коллекции — редакционный ориентир. Это не текущая цена и не оценка качества.</p>
+              <p class="plm-tier-disclaimer">Позиционирование группы — редакционный ориентир. Это не текущая цена и не оценка качества.</p>
               <p class="plm-detail-description">{{ selectedProduct.description }}</p>
-              <dl class="plm-facts"><div v-if="selectedGroup"><dt>Коллекция</dt><dd>{{ selectedGroup.name }}</dd></div><div v-if="selectedTier"><dt>Позиционирование</dt><dd>{{ selectedTier.price_label }}</dd></div><div v-if="selectedGroup?.method"><dt>Производство</dt><dd>{{ selectedGroup.method }}</dd></div><div><dt>Категория</dt><dd>{{ selectedProduct.category }}</dd></div><div v-if="selectedProduct.grapes.length"><dt>Сорта винограда</dt><dd>{{ selectedProduct.grapes.join(', ') }}</dd></div></dl>
-              <div v-if="isUnavailable(selectedProduct)" class="plm-availability"><AppIcon name="info" /><p>Карточки на «Свое Вино» нет в сохранённом каталоге. Это не означает, что продукт снят с производства.</p></div>
+              <dl class="plm-facts"><div v-if="selectedGroup"><dt>Группа</dt><dd>{{ selectedGroup.name }}<p class="plm-detail-group-description">{{ selectedGroup.description }}</p></dd></div><div v-if="selectedTier"><dt>Позиционирование</dt><dd>{{ selectedTier.price_label }}</dd></div><div v-if="groupMethod(selectedGroup)"><dt>Производство в группе</dt><dd>{{ groupMethod(selectedGroup) }}</dd></div><div><dt>Категория</dt><dd>{{ selectedProduct.category }}</dd></div><div v-if="selectedProduct.grapes.length"><dt>Сорта винограда</dt><dd>{{ selectedProduct.grapes.join(', ') }}</dd></div></dl>
+              <div v-if="isUnavailable(selectedProduct)" class="plm-availability"><AppIcon name="info" /><p>Карточки на «Свое Вино» нет в снимке каталога от {{ catalogSnapshotDate }}. Это не означает, что продукт снят с производства.</p></div>
             </template>
-            <template v-else-if="activeUnknown"><div class="plm-availability"><AppIcon name="info" /><p>Это вино производителя {{ line.producer.name }}. Отдельной позиции на карте пока нет. Коллекция и ценовой уровень не определены.</p></div><p v-if="activeUnknown.description" class="plm-detail-description">{{ activeUnknown.description }}</p><dl class="plm-facts"><div v-if="activeUnknown.grapes.length"><dt>Сорта винограда</dt><dd>{{ activeUnknown.grapes.join(', ') }}</dd></div><div v-if="activeUnknown.alcohol"><dt>Алкоголь</dt><dd>{{ activeUnknown.alcohol }}</dd></div></dl></template>
+            <template v-else-if="activeUnknown"><div class="plm-availability"><AppIcon name="info" /><p>Это вино производителя {{ line.producer.name }}. Отдельной позиции на карте пока нет. Группа и ценовой уровень не определены.</p></div><p v-if="activeUnknown.description" class="plm-detail-description">{{ activeUnknown.description }}</p><dl class="plm-facts"><div v-if="activeUnknown.grapes.length"><dt>Сорта винограда</dt><dd>{{ activeUnknown.grapes.join(', ') }}</dd></div><div v-if="activeUnknown.alcohol"><dt>Алкоголь</dt><dd>{{ activeUnknown.alcohol }}</dd></div></dl></template>
           </div>
           </div>
           <div class="plm-detail-actions"><a v-if="selectedUrl" :href="selectedUrl" class="button primary plm-portal-link" target="_blank" rel="noopener noreferrer">На «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-else class="plm-no-link">Нет карточки на «Свое Вино»</p><button type="button" class="plm-return" @click="returnToMap"><AppIcon name="back" />Вернуться к карте</button></div>
         </template>
         <template v-else-if="selectedProduct || activeUnknown"><p class="plm-kicker">ВАШ ВЫБОР СОХРАНЁН</p><h3>{{ selectedName }}</h3><button type="button" class="plm-reopen" @click="reopenDetails">Показать карточку<AppIcon name="arrow" /></button></template>
-        <div v-else class="plm-empty-selection"><AppIcon name="map" /><p class="plm-kicker">ЗНАКОМСТВО С ПРОИЗВОДИТЕЛЕМ</p><h3>Найдите своё вино<br>на карте коллекций</h3><p>Откройте коллекцию и выберите бутылку. Здесь появятся её особенности, способ производства и место в линейке.</p><span>Премиальные коллекции — выше.<br>Форматы и напитки — отдельно.</span></div>
+        <div v-else class="plm-empty-selection"><AppIcon name="map" /><p class="plm-kicker">ЗНАКОМСТВО С ПРОИЗВОДИТЕЛЕМ</p><h3>Найдите своё вино<br>на карте производителя</h3><p>Откройте группу и выберите бутылку. Здесь появятся сведения о вине и его место в линейке.</p><span>Выше расположены группы с более высоким подтверждённым или редакционным позиционированием. Группы без ценового ранга показаны отдельно.</span></div>
       </component>
     </div>
   </section>
@@ -530,6 +551,7 @@ defineExpose({ centerInitial })
 .plm-image-placeholder .icon { width: 28px; height: 40px; opacity: .6; }
 .plm-preview-label { position: absolute; bottom: 7px; right: 10px; display: inline-flex; gap: 5px; align-items: center; color: var(--accent); font-size: 9px; }
 .plm-preview-label .icon { width: 13px; height: 13px; }
+.plm-detail-group-description { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .plm-group-description { margin: 12px 16px 17px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 .plm-products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 12px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--cream) 55%, var(--paper)); }
 .plm-product { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; min-height: 210px; padding: 10px 7px 9px; border: 1px solid transparent; border-radius: 10px; color: var(--ink); background: var(--paper); text-align: center; }

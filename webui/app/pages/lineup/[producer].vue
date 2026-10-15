@@ -3,8 +3,10 @@ import { PRODUCT_LINE_MAPS, findLineProduct } from '#shared/product-line-map'
 
 const route = useRoute()
 const router = useRouter()
-function changeProducer(event: Event) {
-  router.push(`/lineup/${(event.target as HTMLSelectElement).value}`)
+const selectedProducer = ref(String(route.params.producer))
+watch(() => route.params.producer, id => { selectedProducer.value = String(id) })
+function changeProducer() {
+  router.push(`/lineup/${selectedProducer.value}`)
 }
 const line = computed(() => PRODUCT_LINE_MAPS.find(item => item.producer.id === route.params.producer))
 const title = computed(() => line.value ? `Карта линейки ${line.value.producer.name} — Что за вино?` : 'Карта производителя не найдена — Что за вино?')
@@ -21,7 +23,7 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
       <div><p class="step-label">ПУТЕВОДИТЕЛЬ ПО ПРОИЗВОДИТЕЛЮ</p><h1>Карта линейки {{ line.producer.name }}</h1><p>{{ line.scope.label }}. Выберите линейку, затем познакомьтесь с конкретным продуктом.</p></div>
       <NuxtLink to="/" class="button secondary">К сканеру<AppIcon name="arrow" /></NuxtLink>
     </header>
-    <label class="lineup-producer-picker"><span>Производитель</span><select :value="line.producer.id" aria-label="Выбрать производителя" @change="changeProducer"><option v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label>
+    <form class="lineup-producer-picker" @submit.prevent="changeProducer"><label><span>Производитель</span><select v-model="selectedProducer"><option v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label><button type="submit" class="button secondary">Открыть карту<AppIcon name="arrow" /></button></form>
     <p v-if="initialSlug" class="lineup-context">{{ unknownSlug ? 'Вино по этой ссылке не найдено в карте. Вы можете изучить линейки производителя.' : 'Вино выбрано по ссылке, без распознавания.' }}</p>
     <ProductLineMap :key="`${line.producer.id}:${initialSlug || 'overview'}`" :line="line" :initial-slug="initialSlug" :recognized="false" />
     </template>
@@ -36,7 +38,9 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
 .lineup-heading p:not(.step-label), .lineup-context { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .lineup-heading .button { flex-shrink: 0; width: auto; }
 .lineup-context { margin: 0 0 16px; }
-.lineup-producer-picker { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+.lineup-producer-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+.lineup-producer-picker label { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.lineup-producer-picker .button { width: auto; min-height: 40px; padding: 9px 16px; font-size: 13px; }
 .lineup-producer-picker select { min-width: 0; max-width: 100%; padding: 10px 36px 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; }
 .lineup-producer-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (max-width: 767px) {
@@ -44,6 +48,9 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
   .lineup-heading { align-items: start; flex-direction: column; gap: 8px; margin-bottom: 12px; }
   .lineup-heading h1 { margin: 8px 0; font-size: 28px; }
   .lineup-heading div>p:not(.step-label) { display: none; }
+  .lineup-producer-picker { gap: 8px; }
+  .lineup-producer-picker label { width: 100%; }
+  .lineup-producer-picker select { flex: 1; }
   .lineup-context { font-size: 12px; margin-bottom: 0; }
   .lineup-heading .button { width: auto; min-height: 36px; padding: 7px 12px; font-size: 12px; }
 }

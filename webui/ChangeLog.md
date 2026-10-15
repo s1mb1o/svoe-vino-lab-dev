@@ -41,7 +41,9 @@
 
 - Validate all map data before the production build.
 - Wait for visible images before browser screenshots.
-- Verify 198 unit tests, type checks, the build, and both browser suites.
+- Verify 231 tests with the full source snapshot, type checks, the build, and both browser suites.
+- Keep group evidence visible. Distinguish group methods from product facts.
+- Use explicit producer form submission and recover image failures before hydration.
 - Record source review, scanner integration checks, and production asset checks.
 
 ## 2026-10-16 — Мысхако map

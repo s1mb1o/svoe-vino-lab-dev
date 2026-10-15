@@ -63,6 +63,10 @@ Nine snapshot products have no confirmed local image.
 A missing image and a missing catalog link are independent states.
 A controlled HTTP 404 image probe passed in Chromium and WebKit at mobile and desktop sizes.
 The selected product and portal link remain unchanged when its image fails.
+The full 2,103-record snapshot check found no false producer attribution.
+Gray additions and all 586 new image checksums match their crosswalk records.
+The implementation review identified hidden group caveats and ambiguous volume-only labels.
+The final UI exposes group caveats and keeps group methods separate from product facts.
 Read `docs/validation/producer-maps.md` for the full verification scope.
 Read `docs/reviews/2026-10-16-producer-maps-resolution.md` for review decisions.
 

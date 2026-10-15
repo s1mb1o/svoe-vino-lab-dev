@@ -194,7 +194,7 @@ async function assertInfoFocusTrap(map) {
 async function chooseProduct(map, groupId, productId) {
   const mobile = await map.evaluate(() => innerWidth <= 767)
   if (mobile && await infoPopup(map).isVisible()) await closeMobileInfo(map)
-  await map.getByRole('combobox', { name: 'Перейти к коллекции' }).selectOption(groupId)
+  await map.getByRole('combobox', { name: 'Перейти к группе' }).selectOption(groupId)
   assert.equal(await map.locator(`[data-group-id="${groupId}"]`).getAttribute('aria-expanded'), 'true')
   const opener = map.locator(`[data-product-id="${productId}"]`)
   if (mobile) {
@@ -321,7 +321,7 @@ async function overviewAndKeyboard() {
   assert.equal(await map.locator('[data-group-id][aria-expanded="true"]').count(), 0)
   assert.equal(await map.locator('[data-product-id]').count(), 52)
   const imperialToggle = map.locator('[data-group-id="imperial"]')
-  await map.getByRole('button', { name: 'Открыть коллекцию Империал', exact: true }).focus()
+  await map.getByRole('button', { name: 'Открыть группу Империал', exact: true }).focus()
   await page.keyboard.press('Enter')
   await settle(page)
   assert.equal(await imperialToggle.getAttribute('aria-expanded'), 'true')
@@ -329,7 +329,7 @@ async function overviewAndKeyboard() {
   await page.keyboard.press('Enter')
   assert.equal(await imperialToggle.getAttribute('aria-expanded'), 'false')
 
-  const picker = map.getByRole('combobox', { name: 'Перейти к коллекции' })
+  const picker = map.getByRole('combobox', { name: 'Перейти к группе' })
   await picker.focus()
   await picker.selectOption('victor-dravigny')
   await settle(page)
@@ -516,7 +516,7 @@ async function scannerAndShelf() {
   await map.locator('[data-product-detail][data-selected-product="unmatched"]').waitFor()
   assert.equal(await map.locator('[data-product-id][data-selected="true"]').count(), 0)
   assert.equal(await map.locator('.plm-detail-badges').count(), 0, 'An unmapped wine must not acquire an invented tier')
-  assert.match(await map.locator('.plm-availability').innerText(), /Коллекция и ценовой уровень не определены/)
+  assert.match(await map.locator('.plm-availability').innerText(), /Группа и ценовой уровень не определены/)
   assert.equal(await map.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${fixture.slug}`)
   await page.setViewportSize({ width: 390, height: 844 })
   await settle(page)

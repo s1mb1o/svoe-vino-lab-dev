@@ -1,7 +1,7 @@
 # Additional producer maps
 
 Date: 2026-10-16.
-Status: Implementation authorized by the owner.
+Status: Implemented. Read `../validation/producer-maps.md` for verification.
 
 ## Scope
 
