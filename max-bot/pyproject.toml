@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chto-za-vino-max-bot"
+version = "0.1.0"
+description = "MAX messenger bot that recognizes wine from a photo."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "certifi>=2024.2.2",
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "Pillow>=11,<13",
+  "PyYAML>=6,<7",
+  "uvicorn>=0.35,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx2>=2.0.0,<3",
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1.1,<2",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+chto-za-vino-max-bot = "chto_za_vino_max_bot.app:main"
+chto-za-vino-max-admin = "chto_za_vino_max_bot.admin_web:main"
+chto-za-vino-max-profile = "chto_za_vino_max_bot.profile_sync:main"
+chto-za-vino-max-probe = "chto_za_vino_max_bot.probe:main"
+chto-za-vino-max-artifacts = "chto_za_vino_max_bot.artifact_backfill:main"
+chto-za-vino-max-delete-user = "chto_za_vino_max_bot.data_lifecycle:main"
+chto-za-vino-max-host-demo = "chto_za_vino_max_bot.host_demo:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chto_za_vino_max_bot"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".uv-cache", ".venv"]
