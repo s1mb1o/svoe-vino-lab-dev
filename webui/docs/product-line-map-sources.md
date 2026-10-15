@@ -232,3 +232,9 @@ It does not claim complete live assortment coverage.
 Read [inkerman sources](product-line-maps/inkerman/sources.md).
 The map includes 15 snapshot cards and 2 verified additions in 6 groups.
 It does not claim complete live assortment coverage.
+
+## Массандра extension, 2026-10-16
+
+Read [massandra sources](product-line-maps/massandra/sources.md).
+The map includes 44 snapshot cards and 2 verified additions in 9 groups.
+It does not claim complete live assortment coverage.

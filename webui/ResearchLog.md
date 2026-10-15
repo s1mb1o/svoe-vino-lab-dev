@@ -55,6 +55,13 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Массандра, 2026-10-16
+
+The map covers 44 exact catalog slugs from 2026-09-17.
+The map adds 2 verified products without a catalog match.
+1 products have no verified local image and use the explicit placeholder.
+Read `docs/product-line-maps/massandra/sources.md` for collection evidence and limits.
+
 ## Инкерман, 2026-10-16
 
 The map covers 15 exact catalog slugs from 2026-09-17.

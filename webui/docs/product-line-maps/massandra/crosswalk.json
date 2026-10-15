@@ -1,0 +1,618 @@
+{
+  "producer_id": "massandra",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Массандра",
+  "entries": [
+    {
+      "wine_slug": "aligote-avtorskoe",
+      "product_id": "wine-aligote-avtorskoe",
+      "group_id": "author",
+      "catalog_name": "Алиготе Авторское",
+      "catalog_producer": "Массандра",
+      "source_image": "4285_eq_F1_Fau_no_bg_preview_carve_photos_75f98bca1a.webp",
+      "asset_sha256": "45a2352c21c4aa773a33286e7866f42b387c19f80d7d5ec98866cc0f18a6c11b",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "aligote-avtorskoe-vino",
+      "product_id": "wine-aligote-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Алиготе. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "4285_eq_F1_Fau_no_bg_preview_carve_photos_6d7da0f321.webp",
+      "asset_sha256": "45a2352c21c4aa773a33286e7866f42b387c19f80d7d5ec98866cc0f18a6c11b",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "beloe-polusladkoe",
+      "product_id": "wine-beloe-polusladkoe",
+      "group_id": "base",
+      "catalog_name": "Белое полусладкое",
+      "catalog_producer": "Массандра",
+      "source_image": null,
+      "asset_sha256": null,
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "caperavi-avtorskoe-vino",
+      "product_id": "wine-caperavi-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Cаперави. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "2917_Is_MEB_Ew_05f10fa301.webp",
+      "asset_sha256": "5511deb6b2161afad9daf4779dec2829f7bf19ce82b4ba92459474af95d571a9",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "cary-pandas-avtorskoe-vino",
+      "product_id": "wine-cary-pandas-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Cары Пандас. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "2920_t_IFZ_Zgl_88808d05fa.webp",
+      "asset_sha256": "f15a117787a826760b952c7f7c55835bfe4045e1123c92a2edcf7ab1b4bc1aa2",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "cira-avtorskoe-vino",
+      "product_id": "wine-cira-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Cира. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "2919_Ktp_Yck_H_7dd7538fe4.webp",
+      "asset_sha256": "747679563270cb17454d443b60234c8dfef44314d01759b90e4ae915cbf75f83",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "kaberne-avtorskoe-vino",
+      "product_id": "wine-kaberne-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Каберне. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "Kaberne_d0c64468d7.webp",
+      "asset_sha256": "9eb8714065a8bf24e9cf330352bc3efb1d5664360110b489e70d662df6c1117b",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "kaberne-sovinon",
+      "product_id": "wine-kaberne-sovinon",
+      "group_id": "base",
+      "catalog_name": "Каберне Совиньон",
+      "catalog_producer": "Массандра",
+      "source_image": "2202_v_UENI_49_2ae2376a1c.webp",
+      "asset_sha256": "72c075e149f645e5780f7e3dc8f0212ab098f8889461c628f9766b5d54d235b3",
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "kokur-avtorskoe",
+      "product_id": "wine-kokur-avtorskoe",
+      "group_id": "author",
+      "catalog_name": "Кокур Авторское",
+      "catalog_producer": "Массандра",
+      "source_image": "4287_Y_Ch_P_Nz3_no_bg_preview_carve_photos_5f55816077.webp",
+      "asset_sha256": "b453435a55b3cb10dba220378355054705d1aec25092ccf588ac2a94d753bcf3",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "kokur-premium",
+      "product_id": "wine-kokur-premium",
+      "group_id": "premium",
+      "catalog_name": "Кокур Премиум",
+      "catalog_producer": "Массандра",
+      "source_image": "4291_pif_Lu_Yu_no_bg_preview_carve_photos_d891f6036d.webp",
+      "asset_sha256": "9d38fa440c104618e753d79f4249bef0d6a1f9bb59fab3a2fd18144e3d228d0e",
+      "group_source_ids": [
+        "official-premium"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "kokur-suhoe",
+      "product_id": "wine-kokur-suhoe",
+      "group_id": "base",
+      "catalog_name": "Кокур сухое",
+      "catalog_producer": "Массандра",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_E_Hx_Fs_Vdacxiw9g14_S_j_Nls_QH_Uw8_Gotsf9_O_Tvh_VAM_2_MP_Fez_WL_9o66c_Kdh_RE_Gsm_Uq_A_d6dd6cde3c.webp",
+      "asset_sha256": "fee382f5a7a9f82b00a8ce718e9cd5a8dff786dda79ea9cf1d82c31c34753ff8",
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "madera-krymskaya",
+      "product_id": "wine-madera-krymskaya",
+      "group_id": "madeira",
+      "catalog_name": "Мадера Крымская",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_Madera_Krymskaya_42f85c120a.webp",
+      "asset_sha256": "2821361f69efe3d805b489cccdd7c4378641d0ae79dbdb4c008837aa760e7c23",
+      "group_source_ids": [
+        "official-madeira"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-avtorskoe-murvedr-krasnoe-suhoe-14",
+      "product_id": "wine-massandra-avtorskoe-murvedr-krasnoe-suhoe-14",
+      "group_id": "author",
+      "catalog_name": "Авторское Мурведр",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_avtorskoe_murvedr_krasnoe_suhoe_14_9f3b7f61d6.webp",
+      "asset_sha256": "53a94644da3c59c3004c3434002a0e528bb5fa31c1f7a9f5c5f30f1721b0f0a5",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16",
+      "product_id": "wine-massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Бастардо",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_bastardo_bastardo_magarachskiy_krasnoe_sladkoe_16_c111755788.webp",
+      "asset_sha256": "ed5523eed3ef5a8c5e4611388172ca295594b2e542739ed1d71105e3a18a4eef",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-heres",
+      "product_id": "wine-massandra-heres",
+      "group_id": "sherry",
+      "catalog_name": "Массандра Херес",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_Heres_f281a9d608.webp",
+      "asset_sha256": "392f46158e6b6d8d0a27d2c4d0596ff26dc9095deab56697589c49ad39b980ad",
+      "group_source_ids": [
+        "official-sherry"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16",
+      "product_id": "wine-massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16",
+      "group_id": "cahors",
+      "catalog_name": "Кагор Гурзуф",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_kagor_gurzuf_saperavi_krasnoe_sladkoe_16_deb9b34e9f.webp",
+      "asset_sha256": "59e94e223654e981a5be502caaf03754d2f18c8873c252bb9ad16c6750d4e29a",
+      "group_source_ids": [
+        "official-cahors"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16",
+      "product_id": "wine-massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16",
+      "group_id": "cahors",
+      "catalog_name": "Кагор Южнобережный",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_kagor_yuzhnoberezhnyy_saperavi_krasnoe_sladkoe_16_3299446389.webp",
+      "asset_sha256": "84651dae69f150f5a82772d6e6caa2ec27ec4cb53c4d3085f91bf9a10b75a6c6",
+      "group_source_ids": [
+        "official-cahors"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-kokur",
+      "product_id": "wine-massandra-kokur",
+      "group_id": "base",
+      "catalog_name": "Массандра Кокур",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_Kokur_1fa858a17c.webp",
+      "asset_sha256": "b26c2078a466ea0269e3b55421d193a8804a0ba1970d824b6e33ff4fcaf2a9ae",
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-kokur-desertnyy-surozh-beloe-sladkoe-16",
+      "product_id": "wine-massandra-kokur-desertnyy-surozh-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Кокур десертный Сурож",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_kokur_desertnyy_surozh_beloe_sladkoe_16_ffabb4dfbc.webp",
+      "asset_sha256": "adc38d553b17e8ec5b1294fbd1fbe50ad44dc76a8b4fca9c675c744dc071b72b",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16",
+      "product_id": "wine-massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Лакрима Кристи",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_lakrima_kristi_aleatiko_krasnoe_sladkoe_16_2a990c55e6.webp",
+      "asset_sha256": "2cbc7a48afb57db3ddd98a60c4948333d1f70def035d0003feda1903947bde53",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16",
+      "product_id": "wine-massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16",
+      "group_id": "sherry",
+      "catalog_name": "Массандра Херес Ореадна",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_massandra_heres_oreadna_aligote_beloe_suhoe_16_efa1aed005.webp",
+      "asset_sha256": "c1d2f807a145aed30b67e001b8be98d962495201fa4f92cac913d9a070f8ece9",
+      "group_source_ids": [
+        "official-sherry"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat",
+      "product_id": "wine-massandra-muskat",
+      "group_id": "base",
+      "catalog_name": "Массандра Мускат",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_Muskat_94b702fe3b.webp",
+      "asset_sha256": "005b00a60747deccecd2f003de148a053f4d95e5681803a02ac5df269dfc9112",
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13",
+      "product_id": "wine-massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13",
+      "group_id": "dessert",
+      "catalog_name": "Мускат белый красного камня",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskat_belyy_krasnogo_kamnya_beloe_sladkoe_13_8456db974b.webp",
+      "asset_sha256": "7125286af0bfc3b59c0cf19dbbe14f265accf027b03bacaaa1609bb8d74271bb",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10",
+      "product_id": "wine-massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10",
+      "group_id": "late-harvest",
+      "catalog_name": "Мускат белый позднего сбора",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskat_belyy_pozdnego_sbora_beloe_sladkoe_10_17230edc84.webp",
+      "asset_sha256": "817a774077bc84fbc27d3a37c41fa8e50cde57b0d4397f5596324101c98bb796",
+      "group_source_ids": [
+        "official-late-harvest"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16",
+      "product_id": "wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускат Белый Южнобережный",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskat_belyy_yuzhnoberezhnyy_beloe_desertnoe_16_609f9d79d5.webp",
+      "asset_sha256": "581823640f4af73b125b77da1cbd57012272509da854d6a892b635ef917a051d",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16",
+      "product_id": "wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16",
+      "group_id": "late-harvest",
+      "catalog_name": "Мускат позднего сбора",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskat_pozdnego_sbora_muskat_belyy_beloe_sladkoe_16_75b19a772c.webp",
+      "asset_sha256": "67dc3b3bb3334c5d4ebbe434a36a987325207b44cd38ffb91e3a6b8083d07046",
+      "group_source_ids": [
+        "official-late-harvest"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+      "product_id": "wine-massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+      "group_id": "late-harvest",
+      "catalog_name": "Мускат розовый позднего сбора",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskat_rozovyy_pozdnego_sbora_rozovoe_sladkoe_10_543ccac814.webp",
+      "asset_sha256": "459b91d4d0e0d00231c69dd987fbc55233fa76c1f3722e97c6911c40d12f01c0",
+      "group_source_ids": [
+        "official-late-harvest"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
+      "product_id": "wine-massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускатель белый",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskatel_belyy_belye_sorta_vinograda_beloe_sladkoe_16_f7e0314033.webp",
+      "asset_sha256": "89b5a94aa72ec27906f6fbbc19ce465e93fb310ad59597dadc25d0fb0810f335",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16",
+      "product_id": "wine-massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускатель черный",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskatel_chernyy_krasnye_sorta_vinograda_krasnoe_sladkoe_16_b35635608c.webp",
+      "asset_sha256": "01d644c4af82a5cc2891000d05e68bc218e3a0c755d958d688ea8b73944bcea9",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16",
+      "product_id": "wine-massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускатель розовый",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_muskatel_rozovyy_belye_sorta_vinograda_rozovoe_sladkoe_16_3e12b153be.webp",
+      "asset_sha256": "2dc55c3adfda12e49b009a238a6ac5db488e2e8392f57830a8e35ce04a2cd290",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-pino-gri-beloe-sladkoe-16",
+      "product_id": "wine-massandra-pino-gri-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Пино Гри",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_pino_gri_beloe_sladkoe_16_d391c28c56.webp",
+      "asset_sha256": "eecf5c36b2836c9e9f0123ca03580d191e343ee61990328d357fc54223f49922",
+      "group_source_ids": [
+        "official-dessert"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17",
+      "product_id": "wine-massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17",
+      "group_id": "port",
+      "catalog_name": "Портвейн белый Алушта",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_portveyn_belyy_alushta_belye_sorta_vinograda_beloe_sladkoe_17_ab89a72383.webp",
+      "asset_sha256": "2180cc52e27f4af2d52a1bec67ae5ef122bd213eb4c379a6b84994efe581ab93",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135",
+      "product_id": "wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135",
+      "group_id": "port",
+      "catalog_name": "Портвейн Белый Гурзуф",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_portveyn_belyy_gurzuf_kokur_belyy_beloe_sladkoe_135_d34b047b41.webp",
+      "asset_sha256": "1d462c924733fcb59b2936f00fb66467945bde414f51d8d6321fb17ecdcef61d",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18",
+      "product_id": "wine-massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18",
+      "group_id": "port",
+      "catalog_name": "Портвейн белый крымский",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_portveyn_belyy_krymskiy_kokur_beloe_sladkoe_18_4a04230d4f.webp",
+      "asset_sha256": "5aecf075d3ac37cf3a28de85f6a091f262a6eb71aba91c903438afdda7bed62f",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+      "product_id": "wine-massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+      "group_id": "port",
+      "catalog_name": "Портвейн красный Алушта",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_portveyn_krasnyy_alushta_krasnye_sorta_vinograda_krasnoe_sladkoe_17_15423ac1a3.webp",
+      "asset_sha256": "0cf3086bb7b91c920285fc380a8b10aafcb5b7fa935b6fcb599e6f4b72d79ad2",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185",
+      "product_id": "wine-massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185",
+      "group_id": "port",
+      "catalog_name": "Портвейн красный Ливадия",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_portveyn_krasnyy_livadiya_kaberne_sovinon_krasnoe_sladkoe_185_02e4e0776e.webp",
+      "asset_sha256": "f6eaa3bca3e002d57c320026ad8c5edba8d3dff74bdaa7dfb07e1883eb5d8478",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13",
+      "product_id": "wine-massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13",
+      "group_id": "premium",
+      "catalog_name": "Premium Sangiovese",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_premium_sangiovese_sandzhoveze_krasnoe_suhoe_13_9ec620eaff.webp",
+      "asset_sha256": "511ce2a0211146b0dfa3951283e172467a627ed87be3f22d262b9d67c6ad8959",
+      "group_source_ids": [
+        "official-premium"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-rozovoe-suhoe",
+      "product_id": "wine-massandra-rozovoe-suhoe",
+      "group_id": "base",
+      "catalog_name": "Массандра розовое сухое",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_suhoe_rozovoe_218d80e12d.webp",
+      "asset_sha256": "bb35e0aa259776439bab70bae06d103465578f7819744592e0d6314149f6c25f",
+      "group_source_ids": [
+        "official-base"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12",
+      "product_id": "wine-massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12",
+      "group_id": "author",
+      "catalog_name": "Вино Авторское Пино Гри",
+      "catalog_producer": "Массандра",
+      "source_image": "massandra_vino_avtorskoe_pino_gri_beloe_suhoe_12_bf2039c511.webp",
+      "asset_sha256": "857be081e059c42ab5d66f8fa72fba047e8ae4b23d2a89d07f0b8ec2d7c5807b",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "muskat-avtorskoe-vino",
+      "product_id": "wine-muskat-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Мускат. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "2923_GVA_Ps_CA_no_bg_preview_carve_photos_4a01fd1119.webp",
+      "asset_sha256": "4993da12a3150b458172f9aacfa213d458a41cfbd75440050229f15ec92de1b9",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "muskat-pozdnego-sbora-rozovyj",
+      "product_id": "wine-muskat-pozdnego-sbora-rozovyj",
+      "group_id": "late-harvest",
+      "catalog_name": "Мускат позднего сбора розовый",
+      "catalog_producer": "Массандра",
+      "source_image": "4290_z_D_Kb_OVA_no_bg_preview_carve_photos_6bdfe80e27.webp",
+      "asset_sha256": "13aeeef21386f0e2538bcf286887a6d79f872931f6bd98d20ba074d454a22b4e",
+      "group_source_ids": [
+        "official-late-harvest"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "pino-gri-avtorskoe",
+      "product_id": "wine-pino-gri-avtorskoe",
+      "group_id": "author",
+      "catalog_name": "Пино Гри Авторское",
+      "catalog_producer": "Массандра",
+      "source_image": "4286_Ixm_F_Mpd_no_bg_preview_carve_photos_e9bc638816.webp",
+      "asset_sha256": "e0245687ca6e5217959e0ae6a81dd7b851dfdbbcae3d927bc699398a9279b309",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "portvejn-surozh",
+      "product_id": "wine-portvejn-surozh",
+      "group_id": "port",
+      "catalog_name": "Портвейн Сурож",
+      "catalog_producer": "Массандра",
+      "source_image": "Massandra_Portvejn_belyj_Surozh_5476f24b50.webp",
+      "asset_sha256": "3c1b8969299670481c693a055d0c7e76fb1f5ee1b0a39b4b46e344370a978c48",
+      "group_source_ids": [
+        "official-port"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "roze-avtorskoe-vino",
+      "product_id": "wine-roze-avtorskoe-vino",
+      "group_id": "author",
+      "catalog_name": "Розе. Авторское вино",
+      "catalog_producer": "Массандра",
+      "source_image": "2922_l_Cf6_Bdm_213c0a3fbb.webp",
+      "asset_sha256": "78222cefa1b4b2c8f41c8e32ecaf691568916d4f11847f5b829933e011186e2a",
+      "group_source_ids": [
+        "official-author"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-malaga",
+      "wine_slug": null,
+      "official_url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/marochnoe-vino/klassika-massandry/malaga-massandra/",
+      "official_image_url": "https://massandra.ru/upload/iblock/205/fcswy6poi8plxzxkbb4q29yhu63hugj5.png",
+      "absence_basis": "No Malaga name or slug occurs anywhere in the full 2,103-row snapshot. Massandra fortified blends with similar grapes have different product identities.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "9b7da9915fae1b281f0f02f5e3b769795268098f53803ddcbe987328eef80fc9",
+      "original_image_sha256": "6dcd84597ec8080b02aa23345eee0215606391bae955f7e211cdb1b56e8fbe10",
+      "image_dimensions": [
+        342,
+        1280
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    },
+    {
+      "product_id": "official-black-muscat",
+      "wine_slug": null,
+      "official_url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/marochnoe-vino/muskaty/muskat-chernyy-massandra/",
+      "official_image_url": "https://massandra.ru/upload/iblock/593/wruwbjbd11yr7eyrvqxy2einkk1l1790.png",
+      "absence_basis": "The full snapshot has a black Muscat card from AGORA WINERY only. Massandra Muscatel black is a different product type and name. Neither is substituted.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "013f9d3dce10bb03abd0fec5d1f5d1b35d19c9ddd3b9fa2c80184b274c9e388c",
+      "original_image_sha256": "f062684fb3a5f5b8bf10c65e175f27b282b23e76fdd504432b7b38736e9e3fda",
+      "image_dimensions": [
+        342,
+        1280
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    }
+  ],
+  "mapping_notes": [
+    "The current official premium page lists Kokur Premium and Stolovoe Krasnoe Alushta. Premium Sangiovese remains from the historical snapshot; its name supports the premium grouping but does not prove current availability.",
+    "The catalog spelling Херес Ореадна is preserved. No alias to the current Херес Ореанда product is created.",
+    "Late-harvest cards with similar names remain separate. No alcohol value or production year is derived from slug suffixes.",
+    "Fortified styles contain both ordinary and aged products. They use a neutral tier instead of one invented premium ranking.",
+    "Muscatel black is not the added Muscat black. Both identities remain separate."
+  ]
+}

@@ -1,0 +1,1389 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "massandra",
+    "name": "Массандра",
+    "aliases": [
+      "Massandra"
+    ],
+    "slug_prefixes": [
+      "massandra-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Массандра: официальные линейки",
+      "url": "https://massandra.ru/catalog/"
+    },
+    {
+      "id": "official-premium",
+      "label": "Массандра: premium",
+      "url": "https://massandra.ru/catalog/vino-tikhoe/premium/"
+    },
+    {
+      "id": "official-author",
+      "label": "Массандра: author",
+      "url": "https://massandra.ru/catalog/vino-tikhoe/avtorskie/"
+    },
+    {
+      "id": "official-base",
+      "label": "Массандра: base",
+      "url": "https://massandra.ru/catalog/vino-tikhoe/bazovaya-lineyka/"
+    },
+    {
+      "id": "official-late-harvest",
+      "label": "Массандра: late-harvest",
+      "url": "https://massandra.ru/catalog/vino-tikhoe/muskat-pozdnego-sbora/"
+    },
+    {
+      "id": "official-port",
+      "label": "Массандра: port",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/portveyn/"
+    },
+    {
+      "id": "official-sherry",
+      "label": "Массандра: sherry",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/kheres/"
+    },
+    {
+      "id": "official-madeira",
+      "label": "Массандра: madeira",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/madera/"
+    },
+    {
+      "id": "official-cahors",
+      "label": "Массандра: cahors",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/kagor/"
+    },
+    {
+      "id": "official-dessert",
+      "label": "Массандра: dessert",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/"
+    },
+    {
+      "id": "official-malaga",
+      "label": "Официальная карточка: Малага Массандра",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/marochnoe-vino/klassika-massandry/malaga-massandra/"
+    },
+    {
+      "id": "official-black-muscat",
+      "label": "Официальная карточка: Мускат чёрный Массандра",
+      "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/marochnoe-vino/muskaty/muskat-chernyy-massandra/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальные тихие вина",
+      "rank": 3,
+      "description": "Официальная коллекция Премиум. Относительная ценовая ступень задана редакционно.",
+      "price_label": "Премиальный ориентир · ₽₽₽",
+      "source_ids": [
+        "official-premium"
+      ]
+    },
+    {
+      "id": "selected",
+      "label": "Авторская коллекция",
+      "rank": 2,
+      "description": "Отдельное авторское направление производителя. Положение между базовой и премиальной линейками задано редакционно.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-author"
+      ]
+    },
+    {
+      "id": "everyday",
+      "label": "Базовые тихие вина",
+      "rank": 1,
+      "description": "Официальная базовая линейка. Относительная ступень задана редакционно.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-base"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Исторические и сладкие стили",
+      "rank": 0,
+      "description": "Марочные и ординарные креплёные вина, а также поздний сбор показаны без общей ценовой лестницы.",
+      "price_label": "Цена зависит от выпуска",
+      "source_ids": [
+        "official-collections"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "premium",
+      "name": "Премиум",
+      "tier_id": "premium",
+      "method": "Тихие сухие вина",
+      "description": "Терруарное направление с ручным сбором и деликатной переработкой. Кокур подтверждён текущим официальным каталогом; Premium Sangiovese сохранён по карточке снимка.",
+      "source_ids": [
+        "official-premium"
+      ]
+    },
+    {
+      "id": "author",
+      "name": "Авторское вино",
+      "tier_id": "selected",
+      "method": "Тихие вина, ручной сбор",
+      "description": "Коллекция отдельных сортов и розового вина. Официальный каталог выделяет ручной сбор, происхождение винограда и работу винодела над стилем каждого вина.",
+      "source_ids": [
+        "official-author"
+      ]
+    },
+    {
+      "id": "base",
+      "name": "Базовая линейка",
+      "tier_id": "everyday",
+      "method": "Тихие вина",
+      "description": "Моносортовые и купажные вина из европейских и крымских сортов. В снимке сохранены белые, розовые и красные варианты разных стилей.",
+      "source_ids": [
+        "official-base"
+      ]
+    },
+    {
+      "id": "late-harvest",
+      "name": "Мускат позднего сбора",
+      "tier_id": "neutral",
+      "method": "Поздний сбор",
+      "description": "Белые и розовые сладкие мускаты. Название связывает карточки с поздним сбором; точная технология каждого исторического выпуска не приравнивается к текущей.",
+      "source_ids": [
+        "official-late-harvest"
+      ]
+    },
+    {
+      "id": "port",
+      "name": "Портвейны",
+      "tier_id": "neutral",
+      "method": "Креплёные вина; выдержка зависит от выпуска",
+      "description": "Белые и красные портвейны. В одной официальной категории представлены марочные и ординарные вина, поэтому единая ценовая ступень не назначена.",
+      "source_ids": [
+        "official-port"
+      ]
+    },
+    {
+      "id": "sherry",
+      "name": "Хересы",
+      "tier_id": "neutral",
+      "method": "Креплёные вина, выдержка под хересной плёнкой",
+      "description": "Историческое направление Массандры. В снимке есть Херес и карточка с названием «Херес Ореадна»; написание сохранено без подмены идентичности.",
+      "source_ids": [
+        "official-sherry"
+      ]
+    },
+    {
+      "id": "madeira",
+      "name": "Мадеры",
+      "tier_id": "neutral",
+      "method": "Мадеризация и выдержка",
+      "description": "Белые креплёные вина, для которых важна выдержка с воздействием тепла. В снимке представлена Мадера Крымская.",
+      "source_ids": [
+        "official-madeira"
+      ]
+    },
+    {
+      "id": "cahors",
+      "name": "Кагоры",
+      "tier_id": "neutral",
+      "method": "Красные десертные креплёные вина",
+      "description": "Коллекция включает марочные и ординарные вина. Южнобережный и Гурзуф сохранены раздельно.",
+      "source_ids": [
+        "official-cahors"
+      ]
+    },
+    {
+      "id": "dessert",
+      "name": "Десертные вина",
+      "tier_id": "neutral",
+      "method": "Креплёные вина; технология зависит от продукта",
+      "description": "Мускаты, мускатели, Пино Гри, Бастардо и другие исторические марки. Марочные и ординарные продукты различаются технологией и выдержкой; общая цена не задаётся.",
+      "source_ids": [
+        "official-dessert"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-aligote-avtorskoe",
+      "group_id": "author",
+      "name": "Алиготе Авторское",
+      "variant": "",
+      "wine_slug": "aligote-avtorskoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-aligote-avtorskoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат раскрывается тонкой пряностью и свежими травянистыми нотками, уверенно проявляются оттенки зелёных яблок и полевых цветов.\n\nЭлегантный вкус с хорошей кислотностью, оттенками миндаля и деликатной горчинкой в послевкусии.\n\nВиноград собирается вручную при сахаристости не менее 20%. После отделения гребней и охлаждения виноград направляется на прессование в пневматический процесс. Далее сусло-самотек и сусло первой фракции отправляется на брожение, которое длится при контролируемой температуре 15-20 дней. Определённые этапы производства протекают в инертной среде.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-aligote-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Алиготе. Авторское вино",
+      "variant": "",
+      "wine_slug": "aligote-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-aligote-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат раскрывается тонкой пряностью и свежими травянистыми нотками, уверенно проявляются оттенки зелёных яблок и полевых цветов.\n\nЭлегантный вкус с хорошей кислотностью, оттенками миндаля и деликатной горчинкой в послевкусии.\n\nВиноград собирается вручную при сахаристости не менее 20%. После отделения гребней и охлаждения виноград направляется на прессование в пневматический процесс. Далее сусло-самотек и сусло первой фракции отправляется на брожение, которое длится при контролируемой температуре 15-20 дней. Определённые этапы производства протекают в инертной среде.\n\n«Алиготе» Авторское вино выдерживается в течение 2-4 месяцев на тонком дрожжевом осадке в стальных емкостях, что придает ему утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-beloe-polusladkoe",
+      "group_id": "base",
+      "name": "Белое полусладкое",
+      "variant": "",
+      "wine_slug": "beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": null,
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [],
+      "description": "У вина приятный, сдержанный аромат с нотами спелых косточковых фруктов, дополненными деликатными медовыми и растительными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-caperavi-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Cаперави. Авторское вино",
+      "variant": "",
+      "wine_slug": "caperavi-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-caperavi-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате прослеживаются сладкие тона чернослива, спелой вишни и чёрных ягод, приправленные нотками кондитерских специй и горького шоколада.\n\nГлубокий и элегантный вкус отличается бархатистыми, хорошо интегрированными танинами, выделяются оттенки подвяленной красной сливы и ежевичного конфитюра, переходящие в пряное послевкусие.\n\nВиноград собирается вручную при сахаристости не менее 21%. После отделения гребней и дробления мезга направляется на мацерацию при пониженных температурах. Брожение длится 15-20 дней при контролируемой температуре, во время которого практикуется удаление косточек, что придаёт вину мягкую текстуру. По завершении брожения мезга направляется на прессование, для создания вина используется сусло-самотёк, а также сусло первой фракции. Определённые этапы производства протекают в инертной среде.\n\n«Саперави» Авторское вино выдерживается в течение 12 месяцев на тонком дрожжевом осадке в стальных емкостях, что придает ему утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-cary-pandas-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Cары Пандас. Авторское вино",
+      "variant": "",
+      "wine_slug": "cary-pandas-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-cary-pandas-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Сары Пандас"
+      ],
+      "description": "Аромат вина раскрывается яркими нотами экзотических фруктов — ананаса, манго и папайи — в сочетании с легкими оттенками цветущей акации и меда. Пряные акценты добавляют глубину и изысканность.\n\nВкус с плотной текстурой и отличной сбалансированностью. Яркие ноты желтой черешни, алычи и абрикосов создают освежающий фруктовый профиль. В послевкусии появляется легкая пикантная горчинка, придающая вину дополнительную выразительность.\n\nСары Пандас – редкий крымский автохтонный сорт винограда, которого в России насчитывается всего несколько десятков гектаров. Сегодня белое сухое вино из Сары Пандас авторства Игоря Шпиля входит в линейку Авторских вин «Массандры».\n\nНазвание «Сары Пандас» происходит от тюркского «рыжий», указывая на характерную окраску созревших ягод этого сорта.\n\n\nВиноград для производства вина собирают только вручную, бережно перерабатывают. Ферментация протекает в нейтральных емкостях из нержавеющей стали при контролируемых температурах, что обеспечивает яркую фруктовую ароматику, присущую сорту, а дальнейшая выдержка на тонком дрожжевом осадке в течение нескольких месяцев придает вину утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-cira-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Cира. Авторское вино",
+      "variant": "",
+      "wine_slug": "cira-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-cira-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "В выразительной ароматике изобилуют нотки пряностей и черных ягод, приправленные тонкими оттенками сушеной вишни и сливы.\n\nСбалансированный вкус обладает шелковистыми танинами и дарит ягодно-пряные нотки в длительном послевкусии.\n\nВиноград для производства вина собирают только вручную и бережно перерабатывают. Ферментация протекает в нейтральных емкостях из нержавеющей стали при контролируемых температурах, что обеспечивает яркую фруктовую ароматику, присущую сорту, а дальнейшая выдержка на тонком дрожжевом осадке в течение года придаёт вину утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-kaberne-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Каберне. Авторское вино",
+      "variant": "",
+      "wine_slug": "kaberne-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-kaberne-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Пышный аромат встречает характерными для данного сорта нотками чёрной смородины, черничного джема, которые переплетаются с оттенками шелковицы и чернослива.\n\nМягкий и округлый вкус с приятными шелковыми танинами. Изящное послевкусие дополняется тонкими ароматами черноплодной рябины и вишневой косточки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-kaberne-sovinon",
+      "group_id": "base",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "kaberne-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-kaberne-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Богатые ягодные тона во вкусе вина оттеняются нюансами дымка и бисквитной выпечки. Долгое, плотное послевкусие окутывает приятными нотами вишневого джема и чернослива.\n\nКлассический, хорошо выраженный аромат вина наполнен тонами спелой вишни и черных лесных ягод.\n\nОдно из моносортовых сладких вин, которыми славится Массандра. Каберне Совиньон является популярным красным сортом во всем мире, однако десертные вина из него довольно редки. Собранный виноград тщательно сортируется и ферментируется при строго контролируемой температуре. При нужном уровне сахара брожение останавливается холодом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-kokur-avtorskoe",
+      "group_id": "author",
+      "name": "Кокур Авторское",
+      "variant": "",
+      "wine_slug": "kokur-avtorskoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-kokur-avtorskoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "В аромате сочетаются пряные нотки полевых цветов и спелых фруктов, создавая гармоничную цветочно-медовую композицию с лёгким оттенком груши.\n\nПолный и пряный вкус раскрывает всю ароматическую палитру, плавно переходя в гармоничную горчинку в послевкусии.\n\nВиноград собирается вручную при сахаристости не менее 20%. После отделения гребней и охлаждения виноград направляется на прессование в пневматический процесс. Далее сусло-самотек и сусло первой фракции отправляется на брожение, которое длится при контролируемой температуре 15-20 дней. Определённые этапы производства протекают в инертной среде.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-kokur-premium",
+      "group_id": "premium",
+      "name": "Кокур Премиум",
+      "variant": "",
+      "wine_slug": "kokur-premium",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-kokur-premium.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Яркий аромат с доминантой цветочно-медовых нот акации, крымского разнотравья и лимонника.\n\nВкус изысканный, свежий и сбалансированный, с оттенками крыжовника, алычи и белой смородины. Послевкусие продолжительное, с переливами фруктовых нот и легкой минеральностью.\n\nВиноград собран вручную. Мягко переработан на современном пневматическом прессе. Медленное брожение в нержавеющих емкостях при низких температурах и выдержка на тонком осадке.\n\nАвтор гида «Российские вина» Артур Саркисян, присудив этому вино «золото», так описал это вино: «Аромат яркий, комплексный, с доминантой цветочных нот акации, луговых трав, лимонника, легким тоном эвкалипта. Во вкусе элегантное, свежее, гармоничное, с комплексом оттенков крыжовника, алычи, белой смородины. Послевкусие долгое, с переливами фруктовых и минеральных тонов».",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-premium"
+      ]
+    },
+    {
+      "id": "wine-kokur-suhoe",
+      "group_id": "base",
+      "name": "Кокур сухое",
+      "variant": "",
+      "wine_slug": "kokur-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-kokur-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур"
+      ],
+      "description": "Интенсивные ароматы свежего яблока, пряного чая и выпечки, нотки кремня и мёда и белых цветов. Скорее полнотелое, концентрированное и минеральное во вкусе, с освежающей кислотностью, маслянистой текстурой и оттенками цитрусовых и персика в длительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-madera-krymskaya",
+      "group_id": "madeira",
+      "name": "Мадера Крымская",
+      "variant": "",
+      "wine_slug": "madera-krymskaya",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-madera-krymskaya.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Альбильо",
+        "Вердельо",
+        "Серсиаль",
+        "Шабаш"
+      ],
+      "description": "Роскошный, многогранный, свежий аромат вина раскрывается оттенками лимона, кремния, мокрого камня и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-madeira"
+      ]
+    },
+    {
+      "id": "wine-massandra-avtorskoe-murvedr-krasnoe-suhoe-14",
+      "group_id": "author",
+      "name": "Авторское Мурведр",
+      "variant": "",
+      "wine_slug": "massandra-avtorskoe-murvedr-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-avtorskoe-murvedr-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мурведр"
+      ],
+      "description": "Аромат интенсивный — тёмные ягоды, вишня, специи и лёгкий смолистый нюанс; вкус полнотелый, танинный, с хорошей структурой и долгим пряным послевкусием. К красному мясу, баранине, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Бастардо",
+      "variant": "",
+      "wine_slug": "massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Аромат мускатный, интенсивный, с нотами чёрной смородины, вишни, сливы и шоколада; вкус тельное, округлое, с мягкими танинами, нотами вишневого конфитюра и долгим шоколадным послевкусием. Хорошо к шоколадным десертам, утке в ягодном соусе, мясным паштетам и зрелым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-heres",
+      "group_id": "sherry",
+      "name": "Массандра Херес",
+      "variant": "",
+      "wine_slug": "massandra-heres",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Альбильо",
+        "Вердельо",
+        "Кокур Белый",
+        "Ркацители",
+        "Семильон"
+      ],
+      "description": "Аромат со множеством самых сложных оттенков и ярко выраженным, характерным хересным тоном. В гармоничном и богатом вкусе вина чувствуется нежная солоноватость, тона каленого орешка и горького миндаля. С возрастом к ним добавляются коньячно-ванильные ноты. Послевкусие богатое и долгое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sherry"
+      ]
+    },
+    {
+      "id": "wine-massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16",
+      "group_id": "cahors",
+      "name": "Кагор Гурзуф",
+      "variant": "",
+      "wine_slug": "massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский",
+        "Каберне Совиньон",
+        "Саперави"
+      ],
+      "description": "Аромат с доминантой черносмородинового джема и сливок; вкус полный, насыщенный, тельное, округлое, с прекрасным балансом сладости и кислотности, нотами чёрных ягод и шоколада в продолжительном послевкусии. К мороженому, сладостям, фруктам и пасхальным куличам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cahors"
+      ]
+    },
+    {
+      "id": "wine-massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16",
+      "group_id": "cahors",
+      "name": "Кагор Южнобережный",
+      "variant": "",
+      "wine_slug": "massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Аромат тёплый, насыщенный, с нотами чернослива, шоколада и дубовой пряности — результат выдержки в бочках свыше трёх лет; вкус гармоничный, полное, бархатистое, с нотами тёмных ягод, черносмородинового джема и ванили. К шоколадным десертам, куличам, зрелым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cahors"
+      ]
+    },
+    {
+      "id": "wine-massandra-kokur",
+      "group_id": "base",
+      "name": "Массандра Кокур",
+      "variant": "",
+      "wine_slug": "massandra-kokur",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-kokur.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "У вина гармоничный, чистый вкус с миндальными нотками, приятной сладостью и освежающим послевкусием. Вино демонстрирует утончённый, свежий аромат, сотканный из нот груши и миндаля. Вино элегантного соломенно-золотистого цвета.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-massandra-kokur-desertnyy-surozh-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Кокур десертный Сурож",
+      "variant": "",
+      "wine_slug": "massandra-kokur-desertnyy-surozh-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-kokur-desertnyy-surozh-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур"
+      ],
+      "description": "Чистый аромат крымского автохтона — белые цветы, персик, ноты мёда и спелых косточковых фруктов; вкус богатый, сладкий, с нотами абрикоса, дюшеса и мёда, долгим послевкусием. К фруктовым десертам, пирогам с курагой, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Лакрима Кристи",
+      "variant": "",
+      "wine_slug": "massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Алеатико"
+      ],
+      "description": "Аромат насыщенный, ягодный — тёмные ягоды, шоколад, сухофрукты; вкус тельное, богатое, бархатистое, с мягкими танинами, нотами вишни и шоколадного конфитюра. К шоколадным десертам, зрелым сырам, утке и мясным паштетам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16",
+      "group_id": "sherry",
+      "name": "Массандра Херес Ореадна",
+      "variant": "",
+      "wine_slug": "massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Альбильо",
+        "Кокур"
+      ],
+      "description": "Выдержка под хересным флором даёт пикантный аромат с тонами жареного миндаля и грибными нотками; последующая выдержка в бочках добавляет ароматы сушёных яблок и пряных трав. Многогранный вкус с деликатным сухим финишем, выраженной солоноватостью и минеральными нюансами. Аперитив; к суши, тунцу, курице под ореховым соусом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sherry"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat",
+      "group_id": "base",
+      "name": "Массандра Мускат",
+      "variant": "",
+      "wine_slug": "massandra-muskat",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат",
+        "Мускат Белый",
+        "Мускат Янтарный"
+      ],
+      "description": "Вкус вина свежий, сочный, с гармоничной кислотностью, оттенками мёда и дыни. В ярком аромате вина ощущаются тона белых и цитрусовых фруктов, цветов апельсинового дерева и лепестков розы. Вино светло-соломенного цвета.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13",
+      "group_id": "dessert",
+      "name": "Мускат белый красного камня",
+      "variant": "",
+      "wine_slug": "massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат насыщенный, цветочно-цитронный с нотами мёда, акации и спелых южных фруктов; вкус бархатистый, богатый, с исключительным балансом утончённой мускатной сладости и кислотности, длительным послевкусием. К выдержанным сырам, сырам с плесенью, фруктовым десертам, инжиру.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10",
+      "group_id": "late-harvest",
+      "name": "Мускат белый позднего сбора",
+      "variant": "",
+      "wine_slug": "massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат тёплый, с нотами пряностей, сухофруктов, чайной розы и мёда; вкус с великолепным балансом сладости и кислотности, необыкновенно лёгкий, с ароматами крымской осени. К десертам, свежим фруктам, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-late-harvest"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускат Белый Южнобережный",
+      "variant": "",
+      "wine_slug": "massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Аромат сладко-цветочный, очень элегантный, раскрывается нотами спелого персика, мармелада из личи и джема из дыни, переходя к оттенкам засахаренных лимонных долек, грушевой пастилы, запечённого с мёдом яблока, айвового мармелада. Вкус элегантный, маслянистый, прекрасно сбалансированный, с тягучей сладостью, мягкой кислотностью и медовым послевкусием с мускатно-пряными оттенками. Прекрасный дижестив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16",
+      "group_id": "late-harvest",
+      "name": "Мускат позднего сбора",
+      "variant": "",
+      "wine_slug": "massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "В аромате сладкие тона засахаренных цитрусов, орехов, поздних желтых персиков, манго и инжира, айвового варенья, воздушные нотки цветущего луга. Вкус полный, насыщенный, с обволакивающей сладостью и продолжением фруктово-мускатной истории.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-late-harvest"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+      "group_id": "late-harvest",
+      "name": "Мускат розовый позднего сбора",
+      "variant": "",
+      "wine_slug": "massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат тёплый, с нотами розы, персика, мёда и лёгкой пряности; вкус с великолепным балансом сладости и кислотности, необыкновенно лёгкий, с ароматами крымской осени. К фруктовым десертам, свежим ягодам, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-late-harvest"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускатель белый",
+      "variant": "",
+      "wine_slug": "massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Аромат мускатный, цветочный с нотами акации, мёда и персика; вкус сладкий, гармоничный, с богатой мускатной ароматикой и долгим медово-цветочным послевкусием. К фруктовым десертам, выпечке, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускатель черный",
+      "variant": "",
+      "wine_slug": "massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Аромат интенсивный: мускатные тона в сочетании с оттенками спелых красных фруктов; многогранный — вишня, слива, чернослив, кофе и шоколад; вкус бархатистый, с тонами тёмного шоколада, кофейно-лакричными нотами и лёгким послевкусием сушёного чернослива. К утке в ягодном соусе, шоколадным десертам, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускатель розовый",
+      "variant": "",
+      "wine_slug": "massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Белые сорта винограда",
+        "Красные сорта винограда"
+      ],
+      "description": "Аромат интенсивный мускатный, с нотами розы, малины и персика; вкус нежный, сладкий, с мускатной пряностью, лёгкой кислотностью и долгим ягодно-цветочным послевкусием. К свежим ягодам, сладким десертам, мягким сырам с плесенью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-pino-gri-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Пино Гри",
+      "variant": "",
+      "wine_slug": "massandra-pino-gri-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-pino-gri-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат тонкий, с нотами спелых абрикосов, персиков и мёда; вкус богатый, маслянистый, с нотами южных фруктов и приятной сладостью. Длинное тёплое послевкусие. К фуа-гра, паштетам, голубым сырам, фруктовым десертам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-dessert"
+      ]
+    },
+    {
+      "id": "wine-massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17",
+      "group_id": "port",
+      "name": "Портвейн белый Алушта",
+      "variant": "",
+      "wine_slug": "massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Аромат тёплый, с нотами сухофруктов, ванили и лёгкой пряности; вкус гармоничный, с ореховыми оттенками и приятной сладостью. Хорошо к фруктовым десертам, орехам, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135",
+      "group_id": "port",
+      "name": "Портвейн Белый Гурзуф",
+      "variant": "",
+      "wine_slug": "massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "В аромате красивое сплетение тонов меда, грецких орехов, миндаля, марципана, айвового варенья и конфитюра из груш. На фоне пышной ароматики вкус чуть более спокойный, сбалансированный, заметная кислотность нивелирует природную сахаристость. Долгое медово-ореховое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18",
+      "group_id": "port",
+      "name": "Портвейн белый крымский",
+      "variant": "",
+      "wine_slug": "massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Кокур",
+        "Ркацители"
+      ],
+      "description": "Аромат сложный, многоплановый: сухофрукты, ваниль, лёгкие ореховые тона; вкус богатый, гармоничный, с оттенками ореха и сухофруктов, приятным сухим финишем. Создан из множества белых сортов 1944 года. К рыбным блюдам, морепродуктам, голубым сырам и орехам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+      "group_id": "port",
+      "name": "Портвейн красный Алушта",
+      "variant": "",
+      "wine_slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Аромат тёплый, с нотами тёмных ягод, вишни, шоколада и пряностей от выдержки в дубе; вкус богатый, тельное, с мягкими танинами и долгим тёплым послевкусием. К красному мясу, выдержанным сырам, тёмному шоколаду.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185",
+      "group_id": "port",
+      "name": "Портвейн красный Ливадия",
+      "variant": "",
+      "wine_slug": "massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат благородный, с нотами тёмных ягод, вишни, шоколада и пряностей от длительной выдержки в дубе; вкус богатый, тельное, с мягкими танинами и долгим тёплым послевкусием. К красному мясу, выдержанным сырам, тёмному шоколаду.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13",
+      "group_id": "premium",
+      "name": "Premium Sangiovese",
+      "variant": "",
+      "wine_slug": "massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Аромат с нотами красных ягод — вишни, сливы — кожи и лёгкими пряными акцентами; вкус средней полноты, с живой кислотностью, элегантными танинами и длинным фруктово-пряным послевкусием. К томатным пастам, пицце, мясным блюдам, твёрдым итальянским сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-premium"
+      ]
+    },
+    {
+      "id": "wine-massandra-rozovoe-suhoe",
+      "group_id": "base",
+      "name": "Массандра розовое сухое",
+      "variant": "",
+      "wine_slug": "massandra-rozovoe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-rozovoe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Пино Нуар"
+      ],
+      "description": "Вкус вина свежий, лёгкий, мягкий, с деликатной кислотностью и тонкими ягодными и цитрусовыми оттенками. Нежный аромат вина наполнен нотами спелой клубники и сочной малины, украшенными лёгким оттенком сирени. Вино лососёвого цвета.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base"
+      ]
+    },
+    {
+      "id": "wine-massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12",
+      "group_id": "author",
+      "name": "Вино Авторское Пино Гри",
+      "variant": "",
+      "wine_slug": "massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат тонкий, элегантный — персик, абрикос, белые цветы; вкус свежий, с хорошей кислотностью, нотами спелых южных фруктов и лёгкой минеральностью. К рыбным блюдам, пасте, птице, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-muskat-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Мускат. Авторское вино",
+      "variant": "",
+      "wine_slug": "muskat-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-muskat-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Это вино отличают типичные для данного терруара тонкие цитрусовые нотки, дополненные яркими оттенками муската и тропических фруктов.\n\nВ округлом, хорошо сбалансированном вкусе раскрываются нотки лимонного сорбета и цукатов. В послевкусии прослеживаются лёгкие минеральные нюансы.\n\nВиноград собирается вручную при сахаристости не менее 20%. После отделения гребней и охлаждения виноград направляется на прессование в пневматический процесс. Далее сусло-самотек и сусло первой фракции отправляется на брожение, которое длится при контролируемой температуре 15-20 дней. Определённые этапы производства протекают в инертной среде.\n\n«Мускат» Авторское вино выдерживается в течение 2-4 месяцев на тонком дрожжевом осадке в стальных емкостях, что придает ему утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-muskat-pozdnego-sbora-rozovyj",
+      "group_id": "late-harvest",
+      "name": "Мускат позднего сбора розовый",
+      "variant": "",
+      "wine_slug": "muskat-pozdnego-sbora-rozovyj",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-muskat-pozdnego-sbora-rozovyj.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат Розовый"
+      ],
+      "description": "«Мускат позднего сбора» розовое\nСладкое розовое вино ЗГУ Крым\nЗолото\nЗолото\n5\nСеребро\nСеребро\n4\nБронза\nБронза\n5\nВсе награды\nСладкое вино из сорта Мускат розовый – легенда виноделия Южного берега Крыма. Вина из винограда, собранного в конце октября или начале ноября, создавались в «Алупке» и «Гурзуфе». Стилистика уникального вина была воссоздана в урожаях начиная с 2016 года на массандровской винодельне «Гурзуф».\n\nВиноград собирают при высоком уровне сахаристости, в частично заизюмленном виде. Благодаря высокому содержанию сахара сусло получается тягучим, как мёд. Брожение осуществляется при низких температурах, что позволяет сохранить яркую ароматику, а для сохранения высокой остаточной сахаристости практикуется остановка брожения холодом.\n\nВино нежно-розового цвета с легким персиковым оттенком. В аромате сложная гамма цветочных и фруктовых тонов, цветущего розового сада. Во вкусе гармоничное, округлое, с оттенком варенья из лепестков розы, малинового конфитюра, спелых красных садовых ягод, деликатное послевкусие с нотами барбариса.\n\nВиноград собирается вручную в частично подвяленном виде при сахаристости в ягоде не ниже 31%. Брожение осуществляется при низких температурах, что позволяет сохранить яркую ароматику. Остановка брожения осуществляется холодом для сохранения остаточной сахаристости.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-late-harvest"
+      ]
+    },
+    {
+      "id": "wine-pino-gri-avtorskoe",
+      "group_id": "author",
+      "name": "Пино Гри Авторское",
+      "variant": "",
+      "wine_slug": "pino-gri-avtorskoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-pino-gri-avtorskoe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат яркий и многослойный, в котором чувствуются тона спелого яблока и груши, а также акценты экзотических фруктов и легкая леденцовая нотка.\n\nГармоничный вкус раскрывается фруктовыми нотами, сочетающимися с мягкой кислотностью, которая идеально сбалансирована.\n\nВиноград собирается вручную при сахаристости не менее 20%. После отделения гребней и охлаждения виноград направляется на прессование в пневматический процесс. Далее сусло-самотек и сусло первой фракции отправляется на брожение, которое длится при контролируемой температуре 15-20 дней. Определённые этапы производства протекают в инертной среде.\n\n«Пино Гри» Авторское вино выдерживается в течение 2-4 месяцев на тонком дрожжевом осадке в стальных емкостях, что придает ему утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "wine-portvejn-surozh",
+      "group_id": "port",
+      "name": "Портвейн Сурож",
+      "variant": "",
+      "wine_slug": "portvejn-surozh",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-portvejn-surozh.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Вино демонстрирует мягкий, округлый вкус с маслянистой текстурой, приятной сладостью и продолжительным послевкусием. Портвейн интригует выразительным сортовым ароматом с медово-плодовыми тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-port"
+      ]
+    },
+    {
+      "id": "wine-roze-avtorskoe-vino",
+      "group_id": "author",
+      "name": "Розе. Авторское вино",
+      "variant": "",
+      "wine_slug": "roze-avtorskoe-vino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/wine-roze-avtorskoe-vino.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Яркий аромат с оттенками клубники, земляники и красной смородины.\n\nГармоничный и свежий вкус с нежным ягодным оттенком и сливочным послевкусием.\n\nСортовой состав: Сира, Каберне Совиньон\n\nПервое сухое розовое вино в Авторской линейке «Массандры» создано виноделом Игорем Шпилем на исторической винодельне в Гурзуфе. Работая с сортами для создания красных вин линейки, Игорь Шпиль применил для части винограда специальную технологию переработки по белому способу: с минимальным настоем сока красных сортов на мезге в процессе медленного прессования. В результате получилось самое яркое летнее вино линейки.\n\nВиноград для производства вина собирают только вручную и бережно перерабатывают. Ферментация протекает в нейтральных емкостях из нержавеющей стали при контролируемых температурах, что обеспечивает яркую фруктовую ароматику, присущую сорту, а дальнейшая выдержка на тонком дрожжевом осадке в течение нескольких месяцев придает вину утончённый органолептический профиль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author"
+      ]
+    },
+    {
+      "id": "official-malaga",
+      "group_id": "dessert",
+      "name": "Малага Массандра",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/official-malaga.webp",
+        "source_id": "official-malaga"
+      },
+      "category": "Марочное креплёное вино",
+      "style": "Красное · десертное",
+      "grapes": [
+        "Бастардо Магарачский",
+        "Каберне Совиньон",
+        "Кокур белый"
+      ],
+      "description": "Десертное вино с частичным увариванием сусла и выдержкой в кавказском дубе не менее двух лет. В аромате кофе, карамель, инжир и шоколад. Подходит к десертам или как самостоятельный дижестив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-malaga"
+      ]
+    },
+    {
+      "id": "official-black-muscat",
+      "group_id": "dessert",
+      "name": "Мускат чёрный Массандра",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/massandra/official-black-muscat.webp",
+        "source_id": "official-black-muscat"
+      },
+      "category": "Марочное креплёное вино",
+      "style": "Красное · десертное",
+      "grapes": [
+        "Мускат чёрный"
+      ],
+      "description": "Десертное вино из спелого Муската чёрного. Выдержка в кавказском дубе длится не менее двух лет. Шоколадно-фруктовые и ягодные оттенки сопровождают полнотелый вкус с деликатными мускатными акцентами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-black-muscat"
+      ]
+    }
+  ]
+}

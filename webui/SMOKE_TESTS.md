@@ -398,3 +398,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/inkerman?wine=inkerman-muskatnoe-beloe`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Массандра map
+
+Open `/lineup/massandra?wine=aligote-avtorskoe`.
+Check the selected catalog wine, a gray product, and the mobile popup.
