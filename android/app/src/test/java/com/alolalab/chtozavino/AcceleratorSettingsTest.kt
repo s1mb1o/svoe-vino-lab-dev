@@ -7,6 +7,11 @@ import org.junit.Test
 
 class AcceleratorSettingsTest {
     @Test
+    fun unknownSegmenterUsesDis() {
+        assertEquals(SegmenterMode.DIS, SegmenterMode.fromPreference("OTHER"))
+    }
+
+    @Test
     fun unknownModeUsesAuto() {
         assertEquals(AcceleratorMode.AUTO, AcceleratorMode.fromPreference("OTHER"))
     }

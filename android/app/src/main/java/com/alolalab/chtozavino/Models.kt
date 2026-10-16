@@ -28,15 +28,17 @@ data class DebugImages(
     val disMask: Bitmap,
     val crop: Bitmap,
     val whiteBackground: Bitmap,
+    val segmenterName: String = "DIS",
 )
 
 data class RecognitionOutput(
     val matches: List<WineMatch>,
     val debugImages: DebugImages,
-    val disMs: Long,
+    val segmentationMs: Long,
     val embeddingMs: Long,
     val searchMs: Long,
-    val disAccelerator: String,
+    val segmenterName: String,
+    val segmentationAccelerator: String,
     val embeddingAccelerator: String,
 )
 
@@ -60,6 +62,7 @@ data class HistoryEntry(
 data class UiState(
     val ageAccepted: Boolean = false,
     val modelPack: ModelPackInfo? = null,
+    val segmenterMode: SegmenterMode = SegmenterMode.DIS,
     val disAcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
     val sigLip2AcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
     val automaticDisAccelerator: ModelAccelerator? = null,

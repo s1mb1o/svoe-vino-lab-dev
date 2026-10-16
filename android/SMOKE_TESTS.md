@@ -10,6 +10,57 @@
 5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
    index and the Android SigLIP2 LiteRT file.
 
+## Verification on 2026-10-03
+
+- Four catalogue exporter tests passed for 72 reference rows per wine.
+- Seven Python pack-builder tests passed in total.
+- The test pack contained angles `0, 5, …, 355` for each included wine.
+- The test pack validator rejected any vector count that did not equal 72 times the wine
+  count.
+- The Workbench rotation suite passed 26 tests.
+- The Workbench configuration loaded the Android rot5 entry with 72 angles.
+- Full-index generation and an APK device test are pending.
+- Six Python pack-builder tests passed for model-pack format version 3.
+- Android debug unit tests passed after the segmentation-mode change.
+- `lintDebug` and `assembleDebug` passed with JDK 21 after the final source change.
+- The built-in format version 3 pack contains 2,093 vectors, wines, and images.
+- The pack contains the verified 3,234,566-byte YOLO26n-seg w8a32 file.
+- The debug APK installed over version 0.1.4 without data removal.
+- The application upgraded the installed format version 2 pack to format version 3.
+- `GET /healthz` reported pack `20261003-dis-yolo26n-seg`, 2,093 wines, and the
+  selected segmentation mode.
+- The YOLO smoke test returned a result for five of the first 10 queries.
+- The controlled DIS run completed 100 requests in one process.
+- The controlled YOLO run completed 100 requests in one process.
+- No native abort occurred during either run.
+- DIS with SigLIP2 CPU accepted 38 of 100 queries.
+- YOLO with SigLIP2 CPU found a bottle in 70 queries and accepted 23 of 100 queries.
+- The debug HTTP server and ADB port forward were off after the tests.
+- The final 576,503,447-byte debug APK installed on Pixel 8 serial
+  `41231FDJH002WZ`.
+- The final APK SHA-256 is
+  `18800aadae4646a9f06f4605b965f3fe4a1e764d6f7f7f1289c0e38942b47964`.
+- The installed model pack reports format version 3 and contains
+  `yolo26n-seg_w8a32.tflite`.
+- The debug HTTP server setting remained off after the final installation.
+
+## Earlier verification on 2026-10-03
+
+- The debug APK installed over release version 0.1.4 without data removal.
+- `GET /healthz` reported pack `20260929-dis-main-alpha` and 2,093 wines.
+- The Pixel 8 used DIS GPU and SigLIP2 GPU.
+- Queries 1 through 56 completed in one process.
+- Query 57 caused a native abort in the LiteRT GPU accelerator.
+- Three fresh processes completed the remaining queries in batches of 20, 20, and 4.
+- The final file contains 100 ordered and unique query rows.
+- Every row has the required five fields.
+- Every image SHA-256 matches the actual query image.
+- No prediction is null.
+- The median request latency is 4,669 ms.
+- The primary and accepted alternative slugs accepted 38 of 100 predictions.
+- The release APK replaced the debug APK after the test.
+- The debug HTTP server and the ADB port forward were off after the test.
+
 ## Verification on 2026-09-29
 
 - GitHub release `android-v0.1.4` exists and is not a draft.

@@ -1,13 +1,13 @@
 # Model-pack contract
 
 The application reads one ZIP file.
-The application supports format versions 1 and 2.
-The application uses the built-in format version 2 pack on the first start.
+The application supports format versions 1, 2, and 3.
+The application uses the built-in format version 3 pack on the first start.
 The production user interface does not expose pack installation or replacement.
 
 ## Root payloads
 
-Both format versions MUST contain these files at the ZIP root:
+All supported format versions MUST contain these files at the ZIP root:
 
 - `manifest.json`
 - `dis.tflite`
@@ -18,6 +18,11 @@ Both format versions MUST contain these files at the ZIP root:
 - `codes.jsonl`
 
 Format version 2 MUST also contain `images.zip` at the ZIP root.
+Format version 3 MUST also contain these files at the ZIP root:
+
+- `images.zip`
+- `yolo26n-seg_w8a32.tflite`
+
 The application rejects an unknown root payload.
 The application rejects a duplicate root payload.
 
@@ -29,6 +34,8 @@ The SHA-256 of `dis.tflite` MUST be
 `0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087`.
 The SHA-256 of `siglip2_base_224_fp16.tflite` MUST be
 `a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854`.
+The SHA-256 of `yolo26n-seg_w8a32.tflite` MUST be
+`3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf`.
 
 The manifest `files` object MUST record the byte length and SHA-256 of each root
 payload except `manifest.json`.
@@ -40,12 +47,19 @@ The application verifies these values before it activates a pack.
 Each vector MUST be finite and L2-normalized.
 
 `candidates.jsonl` contains one object for each vector relation.
-Each object has `vector_row`, `wine_slug`, and `view`.
+Each generated built-in object has `vector_row`, `wine_slug`, `view`, and `angle`.
 The application searches rows whose view is `full`.
+The built-in pack MUST contain the angles `0, 5, …, 355` for each included wine.
+The built-in pack MUST contain 72 reference vectors for each included wine.
+The application uses the maximum cosine similarity across the rows of one wine.
+
+The manifest MUST set `reference_rotation_step_degrees` to `5`.
+The manifest MUST set `reference_frames_per_image` to `72`.
 
 `wines.jsonl` contains one wine card on each line.
 The required fields are `wine_slug`, `name`, and `page_url`.
-A format version 2 row also contains `image_path`, `image_type`, and `image_sha256`.
+A format version 2 or 3 row also contains `image_path`, `image_type`, and
+`image_sha256`.
 The generated built-in row also contains `image_source_type`, `image_source_sha256`,
 and `image_cut_sha256` for provenance.
 
@@ -55,7 +69,7 @@ Supported kinds are `gtin`, `barcode`, and `qr_url`.
 
 ## Catalogue images
 
-Format version 2 uses one catalogue image for each included wine.
+Format version 2 or 3 uses one catalogue image for each included wine.
 `images.zip` MUST contain each image at
 `images/<wine_slug>.<extension>`.
 The `image_path` value in `wines.jsonl` MUST identify this path.
@@ -81,19 +95,28 @@ workbench catalogue:
 ```text
 python3 tools/build_catalog_pack.py \
   --replace \
-  --version 20260929-dis-main-alpha
+  --version <version>
 ```
 
 The command reads these sources by default:
 
 - `../workbench/data/catalog/catalog.sqlite3`
-- `../workbench/data/catalog/embeddings/android-siglip2-base-224-dis-white/`
+- `../workbench/data/catalog/embeddings/android-siglip2-base-224-dis-white-rot5/`
 - the verified DIS and SigLIP2 LiteRT files in the shared Hugging Face cache
+- the verified YOLO26n-seg LiteRT file in the shared Ultralytics cache
+
+The YOLO file path is
+`~/.config/Ultralytics/yolo26n-seg_w8a32.tflite` by default.
+The official source is the Ultralytics YOLO Flutter release `v0.6.6`.
+The model metadata declares task `segment`, image size 640, COCO classes, and the
+AGPL-3.0 license.
 
 The command selects active wines only.
 The command selects `main_patched` before `main` to find the indexed vector.
-The command writes one vector, one candidate relation, and one transparent package cut
+The command writes 72 vectors, 72 candidate relations, and one transparent package cut
 for each included wine.
+The candidate relations use the angles `0, 5, …, 355`.
+The exporter rejects an incomplete or differently ordered angle sequence.
 The command converts each cut to transparent WebP at quality 80.
 The command limits the long side to 1,024 pixels.
 The command does not copy `main` or `main_patched` source images.

@@ -20,6 +20,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var engine: RecognitionEngine? = null
     private var acceleratorCheckRunning = false
 
+    private var segmenterMode = SegmenterMode.fromPreference(
+        preferences.getString(KEY_SEGMENTER_MODE, null),
+    )
+
     private var disAcceleratorMode = AcceleratorMode.fromPreference(
         preferences.getString(KEY_DIS_ACCELERATOR_MODE, null),
     )
@@ -35,22 +39,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val needsInitialAcceleratorCheck =
         preferences.getInt(KEY_ACCELERATOR_CHECK_VERSION, 0) != ACCELERATOR_CHECK_VERSION ||
             automaticDisAccelerator == null || automaticSigLip2Accelerator == null
+    private val needsBuiltInPack = installedPack?.hasYolo() != true
 
     private val mutableState = MutableStateFlow(
         UiState(
             ageAccepted = preferences.getBoolean("age_accepted", false),
             modelPack = installedPack?.info,
+            segmenterMode = segmenterMode,
             disAcceleratorMode = disAcceleratorMode,
             sigLip2AcceleratorMode = sigLip2AcceleratorMode,
             automaticDisAccelerator = automaticDisAccelerator,
             automaticSigLip2Accelerator = automaticSigLip2Accelerator,
-            isAcceleratorCheckRunning = installedPack != null && needsInitialAcceleratorCheck,
+            isAcceleratorCheckRunning = !needsBuiltInPack && needsInitialAcceleratorCheck,
             debugHttpServerAvailable = BuildConfig.DEBUG,
             debugHttpServerEnabled = BuildConfig.DEBUG && isDebugHttpServerEnabled(application),
             history = historyStore.list(),
-            isBusy = installedPack == null || needsInitialAcceleratorCheck,
+            isBusy = needsBuiltInPack || needsInitialAcceleratorCheck,
             progressText = when {
-                installedPack == null -> "Готовим встроенный каталог…"
+                needsBuiltInPack -> "Готовим встроенный каталог…"
                 needsInitialAcceleratorCheck -> "Проверяем совместимость GPU…"
                 else -> null
             },
@@ -60,14 +66,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            val pack = installedPack ?: runCatching {
+            val pack = installedPack?.takeIf(InstalledModelPack::hasYolo) ?: runCatching {
                 withContext(Dispatchers.IO) { packManager.installBuiltIn() }
             }.getOrElse {
                 showError("Встроенный каталог не установлен: ${friendlyMessage(it)}.")
                 return@launch
             }.also {
                 installedPack = it
-                engine = null
+                replaceEngine(null)
                 mutableState.update { state -> state.copy(modelPack = it.info) }
             }
             if (needsInitialAcceleratorCheck) {
@@ -85,15 +91,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         mutableState.update { it.copy(ageAccepted = true) }
     }
 
+    fun setSegmenterMode(mode: SegmenterMode) {
+        segmenterMode = mode
+        preferences.edit().putString(KEY_SEGMENTER_MODE, mode.name).apply()
+        replaceEngine(null)
+        mutableState.update { it.copy(segmenterMode = mode) }
+    }
+
     fun setDisAcceleratorMode(mode: AcceleratorMode) {
         disAcceleratorMode = mode
         preferences.edit().putString(KEY_DIS_ACCELERATOR_MODE, mode.name).apply()
+        replaceEngine(null)
         mutableState.update { it.copy(disAcceleratorMode = mode) }
     }
 
     fun setSigLip2AcceleratorMode(mode: AcceleratorMode) {
         sigLip2AcceleratorMode = mode
         preferences.edit().putString(KEY_SIGLIP2_ACCELERATOR_MODE, mode.name).apply()
+        replaceEngine(null)
         mutableState.update { it.copy(sigLip2AcceleratorMode = mode) }
     }
 
@@ -164,7 +179,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             runCatching { withContext(Dispatchers.IO) { packManager.install(uri) } }
                 .onSuccess { pack ->
                     installedPack = pack
-                    engine = null
+                    replaceEngine(null)
                     mutableState.update {
                         it.copy(
                             modelPack = pack.info,
@@ -196,7 +211,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             mutableState.update {
                 it.copy(
                     isBusy = true,
-                    progressText = "Выделяем главный объект с помощью DIS…",
+                    progressText = if (currentState.segmenterMode == SegmenterMode.YOLO) {
+                        "Ищем бутылку с помощью YOLO…"
+                    } else {
+                        "Выделяем главный объект с помощью DIS…"
+                    },
                     error = null,
                     matches = emptyList(),
                     debugImages = null,
@@ -207,7 +226,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             runCatching {
                 withContext(Dispatchers.Default) {
                     val activeEngine = engine ?: RecognitionEngine(pack).also { engine = it }
-                    activeEngine.recognize(bitmap, accelerators)
+                    activeEngine.recognize(bitmap, accelerators, currentState.segmenterMode)
                 }
             }.onSuccess { output ->
                 saveAutomaticCpuFallbacks(output)
@@ -226,7 +245,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         isBusy = false,
                         progressText = null,
                         technicalText = buildString {
-                            append("DIS: ${output.disMs} мс (${output.disAccelerator}). ")
+                            append("${output.segmenterName}: ${output.segmentationMs} мс ")
+                            append("(${output.segmentationAccelerator}). ")
                             append("SigLIP2: ${output.embeddingMs} мс ")
                             append("(${output.embeddingAccelerator}). ")
                             append("Поиск: ${output.searchMs} мс.")
@@ -362,9 +382,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private fun saveAutomaticCpuFallbacks(output: RecognitionOutput) {
         var changed = false
         if (
+            output.segmenterName == SegmenterMode.DIS.name &&
             disAcceleratorMode == AcceleratorMode.AUTO &&
             automaticDisAccelerator == ModelAccelerator.GPU &&
-            output.disAccelerator == ModelAccelerator.CPU.name
+            output.segmentationAccelerator == ModelAccelerator.CPU.name
         ) {
             automaticDisAccelerator = ModelAccelerator.CPU
             changed = true
@@ -394,6 +415,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         mutableState.update {
             it.copy(isBusy = false, progressText = null, error = message)
         }
+    }
+
+    private fun replaceEngine(replacement: RecognitionEngine?) {
+        if (engine === replacement) return
+        engine?.close()
+        engine = replacement
+    }
+
+    override fun onCleared() {
+        replaceEngine(null)
+        super.onCleared()
     }
 
     private fun friendlyMessage(error: Throwable): String {

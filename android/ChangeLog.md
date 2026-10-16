@@ -1,5 +1,45 @@
 # Change log
 
+## 2026-10-03
+
+### Five-degree Android reference rotation
+
+- Added the Workbench entry `android-siglip2-base-224-dis-white-rot5`.
+- Added 72 reference angles from 0 degrees through 355 degrees for each catalogue image.
+- Rotated the DIS result before `square_on_white` and the 224 by 224 resize.
+- Kept the 0-degree frame equal to the existing Android model input.
+- Kept one SigLIP2 query vector on the Android device.
+- Kept maximum cosine scoring across all reference rows of one wine.
+- Changed the catalogue exporter default to the rotated index.
+- Added an `angle` value to each generated candidate relation.
+- Added strict validation for the 5-degree sequence and 72 rows per wine.
+- Passed four Android catalogue exporter tests and 26 Workbench rotation tests.
+- Did not generate the full catalogue index or APK in this change.
+
+### DIS and YOLO segmentation modes
+
+- Added the `DIS / YOLO` segmentation setting.
+- Added the official `yolo26n-seg` w8a32 LiteRT model at 640 by 640 pixels.
+- Kept only COCO class 39, `bottle`.
+- Selected the largest central bottle mask.
+- Removed letterbox padding before the white-background crop.
+- Kept YOLO inference on CPU.
+- Added model-pack format version 3 and a verified YOLO payload.
+- Kept format versions 1 and 2 readable.
+- Reused one LiteRT environment, compiled model, and buffer set across requests.
+- Prevented two live GPU models in the DIS pipeline.
+- Added unit tests for YOLO bottle selection, normalized boxes, mask generation, and
+  settings fallback.
+- Ran controlled DIS and YOLO evaluations on 100 images on a Google Pixel 8.
+- DIS with SigLIP2 CPU accepted 38 of 100 images.
+- YOLO with SigLIP2 CPU accepted 23 of 100 images.
+- YOLO did not find a complete bottle in 30 images.
+- Both 100-request runs completed without `SIGABRT`.
+- Passed six Python pack-builder tests, Android debug unit tests, `lintDebug`, and
+  `assembleDebug`.
+- Installed the final debug APK on a Google Pixel 8.
+- Kept the debug HTTP server off after the test.
+
 ## 2026-09-29
 
 ### GitHub Android pre-release

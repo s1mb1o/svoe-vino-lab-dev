@@ -12,13 +12,16 @@ import java.util.zip.ZipInputStream
 
 private const val PACK_FORMAT = "svoe-vino-android-model-pack"
 private const val PACK_VERSION_WITH_IMAGES = 2
-private val SUPPORTED_PACK_VERSIONS = setOf(1, PACK_VERSION_WITH_IMAGES)
+private const val PACK_VERSION_WITH_YOLO = 3
+private val SUPPORTED_PACK_VERSIONS = setOf(1, PACK_VERSION_WITH_IMAGES, PACK_VERSION_WITH_YOLO)
 private const val PIPELINE_ID = "dis-white-square-timm-crop090-v2"
 private const val SIGLIP_MODEL = "vit_base_patch16_siglip_224.v2_webli"
 private const val DIS_MODEL_SHA256 =
     "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
 private const val SIGLIP_MODEL_SHA256 =
     "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
+private const val YOLO_MODEL_SHA256 =
+    "3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf"
 const val VECTOR_DIMENSION = 768
 
 private val BASE_PAYLOADS = setOf(
@@ -29,9 +32,10 @@ private val BASE_PAYLOADS = setOf(
     "wines.jsonl",
     "codes.jsonl",
 )
+private const val YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
 private const val IMAGE_ARCHIVE = "images.zip"
 private const val BUILT_IN_PACK = "default_model_pack.zip"
-private val ALLOWED_ENTRIES = BASE_PAYLOADS + IMAGE_ARCHIVE + "manifest.json"
+private val ALLOWED_ENTRIES = BASE_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
 private const val MAX_PACK_BYTES = 700L * 1024L * 1024L
 private const val MAX_IMAGE_BYTES = 512L * 1024L * 1024L
 private const val MAX_IMAGE_COUNT = 5_000
@@ -63,6 +67,9 @@ data class InstalledModelPack(
         )
 
     fun file(name: String): File = File(directory, name)
+
+    fun hasYolo(): Boolean = manifest.formatVersion >= PACK_VERSION_WITH_YOLO &&
+        file(YOLO_MODEL_FILE).isFile
 }
 
 class ModelPackManager(private val context: Context) {
@@ -185,7 +192,7 @@ class ModelPackManager(private val context: Context) {
             setOf(IMAGE_ARCHIVE)
         } else {
             emptySet()
-        }
+        } + if (formatVersion >= PACK_VERSION_WITH_YOLO) setOf(YOLO_MODEL_FILE) else emptySet()
         if (fileJson.keys().asSequence().toSet() != requiredPayloads) {
             throw ModelPackException("Список файлов в manifest.json не совпадает с контрактом.")
         }
@@ -215,6 +222,12 @@ class ModelPackManager(private val context: Context) {
         }
         if (files.getValue("siglip2_base_224_fp16.tflite").sha256 != SIGLIP_MODEL_SHA256) {
             throw ModelPackException("Пакет содержит другую модель SigLIP2.")
+        }
+        if (
+            formatVersion >= PACK_VERSION_WITH_YOLO &&
+            files.getValue(YOLO_MODEL_FILE).sha256 != YOLO_MODEL_SHA256
+        ) {
+            throw ModelPackException("Пакет содержит другую модель YOLO26n-seg.")
         }
         val installedAt = json.optLong("created_at_epoch_ms", manifestFile.lastModified())
         return InstalledModelPack(

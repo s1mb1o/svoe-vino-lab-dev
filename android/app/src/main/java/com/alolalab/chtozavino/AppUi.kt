@@ -70,6 +70,7 @@ data class AppActions(
     val openUrl: (String) -> Unit,
     val clearHistory: () -> Unit,
     val dismissError: () -> Unit,
+    val setSegmenterMode: (SegmenterMode) -> Unit,
     val setDisAcceleratorMode: (AcceleratorMode) -> Unit,
     val setSigLip2AcceleratorMode: (AcceleratorMode) -> Unit,
     val setDebugHttpServerEnabled: (Boolean) -> Unit,
@@ -370,12 +371,20 @@ private fun SettingsPage(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text("Распознавание", fontWeight = FontWeight.Bold)
-                    Text("DIS выделяет объект. SigLIP2 создаёт вектор из 768 значений.")
-                    AcceleratorPicker(
-                        title = "DIS",
-                        mode = state.disAcceleratorMode,
-                        onChange = actions.setDisAcceleratorMode,
-                    )
+                    Text("Сегментатор выделяет объект. SigLIP2 создаёт вектор из 768 значений.")
+                    SegmenterPicker(state.segmenterMode, actions.setSegmenterMode)
+                    if (state.segmenterMode == SegmenterMode.DIS) {
+                        AcceleratorPicker(
+                            title = "DIS",
+                            mode = state.disAcceleratorMode,
+                            onChange = actions.setDisAcceleratorMode,
+                        )
+                    } else {
+                        Text(
+                            "YOLO26n-seg использует CPU и ищет класс bottle.",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                     AcceleratorPicker(
                         title = "SigLIP2",
                         mode = state.sigLip2AcceleratorMode,
@@ -473,12 +482,36 @@ private fun AcceleratorPicker(
     }
 }
 
+@Composable
+private fun SegmenterPicker(
+    mode: SegmenterMode,
+    onChange: (SegmenterMode) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text("Сегментация", style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SegmenterMode.entries.forEach { candidate ->
+                FilterChip(
+                    selected = mode == candidate,
+                    onClick = { onChange(candidate) },
+                    label = { Text(candidate.name) },
+                )
+            }
+        }
+    }
+}
+
 private fun automaticAcceleratorText(state: UiState): String {
     if (state.isAcceleratorCheckRunning) return "Идёт проверка GPU на этом устройстве."
     val dis = state.automaticDisAccelerator?.name ?: "не проверен"
     val sigLip2 = state.automaticSigLip2Accelerator?.name ?: "не проверен"
+    val segmentation = if (state.segmenterMode == SegmenterMode.YOLO) {
+        "YOLO — CPU"
+    } else {
+        "DIS — $dis"
+    }
     return "Режим «Авто» проверяет модели на первом запуске. " +
-        "Текущий выбор: DIS — $dis, SigLIP2 — $sigLip2."
+        "Текущий выбор: $segmentation, SigLIP2 — $sigLip2."
 }
 
 @Composable
@@ -540,7 +573,7 @@ private fun DebugSection(images: DebugImages) {
             Text(if (expanded) "Скрыть этапы обработки" else "Показать этапы обработки")
         }
         if (expanded) {
-            ImageCard("После DIS: маска", images.disMask)
+            ImageCard("После ${images.segmenterName}: маска", images.disMask)
             ImageCard("Обрезанное изображение", images.crop)
             ImageCard("Белый фон и квадрат", images.whiteBackground)
         }

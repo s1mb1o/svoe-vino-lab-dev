@@ -13,6 +13,7 @@ import kotlin.concurrent.withLock
 const val DEBUG_HTTP_PORT = 18088
 private const val MAX_IMAGE_BYTES = 20L * 1024L * 1024L
 internal const val PIPELINE_NAME = "android-dis-siglip2-base-224"
+internal const val YOLO_PIPELINE_NAME = "android-yolo26n-seg-siglip2-base-224"
 
 object DebugHttpServer {
     private var server: AndroidMatcherServer? = null
@@ -28,6 +29,7 @@ object DebugHttpServer {
 
     @Synchronized
     fun stop() {
+        server?.closeResources()
         server?.stop()
         server = null
     }
@@ -43,8 +45,12 @@ internal fun matchLimit(raw: String?): Int {
 internal fun predictionJson(matches: List<WineMatch>): JSONObject = JSONObject()
     .put("slug", matches.firstOrNull()?.wine?.slug.orEmpty())
 
-internal fun matchJson(matches: List<WineMatch>, latencyMs: Double): JSONObject = JSONObject()
-    .put("pipeline", PIPELINE_NAME)
+internal fun matchJson(
+    matches: List<WineMatch>,
+    latencyMs: Double,
+    pipeline: String = PIPELINE_NAME,
+): JSONObject = JSONObject()
+    .put("pipeline", pipeline)
     .put("latency_ms", latencyMs)
     .put("candidates", JSONArray().apply {
         matches.forEachIndexed { index, match ->
@@ -104,6 +110,7 @@ private class AndroidMatcherServer(
             .put("port", DEBUG_HTTP_PORT)
             .put("pack_version", pack?.manifest?.versionName ?: JSONObject.NULL)
             .put("wine_count", pack?.manifest?.wineCount ?: 0)
+            .put("segmenter", savedSegmenterMode(context).name)
         return json(if (pack == null) Response.Status.SERVICE_UNAVAILABLE else Response.Status.OK, body)
     }
 
@@ -136,18 +143,30 @@ private class AndroidMatcherServer(
             val output = inferenceLock.withLock {
                 val pack = ModelPackManager(context).current()
                     ?: return error(Response.Status.SERVICE_UNAVAILABLE, "model pack is not ready")
+                val segmenterMode = savedSegmenterMode(context)
                 val key = "${pack.directory.absolutePath}:${pack.manifest.versionName}:${pack.manifest.installedAt}"
                 if (engine == null || engineKey != key) {
+                    engine?.close()
                     engine = RecognitionEngine(pack)
                     engineKey = key
                 }
-                engine!!.recognize(bitmap, savedRecognitionAccelerators(context), k ?: 1)
+                engine!!.recognize(
+                    bitmap,
+                    savedRecognitionAccelerators(context),
+                    segmenterMode,
+                    k ?: 1,
+                )
             }
             val latencyMs = (System.nanoTime() - started) / 1_000_000.0
             val body = if (k == null) {
                 predictionJson(output.matches)
             } else {
-                matchJson(output.matches, latencyMs)
+                val pipeline = if (output.segmenterName == SegmenterMode.YOLO.name) {
+                    YOLO_PIPELINE_NAME
+                } else {
+                    PIPELINE_NAME
+                }
+                matchJson(output.matches, latencyMs, pipeline)
             }
             recycle(output)
             json(Response.Status.OK, body)
@@ -160,6 +179,14 @@ private class AndroidMatcherServer(
         output.debugImages.disMask.recycle()
         output.debugImages.crop.recycle()
         output.debugImages.whiteBackground.recycle()
+    }
+
+    fun closeResources() {
+        inferenceLock.withLock {
+            engine?.close()
+            engine = null
+            engineKey = null
+        }
     }
 
     private fun json(status: Response.IStatus, body: JSONObject): Response =

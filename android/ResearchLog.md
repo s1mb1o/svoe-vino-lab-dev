@@ -1,5 +1,94 @@
 # Research log
 
+## 2026-10-03
+
+### Five-degree Android reference rotation
+
+- The Android search already keeps the maximum score for each `wine_slug`.
+- The runtime needs no additional query embedding for rotation support.
+- The offline index now provides 72 rows per catalogue image.
+- Rotation occurs after DIS and `white_background`.
+- Rotation occurs before `square_on_white` and the 224 by 224 resize.
+- This order keeps the 0-degree frame equal to the existing Android input.
+- For 2,093 wines, float32 vectors need 462,938,112 bytes.
+- The old one-vector index needs 6,429,696 bytes.
+- The rotation sequence adds 456,508,416 bytes before ZIP overhead.
+- The generated index and APK were not built during this implementation step.
+
+- The official Ultralytics YOLO Flutter release `v0.6.6` supplied
+  `yolo26n-seg_w8a32.tflite`.
+- The YOLO file is 3,234,566 bytes.
+- Its SHA-256 is
+  `3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf`.
+- The embedded metadata identifies Ultralytics version 8.4.104, task `segment`, image
+  size 640, and COCO class 39 as `bottle`.
+- The embedded metadata declares the AGPL-3.0 license.
+- Model-pack format version 3 adds the YOLO file and keeps the same 2,093 catalogue
+  vectors, wines, and images as the earlier DIS test.
+- The version 3 pack is 432,436,177 bytes.
+- Its SHA-256 is
+  `c55203fdaa2b2f1abb034eb22793714465ae265298ce8b4a3ef9a6dfe8cd1616`.
+- The Pixel 8 test used YOLO on CPU.
+- The controlled comparison used SigLIP2 on CPU for DIS and YOLO.
+- DIS returned 100 predictions and accepted 38 of 100.
+- DIS median latency was 2,024.5 ms and mean latency was 1,981.25 ms.
+- YOLO found a bottle in 70 of 100 images.
+- YOLO returned 70 predictions and accepted 23 of 100.
+- YOLO median latency was 1,234 ms and mean latency was 1,312.99 ms.
+- Both segmentation modes were correct for 20 queries.
+- DIS alone was correct for 18 queries.
+- YOLO alone was correct for 3 queries.
+- Neither mode was correct for 59 queries.
+- The 30 YOLO failures mainly contain label close-ups or images without a complete
+  bottle.
+- Both 100-request runs completed in one application process.
+- Neither run caused `SIGABRT` or another native abort.
+- The DIS result file SHA-256 is
+  `e44ea3ff502b3ee09f87bbd2e52680f7b8d8e9082d845852c612933deba172f8`.
+- The controlled YOLO result file SHA-256 is
+  `c15984953177af732a2aa9e87d9755d36cb60fec013e666337e8a76006a3e232`.
+- The debug HTTP server and ADB port forward were disabled after the tests.
+- Six Python pack-builder tests passed.
+- `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed with JDK 21.
+- The final debug APK is 576,503,447 bytes.
+- Its SHA-256 is
+  `18800aadae4646a9f06f4605b965f3fe4a1e764d6f7f7f1289c0e38942b47964`.
+- The final debug APK installed on the Pixel 8 with serial `41231FDJH002WZ`.
+- The installed manifest reports format version 3, 2,093 vectors, and the verified
+  YOLO model.
+- The saved device settings select YOLO and SigLIP2 CPU.
+- The debug HTTP server setting is off.
+
+- The Pixel 8 evaluation used Android application version 0.1.4.
+- The debug server reported model pack `20260929-dis-main-alpha` and 2,093 wines.
+- ADB forwarded host port 18088 to device port 18088.
+- The run used the saved DIS GPU and SigLIP2 GPU selections.
+- The attached evaluation set contained 100 WebP query images.
+- The ZIP structure and CRC values were valid.
+- The supplied `checksums.sha256` file did not match 42 query images.
+- The expected-answer file matched the actual SHA-256 value of all 100 query images.
+- The first continuous run completed queries 1 through 56.
+- Query 57 caused a native `SIGABRT` in `libLiteRtClGlAccelerator.so`.
+- The stack trace shows the failure during GPU `CompiledModel` creation.
+- The process uptime was 392 seconds when the failure occurred.
+- Three application restarts completed queries 57 through 100 in batches of 20, 20,
+  and 4 queries.
+- The final `predictions.jsonl` contains 100 unique queries and no null prediction.
+- The minimum latency was 3,923 ms.
+- The median latency was 4,669 ms.
+- The mean latency was 4,826.68 ms.
+- The maximum latency was 6,948 ms.
+- The accepted-answer check used the primary slug, `alternative_slug_1`, and
+  `alternative_slug_2`.
+- The result had 38 accepted predictions from 100 queries.
+- All 38 accepted predictions matched the primary slug.
+- The alternative slugs did not add an accepted prediction.
+- The legacy `alternative_slug` field did not change the result.
+- The final file SHA-256 is
+  `3842219ad3130c4403ce3c81bb35394046da3c6e21f3d7fea2f019c23611796d`.
+- The release application replaced the debug application after the run.
+- The debug HTTP server setting and ADB port forward were disabled after the run.
+
 ## 2026-09-29
 
 - GitHub repository `s1mb1o/svoe-vino-lab-dev` is private.

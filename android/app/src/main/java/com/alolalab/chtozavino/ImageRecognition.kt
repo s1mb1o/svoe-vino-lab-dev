@@ -11,9 +11,11 @@ import android.net.Uri
 import android.util.Log
 import com.google.ai.edge.litert.Accelerator
 import com.google.ai.edge.litert.CompiledModel
+import com.google.ai.edge.litert.Environment
 import com.google.ai.edge.litert.TensorBuffer
 import java.io.File
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -35,18 +37,22 @@ private class LiteRtRunner private constructor(
     private val outputs: List<TensorBuffer> = model.createOutputBuffers()
 
     companion object {
-        fun open(path: String, accelerator: ModelAccelerator): LiteRtRunner =
+        fun open(
+            path: String,
+            accelerator: ModelAccelerator,
+            environment: Environment? = null,
+        ): LiteRtRunner =
             when (accelerator) {
-                ModelAccelerator.GPU -> openGpu(path)
-                ModelAccelerator.CPU -> openCpu(path)
+                ModelAccelerator.GPU -> openGpu(path, environment)
+                ModelAccelerator.CPU -> openCpu(path, environment)
             }
 
-        fun openGpu(path: String): LiteRtRunner = try {
+        fun openGpu(path: String, environment: Environment? = null): LiteRtRunner = try {
             LiteRtRunner(
                 CompiledModel.create(
                     path,
                     CompiledModel.Options(Accelerator.GPU),
-                    null,
+                    environment,
                 ),
                 "GPU",
             )
@@ -54,12 +60,12 @@ private class LiteRtRunner private constructor(
             throw ImageRecognitionException("LiteRT не смог загрузить модель на GPU.", error)
         }
 
-        fun openCpu(path: String): LiteRtRunner = try {
+        fun openCpu(path: String, environment: Environment? = null): LiteRtRunner = try {
             LiteRtRunner(
                 CompiledModel.create(
                     path,
                     CompiledModel.Options(Accelerator.CPU),
-                    null,
+                    environment,
                 ),
                 "CPU",
             )
@@ -69,9 +75,13 @@ private class LiteRtRunner private constructor(
     }
 
     fun run(input: FloatArray): FloatArray {
+        return runAll(input).first()
+    }
+
+    fun runAll(input: FloatArray): List<FloatArray> {
         inputs[0].writeFloat(input)
         model.run(inputs, outputs)
-        return outputs[0].readFloat()
+        return outputs.map(TensorBuffer::readFloat)
     }
 
     override fun close() {
@@ -85,8 +95,15 @@ private class DisSegmenter(
     private val modelPath: String,
     accelerator: ModelAccelerator,
     private val allowCpuFallback: Boolean,
+    private val environment: Environment? = null,
 ) : AutoCloseable {
-    private var runner = openRunner(modelPath, accelerator, allowCpuFallback, "DIS")
+    private var runner = openRunner(
+        modelPath,
+        accelerator,
+        allowCpuFallback,
+        "DIS",
+        environment,
+    )
     val accelerator: String get() = runner.accelerator
 
     fun mask(bitmap: Bitmap): FloatArray {
@@ -128,7 +145,7 @@ private class DisSegmenter(
             )
             runner.close()
             runner = try {
-                LiteRtRunner.openCpu(modelPath)
+                LiteRtRunner.openCpu(modelPath, environment)
             } catch (cpuOpenError: Exception) {
                 cpuOpenError.addSuppressed(gpuError)
                 throw cpuOpenError
@@ -143,12 +160,110 @@ private class DisSegmenter(
     }
 }
 
+private class YoloBottleSegmenter(
+    modelPath: String,
+    environment: Environment? = null,
+) : AutoCloseable {
+    private val runner = LiteRtRunner.openCpu(modelPath, environment)
+    val accelerator: String get() = runner.accelerator
+
+    fun mask(bitmap: Bitmap): SegmentationMask {
+        val scale = min(
+            YOLO_INPUT_SIZE.toFloat() / bitmap.width,
+            YOLO_INPUT_SIZE.toFloat() / bitmap.height,
+        )
+        val resizedWidth = max(1, (bitmap.width * scale).roundToInt())
+        val resizedHeight = max(1, (bitmap.height * scale).roundToInt())
+        val padLeft = (YOLO_INPUT_SIZE - resizedWidth) / 2
+        val padTop = (YOLO_INPUT_SIZE - resizedHeight) / 2
+        val inputBitmap = Bitmap.createBitmap(
+            YOLO_INPUT_SIZE,
+            YOLO_INPUT_SIZE,
+            Bitmap.Config.ARGB_8888,
+        )
+        Canvas(inputBitmap).apply {
+            drawColor(Color.rgb(114, 114, 114))
+            drawBitmap(
+                bitmap,
+                null,
+                RectF(
+                    padLeft.toFloat(),
+                    padTop.toFloat(),
+                    (padLeft + resizedWidth).toFloat(),
+                    (padTop + resizedHeight).toFloat(),
+                ),
+                Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG),
+            )
+        }
+
+        val pixels = IntArray(YOLO_INPUT_SIZE * YOLO_INPUT_SIZE)
+        inputBitmap.getPixels(
+            pixels,
+            0,
+            YOLO_INPUT_SIZE,
+            0,
+            0,
+            YOLO_INPUT_SIZE,
+            YOLO_INPUT_SIZE,
+        )
+        inputBitmap.recycle()
+        val plane = YOLO_INPUT_SIZE * YOLO_INPUT_SIZE
+        val input = FloatArray(3 * plane)
+        for (index in pixels.indices) {
+            val pixel = pixels[index]
+            input[index] = ((pixel ushr 16) and 0xff) / 255f
+            input[plane + index] = ((pixel ushr 8) and 0xff) / 255f
+            input[2 * plane + index] = (pixel and 0xff) / 255f
+        }
+
+        val outputs = runner.runAll(input)
+        val detections = outputs.singleOrNull {
+            it.size == YOLO_DETECTION_FEATURE_COUNT * YOLO_ANCHOR_COUNT
+        } ?: throw ImageRecognitionException(
+            "YOLO26n-seg вернул неизвестный detection tensor: ${outputs.map(FloatArray::size)}.",
+        )
+        val prototypes = outputs.singleOrNull {
+            it.size == YOLO_MASK_COEFFICIENT_COUNT * YOLO_PROTO_SIZE * YOLO_PROTO_SIZE
+        } ?: throw ImageRecognitionException(
+            "YOLO26n-seg вернул неизвестный mask tensor: ${outputs.map(FloatArray::size)}.",
+        )
+        val bottle = selectYoloBottleDetection(detections)
+            ?: throw ImageRecognitionException(
+                "YOLO не нашёл бутылку. Поместите всю бутылку в центр кадра.",
+            )
+        val protoScale = YOLO_PROTO_SIZE.toFloat() / YOLO_INPUT_SIZE
+        val contentLeft = floor(padLeft * protoScale).toInt().coerceIn(0, YOLO_PROTO_SIZE - 1)
+        val contentTop = floor(padTop * protoScale).toInt().coerceIn(0, YOLO_PROTO_SIZE - 1)
+        val contentRight = ceil((padLeft + resizedWidth) * protoScale)
+            .toInt().coerceIn(contentLeft + 1, YOLO_PROTO_SIZE)
+        val contentBottom = ceil((padTop + resizedHeight) * protoScale)
+            .toInt().coerceIn(contentTop + 1, YOLO_PROTO_SIZE)
+        return buildYoloBottleMask(
+            prototypes = prototypes,
+            detection = bottle,
+            contentLeft = contentLeft,
+            contentTop = contentTop,
+            contentRight = contentRight,
+            contentBottom = contentBottom,
+        )
+    }
+
+    override fun close() = runner.close()
+}
+
 private class SigLip2Encoder(
     private val modelPath: String,
     accelerator: ModelAccelerator,
     private val allowCpuFallback: Boolean,
+    private val environment: Environment? = null,
 ) : AutoCloseable {
-    private var runner = openRunner(modelPath, accelerator, allowCpuFallback, "SigLIP2")
+    private var runner = openRunner(
+        modelPath,
+        accelerator,
+        allowCpuFallback,
+        "SigLIP2",
+        environment,
+    )
     val accelerator: String get() = runner.accelerator
 
     fun encode(bitmap: Bitmap): FloatArray {
@@ -201,7 +316,7 @@ private class SigLip2Encoder(
             )
             runner.close()
             runner = try {
-                LiteRtRunner.openCpu(modelPath)
+                LiteRtRunner.openCpu(modelPath, environment)
             } catch (cpuOpenError: Exception) {
                 cpuOpenError.addSuppressed(gpuError)
                 throw cpuOpenError
@@ -221,8 +336,9 @@ private fun openRunner(
     accelerator: ModelAccelerator,
     allowCpuFallback: Boolean,
     modelName: String,
+    environment: Environment? = null,
 ): LiteRtRunner = try {
-    LiteRtRunner.open(modelPath, accelerator)
+    LiteRtRunner.open(modelPath, accelerator, environment)
 } catch (gpuError: Exception) {
     if (!allowCpuFallback || accelerator != ModelAccelerator.GPU) throw gpuError
     Log.w(
@@ -231,7 +347,7 @@ private fun openRunner(
         gpuError,
     )
     try {
-        LiteRtRunner.openCpu(modelPath)
+        LiteRtRunner.openCpu(modelPath, environment)
     } catch (cpuError: Exception) {
         cpuError.addSuppressed(gpuError)
         throw cpuError
@@ -309,16 +425,24 @@ private data class PreparedImage(
     val modelInput: Bitmap,
 )
 
-private object DisImageProcessor {
-    fun prepare(source: Bitmap, mask: FloatArray): PreparedImage {
-        var minX = DIS_SIZE
-        var minY = DIS_SIZE
+private object ForegroundImageProcessor {
+    fun prepare(
+        source: Bitmap,
+        segmentationMask: SegmentationMask,
+        segmenterName: String,
+    ): PreparedImage {
+        val mask = segmentationMask.values
+        val maskWidth = segmentationMask.width
+        val maskHeight = segmentationMask.height
+        require(mask.size == maskWidth * maskHeight)
+        var minX = maskWidth
+        var minY = maskHeight
         var maxX = -1
         var maxY = -1
         var foregroundCount = 0
-        for (y in 0 until DIS_SIZE) {
-            val row = y * DIS_SIZE
-            for (x in 0 until DIS_SIZE) {
+        for (y in 0 until maskHeight) {
+            val row = y * maskWidth
+            for (x in 0 until maskWidth) {
                 if (mask[row + x] >= MASK_THRESHOLD) {
                     foregroundCount += 1
                     minX = min(minX, x)
@@ -331,19 +455,19 @@ private object DisImageProcessor {
         val fraction = foregroundCount.toFloat() / mask.size
         if (maxX < minX || fraction < 0.005f) {
             throw ImageRecognitionException(
-                "DIS не нашёл главный объект. Поместите бутылку в центр кадра.",
+                "$segmenterName не нашёл главный объект. Поместите бутылку в центр кадра.",
             )
         }
         if (fraction > 0.995f) {
             throw ImageRecognitionException(
-                "DIS выделил весь кадр. Снимите бутылку на более простом фоне.",
+                "$segmenterName выделил весь кадр. Снимите бутылку на более простом фоне.",
             )
         }
 
-        var left = (minX.toFloat() / DIS_SIZE * source.width).toInt()
-        var top = (minY.toFloat() / DIS_SIZE * source.height).toInt()
-        var right = ceil((maxX + 1f) / DIS_SIZE * source.width).toInt()
-        var bottom = ceil((maxY + 1f) / DIS_SIZE * source.height).toInt()
+        var left = (minX.toFloat() / maskWidth * source.width).toInt()
+        var top = (minY.toFloat() / maskHeight * source.height).toInt()
+        var right = ceil((maxX + 1f) / maskWidth * source.width).toInt()
+        var bottom = ceil((maxY + 1f) / maskHeight * source.height).toInt()
         val marginX = ((right - left) * 0.04f).roundToInt()
         val marginY = ((bottom - top) * 0.04f).roundToInt()
         left = (left - marginX).coerceAtLeast(0)
@@ -351,7 +475,7 @@ private object DisImageProcessor {
         right = (right + marginX).coerceAtMost(source.width)
         bottom = (bottom + marginY).coerceAtMost(source.height)
         if (right <= left || bottom <= top) {
-            throw ImageRecognitionException("DIS вернул пустую область объекта.")
+            throw ImageRecognitionException("$segmenterName вернул пустую область объекта.")
         }
 
         val width = right - left
@@ -362,11 +486,11 @@ private object DisImageProcessor {
         val compositePixels = IntArray(cropPixels.size)
         for (y in 0 until height) {
             val sourceY = top + y
-            val maskY = (sourceY * DIS_SIZE / source.height).coerceIn(0, DIS_SIZE - 1)
+            val maskY = (sourceY * maskHeight / source.height).coerceIn(0, maskHeight - 1)
             for (x in 0 until width) {
                 val sourceX = left + x
-                val maskX = (sourceX * DIS_SIZE / source.width).coerceIn(0, DIS_SIZE - 1)
-                val alpha = mask[maskY * DIS_SIZE + maskX].coerceIn(0f, 1f)
+                val maskX = (sourceX * maskWidth / source.width).coerceIn(0, maskWidth - 1)
+                val alpha = mask[maskY * maskWidth + maskX].coerceIn(0f, 1f)
                 val pixel = cropPixels[y * width + x]
                 val red = (255f + (((pixel ushr 16) and 0xff) - 255f) * alpha).roundToInt()
                 val green = (255f + (((pixel ushr 8) and 0xff) - 255f) * alpha).roundToInt()
@@ -396,10 +520,11 @@ private object DisImageProcessor {
         }
         val maskPixels = IntArray(previewWidth * previewHeight)
         for (y in 0 until previewHeight) {
-            val maskY = y * DIS_SIZE / previewHeight
+            val maskY = y * maskHeight / previewHeight
             for (x in 0 until previewWidth) {
-                val maskX = x * DIS_SIZE / previewWidth
-                val value = (mask[maskY * DIS_SIZE + maskX].coerceIn(0f, 1f) * 255f).roundToInt()
+                val maskX = x * maskWidth / previewWidth
+                val value = (mask[maskY * maskWidth + maskX].coerceIn(0f, 1f) * 255f)
+                    .roundToInt()
                 maskPixels[y * previewWidth + x] = Color.rgb(value, value, value)
             }
         }
@@ -407,48 +532,77 @@ private object DisImageProcessor {
         maskPreview.setPixels(maskPixels, 0, previewWidth, 0, 0, previewWidth, previewHeight)
 
         return PreparedImage(
-            debug = DebugImages(maskPreview, crop, square),
+            debug = DebugImages(maskPreview, crop, square, segmenterName),
             modelInput = square,
         )
     }
 }
 
-class RecognitionEngine(private val pack: InstalledModelPack) {
+class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
     private val index = CatalogueIndex.load(pack)
+    private val environment = Environment.create()
+    private var disSegmenter: DisSegmenter? = null
+    private var disAccelerator: ModelAccelerator? = null
+    private var disAllowsFallback: Boolean? = null
+    private var yoloSegmenter: YoloBottleSegmenter? = null
+    private var encoder: SigLip2Encoder? = null
+    private var encoderAccelerator: ModelAccelerator? = null
+    private var encoderAllowsFallback: Boolean? = null
 
     fun findCode(raw: String): List<WineMatch> = index.findCode(raw)
 
+    @Synchronized
     fun recognize(
         bitmap: Bitmap,
         accelerators: RecognitionAccelerators,
+        segmenterMode: SegmenterMode = SegmenterMode.DIS,
         limit: Int = 5,
     ): RecognitionOutput {
         require(limit in 1..20)
-        val disStart = System.nanoTime()
-        val mask: FloatArray
-        val disAccelerator: String
-        DisSegmenter(
-            modelPath = pack.file("dis.tflite").absolutePath,
-            accelerator = accelerators.dis,
-            allowCpuFallback = accelerators.allowDisCpuFallback,
-        ).use { dis ->
-            mask = dis.mask(bitmap)
-            disAccelerator = dis.accelerator
+        val segmentationStart = System.nanoTime()
+        val mask: SegmentationMask
+        val segmenterName: String
+        val actualSegmentationAccelerator: String
+        if (segmenterMode == SegmenterMode.YOLO) {
+            if (!pack.hasYolo()) {
+                throw ImageRecognitionException("В пакете моделей нет YOLO26n-seg.")
+            }
+            closeDisSegmenter()
+            val yolo = yoloSegmenter ?: YoloBottleSegmenter(
+                pack.file("yolo26n-seg_w8a32.tflite").absolutePath,
+                environment,
+            ).also { yoloSegmenter = it }
+            mask = yolo.mask(bitmap)
+            segmenterName = SegmenterMode.YOLO.name
+            actualSegmentationAccelerator = yolo.accelerator
+        } else {
+            closeYoloSegmenter()
+            val dis = getDisSegmenter(accelerators)
+            mask = SegmentationMask(dis.mask(bitmap), DIS_SIZE, DIS_SIZE)
+            segmenterName = SegmenterMode.DIS.name
+            actualSegmentationAccelerator = dis.accelerator
         }
-        val prepared = DisImageProcessor.prepare(bitmap, mask)
-        val disMs = elapsedMs(disStart)
+        val prepared = ForegroundImageProcessor.prepare(bitmap, mask, segmenterName)
+        val segmentationMs = elapsedMs(segmentationStart)
 
         val embeddingStart = System.nanoTime()
-        val embedding: FloatArray
-        val embeddingAccelerator: String
-        SigLip2Encoder(
-            modelPath = pack.file("siglip2_base_224_fp16.tflite").absolutePath,
-            accelerator = accelerators.sigLip2,
-            allowCpuFallback = accelerators.allowSigLip2CpuFallback,
-        ).use { encoder ->
-            embedding = encoder.encode(prepared.modelInput)
-            embeddingAccelerator = encoder.accelerator
+        val effectiveEmbeddingAccelerator = if (
+            segmenterMode == SegmenterMode.DIS &&
+            actualSegmentationAccelerator == ModelAccelerator.GPU.name &&
+            accelerators.sigLip2 == ModelAccelerator.GPU
+        ) {
+            // LiteRT GPU can abort when two CompiledModel instances live in one process.
+            // Keep DIS on GPU and use CPU for the smaller SigLIP2 model.
+            ModelAccelerator.CPU
+        } else {
+            accelerators.sigLip2
         }
+        val activeEncoder = getEncoder(
+            accelerator = effectiveEmbeddingAccelerator,
+            allowCpuFallback = accelerators.allowSigLip2CpuFallback,
+        )
+        val embedding = activeEncoder.encode(prepared.modelInput)
+        val embeddingAccelerator = activeEncoder.accelerator
         val embeddingMs = elapsedMs(embeddingStart)
 
         val searchStart = System.nanoTime()
@@ -460,12 +614,83 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
         return RecognitionOutput(
             matches = matches,
             debugImages = prepared.debug,
-            disMs = disMs,
+            segmentationMs = segmentationMs,
             embeddingMs = embeddingMs,
             searchMs = searchMs,
-            disAccelerator = disAccelerator,
+            segmenterName = segmenterName,
+            segmentationAccelerator = actualSegmentationAccelerator,
             embeddingAccelerator = embeddingAccelerator,
         )
+    }
+
+    private fun getDisSegmenter(accelerators: RecognitionAccelerators): DisSegmenter {
+        if (
+            disSegmenter == null ||
+            disAccelerator != accelerators.dis ||
+            disAllowsFallback != accelerators.allowDisCpuFallback
+        ) {
+            closeDisSegmenter()
+            if (accelerators.dis == ModelAccelerator.GPU && encoder?.accelerator == "GPU") {
+                closeEncoder()
+            }
+            disSegmenter = DisSegmenter(
+                modelPath = pack.file("dis.tflite").absolutePath,
+                accelerator = accelerators.dis,
+                allowCpuFallback = accelerators.allowDisCpuFallback,
+                environment = environment,
+            )
+            disAccelerator = accelerators.dis
+            disAllowsFallback = accelerators.allowDisCpuFallback
+        }
+        return checkNotNull(disSegmenter)
+    }
+
+    private fun getEncoder(
+        accelerator: ModelAccelerator,
+        allowCpuFallback: Boolean,
+    ): SigLip2Encoder {
+        if (
+            encoder == null || encoderAccelerator != accelerator ||
+            encoderAllowsFallback != allowCpuFallback
+        ) {
+            closeEncoder()
+            encoder = SigLip2Encoder(
+                modelPath = pack.file("siglip2_base_224_fp16.tflite").absolutePath,
+                accelerator = accelerator,
+                allowCpuFallback = allowCpuFallback,
+                environment = environment,
+            )
+            encoderAccelerator = accelerator
+            encoderAllowsFallback = allowCpuFallback
+        }
+        return checkNotNull(encoder)
+    }
+
+    private fun closeDisSegmenter() {
+        disSegmenter?.close()
+        disSegmenter = null
+        disAccelerator = null
+        disAllowsFallback = null
+    }
+
+    private fun closeYoloSegmenter() {
+        yoloSegmenter?.close()
+        yoloSegmenter = null
+    }
+
+    private fun closeEncoder() {
+        encoder?.close()
+        encoder = null
+        encoderAccelerator = null
+        encoderAllowsFallback = null
+    }
+
+    @Synchronized
+    override fun close() {
+        closeDisSegmenter()
+        closeYoloSegmenter()
+        closeEncoder()
+        environment.close()
     }
 
     private fun elapsedMs(start: Long): Long = (System.nanoTime() - start) / 1_000_000L

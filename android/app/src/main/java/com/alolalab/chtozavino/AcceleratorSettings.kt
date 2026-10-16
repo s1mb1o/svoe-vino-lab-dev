@@ -7,6 +7,18 @@ internal const val KEY_AUTOMATIC_DIS_ACCELERATOR = "automatic_dis_accelerator"
 internal const val KEY_AUTOMATIC_SIGLIP2_ACCELERATOR = "automatic_siglip2_accelerator"
 internal const val KEY_DIS_ACCELERATOR_MODE = "dis_accelerator_mode"
 internal const val KEY_SIGLIP2_ACCELERATOR_MODE = "siglip2_accelerator_mode"
+internal const val KEY_SEGMENTER_MODE = "segmenter_mode"
+
+enum class SegmenterMode {
+    DIS,
+    YOLO;
+
+    companion object {
+        fun fromPreference(value: String?): SegmenterMode = entries.firstOrNull {
+            it.name == value
+        } ?: DIS
+    }
+}
 
 enum class AcceleratorMode {
     AUTO,
@@ -73,6 +85,11 @@ fun savedRecognitionAccelerators(context: Context): RecognitionAccelerators {
             preferences.getString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, null),
         ),
     )
+}
+
+fun savedSegmenterMode(context: Context): SegmenterMode {
+    val preferences = context.getSharedPreferences(SETTINGS_PREFERENCES, 0)
+    return SegmenterMode.fromPreference(preferences.getString(KEY_SEGMENTER_MODE, null))
 }
 
 private fun resolveAccelerator(

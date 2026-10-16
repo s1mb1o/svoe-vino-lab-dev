@@ -16,14 +16,14 @@ from tools import build_catalog_pack
 
 
 class BuildCatalogPackTest(unittest.TestCase):
-    def test_builds_one_transparent_package_image_and_vector_per_wine(self):
+    def test_builds_one_image_and_72_reference_vectors_per_wine(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            catalog, dis, siglip = self.make_sources(root)
+            catalog, dis, siglip, yolo = self.make_sources(root)
             output = root / "default_model_pack.zip"
-            result = self.build(catalog, dis, siglip, output)
+            result = self.build(catalog, dis, siglip, yolo, output)
 
-            self.assertEqual(result["vectors"], 2)
+            self.assertEqual(result["vectors"], 144)
             self.assertEqual(result["wines"], 2)
             self.assertEqual(result["images"], 2)
             self.assertEqual(result["omitted_wines"], 1)
@@ -33,7 +33,10 @@ class BuildCatalogPackTest(unittest.TestCase):
 
             with zipfile.ZipFile(output) as pack:
                 manifest = json.loads(pack.read("manifest.json"))
-                self.assertEqual(manifest["format_version"], 2)
+                self.assertEqual(manifest["format_version"], 3)
+                self.assertEqual(manifest["reference_rotation_step_degrees"], 5)
+                self.assertEqual(manifest["reference_frames_per_image"], 72)
+                self.assertIn(build_catalog_pack.build_model_pack.YOLO_MODEL_FILE, pack.namelist())
                 self.assertEqual(
                     manifest["image_selection"], "package_cut_transparent_webp",
                 )
@@ -69,7 +72,17 @@ class BuildCatalogPackTest(unittest.TestCase):
                 vector_bytes = pack.read("vectors.f32")
                 vectors = np.frombuffer(vector_bytes, dtype="<f4").reshape(-1, 768)
                 self.assertEqual(int(np.argmax(vectors[0])), 0)
-                self.assertEqual(int(np.argmax(vectors[1])), 2)
+                self.assertEqual(int(np.argmax(vectors[71])), 0)
+                self.assertEqual(int(np.argmax(vectors[72])), 2)
+                candidates = [
+                    json.loads(line)
+                    for line in pack.read("candidates.jsonl").splitlines()
+                ]
+                self.assertEqual(len(candidates), 144)
+                self.assertEqual(
+                    [row["angle"] for row in candidates[:72]],
+                    list(range(0, 360, 5)),
+                )
 
     def test_refuses_an_opaque_package_cut(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -82,21 +95,41 @@ class BuildCatalogPackTest(unittest.TestCase):
             ):
                 build_catalog_pack.export_display_image(source, root / "output.webp")
 
+    def test_refuses_an_incomplete_reference_rotation_sequence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog, _, _, _ = self.make_sources(root)
+            index_path = (
+                catalog / "embeddings" / "android-siglip2-base-224-dis-white-rot5" /
+                "index.json"
+            )
+            index = json.loads(index_path.read_text(encoding="utf-8"))
+            index["items"][0]["angles"].pop()
+            index_path.write_text(json.dumps(index), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                build_catalog_pack.CatalogPackError,
+                "all 72 Android reference angles",
+            ):
+                build_catalog_pack.load_index(
+                    catalog, "android-siglip2-base-224-dis-white-rot5")
+
     def test_refuses_to_replace_an_existing_pack_without_flag(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            catalog, dis, siglip = self.make_sources(root)
+            catalog, dis, siglip, yolo = self.make_sources(root)
             output = root / "default_model_pack.zip"
             output.write_bytes(b"old")
             with self.assertRaisesRegex(build_catalog_pack.CatalogPackError, "--replace"):
-                self.build(catalog, dis, siglip, output)
+                self.build(catalog, dis, siglip, yolo, output)
 
-    def build(self, catalog, dis, siglip, output):
+    def build(self, catalog, dis, siglip, yolo, output):
         args = argparse.Namespace(
             catalog=str(catalog),
-            embedding="android-siglip2-base-224-dis-white",
+            embedding="android-siglip2-base-224-dis-white-rot5",
             dis_model=str(dis),
             siglip_model=str(siglip),
+            yolo_model=str(yolo),
             out=str(output),
             version="test",
             replace=False,
@@ -105,6 +138,7 @@ class BuildCatalogPackTest(unittest.TestCase):
             build_catalog_pack.build_model_pack,
             DIS_MODEL_SHA256=build_catalog_pack.file_digest(dis),
             SIGLIP_MODEL_SHA256=build_catalog_pack.file_digest(siglip),
+            YOLO_MODEL_SHA256=build_catalog_pack.file_digest(yolo),
         ):
             return build_catalog_pack.build(args)
 
@@ -181,33 +215,42 @@ class BuildCatalogPackTest(unittest.TestCase):
         connection.commit()
         connection.close()
 
-        embedding = catalog / "embeddings" / "android-siglip2-base-224-dis-white"
+        embedding = catalog / "embeddings" / "android-siglip2-base-224-dis-white-rot5"
         embedding.mkdir(parents=True)
-        vectors = np.zeros((3, 768), dtype=np.float32)
-        vectors[0, 0] = 1
-        vectors[1, 1] = 1
-        vectors[2, 2] = 1
+        angles = list(range(0, 360, 5))
+        vectors = np.zeros((3 * len(angles), 768), dtype=np.float32)
+        vectors[0:72, 0] = 1
+        vectors[72:144, 1] = 1
+        vectors[144:216, 2] = 1
         np.save(embedding / "vectors.npy", vectors, allow_pickle=False)
         (embedding / "index.json").write_text(
             json.dumps({
-                "name": "android-siglip2-base-224-dis-white",
+                "name": "android-siglip2-base-224-dis-white-rot5",
                 "dim": 768,
                 "vectors_file": "vectors.npy",
                 "updated_at": "test",
-                "config": {"model": "vit_base_patch16_siglip_224.v2_webli"},
+                "config": {
+                    "model": "vit_base_patch16_siglip_224.v2_webli",
+                    "rotation_step": 5,
+                },
                 "items": [
-                    {"source_sha256": sources["main-only"], "view": "full", "row": 0},
-                    {"source_sha256": sources["patched-main"], "view": "full", "row": 1},
-                    {"source_sha256": sources["patched"], "view": "full", "row": 2},
+                    {"source_sha256": sources["main-only"], "view": "full", "row": 0,
+                     "angles": angles},
+                    {"source_sha256": sources["patched-main"], "view": "full", "row": 72,
+                     "angles": angles},
+                    {"source_sha256": sources["patched"], "view": "full", "row": 144,
+                     "angles": angles},
                 ],
             }),
             encoding="utf-8",
         )
         dis = root / "dis.tflite"
         siglip = root / "siglip.tflite"
+        yolo = root / "yolo.tflite"
         dis.write_bytes(b"dis")
         siglip.write_bytes(b"siglip")
-        return catalog, dis, siglip
+        yolo.write_bytes(b"yolo")
+        return catalog, dis, siglip, yolo
 
 
 if __name__ == "__main__":

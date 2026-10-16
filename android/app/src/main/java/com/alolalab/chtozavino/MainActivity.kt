@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
                     openUrl = ::openUrl,
                     clearHistory = viewModel::clearHistory,
                     dismissError = viewModel::dismissError,
+                    setSegmenterMode = viewModel::setSegmenterMode,
                     setDisAcceleratorMode = viewModel::setDisAcceleratorMode,
                     setSigLip2AcceleratorMode = viewModel::setSigLip2AcceleratorMode,
                     setDebugHttpServerEnabled = viewModel::setDebugHttpServerEnabled,

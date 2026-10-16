@@ -21,6 +21,7 @@ MODEL = "vit_base_patch16_siglip_224.v2_webli"
 DIMENSION = 768
 DIS_MODEL_SHA256 = "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
 SIGLIP_MODEL_SHA256 = "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
+YOLO_MODEL_SHA256 = "3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf"
 PAYLOADS = (
     "dis.tflite",
     "siglip2_base_224_fp16.tflite",
@@ -29,6 +30,7 @@ PAYLOADS = (
     "wines.jsonl",
     "codes.jsonl",
 )
+YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
 
 
 class PackError(ValueError):

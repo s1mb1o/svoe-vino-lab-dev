@@ -1,6 +1,6 @@
 # Android application specification
 
-Date: 2026-09-29
+Date: 2026-10-03
 
 ## Purpose
 
@@ -24,8 +24,8 @@ The application opens the matching page on `vino-svoe.ru`.
 4. The user MAY scan a barcode or QR code with Google Code Scanner.
 5. The user starts image recognition with the button `Начать распознавание`.
 6. The application shows ranked results and one catalogue image for each result.
-7. The application shows the DIS mask, the crop, and the white-background image in the
-   debug section.
+7. The application shows the selected segmentation mask, the crop, and the
+   white-background image in the debug section.
 8. The user MAY open a result on `vino-svoe.ru`.
 9. The application MUST store local result history.
 10. The top application bar MUST contain a settings gear icon.
@@ -38,10 +38,12 @@ The application opens the matching page on `vino-svoe.ru`.
 
 ## Image recognition
 
+The settings page MUST provide a `DIS / YOLO` segmentation setting.
+The default segmentation mode MUST be `DIS`.
 The application MUST use this image pipeline:
 
 1. Decode the image and limit its long side to 2,048 pixels.
-2. Run DIS at 1,024 by 1,024 pixels.
+2. Run the selected segmentation model.
 3. Calculate the foreground box from mask values of 0.5 or more.
 4. Add a four-percent margin to the foreground box.
 5. Crop the source image and the alpha mask to this box.
@@ -54,12 +56,22 @@ The application MUST use this image pipeline:
 12. Run `vit_base_patch16_siglip_224.v2_webli` through LiteRT.
 13. Compare the 768-dimensional normalized vector with catalogue vectors.
 14. Use dot product as cosine similarity.
-15. Use the maximum image score as the wine score.
+15. Use the maximum score across all reference angles and images as the wine score.
 
 The user interface MUST show the image score as `Сходство: <whole percent>%`.
 The user interface MUST NOT describe the cosine score as confidence.
 
 Steps 9 and 10 reproduce the timm image processor with `crop_pct=0.9`.
+
+DIS MUST use a 1,024 by 1,024 input.
+YOLO MUST use the official `yolo26n-seg` w8a32 LiteRT model.
+YOLO MUST use a 640 by 640 letterbox input.
+YOLO MUST keep only COCO class 39, `bottle`.
+YOLO MUST select the largest central bottle.
+YOLO MUST remove letterbox padding from the output mask.
+YOLO MUST use CPU in this implementation.
+YOLO MUST report an error when it does not find a bottle.
+YOLO MUST NOT fall back to DIS when YOLO is selected.
 
 The desktop catalogue pipeline MUST use the same steps.
 The application MUST reject vectors from a different model or pipeline.
@@ -71,8 +83,14 @@ The settings page MUST provide `Авто`, `GPU`, and `CPU` for each model.
 The `Авто` mode MUST use the saved automatic selection.
 The `Авто` mode MUST retry a failed GPU inference on CPU.
 The application MUST save CPU as the automatic selection after this fallback.
-The explicit `GPU` mode MUST report an invalid GPU result.
+The explicit `GPU` mode MUST report an invalid GPU result when the dual-GPU safety
+rule does not select CPU.
 The explicit `CPU` mode MUST not load the model on GPU.
+The recognition engine MUST reuse the LiteRT environment, compiled models, and tensor
+buffers across requests.
+The recognition engine MUST not keep two GPU compiled models open at the same time.
+When DIS and SigLIP2 both resolve to GPU, the engine MUST keep DIS on GPU and use
+SigLIP2 on CPU.
 
 ## Barcode and QR recognition
 
@@ -87,10 +105,16 @@ The application MUST not upload a scanned value.
 
 ## Model pack
 
-The APK MUST contain a built-in format version 2 model pack.
+The APK MUST contain a built-in format version 3 model pack.
 The built-in pack MUST use the completed
-`android-siglip2-base-224-dis-white` embedding index.
+`android-siglip2-base-224-dis-white-rot5` embedding index.
+The index MUST contain one reference vector at each angle from 0 degrees through 355
+degrees in 5-degree intervals.
+Each selected catalogue image MUST have 72 reference vectors.
+The query image MUST produce one vector.
+The application MUST use the maximum score across the 72 reference vectors of each wine.
 The built-in pack MUST contain one transparent package cut for each included wine.
+The built-in pack MUST contain the verified YOLO26n-seg LiteRT file.
 The package cut MUST be WebP with a long side of 1,024 pixels or less.
 The built-in pack MUST NOT contain the large `main_patched` or `main` source image.
 The source image MUST identify the selected vector and package cut only.
@@ -130,6 +154,7 @@ The server MUST reject an image above 20 MiB.
 The optional `k` value of `/v1/match` MUST be an integer from 1 through 20.
 The default `k` value MUST be 20.
 The server MUST use the installed model pack.
+The server MUST use the saved `DIS / YOLO` setting.
 The server MUST use the saved DIS and SigLIP2 accelerator settings.
 The server MUST serialize model inference.
 The debug endpoints MUST not run barcode recognition.

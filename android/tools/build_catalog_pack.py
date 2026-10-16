@@ -29,7 +29,7 @@ except ImportError:  # Direct script execution.
 
 ANDROID_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CATALOG = ANDROID_ROOT.parent / "workbench" / "data" / "catalog"
-DEFAULT_EMBEDDING = "android-siglip2-base-224-dis-white"
+DEFAULT_EMBEDDING = "android-siglip2-base-224-dis-white-rot5"
 DEFAULT_OUTPUT = ANDROID_ROOT / "app" / "src" / "main" / "assets" / "default_model_pack.zip"
 DEFAULT_DIS_MODEL = (
     Path.home() / ".cache" / "huggingface" / "hub" /
@@ -42,7 +42,8 @@ DEFAULT_SIGLIP_MODEL = (
     "509b5cbcf1a849f37696be08f8297c6cd3050bf4" /
     "siglip2_base_224_fp16.tflite"
 )
-PACK_VERSION = 2
+DEFAULT_YOLO_MODEL = Path.home() / ".config" / "Ultralytics" / "yolo26n-seg_w8a32.tflite"
+PACK_VERSION = 3
 IMAGE_SELECTION = "package_cut_transparent_webp"
 IMAGE_ARCHIVE = "images.zip"
 DISPLAY_IMAGE_FORMAT = "webp"
@@ -50,7 +51,10 @@ DISPLAY_IMAGE_MAX_SIDE = 1024
 DISPLAY_IMAGE_QUALITY = 80
 DISPLAY_IMAGE_METHOD = 4
 DISPLAY_IMAGE_WORKERS = 4
-PAYLOADS = build_model_pack.PAYLOADS + (IMAGE_ARCHIVE,)
+REFERENCE_ROTATION_STEP_DEGREES = 5
+REFERENCE_ROTATION_ANGLES = list(range(0, 360, REFERENCE_ROTATION_STEP_DEGREES))
+REFERENCE_FRAMES_PER_IMAGE = len(REFERENCE_ROTATION_ANGLES)
+PAYLOADS = build_model_pack.PAYLOADS + (build_model_pack.YOLO_MODEL_FILE, IMAGE_ARCHIVE)
 SLUG = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
 
@@ -119,6 +123,11 @@ def load_index(catalog, embedding_name):
     config = index.get("config") or {}
     if config.get("model") != build_model_pack.MODEL:
         raise CatalogPackError(f"the embedding model must be {build_model_pack.MODEL}")
+    if config.get("rotation_step") != REFERENCE_ROTATION_STEP_DEGREES:
+        raise CatalogPackError(
+            f"the Android embedding rotation_step must be "
+            f"{REFERENCE_ROTATION_STEP_DEGREES} degrees"
+        )
     vector_name = index.get("vectors_file")
     if not isinstance(vector_name, str) or Path(vector_name).name != vector_name:
         raise CatalogPackError("the embedding index has an invalid vectors_file")
@@ -139,11 +148,19 @@ def load_index(catalog, embedding_name):
             raise CatalogPackError(f"embedding item {number} is not an object")
         key = (item.get("source_sha256"), item.get("view"))
         row = item.get("row")
-        if (isinstance(row, bool) or not isinstance(row, int) or not 0 <= row < len(vectors)):
+        angles = item.get("angles")
+        if item.get("view") == "full" and angles != REFERENCE_ROTATION_ANGLES:
+            raise CatalogPackError(
+                f"embedding item {number} must contain all "
+                f"{REFERENCE_FRAMES_PER_IMAGE} Android reference angles"
+            )
+        count = len(angles) if isinstance(angles, list) else 1
+        if (isinstance(row, bool) or not isinstance(row, int) or row < 0 or
+                row + count > len(vectors)):
             raise CatalogPackError(f"embedding item {number} has an invalid vector row")
         if key in items:
             raise CatalogPackError(f"the embedding index repeats item {key}")
-        items[key] = row
+        items[key] = {"row": row, "angles": angles or [0]}
     return root, index, vectors, items
 
 
@@ -206,7 +223,7 @@ def archive_digest(archive, name):
 
 
 def validate_pack(path):
-    """Validate one completed version 2 pack and return its summary."""
+    """Validate one completed built-in pack and return its summary."""
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
         expected = {"manifest.json", *PAYLOADS}
@@ -228,9 +245,36 @@ def validate_pack(path):
         vector_bytes = manifest["vector_count"] * build_model_pack.DIMENSION * 4
         if archive.getinfo("vectors.f32").file_size != vector_bytes:
             raise CatalogPackError("vectors.f32 has an invalid byte length")
+        if manifest.get("reference_rotation_step_degrees") != (
+                REFERENCE_ROTATION_STEP_DEGREES):
+            raise CatalogPackError("the reference rotation step is invalid")
+        if manifest.get("reference_frames_per_image") != REFERENCE_FRAMES_PER_IMAGE:
+            raise CatalogPackError("the reference frame count is invalid")
         wine_rows = [json.loads(line) for line in archive.read("wines.jsonl").splitlines()]
         if len(wine_rows) != manifest["wine_count"]:
             raise CatalogPackError("wines.jsonl does not match wine_count")
+        candidate_rows = [
+            json.loads(line) for line in archive.read("candidates.jsonl").splitlines()
+        ]
+        if len(candidate_rows) != manifest["vector_count"]:
+            raise CatalogPackError("candidates.jsonl does not match vector_count")
+        if manifest["vector_count"] != manifest["wine_count"] * REFERENCE_FRAMES_PER_IMAGE:
+            raise CatalogPackError("vector_count does not match the reference frame count")
+        candidate_vector_rows = [row.get("vector_row") for row in candidate_rows]
+        if (any(isinstance(row, bool) or not isinstance(row, int)
+                for row in candidate_vector_rows) or
+                sorted(candidate_vector_rows) != list(range(manifest["vector_count"]))):
+            raise CatalogPackError("candidates.jsonl does not map each vector row once")
+        angles_by_wine = {}
+        for row in candidate_rows:
+            if row.get("view") != "full":
+                raise CatalogPackError("a catalogue candidate is not a full reference")
+            angles_by_wine.setdefault(row.get("wine_slug"), []).append(row.get("angle"))
+        wine_slugs = {row.get("wine_slug") for row in wine_rows}
+        if set(angles_by_wine) != wine_slugs:
+            raise CatalogPackError("candidates.jsonl does not cover each wine")
+        if any(angles != REFERENCE_ROTATION_ANGLES for angles in angles_by_wine.values()):
+            raise CatalogPackError("a wine does not have the complete rotation sequence")
         image_paths = [row.get("image_path") for row in wine_rows]
         with zipfile.ZipFile(archive.open(IMAGE_ARCHIVE)) as images:
             image_names = images.namelist()
@@ -275,10 +319,12 @@ def build(args):
     output = Path(args.out).resolve()
     dis_model = Path(args.dis_model).resolve()
     siglip_model = Path(args.siglip_model).resolve()
+    yolo_model = Path(args.yolo_model).resolve()
     if not database.is_file():
         raise CatalogPackError(f"catalog database does not exist: {database}")
     verify_model(dis_model, build_model_pack.DIS_MODEL_SHA256, "DIS model")
     verify_model(siglip_model, build_model_pack.SIGLIP_MODEL_SHA256, "SigLIP2 model")
+    verify_model(yolo_model, build_model_pack.YOLO_MODEL_SHA256, "YOLO26n-seg model")
     _, index, vectors, items = load_index(catalog, args.embedding)
     wines, codes = source_rows(database)
 
@@ -317,9 +363,16 @@ def build(args):
         assert source is not None
         if file_digest(source) != cut_digest:
             raise CatalogPackError(f"the package cut SHA-256 does not match for {slug}")
-        row = len(selected_vectors)
-        selected_vectors.append(vectors[items[(digest, "full")]])
-        candidate_rows.append({"vector_row": row, "wine_slug": slug, "view": "full"})
+        reference = items[(digest, "full")]
+        for offset, angle in enumerate(reference["angles"]):
+            row = len(selected_vectors)
+            selected_vectors.append(vectors[reference["row"] + offset])
+            candidate_rows.append({
+                "vector_row": row,
+                "wine_slug": slug,
+                "view": "full",
+                "angle": angle,
+            })
         image_path = f"images/{slug}.{DISPLAY_IMAGE_FORMAT}"
         wine_row = {
             "wine_slug": slug,
@@ -354,6 +407,7 @@ def build(args):
         root = Path(temporary)
         shutil.copyfile(dis_model, root / "dis.tflite")
         shutil.copyfile(siglip_model, root / "siglip2_base_224_fp16.tflite")
+        shutil.copyfile(yolo_model, root / build_model_pack.YOLO_MODEL_FILE)
         (root / "vectors.f32").write_bytes(matrix.tobytes(order="C"))
         build_model_pack.write_jsonl(root / "candidates.jsonl", candidate_rows)
         build_model_pack.write_jsonl(root / "codes.jsonl", code_rows)
@@ -388,6 +442,8 @@ def build(args):
             "wine_count": len(wine_rows),
             "image_count": len(image_sources),
             "omitted_wine_count": len(omitted),
+            "reference_rotation_step_degrees": REFERENCE_ROTATION_STEP_DEGREES,
+            "reference_frames_per_image": REFERENCE_FRAMES_PER_IMAGE,
             "image_selection": IMAGE_SELECTION,
             "image_format": DISPLAY_IMAGE_FORMAT,
             "image_max_side": DISPLAY_IMAGE_MAX_SIDE,
@@ -436,6 +492,7 @@ def main(argv=None):
     parser.add_argument("--embedding", default=DEFAULT_EMBEDDING)
     parser.add_argument("--dis-model", default=str(DEFAULT_DIS_MODEL))
     parser.add_argument("--siglip-model", default=str(DEFAULT_SIGLIP_MODEL))
+    parser.add_argument("--yolo-model", default=str(DEFAULT_YOLO_MODEL))
     parser.add_argument("--out", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--version", default=time.strftime("%Y%m%d"))
     parser.add_argument("--replace", action="store_true")

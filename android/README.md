@@ -14,17 +14,24 @@ The application ID is `chtozavino.alolalab.com`.
 - A product website link on the settings page.
 - Independent `Авто`, `GPU`, and `CPU` settings for DIS and SigLIP2.
 - A first-start GPU compatibility check with a saved safe selection.
+- A `DIS / YOLO` segmentation setting.
 - DIS foreground segmentation.
+- YOLO26n-seg bottle segmentation with COCO class `bottle` on CPU.
 - White-background crop.
 - SigLIP2 Base/16 224 embedding.
 - Local cosine search.
 - Debug images for each preprocessing stage.
-- Built-in DIS catalogue embeddings and one catalogue image for each included wine.
+- Built-in DIS catalogue embeddings at 72 reference angles and one catalogue image for
+  each included wine.
 - Links to the matching page on `vino-svoe.ru`.
 - A whole-percent `Сходство` value for image results.
 - Local history.
 - A light or dark theme that follows the system setting.
 - The shared `svoe-vino-lab` product logo as the launcher icon.
+
+DIS is the default segmentation mode.
+Use YOLO for photographs that show a complete bottle.
+Keep DIS for label close-ups and mixed photographs.
 
 ## Build
 
@@ -38,23 +45,34 @@ python3 tools/build_catalog_pack.py \
 ```
 
 The default pack uses
-`../workbench/data/catalog/embeddings/android-siglip2-base-224-dis-white`.
+`../workbench/data/catalog/embeddings/android-siglip2-base-224-dis-white-rot5`.
 It writes `app/src/main/assets/default_model_pack.zip`.
 
 The exporter writes only the files that the Android application uses:
 
-- The verified DIS and SigLIP2 LiteRT models.
-- The selected 768-dimensional SigLIP2 vectors.
+- The verified DIS, YOLO26n-seg, and SigLIP2 LiteRT models.
+- The selected 768-dimensional SigLIP2 reference vectors.
 - Wine metadata and local barcode and QR relations.
 - One transparent package cut for each included wine.
 
 The exporter selects `main_patched` before `main` to find the correct indexed vector.
+It exports 72 reference vectors for each selected image.
+The reference angles are `0°, 5°, …, 355°`.
+The application calculates one query vector.
+It uses the maximum cosine similarity across the 72 reference vectors of each wine.
 It does not put either source image into the Android pack.
 It reads the related `image_derivative` row with `kind=package`.
 It crops the transparent border and limits the long side to 1,024 pixels.
 It writes the display image as transparent WebP at quality 80.
 The display image is not an input to image matching.
 The application uses the saved vector for image matching.
+
+The YOLO model is the official Ultralytics `yolo26n-seg` w8a32 LiteRT asset.
+Its embedded metadata declares the AGPL-3.0 license.
+Do not publish an APK that contains this model until the distribution license is
+approved for the product.
+Use a compatible commercial license when the product license is not compatible with
+AGPL-3.0.
 
 The exporter verifies model hashes, vector shape, vector normalization, source cut
 hashes, image transparency, image dimensions, archive paths, and all generated payload
@@ -84,7 +102,8 @@ Sign this APK with an owner-controlled release key before installation or public
 The APK installs the built-in pack on the first start.
 The application uses this pack without a replacement action in the user interface.
 Model files, catalogue images, vectors, and generated packs stay outside Git.
-Reserve at least 1.5 GB of free device storage for the APK and the installed pack.
+The 72 reference vectors add approximately 435 MiB for a catalogue of 2,093 wines.
+Reserve at least 2.5 GB of free device storage for the APK and the installed pack.
 
 ## Debug device bulk evaluation
 
@@ -97,9 +116,10 @@ Open the application settings and enable `HTTP-сервер для тестов`
 test.
 Disable the setting after the test.
 The application saves the setting between starts.
-The server uses the installed model pack and the saved DIS and SigLIP2 accelerator
-settings.
+The server uses the installed model pack, the saved `DIS / YOLO` setting, and the saved
+DIS and SigLIP2 accelerator settings.
 It serializes inference because one LiteRT model pipeline processes one image at a time.
+It reuses the LiteRT environment, compiled models, and tensor buffers across requests.
 
 - `GET /healthz` reports the pack version and wine count.
 - `POST /v1/eval/predict` accepts multipart field `image` and returns one `slug`.
@@ -156,3 +176,24 @@ Read [the model and vector verification results](VERIFICATION_RESULTS.md),
 [the verified Android 0.1.4 screenshot set](docs/screenshots/android-0.1.4/README.md),
 [the specification](docs/specification.md), and
 [the model-pack contract](docs/model-pack.md).
+
+## Pixel 8 segmentation comparison
+
+The controlled 100-image test used the same catalogue, vectors, queries, and SigLIP2
+CPU accelerator for both segmentation modes.
+
+- DIS found a result for 100 images and accepted 38 results.
+- YOLO found a bottle for 70 images and accepted 23 results.
+- DIS median latency was 2,024.5 ms.
+- YOLO median latency was 1,234 ms.
+- Both runs completed 100 requests in one process without `SIGABRT`.
+
+Keep DIS as the default for this test set.
+YOLO is faster, but it has lower coverage and lower accepted Top-1 accuracy on these
+queries.
+
+The YOLO result is worse for this test set because 30 images do not show a complete
+bottle that the COCO `bottle` class can detect.
+The generated result files are in
+`../output/android-pixel8-dis-reuse-eval-20261003/` and
+`../output/android-pixel8-yolo26n-siglip-cpu-eval-20261003/`.
