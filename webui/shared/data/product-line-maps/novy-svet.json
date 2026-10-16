@@ -1,0 +1,1681 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "novy-svet",
+    "name": "Новый Свет",
+    "aliases": [
+      "Новый Свет. Дом шампанских вин",
+      "Novy Svet"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Новый Свет: официальные коллекции",
+      "url": "https://nsvet-crimea.ru/shampain/"
+    },
+    {
+      "id": "official-prestige",
+      "label": "Новый Свет: Кюве Де Престиж",
+      "url": "https://nsvet-crimea.ru/shampain/kyuve-de-prestizh/"
+    },
+    {
+      "id": "official-limited",
+      "label": "Новый Свет: Лимитированные и особые кюве",
+      "url": "https://nsvet-crimea.ru/shampain/"
+    },
+    {
+      "id": "official-collection",
+      "label": "Новый Свет: Коллекционное",
+      "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-kollektsionnoe/"
+    },
+    {
+      "id": "official-aged",
+      "label": "Новый Свет: Выдержанное",
+      "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-vyderzhannoe/"
+    },
+    {
+      "id": "official-crown",
+      "label": "Новый Свет: Коронационное",
+      "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/"
+    },
+    {
+      "id": "official-official-koronatsionnoe",
+      "label": "Официальная карточка: Новый Свет · Коронационное",
+      "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-4",
+      "label": "Флагманские коллекции",
+      "rank": 4,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Старший ориентир · ₽₽₽₽",
+      "source_ids": [
+        "official-crown"
+      ]
+    },
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-prestige",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-collection"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-aged"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "prestige",
+      "name": "Кюве Де Престиж",
+      "tier_id": "tier-3",
+      "method": "Классический метод; коллекционная выдержка",
+      "description": "Кюве из Шардоне, Рислинга и Пино Гри. Названия Millesime и Кюве Де Престиж сохранены по снимку.",
+      "source_ids": [
+        "official-prestige",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "limited",
+      "name": "Лимитированные и особые кюве",
+      "tier_id": "tier-3",
+      "method": "Классический метод; специальные выпуски",
+      "description": "Парадизио, Блан де Нуар, Золотой Рислинг, Юбилейное и Кюве. Редакционная группа исторических специальных выпусков. Не все названия совпадают с текущими разделами сайта.",
+      "source_ids": [
+        "official-limited",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "collection",
+      "name": "Коллекционное",
+      "tier_id": "tier-2",
+      "method": "Классический метод; не менее 36 месяцев на осадке",
+      "description": "Винтажная коллекционная серия. Каждая сохранённая карточка показана отдельно, даже когда название повторяется.",
+      "source_ids": [
+        "official-collection",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "aged",
+      "name": "Выдержанное",
+      "tier_id": "tier-1",
+      "method": "Классический метод; не менее 12 месяцев на осадке",
+      "description": "Основная выдержанная коллекция: белые, розовые и красные игристые вина. Цвет и сладость различаются между позициями.",
+      "source_ids": [
+        "official-aged",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "crown",
+      "name": "Коронационное",
+      "tier_id": "tier-4",
+      "method": "Классический метод; винтажное коллекционное игристое",
+      "description": "Флагман Дома шампанских вин. Ограниченный тираж и самостоятельная историческая рецептура.",
+      "source_ids": [
+        "official-crown",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-novyj-svet-aligote",
+      "group_id": "limited",
+      "name": "Новый Свет. Алиготе",
+      "variant": "",
+      "wine_slug": "novyj-svet-aligote",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-aligote.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Виноград собирают вручную, охлаждают при переработке, осуществляют деликатное прессование, брожение происходит на чистой культуре дрожжей при низких температурах, хранение виноматериалов в условиях инертного газа, тираж и закладка на вторичное брожение с использованием собственной культуры дрожжей, выдержка на осадке в старинных подвалах при температуре 14 градусов. \n\nЯркий аромат с оттенками зеленого яблока и лимонника, нотками акации и лайма. Вкус гармоничный, округлый со средней плюс кислотностью, умеренным алкоголем, нотами яблок и мяты в длительном послевкусии",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-blan-de-nuar",
+      "group_id": "limited",
+      "name": "Новый Свет. Блан Де Нуар",
+      "variant": "",
+      "wine_slug": "novyj-svet-blan-de-nuar",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-blan-de-nuar.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 205,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Благородное шампанское произведено на 100% из самых тонких фракций сока традиционного сорта винограда Пино Нуар. Для создания базового вина черный виноград был переработан по белому способу без мацерации виноградного сока на мезге, благодаря чему вино имеет деликатный пудровый оттенок в цвете и легкие фруктовые ноты в аромате.\n\nВино светло-соломенного цвета с пудровым оттенком. Устойчивый перляж с маленькими, тонкими и живыми пузырьками. Аромат вина с нюансами сдобной выпечки, кремовыми и сливочными оттенками. Утонченное вино с гладкой текстурой, хорошо интегрированной кислотностью, фруктовым вкусом и освежающим солоновато-минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-kaberne",
+      "group_id": "aged",
+      "name": "Новый Свет. Каберне",
+      "variant": "",
+      "wine_slug": "novyj-svet-kaberne",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-kaberne.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Элегантное шампанское из сорта Каберне Совиньон урожая 2018 года создано из единственного сорта винограда. Для создания базового вина черный виноград был переработан по белому способу с кратковременной мацерацией виноградного сока на мезге, благодаря чему вино имеет нежно розовый цвет и приятный легкий фруктовый аромат.\n\nПрозрачное с блеском, светло-лососевого цвета с оттенками розового золота. Гармоничный сортовой аромат с яркой доминантой красных фруктов и ягод с сливочным оттенком. Развивается в процессе дегустации и повышения температуры. Хороший баланс дозажа и кислотности формируют освежающий вкус с долгим ягодным послевкусием. Мелкодисперсная игра высокой интенсивности с устойчивым муссом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-kaberne-sovinon",
+      "group_id": "aged",
+      "name": "Новый Свет. Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "novyj-svet-kaberne-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-kaberne-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Редкий образец игристого моносортового вина из красного сорта винограда Каберне Совиньон. Впервые классическим методом с выдержкой на осадке в бутылке красный брют был создан энологами Дома шампанских вин «Новый Свет» в 1995 году. \n\nВино темно-рубинового цвета. В аромате преобладает черная смородина, гранат, вишня. Вкус насыщенный, сочетает в себе свежесть и плотное тело, с яркими смородиновыми акцентами. Послевкусие вина бархатное, с тонами сушёного чернослива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-kaberne-sovinon-polusladkoe",
+      "group_id": "aged",
+      "name": "Новый Свет. Каберне Совиньон полусладкое",
+      "variant": "",
+      "wine_slug": "novyj-svet-kaberne-sovinon-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-kaberne-sovinon-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Редкий образец игристого моносортового вина из красного сорта винограда Каберне Совиньон. Впервые вино было создано энологами Дома шампанских вин «Новый Свет» в 1995 году.\n\n*в описании приведен основной сорт винограда, состав которого не менее 85%, уточненный состав на контрэтикетке продукции.\n\nВино темно-рубинового цвета. В аромате преобладает черная смородина, гранат, вишня. Вкус насыщенный, сочетает в себе свежесть и плотное тело, с яркими смородиновыми акцентами. Послевкусие вина бархатное, с тонами сушёного чернослива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-kollekczionnoe-bryut",
+      "group_id": "collection",
+      "name": "Новый Свет коллекционное брют",
+      "variant": "",
+      "wine_slug": "novyj-svet-kollekczionnoe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-kollekczionnoe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Прекрасный образец классического шампанского с тонким минеральным вкусом. Шампанское «Новый свет» брют - обладатель многочисленных наград международных конкурсов. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке не менее 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную.\n\nВино светло-соломенного цвета с золотым отливом. Мусс устойчивый, с долгой игрой перляжа в бокале. Нежный аромат белых цветов и ванильной выпечки. Минимальное содержание сахара создает вкус с превосходным балансом сливочности и легкой горечи дикой черешни.\n\nСорта винограда: Шардоне, Рислинг, Пино Нуар, Алиготе",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-paradizio",
+      "group_id": "limited",
+      "name": "Новый Свет. Парадизио",
+      "variant": "",
+      "wine_slug": "novyj-svet-paradizio",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-paradizio.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 204,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Игристое вино Новый Свет Парадизио Брют обладает изысканным вкусом с яркими фруктовыми оттенками и приятной кислинкой. Оно отлично подходит для торжественных мероприятий и романтических ужинов. \n\nВино производится на одном из старейших винодельческих предприятий Крыма. Игристое вино Новый Свет Парадизио Брют получило множество наград на международных конкурсах.     \n\nНовый Свет, Парадизио является настоящим сокровищем Дома и выпускается только в исключительные годы, когда урожай превышает даже самые смелые ожидания виноделов. \"История — достойная удивления, изысканность достойная восторга\" — это их главный посыл. Утонченный, аристократичный вкус этого игристого вина — результат долгих исканий и плод давних мечтаний великого крымского винодела — князя Льва Сергеевича Голицына. В конце XIX века так называлась одна из первых и наиболее известных созданных им линеек. В 1900-м году \"Новый Свет. Парадизио\" впервые в истории отечественного виноделия удостоилось Гран-при на Всемирной выставке в Париже.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-pino-gri-millezim",
+      "group_id": "prestige",
+      "name": "Новый Свет. Пино Гри Миллезим",
+      "variant": "",
+      "wine_slug": "novyj-svet-pino-gri-millezim",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-pino-gri-millezim.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Миллезимное вино из сорта винограда Пино Гри отличается легкостью, мягкостью и гастрономичностью. Виноград, рожденный на меловых почвах предгорной зоны западного Крыма, в долине рек Альма и Кача, собирается вручную, в прохладные утренние часы. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке более 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную. \n\nСветло-кораллового цвета с тонким ягодно-сливочным букетом. Во вкусе преобладает изобилие сладких тонов земляники, малины и розовой черешни. Вино сбалансировано, легкая сладость ягод гармонирует с изумительной свежестью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-polusladkoe",
+      "group_id": "aged",
+      "name": "Новый Свет полусладкое",
+      "variant": "",
+      "wine_slug": "novyj-svet-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино выдерживается на осадке в бутылке не менее 12 месяцев в горных тоннелях при постоянной температуре +14С. При производстве используется сок только первого отжима — «кюве». Технологические операции: перекладка, ремюаж — проводятся вручную. Сорт винограда: Шардоне, Рислинг, Пино Нуар, Пино Блан, Алиготе, Кокур белый, Совиньон*\n\n*в описании приведены основные сорта винограда, состав которых не менее 85%, уточненный состав на контрэтикетке продукции.\n\nВино светло-золотистого цвета, с устойчивым муссом и долгой игрой перляжа. Богатый аромат с нотами цветущего подсолнечника и меда. Во вкусе ананас, манго. В послевкусие ванильные тона.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-polusuhoe-kollekczionnoe",
+      "group_id": "collection",
+      "name": "Новый Свет полусухое коллекционное",
+      "variant": "",
+      "wine_slug": "novyj-svet-polusuhoe-kollekczionnoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-polusuhoe-kollekczionnoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Благородное коллекционное вино выдерживается на осадке в бутылке не менее 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. При производстве используется сок только первого отжима — «кюве».  Технологические операции: перекладка, ремюаж — проводятся вручную.\n\nВино светло-соломенного цвета с золотым отливом. Прекрасная гармония аромата белых цветов и спелых фруктов. Вкус мягкий, сбалансированный с медовыми нотками засахаренных яблок и груши. Тонкий чувственный мусс и долгий перляж.\n\nСорта винограда: Шардоне, Рислинг, Пино Нуар, Алиготе",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-risling-kyuve-de-prestizh",
+      "group_id": "prestige",
+      "name": "Новый Свет. Рислинг Кюве де Престиж",
+      "variant": "",
+      "wine_slug": "novyj-svet-risling-kyuve-de-prestizh",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-risling-kyuve-de-prestizh.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 204,
+          "height": 728,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Созревание сорта Рислинг происходит медленно и продолжается вплоть до ноября, поэтому наиболее комфортно он чувствует себя в западной части Крыма, где у него есть возможность дозреть в последних теплых лучах осеннего солнца. Оптимальные условия для него обеспечивают каменистые ярусы терруаров вдоль рек Альма и Кача, дающих винограду достаточное количество тепла. Миллезимное вино выдерживается на осадке не менее 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную. \n\nВино светло-соломенного цвета с зелеными отблесками. В аромате свежескошенные луговые травы и липовый цвет. Обладает хорошо сбалансированным гармоничным свежим вкусом с нотами цитруса и зеленого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-shardone",
+      "group_id": "collection",
+      "name": "Новый Свет. Шардоне",
+      "variant": "",
+      "wine_slug": "novyj-svet-shardone",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-shardone.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино благородного золотистого цвета, с изящным длительным перляжем в бокале. В аромате белые цветы. Вкус с яркими оттенками груши, ананаса и легкой минеральностью. Идеально сбалансированное вино с отличным потенциалом старения.\n\nВино создано классическим методом с выдержкой более 36 месяцев на осадке в бутылке в тоннелях конца XIX века при постоянной температуре +14С. При производстве используется сок только первого отжима — «кюве». Технологические операции: перекладка и ремюаж — проводятся вручную.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-shardone-kyuve-de-prestizh",
+      "group_id": "prestige",
+      "name": "Новый Свет. Шардоне Кюве де Престиж",
+      "variant": "",
+      "wine_slug": "novyj-svet-shardone-kyuve-de-prestizh",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-shardone-kyuve-de-prestizh.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино светло-соломенного цвета с нежным ароматом белых цветов. Обладает сбалансированным гармоничным вкусом желтого яблока, лайма и долгим минеральным послевкусием с цитрусово-фруктовым финишем. Перляж в бокале долгий, мусс устойчивый.\n\nМоносортовое шампанское без добавления экспедиционного ликера. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке более 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-shardone-kyuve-de-prestizh-1",
+      "group_id": "prestige",
+      "name": "Новый Свет. Шардоне Кюве Де Престиж",
+      "variant": "",
+      "wine_slug": "novyj-svet-shardone-kyuve-de-prestizh-1",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-shardone-kyuve-de-prestizh-1.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 204,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Моносортовое шампанское без добавления экспедиционного ликера. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке более 36 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную. \n\nВино светло-соломенного цвета с нежным ароматом белых цветов. Обладает сбалансированным гармоничным вкусом желтого яблока, лайма и долгим минеральным послевкусием с цитрусово-фруктовым финишем. Перляж в бокале долгий, мусс устойчивый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-vyderzhannoe-bryut",
+      "group_id": "aged",
+      "name": "Новый Свет выдержанное брют",
+      "variant": "",
+      "wine_slug": "novyj-svet-vyderzhannoe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-vyderzhannoe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Виноград, рожденный на меловых почвах предгорной зоны западного Крыма, в долине рек Альма и Кача, собирается вручную в прохладные утренние часы и тщательно сортируется. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке не менее 12 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную.\n\nВино светло-соломенного цвета с лимонными отблесками. Окутывает ароматом луговых весенних цветов. Во вкусе груша, персик и яблоко. Нежное минеральное послевкусие.\n\nСорта винограда: Шардоне, Рислинг, Пино Нуар, Пино Гри",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyj-svet-zolotoj-risling",
+      "group_id": "limited",
+      "name": "Новый Свет. Золотой Рислинг",
+      "variant": "",
+      "wine_slug": "novyj-svet-zolotoj-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyj-svet-zolotoj-risling.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Российское шампанское из отборного белого винограда сорта Рислинг. Это изысканное моносортовое вино ярко передает характеристику терруара западного Крыма. При производстве используется сок только первого отжима. Вино выдерживается на осадке более 36 месяцев в тоннелях конца XIX века при постоянной температуре +14 °С. Технологические операции — перекладка, ремюаж — проводятся вручную. \n\nАромат белого персика, жёлтого лимона, сушеных цветов липы и петрольных тонов, присущих винам из этого сорта с многолетней выдержкой. Во вкусе полнотелое, объемное с прекрасной яркой кислотностью, отличным балансом сахара и долгим минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-krasnoe-novyy-svet-kaberne-sovinon-135",
+      "group_id": "aged",
+      "name": "Игристое вино выдержанное брют красное «Новый Свет. Каберне Совиньон»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-krasnoe-novyy-svet-kaberne-sovinon-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-krasnoe-novyy-svet-kaberne-sovinon-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 205,
+          "height": 721,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · брют",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат интенсивный, с нотами тёмных ягод, тёмного шоколада и лёгкими пряными оттенками; вкус яркий, полнотелый, с хорошей структурой и долгим послевкусием с тонами чёрной смородины и вишни. Хорошо к красному мясу на гриле, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-fran-135",
+      "group_id": "aged",
+      "name": "Игристое вино выдержанное брют розовое «Новый Свет. Пино Фран»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-fran-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-fran-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 5,
+          "width": 204,
+          "height": 721,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Пино фран"
+      ],
+      "description": "Аромат нежный, цветочно-фруктовый — полевые цветы, мелисса, персик, красная смородина, малина, красное яблоко; вкус изысканный, округлый, маслянистый, с ягодными тонами красной смородины и крыжовника, насыщенным послевкусием. Хорошо к морепродуктам, сырам, белому жареному мясу и птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-nuar-125",
+      "group_id": "aged",
+      "name": "Игристое вино выдержанное брют розовое «Новый Свет. Пино Нуар»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-nuar-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-bryut-rozovoe-novyy-svet-pino-nuar-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 721,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат элегантный — тонкие ноты желе из красной смородины и малины, розового персика, сушеной вишни, цукатов из апельсина и розового грейпфрута; вкус комплексный, сбалансированный, с ягодными оттенками клубники, миндаля и спелых персиков, изящной кислотностью и долгим филигранным послевкусием. Отличный аперитив, а также к морепродуктам, лёгким салатам и птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-krasnoe-novyy-svet-kaberne-sovinon-12",
+      "group_id": "aged",
+      "name": "Игристое вино выдержанное полусладкое красное «Новый Свет. Каберне Совиньон»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-krasnoe-novyy-svet-kaberne-sovinon-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-krasnoe-novyy-svet-kaberne-sovinon-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 204,
+          "height": 727,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат насыщенный, с нотами тёмных ягод, изюма и сухофруктов; вкус ярко ягодный с медовыми нотками, тонами изюма, с приятной ненавязчивой сладостью и долгим послевкусием. Рекомендуется к сладким десертам, прохладным кремовым блюдам и фруктовым тартам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-pino-fran-135",
+      "group_id": "aged",
+      "name": "Игристое вино выдержанное полусладкое розовое «Новый Свет. Пино Фран»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-pino-fran-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-pino-fran-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 202,
+          "height": 723,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусладкое",
+      "grapes": [
+        "Пино фран"
+      ],
+      "description": "Аромат свежий цветочно-фруктовый; вкус очаровательный, нежный, аристократичный, с приятной сладостью ягодных оттенков и долгим перляжем. Хорошо к лёгким фруктам, овощам, дыне, авокадо, белому жареному мясу и домашней птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-novyy-svet-kokur-kokur-belyy-beloe-ekstra-bryut-12",
+      "group_id": "limited",
+      "name": "Новый Свет. Кокур",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-novyy-svet-kokur-kokur-belyy-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-novyy-svet-kokur-kokur-belyy-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Красивая игра мелких и ровных пузырьков. Аромат элегантный и изящный: нежные белые цветы и свежий оттенок альпийских трав и белых цветов сменяются нотами белой черешни, кожицы персика, розового грейпфрута и флер д’оранж. Вкус свежий, утонченный, с кристальной кислотностью, оттенками цитрусовых и аристократической горчинкой в послевкусии. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-novyy-svet-kyuve-ekstra-bryut-shardone-beloe-135",
+      "group_id": "limited",
+      "name": "Новый Свет. Кюве экстра брют",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-novyy-svet-kyuve-ekstra-bryut-shardone-beloe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-novyy-svet-kyuve-ekstra-bryut-shardone-beloe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Тонкая игра мелких пузырьков, образующих ровные изящные нити. Аромат теплый и фруктовый: раскрывается нотами белого и красного яблока, розового персика, золотого крыжовника, с легкими оттенками помело и грейпфрута. Фоном — аккуратный тон нежной выпечки. Вкус стройный, изящный, многогранный, с красивой кислотностью и утонченным послевкусием. Отличный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-novyy-svet-pino-nuar-rozovoe-bryut-13",
+      "group_id": "aged",
+      "name": "Новый Свет. Пино Нуар",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-novyy-svet-pino-nuar-rozovoe-bryut-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-novyy-svet-pino-nuar-rozovoe-bryut-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 201,
+          "height": 727,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Тончайшая игра пузырьков, выстраивающихся в жемчужные нити. Аромат элегантный, раскрывается тонкими нотами прозрачного желе из красной смородины и малины, нежными нюансами розового персика, сушеной вишни, цукатов из апельсина и свежей нотой розового грейпфрута. Фоном звучат мягкие шелковые оттенки крем-брюле с клубничным муссом. Вкус комплексный, сбалансированный, с ягодными оттенками, изящной кислотностью и долгим филигранным послевкусием. Отличный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-novyy-svet-polusladkoe-roze-shardone-rozovoe-115",
+      "group_id": "aged",
+      "name": "Новый Свет полусладкое розе",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-novyy-svet-polusladkoe-roze-shardone-rozovoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-novyy-svet-polusladkoe-roze-shardone-rozovoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусладкое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Стройная и изящная игра пузырьков. Аромат тонкий, ягодный, с нотами желе из красной смородины, спелой вишни, крыжовника, сочного яблока, персикового джема и нежным цветочным акцентом. Вкус яркий, с гармоничной сладостью и кислотностью, сочным фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-pino-nuar-polusuhoe-rozovoe-135",
+      "group_id": "aged",
+      "name": "Пино Нуар полусухое",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-pino-nuar-polusuhoe-rozovoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-pino-nuar-polusuhoe-rozovoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 202,
+          "height": 727,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусухое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Тонкая, стройная игра пузырьков. Аромат фруктовый, с нотами красной смородины, спелого яблока, клубники и сушеной малины. Вкус свежий, с мягкой сладостью, легкой кислотностью и фруктово-леденцовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-kyuve-de-prestizh-pino-gri-millezim-rozovoe-125",
+      "group_id": "prestige",
+      "name": "Российское шампанское коллекционное брют белое «Новый Свет. Кюве Де Престиж Пино Гри Миллезим»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-kyuve-de-prestizh-pino-gri-millezim-rozovoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-kyuve-de-prestizh-pino-gri-millezim-rozovoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 5,
+          "width": 203,
+          "height": 721,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат тонкий, элегантный — с цветочными и фруктовыми оттенками, лёгкой нотой выпечки; вкус сбалансированный, с ненавязчивой сладостью груши, ананаса и минеральными нюансами. Долгое кремовое послевкусие. Идеальный аперитив и к блюдам из домашней птицы, ризотто, морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-paradizio-shardone-125",
+      "group_id": "limited",
+      "name": "Российское шампанское коллекционное брют белое «Новый Свет. Парадизио»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-paradizio-shardone-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-paradizio-shardone-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат шикарный цветочный — тонкие ноты белых полевых цветов и едва уловимая свежесть морского бриза, свежей выпечки; вкус полнотелый, сливочный с идеальным балансом кислотности, доминантой белых цветов и чистой минеральностью. Долгое кремовое послевкусие. Идеальный аперитив, а также к морепродуктам, рыбе, лёгким закускам и воздушным десертам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-yubileynoe-risling-13",
+      "group_id": "limited",
+      "name": "Российское шампанское коллекционное брют белое «Новый Свет. Юбилейное»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-yubileynoe-risling-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-yubileynoe-risling-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 202,
+          "height": 720,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат с нотами цветущего винограда, полевых цветов и лёгкими сливочными нюансами; вкус свежий, тонкий, с минеральными тонами и возможной пикантной горчинкой от старой лозы. Рекомендуется к белому мясу, твёрдым пикантным сырам и морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-zolotoy-risling-suhoe-13",
+      "group_id": "limited",
+      "name": "Российское шампанское коллекционное брют белое «Новый Свет. Золотой Рислинг»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-zolotoy-risling-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-zolotoy-risling-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 720,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат белого персика, жёлтого лимона, сушеных цветов липы с петрольными тонами, характерными для выдержанного рислинга; вкус полнотелый, объёмный, с яркой кислотностью, хорошим балансом и долгим минеральным послевкусием. Рекомендуется к традиционным крымским морепродуктам, устрицам, сырам и орехам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-rozovoe-novyy-svet-pino-nuar-135",
+      "group_id": "collection",
+      "name": "Российское шампанское коллекционное брют розовое «Новый Свет. Пино Нуар»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-rozovoe-novyy-svet-pino-nuar-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-rozovoe-novyy-svet-pino-nuar-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 204,
+          "height": 728,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат элегантный — тонкие ноты красной смородины, малины, розового персика и цукатов из апельсина; вкус комплексный, с яркими оттенками клубники, сушеной малины, миндаля и спелых персиков, изящной кислотностью и долгим послевкусием. Отличный аперитив, к птице и лёгким закускам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-blan-de-nuar-pino-nuar-13",
+      "group_id": "limited",
+      "name": "Российское шампанское коллекционное экстра брют белое «Новый Свет. Блан де Нуар»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-blan-de-nuar-pino-nuar-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-blan-de-nuar-pino-nuar-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат многослойный — спелая слива, персик, бисквит, затем нотки масла, земляники, цветочные тона; вкус многогранный, с преобладанием тонов масла, солёного крекера, цедры лимона и абрикоса, высокой кислотностью и лёгкой минеральностью. К белой рыбе, мягким сырам, птице, морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-de-prestizh-shardone-125",
+      "group_id": "prestige",
+      "name": "Российское шампанское коллекционное экстра брют белое «Новый Свет. Кюве Де Престиж Шардоне»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-de-prestizh-shardone-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-de-prestizh-shardone-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 6,
+          "width": 201,
+          "height": 720,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, с тонами цитруса, белых цветов и лёгкими нотами выпечки и сливок; вкус свежий, с минеральностью, гармоничной кислотностью и долгим послевкусием. К морепродуктам, рыбе, птице, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-risling-125",
+      "group_id": "limited",
+      "name": "Российское шампанское коллекционное экстра брют белое «Новый Свет. Кюве»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-risling-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-kyuve-risling-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 204,
+          "height": 728,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Алиготе",
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, насыщенный, передающий цветение виноградной лозы и полевых цветов; вкус яркий, сложный, с пикантной горчинкой и долгим минеральным послевкусием. Классический метод, выдержка на осадке свыше 36 месяцев без экспедиционного ликёра. Подают к белому мясу, ризотто с морепродуктами, фуа-гра, твёрдым выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-risling-kyuve-de-prestizh-125",
+      "group_id": "prestige",
+      "name": "Российское шампанское коллекционное экстра брют белое «Новый Свет. Рислинг Кюве Де Престиж»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-risling-kyuve-de-prestizh-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-risling-kyuve-de-prestizh-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 720,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат раскрывается нотами свежескошенных луговых трав и липового цвета в сочетании с тонами персика и лимона; вкус гармоничный и сбалансированный, с нотами цитруса и зелёного яблока. Долгое минеральное послевкусие с элегантными петрольными нюансами. Хорошо к сливочным сырам, устрицам, крабам, тартару из гребешков, икре.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-prestige"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-shardone-125",
+      "group_id": "collection",
+      "name": "Российское шампанское коллекционное экстра брют белое «Новый Свет»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-shardone-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-shardone-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 202,
+          "height": 720,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Алиготе",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, лёгкие нотки соломы и сухой листвы, белые фрукты; вкус тонкий, освежающий, с оттенками яблок, белых цветов и характерной минеральностью. К полумягким и твёрдым сырам, форели, палтусу и моллюскам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-risling-125",
+      "group_id": "collection",
+      "name": "Российское шампанское коллекционное полусухое белое «Новый Свет»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-risling-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-risling-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 191,
+          "height": 725,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусухое",
+      "grapes": [
+        "Алиготе",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат с нотами свежих ягод и полевых цветов; вкус гармоничный, хорошо сбалансированный, с минеральными и фруктовыми нотками, приятной умеренной сладостью. Освежающий, лёгкий финиш. Хорошо к лёгким фруктовым десертам, мягким сырам и в качестве аперитива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13",
+      "group_id": "collection",
+      "name": "Российское шампанское коллекционное полусухое белое «Новый Свет»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 191,
+          "height": 725,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусухое",
+      "grapes": [
+        "Алиготе",
+        "Пино фран",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Аромат с нотами свежих ягод и полевых цветов; вкус гармоничный, сбалансированный, с минеральными и фруктовыми нотками и умеренной сладостью. Лёгкий, освежающий. Хорошо к лёгким десертам, мягким сырам и фруктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-rozovoe-novyy-svet-pino-nuar-125",
+      "group_id": "collection",
+      "name": "Российское шампанское коллекционное полусухое розовое «Новый Свет. Пино Нуар»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-rozovoe-novyy-svet-pino-nuar-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-rozovoe-novyy-svet-pino-nuar-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 5,
+          "width": 165,
+          "height": 625,
+          "source_width": 173,
+          "source_height": 632
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусухое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат деликатный — ноты лесных ягод, малины, розового персика; вкус ягодный, изысканный, с нотками клубники, сушеной малины, миндаля и лесных орехов, умеренной сладостью и долгим минеральным послевкусием. Хорошо к лёгким десертам, фруктам, мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collection"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-beloe-novyy-svet-shardone-125",
+      "group_id": "aged",
+      "name": "Российское шампанское выдержанное брют белое «Новый Свет»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-beloe-novyy-svet-shardone-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-beloe-novyy-svet-shardone-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 6,
+          "width": 202,
+          "height": 720,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Алиготе",
+        "Кокур",
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат с нотами цветущего винограда и полевых цветов; вкус свежий, лёгкий, с характерной минеральностью и гармоничной кислотностью, долгим послевкусием. К белому мясу, твёрдым пикантным сырам, морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-rozovoe-novyy-svet-kaberne-kaberne-sovinon-11",
+      "group_id": "aged",
+      "name": "Российское шампанское выдержанное брют розовое «Новый Свет. Каберне»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-rozovoe-novyy-svet-kaberne-kaberne-sovinon-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-rozovoe-novyy-svet-kaberne-kaberne-sovinon-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 201,
+          "height": 720,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат деликатный, с нотами красных фруктов и лёгкими цветочными оттенками; вкус свежий, с ягодными тонами, сбалансированной кислотностью и продолжительным послевкусием. К морепродуктам, лёгким закускам и мягким сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13",
+      "group_id": "limited",
+      "name": "Российское шампанское выдержанное экстра брют белое «Новый Свет. Алиготе»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 205,
+          "height": 726,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат свежий, цветочно-фруктовый с нотами цитруса и зелёного яблока; вкус живой, с хрустящей кислотностью, лёгкой горчинкой и освежающим минеральным послевкусием. Хорошо к морепродуктам, рыбным блюдам и в качестве аперитива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11",
+      "group_id": "limited",
+      "name": "Российское шампанское выдержанное экстра брют белое «Новый Свет. Кокур»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 720,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · экстра брют",
+      "grapes": [
+        "Кокур"
+      ],
+      "description": "Чистый сортовой аромат крымского автохтона Кокур с нотами полевых цветов и свежего винограда; вкус освежающий, «хрустящий», с фруктовыми тонами персика, дюшеса и крыжовника, долгим послевкусием. Идеальный аперитив, к лёгким закускам и морепродуктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-limited"
+      ]
+    },
+    {
+      "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125",
+      "group_id": "aged",
+      "name": "Российское шампанское выдержанное полусладкое розовое «Новый Свет»",
+      "variant": "",
+      "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 4,
+          "width": 200,
+          "height": 722,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусладкое",
+      "grapes": [
+        "Алиготе",
+        "Каберне Совиньон",
+        "Кокур",
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, наполненный нотами слегка засахаренных красных ягод; вкус элегантный и яркий, с приятной ненавязчивой сладостью фруктовых оттенков и освежающей кислотностью. Идеален к фруктовым десертам, лёгким пирогам и ягодным муссам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-aged"
+      ]
+    },
+    {
+      "id": "official-koronatsionnoe",
+      "group_id": "crown",
+      "name": "Новый Свет · Коронационное",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/novy-svet/official-koronatsionnoe.webp",
+        "source_id": "official-official-koronatsionnoe",
+        "frame": {
+          "x": 3,
+          "y": 5,
+          "width": 201,
+          "height": 718,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое игристое · брют",
+      "grapes": [
+        "Шардоне",
+        "Рислинг Рейнский",
+        "Пино Нуар",
+        "Алиготе"
+      ],
+      "description": "Флагман Дома шампанских вин. Коллекционное винтажное игристое ограниченного тиража. Воссоздано в 2005 году по рецептуре Льва Голицына. Точное название отсутствует в снимке каталога.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-koronatsionnoe",
+        "official-crown"
+      ]
+    }
+  ]
+}

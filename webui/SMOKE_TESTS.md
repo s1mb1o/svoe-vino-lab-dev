@@ -1,3 +1,7 @@
+# 2026-10-16: Новый Свет
+
+Open /lineup/novy-svet with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
 # 2026-10-16: Валерий Захарьин
 
 Open /lineup/valery-zakharyin with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
