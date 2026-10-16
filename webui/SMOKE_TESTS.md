@@ -451,3 +451,9 @@ Open `/lineup/fanagoria?wine=fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135
 Check the complete Rkatsiteli 2019 outline on flat light and dark backgrounds.
 Confirm that no opaque gray or white stripe remains outside the right contour.
 Repeat in the desktop detail panel and mobile popup.
+
+Open `/lineup/fanagoria?wine=fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135`.
+Check both sides of the neck on flat light and dark backgrounds.
+Confirm that no white rectangle remains outside the bottle.
+Check the desktop detail panel and the mobile popup.
+Read `docs/validation/lineup-image-visual-review.md` before accepting a complete lineup image review.

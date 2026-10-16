@@ -44,7 +44,7 @@ Faint transparent outliers can leave an excessively wide image frame.
 A frame from alpha values of at least 128 removes these outer fields from the crop calculation.
 The crop adds 8 source pixels around that frame. The crop does not change alpha values inside the frame.
 The conversion fits the cropped image into 720 px height. The conversion adds 6 px transparent padding on every side.
-WebP uses quality 88 and alpha quality 100. The 82 files total 2,149,756 bytes after the Rkatsiteli correction below.
+WebP uses quality 88 and alpha quality 100. The 82 files total 2,149,808 bytes after both Decanter corrections below.
 This conversion preserves the generated alpha and reduces mobile transfer size.
 
 ## Rejected source photos
@@ -114,3 +114,11 @@ Read [fanagoria-decanter-cutout.json](fanagoria-decanter-cutout.json) for the sa
 Nitro embeds static file size and ETag metadata in the server build.
 Replacing `.output/public` bytes alone can produce an incorrect Content-Length.
 Rebuild the application and restart the local server after an asset replacement.
+
+## Complete visual review follow-up, 2026-10-16
+
+A complete light and dark contact-sheet review checked all 636 referenced images.
+The review found one additional opaque rectangle defect in Decanter Saperavi 2017.
+The source was regenerated through built-in imagegen. The former accepted output is now recorded as rejected.
+The earlier alpha and geometry checks did not establish a complete visual outline review.
+Read [lineup-image-visual-review.md](lineup-image-visual-review.md) for the correction, browser checks and open framing observations.

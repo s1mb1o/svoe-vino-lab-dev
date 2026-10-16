@@ -37,6 +37,14 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Complete lineup image review
+
+- Review all 636 images on flat light and dark backgrounds.
+- Correct the Decanter Saperavi 2017 background through built-in imagegen.
+- Preserve source hashes, rejected output hashes and the exact replacement prompt.
+- Record 31 open image-framing observations.
+- Pass 65 map tests, the production build and eight Chromium/WebKit image cases.
+
 ## 2026-10-16 — Fanagoria Decanter background correction
 
 - Regenerate the Rkatsiteli 2019 cutout from the original catalog image.

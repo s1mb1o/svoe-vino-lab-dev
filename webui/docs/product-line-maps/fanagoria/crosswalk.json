@@ -523,7 +523,7 @@
       "catalog_name": "Декантер. Саперави 2017",
       "catalog_producer": "Фанагория",
       "source_image": "fanagoriya_dekanter_saperavi_2017_krasnoe_suhoe_135_1eb1ee94fa.webp",
-      "asset_sha256": "8affe828b0c1faa116045c01af53bb5ada6cd67226f30cf55f364d21e27f70ee",
+      "asset_sha256": "1afc22c8948078606ee5b3a70f592b5371ac3322a0bc23f86684c41097890036",
       "catalog_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135",
       "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/fanagoriya_dekanter_saperavi_2017_krasnoe_suhoe_135_1eb1ee94fa.webp",
       "transformation": {
@@ -532,7 +532,7 @@
         "mode": "built-in",
         "date": "2026-10-16",
         "input_asset_sha256": "06bf1ab6ebad73c36e756a17677dc9e369aa666b87d6c073debb1036ffdb7010",
-        "output_asset_sha256": "8affe828b0c1faa116045c01af53bb5ada6cd67226f30cf55f364d21e27f70ee",
+        "output_asset_sha256": "1afc22c8948078606ee5b3a70f592b5371ac3322a0bc23f86684c41097890036",
         "record": "imagegen-cutouts.json"
       }
     },

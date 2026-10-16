@@ -55,6 +55,15 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Complete lineup image review, 2026-10-16
+
+The manual review covers 636 image files in 22 light and dark contact sheets.
+One additional mask defect occurs beside the Decanter Saperavi 2017 neck.
+The replacement uses the original catalog image and built-in imagegen.
+31 images have large transparent fields and an approximate desktop bottle height below 130 px.
+A square source canvas can reduce a narrow bottle to 120 px under the CSS max-width limit.
+Read `docs/validation/lineup-image-visual-review.md` for the full scope, correction and open framing observations.
+
 ## Fanagoria Decanter background remnants, 2026-10-16
 
 The previous Rkatsiteli 2019 cutout contained opaque gray and white stripes outside the right contour.

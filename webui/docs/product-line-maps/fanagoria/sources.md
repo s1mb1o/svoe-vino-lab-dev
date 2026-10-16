@@ -119,3 +119,11 @@ The first Decanter Rkatsiteli 2019 derivative contained opaque stripe remnants b
 A new built-in imagegen edit uses the original catalog image. The asset URL is unchanged.
 The manifest preserves the rejected derivative hashes and prompt under `superseded_outputs`.
 Flat light and dark composites are required in addition to alpha and border checks.
+
+### Saperavi 2017 correction, 2026-10-16
+
+The complete lineup review found white background rectangles beside the right neck contour.
+A new built-in imagegen edit uses the original Decanter Saperavi 2017 catalog image.
+The asset URL and product metadata are unchanged.
+The manifest preserves the rejected output and the new prompt and hashes.
+The corrected bottle passed light and dark desktop and mobile checks in Chromium and WebKit.
