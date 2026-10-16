@@ -231,7 +231,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 859,
+          "y": 0,
+          "width": 644,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -256,7 +264,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 48,
+          "y": 22,
+          "width": 335,
+          "height": 1236,
+          "source_width": 430,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -283,7 +299,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-graviti-pino-blan-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 54,
+          "y": 8,
+          "width": 344,
+          "height": 1257,
+          "source_width": 451,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -310,7 +334,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-fran-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 92,
+          "y": 53,
+          "width": 279,
+          "height": 1168,
+          "source_width": 451,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -335,7 +367,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 88,
+          "y": 54,
+          "width": 280,
+          "height": 1184,
+          "source_width": 441,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -360,7 +400,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 91,
+          "y": 43,
+          "width": 279,
+          "height": 1180,
+          "source_width": 454,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -385,7 +433,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-kokur-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 48,
+          "y": 59,
+          "width": 329,
+          "height": 1152,
+          "source_width": 424,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -410,7 +466,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-kolombar-beloe-polusuhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 57,
+          "y": 61,
+          "width": 326,
+          "height": 1141,
+          "source_width": 443,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -435,7 +499,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-locantita-merlot-cabernet-franc.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 53,
+          "y": 18,
+          "width": 321,
+          "height": 1173,
+          "source_width": 416,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -465,7 +537,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 98,
+          "y": 54,
+          "width": 277,
+          "height": 1160,
+          "source_width": 457,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -490,7 +570,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 898,
+          "y": 0,
+          "width": 566,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -515,7 +603,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-rezerv-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 66,
+          "y": 30,
+          "width": 286,
+          "height": 1212,
+          "source_width": 433,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -540,7 +636,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-petit-arvin-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 89,
+          "y": 52,
+          "width": 329,
+          "height": 1155,
+          "source_width": 496,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -565,7 +669,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-blan-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 59,
+          "y": 60,
+          "width": 324,
+          "height": 1142,
+          "source_width": 442,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -590,7 +702,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-blan-rezerv-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 96,
+          "y": 37,
+          "width": 335,
+          "height": 1221,
+          "source_width": 509,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -615,7 +735,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-gri-beloe-polusuhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 69,
+          "y": 59,
+          "width": 323,
+          "height": 1137,
+          "source_width": 453,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -640,7 +768,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-beloe-ekstra-bryut-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 255,
+          "y": 113,
+          "width": 1090,
+          "height": 3905,
+          "source_width": 1598,
+          "source_height": 4200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -665,7 +801,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 90,
+          "y": 79,
+          "width": 314,
+          "height": 1118,
+          "source_width": 479,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -690,7 +834,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 87,
+          "y": 105,
+          "width": 311,
+          "height": 1138,
+          "source_width": 469,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -715,7 +867,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-rislaner-beloe-polusladkoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 56,
+          "y": 63,
+          "width": 325,
+          "height": 1142,
+          "source_width": 441,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -740,7 +900,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-risling-beloe-polusuhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 60,
+          "y": 45,
+          "width": 269,
+          "height": 1176,
+          "source_width": 397,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -765,7 +933,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-semilon-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 59,
+          "y": 55,
+          "width": 330,
+          "height": 1155,
+          "source_width": 443,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -790,7 +966,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 55,
+          "y": 49,
+          "width": 331,
+          "height": 1160,
+          "source_width": 442,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -815,7 +999,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-rezerv-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 856,
+          "y": 0,
+          "width": 650,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -840,7 +1032,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-rezerv-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 75,
+          "y": 121,
+          "width": 314,
+          "height": 1141,
+          "source_width": 473,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -865,7 +1065,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-shiraz-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 53,
+          "y": 46,
+          "width": 278,
+          "height": 1163,
+          "source_width": 379,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -890,7 +1098,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 74,
+          "y": 46,
+          "width": 282,
+          "height": 1197,
+          "source_width": 426,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -915,7 +1131,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 86,
+          "y": 39,
+          "width": 305,
+          "height": 1226,
+          "source_width": 491,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -944,7 +1168,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 92,
+          "y": 53,
+          "width": 307,
+          "height": 1227,
+          "source_width": 506,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -971,7 +1203,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 93,
+          "y": 39,
+          "width": 307,
+          "height": 1218,
+          "source_width": 512,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1001,7 +1241,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 62,
+          "y": 40,
+          "width": 310,
+          "height": 1240,
+          "source_width": 444,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1029,7 +1277,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 110,
+          "y": 33,
+          "width": 312,
+          "height": 1245,
+          "source_width": 522,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1055,7 +1311,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-sovinon-blan-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 53,
+          "y": 40,
+          "width": 334,
+          "height": 1172,
+          "source_width": 433,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1080,7 +1344,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-sovinon-blan-rezerv-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 87,
+          "y": 114,
+          "width": 311,
+          "height": 1135,
+          "source_width": 480,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1105,7 +1377,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 96,
+          "y": 115,
+          "width": 238,
+          "height": 1077,
+          "source_width": 434,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1130,7 +1410,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-tempranilo-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 59,
+          "y": 37,
+          "width": 280,
+          "height": 1174,
+          "source_width": 397,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1155,7 +1443,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-tempranilo-rezerv-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 58,
+          "y": 54,
+          "width": 280,
+          "height": 1183,
+          "source_width": 417,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1180,7 +1476,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-alma-valley-traminer-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 83,
+          "y": 41,
+          "width": 327,
+          "height": 1214,
+          "source_width": 466,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1205,7 +1509,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/wine-locantita-sauvignon-blanc-chardonnay.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 201,
+          "height": 722,
+          "source_width": 211,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1233,7 +1545,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/official-alma-x-cabernet-saperavi.webp",
-        "source_id": "official-alma-x-cabernet-saperavi"
+        "source_id": "official-alma-x-cabernet-saperavi",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
       },
       "category": "Тихое вино",
       "style": "Красное · сухое",
@@ -1258,7 +1578,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/alma-valley/official-muscat-appassimento.webp",
-        "source_id": "official-muscat-appassimento"
+        "source_id": "official-muscat-appassimento",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 217,
+          "height": 1000,
+          "source_width": 217,
+          "source_height": 1000
+        }
       },
       "category": "Сладкое вино",
       "style": "Белое · природно-сладкое",
