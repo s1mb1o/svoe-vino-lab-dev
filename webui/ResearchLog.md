@@ -1,3 +1,7 @@
+# 2026-10-16: Валерий Захарьин
+
+Check Валерий Захарьин against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/valery-zakharyin/sources.md.
+
 # 2026-10-16: Шато Пино
 
 Check Шато Пино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/chateau-pinot/sources.md.

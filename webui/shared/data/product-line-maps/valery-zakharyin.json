@@ -1,0 +1,1877 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "valery-zakharyin",
+    "name": "Валерий Захарьин",
+    "aliases": [
+      "Валерий Захарин",
+      "Valery Zaharin",
+      "Дом Захарьиных"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Валерий Захарьин: официальные коллекции",
+      "url": "https://valeryzaharin.com/ru/"
+    },
+    {
+      "id": "official-reserve",
+      "label": "Валерий Захарьин: Резерв · автохтоны и Opus Magnum",
+      "url": "https://valeryzaharin.com/ru/catalog/rubedo"
+    },
+    {
+      "id": "official-autochthon",
+      "label": "Валерий Захарьин: Автохтонные вина Крыма",
+      "url": "https://valeryzaharin.com/ru/catalog/avtohtonnyie-vina"
+    },
+    {
+      "id": "official-authors",
+      "label": "Валерий Захарьин: Авторские вина",
+      "url": "https://valeryzaharin.com/ru/catalog/avtorskie-vina"
+    },
+    {
+      "id": "official-bakkal-su",
+      "label": "Валерий Захарьин: Баккал Су",
+      "url": "https://valeryzaharin.com/ru/catalog/bakkal-su"
+    },
+    {
+      "id": "official-house",
+      "label": "Валерий Захарьин: Дом Захарьиных",
+      "url": "https://valeryzaharin.com/ru/catalog/dom-zaharinyih"
+    },
+    {
+      "id": "official-burluk",
+      "label": "Валерий Захарьин: Бурлюк · тихие",
+      "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-tihih-vin-burlyuk"
+    },
+    {
+      "id": "official-varietal",
+      "label": "Валерий Захарьин: Валерий Захарьин · сортовые",
+      "url": "https://valeryzaharin.com/ru/"
+    },
+    {
+      "id": "official-four-colours",
+      "label": "Валерий Захарьин: Four Colours",
+      "url": "https://valeryzaharin.com/ru/catalog/fourcolours"
+    },
+    {
+      "id": "official-paterum",
+      "label": "Валерий Захарьин: Paterum",
+      "url": "https://valeryzaharin.com/ru/catalog/paterum"
+    },
+    {
+      "id": "official-tango",
+      "label": "Валерий Захарьин: Танговое Манто",
+      "url": "https://valeryzaharin.com/ru/catalog/tangovoe-manto"
+    },
+    {
+      "id": "official-kokur-sparkling",
+      "label": "Валерий Захарьин: Кокур & K°",
+      "url": "https://valeryzaharin.com/ru/catalog/kokurko"
+    },
+    {
+      "id": "official-author-sparkling",
+      "label": "Валерий Захарьин: Авторское игристое",
+      "url": "https://valeryzaharin.com/ru/catalog/avtorskaya-kollektsiya-igristyih-vin-"
+    },
+    {
+      "id": "official-burluk-sparkling",
+      "label": "Валерий Захарьин: Бурлюк · игристые",
+      "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-igristyih-vin--burlyuk"
+    },
+    {
+      "id": "official-chateau-antique",
+      "label": "Валерий Захарьин: Chateau Antique",
+      "url": "https://valeryzaharin.com/ru/catalog/chateau-antique"
+    },
+    {
+      "id": "official-official-chateau-antique-sauvignon",
+      "label": "Официальная карточка: Chateau Antique · Sauvignon",
+      "url": "https://valeryzaharin.com/ru/product/sauvingnon"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-autochthon",
+        "official-authors",
+        "official-house"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-burluk",
+        "official-varietal",
+        "official-four-colours",
+        "official-paterum",
+        "official-tango",
+        "official-kokur-sparkling",
+        "official-author-sparkling",
+        "official-burluk-sparkling",
+        "official-chateau-antique"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "reserve",
+      "name": "Резерв · автохтоны и Opus Magnum",
+      "tier_id": "tier-3",
+      "method": "Отбор винограда; дубовая выдержка",
+      "description": "Кефесия Резерв, Сары Пандас Резерв и купажи Albedo/Rubedo. Старшая ступень задана редакционно по резервному статусу и работе с дубом.",
+      "source_ids": [
+        "official-reserve",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "autochthon",
+      "name": "Автохтонные вина Крыма",
+      "tier_id": "tier-2",
+      "method": "Местные сорта и авторские купажи",
+      "description": "Кефесия, Сары Пандас, Кокур и купажи с другими сортами. Разные карточки и оформления сохранены отдельно.",
+      "source_ids": [
+        "official-autochthon",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "authors",
+      "name": "Авторские вина",
+      "tier_id": "tier-2",
+      "method": "Тихие авторские вина",
+      "description": "Именная авторская коллекция. Алеатико, Бастардо и красный купаж представлены отдельными позициями.",
+      "source_ids": [
+        "official-authors",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "bakkal-su",
+      "name": "Баккал Су",
+      "tier_id": "tier-1",
+      "method": "Сортовые и купажные тихие вина",
+      "description": "Базовый ориентир внутри карты. Коллекция сочетает белые и красные вина с разной сладостью.",
+      "source_ids": [
+        "official-bakkal-su",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "house",
+      "name": "Дом Захарьиных",
+      "tier_id": "tier-2",
+      "method": "Тихие вина; дубовая выдержка",
+      "description": "Белое и красное вина коллекции. Исторические карточки сохранены без замены состава данными новых выпусков.",
+      "source_ids": [
+        "official-house",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "burluk",
+      "name": "Бурлюк · тихие",
+      "tier_id": "tier-0",
+      "method": "Современные сортовые стили",
+      "description": "Молодая команда виноделов создаёт вина с разными подходами к винификации. Тихие вина отделены от игристых Бурлюк.",
+      "source_ids": [
+        "official-burluk",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "varietal",
+      "name": "Валерий Захарьин · сортовые",
+      "tier_id": "tier-0",
+      "method": "Тихие вина; технология зависит от выпуска",
+      "description": "Сортовые вина из снимка. Среди них есть сухие и полусладкие карточки. Общая цена или выдержка для всей группы не назначена.",
+      "source_ids": [
+        "official-varietal",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "four-colours",
+      "name": "Four Colours",
+      "tier_id": "tier-0",
+      "method": "Авторская коллекция",
+      "description": "Четыре Цвета представлены Бастардо. Коллекция сохранена отдельно от остальных авторских серий.",
+      "source_ids": [
+        "official-four-colours",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "paterum",
+      "name": "Paterum",
+      "tier_id": "tier-0",
+      "method": "Купаж красных сортов",
+      "description": "Бастардо, Саперави и Кефесия в отдельном авторском купаже. Премиальная ступень не назначена.",
+      "source_ids": [
+        "official-paterum",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "tango",
+      "name": "Танговое Манто",
+      "tier_id": "tier-0",
+      "method": "Авторские сортовые вина",
+      "description": "Красный Пино Нуар и белый Совиньон. Коллекция объединена по названию, а не по цвету.",
+      "source_ids": [
+        "official-tango",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "kokur-sparkling",
+      "name": "Кокур & K°",
+      "tier_id": "tier-0",
+      "method": "Игристые вина",
+      "description": "Кокур в вариантах брют и полусладкое. Отдельная карточка «Кокур Классика» сохранена отдельно.",
+      "source_ids": [
+        "official-kokur-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "author-sparkling",
+      "name": "Авторское игристое",
+      "tier_id": "tier-0",
+      "method": "Моносортовое игристое",
+      "description": "Алиготе из авторской коллекции. Метод и выдержку конкретного выпуска нужно проверять отдельно.",
+      "source_ids": [
+        "official-author-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "burluk-sparkling",
+      "name": "Бурлюк · игристые",
+      "tier_id": "tier-0",
+      "method": "Моносортовое игристое",
+      "description": "Игристый Алиготе отделён от тихого Алиготе Бурлюк. Карточки не объединены.",
+      "source_ids": [
+        "official-burluk-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "chateau-antique",
+      "name": "Chateau Antique",
+      "tier_id": "tier-0",
+      "method": "Тихие сортовые вина",
+      "description": "Самостоятельная коллекция с французскими названиями сортов. Ценовое соотношение с основными сериями не подтверждено.",
+      "source_ids": [
+        "official-chateau-antique",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-avtohtonnoe-vino-kryma-beloe-suhoe",
+      "group_id": "autochthon",
+      "name": "Автохтонное Вино Крыма белое сухое",
+      "variant": "",
+      "wine_slug": "avtohtonnoe-vino-kryma-beloe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-avtohtonnoe-vino-kryma-beloe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 194,
+          "height": 718,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Алиготе",
+        "Кокур Белый",
+        "Сары Пандас"
+      ],
+      "description": "В аромате присутствует фруктово-цветочное направление, курага, груша, легкие медовые оттенки. Вкус умеренно-свежий, полный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valerij-zaharin-kokur-i-ko-beloe-bryut",
+      "group_id": "kokur-sparkling",
+      "name": "Валерий Захарьин Кокур и Ко белое брют",
+      "variant": "",
+      "wine_slug": "valerij-zaharin-kokur-i-ko-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valerij-zaharin-kokur-i-ko-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 213,
+          "height": 718,
+          "source_width": 227,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Кокур Белый",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Отличается чистым интенсивным ароматом, в котором угадываются зеленое яблоко, лимон, белые цветы и грушевые леденцы. А его легкий сбалансированный вкус с оттенками зеленого яблока, крыжовника, грушевых леденцов и скошенной травы хорошо сочетается с устрицами, блюдами из рыбы, морепродуктами, легкими закусками и твердыми сырами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kokur-sparkling"
+      ]
+    },
+    {
+      "id": "wine-valerij-zaharin-kokur-i-ko-beloe-polusladkoe",
+      "group_id": "kokur-sparkling",
+      "name": "Валерий Захарьин Кокур и Ко белое полусладкое",
+      "variant": "",
+      "wine_slug": "valerij-zaharin-kokur-i-ko-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valerij-zaharin-kokur-i-ko-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 204,
+          "height": 718,
+          "source_width": 218,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Кокур Белый",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат фруктовый, с тонами фруктов, яблока и весенних цветов. Вино обладаем мягким, приятным вкусом и фруктово-цветочными тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kokur-sparkling"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-albedo-reserve-sary-pandas-beloe-suhoe-115",
+      "group_id": "reserve",
+      "name": "Albedo. Reserve",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-albedo-reserve-sary-pandas-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-albedo-reserve-sary-pandas-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 259,
+          "height": 728,
+          "source_width": 263,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Сары Пандас"
+      ],
+      "description": "Вкус: Мягкий, свежий, с умеренной кислотностью, приятными нотками сушеного абрикоса и ванили, округлым, сбалансированным послевкусием. Нежный, с тонами груши, цветочного мёда и разнотравья.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-aleatiko-kefesiya-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-rozovoe-suhoe-125",
+      "group_id": "autochthon",
+      "name": "Алеатико - Кефесия. Автохтонное вино Крыма от Валерия Захарьина",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-aleatiko-kefesiya-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-rozovoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-aleatiko-kefesiya-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-rozovoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 206,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Алеатико"
+      ],
+      "description": "Вкус: С земляничными, гранатовыми, вишневыми и цветочными нотами, с пикантным послевкусием средней длины. Сочный, с оттенками клубники, трав, абрикоса, малины, шелковицы, лепестков фиалки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-aligote-avtorskoe-valeriy-zaharin-beloe-bryut-115",
+      "group_id": "author-sparkling",
+      "name": "Алиготе. Авторское. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-aligote-avtorskoe-valeriy-zaharin-beloe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-aligote-avtorskoe-valeriy-zaharin-beloe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 203,
+          "height": 726,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Кремовый, с мягкой кислинкой, с нотками светлых фруктов и цитрусовых, с тонами скошенной травы, ромашки и миндаля в свежем послевкусии. Нежный, с тонами зеленого яблока, лайма, белых цветов, сена и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-author-sparkling"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-aligote-burlyuk-beloe-bryut-115",
+      "group_id": "burluk-sparkling",
+      "name": "Алиготе. Бурлюк",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-aligote-burlyuk-beloe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-aligote-burlyuk-beloe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 215,
+          "height": 728,
+          "source_width": 219,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Комплексный, с освежающими цитрусовыми тонами, хрустящей кислотностью и ярким, долгим, фруктовым послевкусием. Гармоничный и свежий с ттенками цветущего подсолнуха, спелого белого персика, яблока и груши.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-burluk-sparkling"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-aligote-burlyuk-beloe-suhoe-13",
+      "group_id": "burluk",
+      "name": "Алиготе. Бурлюк",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-aligote-burlyuk-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-aligote-burlyuk-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Многогранный, с освежающими цитрусовыми тонами, хрустящей кислотностью и ярким, долгим, стойким, фруктовым послевкусием. Гармоничный и свежий с оттенками цветущего подсолнуха, спелого белого персика, яблока и груши.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-burluk"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-aligote-valeriy-zaharin-beloe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Алиготе. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-aligote-valeriy-zaharin-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-aligote-valeriy-zaharin-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 198,
+          "height": 725,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Сбалансированный и элегантный, с выразительной кислотностью и характерным минеральным послевкусием. С оттенками цедры цитрусовых, абрикоса, груши и белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-avtorskiy-kupazh-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "group_id": "autochthon",
+      "name": "Автохтонное вино Крыма. Авторский Купаж. Бастардо – Саперави – Кефесия",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-avtorskiy-kupazh-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-avtorskiy-kupazh-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 8,
+          "width": 194,
+          "height": 717,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Интенсивный, сбалансированный, с нотками черных ягод, красных фруктов и цветов, хорошо интегрированными танинами и приятной терпкостью в сухом послевкусии. Яркий с выразительными тонами темных ягод, сушеной вишни и душистых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-aleatiko-kefesiya-rozovoe-suhoe-11",
+      "group_id": "autochthon",
+      "name": "Автохтонное вино Крыма от Валерия Захарьина. Алеатико – Кефесия",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-aleatiko-kefesiya-rozovoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-aleatiko-kefesiya-rozovoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 234,
+          "height": 728,
+          "source_width": 239,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Алеатико"
+      ],
+      "description": "Вкус: Легкий, сочный, с мягкой кислотностью и продолжительным, приятным, фруктовым послевкусием. Яркий с ягодными оттенками клубники и свежими травянистыми нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "group_id": "autochthon",
+      "name": "Автохтонное вино Крыма от Валерия Захарьина. Бастардо – Кефесия",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 240,
+          "height": 728,
+          "source_width": 244,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Сбалансированный, с умеренными таниннами, свежей кислотностью, сочными тонами ежевики и сливы, оттенками чернослива, молочного шоколада и специй. Послевкусие длительное, приятное. С тонами зрелой вишни, черного перца, табака и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Автохтонное вино Крыма от Валерия Захарьина. Кефесия Резерв",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 240,
+          "height": 728,
+          "source_width": 245,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Кефесия"
+      ],
+      "description": "Вкус: Объемный, хорошо структурированный, с мягкими танинами, ягодно-фруктовыми тонами и затяжным послевкусием. Богатый, с нотами сливовы, вишни, ежевики, черной шелковицы и десертных приправ.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kokur-sary-pandas-kokur-belyy-beloe-suhoe-115",
+      "group_id": "autochthon",
+      "name": "Автохтонное вино Крыма от Валерия Захарьина. Кокур – Сары Пандас",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kokur-sary-pandas-kokur-belyy-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kokur-sary-pandas-kokur-belyy-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 236,
+          "height": 728,
+          "source_width": 245,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Вкус: Гармоничный, плотный, с хорошо сбалансированной кислотностью, нотами пчелиного воска, кураги и сена, тонами свежего хлеба в послевкусии. Цветочно-фруктовый с оттенками кураги, груши, белых цветов, легкими медовыми оттенками и нюансами разнотравья.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtohtonnoe-vino-kryma-sary-pandas-rezerv-beloe-suhoe-115",
+      "group_id": "reserve",
+      "name": "Автохтонное вино Крыма. Сары Пандас Резерв",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-sary-pandas-rezerv-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtohtonnoe-vino-kryma-sary-pandas-rezerv-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 237,
+          "height": 728,
+          "source_width": 245,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Сары Пандас"
+      ],
+      "description": "Вкус: Насыщенный, гармоничный, с приятными фруктовыми и дрожжевыми нотками, хорошим балансом кислотности и тонкими нюансами специй в послевкусии. Элегантный с оттенками свежей выпечки, желтого яблока и душистых трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-aleatiko-rozovoe-suhoe-115",
+      "group_id": "authors",
+      "name": "Авторское вино от Валерия Захарьина. Алеатико",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-aleatiko-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-aleatiko-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Алеатико"
+      ],
+      "description": "Вкус: Свежий, гармоничный, с фруктово-ягодными тонами, цветочными штрихами, нежной текстурой, едва ощутимой танинной терпкостью и сбалансированным послевкусием. С оттенками красных ягод и подлеска.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-authors"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-bastardo-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "group_id": "authors",
+      "name": "Авторское вино от Валерия Захарьина. Бастардо",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-bastardo-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-bastardo-bastardo-magarachskiy-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Гармоничный, с фруктовыми акцентами, тонкой ягодной кислинкой, округлыми танинами и приятным, сухим послевкусием. С фруктовыми, цветочными и пряными нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-authors"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-krasnoe-pino-nuar-suhoe-125",
+      "group_id": "authors",
+      "name": "Авторское вино от Валерия Захарьина. Красное",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-krasnoe-pino-nuar-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-krasnoe-pino-nuar-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Слегка терпкий, с деликатной танинной горчинкой, ягодной кислинкой и пряными тонами в сухом послевкусии. Яркий, с оттенками спелых темных ягод и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-authors"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bakkal-su-aligote-beloe-suhoe-115",
+      "group_id": "bakkal-su",
+      "name": "Баккал Су Алиготе",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bakkal-su-aligote-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bakkal-su-aligote-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Мягкий, освежающий, с минерально-цитрусовыми оттенками, гладкой текстурой и приятной кислинкой в чистом послевкусии. Свежий, с нотами цитрусовых и тропических фруктов, трав и весенних цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bakkal-su-kaberne-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "bakkal-su",
+      "name": "Баккал Су Каберне",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bakkal-su-kaberne-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bakkal-su-kaberne-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 192,
+          "height": 727,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Насыщенный, бархатистый, с фруктово-пряными оттенками, отличным балансом кислотности и танинности, долгим и сухим послевкусием. Выразительный с нотами лакрицы, кожи и черной смородины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bakkal-su-muskat-ottonel-beloe-polusladkoe-115",
+      "group_id": "bakkal-su",
+      "name": "Баккал Су. Мускат Оттонель",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bakkal-su-muskat-ottonel-beloe-polusladkoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bakkal-su-muskat-ottonel-beloe-polusladkoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 198,
+          "height": 728,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "Вкус: Свежий, сбалансированный, с яркими фруктовыми оттенками, приятной сладостью и мягким послевкусием. Насыщенный, с тонами экзотических фруктов, оттенками жасмина, жимолости, розы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bakkal-su-saperavi-bastardo-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "bakkal-su",
+      "name": "Баккал Су Саперави - Бастардо - Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bakkal-su-saperavi-bastardo-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bakkal-su-saperavi-bastardo-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Сочный, с тонами черных фруктов, шелковицы, ванили и перца. С нотками пряностей, сливы, трав и с легкими нюансами какао.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bakkal-su-saperavi-kaberne-sovinon-krasnoe-suhoe-12",
+      "group_id": "bakkal-su",
+      "name": "Баккал Су. Саперави – Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bakkal-su-saperavi-kaberne-sovinon-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bakkal-su-saperavi-kaberne-sovinon-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 198,
+          "height": 728,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Сбалансированный, с бархатистой текстурой, нотами черной смородины, вишни, гвоздики и перца, округлыми танинами и легкой терпкостью в долгом послевкусии. Фруктовый с тонами спелой сливы, вишни, шелковицы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-bastardo-kefesiya-avtohtonnoe-vino-kryma-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "group_id": "autochthon",
+      "name": "Бастардо - Кефесия. Автохтонное вино Крыма",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-bastardo-kefesiya-avtohtonnoe-vino-kryma-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-bastardo-kefesiya-avtohtonnoe-vino-kryma-bastardo-magarachskiy-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Сбалансированный, с умеренной танинной структурой, свежей кислотностью, с тонами ежевики, сливы, чернослива, молочного шоколада и специй, с длительным приятным послевкусием. С тонами зрелой вишни, черного перца, табака и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-chetyre-tsveta-bastardo-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "group_id": "four-colours",
+      "name": "Четыре Цвета. Бастардо",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-chetyre-tsveta-bastardo-bastardo-magarachskiy-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-chetyre-tsveta-bastardo-bastardo-magarachskiy-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Приятный, бархатистый, фруктовый, с мягкими танинами и свежей ягодной кислинкой в сухом послевкусии. Интенсивный с оттенками шиповника, спелой вишни и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-four-colours"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-dom-zaharinyh-beloe-sary-pandas-suhoe-115",
+      "group_id": "house",
+      "name": "Дом Захарьиных белое",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-dom-zaharinyh-beloe-sary-pandas-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-dom-zaharinyh-beloe-sary-pandas-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 221,
+          "height": 726,
+          "source_width": 226,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Сары Пандас"
+      ],
+      "description": "Вкус: Насыщенный с нотками ванили, тостов, имбиря и кураги, гармоничной кислотностью, шелковистой текстурой и продолжительным послевкусием. Сложный с нотами спелого яблока, груши, айвы и цитрусовых фруктов, дополненными тонами сливочного масла, карамели, крем-брюле, кураги, ванили и гвоздики, оттенками желтых цветов и травы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-house"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-dom-zaharinyh-krasnoe-kaberne-sovinon-suhoe-125",
+      "group_id": "house",
+      "name": "Дом Захарьиных красное",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-dom-zaharinyh-krasnoe-kaberne-sovinon-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-dom-zaharinyh-krasnoe-kaberne-sovinon-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: С отчетливыми танинами, оттенками сухофруктов, вишневой косточки, перца и кофе. С нотами чернослива, поджаренного черного хлеба, черешни и пряностей Востока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-house"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-kaberne-fran-burlyuk-krasnoe-suhoe-13",
+      "group_id": "burluk",
+      "name": "Каберне Фран. Бурлюк",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-kaberne-fran-burlyuk-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-kaberne-fran-burlyuk-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 207,
+          "height": 728,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Насыщенный, с оттенками ягод и фруктов, с хорошим балансом кислотности и танинной терпкости, свежим, долгим послевкусием. Яркий с сочными тонами спелой вишни, сливы, темной и терпкой ежевики, кислой клюквы",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-burluk"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-kefesiya-valeriy-zaharin-krasnoe-suhoe-12",
+      "group_id": "varietal",
+      "name": "Кефесия. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-kefesiya-valeriy-zaharin-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-kefesiya-valeriy-zaharin-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 198,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Кефесия"
+      ],
+      "description": "Вкус: Сбалансированный, с фруктово-пряным тонами, шелковистыми танинами и стойким, сухим послевкусием. Яркий, выразительный с фруктово-ягодными оттенками и тонкими нюансами пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-kokur-klassika-kokur-belyy-beloe-bryut-115",
+      "group_id": "kokur-sparkling",
+      "name": "Кокур Классика",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-kokur-klassika-kokur-belyy-beloe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-kokur-klassika-kokur-belyy-beloe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 206,
+          "height": 728,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Вкус: Свежий, гармоничный, с хорошо сбалансированной кислотностью, нотами груши, яблока, лимона и приятным, легким послевкусием. Приятный, ненавязчивый, фруктовый, цветочный, немного медовый, с долей минеральности.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kokur-sparkling"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-kokur-valeriy-zaharin-kokur-belyy-beloe-polusladkoe-125",
+      "group_id": "varietal",
+      "name": "Кокур. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-kokur-valeriy-zaharin-kokur-belyy-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-kokur-valeriy-zaharin-kokur-belyy-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Вкус: Мягкий, с нежной фруктовой сладостью, сбалансированной тонкой кислотностью и приятным послевкусием. С тонами спелой сочной груши и яблока, сладких цитрусовых фруктов и белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-muskat-valeriy-zaharin-muskat-ottonel-beloe-polusladkoe-12",
+      "group_id": "varietal",
+      "name": "Мускат. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-muskat-valeriy-zaharin-muskat-ottonel-beloe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-muskat-valeriy-zaharin-muskat-ottonel-beloe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Оттонель"
+      ],
+      "description": "Вкус: Нежный с выверенным балансом сладости зрелых экзотических фруктов и кислотности, с ароматным приятным послевкусием. С тонами экзотических фруктов и цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-paterum-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "group_id": "paterum",
+      "name": "Патерум. Бастардо – Саперави – Кефесия",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-paterum-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-paterum-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 4,
+          "width": 207,
+          "height": 722,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский"
+      ],
+      "description": "Вкус: Округлый, с шелковистой текстурой, фруктово-ягодными оттенками и приятными танинами в длительном послевкусии. Гармоничный, с нотами спелых темных фруктов и ягод, пряностей, подлеска, дыма и трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-paterum"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-pino-nuar-valeriy-zaharin-krasnoe-polusladkoe-105",
+      "group_id": "varietal",
+      "name": "Пино Нуар. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-pino-nuar-valeriy-zaharin-krasnoe-polusladkoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-pino-nuar-valeriy-zaharin-krasnoe-polusladkoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Элегантный и нежный, с мягкой фруктовой сладостью, тонкой ягодной терпкостью, ощутимой свежестью и соблазнительной бархатистостью. Послевкусие приятное, округлое. Нежный, с тонами зрелых красных ягод и фруктов, легкими оттенками сладкие специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-risling-valeriy-zaharin-risling-reynskiy-beloe-polusladkoe-125",
+      "group_id": "varietal",
+      "name": "Рислинг. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-risling-valeriy-zaharin-risling-reynskiy-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-risling-valeriy-zaharin-risling-reynskiy-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Гармоничный, мягкий, с балансом фруктовой сладости и пикантной кислинки, с тонким медовым послевкусием. Свежий, изящный, с нотками персика, яблока, груши, дыни и белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-rubedo-reserve-merlo-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Rubedo. Reserve",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-rubedo-reserve-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-rubedo-reserve-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 260,
+          "height": 728,
+          "source_width": 264,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: С тонами вишни, черешни, шелковицы, ежевики, какао, гвоздики, с мягкими танинами и долгим послевкусием. Насыщенный, с нотами спелых ягод, шоколада и пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-sandzhoveze-burlyuk-krasnoe-suhoe-13",
+      "group_id": "burluk",
+      "name": "Санджовезе. Бурлюк",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-sandzhoveze-burlyuk-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-sandzhoveze-burlyuk-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 205,
+          "height": 726,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Вкус: С бархатистой текстурой, нотками сладкого ягодного пирога и зрелого граната, деликатно вяжущими танинами и ярким, выразительным, приятно пряным послевкусием. Яркий с тонами спелой красной вишни, темной сливы, лесных ягод, смородины, украшенными интенсивными пряными элементами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-burluk"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-saperavi-kaberne-sovinon-bakkal-su-krasnoe-suhoe-12",
+      "group_id": "bakkal-su",
+      "name": "Саперави - Каберне Совиньон. Баккал Су",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-saperavi-kaberne-sovinon-bakkal-su-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-saperavi-kaberne-sovinon-bakkal-su-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Сбалансированный, мягким, с бархатистой текстурой, нотами черной смородины, вишни, гвоздики и перца, округлыми танинами и легкой терпкостью в долгом послевкусии. Фруктовый, с тонами спелой сливы, вишни, шелковицы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-bakkal-su"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-sary-pandas-valeriy-zaharin-beloe-suhoe-125",
+      "group_id": "varietal",
+      "name": "Сары Пандас. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-sary-pandas-valeriy-zaharin-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-sary-pandas-valeriy-zaharin-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 198,
+          "height": 725,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Сары Пандас"
+      ],
+      "description": "Вкус: Чистый, яркий, сбалансированный, с тонкой кислинкой и приятным послевкусием с оттенками пчелиного воска и сена. Выразительный, насыщенный оттенками кураги, груши, меда и разнотравья.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-sira-valeriy-zaharin-krasnoe-polusladkoe-125",
+      "group_id": "varietal",
+      "name": "Сира. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-sira-valeriy-zaharin-krasnoe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-sira-valeriy-zaharin-krasnoe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Гармоничный, с фруктовой сладостью и ягодной свежестью, с мягкими танинами, хорошей кислотностью и приятным послевкусием. Выразительно-ягодный, с джемовыми тонами зрелой вишни, малины и ежевики, с легким оттенком подлеска.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-sovinon-blan-valeriy-zaharin-beloe-polusladkoe-105",
+      "group_id": "varietal",
+      "name": "Совиньон Блан. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-sovinon-blan-valeriy-zaharin-beloe-polusladkoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-sovinon-blan-valeriy-zaharin-beloe-polusladkoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Гармоничный, с природной сладостью зрелых тропических плодов и свежей кислотностью, с нежным и приятным послевкусием. Сложный, с тонами спелых плодов манго, засахаренного грейпфрута и бузины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-sovinon-valeriy-zaharin-beloe-polusladkoe-125",
+      "group_id": "varietal",
+      "name": "Совиньон. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-sovinon-valeriy-zaharin-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-sovinon-valeriy-zaharin-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон"
+      ],
+      "description": "Вкус: Нежный, сбалансированный, с мягкой фруктовой сладостью, пикантной цитрусовой кислинкой, нюансами трав, цедры и минералов. Легкий, с нотками цитрусовых, хрустящего зеленого яблока, крыжовника и мармелада из белой смородины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-tangovoe-manto-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "tango",
+      "name": "Танговое Манто. Пино Нуар",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-tangovoe-manto-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-tangovoe-manto-pino-nuar-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 225,
+          "height": 728,
+          "source_width": 229,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Насыщенный, приятный, с фруктово-ягодными акцентами, кислинкой кизила, нотками специй в долгом, сухом послевкусии. С тонами спелой вишни и черешни, украшенными нотками пряностей и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tango"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-tangovoe-manto-sovinon-sovinon-blan-beloe-suhoe-125",
+      "group_id": "tango",
+      "name": "Танговое Манто. Совиньон",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-tangovoe-manto-sovinon-sovinon-blan-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-tangovoe-manto-sovinon-sovinon-blan-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 226,
+          "height": 728,
+          "source_width": 230,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Легкий, гармоничный, с пикантными тонами белого перца и желтых спелых фруктов, свежей кислотностью и сухим, приятным послевкусием. Изысканный, с тонами сочного грейпфрута и крыжовника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tango"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-traminer-burlyuk-traminer-rozovyy-beloe-suhoe-135",
+      "group_id": "burluk",
+      "name": "Траминер. Бурлюк",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-traminer-burlyuk-traminer-rozovyy-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-traminer-burlyuk-traminer-rozovyy-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 727,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Траминер Розовый"
+      ],
+      "description": "Вкус: Свежий, с сочной кислотностью и стойким, выразительным послевкусием. Яркий, с оттенками спелого персика, цитрусовых фруктов, специй, розы и пиона, дополненных мускатными и минеральными штрихами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-burluk"
+      ]
+    },
+    {
+      "id": "wine-valeriy-zaharin-traminer-valeriy-zaharin-traminer-rozovyy-beloe-polusladkoe-105",
+      "group_id": "varietal",
+      "name": "Траминер. Валерий Захарьин",
+      "variant": "",
+      "wine_slug": "valeriy-zaharin-traminer-valeriy-zaharin-traminer-rozovyy-beloe-polusladkoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/wine-valeriy-zaharin-traminer-valeriy-zaharin-traminer-rozovyy-beloe-polusladkoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 169,
+          "height": 728,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Траминер Розовый"
+      ],
+      "description": "Вкус: Фруктово-цветочный, с природной сладостью, тонкой кислотностью и достаточно продолжительным и ароматным послевкусием. С нотами зрелых сладких фруктов и чайной розы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "official-chateau-antique-sauvignon",
+      "group_id": "chateau-antique",
+      "name": "Chateau Antique · Sauvignon",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/valery-zakharyin/official-chateau-antique-sauvignon.webp",
+        "source_id": "official-official-chateau-antique-sauvignon",
+        "frame": {
+          "x": 10,
+          "y": 3,
+          "width": 186,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Совиньон"
+      ],
+      "description": "Сухое белое вино Chateau Antique. Официальная коллекция выделена отдельно от авторских и автохтонных вин Валерия Захарьина. Точное название отсутствует в снимке каталога.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-chateau-antique-sauvignon",
+        "official-chateau-antique"
+      ]
+    }
+  ]
+}
