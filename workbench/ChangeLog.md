@@ -7528,3 +7528,15 @@ browser-verification.json, claude-review.json, and live-comparison.jpg at reposi
 - Restart idle port 8168 with SIGTERM from PID 22964 to PID 6914. GET /api/dataset
   returns HTTP 200. Preserve 2296 wines, 3575 image links, 3555 label descriptions,
   and schema 36. Start no live catalogue import. Old reports require Compare again.
+
+
+## Website synchronization on startup
+
+- Add `website_sync.on_startup` and `scripts/sync_website.py`. The default disables startup synchronization.
+- Apply safe website updates, update the selected embeddings and clusters, and validate a frozen matcher catalogue.
+- Publish complete local data through an atomic symlink. Preserve the previous release and pending manual choices.
+- Share a cross-process lock between startup, shell, and UI operations. Stop active children before the lock is released.
+- Pass the selected configuration to image review and record synchronization stages in the Website import page.
+- Validate the operation with temporary catalogue data and a local fake embedding service. No live website import or deployment runs for validation.
+- Validation: 106 synchronization, import, image-review, and catalogue-copy checks pass. Two server-hook checks pass before and after application. Ruff, JavaScript syntax, configuration dry-run, and diff checks pass.
+- Restart idle Workbench on port 8168 from PID 6914 to PID 85800. Dataset returns HTTP 200. Keep the existing website report and leave startup synchronization disabled.

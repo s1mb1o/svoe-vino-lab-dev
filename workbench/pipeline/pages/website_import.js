@@ -189,6 +189,7 @@
 
   function showRunning() {
     const what = state.phase === "apply" ? "Applying selected changes."
+      : state.phase === "sync" ? "Synchronizing safe website updates and matcher data."
       : state.phase === "automate" ? "Checking and applying safe updates." : "Comparing with the website.";
     body.innerHTML = `<p class="validation-intro">${what} It reads the list, the sitemap, and
       the original image of each wine of vino-svoe.ru. Automatic updates also check changed
@@ -436,12 +437,18 @@
       return setStatus(`Cannot read the diff: ${error.message}`, true);
     }
     showDiff();
+    if (state.synchronization && state.synchronization.ok) {
+      const note = document.createElement("p");
+      note.className = "validation-intro";
+      note.textContent = "Safe updates complete. Local matcher catalogue updated. Remaining changes need your decision.";
+      body.prepend(note);
+    }
     if (state.state === "failed") {
-      if (state.phase === "automate") {
+      if (state.phase === "automate" || state.phase === "sync") {
         const button = actions.querySelector('[data-website="apply"]');
         if (button) button.hidden = true;
       }
-      setStatus(`The last ${state.phase === "automate" ? "automatic update" : "apply"} failed:\n${state.error || ""}\nUse Compare again to refresh the report before applying changes.`, true);
+      setStatus(`The last ${state.phase === "sync" ? "synchronization" : state.phase === "automate" ? "automatic update" : "apply"} failed:\n${state.error || ""}\nUse Compare again to refresh the report before applying changes.`, true);
     }
   }
 

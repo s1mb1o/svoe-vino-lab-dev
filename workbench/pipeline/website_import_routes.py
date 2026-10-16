@@ -33,6 +33,7 @@ import time
 import urllib.parse
 
 import import_website
+import website_sync
 
 API = "/api/website-import"
 IMAGES = "/website-import/"
@@ -57,7 +58,7 @@ IMAGE_CACHE = "public, max-age=31536000, immutable"
 # The largest body of an apply: one choice for each conflict and each change.
 BODY_LIMIT = 4 * 1024 * 1024
 # The progress lines of `import_website.py`.
-PROGRESS = re.compile(r"^(list|images|review): ")
+PROGRESS = re.compile(r"^(list|images|review|sync): ")
 
 # run directory -> the process that this server started. The server reaps it.
 _PROCESSES = {}
@@ -103,6 +104,8 @@ def _running():
             del _PROCESSES[directory]
     job = _read_json(os.path.join(WORK, JOB_FILE))
     if not isinstance(job, dict) or not isinstance(job.get("pid"), int):
+        return None
+    if job.get("lock") == "flock" and not website_sync.operation_locked(WORK):
         return None
     directory = os.path.join(WORK, job.get("run", ""))
     process = _PROCESSES.get(directory)
@@ -150,6 +153,7 @@ def run_state(run):
     if job is not None and job.get("run") == run:
         return dict(out, state="running", phase=job.get("phase"), pid=job["pid"],
                     started_at=job.get("started_at"))
+    sync = _read_json(os.path.join(directory, website_sync.RESULT))
     result = _read_json(os.path.join(directory, import_website.RESULT_FILE))
     diff = _read_json(os.path.join(directory, import_website.DIFF_FILE))
     automatic_error = _read_json(os.path.join(directory, import_website.AUTOMATION_ERROR_FILE))
@@ -160,12 +164,16 @@ def run_state(run):
         return dict(out, state="failed", phase="apply", error=result.get("error"),
                     counts=_counts(diff) if isinstance(diff, dict) else None)
     if isinstance(diff, dict):
+        if isinstance(sync, dict) and not sync.get("ok"):
+            return dict(out, state="failed", phase="sync", error=sync.get("error") or
+                        "synchronization stopped before completion; read run.log", counts=_counts(diff),
+                        synchronization=sync)
         if isinstance(automatic_error, dict):
             return dict(out, state="failed", phase="automate", error=automatic_error.get("error"),
                         counts=_counts(diff))
-        return dict(out, state="prepared", phase="prepare", counts=_counts(diff),
+        return dict(out, state="prepared", phase="prepare", counts=_counts(diff), synchronization=sync,
                     created_at=diff.get("created_at"))
-    return dict(out, state="failed", phase="prepare",
+    return dict(out, state="failed", phase="prepare", synchronization=sync,
                 error="\n".join(errors) or "the compare ended with no diff; read %s"
                 % os.path.join(directory, LOG_FILE))
 
@@ -186,30 +194,35 @@ def _start(server, run, phase, extra=()):
         if job is not None:
             return _error(409, "a website import runs: run %s, %s, PID %s"
                           % (job.get("run"), job.get("phase"), job.get("pid")))
-        os.makedirs(directory, exist_ok=True)
         mode = {"prepare": "--prepare", "apply": "--apply", "automate": "--automate"}[phase]
         marker = os.path.join(directory, import_website.AUTOMATION_ERROR_FILE)
         previous_error = _read_json(marker) if phase == "automate" else None
-        if phase == "automate":
-            try:
-                os.unlink(marker)
-            except FileNotFoundError:
-                pass
         try:
-            with open(os.path.join(directory, LOG_FILE), "ab") as log:
-                process = subprocess.Popen(
-                    [sys.executable, SCRIPT, "--db", os.path.abspath(server.db_path), mode,
-                     directory] + list(extra),
-                    stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT,
-                    start_new_session=True)
+            with website_sync.OperationLock(WORK) as lock:
+                os.makedirs(directory, exist_ok=True)
+                if phase == "automate":
+                    try:
+                        os.unlink(marker)
+                    except FileNotFoundError:
+                        pass
+                with open(os.path.join(directory, LOG_FILE), "ab") as log:
+                    config_args = (["--config", os.path.abspath(server.config_path)]
+                                   if getattr(server, "config_path", None) else [])
+                    process = subprocess.Popen(
+                        [sys.executable, SCRIPT, "--db", os.path.abspath(server.db_path), mode,
+                         directory] + list(extra) + config_args,
+                        stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT,
+                        start_new_session=True, pass_fds=(lock.fileno(),))
+                    _PROCESSES[directory] = process
+                    import_website.write_json(os.path.join(WORK, JOB_FILE), {
+                        "run": run, "phase": phase, "pid": process.pid, "lock": "flock",
+                        "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")})
+        except website_sync.Busy as exc:
+            return _error(409, str(exc))
         except OSError:
             if previous_error is not None:
                 import_website.write_json(marker, previous_error)
             raise
-        _PROCESSES[directory] = process
-        import_website.write_json(os.path.join(WORK, JOB_FILE), {
-            "run": run, "phase": phase, "pid": process.pid,
-            "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")})
     return _json(202, {"run": run, "phase": phase, "state": "running", "pid": process.pid})
 
 

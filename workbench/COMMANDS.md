@@ -1437,3 +1437,32 @@ The run directory MUST contain a current prepared report for this database.
 ```sh
 python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3 --automate work/website-import/SELECTED_RUN
 ```
+
+
+## Safe website synchronization and matcher data
+
+Set `website_sync.on_startup: true` in `config.yaml` to start a background synchronization
+when Workbench starts. The default is false. Configure `matcher_embeddings` and
+`matcher_output` in that mapping. Read `docs/testing/website-sync.md`.
+
+This read-only command validates the configuration and prints the planned stages:
+```bash
+python3 scripts/sync_website.py --dry-run
+```
+
+The following command calls vino-svoe.ru, SAM3, VLM, and the selected embedding services.
+It writes safe catalogue updates and builds the selected indexes and clusters.
+It publishes a checked local matcher catalogue. It keeps manual choices for the UI.
+The selected services MUST be available. The command uses `embedding_python`.
+```bash
+python3 scripts/sync_website.py
+```
+
+Use another configuration with `--config /absolute/path/config.yaml`.
+Progress and decisions appear at `/dataset/website-import`. The run directory holds
+`run.log` and `sync-result.json`. A running remote matcher needs a separate deployment.
+
+The tests use temporary data and a local fake server. They call no external service:
+```bash
+python3 -m unittest discover -s tests -p 'test_website_sync.py'
+```

@@ -207,6 +207,7 @@ import wine_vintages  # noqa: E402
 import testset_routes  # noqa: E402
 import vlm_config  # noqa: E402
 import website_import_routes  # noqa: E402
+import website_sync  # noqa: E402
 import wine_tags  # noqa: E402
 import wine_draft  # noqa: E402
 
@@ -294,8 +295,9 @@ def read_config(path=CONFIG_PATH):
     if not database:
         raise ConfigError("%s holds no key `database_file`" % path)
     try:
+        website_sync.check_config(config)
         qr_barcode.check_config(config.get(qr_barcode.CONFIG_KEY))
-    except qr_barcode.ConfigError as exc:
+    except (qr_barcode.ConfigError, website_sync.SyncError) as exc:
         raise ConfigError(str(exc)) from exc
     rootdir = config.get("rootdir") or os.path.dirname(os.path.dirname(ROOT))
     return config, os.path.abspath(os.path.join(rootdir, database))
@@ -2413,6 +2415,13 @@ def main(argv=None):
     watcher = start_watcher(args.config)
     if watcher is not None:
         print("image description watcher: pid %d, log %s" % (watcher.pid, WATCHER_LOG))
+    try:
+        sync = website_sync.start_on_launch(config, args.config)
+        if sync is not None:
+            print("website synchronization: pid %d, log %s" %
+                  (sync.pid, website_sync.WORK / "startup.log"))
+    except (OSError, website_sync.SyncError) as exc:
+        print("website synchronization did not start: %s" % exc, file=sys.stderr)
     signal.signal(signal.SIGTERM, _stop_on_sigterm)
     try:
         server.serve_forever()

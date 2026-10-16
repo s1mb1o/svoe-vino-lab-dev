@@ -24,6 +24,16 @@ database_file: svoe-vino-lab/workbench/data/catalog/catalog.sqlite3
 # docs/plans/10_embeddings-page.md.
 embedding_python: ~/.venvs/svoe-vino-lab/bin/python
 
+# Run safe website synchronization in the background when Workbench starts.
+# The shell entry point is `python3 scripts/sync_website.py`.
+# Publish complete matcher data through this local symlink. Keep prior releases.
+website_sync:
+  on_startup: false
+  matcher_embeddings:
+    - gx10-siglip2-so400m-patch16-naflex-p512
+    - gx10-siglip2-so400m-patch16-naflex-p512-rot5
+  matcher_output: svoe-vino-lab/workbench/work/matcher-catalog
+
 # true: before each run of a pipeline of the backend `embedding`, the run updates the index
 # of the embedding that the key `embedding` of the pipeline names. The build does only the
 # items that are stale, missing, or failed, as the button `Build` of `/embedding` does, so

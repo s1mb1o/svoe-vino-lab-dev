@@ -1111,6 +1111,7 @@ def main(argv=None):
                     "on a changed text or a changed main image. --prepare and --apply are "
                     "the two steps of the merge dialog of the lab server.")
     parser.add_argument("--db", required=True, help="path of the lab database")
+    parser.add_argument("--config", help="configuration of the SAM3 and VLM image checks")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--prepare", metavar="DIR",
                       help="compare, and write the diff and the images to DIR")
@@ -1121,13 +1122,20 @@ def main(argv=None):
     parser.add_argument("--review-images", action="store_true", help="review images without automatic writes")
     args = parser.parse_args(argv)
 
+    segmenter = reviewer = None
+    if args.config:
+        import website_image_review
+        segmenter = derive.Sam3Client(derive.configured_endpoint(derive.SAM3_ENDPOINT, args.config))
+        reviewer = website_image_review.ImageReviewer(args.config, segmenter=segmenter)
+
     def log(message):
         print(message, flush=True)
 
     errors = (WebsiteError, labdb.SchemaError, sqlite3.Error, OSError, comments.CommentError)
     if args.prepare:
         try:
-            diff = prepare(args.db, args.prepare, log=log, automatic=args.automatic, review_images=args.review_images)
+            diff = prepare(args.db, args.prepare, log=log, automatic=args.automatic,
+                           review_images=args.review_images, reviewer=reviewer, segmenter=segmenter)
         except Exception as exc:
             print("error: %s" % exc, file=sys.stderr)
             if (args.automatic or args.review_images) and os.path.isfile(os.path.join(args.prepare, DIFF_FILE)):
@@ -1139,7 +1147,7 @@ def main(argv=None):
         return 0
     if args.automate:
         try:
-            automate_directory(args.db, args.automate, log=log)
+            automate_directory(args.db, args.automate, log=log, reviewer=reviewer, segmenter=segmenter)
         except Exception as exc:
             print("error: %s" % exc, file=sys.stderr)
             write_json(os.path.join(args.automate, AUTOMATION_ERROR_FILE), {"error": str(exc)})
@@ -1147,7 +1155,7 @@ def main(argv=None):
         return 0
     if args.apply:
         try:
-            report = apply_directory(args.db, args.apply, log=log)
+            report = apply_directory(args.db, args.apply, log=log, segmenter=segmenter)
         except errors as exc:
             print("error: %s" % exc, file=sys.stderr)
             write_json(os.path.join(args.apply, RESULT_FILE), {"ok": False, "error": str(exc)})
@@ -1156,7 +1164,7 @@ def main(argv=None):
         print_report(report, args.db)
         return 0
     try:
-        report = import_website(args.db, log=log)
+        report = import_website(args.db, log=log, segmenter=segmenter)
     except errors as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
