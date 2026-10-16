@@ -108,6 +108,9 @@ class RateLimiter:
             raise ValueError("rate must be positive")
         self.interval = 1.0 / rate
         self.lock = asyncio.Lock()
+        # Requests that hold or wait for the lock. A limiter in use is never evicted: a released
+        # lock looks free before its next waiter resumes.
+        self.users = 0
         self._clock = clock
         self._sleep = sleep
         self._next_at = float("-inf")
@@ -211,7 +214,7 @@ class MaxApi:
             self._chat_limiters[chat_id] = limiter
             while len(self._chat_limiters) > MAX_CHAT_LIMITERS:
                 oldest = next(iter(self._chat_limiters.values()))
-                if oldest.lock.locked():
+                if oldest.users:
                     # A limiter in use stays. The map can exceed the bound for a short time.
                     break
                 self._chat_limiters.popitem(last=False)
@@ -231,13 +234,17 @@ class MaxApi:
             await self._global_limiter.acquire()
             return
         chat = self._chat_limiter(chat_id)
-        async with chat.lock:
-            await chat.wait_ready()
-            async with self._global_limiter.lock:
-                await self._global_limiter.wait_ready()
-                now = self._clock()
-                chat.mark(now)
-                self._global_limiter.mark(now)
+        chat.users += 1
+        try:
+            async with chat.lock:
+                await chat.wait_ready()
+                async with self._global_limiter.lock:
+                    await self._global_limiter.wait_ready()
+                    now = self._clock()
+                    chat.mark(now)
+                    self._global_limiter.mark(now)
+        finally:
+            chat.users -= 1
 
     async def _request(
         self,

@@ -7,6 +7,7 @@ import ssl
 import httpx
 import pytest
 
+from chto_za_vino_max_bot import max_api
 from chto_za_vino_max_bot.max_api import (
     DEFAULT_CA_FILE,
     DEFAULT_CA_SHA256,
@@ -621,3 +622,36 @@ async def test_a_waiting_request_is_not_overtaken_by_a_new_request():
         driver.cancel()
 
     assert order == ["1", "2", "3"]
+
+
+async def test_a_chat_limiter_with_waiting_requests_is_not_evicted(monkeypatch):
+    monkeypatch.setattr(max_api, "MAX_CHAT_LIMITERS", 1)
+    clock = VirtualTime()
+    api = MaxApi(
+        TOKEN,
+        httpx.AsyncClient(transport=httpx.MockTransport(lambda request: message_answer())),
+        base_url=BASE,
+        global_rate=1000.0,
+        chat_rate=2.0,
+        sleep=clock.sleep,
+        clock=lambda: clock.now,
+    )
+    await api.send_message(1, text="first")
+    holder = asyncio.create_task(api.send_message(1, text="holds the chat lock"))
+    queued = asyncio.create_task(api.send_message(1, text="waits for the chat lock"))
+    for _ in range(20):
+        await asyncio.sleep(0)
+    in_use = api._chat_limiters[1]
+    assert in_use.users == 2
+
+    api._chat_limiter(2)
+
+    # Chat 1 has requests, so a new chat does not evict it, even beyond the bound.
+    assert api._chat_limiters[1] is in_use
+    while not (holder.done() and queued.done()):
+        await asyncio.sleep(0)
+        if clock.sleepers:
+            clock.advance(min(wake for wake, _ in clock.sleepers))
+    assert in_use.users == 0
+    api._chat_limiter(3)
+    assert 1 not in api._chat_limiters
