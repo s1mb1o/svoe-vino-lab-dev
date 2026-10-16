@@ -1,0 +1,1979 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "chateau-pinot",
+    "name": "Шато Пино",
+    "aliases": [
+      "Chateau Pinot"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Шато Пино: официальные коллекции",
+      "url": "https://chateau-pinot.ru/winery"
+    },
+    {
+      "id": "official-poezdnik",
+      "label": "Шато Пино: A. G. Поездник",
+      "url": "https://chateau-pinot.ru/collections/poezdnik"
+    },
+    {
+      "id": "official-grand-reserve",
+      "label": "Шато Пино: Grand Reserve",
+      "url": "https://chateau-pinot.ru/collections/grand-reserve"
+    },
+    {
+      "id": "official-exclusive",
+      "label": "Шато Пино: Exclusive",
+      "url": "https://chateau-pinot.ru/collections/ehksklyuziv"
+    },
+    {
+      "id": "official-gravity",
+      "label": "Шато Пино: Гравитация",
+      "url": "https://chateau-pinot.ru/collections/gravitaciya"
+    },
+    {
+      "id": "official-koldun",
+      "label": "Шато Пино: Колдун",
+      "url": "https://chateau-pinot.ru/collections/kolduny"
+    },
+    {
+      "id": "official-shantazh",
+      "label": "Шато Пино: Шантаж",
+      "url": "https://chateau-pinot.ru/collections/shantazh"
+    },
+    {
+      "id": "official-classic",
+      "label": "Шато Пино: Классика и сортовые вина",
+      "url": "https://chateau-pinot.ru/collections/klassika"
+    },
+    {
+      "id": "official-wild",
+      "label": "Шато Пино: Дикари / Дичь",
+      "url": "https://chateau-pinot.ru/collections/dikari"
+    },
+    {
+      "id": "official-sorcerer-balls",
+      "label": "Шато Пино: Шары Колдуна",
+      "url": "https://chateau-pinot.ru/collections/shary-kolduna"
+    },
+    {
+      "id": "official-ice-wine",
+      "label": "Шато Пино: ICE Wine",
+      "url": "https://chateau-pinot.ru/collections/ice-wine"
+    },
+    {
+      "id": "official-petnat",
+      "label": "Шато Пино: Петнат",
+      "url": "https://chateau-pinot.ru/collections/petnat"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "Шато Пино: Классическое игристое",
+      "url": "https://chateau-pinot.ru/collections/igristoe"
+    },
+    {
+      "id": "official-official-grand-reserve-rose",
+      "label": "Официальная карточка: Grand Reserve · игристое Rosé",
+      "url": "https://chateau-pinot.ru/collections/grand-reserve"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-4",
+      "label": "Флагманские коллекции",
+      "rank": 4,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Старший ориентир · ₽₽₽₽",
+      "source_ids": [
+        "official-poezdnik"
+      ]
+    },
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-exclusive",
+        "official-gravity",
+        "official-koldun",
+        "official-shantazh"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-classic"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-wild",
+        "official-sorcerer-balls",
+        "official-ice-wine",
+        "official-petnat",
+        "official-sparkling"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "poezdnik",
+      "name": "A. G. Поездник",
+      "tier_id": "tier-4",
+      "method": "Ферментация и выдержка в дубовых барриках",
+      "description": "Ультрапремиальная лимитированная серия. Производитель отбирает лучшие бочки для двух купажей, названных в честь владельца.",
+      "source_ids": [
+        "official-poezdnik",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "grand-reserve",
+      "name": "Grand Reserve",
+      "tier_id": "tier-3",
+      "method": "Ручной сбор; двойная сортировка; отбор бочек",
+      "description": "Старшая коллекция с отбором винограда и бочек для ассамбляжа. Производитель подчёркивает потенциал к выдержке.",
+      "source_ids": [
+        "official-grand-reserve",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "exclusive",
+      "name": "Exclusive",
+      "tier_id": "tier-2",
+      "method": "Авторские купажи",
+      "description": "Белые, красные и розовые купажи. Внутри коллекции удобно сравнивать сочетания сортов.",
+      "source_ids": [
+        "official-exclusive",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "gravity",
+      "name": "Гравитация",
+      "tier_id": "tier-2",
+      "method": "Особый купаж",
+      "description": "Каберне Совиньон и Мерло в самостоятельной коллекции. Положение рядом с Exclusive задано редакционно.",
+      "source_ids": [
+        "official-gravity",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "koldun",
+      "name": "Колдун",
+      "tier_id": "tier-2",
+      "method": "Выдержанные вина",
+      "description": "Белые и красные авторские вина. Резерв и отдельные выпуски каталога сохранены отдельными позициями.",
+      "source_ids": [
+        "official-koldun",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "shantazh",
+      "name": "Шантаж",
+      "tier_id": "tier-2",
+      "method": "Выдержанные вина",
+      "description": "Отдельная коллекция для сети «Красное&Белое». В снимке представлен белый купаж Совиньон Блан — Шардоне.",
+      "source_ids": [
+        "official-shantazh",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Классика и сортовые вина",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые и купажные вина",
+      "description": "Редакционная группа основных тихих вин из снимка. Названные специальные серии вынесены отдельно. Точную технологию нужно проверять по выпуску.",
+      "source_ids": [
+        "official-classic",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wild",
+      "name": "Дикари / Дичь",
+      "tier_id": "tier-0",
+      "method": "Авторская серия",
+      "description": "Самостоятельные выпуски с авторским оформлением и стилистикой. Ценовое соотношение с другими коллекциями не подтверждено.",
+      "source_ids": [
+        "official-wild",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sorcerer-balls",
+      "name": "Шары Колдуна",
+      "tier_id": "tier-0",
+      "method": "Экспериментальные тихие вина",
+      "description": "Блаш, Глю Глю, Рамато и другие авторские выпуски. Различия в цвете и составе сохранены по карточкам каталога.",
+      "source_ids": [
+        "official-sorcerer-balls",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "ice-wine",
+      "name": "ICE Wine",
+      "tier_id": "tier-0",
+      "method": "Специальное сладкое вино",
+      "description": "Рислинг выделен по стилю. Это самостоятельная область карты, без сравнения цены с сухими коллекциями.",
+      "source_ids": [
+        "official-ice-wine",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "petnat",
+      "name": "Петнат",
+      "tier_id": "tier-0",
+      "method": "Метод Ancestrale",
+      "description": "Игристые авторские вина разных сортов и цветов. Отдельные карточки Пино Гри сохранены отдельно.",
+      "source_ids": [
+        "official-petnat",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Классическое игристое",
+      "tier_id": "tier-0",
+      "method": "Классический метод",
+      "description": "Белое и розовые игристые вина. Их позиционирование показано отдельно от тихих коллекций.",
+      "source_ids": [
+        "official-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-aligote-shato-pino",
+      "group_id": "classic",
+      "name": "Aligote. Шато Пино",
+      "variant": "",
+      "wine_slug": "aligote-shato-pino",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-aligote-shato-pino.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 223,
+          "height": 721,
+          "source_width": 235,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат: Комплексный и насыщенный, тропические фрукты, нотки зеленого яблока, цитрусовые фрукты, акация и жимолость.\n\nВкус: минеральное вино с отличной фруктовостью и освежающей кислотностью\n\nТехнология: Выдержка на тонком осадке в стальных емкостях в течение 6 месяцев",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-koldun-beloe-suhoe",
+      "group_id": "koldun",
+      "name": "Колдун белое сухое",
+      "variant": "",
+      "wine_slug": "koldun-beloe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-koldun-beloe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 202,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Пино Гриджио",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "Яркий и свежий аромат вина изобилует нотами зрелых тропических фруктов. Освежающий, округлый, легкий, питкий вкус вина раскрывается тонами груши и цитрусовых фруктов. Послевкусие продолжительное, приятное, с тонкими нюансами ванили и меда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-koldun"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-agpoezdnik-beloe-shardone-suhoe-13",
+      "group_id": "poezdnik",
+      "name": "A.G.Poezdnik. Белое",
+      "variant": "",
+      "wine_slug": "shato-pino-agpoezdnik-beloe-shardone-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-agpoezdnik-beloe-shardone-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 247,
+          "height": 728,
+          "source_width": 251,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Минеральный, свежий с преобладанием тропических фруктов и груши. Яркий с медово-цветочными нотами, переходящие в ноты засахаренной цедры.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-poezdnik"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-agpoezdnik-krasnoe-kaberne-fran-suhoe-14",
+      "group_id": "poezdnik",
+      "name": "A.G.Poezdnik. Красное",
+      "variant": "",
+      "wine_slug": "shato-pino-agpoezdnik-krasnoe-kaberne-fran-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-agpoezdnik-krasnoe-kaberne-fran-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 251,
+          "height": 728,
+          "source_width": 255,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Сбалансированный, с вишневыми нотами и оттенками дуба. Продолжительное послевкусие. Спелые фрукты и ягоды: слива, красная смородина, кизил",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-poezdnik"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
+      "group_id": "classic",
+      "name": "Алиготе - Ркацители белое сухое",
+      "variant": "",
+      "wine_slug": "shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-aligote-rkatsiteli-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 196,
+          "height": 726,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Полный с легкими танинами и медово фруктовыми оттенками, напоминающий ягоды зрелого кизила. Ноты цитрусовых фруктов и акации.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
+      "group_id": "classic",
+      "name": "Алиготе - Ркацители сухое белое",
+      "variant": "",
+      "wine_slug": "shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-aligote-rkatsiteli-suhoe-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 201,
+          "height": 726,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Легкие танины, с медово-фруктовыми оттенками, ноты зрелого кизила. Ноты цитрусовых с нотами акации.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-blan-de-blan-shardone-beloe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "name": "Блан Де Блан",
+      "variant": "",
+      "wine_slug": "shato-pino-blan-de-blan-shardone-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-blan-de-blan-shardone-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 241,
+          "height": 728,
+          "source_width": 246,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Сочное цитрусовое послевкусие. Яркий, сочный с фруктово-дымными нотами и ароматом выпечки с грушевым конфитюром.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-dichkaberne-fran-krasnoe-suhoe-14",
+      "group_id": "wild",
+      "name": "Дичь.Каберне Фран",
+      "variant": "",
+      "wine_slug": "shato-pino-dichkaberne-fran-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-dichkaberne-fran-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 199,
+          "height": 726,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Плотный, цветочно-ягодный с пряными оттенками. Аромат фиалки, ирисов, ежевики, черешни, черного перца и горького шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-wild"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
+      "group_id": "exclusive",
+      "name": "Exclusive Каберне Совиньон - Шираз",
+      "variant": "",
+      "wine_slug": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 202,
+          "height": 725,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, бархатистый, с легкими шоколадными нотами. Ноты черной смородины, ежевики.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-exclusive-pino-nuar-merlo-krasnoe-suhoe-135",
+      "group_id": "exclusive",
+      "name": "Exclusive Пино Нуар - Мерло",
+      "variant": "",
+      "wine_slug": "shato-pino-exclusive-pino-nuar-merlo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-exclusive-pino-nuar-merlo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 203,
+          "height": 728,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Гармоничный, мягкий, полный с фруктовым послевкусием. Сложный с нотами лакрицы, вишни, чернослива и легким оттенком душистого перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-exclusive-shardone-pino-gri-beloe-suhoe-125",
+      "group_id": "exclusive",
+      "name": "Exclusive Шардоне - Пино Гри",
+      "variant": "",
+      "wine_slug": "shato-pino-exclusive-shardone-pino-gri-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-exclusive-shardone-pino-gri-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 724,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий гармоничный. Ноты зеленого яблока, персика и цветов акации.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-exclusive-vione-risling-beloe-suhoe-115",
+      "group_id": "exclusive",
+      "name": "Exclusive Вионье - Рислинг",
+      "variant": "",
+      "wine_slug": "shato-pino-exclusive-vione-risling-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-exclusive-vione-risling-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 197,
+          "height": 727,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Свежий с цитрусовым послевкусием. Яркий ароматный, цветочно-фруктовый с нотами глицинии, лайма, грейфрута и тропических фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-grand-reserve-cabernet-franc-kaberne-fran-krasnoe-suhoe-135",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve Cabernet Franc",
+      "variant": "",
+      "wine_slug": "shato-pino-grand-reserve-cabernet-franc-kaberne-fran-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-grand-reserve-cabernet-franc-kaberne-fran-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Плотный вкус и насыщенное послевкусие черных пряных ягод. Мощный, ноты фиалки, ирисов, ежевики, черешни, специй и горького шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve Cabernet Sauvignon",
+      "variant": "",
+      "wine_slug": "shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Согревающе-обволакивающий терпкий с долгим, ягодным послевкусием. Черная смородина, чернослива, вишня, кизил, с нотами гвоздики, ванили, малинового джема.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-grand-reserve-chardonnay-shardone-beloe-suhoe-125",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve Chardonnay",
+      "variant": "",
+      "wine_slug": "shato-pino-grand-reserve-chardonnay-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-grand-reserve-chardonnay-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Вкус легкий, изящный, тонкой, свежий. Сливочно-минеральный с цитрусово-ванильным профилем. Цитрусовые и тропические фрукты: лайм, ананас, манго, медово-ванильное мороженое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-grand-reserve-pinot-noir-pino-nuar-krasnoe-suhoe-135",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve Pinot Noir",
+      "variant": "",
+      "wine_slug": "shato-pino-grand-reserve-pinot-noir-pino-nuar-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-grand-reserve-pinot-noir-pino-nuar-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 203,
+          "height": 728,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Бархатистый пряный ягодный. Ягоды, припудренные ванилью, свежими ягодами красной смородины, брусники и вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-gravitatsiya-kaberne-sovinon-merlo-krasnoe-suhoe-135",
+      "group_id": "gravity",
+      "name": "Гравитация. Каберне Совиньон - Мерло",
+      "variant": "",
+      "wine_slug": "shato-pino-gravitatsiya-kaberne-sovinon-merlo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-gravitatsiya-kaberne-sovinon-merlo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 194,
+          "height": 726,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Полный, округлый, бархатистый с легкой гармоничной кислотностью. Яркий насыщенный: северные ягоды, смородина, вишня, чернослив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gravity"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-ice-wine-risling-risling-reynskiy-beloe-sladkoe-11",
+      "group_id": "ice-wine",
+      "name": "ICE Wine Рислинг",
+      "variant": "",
+      "wine_slug": "shato-pino-ice-wine-risling-risling-reynskiy-beloe-sladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-ice-wine-risling-risling-reynskiy-beloe-sladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 125,
+          "height": 728,
+          "source_width": 129,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Фруктово-цветочный. Фруктово-медовые ноты, с тонами персика, груши, белых цветов в аромате и вкусе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-ice-wine"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Каберне Фран - Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 203,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Гармоничный с шелковистыми фруктовыми танинами. Красная смородина, спелая вишня, садовая ежевика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "shato-pino-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 194,
+          "height": 728,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Гармоничный с шелковистыми фруктовыми танинами, нотами темного шоколада, кофе. Послевкусие продолжительное ванильное. Красная и черная смородина, спелая вишя, садовая ежевика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Каберне Совиньон - Мерло",
+      "variant": "",
+      "wine_slug": "shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 203,
+          "height": 726,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Активные танины, с пряными и фруктовыми нотами. Деликатные тона черешни и садовой вишни, красной сливы, легкие оттенки сухой травы и пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-klassika-sauvignon-blanc",
+      "group_id": "classic",
+      "name": "Шато Пино Классика Sauvignon Blanc",
+      "variant": "",
+      "wine_slug": "shato-pino-klassika-sauvignon-blanc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-klassika-sauvignon-blanc.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 165,
+          "height": 718,
+          "source_width": 179,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Бокал наполнен зелёными яблоками, корками грейпфрута, свежестью крыжовника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-koldun-belyy-shardone-beloe-suhoe-12",
+      "group_id": "koldun",
+      "name": "Колдун Белый",
+      "variant": "",
+      "wine_slug": "shato-pino-koldun-belyy-shardone-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-koldun-belyy-shardone-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 210,
+          "height": 728,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Фруктовое, округлое. Тонкие ванильно-медовыми ноты в послевкусии. Яркий аромат тропических фруктов, с грушево-цитрусовым продолжением.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-koldun"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-koldun-krasnyy-merlo-krasnoe-suhoe-14",
+      "group_id": "koldun",
+      "name": "Колдун Красный",
+      "variant": "",
+      "wine_slug": "shato-pino-koldun-krasnyy-merlo-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-koldun-krasnyy-merlo-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 195,
+          "height": 728,
+          "source_width": 200,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Насыщенный ягодный. Выраженный ягодный, с нотами лакрицы и черного перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-koldun"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-koldun-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "koldun",
+      "name": "Колдун Резерв",
+      "variant": "",
+      "wine_slug": "shato-pino-koldun-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-koldun-rezerv-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сбалансированный с тонами ежевики и сливы, с фруктовым послевкусием. Яркий с нотами вишни, ежевики, отвара шиповника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-koldun"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-marselan-merlo-krasnoe-suhoe-13",
+      "group_id": "classic",
+      "name": "Марселан - Мерло",
+      "variant": "",
+      "wine_slug": "shato-pino-marselan-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-marselan-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Бархатистые танины переходящие в сочные пряные фрукты. Ноты ягод черной смородины, вишни, черемухи и сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-petnat-oranzh-vione-beloe-ekstra-bryut-11",
+      "group_id": "petnat",
+      "name": "Петнат Оранж",
+      "variant": "",
+      "wine_slug": "shato-pino-petnat-oranzh-vione-beloe-ekstra-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-petnat-oranzh-vione-beloe-ekstra-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 248,
+          "height": 728,
+          "source_width": 252,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Хрустящий, сбалансированный, с продолжительным фруктово-ягодным послевкусием. Сложный, с нотами абрикоса, персика и полевых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-petnat"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-petnat-pino-gri-beloe-ekstra-bryut-11",
+      "group_id": "petnat",
+      "name": "Петнат Пино Гри",
+      "variant": "",
+      "wine_slug": "shato-pino-petnat-pino-gri-beloe-ekstra-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-petnat-pino-gri-beloe-ekstra-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 251,
+          "height": 728,
+          "source_width": 255,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Фруктовый, сбалансированный, с фруктово-цветочными нотами, легкий медовый оттенок. Свежий, цветочно-фруктовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-petnat"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-petnat-pino-gri-rozovoe-ekstra-bryut-11",
+      "group_id": "petnat",
+      "name": "Петнат Пино Гри",
+      "variant": "",
+      "wine_slug": "shato-pino-petnat-pino-gri-rozovoe-ekstra-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-petnat-pino-gri-rozovoe-ekstra-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 248,
+          "height": 728,
+          "source_width": 252,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Свежий, гармоничный, ягодное послевкусие. Нежные ягодные ароматы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-petnat"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-petnat-pino-nuar-rozovoe-ekstra-bryut-11",
+      "group_id": "petnat",
+      "name": "Петнат Пино Нуар",
+      "variant": "",
+      "wine_slug": "shato-pino-petnat-pino-nuar-rozovoe-ekstra-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-petnat-pino-nuar-rozovoe-ekstra-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 250,
+          "height": 728,
+          "source_width": 254,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Хрустящий, элегантный, фруктовые продолжительные оттенки в послевкусии. Свежий аромат нежных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-petnat"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-petnat-sovinon-blan-beloe-ekstra-bryut-11",
+      "group_id": "petnat",
+      "name": "Петнат Совиньон Блан",
+      "variant": "",
+      "wine_slug": "shato-pino-petnat-sovinon-blan-beloe-ekstra-bryut-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-petnat-sovinon-blan-beloe-ekstra-bryut-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 245,
+          "height": 727,
+          "source_width": 251,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Легкий, минеральный и свежий. Тонкий аромат лайма, маракуйи и персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-petnat"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-gri-roze-rozovoe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "name": "Пино Гри розе",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-gri-roze-rozovoe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-gri-roze-rozovoe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 245,
+          "height": 728,
+          "source_width": 249,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Долгий, многогранный финиш с сочным фруктовым грушево-айвовым послевкусием. Лесные ягоды, айва, цветы шиповника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-gridzhio-beloe-suhoe-12",
+      "group_id": "classic",
+      "name": "Пино Гриджио",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-gridzhio-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-gridzhio-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 178,
+          "height": 728,
+          "source_width": 182,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гриджио"
+      ],
+      "description": "Вкус: Послевкусие продолжительное, фруктовое. Пряно-фруктовые ноты зеленых яблок, груши, лайма и персиков.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-nuar-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-nuar-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-nuar-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 207,
+          "height": 726,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Гармоничный с шелковистыми фруктовыми танинами. Свежие красные фруктово-ягодные ноты садовой черемухи, черной сливы и вишни. Вкус гармоничный с шелковистыми фруктовыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
+      "group_id": "exclusive",
+      "name": "Пино Нуар - Пино Гри",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 199,
+          "height": 726,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Легкие фруктовые оттенки с приятным свежим ягодным послевкусием. Тонкий фруктово-ягодный аромат клубники, малины, персиков и айвы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-nuar-roze-rozovoe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Пино Нуар розе",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-nuar-roze-rozovoe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-nuar-roze-rozovoe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 234,
+          "height": 726,
+          "source_width": 240,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Насыщенный, гармоничный с долгим многогранным сочным цитрусовым послевкусием. Ягодный: клубника, малина.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
+      "group_id": "exclusive",
+      "name": "Пино Нуар - Саперави",
+      "variant": "",
+      "wine_slug": "shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 203,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Гармоничный с шелковистыми фруктовыми танинами. Цветочно-ягодный гармонию, с нотами фиалки, красной смородины, спелой вишни, садовой ежевики, переходящие в ароматы специй и табака.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shantazh-sovinon-blan-shardone-beloe-suhoe-115",
+      "group_id": "shantazh",
+      "name": "Шантаж. Совиньон Блан - Шардоне",
+      "variant": "",
+      "wine_slug": "shato-pino-shantazh-sovinon-blan-shardone-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shantazh-sovinon-blan-shardone-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 206,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Легкое, с фруктовым послевкусием. Лист черной смородины, крыжовник и яркие ноты тропических фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-shantazh"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shardone-beloe-suhoe-125",
+      "group_id": "classic",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "shato-pino-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Фруктовый, свежий, сбалансированный с преобладанием тропических фруктов и дюшеса. Яркий сложный с нотами цитрусов и тропических фруктов. Выдержка в дубе придает вину округлость.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shardone-risling-beloe-suhoe-12",
+      "group_id": "exclusive",
+      "name": "Шардоне - Рислинг",
+      "variant": "",
+      "wine_slug": "shato-pino-shardone-risling-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shardone-risling-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий гармоничный с легким цитрусовым послевкусием. Яркий фруктовый профиль с преобладанием груши и экзотических фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-kolduna-blash-pino-gri-rozovoe-suhoe-12",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна. Блаш",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-kolduna-blash-pino-gri-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-kolduna-blash-pino-gri-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Гармоничный, освежающий, сочным вкусом с яркими акцентами вишни и клубники, хрустящей кислотностью и стойким послевкусием. Выраженные тона красных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна. Глю Глю",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 178,
+          "height": 728,
+          "source_width": 182,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Легкий, свежий, морсовый. Яркий ягодный, с нотами вишни и оттенком цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-kolduna-kirpichi-prileteli-pino-nuar-krasnoe-suhoe-135",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна. Кирпичи Прилетели",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-kolduna-kirpichi-prileteli-pino-nuar-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-kolduna-kirpichi-prileteli-pino-nuar-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Элегантный вкус наполнен нотками вишни, смородины, кизила и пряностей. Изысканный с легким оттенком дыма, подлеска и сладких ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-kolduna-ramato-pino-gri-rozovoe-suhoe-115",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна. Рамато",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-kolduna-ramato-pino-gri-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-kolduna-ramato-pino-gri-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Обвалакивающий, бархатистый, переходящий в долгое послевкусие. Гастрономичное вино, с плотной явной структурой. Сложный с нотками табачного листа, чая, сухофруктов, кожи,хьюмидора.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-kolduna-topolek-rkatsiteli-beloe-suhoe-125",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна. Тополек",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-kolduna-topolek-rkatsiteli-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-kolduna-topolek-rkatsiteli-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 236,
+          "height": 727,
+          "source_width": 240,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Полный с легкими танинами и медово фруктовыми оттенками, напоминающий ягоды зрелого кизила. Свежиие ягоды кизила, белая слива, чайный лист и подвяленые персики и абрикосы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shary-koldunatroynichok-risling-beloe-suhoe-115",
+      "group_id": "sorcerer-balls",
+      "name": "Шары Колдуна.Тройничок",
+      "variant": "",
+      "wine_slug": "shato-pino-shary-koldunatroynichok-risling-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shary-koldunatroynichok-risling-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 212,
+          "height": 728,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Вкус сбалансированный, с приятной кислотностью, с нотами яблок, желтых фруктов, легкой косточковой горчинкой и свежим цитрусовым послевкусием. Насыщенный, со сладкими нотами тропических фруктов, белых цветов, банана, манго, легкими оттенками сухофруктов и освежающей минеральной нотой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sorcerer-balls"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shato-pino-koldun-merlo-krasnoe-suhoe-137",
+      "group_id": "koldun",
+      "name": "Шато Пино «Колдун»",
+      "variant": "",
+      "wine_slug": "shato-pino-shato-pino-koldun-merlo-krasnoe-suhoe-137",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shato-pino-koldun-merlo-krasnoe-suhoe-137.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло",
+        "Пти Вердо"
+      ],
+      "description": "Аромат сложный — тёмные ягоды, ежевика, нотки шоколада, специй и кедра; вкус полнотелый, плотный, с мягкими танинами и долгим пряным послевкусием. К красному мясу, стейкам, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-koldun"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shiraz-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Шираз",
+      "variant": "",
+      "wine_slug": "shato-pino-shiraz-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shiraz-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 193,
+          "height": 727,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус: Мягкий, зрелый с ягодным послевкусием и бархатистыми танинами. Насыщенный пряно-фруктовый аромат с преобладанием ежевики, табака и черного перца, горького шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-shiraz-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "name": "Шираз",
+      "variant": "",
+      "wine_slug": "shato-pino-shiraz-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-shiraz-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 193,
+          "height": 725,
+          "source_width": 199,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус: Вкус мягкий, зрелый с ягодным послевкусием и бархатистыми. Мощный, насыщенный пряно-фруктовый аромат с преобладанием ежевики, табака и черного перца, горького шоколада. танинами",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
+      "group_id": "exclusive",
+      "name": "Совиньон Блан - Семильон",
+      "variant": "",
+      "wine_slug": "shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/wine-shato-pino-sovinon-blan-semilon-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Свежий, округлый, минеральный в послевкусии. Ноты тропических фруктов: манго, маракуйя, ананас, айва.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-exclusive"
+      ]
+    },
+    {
+      "id": "official-grand-reserve-rose",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve · игристое Rosé",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-pinot/official-grand-reserve-rose.webp",
+        "source_id": "official-official-grand-reserve-rose",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 236,
+          "height": 722,
+          "source_width": 246,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое игристое",
+      "grapes": [],
+      "description": "Игристое Rosé из официальной коллекции Grand Reserve. Производитель показывает его отдельно от тихого Пино Нуар и основной игристой серии. Состав конкретного выпуска не переносится из других карточек.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-grand-reserve-rose",
+        "official-grand-reserve"
+      ]
+    }
+  ]
+}

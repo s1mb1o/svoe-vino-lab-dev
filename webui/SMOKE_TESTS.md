@@ -1,3 +1,7 @@
+# 2026-10-16: Шато Пино
+
+Open /lineup/chateau-pinot with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
 # 2026-10-16: ESSE
 
 Open /lineup/esse with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
