@@ -90,3 +90,11 @@ The orange wine card has a red category and a gold color. Its map style is «О�
 The Riesling Reserve card has a red category and a straw-gold color. Its map style is «Стиль уточняется».
 Both products show «Данные источника расходятся».
 The current official orange wine page describes a different blend. The map does not replace the saved grapes or description with that release.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 97 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
