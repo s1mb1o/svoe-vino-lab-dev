@@ -10,7 +10,8 @@ Read `../reviews/2026-10-15-product-line-map-resolution.md` for review decisions
 
 The guide MUST use one JSON file for each producer.
 The first file MUST cover the six Abrau-Durso sheets dated 2026-09-20.
-The graph MUST contain 14 groups and 52 unique products or package variants.
+The initial sheet subset MUST retain 14 groups and 52 unique products or package variants.
+The catalog extension adds 21 products in five still-wine groups. The complete graph has 73 products in 19 groups.
 The graph MUST retain products that have no `wine_slug`.
 The map MUST show these products in gray. These products MUST remain selectable.
 The map MUST show relative price positioning and premium tiers.
@@ -96,3 +97,17 @@ Each image MAY contain a measured `frame` rectangle and source dimensions.
 The renderer MUST size the visible frame consistently across products.
 The renderer MUST retain source aspect ratio and keep the complete visible outline.
 Read `../product-image-sizing.md` for the contract and measurement method.
+
+## Catalog completion, 2026-10-16
+
+Include every identified Abrau-Durso card from `official-2026-09-17`.
+Retain the original sheet products, aliases, gray packages and image bytes.
+Add Abrau-Durso still wines, Abrau Estates, Abrau blends, Az Abrau and Femme d’Abrau.
+Use the exact source descriptions, names and grape values. Keep separate catalog identities separate.
+Use official collection evidence for premium and medium positioning. Keep unsupported common price ranks neutral.
+Do not change numeric prices or infer alcohol and vintage from slug suffixes.
+The owner explicitly excluded `rozovoe-polusladkoe-2` until exact bottle and collection identification.
+The resulting map covers 56 of 57 snapshot cards. The excluded card keeps the unmatched recognition fallback.
+Validate exact initial selection and centering for every new slug on desktop and mobile.
+Validate the mobile popup, portal link, return state, all source images and the original Abrau regression suite.
+Read `../product-line-maps/abrau-durso/sources.md` for evidence and image preparation.

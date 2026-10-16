@@ -209,6 +209,30 @@ async function chooseProduct(map, groupId, productId) {
   if (mobile) await assertInfoPopup(map)
 }
 
+async function delayedFontCentering() {
+  const context = await newContext()
+  const page = await context.newPage()
+  let releaseFont
+  const fontReady = new Promise(resolve => { releaseFont = resolve })
+  try {
+    await page.route('**/reference/playfair-display.woff2', async route => { await fontReady; await route.continue() })
+    await page.goto(`${origin}/lineup/abrau-durso?wine=${alias}`, { waitUntil: 'domcontentloaded' })
+    await page.waitForFunction(() => {
+      const surface = document.querySelector('.plm-surface')
+      return surface && surface.style.height !== '1800px' && document.fonts.status === 'loading'
+    })
+    releaseFont()
+    await settle(page)
+    const map = page.locator('.product-line-map')
+    await selection(map, initialId)
+    await assertCentered(map, initialId)
+    checks.push('Initial selection stays centered after a delayed web font changes group height')
+  } finally {
+    releaseFont()
+    await context.close()
+  }
+}
+
 async function screenshotsAndResponsiveStates() {
   for (const theme of ['light', 'dark']) {
     for (const [width, height] of [[1440, 1000], [390, 844], [320, 740]]) {
@@ -317,9 +341,9 @@ async function overviewAndKeyboard() {
   const map = page.locator('.product-line-map')
   assert.equal(await map.locator('[data-product-detail]').getAttribute('data-selected-product'), '')
   assert.equal(await map.locator('[data-recognized="true"], .plm-current-marker').count(), 0)
-  assert.equal(await map.locator('[data-group-id]').count(), 14)
+  assert.equal(await map.locator('[data-group-id]').count(), graph.groups.length)
   assert.equal(await map.locator('[data-group-id][aria-expanded="true"]').count(), 0)
-  assert.equal(await map.locator('[data-product-id]').count(), 52)
+  assert.equal(await map.locator('[data-product-id]').count(), graph.products.length)
   const imperialToggle = map.locator('[data-group-id="imperial"]')
   await map.getByRole('button', { name: 'Открыть группу Империал', exact: true }).focus()
   await page.keyboard.press('Enter')
@@ -405,7 +429,7 @@ async function overviewAndKeyboard() {
   assert.equal(graph.groups.find(group => group.id === visibleAnchor.id)?.tier_id, 'formats', 'Manual pan must reach the formats tier')
   await map.getByRole('button', { name: 'Открыть все', exact: true }).click()
   await settle(page)
-  assert.equal(await map.locator('[data-group-id][aria-expanded="true"]').count(), 14)
+  assert.equal(await map.locator('[data-group-id][aria-expanded="true"]').count(), graph.groups.length)
   const afterExpand = await viewport.evaluate((frame, id) => {
     const bounds = frame.getBoundingClientRect()
     const heading = frame.querySelector(`[data-group-id="${id}"]`).getBoundingClientRect()
@@ -420,9 +444,9 @@ async function overviewAndKeyboard() {
     assert.match(response.headers()['content-type'], /^image\/webp/)
     return product.id
   }))
-  assert.equal(new Set(assets).size, 52)
+  assert.equal(new Set(assets).size, graph.products.length)
   await context.close()
-  checks.push('Overview, preview/reopen focus, native picker keyboard focus, keyboard selection/pan/zoom, mouse drag suppression, visible expand-all anchor, 52 asset responses')
+  checks.push('Overview, preview/reopen focus, native picker keyboard focus, keyboard selection/pan/zoom, mouse drag suppression, visible expand-all anchor, all registered Abrau asset responses')
 }
 
 const wineFixture = (slug = alias, overrides = {}) => ({
@@ -723,6 +747,7 @@ async function popupReadingPosition() {
 }
 
 try {
+  await delayedFontCentering()
   await screenshotsAndResponsiveStates()
   await overviewAndKeyboard()
   await scannerAndShelf()

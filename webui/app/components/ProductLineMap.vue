@@ -222,6 +222,8 @@ function mapElement(id: string, kind: 'product' | 'group' = 'product') {
 }
 async function centerElement(id: string, kind: 'product' | 'group' = 'product') {
   await nextTick()
+  // Web fonts can change the height of groups above the selected product.
+  await document.fonts.ready
   measureCanvas()
   await nextTick()
   const frame = viewport.value

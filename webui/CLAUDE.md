@@ -88,3 +88,5 @@ Use the optional `image.frame` geometry and `ProductLineImage.vue` to normalize 
 Do not compare HTML image-box heights when checking bottle scale. Compare the rendered alpha outline.
 Recompute frame geometry when an image asset changes. Keep the original image dimensions consistent with its frame.
 Visual checks MUST account for the clipped image-frame bounds. Do not wait on hidden lazy source images in WebKit.
+
+Wait for `document.fonts.ready` before measuring a map centering target. A new group can wrap after the web font loads and move the selected product away from the center. Keep the delayed-font centering regression in `test:line-map`.

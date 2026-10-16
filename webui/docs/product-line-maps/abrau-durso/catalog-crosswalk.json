@@ -1,0 +1,405 @@
+{
+  "producer_id": "abrau-durso",
+  "catalog_snapshot": "official-2026-09-17",
+  "entries": [
+    {
+      "wine_slug": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12",
+      "catalog_name": "Abrau-Durso Brut Rose Reserve",
+      "product_id": "reserve-brut-rose",
+      "group_id": "reserve",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115",
+      "catalog_name": "Abrau-Durso Reserve Brut",
+      "product_id": "reserve-brut",
+      "group_id": "reserve",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "catalog_name": "Абрау-Дюрсо Пино Нуар",
+      "product_id": "wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "catalog_name": "Abrau Estates Амурский Потапенко",
+      "product_id": "wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "catalog_name": "Abrau Estates белое",
+      "product_id": "wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "catalog_name": "Abrau Estates. Достойный",
+      "product_id": "wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "catalog_name": "Abrau Estates Каберне по-белому",
+      "product_id": "wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "catalog_name": "Abrau Estates красное",
+      "product_id": "wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "catalog_name": "Abrau Estates Оранж",
+      "product_id": "wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "catalog_name": "Abrau Estates. Розе",
+      "product_id": "wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "group_id": "abrau-estates",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "catalog_name": "Абрау Купаж красный полсусладкое",
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "abrau-blends",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "catalog_name": "Абрау Купаж светлый сухое",
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "group_id": "abrau-blends",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "catalog_name": "Абрау Купаж тёмный сухое",
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "group_id": "abrau-blends",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-aleksandr-ii-magnum-shardone-beloe-bryut-125",
+      "catalog_name": "Александр II Magnum",
+      "product_id": "cuvee-alexander-ii-magnum",
+      "group_id": "cuvee-alexander-ii",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "catalog_name": "Az Abrau Баяншира",
+      "product_id": "wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "group_id": "az-abrau",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "catalog_name": "Az Abrau Мадраса",
+      "product_id": "wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "group_id": "az-abrau",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-12",
+      "catalog_name": "Brut d'Or Blanc de Blancs",
+      "product_id": "brut-dor-blanc-de-blancs",
+      "group_id": "brut-dor",
+      "match": "alias"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125",
+      "catalog_name": "Brut d'Or. Blanc de Blancs",
+      "product_id": "brut-dor-blanc-de-blancs",
+      "group_id": "brut-dor",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-115",
+      "catalog_name": "Brut d'Or Blanc de Noirs",
+      "product_id": "brut-dor-blanc-de-noirs",
+      "group_id": "brut-dor",
+      "match": "alias"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125",
+      "catalog_name": "Brut d'Or Blanc de Noirs",
+      "product_id": "brut-dor-blanc-de-noirs",
+      "group_id": "brut-dor",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-riesling-risling-beloe-bryut-12",
+      "catalog_name": "Brut d'Or. Riesling",
+      "product_id": "brut-dor-riesling",
+      "group_id": "brut-dor",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-brut-dor-rose-pino-nuar-rozovoe-bryut-12",
+      "catalog_name": "Brut d'Or Rose",
+      "product_id": "brut-dor-rose",
+      "group_id": "brut-dor",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "catalog_name": "Femme d’Abrau",
+      "product_id": "wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "group_id": "femme-dabrau",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-fizz-beloe-bryut",
+      "catalog_name": "Абрау Дюрсо Физз белое брют",
+      "product_id": "abrau-fizz-brut-white",
+      "group_id": "fizz",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-fizz-beloe-polusladkoe",
+      "catalog_name": "Абрау Дюрсо Физз белое полусладкое",
+      "product_id": "abrau-fizz-semi-sweet-white",
+      "group_id": "fizz",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12",
+      "catalog_name": "Императорское брют",
+      "product_id": "imperatorskoe-brut",
+      "group_id": "imperatorskoe",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperatorskoe-polusladkoe-shardone-beloe-12",
+      "catalog_name": "Императорское полусладкое",
+      "product_id": "imperatorskoe-semi-sweet",
+      "group_id": "imperatorskoe",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperatorskoe-polusuhoe-shardone-beloe-12",
+      "catalog_name": "Императорское полусухое",
+      "product_id": "imperatorskoe-semi-dry",
+      "group_id": "imperatorskoe",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperial-brut-lart-nouveau-shardone-beloe-bryut-105",
+      "catalog_name": "Империал Brut L'Art Nouveau",
+      "product_id": "imperial-brut-lart-nouveau",
+      "group_id": "imperial",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperial-brut-rose-pino-nuar-rozovoe-bryut-12",
+      "catalog_name": "Империал Brut Rose",
+      "product_id": "imperial-brut-rose",
+      "group_id": "imperial",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperial-brut-vintage-shardone-beloe-bryut-12",
+      "catalog_name": "Империал. Brut Vintage",
+      "product_id": "imperial-brut-vintage",
+      "group_id": "imperial",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125",
+      "catalog_name": "Империал Кюве",
+      "product_id": "imperial-cuvee-rose",
+      "group_id": "imperial",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "catalog_name": "Каберне Совиньон",
+      "product_id": "wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "catalog_name": "Пино Нуар",
+      "product_id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "catalog_name": "Пино Нуар",
+      "product_id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+      "catalog_name": "Рислинг",
+      "product_id": "wine-abrau-dyurso-risling-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+      "catalog_name": "Рислинг",
+      "product_id": "wine-abrau-dyurso-risling-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-koshernoe-bryut-shardone-beloe-13",
+      "catalog_name": "Русское Игристое кошерное брют",
+      "product_id": "russian-sparkling-kosher-brut",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-koshernoe-polusladkoe-shardone-beloe-12",
+      "catalog_name": "Русское Игристое кошерное полусладкое",
+      "product_id": "russian-sparkling-kosher-semi-sweet",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusladkoe-krasnoe-kaberne-sovinon-12",
+      "catalog_name": "Русское Игристое полусладкое красное",
+      "product_id": "russian-sparkling-semi-sweet-red",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusladkoe-shardone-beloe-12",
+      "catalog_name": "Русское Игристое полусладкое",
+      "product_id": "russian-sparkling-semi-sweet-white",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12",
+      "catalog_name": "Русское Игристое полусухое розовое",
+      "product_id": "russian-sparkling-semi-dry-rose",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusuhoe-shardone-beloe-12",
+      "catalog_name": "Русское Игристое полусухое",
+      "product_id": "russian-sparkling-semi-dry-white",
+      "group_id": "russian-sparkling",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+      "catalog_name": "Шардоне",
+      "product_id": "wine-abrau-dyurso-shardone-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+      "catalog_name": "Шардоне",
+      "product_id": "wine-abrau-dyurso-shardone-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-spumante-bryut-roze-shardone-rozovoe-12",
+      "catalog_name": "Spumante брют розе",
+      "product_id": "spumante-brut-rose",
+      "group_id": "spumante",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut",
+      "catalog_name": "Абрау Дюрсо Удельное Ведомство Императорское белое брют",
+      "product_id": "udelnoe-vedomstvo-brut",
+      "group_id": "udelnoe-vedomstvo",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-polusladkoe",
+      "catalog_name": "Абрау Дюрсо Удельное Ведомство Императорское белое полусладкое",
+      "product_id": "udelnoe-vedomstvo-semi-sweet",
+      "group_id": "udelnoe-vedomstvo",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-brut-rose-pino-nuar-rozovoe-bryut-12",
+      "catalog_name": "Victor Dravigny. Brut Rose",
+      "product_id": "victor-dravigny-brut-rose",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12",
+      "catalog_name": "Victor Dravigny. Brut",
+      "product_id": "victor-dravigny-brut",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-bryut",
+      "catalog_name": "Абрау-Дюрсо Victor Dravigny брют",
+      "product_id": "victor-dravigny-brut",
+      "group_id": "victor-dravigny",
+      "match": "alias"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-extra-brut-shardone-beloe-bryut-125",
+      "catalog_name": "Victor Dravigny. Extra Brut",
+      "product_id": "victor-dravigny-extra-brut",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125",
+      "catalog_name": "Victor Dravigny. Кошерное брют",
+      "product_id": "victor-dravigny-kosher-brut",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-krasnoe-polusladkoe-kaberne-sovinon-125",
+      "catalog_name": "Victor Dravigny. Красное полусладкое",
+      "product_id": "victor-dravigny-red-semi-sweet",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-polusladkoe-sovinon-blan-beloe-12",
+      "catalog_name": "Victor Dravigny. Полусладкое",
+      "product_id": "victor-dravigny-semi-sweet",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "abrau-dyurso-victor-dravigny-polusuhoe-pino-blan-beloe-12",
+      "catalog_name": "Victor Dravigny. Полусухое",
+      "product_id": "victor-dravigny-semi-dry",
+      "group_id": "victor-dravigny",
+      "match": "canonical"
+    },
+    {
+      "wine_slug": "rozovoe-polusladkoe-2",
+      "catalog_name": "Розовое полусладкое",
+      "product_id": null,
+      "group_id": null,
+      "match": "excluded-unidentified"
+    }
+  ]
+}

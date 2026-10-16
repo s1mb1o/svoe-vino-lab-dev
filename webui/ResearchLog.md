@@ -55,6 +55,26 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Abrau-Durso catalog completion, 2026-10-16
+
+The saved producer snapshot contains 57 cards. The initial sheet map represented 35 cards through canonical slugs and aliases.
+Twenty-one identified cards belong to five still-wine groups. Keep every distinct snapshot identity.
+The owner excluded `rozovoe-polusladkoe-2` until exact bottle and collection identification.
+The extended map represents 56 cards through 53 canonical slugs and three aliases. It retains all 20 gray products.
+The map has 73 product nodes in 19 groups.
+Official collection pages establish premium Abrau-Durso positioning and medium Abrau Estates positioning.
+Current blends can differ from snapshot blends. Keep the saved product description and grape values.
+Abrau Collection is also the current name of the retro-car still-wine range. Keep this group separate from sparkling cans with that name.
+Az Abrau and Femme d’Abrau have a neutral price tier. Their sources do not establish one common price rank.
+All 21 source bottles already have transparent backgrounds. No generated label or new segmentation is required.
+The larger premium section exposed initial-centering drift in Chromium after web-font loading changed a group heading height.
+Wait for `document.fonts.ready` before measuring a center target. Keep the delayed-font browser regression.
+An existing in-app Abrau tab still displayed the old 52-product client. Full navigation loaded the new 73-product client.
+The catalog still contains large producers without maps. The largest exact producer fields are Союз-Вино (69), ESSE (53), Шато Пино (50), Валерий Захарьин (46), and Новый Свет. Дом шампанских вин (44).
+Read `docs/validation/catalog-lineup-coverage.json` for the complete ranking and source hash.
+Counts refer to catalog cards. They do not measure production volume.
+
+
 ## Missing bottle-image recovery, 2026-10-16
 
 The owner clarified that the reported card means the bottle image.

@@ -1,30 +1,77 @@
 import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import baseline from '../docs/product-line-maps/abrau-durso/catalog-baseline.json'
+import extension from '../docs/product-line-maps/abrau-durso/catalog-extension.json'
+import catalogCrosswalk from '../docs/product-line-maps/abrau-durso/catalog-crosswalk.json'
 import { describe, expect, it } from 'vitest'
 import crosswalk from '../docs/product-line-map-crosswalk.json'
 import { ABRAU_PRODUCT_LINE as line, findLineProduct, findProducerLine, productLineEdges, productPortalUrl, productsInGroup, resolveProductLine, validateProductLineMap } from '../shared/product-line-map'
 
 describe('producer product-line graph', () => {
-  it('covers the six source sheets without repeated Fizz packages', () => {
+  it('retains the six source sheets and adds the identified still-wine catalog cards', () => {
     expect(validateProductLineMap(line)).toEqual([])
-    expect(line.products).toHaveLength(52)
-    expect(line.groups).toHaveLength(14)
-    expect(line.products.filter(product => product.wine_slug)).toHaveLength(32)
+    expect(line.products).toHaveLength(73)
+    expect(line.groups).toHaveLength(19)
+    expect(line.products.filter(product => product.wine_slug)).toHaveLength(53)
     expect(line.products.filter(product => !product.wine_slug)).toHaveLength(20)
     expect(line.products.reduce((count, product) => count + product.wine_slug_aliases.length, 0)).toBe(3)
-    expect(line.scope.as_of).toBe('2026-09-20')
+    expect(line.scope.as_of).toBe('2026-10-16')
     const fizz = line.groups.find(group => group.name.includes('Fizz'))!
     expect(productsInGroup(line, fizz.id)).toHaveLength(4)
     expect(productsInGroup(line, fizz.id).every(product => /игристое вино/i.test(product.category))).toBe(true)
   })
 
-  it('maps each source-sheet entry to one product and covers every product', () => {
+  it('keeps all original sheet products separate from the 21 catalog additions', () => {
     expect(crosswalk.entries).toHaveLength(54)
     expect(new Set(crosswalk.entries.map(entry => entry.sheet)).size).toBe(6)
-    expect(new Set(crosswalk.entries.map(entry => entry.product_id))).toEqual(new Set(line.products.map(product => product.id)))
+    expect(new Set(crosswalk.entries.map(entry => entry.product_id)).size).toBe(52)
+    expect(new Set([...crosswalk.entries.map(entry => entry.product_id), ...extension.entries.map(entry => entry.product_id)])).toEqual(new Set(line.products.map(product => product.id)))
     expect(new Set(crosswalk.entries.map(entry => `${entry.sheet}:${entry.source_image}`)).size).toBe(54)
     for (const product of line.products) {
-      expect(crosswalk.entries.filter(entry => entry.product_id === product.id)).toHaveLength(['abrau-fizz-brut-white', 'abrau-fizz-semi-sweet-white'].includes(product.id) ? 2 : 1)
+      const added = extension.entries.some(entry => entry.product_id === product.id)
+      expect(crosswalk.entries.filter(entry => entry.product_id === product.id)).toHaveLength(added ? 0 : ['abrau-fizz-brut-white', 'abrau-fizz-semi-sweet-white'].includes(product.id) ? 2 : 1)
     }
+  })
+
+  it('covers the independently pinned Abrau catalog except the owner-excluded unidentified card', () => {
+    expect(baseline.expected_count).toBe(57)
+    expect(baseline.records).toHaveLength(57)
+    expect(baseline.source_sha256).toBe('e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961')
+    expect(extension.entries).toHaveLength(21)
+    expect(extension.excluded_catalog_cards.map(record => record.wine_slug)).toEqual(['rozovoe-polusladkoe-2'])
+    expect(catalogCrosswalk.entries).toHaveLength(57)
+    const excluded = new Set(extension.excluded_catalog_cards.map(record => record.wine_slug))
+    for (const record of baseline.records) {
+      const product = findLineProduct(line, record.slug)
+      if (excluded.has(record.slug)) {
+        expect(product).toBeUndefined()
+        expect(catalogCrosswalk.entries.find(entry => entry.wine_slug === record.slug)?.match).toBe('excluded-unidentified')
+      } else {
+        expect(product, record.slug).toBeDefined()
+        expect(catalogCrosswalk.entries.find(entry => entry.wine_slug === record.slug)?.product_id).toBe(product!.id)
+      }
+    }
+    expect(baseline.records.filter(record => findLineProduct(line, record.slug))).toHaveLength(56)
+    for (const entry of extension.entries) {
+      const record = baseline.records.find(record => record.slug === entry.wine_slug)!
+      const product = findLineProduct(line, record.slug)!
+      expect(product).toMatchObject({ id: entry.product_id, group_id: entry.group_id, name: record.name, description: record.description, wine_slug_aliases: [], category: 'Тихое вино' })
+      expect(product.grapes).toEqual(record.grapes.split(/[,;]/).map(value => value.trim()).filter(Boolean))
+      const bytes = readFileSync(new URL(`../public${product.image!.src}`, import.meta.url))
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(entry.asset_sha256)
+      expect(product.image!.frame).toEqual(entry.frame)
+    }
+    expect(resolveProductLine({ producer: 'Абрау-Дюрсо', slug: 'rozovoe-polusladkoe-2' })).toMatchObject({ status: 'unplaced', line })
+  })
+
+  it.skipIf(!process.env.PRODUCT_LINE_CATALOG_SNAPSHOT)('verifies all 57 baseline records against the original snapshot', () => {
+    const bytes = readFileSync(process.env.PRODUCT_LINE_CATALOG_SNAPSHOT!)
+    expect(createHash('sha256').update(bytes).digest('hex')).toBe(baseline.source_sha256)
+    const records = bytes.toString('utf8').split(/\r?\n/).filter(Boolean)
+      .map(row => JSON.parse(row)).filter(row => row.producer === 'Абрау-Дюрсо')
+      .map(({ slug, name, description, grapes }) => ({ slug, name, description, grapes }))
+    expect(records).toHaveLength(57)
+    expect(records).toEqual(baseline.records)
   })
 
   it('resolves the exact scanner result and verified legacy aliases to one product', () => {
@@ -44,7 +91,8 @@ describe('producer product-line graph', () => {
   it('does not invent a product or producer match', () => {
     expect(findProducerLine({ producer: 'Абрау—Дюрсо', slug: 'unknown' })).toBe(line)
     expect(findProducerLine({ producer: '', slug: 'abrau-dyurso-risling-beloe-suhoe-12' })).toBe(line)
-    expect(findLineProduct(line, 'abrau-dyurso-risling-beloe-suhoe-12')).toBeUndefined()
+    expect(findLineProduct(line, 'abrau-dyurso-risling-beloe-suhoe-12')?.group_id).toBe('abrau-still')
+    expect(findLineProduct(line, 'rozovoe-polusladkoe-2')).toBeUndefined()
     expect(findLineProduct(line, undefined)).toBeUndefined()
     expect(findProducerLine({ producer: 'Винодельня Марченко', slug: 'priboj-marchenko-beloe-polusuhoe' })).toBeUndefined()
   })
@@ -71,7 +119,7 @@ describe('producer product-line graph', () => {
 
   it('derives a connected containment tree from one membership field', () => {
     const edges = productLineEdges(line)
-    expect(edges).toHaveLength(66)
+    expect(edges).toHaveLength(92)
     for (const product of line.products) {
       expect(edges.filter(edge => edge.target === product.id)).toEqual([{ source: product.group_id, target: product.id, type: 'contains' }])
       expect(edges.some(edge => edge.source === line.producer.id && edge.target === product.group_id)).toBe(true)

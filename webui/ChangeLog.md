@@ -37,6 +37,17 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Abrau-Durso identified catalog completion
+
+- Add 21 still-wine cards in five groups. Extend Abrau-Durso to 73 products in 19 groups.
+- Cover 56 of 57 snapshot cards. Keep `rozovoe-polusladkoe-2` excluded until identification, as requested by the owner.
+- Preserve the original 52 products, three aliases, 20 gray products and original image bytes.
+- Add local bottle images, measured frames, official collection sources and independent catalog crosswalks.
+- Wait for web-font layout before centering a selected wine. Add a delayed-font browser regression.
+- Pass 235 unit tests, type checks, the build, 126 new-slug browser cases and the existing Abrau suite in Chromium and WebKit.
+- Record the largest catalog producers that have no map and the updated total catalog coverage of 618 out of 2,103 cards.
+
+
 ## 2026-10-16 — Complete bottle-image coverage
 
 - Require an image and a measured frame for every current map product.

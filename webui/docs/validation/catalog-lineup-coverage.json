@@ -1,0 +1,518 @@
+{
+  "date": "2026-10-16",
+  "snapshot": "official-2026-09-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "method": "Count unique snapshot wine_slug identities. Include verified aliases. Do not count producer-name fallback or null-slug additions as catalog coverage. Rank exact producer field values. Do not interpret card counts as production volume.",
+  "catalog_cards": 2103,
+  "covered_catalog_cards": 618,
+  "catalog_coverage_percent": 29.386590584878746,
+  "supported_producers": 11,
+  "supported_producer_catalog_cards": 619,
+  "supported_producer_coverage_percent": 99.83844911147011,
+  "map_products": 668,
+  "unsupported_producers": [
+    {
+      "producer": "Союз-Вино",
+      "catalog_cards": 69
+    },
+    {
+      "producer": "ESSE",
+      "catalog_cards": 53
+    },
+    {
+      "producer": "Шато Пино",
+      "catalog_cards": 50
+    },
+    {
+      "producer": "Валерий Захарьин",
+      "catalog_cards": 46
+    },
+    {
+      "producer": "Новый Свет. Дом шампанских вин",
+      "catalog_cards": 44
+    },
+    {
+      "producer": "Бельбек",
+      "catalog_cards": 39
+    },
+    {
+      "producer": "Собер Баш",
+      "catalog_cards": 37
+    },
+    {
+      "producer": "AGORA WINERY",
+      "catalog_cards": 32
+    },
+    {
+      "producer": "WINEMAFIA",
+      "catalog_cards": 31
+    },
+    {
+      "producer": "АРАТТИ",
+      "catalog_cards": 31
+    },
+    {
+      "producer": "Golubitskoe Estate",
+      "catalog_cards": 31
+    },
+    {
+      "producer": "Olymp Winery",
+      "catalog_cards": 29
+    },
+    {
+      "producer": "AYA Organic Wine & Vineyards",
+      "catalog_cards": 27
+    },
+    {
+      "producer": "Chateau de Talu",
+      "catalog_cards": 26
+    },
+    {
+      "producer": "Усадьба Мезыбь",
+      "catalog_cards": 26
+    },
+    {
+      "producer": "Château Le Grand Vostock",
+      "catalog_cards": 25
+    },
+    {
+      "producer": "Раевское",
+      "catalog_cards": 23
+    },
+    {
+      "producer": "Belmas Winery",
+      "catalog_cards": 22
+    },
+    {
+      "producer": "Усадьба Перовских",
+      "catalog_cards": 22
+    },
+    {
+      "producer": "Denisov Winery",
+      "catalog_cards": 21
+    },
+    {
+      "producer": "Имение Сикоры",
+      "catalog_cards": 21
+    },
+    {
+      "producer": "Винодельня Бюрнье",
+      "catalog_cards": 20
+    },
+    {
+      "producer": "Галицкий и Галицкий",
+      "catalog_cards": 20
+    },
+    {
+      "producer": "Скалистый берег",
+      "catalog_cards": 20
+    },
+    {
+      "producer": "Domaine Lipko",
+      "catalog_cards": 20
+    },
+    {
+      "producer": "Золотое Поле",
+      "catalog_cards": 19
+    },
+    {
+      "producer": "Винодельня Батрак",
+      "catalog_cards": 19
+    },
+    {
+      "producer": "Агролайн",
+      "catalog_cards": 18
+    },
+    {
+      "producer": "Vibes",
+      "catalog_cards": 18
+    },
+    {
+      "producer": "Реликта",
+      "catalog_cards": 17
+    },
+    {
+      "producer": "Усадьба Дивноморское",
+      "catalog_cards": 17
+    },
+    {
+      "producer": "Шато АЛВИСА",
+      "catalog_cards": 16
+    },
+    {
+      "producer": "Виноградники Гай-Кодзора",
+      "catalog_cards": 16
+    },
+    {
+      "producer": "LETO",
+      "catalog_cards": 16
+    },
+    {
+      "producer": "Loco Cimbali",
+      "catalog_cards": 16
+    },
+    {
+      "producer": "Chateau Andre",
+      "catalog_cards": 15
+    },
+    {
+      "producer": "KATHARON",
+      "catalog_cards": 15
+    },
+    {
+      "producer": "Винодельня Узунов",
+      "catalog_cards": 15
+    },
+    {
+      "producer": "Солнечная долина",
+      "catalog_cards": 13
+    },
+    {
+      "producer": "Винодельня Жаков",
+      "catalog_cards": 13
+    },
+    {
+      "producer": "Gunko Winery",
+      "catalog_cards": 12
+    },
+    {
+      "producer": "STN Winery",
+      "catalog_cards": 12
+    },
+    {
+      "producer": "Oleg Repin",
+      "catalog_cards": 11
+    },
+    {
+      "producer": "Domaine de la Vivandiere",
+      "catalog_cards": 11
+    },
+    {
+      "producer": "Вилла София",
+      "catalog_cards": 11
+    },
+    {
+      "producer": "Криница",
+      "catalog_cards": 11
+    },
+    {
+      "producer": "Andryus Yutsis",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "Bogovich Wine & Vineyard",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "Mantra Estate",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "ЛОРИО -  семейная винодельня Логуновых",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "Литавщук. Litavshchuk vineyards & winery",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "MILLSTREAM",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "ВайнКрафт",
+      "catalog_cards": 10
+    },
+    {
+      "producer": "Табия",
+      "catalog_cards": 9
+    },
+    {
+      "producer": "Ferrum Winery",
+      "catalog_cards": 9
+    },
+    {
+      "producer": "Le K2",
+      "catalog_cards": 9
+    },
+    {
+      "producer": "Винодельня Марченко",
+      "catalog_cards": 9
+    },
+    {
+      "producer": "Bakla Vines",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Цимлянские вина",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Винодельня Братьев Мельниковых",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Два Сердца",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Два Петра",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Шато Ай-Даниль",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Винодельня Покровская",
+      "catalog_cards": 8
+    },
+    {
+      "producer": "Коммуналка",
+      "catalog_cards": 7
+    },
+    {
+      "producer": "Cloudy Winery",
+      "catalog_cards": 7
+    },
+    {
+      "producer": "LeGato",
+      "catalog_cards": 7
+    },
+    {
+      "producer": "Rem Akchurin",
+      "catalog_cards": 7
+    },
+    {
+      "producer": "Долина Лефкадия",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Chateau Cachalot",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Донское винодельческое хозяйство \"Эльбузд\"",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Dubinin Winery",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Nesterov Winery",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Усадьба Родное Гнездо",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Вилла Уркуста",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Вина Арпачина",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Винодельня Бердяева",
+      "catalog_cards": 6
+    },
+    {
+      "producer": "Cellar Master",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Дача Сердюка",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "GAVRAS",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Ivan & Ksenia Kruz",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "JD winery",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Винодельня Константина Дзитоева",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Mancopia",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Oxana Istratova Wine",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Uppa Winery",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Винодельня Марко",
+      "catalog_cards": 5
+    },
+    {
+      "producer": "Благолюбов",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Усадьба Меркотан",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Николаев и сыновья",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Tempelhof Winery",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Усадьба Маркотх",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Uva Vallis",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "В2Р",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Villa di Alma",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "Винодельня 78",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "WINEPARK",
+      "catalog_cards": 4
+    },
+    {
+      "producer": "One Barrel (Уан Баррел)",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "Cock t'est belle",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "Левокумское",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "Mons Albus",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "VinaBani",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "Винодельня Бегильдеева",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "Винодельня Молчанова",
+      "catalog_cards": 3
+    },
+    {
+      "producer": "А. Гордиенко & М. Николаев",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Ароматное",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Артвин",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Гусевъ",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Поместье Голубицкое",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Kalos Limen",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Винодельня Орлова",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Radio Wine",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Chateau Semiray",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Семейная винодельня Михаила Колесникова",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Виктор Сташко",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Wein und Wasser",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Yaiyla Winery",
+      "catalog_cards": 2
+    },
+    {
+      "producer": "Сатера",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Сенетх",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Усадьба Александровская",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Винный форт Адагум",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Винный кооператив Интуиция",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Vino & Nebo",
+      "catalog_cards": 1
+    },
+    {
+      "producer": "Зимовец",
+      "catalog_cards": 1
+    }
+  ],
+  "abrau": {
+    "catalog_cards": 57,
+    "covered_catalog_cards": 56,
+    "coverage_percent": 98.24561403508771,
+    "excluded_slug": "rozovoe-polusladkoe-2",
+    "exclusion_basis": "Owner instruction on 2026-10-16. The bottle and collection are not identified."
+  }
+}

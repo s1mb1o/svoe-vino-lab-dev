@@ -1,0 +1,2390 @@
+{
+  "date": "2026-10-16",
+  "status": "passed",
+  "products": 73,
+  "groups": 19,
+  "catalog_cards_covered": 56,
+  "producer_catalog_cards": 57,
+  "excluded_slug": "rozovoe-polusladkoe-2",
+  "exclusion_basis": "Owner instruction until exact bottle and collection identification.",
+  "new_products": 21,
+  "original_products_unchanged": 52,
+  "original_image_hashes_unchanged": 52,
+  "asset_checks": {
+    "status": "passed",
+    "original_products_unchanged": 52,
+    "original_image_hashes_unchanged": 52,
+    "new_products": 21,
+    "images_decoded": 73,
+    "records": [
+      {
+        "id": "cuvee-alexander-ii-magnum",
+        "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+        "sha256": "502259536eef73c3320f442b5fbe995977f37ab07f9c5a29b27781128a6b9c81",
+        "frame": {
+          "x": 2,
+          "y": 0,
+          "width": 156,
+          "height": 480,
+          "source_width": 158,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 4,
+          "y": 0,
+          "width": 153,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "cuvee-alexander-ii-gift-box",
+        "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-gift-box.webp",
+        "sha256": "bd672d5e1cbc833fac0dddd31cc8283380937b48c7ae66ca4612d55b7f9aa94e",
+        "frame": {
+          "x": 2,
+          "y": 0,
+          "width": 309,
+          "height": 480,
+          "source_width": 311,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 4,
+          "y": 0,
+          "width": 307,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperial-brut-lart-nouveau",
+        "src": "/product-line-maps/abrau-durso/imperial-brut-lart-nouveau.webp",
+        "sha256": "3b4cdecfe54b3cad531f18c36168c62babba8ef405c84db12b0f8c7a2243aa42",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 154,
+          "height": 480,
+          "source_width": 154,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 154,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperial-brut-vintage",
+        "src": "/product-line-maps/abrau-durso/imperial-brut-vintage.webp",
+        "sha256": "534d65c4c97498083b879bf44f2ea42e0824d79ade56580c3571eb1fd216cb75",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 151,
+          "height": 480,
+          "source_width": 151,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 151,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperial-brut-rose",
+        "src": "/product-line-maps/abrau-durso/imperial-brut-rose.webp",
+        "sha256": "6295bdcb004a940aef503134a42615b3ba5c1b1b1c594b0a18a17e819a125bfc",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 153,
+          "height": 480,
+          "source_width": 153,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 153,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperial-cuvee-rose",
+        "src": "/product-line-maps/abrau-durso/imperial-cuvee-rose.webp",
+        "sha256": "2aa81ba4d636985b334963dff27800899a59461a5335beb71c3f2caccceb3424",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 150,
+          "height": 480,
+          "source_width": 150,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 150,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "brut-dor-blanc-de-blancs",
+        "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-blancs.webp",
+        "sha256": "9ff9108da6aeac33ed9ff3e5de36adbd419a2b7b27620a8a84598c845a6f0a8e",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "brut-dor-blanc-de-noirs",
+        "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-noirs.webp",
+        "sha256": "5e347bdbb9fface00cb9ac12472740a83904826581dec892c463a841f596a0f8",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "brut-dor-riesling",
+        "src": "/product-line-maps/abrau-durso/brut-dor-riesling.webp",
+        "sha256": "5745dda42b18252f2c9e6f690cad655f6e73f2183e3670bbf99ac4017f76f6a3",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "brut-dor-rose",
+        "src": "/product-line-maps/abrau-durso/brut-dor-rose.webp",
+        "sha256": "1c7637f017b40404ab99113a93b6b25c1f9243e9254f89c289dad6eeb55472fe",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-brut",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-brut.webp",
+        "sha256": "e89b37a2d65d996e9fa8b94ff41823a1b395553ca97f2d1c5a5448547e7ca7b2",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 480,
+          "source_width": 132,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 0,
+          "width": 130,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-extra-brut",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-extra-brut.webp",
+        "sha256": "b795b39f4d179c3b4ad4b901a1de6eca4cd7bbcc0f715876f7a6ffdda71380e9",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-brut-rose",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-brut-rose.webp",
+        "sha256": "1a9815900906ce3020e389db437cb255d39b427d3efc242c3068dcd3fd298a06",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-semi-dry",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-dry.webp",
+        "sha256": "62283aa948e1cb71385bb0053639dc9db6d1c7339dcc3d5b6c48b9019f5852c4",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-semi-sweet",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-sweet.webp",
+        "sha256": "17fe36082f9e6a0e04d133305aa2ee9cf95cc338ff5438aa9a07cad7e0b0c3bb",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-red-semi-sweet",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-red-semi-sweet.webp",
+        "sha256": "06caff40f6504ef008179a10c262254f5e0fe92e918a09272df00b3e615aad9e",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-kosher-brut",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-kosher-brut.webp",
+        "sha256": "958383d019bda49270497815755b05a647e88fa48ff153eb586eddf74de97a36",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "victor-dravigny-zero-dosage",
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-zero-dosage.webp",
+        "sha256": "b69b37735db05b1f0598db1d037b15bf6b029fb39ae12223e127bc50cc760195",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 148,
+          "height": 480,
+          "source_width": 148,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 148,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "reserve-brut",
+        "src": "/product-line-maps/abrau-durso/reserve-brut.webp",
+        "sha256": "d635fa7e0d7fc66852a0d0486d1734df2b3f68259b1e89c3eba444f7e3d813d1",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 480,
+          "source_width": 135,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "reserve-brut-rose",
+        "src": "/product-line-maps/abrau-durso/reserve-brut-rose.webp",
+        "sha256": "f39d7d30f76450c66c736e0b195e8648b13ee5c74a1ef21a3a5a8f6ea91cd7fc",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperatorskoe-brut",
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-brut.webp",
+        "sha256": "4e0c7a9d87d003ba74a229971275b0fced1fbbb93b46b353d684833856d6b6a2",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperatorskoe-semi-dry",
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-dry.webp",
+        "sha256": "05f1c2844de528f410aec755630c41b58d7037a679ea3b5ed3a9de1dcda5372c",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "imperatorskoe-semi-sweet",
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-sweet.webp",
+        "sha256": "404e371918cc3ffe9e026a88d47dad9be268dac2e3a798727147f7d0a4aab825",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "udelnoe-vedomstvo-brut",
+        "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-brut.webp",
+        "sha256": "fa7155c5e0ed94d45419acee4bd0c382d30703dfa56aba36187a16866a7538f4",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 480,
+          "source_width": 137,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 479
+        },
+        "added": false
+      },
+      {
+        "id": "udelnoe-vedomstvo-semi-sweet",
+        "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-semi-sweet.webp",
+        "sha256": "85bbe2feaec3168a3febcbbcb9e94cdd49c648556a5c431b14cff597e3e3c44f",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 479
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-semi-dry-white",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-white.webp",
+        "sha256": "91a42d8d254121839f79e8c1de88f8299a89ed2d654db355fb03a38db69e973c",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 477
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-semi-sweet-white",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-white.webp",
+        "sha256": "4cd32fcd6b5bf71e6fd0d201715448e80dcef2a39ba7ed83dd13441edf7cbac6",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 477
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-semi-dry-rose",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-rose.webp",
+        "sha256": "c21d635a8eab420859fca3230e0e6ad262498a7391b3050641fedc328bb79d46",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 477
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-semi-sweet-red",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-red.webp",
+        "sha256": "5ec09bee8caf45e549d0d538dd0614389f065e877767a48a8565bfa3026ceac3",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 477
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-kosher-brut",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-brut.webp",
+        "sha256": "cdfa05089b89633d9635c1c60565039019242eb7b9862177aed7222ff1cc8f65",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 126,
+          "height": 480,
+          "source_width": 126,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 126,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-kosher-semi-sweet",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-semi-sweet.webp",
+        "sha256": "0a2b5c62185dc8f8bf5254152ba732d2a9818f5779fc1c4ff9b1c49e57e6b524",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 125,
+          "height": 480,
+          "source_width": 125,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 125,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-brut-white",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-brut-white.webp",
+        "sha256": "cce8638198dab858582c4cd594de9cc191916e6760866a62fd30e4037b8f8004",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 480,
+          "source_width": 134,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "russian-sparkling-dry-white",
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-dry-white.webp",
+        "sha256": "220f0741f8daad481844329047ee05bd8e3253f1eb5d7fe81a41998c0bd7d69d",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 480,
+          "source_width": 137,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 0,
+          "width": 136,
+          "height": 478
+        },
+        "added": false
+      },
+      {
+        "id": "spumante-brut-rose",
+        "src": "/product-line-maps/abrau-durso/spumante-brut-rose.webp",
+        "sha256": "939d6dbcdaa1d72265c921504e954ab16c5fb39cf30bdf61181e512a2ceebd9a",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "spumante-brut-white",
+        "src": "/product-line-maps/abrau-durso/spumante-brut-white.webp",
+        "sha256": "51191961f0791ac3aa92a722e1be99529d32612310c52d917a6ee6b89449058a",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 133,
+          "height": 454,
+          "source_width": 133,
+          "source_height": 454
+        },
+        "visible": {
+          "x": 1,
+          "y": 2,
+          "width": 131,
+          "height": 451
+        },
+        "added": false
+      },
+      {
+        "id": "spumante-semi-dry-white",
+        "src": "/product-line-maps/abrau-durso/spumante-semi-dry-white.webp",
+        "sha256": "dbb9718a2500a25a25e892308ce116453110e4704eeafffc19c97f0a52250b08",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 144,
+          "height": 480,
+          "source_width": 144,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 1,
+          "width": 142,
+          "height": 478
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fizz-brut-white",
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-white.webp",
+        "sha256": "5046236a57bb71d8d4a8276547d84220a58c8a7eebce51733d66dd55dd305cd7",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 340,
+          "source_width": 132,
+          "source_height": 340
+        },
+        "visible": {
+          "x": 1,
+          "y": 1,
+          "width": 130,
+          "height": 339
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fizz-brut-rose",
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-rose.webp",
+        "sha256": "15f24134a79557ec1868178c74902d9a72c70cb1b2c6a63929ef8f8404b3b570",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 340,
+          "source_width": 132,
+          "source_height": 340
+        },
+        "visible": {
+          "x": 2,
+          "y": 1,
+          "width": 129,
+          "height": 339
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fizz-semi-sweet-white",
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-white.webp",
+        "sha256": "633cef2451a5d5d3298fe76c11577ad58fbd1045a3770925b2615ef5eca512a2",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 131,
+          "height": 338,
+          "source_width": 131,
+          "source_height": 338
+        },
+        "visible": {
+          "x": 1,
+          "y": 1,
+          "width": 129,
+          "height": 337
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fizz-semi-sweet-rose",
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-rose.webp",
+        "sha256": "c8c9e91314062d4651c7a9f26aff87573970d61834e780575bb0b3de6fdfbd89",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 131,
+          "height": 338,
+          "source_width": 131,
+          "source_height": 338
+        },
+        "visible": {
+          "x": 1,
+          "y": 1,
+          "width": 129,
+          "height": 337
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-purple",
+        "src": "/product-line-maps/abrau-durso/abrau-light-purple.webp",
+        "sha256": "118c3036e616555464d8546bc302470987d7d2e2762ee3dea0c4af603f16d597",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-pink",
+        "src": "/product-line-maps/abrau-durso/abrau-light-pink.webp",
+        "sha256": "04b3e8ffaaaaed0361c16b52c1cc383d7caf6fc474c5ba48e6fd8f1e83ca4ef3",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 2,
+          "width": 139,
+          "height": 478
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fiori-red",
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-red.webp",
+        "sha256": "54fc466998ef82246eac3615caafffdd2278b5a9216ee5d7a90441bcbed341ac",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 144,
+          "height": 480,
+          "source_width": 144,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 2,
+          "y": 1,
+          "width": 140,
+          "height": 479
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fiori-white-green",
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-white-green.webp",
+        "sha256": "4745838d39cc245e301749b5e1e65146035e2fca272bd9c45b7755fb9c336fda",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 480,
+          "source_width": 140,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 2,
+          "width": 138,
+          "height": 478
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fiori-rose",
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-rose.webp",
+        "sha256": "4057fe557233f0411724b865071572b77fb71e376bcc337aad01a9b2265e569e",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 480,
+          "source_width": 140,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 2,
+          "width": 138,
+          "height": 478
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-fiori-white-purple",
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-white-purple.webp",
+        "sha256": "5b6cf61a8dedfb8d76ac60951acf6e17e92c86ece66d8ac92b8057819cb3feba",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 139,
+          "height": 480,
+          "source_width": 139,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 1,
+          "y": 0,
+          "width": 136,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-collection-white",
+        "src": "/product-line-maps/abrau-durso/abrau-collection-white.webp",
+        "sha256": "385280099205a60a23616e7f24584625f915a7764578ba36aff42692958c8df1",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 341,
+          "source_width": 137,
+          "source_height": 341
+        },
+        "visible": {
+          "x": 2,
+          "y": 0,
+          "width": 135,
+          "height": 341
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-collection-rose",
+        "src": "/product-line-maps/abrau-durso/abrau-collection-rose.webp",
+        "sha256": "dfbbdf12aac628d97c725733ef0b6a2874c429d66799579a925fffc97d060bee",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 339,
+          "source_width": 136,
+          "source_height": 339
+        },
+        "visible": {
+          "x": 2,
+          "y": 0,
+          "width": 134,
+          "height": 339
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-zero-purple-bottle",
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-bottle.webp",
+        "sha256": "118c3036e616555464d8546bc302470987d7d2e2762ee3dea0c4af603f16d597",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-zero-pink-bottle",
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-bottle.webp",
+        "sha256": "18812132afc58375731b23aa3ee2ac411a64d89b189d13d37a5b73e822f7d3c5",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-zero-purple-can",
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-can.webp",
+        "sha256": "8c6b7e7559d086e47de6cb4551f640772cb8a1137271115f573f18fb2a1c8374",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 119,
+          "height": 287,
+          "source_width": 119,
+          "source_height": 287
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 119,
+          "height": 287
+        },
+        "added": false
+      },
+      {
+        "id": "abrau-light-zero-pink-can",
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-can.webp",
+        "sha256": "639e9e2583fcf4419889474df00f9e6d0234d795fea7bf50b5fe969cb2b3f9b4",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 117,
+          "height": 288,
+          "source_width": 117,
+          "source_height": 288
+        },
+        "visible": {
+          "x": 0,
+          "y": 0,
+          "width": 117,
+          "height": 288
+        },
+        "added": false
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+        "sha256": "d93a39f36e20d40b8ba2dd4c4a3ceae58051ee14ad4d4f968f61a7bc08a80102",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 6,
+          "y": 6,
+          "width": 225,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105.webp",
+        "sha256": "3bf68beda0dec1762bc07af8bf0aa07f6f98da0af2f93b914d8e056d9a28fae8",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 203,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 9,
+          "y": 8,
+          "width": 186,
+          "height": 716
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+        "sha256": "2394537ebe109a0d6ace74a3069b336960951b1e3a1701c17f057c950cb2da0a",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 203,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 186,
+          "height": 716
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135.webp",
+        "sha256": "8719f116a2f8ce3110b3087b8732a6eea5b9b3ceb9f2b64d0cee76b26b92367e",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 195,
+          "height": 727,
+          "source_width": 203,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 7,
+          "width": 187,
+          "height": 719
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105.webp",
+        "sha256": "46760830a367bff11195c1523fa53da6f0d78f847e8da44320cfb7d985c29322",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 202,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 186,
+          "height": 716
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13.webp",
+        "sha256": "7b2230b12c5fc5514dd91d917f3500386873c1f3c2d0563c6d44e307f0fe572c",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 196,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 7,
+          "y": 6,
+          "width": 188,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105.webp",
+        "sha256": "373ba3f64ec10277e380ff730d9e378baabe7c09d81e3da12b08d7e0e091c4de",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 199,
+          "height": 724,
+          "source_width": 207,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 191,
+          "height": 716
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12.webp",
+        "sha256": "f1e480ea140b02574a81c09f7c5e1e65cc3e604af166fe060e483273c702d4d1",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 195,
+          "height": 727,
+          "source_width": 203,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 7,
+          "width": 187,
+          "height": 719
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+        "sha256": "bd470e21e89f08872d3395625320fd3ac31511cdddfa5e5a506fe1b70918142a",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 175,
+          "height": 723,
+          "source_width": 184,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 167,
+          "height": 715
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125.webp",
+        "sha256": "07beec15139f5ebcac32b144616188b4519046345e56ac9061b04b0db7ed8aca",
+        "frame": {
+          "x": 4,
+          "y": 5,
+          "width": 176,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 9,
+          "width": 168,
+          "height": 714
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13.webp",
+        "sha256": "af80b158663e2cafb79df324ca194924796c1d919590855a11f5a70ffd2c68bb",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 176,
+          "height": 723,
+          "source_width": 184,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 168,
+          "height": 715
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12.webp",
+        "sha256": "916488d5da536f493d0081f1a7c3501dfa14bb3282bc26f71cbdde0c83c1bce0",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 6,
+          "width": 189,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14.webp",
+        "sha256": "916488d5da536f493d0081f1a7c3501dfa14bb3282bc26f71cbdde0c83c1bce0",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 6,
+          "width": 189,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107.webp",
+        "sha256": "950bb305f0025efac27062333c07c05e55ee3cb83e68a1dae13f4ca0a794f376",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 268,
+          "height": 723,
+          "source_width": 276,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 8,
+          "width": 260,
+          "height": 715
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "sha256": "6c2cdf4d8fc70f2d26f3ab8d2d260e7c9fbd3db215347e8819b66d08e970c5d6",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 6,
+          "width": 194,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12.webp",
+        "sha256": "15e30e774756a5bb677bea2c7aeca14070c8d97a5734154ef33fff38755744bf",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 226,
+          "height": 727,
+          "source_width": 235,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 9,
+          "y": 6,
+          "width": 218,
+          "height": 719
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125.webp",
+        "sha256": "1a2160ba3eda56c2916e396f47bebcda5fe605dc91d883326f1e1ddeb6168b2b",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 6,
+          "y": 6,
+          "width": 225,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-risling-beloe-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-12.webp",
+        "sha256": "9497b179925d81c2d94212c507232717a790ffd320f8e252fe0406dc6312932c",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 172,
+          "height": 728,
+          "source_width": 178,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 6,
+          "width": 164,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-risling-beloe-suhoe-13",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-13.webp",
+        "sha256": "9a678f7c53087c8976c0dabefc785bf907054842f8ef4d591075c18c9705f9af",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 165,
+          "height": 727,
+          "source_width": 173,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 6,
+          "width": 157,
+          "height": 719
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-shardone-beloe-suhoe-12",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-12.webp",
+        "sha256": "6954fd3469c30b1fb4d93e40c6362233f12db66b735a155c6681487ca10943fe",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 6,
+          "y": 6,
+          "width": 225,
+          "height": 720
+        },
+        "added": true
+      },
+      {
+        "id": "wine-abrau-dyurso-shardone-beloe-suhoe-13",
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-13.webp",
+        "sha256": "48253a18b6f548a450cdbfd3b577e9cc205a4cd54e3e63204f83b686abe9fd3f",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 226,
+          "height": 726,
+          "source_width": 235,
+          "source_height": 732
+        },
+        "visible": {
+          "x": 8,
+          "y": 7,
+          "width": 218,
+          "height": 718
+        },
+        "added": true
+      }
+    ]
+  },
+  "new_slug_browser_checks": [
+    {
+      "engine": "chromium",
+      "status": "passed",
+      "cases": [
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "status": "passed",
+      "cases": [
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+          "group": "abrau-estates",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "group": "abrau-blends",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+          "group": "az-abrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+          "group": "az-abrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+          "group": "femme-dabrau",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 1440,
+          "theme": "light",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 390,
+          "theme": "dark",
+          "status": "passed"
+        },
+        {
+          "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+          "group": "abrau-still",
+          "width": 320,
+          "theme": "light",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "regression": {
+    "chromium": "passed",
+    "webkit": "passed",
+    "delayed_web_font_centering": "passed in both engines",
+    "scanner_and_nested_shelf_dialogs": "passed in both engines",
+    "mobile_popup_and_breakpoints": "passed in both engines"
+  },
+  "unit_tests": 235,
+  "unit_test_files": 16,
+  "typecheck": "passed",
+  "build": "passed",
+  "physical_device_testing": false
+}

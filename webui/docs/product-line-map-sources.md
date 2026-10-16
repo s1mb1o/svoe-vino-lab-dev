@@ -1,13 +1,16 @@
 # Product line map sources
 
-Date: 2026-10-15.
+Date: 2026-10-16.
 
 ## Scope
 
-The Abrau-Durso map reproduces the six prepared sheets from 2026-09-20.
+The initial Abrau-Durso subset reproduces the six prepared sheets from 2026-09-20.
+The extension on 2026-10-16 adds 21 identified still-wine catalog cards.
+Read [the extension sources](product-line-maps/abrau-durso/sources.md) for the current 73-product scope.
 The source catalog snapshot is `official-2026-09-17`.
 The map covers sparkling wines and the drink packages on those sheets.
-The map does not cover all still wines from the producer.
+The map covers all identified still-wine cards in the saved producer snapshot.
+One unidentified rose card remains excluded by the owner.
 This work did not check the live catalog.
 A missing `wine_slug` means that the supplied snapshot has no verified match.
 It does not mean that the producer has stopped production.
@@ -55,9 +58,10 @@ The source sheet alone does not establish its exact beverage category.
 The two repeated entries are the white Fizz variants.
 The unit test requires exact product coverage and six source sheets.
 
-The graph contains 52 product nodes in 14 groups.
-It has 32 canonical catalog slugs and 3 additional slug aliases.
-It has 20 products without a verified catalog slug.
+The original sheet subset contains 52 product nodes in 14 groups.
+The original sheet subset has 32 canonical catalog slugs and three additional slug aliases.
+The extended graph contains 73 product nodes in 19 groups.
+The extended graph has 53 canonical catalog slugs, three aliases and 20 products without a verified catalog slug.
 
 | Group | Products | Canonical slugs | Missing slugs |
 | --- | ---: | ---: | ---: |
@@ -140,7 +144,7 @@ The UI disclaimer states these limits.
 
 ## Asset preparation
 
-The graph uses 52 local WebP files.
+The original sheet subset uses 52 local WebP files.
 The files retain the source alpha channel.
 Preparation removes transparent outer margins.
 Preparation limits height to 480 pixels.
@@ -276,3 +280,13 @@ The frame uses the source alpha outline and a small transparent margin.
 The frame changes image presentation only. Source image bytes and product facts are unchanged.
 The renderer uses the frame for group previews, product nodes and product details.
 Read [the sizing contract](product-image-sizing.md) for the measurement method.
+
+## Abrau-Durso catalog extension, 2026-10-16
+
+Read [the extension sources](product-line-maps/abrau-durso/sources.md).
+The current map represents 56 of the 57 producer snapshot cards.
+It retains the original 52 sheet products and adds 21 still-wine cards.
+The graph has 73 product nodes, 19 groups, 53 canonical catalog slugs and three aliases.
+The 20 gray products remain unchanged.
+The owner excluded `rozovoe-polusladkoe-2` until exact identification.
+All 21 new bottle photos have source alpha. No generated labels are used.

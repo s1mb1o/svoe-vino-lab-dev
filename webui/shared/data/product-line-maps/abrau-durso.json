@@ -13,8 +13,8 @@
     ]
   },
   "scope": {
-    "label": "Игристые вина и напитки",
-    "as_of": "2026-09-20",
+    "label": "Игристые и тихие вина, напитки",
+    "as_of": "2026-10-16",
     "catalog_snapshot": "official-2026-09-17"
   },
   "sources": [
@@ -62,6 +62,46 @@
       "id": "spumante-semi-dry-image",
       "label": "Изображение Abrau Spumante белое полусухое: Роскачество",
       "url": "https://rskrf.ru/upload/resize_cache/iblock/1d1/660_668_240cd750bba9870f18aada2478b24840a/rx3f9qty46thotasgt6ms7jcz4lrom4b.jpg"
+    },
+    {
+      "id": "official-still-premium",
+      "label": "Абрау-Дюрсо: премиальная коллекция тихих вин",
+      "url": "https://abrau.ru/collection/tihie-vina/premialnye-vina"
+    },
+    {
+      "id": "official-still-estates",
+      "label": "Абрау-Дюрсо: Abrau Estates",
+      "url": "https://abrau.ru/collection/tihie-vina/abrau-estates/"
+    },
+    {
+      "id": "official-estates-position",
+      "label": "Абрау-Дюрсо: позиционирование Abrau Estates",
+      "url": "https://vn.abrau.ru/news/abrau-durso-presents-abrau-estates-a-new-collection-of-still-wines"
+    },
+    {
+      "id": "official-estates-local-grapes",
+      "label": "Абрау-Дюрсо: Амурский Потапенко и Достойный",
+      "url": "https://abrau.ru/news/abrau-dyurso-predstavlyaet-abrau-estates-vinodelnya-yubileynaya"
+    },
+    {
+      "id": "official-still-blends",
+      "label": "Абрау-Дюрсо: тихие вина «Абрау Купаж» / Abrau Collection",
+      "url": "https://abrau.ru/collection/tihie-vina/kupazhnye-vina"
+    },
+    {
+      "id": "official-still-az",
+      "label": "Абрау-Дюрсо: Az Abrau",
+      "url": "https://abrau.ru/collection/tihie-vina/az-abrau"
+    },
+    {
+      "id": "official-still-femme",
+      "label": "Абрау-Дюрсо: Femme d’Abrau",
+      "url": "https://abrau.ru/collection/tihie-vina/abrau-femme"
+    },
+    {
+      "id": "official-femme-release",
+      "label": "Абрау-Дюрсо: лимитированный выпуск Femme d’Abrau",
+      "url": "https://abrau.ru/news/femme-d-abrau-kompliment-dlya-luchshey"
     }
   ],
   "price_positioning": {
@@ -74,10 +114,11 @@
       "id": "premium",
       "label": "Премиальные коллекции",
       "rank": 4,
-      "description": "Cuvée Alexander II, «Империал» и Brut d’Or. Премиальное позиционирование отмечено на подготовленных листах.",
+      "description": "Cuvée Alexander II, «Империал», Brut d’Or и тихие вина «Абрау-Дюрсо». Премиальное позиционирование подтверждено листами и официальным каталогом.",
       "price_label": "Премиальный сегмент · ₽₽₽₽",
       "source_ids": [
-        "prepared-sheets-2026-09-20"
+        "prepared-sheets-2026-09-20",
+        "official-still-premium"
       ]
     },
     {
@@ -92,22 +133,25 @@
     },
     {
       "id": "charmat",
-      "label": "Резервуарные коллекции",
+      "label": "Средний сегмент",
       "rank": 2,
-      "description": "Reserve, «Императорское» и архивное «Удельное ведомство». Метод Шарма. Относительный ценовой уровень задан редакционно.",
+      "description": "Reserve, «Императорское», архивное «Удельное ведомство» и тихие вина Abrau Estates. Метод производства указан отдельно для каждой группы. Относительный ценовой уровень — редакционный ориентир.",
       "price_label": "Средний сегмент · ₽₽",
       "source_ids": [
-        "prepared-sheets-2026-09-20"
+        "prepared-sheets-2026-09-20",
+        "official-still-estates",
+        "official-estates-position"
       ]
     },
     {
       "id": "accessible",
       "label": "Доступные коллекции",
       "rank": 1,
-      "description": "«Русское игристое» и Abrau Spumante. Доступное позиционирование отмечено на подготовленных листах.",
+      "description": "«Русское игристое», Abrau Spumante и тихие купажные вина «Абрау». Положение купажных вин в доступном сегменте задано редакционно.",
       "price_label": "Доступный сегмент · ₽",
       "source_ids": [
-        "prepared-sheets-2026-09-20"
+        "prepared-sheets-2026-09-20",
+        "official-still-blends"
       ]
     },
     {
@@ -119,6 +163,17 @@
       "source_ids": [
         "prepared-sheets-2026-09-20",
         "official-catalog-2025"
+      ]
+    },
+    {
+      "id": "still-special",
+      "label": "Тихие вина: особые коллекции",
+      "rank": 0,
+      "description": "Az Abrau и Femme d’Abrau. Отдельные направления по происхождению и стилю. Общая ценовая ступень не подтверждена.",
+      "price_label": "Без общего ценового ранга",
+      "source_ids": [
+        "official-still-az",
+        "official-still-femme"
       ]
     }
   ],
@@ -261,6 +316,59 @@
       "description": "Безалкогольные искристые напитки. Два варианта этикетки, каждый в бутылке и в банке.",
       "source_ids": [
         "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-still",
+      "name": "Абрау-Дюрсо · тихие вина",
+      "tier_id": "premium",
+      "method": "Тихие вина; выдержка зависит от выпуска",
+      "description": "Премиальная коллекция сортовых тихих вин. Рислинг, Шардоне, Пино Нуар и Каберне Совиньон представлены в разных оформлениях и выпусках.",
+      "source_ids": [
+        "official-still-premium",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "abrau-estates",
+      "name": "Abrau Estates",
+      "tier_id": "charmat",
+      "method": "Тихие вина; выдержка и технология зависят от продукта",
+      "description": "Тихие вина винодельни «Юбилейная»: европейские сорта, Амурский Потапенко и Достойный. В коллекции есть розовое вино, оранж и «Каберне по-белому».",
+      "source_ids": [
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "abrau-blends",
+      "name": "Абрау Купаж · тихие вина",
+      "tier_id": "accessible",
+      "method": "Тихие купажные вина",
+      "description": "Сухие и полусладкие купажные вина с ретроавтомобилями на этикетках. Современное название коллекции на сайте производителя — Abrau Collection. Это отдельная группа от одноимённых игристых вин в банках.",
+      "source_ids": [
+        "official-still-blends"
+      ]
+    },
+    {
+      "id": "az-abrau",
+      "name": "Az Abrau",
+      "tier_id": "still-special",
+      "method": "Тихие сортовые вина",
+      "description": "Коллекция вин из Азербайджана. Местные сорта Баяншира и Мадраса передают характер виноградников предгорий Большого Кавказа. Общий ценовой ранг не задан.",
+      "source_ids": [
+        "official-still-az"
+      ]
+    },
+    {
+      "id": "femme-dabrau",
+      "name": "Femme d’Abrau",
+      "tier_id": "still-special",
+      "method": "Тихие вина",
+      "description": "Лимитированная коллекция ароматных вин в лёгкой стилистике и специальном оформлении. Красное вино из Амурского Потапенко представлено отдельной позицией. Общий ценовой ранг не задан.",
+      "source_ids": [
+        "official-still-femme",
+        "official-femme-release"
       ]
     }
   ],
@@ -2063,6 +2171,718 @@
       "source_ids": [
         "official-catalog-2025",
         "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "abrau-still",
+      "name": "Абрау-Дюрсо Пино Нуар",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат тонкий — вишня, малина, лёгкие нотки земляники и пряностей; вкус элегантный, с мягкими танинами, свежей кислотностью и продолжительным ягодным послевкусием. К мясным блюдам, сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates Амурский Потапенко",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Амурский Потапенко"
+      ],
+      "description": "В аромате цветочные ноты пионов и фиалок, тона черных ягод и фруктов – шелковицы, черной смородины и ежевики с нюансами пряностей. Во вкусе ноты синей сливы, черешни, черной смородины. Послевкусие с яркими танинами и тонкой пряностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates белое",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг",
+        "Уньи блан",
+        "Шардоне"
+      ],
+      "description": "В аромате ноты белого персика, свежих тропических фруктов, средиземноморских специй и лаванды. В аромате тона грейпфрута, экзотических фруктов и белой дыни с яркой, живой кислотностью и ярким послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates. Достойный",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 195,
+          "height": 727,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Достойный"
+      ],
+      "description": "В аромате джемовые ноты красных ягод: смородины, вишни, кизила и терна. тона сафьяна и тонкая копченая нота. Аромат яркий, объемный с ягодной свежестью, тонкой кислотностью и бархатными танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates Каберне по-белому",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 194,
+          "height": 724,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате тона белой сливы, крыжовника и весенних первоцветов. Во вкусе ягодные оттенки с нюансами минеральности с деликатным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates красное",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 196,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "В аромате фрукты, табак, чернослив, шоколад и мускатный орех. Вкус кислотный, свежий, с мягкими танинами, легкими животными и табачными нюансами в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates Оранж",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 199,
+          "height": 724,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Оранжевое",
+      "grapes": [
+        "Цитронный Магарача"
+      ],
+      "description": "В аромате медовые и цитрусовые оттенки, ноты спелых и сочных белых фруктов, пряные тона полевых трав с нюансами мяты. Вкус сбалансированный с сочными, но тонкими танинами, цитрусовой легкой кислинкой и медовой сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "group_id": "abrau-estates",
+      "name": "Abrau Estates. Розе",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 195,
+          "height": 727,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран"
+      ],
+      "description": "В аромате тона свежей клубники, спелой малины и смородины. Вкус легкий, наполненный ягодными оттенками, отличается свежестью и хорошим балансом. Сочные ягодные оттенки дополнены нюансами минеральности с деликатным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "abrau-blends",
+      "name": "Абрау Купаж красный полсусладкое",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 175,
+          "height": 723,
+          "source_width": 184,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "В аромате красные ягоды и вишнево-смородиновый джем. Во вкусе фруктовые нюансы и продолжительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "group_id": "abrau-blends",
+      "name": "Абрау Купаж светлый сухое",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 5,
+          "width": 176,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Августин",
+        "Рислинг",
+        "Уньи блан",
+        "Шардоне"
+      ],
+      "description": "В аромате ноты крыжовника в сочетании с белыми цветами. Во вкусе ноты алычи и тропические фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "group_id": "abrau-blends",
+      "name": "Абрау Купаж тёмный сухое",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 176,
+          "height": 723,
+          "source_width": 184,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "В аромате ноты свежих ягод и вишневого джема с оттенками специй. Вкус сбалансированный с нюансами пряностей и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "group_id": "az-abrau",
+      "name": "Az Abrau Баяншира",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Баяншира"
+      ],
+      "description": "В аромате дюшес, айва и тропические фрукты. Вкус насыщенный, с округлой текстурой. Ноты белых фруктов и цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-az"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "group_id": "az-abrau",
+      "name": "Az Abrau Мадраса",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "мадраса"
+      ],
+      "description": "В аромате черные ягоды и пряности. Вкус насыщенный, мощный и терпкий с яркими танинами, пряными нюансами и деликатным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-az"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "group_id": "femme-dabrau",
+      "name": "Femme d’Abrau",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 268,
+          "height": 723,
+          "source_width": 276,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Амурский Потапенко"
+      ],
+      "description": "В аромате цветочные ноты пионов и фиалок, тона черных ягод и фруктов, шелковицы, черной смородины и ежевики с нотой пряностей. Во вкусе цветочные ноты пионов и фиалок, тона черных ягод и фруктов, шелковицы, черной смородины и ежевики с нотой пряностей.",
+      "release_status": "catalog",
+      "badges": [
+        "Лимитированная коллекция"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-femme",
+        "official-femme-release"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат богатый и многогранный, раскрывающийся постепенно: сочные тона черной смородины, нежной фиалки и ежевики сменяются джемовыми нотами спелого инжира, оттенками чабреца и молотого черного перца. Вкус мягкий, объемный, с четкой структурой, округлыми танинами и долгим сочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "group_id": "abrau-still",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 226,
+          "height": 727,
+          "source_width": 235,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат нежный и тонкий, с доминирующими нотами лесной малины, вишни и удивительным легким оттенком лепестков розы, дополненный сладковатыми акцентами джема из черных ягод. Вкус утонченный, с яркой кислотностью и выраженным сухим танином, который сохраняется в долгом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате спелые темные фрукты, табака, подлеска, нюансами лакрицы, пряных специй и трав. Вкус сочный, округлый с тонами спелой ежевики, черной вишни, цветов, чернослива и мягкими оттенками специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-risling-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 172,
+          "height": 728,
+          "source_width": 178,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате фрукты, полевые цветы, манго, засахаренный персик. Вкус сбалансированный с цитрусово-цветочными акцентами и длительное мягкое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-risling-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 165,
+          "height": 727,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Спелый аромат с нотами ранетки, сушеных фруктов, айвы и белых цветов. Вкус простой, понятный, характерная для сорта яркая кислотность несколько перетягивает на себя внимание.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-shardone-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 233,
+          "height": 728,
+          "source_width": 237,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате пряная ваниль, спелый персик и луговые цветы. Во вкусе минеральные ноты, тонкие нюансы дуба.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ]
+    },
+    {
+      "id": "wine-abrau-dyurso-shardone-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 226,
+          "height": 726,
+          "source_width": 235,
+          "source_height": 732
+        }
+      },
+      "category": "Тихое вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Красивый развитый аромат с нотами сушеных яблок, айвы, персиковой пастилы, безе, орехов и весенних медоносных цветов. Вкус ровный, с приятной округлостью и легкой маслянистостью. Приятное послевкусие с тонами каленых орехов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
       ]
     }
   ]

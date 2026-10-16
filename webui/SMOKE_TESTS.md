@@ -39,6 +39,16 @@ The presentation files and video remain byte-identical to the previous release.
 - Block the external Metrika loader. Confirm that the page and navigation still work.
 - Confirm the existing age gate, service health, and presentation artifacts.
 
+## Abrau-Durso still-wine completion
+
+1. Open every new exact slug from `docs/product-line-maps/abrau-durso/catalog-extension.json`.
+2. Confirm that the product is selected, its group is expanded, and its image loads without clipping.
+3. Check the five still-wine groups at desktop, 390 px and 320 px widths in both themes.
+4. Open the mobile popup. Confirm the exact portal URL and return to the same map position.
+5. Confirm that the old 52 sheet products and all three aliases still resolve.
+6. Confirm that `rozovoe-polusladkoe-2` remains unplaced after recognition, as requested by the owner.
+7. Delay the Playfair font response on initial load. Confirm that the selected wine stays centered after the font loads.
+
 ## Additional producer maps
 
 Check `official-5000-cabernet-sauvignon`, `wine-ona-skazala-da`, `wine-beloe-polusladkoe`, and all eight restored Zolotaya Balka images.

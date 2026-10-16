@@ -1,0 +1,593 @@
+{
+  "producer_id": "abrau-durso",
+  "date": "2026-10-16",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_source_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "entries": [
+    {
+      "product_id": "wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug": "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "abrau-still",
+      "catalog_name": "Абрау-Дюрсо Пино Нуар",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_dyurso_pino_nuar_krasnoe_suhoe_13_2c1e6330fe.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_dyurso_pino_nuar_krasnoe_suhoe_13_2c1e6330fe.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_dyurso_pino_nuar_krasnoe_suhoe_13_2c1e6330fe.webp",
+      "input_asset_sha256": "b3c3379aa13e2ce09eb6cd740e9d6e6d8b339644a90478082254d5f74f9ba97b",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+      "asset_sha256": "d93a39f36e20d40b8ba2dd4c4a3ceae58051ee14ad4d4f968f61a7bc08a80102",
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "width": 233,
+        "height": 728,
+        "source_width": 237,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "wine_slug": "abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates Амурский Потапенко",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_amurskiy_potapenko_krasnoe_suhoe_105_a70c9cabe2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_amurskiy_potapenko_krasnoe_suhoe_105_a70c9cabe2.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_amurskiy_potapenko_krasnoe_suhoe_105_a70c9cabe2.webp",
+      "input_asset_sha256": "3d86ea70000a54bcb6259101b14a654f2edf2d567de5b496e3010f869d90807c",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105.webp",
+      "asset_sha256": "3bf68beda0dec1762bc07af8bf0aa07f6f98da0af2f93b914d8e056d9a28fae8",
+      "frame": {
+        "x": 5,
+        "y": 4,
+        "width": 194,
+        "height": 724,
+        "source_width": 203,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "wine_slug": "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates белое",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_beloe_shardone_suhoe_12_6c1aeb2039.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_beloe_shardone_suhoe_12_6c1aeb2039.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_beloe_shardone_suhoe_12_6c1aeb2039.webp",
+      "input_asset_sha256": "5cfa62936bf3bfd8f9eec0cb4f5d973b5293a683cf83a64c9bc41f4e6e0762d6",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+      "asset_sha256": "2394537ebe109a0d6ace74a3069b336960951b1e3a1701c17f057c950cb2da0a",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 194,
+        "height": 724,
+        "source_width": 203,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "wine_slug": "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates. Достойный",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_dostoynyy_krasnoe_suhoe_135_a2b9e120e4.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_dostoynyy_krasnoe_suhoe_135_a2b9e120e4.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_dostoynyy_krasnoe_suhoe_135_a2b9e120e4.webp",
+      "input_asset_sha256": "7984812cc05b62688750713db697704b57feeffbae93c2ca15ff787b7222f93d",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135.webp",
+      "asset_sha256": "8719f116a2f8ce3110b3087b8732a6eea5b9b3ceb9f2b64d0cee76b26b92367e",
+      "frame": {
+        "x": 4,
+        "y": 3,
+        "width": 195,
+        "height": 727,
+        "source_width": 203,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "wine_slug": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates Каберне по-белому",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_kaberne_po_belomu_kaberne_sovinon_beloe_suhoe_105_a340de7dd3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_kaberne_po_belomu_kaberne_sovinon_beloe_suhoe_105_a340de7dd3.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_kaberne_po_belomu_kaberne_sovinon_beloe_suhoe_105_a340de7dd3.webp",
+      "input_asset_sha256": "b8963dea7949c6c9ce066bcb2902e4f06479c36ae37871e7eb13083951ce9f04",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105.webp",
+      "asset_sha256": "46760830a367bff11195c1523fa53da6f0d78f847e8da44320cfb7d985c29322",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 194,
+        "height": 724,
+        "source_width": 202,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "wine_slug": "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates красное",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_krasnoe_kaberne_sovinon_suhoe_13_1770f5150f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_krasnoe_kaberne_sovinon_suhoe_13_1770f5150f.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_krasnoe_kaberne_sovinon_suhoe_13_1770f5150f.webp",
+      "input_asset_sha256": "4bfdb98b56e3542f0588a260c2d5adf9638892e7772edcbc69604fa468e11f24",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13.webp",
+      "asset_sha256": "7b2230b12c5fc5514dd91d917f3500386873c1f3c2d0563c6d44e307f0fe572c",
+      "frame": {
+        "x": 3,
+        "y": 2,
+        "width": 196,
+        "height": 728,
+        "source_width": 203,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "wine_slug": "abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates Оранж",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_105_95e00a834b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_105_95e00a834b.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_105_95e00a834b.webp",
+      "input_asset_sha256": "f372eb5dd479d521f09fe0320a2dc19fbdc8f2e0f5c2793d4518e4c056b23f42",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-105.webp",
+      "asset_sha256": "373ba3f64ec10277e380ff730d9e378baabe7c09d81e3da12b08d7e0e091c4de",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 199,
+        "height": 724,
+        "source_width": 207,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "wine_slug": "abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12",
+      "group_id": "abrau-estates",
+      "catalog_name": "Abrau Estates. Розе",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_estates_roze_kaberne_sovinon_rozovoe_suhoe_12_416c8f123b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_estates_roze_kaberne_sovinon_rozovoe_suhoe_12_416c8f123b.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_estates_roze_kaberne_sovinon_rozovoe_suhoe_12_416c8f123b.webp",
+      "input_asset_sha256": "e694ad3509c385db285beb35563ac045909786cd5f56ef179626a084257e6996",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-roze-kaberne-sovinon-rozovoe-suhoe-12.webp",
+      "asset_sha256": "f1e480ea140b02574a81c09f7c5e1e65cc3e604af166fe060e483273c702d4d1",
+      "frame": {
+        "x": 4,
+        "y": 3,
+        "width": 195,
+        "height": 727,
+        "source_width": 203,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-estates",
+        "official-estates-local-grapes"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "abrau-blends",
+      "catalog_name": "Абрау Купаж красный полсусладкое",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_kupazh_krasnyy_polsusladkoe_kaberne_sovinon_krasnoe_polusladkoe_11_291e93ae8d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_kupazh_krasnyy_polsusladkoe_kaberne_sovinon_krasnoe_polusladkoe_11_291e93ae8d.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_kupazh_krasnyy_polsusladkoe_kaberne_sovinon_krasnoe_polusladkoe_11_291e93ae8d.webp",
+      "input_asset_sha256": "dc2cd3a9987363d9fca3ade8ebf86293511db0a29675870a7a048e3f8a62710f",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-krasnyy-polsusladkoe-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+      "asset_sha256": "bd470e21e89f08872d3395625320fd3ac31511cdddfa5e5a506fe1b70918142a",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 175,
+        "height": 723,
+        "source_width": 184,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "group_id": "abrau-blends",
+      "catalog_name": "Абрау Купаж светлый сухое",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_kupazh_svetlyy_suhoe_shardone_beloe_125_b60d4bb639.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_kupazh_svetlyy_suhoe_shardone_beloe_125_b60d4bb639.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_kupazh_svetlyy_suhoe_shardone_beloe_125_b60d4bb639.webp",
+      "input_asset_sha256": "1da65da387479645a1c4360bb92dffb4f31d8be823104454ba4ad8f9f8cfd1fa",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125.webp",
+      "asset_sha256": "07beec15139f5ebcac32b144616188b4519046345e56ac9061b04b0db7ed8aca",
+      "frame": {
+        "x": 4,
+        "y": 5,
+        "width": 176,
+        "height": 722,
+        "source_width": 185,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "wine_slug": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+      "group_id": "abrau-blends",
+      "catalog_name": "Абрау Купаж тёмный сухое",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_abrau_kupazh_tyomnyy_suhoe_kaberne_sovinon_krasnoe_13_a9c6a97e9b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_abrau_kupazh_tyomnyy_suhoe_kaberne_sovinon_krasnoe_13_a9c6a97e9b.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_abrau_kupazh_tyomnyy_suhoe_kaberne_sovinon_krasnoe_13_a9c6a97e9b.webp",
+      "input_asset_sha256": "aeac8a6eff423d88e8cf66349d4138a8ac717b9b9bf9ceeaa32c9453da17eb16",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13.webp",
+      "asset_sha256": "af80b158663e2cafb79df324ca194924796c1d919590855a11f5a70ffd2c68bb",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 176,
+        "height": 723,
+        "source_width": 184,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-blends"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "wine_slug": "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12",
+      "group_id": "az-abrau",
+      "catalog_name": "Az Abrau Баяншира",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_az_abrau_bayanshira_beloe_suhoe_12_50e16ea5d5.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_az_abrau_bayanshira_beloe_suhoe_12_50e16ea5d5.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_az_abrau_bayanshira_beloe_suhoe_12_50e16ea5d5.webp",
+      "input_asset_sha256": "72e20812bf92c81c38da9457021972ec87b353d9586ebe850f38f3732b954921",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12.webp",
+      "asset_sha256": "916488d5da536f493d0081f1a7c3501dfa14bb3282bc26f71cbdde0c83c1bce0",
+      "frame": {
+        "x": 4,
+        "y": 2,
+        "width": 197,
+        "height": 728,
+        "source_width": 205,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-az"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "wine_slug": "abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14",
+      "group_id": "az-abrau",
+      "catalog_name": "Az Abrau Мадраса",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_az_abrau_madrasa_krasnoe_suhoe_14_a2a0b9e8a3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_az_abrau_madrasa_krasnoe_suhoe_14_a2a0b9e8a3.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_az_abrau_madrasa_krasnoe_suhoe_14_a2a0b9e8a3.webp",
+      "input_asset_sha256": "72e20812bf92c81c38da9457021972ec87b353d9586ebe850f38f3732b954921",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-az-abrau-madrasa-krasnoe-suhoe-14.webp",
+      "asset_sha256": "916488d5da536f493d0081f1a7c3501dfa14bb3282bc26f71cbdde0c83c1bce0",
+      "frame": {
+        "x": 4,
+        "y": 2,
+        "width": 197,
+        "height": 728,
+        "source_width": 205,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-az"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "wine_slug": "abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107",
+      "group_id": "femme-dabrau",
+      "catalog_name": "Femme d’Abrau",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_femme_dabrau_amurskiy_potapenko_krasnoe_suhoe_107_d599cb8a22.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_femme_dabrau_amurskiy_potapenko_krasnoe_suhoe_107_d599cb8a22.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_femme_dabrau_amurskiy_potapenko_krasnoe_suhoe_107_d599cb8a22.webp",
+      "input_asset_sha256": "a2cbcd83cde3d3e464d6a98deeb9a6f13c1790572b66a72f5deac6b15f112f46",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107.webp",
+      "asset_sha256": "950bb305f0025efac27062333c07c05e55ee3cb83e68a1dae13f4ca0a794f376",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "width": 268,
+        "height": 723,
+        "source_width": 276,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-femme",
+        "official-femme-release"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug": "abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "catalog_name": "Каберне Совиньон",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_125_b9410efa7a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_125_b9410efa7a.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_125_b9410efa7a.webp",
+      "input_asset_sha256": "98968f4b2d5fdfbffd8850cb66c0e2623c1b25a3b4daceadd9da40236175708e",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125.webp",
+      "asset_sha256": "6c2cdf4d8fc70f2d26f3ab8d2d260e7c9fbd3db215347e8819b66d08e970c5d6",
+      "frame": {
+        "x": 4,
+        "y": 2,
+        "width": 202,
+        "height": 728,
+        "source_width": 210,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "group_id": "abrau-still",
+      "catalog_name": "Пино Нуар",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_pino_nuar_krasnoe_suhoe_vyderzhannoe_12_e7055f24aa.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_pino_nuar_krasnoe_suhoe_vyderzhannoe_12_e7055f24aa.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_pino_nuar_krasnoe_suhoe_vyderzhannoe_12_e7055f24aa.webp",
+      "input_asset_sha256": "6d49065f5f9c8047f1d95a6ed3b00c1d4e07515f34d0344213fa8a5eca4f4b2e",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12.webp",
+      "asset_sha256": "15e30e774756a5bb677bea2c7aeca14070c8d97a5734154ef33fff38755744bf",
+      "frame": {
+        "x": 5,
+        "y": 2,
+        "width": 226,
+        "height": 727,
+        "source_width": 235,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "wine_slug": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "abrau-still",
+      "catalog_name": "Пино Нуар",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_pino_nuar_krasnoe_suhoe_125_529987dabf.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_pino_nuar_krasnoe_suhoe_125_529987dabf.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_pino_nuar_krasnoe_suhoe_125_529987dabf.webp",
+      "input_asset_sha256": "0ecb9ee4ad264b5b36ab92bf03e82e3dcd0e22a292df8ee17e0763206dc60cc6",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125.webp",
+      "asset_sha256": "1a2160ba3eda56c2916e396f47bebcda5fe605dc91d883326f1e1ddeb6168b2b",
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "width": 233,
+        "height": 728,
+        "source_width": 237,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-risling-beloe-suhoe-12",
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_risling_beloe_suhoe_12_dea6af4677.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_risling_beloe_suhoe_12_dea6af4677.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_risling_beloe_suhoe_12_dea6af4677.webp",
+      "input_asset_sha256": "4b2867006e599bac54f4691fa98aeb17feeb142bf6aae62bb38c671435489d64",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-12.webp",
+      "asset_sha256": "9497b179925d81c2d94212c507232717a790ffd320f8e252fe0406dc6312932c",
+      "frame": {
+        "x": 4,
+        "y": 2,
+        "width": 172,
+        "height": 728,
+        "source_width": 178,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-risling-beloe-suhoe-13",
+      "wine_slug": "abrau-dyurso-risling-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_risling_beloe_suhoe_vyderzhannoe_13_3d81416050.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_risling_beloe_suhoe_vyderzhannoe_13_3d81416050.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_risling_beloe_suhoe_vyderzhannoe_13_3d81416050.webp",
+      "input_asset_sha256": "ace4bab6999ddd07affe873d313072dc529cd555bad15ffbad0bdc5c590be0b8",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-risling-beloe-suhoe-13.webp",
+      "asset_sha256": "9a678f7c53087c8976c0dabefc785bf907054842f8ef4d591075c18c9705f9af",
+      "frame": {
+        "x": 4,
+        "y": 2,
+        "width": 165,
+        "height": 727,
+        "source_width": 173,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-shardone-beloe-suhoe-12",
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-12",
+      "group_id": "abrau-still",
+      "catalog_name": "Шардоне",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_shardone_beloe_suhoe_12_9e3d40dd34.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_shardone_beloe_suhoe_12_9e3d40dd34.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_shardone_beloe_suhoe_12_9e3d40dd34.webp",
+      "input_asset_sha256": "bcd51571d0c612f532f59fa505695bf0758ee99b8af2bc9dd3d0734643832e04",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-12.webp",
+      "asset_sha256": "6954fd3469c30b1fb4d93e40c6362233f12db66b735a155c6681487ca10943fe",
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "width": 233,
+        "height": 728,
+        "source_width": 237,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    },
+    {
+      "product_id": "wine-abrau-dyurso-shardone-beloe-suhoe-13",
+      "wine_slug": "abrau-dyurso-shardone-beloe-suhoe-13",
+      "group_id": "abrau-still",
+      "catalog_name": "Шардоне",
+      "catalog_producer": "Абрау-Дюрсо",
+      "source_image": "abrau_dyurso_shardone_beloe_suhoe_vyderzhannoe_13_3fdd6c2c92.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/abrau_dyurso_shardone_beloe_suhoe_vyderzhannoe_13_3fdd6c2c92.webp",
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/abrau_dyurso_shardone_beloe_suhoe_vyderzhannoe_13_3fdd6c2c92.webp",
+      "input_asset_sha256": "b1aaa8361e155e75af39cb70a6d212ce4f53a0594bc1b809dc72f9178aebd87d",
+      "asset": "/product-line-maps/abrau-durso/wine-abrau-dyurso-shardone-beloe-suhoe-13.webp",
+      "asset_sha256": "48253a18b6f548a450cdbfd3b577e9cc205a4cd54e3e63204f83b686abe9fd3f",
+      "frame": {
+        "x": 4,
+        "y": 3,
+        "width": 226,
+        "height": 726,
+        "source_width": 235,
+        "source_height": 732
+      },
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-still-premium"
+      ],
+      "transformation": "Crop transparent outer margins. Fit to at most 720 px height. Add 6 transparent pixels. Encode WebP at quality 88 with alpha quality 100. Preserve source label pixels through resampling. No segmentation or image generation is used.",
+      "mapping_basis": "The exact catalog name and bottle label identify the collection. Keep separate snapshot cards and package appearances. Do not infer year, alcohol or sweetness from the slug suffix."
+    }
+  ],
+  "excluded_catalog_cards": [
+    {
+      "wine_slug": "rozovoe-polusladkoe-2",
+      "catalog_name": "Розовое полусладкое",
+      "reason": "The source is a generated wine-glass scene. No exact bottle or collection is established. The owner explicitly requested exclusion until exact identification.",
+      "owner_decision_date": "2026-10-16",
+      "source_image": "Generated_Image_June_22_2026_10_44_PM_8cfe21d41e.webp",
+      "source_image_sha256": "0281e2d0268e36f2f003c62bcb0663ea2b7762bf8df5c13b5db261cba2bc5f13"
+    }
+  ]
+}
