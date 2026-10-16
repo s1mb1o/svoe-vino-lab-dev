@@ -20,6 +20,9 @@ x-max-bot-common: &common
   volumes:
     - ./data:/data
   restart: unless-stopped
+  # Without an init process the bot is PID 1, and Linux ignores SIGTERM to PID 1 until the bot
+  # installs its handler. A stop during startup then waits for the kill after the grace period.
+  init: true
   read_only: true
   tmpfs:
     - /tmp

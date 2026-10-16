@@ -341,7 +341,9 @@
 - Confirm that `docker compose exec max-bot touch /app/x` fails (read-only root file system).
 - Restart the bot container while no photo job runs.
 - Confirm that the bot answers a new photo after the restart.
-- Run `docker compose stop` and confirm that both containers exit with code 0.
+- Run `docker compose stop` and confirm that it ends in a few seconds: the bot exits with code 0;
+  the administration interface exits with 0 or 143, because uvicorn raises SIGTERM again after
+  its graceful shutdown.
 
 ## Host verification and data lifecycle
 

@@ -32,37 +32,41 @@ The files of this directory:
   Russian Trusted Root CA that `platform-api2.max.ru` needs. Do not add it to the host.
 - The model services: ShieldGemma and SAM3 on `192.168.86.14:18081`, the matcher on
   `192.168.86.14:28000`.
-- A user that can run Docker. uid 1000 owns `/srv/svoe-vino-lab`, and the containers run as
-  uid 1000.
+- A deploy user with uid 1000 that can run Docker. uid 1000 owns `/srv/svoe-vino-lab`, and the
+  containers run as uid 1000. Run the `docker compose` commands as this user.
 
 ## First installation
 
-1. Make the directories:
+1. Make the directories. Give each one to uid 1000 explicitly: a directory that root owns
+   stops the containers from writing the database.
 
    ```bash
    sudo install -d -o 1000 -g 1000 -m 0750 /srv/svoe-vino-lab/prod/max-bot
-   install -d -m 0750 /srv/svoe-vino-lab/prod/max-bot/data
-   install -d -m 0700 /srv/svoe-vino-lab/prod/max-bot/config
+   sudo install -d -o 1000 -g 1000 -m 0750 /srv/svoe-vino-lab/prod/max-bot/data
+   sudo install -d -o 1000 -g 1000 -m 0700 /srv/svoe-vino-lab/prod/max-bot/config
    ```
 
 2. Copy the Compose file and the environment template from a checkout of the revision:
 
    ```bash
    cd /path/to/svoe-vino-lab
-   cp max-bot/deploy/gx10/max-bot-prod.compose.yaml /srv/svoe-vino-lab/prod/max-bot/compose.yaml
-   install -m 0600 max-bot/deploy/gx10/max-bot.env.example \
+   sudo install -o 1000 -g 1000 -m 0640 max-bot/deploy/gx10/max-bot-prod.compose.yaml \
+       /srv/svoe-vino-lab/prod/max-bot/compose.yaml
+   sudo install -o 1000 -g 1000 -m 0600 max-bot/deploy/gx10/max-bot.env.example \
        /srv/svoe-vino-lab/prod/max-bot/config/max-bot.env
    ```
 
 3. Edit `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` with an editor. Set
    `MAX_BOT_TOKEN`, `BOT_ADMIN_USER_ID`, `BOT_HTTP_API_TOKEN`, and `BOT_ADMIN_WEB_PASSWORD`.
    Generate each random value separately, for example with `openssl rand -hex 32`.
-   Do not put a secret on a command line, because the shell history keeps it.
+   Write each secret between single quotes (`MAX_BOT_TOKEN='...'`): Compose expands `$NAME` in
+   an unquoted value. Do not put a secret on a command line, because the shell history keeps it.
 
 4. Check the permissions:
 
    ```bash
-   stat -c '%a %U' /srv/svoe-vino-lab/prod/max-bot/config/max-bot.env   # 600 <deploy user>
+   stat -c '%a %u' /srv/svoe-vino-lab/prod/max-bot/config/max-bot.env   # 600 1000
+   stat -c '%a %u' /srv/svoe-vino-lab/prod/max-bot/data                 # 750 1000
    ```
 
 ## Build and start a revision
@@ -138,18 +142,38 @@ polling.
 - Stop: `docker compose stop`. The bot stops on SIGTERM and finishes cleanly.
 - Token rotation: refresh the token on business.max.ru («Чат-боты → ⋮ → Настройки», the refresh
   icon), write it to `config/max-bot.env`, and run `docker compose up -d`.
-- Early deletion of the data of one user. Stop the bot first, because the deletion needs no
-  active requests:
-
-  ```bash
-  docker compose stop max-bot
-  docker compose run --rm --no-deps max-bot chto-za-vino-max-delete-user USER_ID --confirm
-  docker compose start max-bot
-  ```
-
 - Backup: stop the bot or use `sqlite3 data/bot.sqlite3 ".backup ..."`, then copy `data/`.
   The data directory holds user photos. Keep its backup with the same protection.
 - Retention: the bot deletes terminal request data after 30 days, at startup and once each day.
+
+### Early deletion of the data of one user
+
+The deletion command refuses a user with an active request (`received`, `queued`,
+`processing`, or `retry_requested`). A stop during a photo job keeps the status of the job.
+
+1. Count the active requests of the user. Continue only when the count is `0`:
+
+```bash
+docker compose run --rm --no-deps -T max-bot python - USER_ID <<'PY'
+import sqlite3, sys
+active = ("received", "queued", "processing", "retry_requested")
+print(sqlite3.connect("/data/bot.sqlite3").execute(
+    "SELECT COUNT(*) FROM requests WHERE user_id = ? AND status IN (?, ?, ?, ?)",
+    (int(sys.argv[1]), *active),
+).fetchone()[0])
+PY
+```
+
+2. Stop the bot, delete the data, and start the bot:
+
+```bash
+docker compose stop max-bot
+docker compose run --rm --no-deps max-bot chto-za-vino-max-delete-user USER_ID --confirm
+docker compose start max-bot
+```
+
+If the deletion command reports active requests, start the bot, wait until the requests finish
+(the administration interface shows their status), and repeat from step 1.
 
 ## Switch to a webhook later
 
