@@ -231,7 +231,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-aligote-avtorskoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 1000,
+          "source_width": 280,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -256,7 +264,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-aligote-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 1000,
+          "source_width": 280,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -301,7 +317,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-caperavi-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 292,
+          "height": 1000,
+          "source_width": 292,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -326,7 +350,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-cary-pandas-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 293,
+          "height": 1000,
+          "source_width": 293,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -351,7 +383,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-cira-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 292,
+          "height": 1000,
+          "source_width": 292,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -376,7 +416,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-kaberne-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 15,
+          "width": 342,
+          "height": 1231,
+          "source_width": 342,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -401,7 +449,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-kaberne-sovinon.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 296,
+          "height": 1000,
+          "source_width": 296,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -426,7 +482,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-kokur-avtorskoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 1000,
+          "source_width": 280,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -451,7 +515,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-kokur-premium.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 301,
+          "height": 1000,
+          "source_width": 301,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -476,7 +548,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-kokur-suhoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1169,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -501,7 +581,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-madera-krymskaya.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1169,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -529,7 +617,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-avtorskoe-murvedr-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 21,
+          "y": 22,
+          "width": 435,
+          "height": 1467,
+          "source_width": 474,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -554,7 +650,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-bastardo-bastardo-magarachskiy-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1,
+          "y": 1,
+          "width": 176,
+          "height": 699,
+          "source_width": 178,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -579,7 +683,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 530,
+          "y": 3,
+          "width": 344,
+          "height": 1395,
+          "source_width": 1400,
+          "source_height": 1400
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -609,7 +721,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-kagor-gurzuf-saperavi-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 344,
+          "height": 1500,
+          "source_width": 344,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -636,7 +756,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-kagor-yuzhnoberezhnyy-saperavi-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 7,
+          "width": 170,
+          "height": 693,
+          "source_width": 175,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -661,7 +789,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-kokur.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1168,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -686,7 +822,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-kokur-desertnyy-surozh-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 177,
+          "height": 700,
+          "source_width": 177,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -711,7 +855,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-lakrima-kristi-aleatiko-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 4,
+          "width": 172,
+          "height": 696,
+          "source_width": 173,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -736,7 +888,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-massandra-heres-oreadna-aligote-beloe-suhoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 168,
+          "height": 700,
+          "source_width": 168,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -763,7 +923,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1167,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -790,7 +958,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-krasnogo-kamnya-beloe-sladkoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 145,
+          "height": 625,
+          "source_width": 145,
+          "source_height": 625
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -815,7 +991,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-pozdnego-sbora-beloe-sladkoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 118,
+          "height": 700,
+          "source_width": 118,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -840,7 +1024,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 889,
+          "y": 0,
+          "width": 582,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -865,7 +1057,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 973,
+          "y": 0,
+          "width": 416,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -890,7 +1090,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 116,
+          "height": 700,
+          "source_width": 116,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -915,7 +1123,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 600,
+          "source_width": 140,
+          "source_height": 600
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -940,7 +1156,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 167,
+          "height": 700,
+          "source_width": 167,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -965,7 +1189,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-muskatel-rozovyy-belye-sorta-vinograda-rozovoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 365,
+          "height": 1500,
+          "source_width": 365,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -991,7 +1223,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-pino-gri-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 0,
+          "width": 360,
+          "height": 1494,
+          "source_width": 376,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1016,7 +1256,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-alushta-belye-sorta-vinograda-beloe-sladkoe-17.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1,
+          "y": 0,
+          "width": 168,
+          "height": 700,
+          "source_width": 169,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1041,7 +1289,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 890,
+          "y": 0,
+          "width": 581,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1066,7 +1322,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 359,
+          "height": 1500,
+          "source_width": 359,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1093,7 +1357,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 167,
+          "height": 700,
+          "source_width": 167,
+          "source_height": 700
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1118,7 +1390,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-portveyn-krasnyy-livadiya-kaberne-sovinon-krasnoe-sladkoe-185.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 358,
+          "height": 1500,
+          "source_width": 358,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1143,7 +1423,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-premium-sangiovese-sandzhoveze-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 180,
+          "height": 621,
+          "source_width": 180,
+          "source_height": 621
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1168,7 +1456,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-rozovoe-suhoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1168,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1194,7 +1490,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 21,
+          "y": 22,
+          "width": 435,
+          "height": 1467,
+          "source_width": 474,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1219,7 +1523,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-muskat-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 293,
+          "height": 1000,
+          "source_width": 293,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1244,7 +1556,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-muskat-pozdnego-sbora-rozovyj.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 169,
+          "height": 1000,
+          "source_width": 169,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1269,7 +1589,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-pino-gri-avtorskoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 1000,
+          "source_width": 280,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1294,7 +1622,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-portvejn-surozh.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 0,
+          "width": 285,
+          "height": 1170,
+          "source_width": 321,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1319,7 +1655,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/wine-roze-avtorskoe-vino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 290,
+          "height": 1000,
+          "source_width": 290,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1344,7 +1688,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/official-malaga.webp",
-        "source_id": "official-malaga"
+        "source_id": "official-malaga",
+        "frame": {
+          "x": 19,
+          "y": 0,
+          "width": 304,
+          "height": 1252,
+          "source_width": 342,
+          "source_height": 1280
+        }
       },
       "category": "Марочное креплёное вино",
       "style": "Красное · десертное",
@@ -1370,7 +1722,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/massandra/official-black-muscat.webp",
-        "source_id": "official-black-muscat"
+        "source_id": "official-black-muscat",
+        "frame": {
+          "x": 19,
+          "y": 0,
+          "width": 304,
+          "height": 1252,
+          "source_width": 342,
+          "source_height": 1280
+        }
       },
       "category": "Марочное креплёное вино",
       "style": "Красное · десертное",
