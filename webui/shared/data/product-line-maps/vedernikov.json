@@ -211,7 +211,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-rkacziteli-beloe-suhoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 73,
+          "y": 0,
+          "width": 334,
+          "height": 1200,
+          "source_width": 491,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -236,7 +244,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 314,
+          "height": 997,
+          "source_width": 314,
+          "source_height": 997
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -261,7 +277,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -286,7 +310,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -311,7 +343,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 266,
+          "height": 997,
+          "source_width": 266,
+          "source_height": 997
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -336,7 +376,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-beloe-risling-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -361,7 +409,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskiy-rezerv-krasnoe-kaberne-sovinon-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -387,7 +443,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 235,
+          "height": 1000,
+          "source_width": 235,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -413,7 +477,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-kaberne-krasnostop-zolotovskiy-krasnoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 235,
+          "height": 1000,
+          "source_width": 235,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -439,7 +511,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-risling-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -463,7 +543,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-rkatsiteli-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 194,
+          "y": 0,
+          "width": 209,
+          "height": 800,
+          "source_width": 600,
+          "source_height": 800
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -487,7 +575,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-gubernatorskoe-rozovoe-tsimlyanskiy-chernyy-suhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 239,
+          "height": 1000,
+          "source_width": 239,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -513,7 +609,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-kaberne-sovinon-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -538,7 +642,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -563,7 +675,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -588,7 +708,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-krasnostop-zolotovskiy-roze-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -613,7 +741,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-pravoberezhnoe-beloe-aligote-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1025,
+          "height": 3988,
+          "source_width": 1025,
+          "source_height": 3988
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -637,7 +773,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-pravoberezhnoe-krasnoe-kaberne-sovinon-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 228,
+          "height": 971,
+          "source_width": 228,
+          "source_height": 971
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -663,7 +807,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-rkatsiteli-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 254,
+          "height": 1000,
+          "source_width": 254,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -688,7 +840,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-aligote-beloe-bryut-117.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 321,
+          "height": 998,
+          "source_width": 322,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -713,7 +873,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-beloe-suhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 171,
+          "height": 620,
+          "source_width": 172,
+          "source_height": 620
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -738,7 +906,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-sibirkovyy-ekstra-bryut-beloe-117.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 317,
+          "height": 1000,
+          "source_width": 317,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -762,7 +938,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-blanc-de-noirs-beloe-bryut-117.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 475,
+          "height": 1500,
+          "source_width": 475,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -786,7 +970,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-129.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 999,
+          "source_width": 280,
+          "source_height": 999
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -810,7 +1002,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 800,
+          "y": 0,
+          "width": 760,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -834,7 +1034,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rezerv-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 279,
+          "height": 1000,
+          "source_width": 279,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -859,7 +1067,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-rozovyy-rozovoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 239,
+          "height": 1000,
+          "source_width": 239,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -884,7 +1100,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-dolina-dona-beloe-suhoe-aligote-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 407,
+          "height": 1500,
+          "source_width": 407,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -911,7 +1135,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 410,
+          "height": 1500,
+          "source_width": 410,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -937,7 +1169,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-golubok-krasnoe-suhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 405,
+          "height": 1500,
+          "source_width": 405,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -963,7 +1203,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-gubernatorskoe-rezerv-kaberne-sovinon-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 410,
+          "height": 1500,
+          "source_width": 410,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -989,7 +1237,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-kaberne-sovinon-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 408,
+          "height": 1500,
+          "source_width": 408,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1014,7 +1270,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 407,
+          "height": 1500,
+          "source_width": 407,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1039,7 +1303,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-krasnostop-zolotovskiy-magnum-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 405,
+          "height": 1500,
+          "source_width": 405,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1064,7 +1336,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-pet-nat-golubok-krasnyy-bryut-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 181,
+          "y": 0,
+          "width": 433,
+          "height": 1500,
+          "source_width": 799,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1088,7 +1368,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-pet-nat-platovskiy-aligote-bryut-beloe-suhoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 423,
+          "height": 1500,
+          "source_width": 423,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1113,7 +1401,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-puhlyakovskiy-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 394,
+          "height": 1500,
+          "source_width": 394,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1139,7 +1435,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-2-tsimlyanskiy-chernyy-rozovoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 1500,
+          "source_width": 434,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1163,7 +1467,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-roze-tsimlyanskiy-chernyy-rozovoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 476,
+          "height": 1500,
+          "source_width": 476,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1187,7 +1499,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-bryut-tsimlyanskiy-chernyy-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 475,
+          "height": 1500,
+          "source_width": 475,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1211,7 +1531,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 412,
+          "height": 1500,
+          "source_width": 412,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1236,7 +1564,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vinodelnya-vedernikov-pet-nat-roze-tsimlyanskiy-chernyy-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 422,
+          "height": 1500,
+          "source_width": 422,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1260,7 +1596,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-vinodelnya-vedernikov-tsimlyanskiy-chernyy-sibirkovyy-ekstra-bryut-beloe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 478,
+          "height": 1500,
+          "source_width": 478,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1285,7 +1629,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/official-hard-sign.webp",
-        "source_id": "vedernikov-hard-sign"
+        "source_id": "vedernikov-hard-sign",
+        "frame": {
+          "x": 136,
+          "y": 1,
+          "width": 290,
+          "height": 999,
+          "source_width": 567,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное сухое",
@@ -1313,7 +1665,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/vedernikov/official-hard-sign-2.webp",
-        "source_id": "vedernikov-hard-sign-2"
+        "source_id": "vedernikov-hard-sign-2",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 282,
+          "height": 1000,
+          "source_width": 282,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное сухое",

@@ -24,3 +24,11 @@ This is complete snapshot coverage with two verified additions. It is not comple
 ## Assets
 
 All 45 images are copied WebP files. Snapshot images and the two official product images are unchanged. The crosswalk contains their SHA-256 values.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 45 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
