@@ -26,6 +26,19 @@
 
 ## 2026-10-17
 
+- Add optional MLflow tracking for both matcher evaluation scripts.
+- Add export and retry for Workbench, matcher evaluation, and ArcFace reports.
+- Preserve local results. Store destination-specific retry state. Verify sanitized artifact hashes.
+- Exclude credentials, raw traces, image bodies, arbitrary logs, and direct S3 uploads.
+- Add focused tests and an opt-in real MLflow SQLite integration test.
+- Read [the tracking contract](docs/mlflow.md). Track the implementation in GitHub issue 19.
+- Validate the isolated commit source: 400 matcher tests run with one opt-in test skipped.
+  Run the real MLflow 3.17.1 SQLite integration test separately. It passes.
+  Verify unavailable-service handling and artifact hashes. Ruff checks pass.
+- GitHub port (2026-10-19): `matcher/scripts/evaluate_label_only.py` and
+  `evaluate_label_parts.py` are not in this repository. Their export hooks and the two
+  hook tests of `tests/test_mlflow_tracking.py` are not included.
+
 - Accepted HEIF (HEIC) uploads in `POST /v1/eval/predict`, `POST /v1/match`, and
   `POST /v1/group/match` (GitHub issue #24). iPhone cameras save HEIC by default.
   Before, the admission check answered HTTP 415.

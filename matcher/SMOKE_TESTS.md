@@ -145,3 +145,13 @@ Plan 85 of the workbench. Read [docs/cascade.md](docs/cascade.md).
   comes within 3 s from the client side.
 - Stop SAM3 (or point `SAM3_ENDPOINT` to a closed port). Confirm that
   `POST /v1/eval/predict` still answers from the whole photo (`decision.source` `whole`).
+
+## MLflow tracking
+
+1. Run the adapter and evaluator-hook tests in `docs/mlflow.md`.
+2. Leave `MLFLOW_TRACKING_ENABLED` unset. Confirm that evaluation creates no `.mlflow/` directory.
+3. Export a synthetic saved evaluation to a local MLflow store. Confirm metrics and sanitized configuration artifacts.
+4. Repeat export. Confirm one remote run with the same run ID.
+5. Simulate a failed artifact upload. Confirm pending state and unchanged local results.
+6. Retry export. Confirm the artifact hashes and the original remote run ID.
+7. Run the opt-in SQLite integration test from `docs/mlflow.md`.

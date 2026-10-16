@@ -3081,3 +3081,9 @@ The database keeps absolute paths, so the links MUST stay in place.
 in the answer of the official recognizer, and `0` means the recognizer missed the wine.
 Use it to split easy photos from hard photos. It is not a correctness label:
 the recognizer misses many photos that are correct but hard.
+
+## Optional MLflow tracking
+
+Benchmark jobs can export saved parameters, metrics, and selected artifacts to MLflow.
+Read [the Workbench integration](docs/mlflow.md).
+Read [COMMANDS.md](COMMANDS.md) for export and retry commands.

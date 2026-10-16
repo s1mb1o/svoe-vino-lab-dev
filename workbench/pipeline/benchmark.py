@@ -52,6 +52,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(1, os.path.join(ROOT, "scripts"))
 import imagestore  # noqa: E402
+import experiment_tracking  # noqa: E402
 import labdb  # noqa: E402
 import match_backends  # noqa: E402
 import testsets  # noqa: E402
@@ -482,6 +483,7 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     with open(os.path.join(run_dir, "metrics.json"), "w", encoding="utf-8") as fh:
         json.dump(met, fh, ensure_ascii=False, indent=2, sort_keys=True)
     write_summary(os.path.join(run_dir, "summary.md"), meta, met)
+    experiment_tracking.export_benchmark(run_dir, log)
     return run_dir, met
 
 

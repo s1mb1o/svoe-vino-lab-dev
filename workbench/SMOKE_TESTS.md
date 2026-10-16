@@ -2780,6 +2780,14 @@ Read [the protocol](docs/testing/label-only-benchmark.md).
 
 Do not create smoke-test cards in the live catalogue.
 
+## MLflow tracking
+
+1. Run the MLflow and benchmark tests listed in `COMMANDS.md`.
+2. Run a synthetic benchmark with tracking disabled. Confirm the existing seven result files.
+3. Enable tracking in a test process. Confirm that export starts after local result finalization.
+4. Make the tracking client unavailable. Confirm valid local metrics and `.mlflow/state.json` with pending status.
+5. Retry the saved directory with the export command. Confirm one remote run and unchanged local results.
+
 ## Static wine images (plan 06 of the repository)
 
 | ID | Step | Expected result |

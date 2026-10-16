@@ -1466,3 +1466,46 @@ The tests use temporary data and a local fake server. They call no external serv
 ```bash
 python3 -m unittest discover -s tests -p 'test_website_sync.py'
 ```
+
+## MLflow experiment tracking
+
+Read [the integration contract](docs/mlflow.md).
+Run every command below from the Workbench root.
+
+### Install the optional client
+
+Use the Python environment that starts Workbench jobs.
+This command installs packages.
+
+```sh
+python -m pip install -r ../matcher/requirements-mlflow.txt
+```
+
+### Export or retry a saved experiment
+
+Set `MLFLOW_TRACKING_URI` to the existing tracking server URI.
+Set `MLFLOW_EXPERIMENT_NAME` when the default `svoe-vino-lab` is not suitable.
+Read credentials from the standard MLflow environment variables.
+These commands write to MLflow and create `.mlflow/` state in the source directory.
+Replace each placeholder path.
+
+```sh
+python ../matcher/mlflow_tracking.py runs/RUN_ID
+python ../matcher/mlflow_tracking.py PATH_TO_MATCHER_EVALUATION --kind matcher
+python ../matcher/mlflow_tracking.py PATH_TO_ARCFACE_OUTPUT --kind arcface
+```
+
+Set `MLFLOW_TRACKING_ENABLED=true` before starting the server to enable automatic benchmark export.
+The explicit commands do not require that flag.
+
+### Local tests
+
+These tests use synthetic results. They do not call MLflow or run inference.
+They write temporary test files.
+
+```sh
+python -m unittest discover -s tests -p 'test_mlflow_tracking.py' -v
+python -m unittest discover -s tests -p 'test_benchmark.py' -v
+```
+
+Read `../matcher/docs/mlflow.md` for the opt-in real SQLite store test.

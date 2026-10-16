@@ -37,6 +37,15 @@
   Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
   `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
 
+## 2026-10-17
+
+- Add optional MLflow export after benchmark result finalization.
+- Cover Testset runs, remote matcher runs, and embedding self-tests through the shared benchmark runner.
+- Preserve completed local results when tracking fails. Add explicit export and retry commands.
+- Add the synthetic benchmark outage test and [configuration documentation](docs/mlflow.md).
+- Track the implementation in GitHub issue 19.
+- Validate all 140 affected Workbench tests in both the shared checkout and the isolated commit source.
+
 ## 2026-10-11
 
 - Prepare the paired label-only benchmark for the owner-selected scopes.

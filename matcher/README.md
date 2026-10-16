@@ -692,3 +692,9 @@ OpenAPI описывает GET /healthz, GET /readyz, обязательное m
 ## Known issues
 
 [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) lists the known defects that are not fixed yet.
+
+## Optional MLflow tracking
+
+The evaluation scripts can export saved experiments to MLflow.
+Read [configuration, retry, and artifact rules](docs/mlflow.md).
+Tracking is disabled by default.

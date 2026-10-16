@@ -1,5 +1,15 @@
 # Research log
 
+## 2026-10-17: Optional MLflow experiment tracking
+
+- The existing Workbench runner saves structured run files after scoring. Both matcher evaluators save structured comparison reports. These boundaries allow tracking without changing model inference.
+- Considered process-global MLflow autologging, explicit client calls, and an external directory scanner. Selected explicit `MlflowClient` calls after local report creation. This avoids shared active-run state and keeps the change small.
+- The [official client API](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.client.html) provides experiment lookup, run creation, batched parameters and metrics, artifact upload, and run termination.
+- MLflow 3.17.1 with a temporary SQLite store passes the synthetic export, artifact-failure retry, and artifact hash check. Repeated export retains one run and one metric history point.
+- The local environment does not have the optional SDK. Normal inference and disabled tracking must therefore remain independent of the SDK.
+- Direct S3 artifact uploads do not satisfy the workspace checksum rules. Restrict this client to local artifacts and an MLflow artifact proxy. Server storage and backup remain separate work in issue 18.
+- Retry state stays beside each source experiment. A source copy without that state is a new source. Changed results require a new experiment directory.
+
 ## HEIF (HEIC) decoding with Pillow, 2026-10-17
 
 Context: GitHub issue #24. Pillow 12.3.0 cannot read HEIC without a plugin. Two plugins
