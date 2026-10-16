@@ -1,3 +1,7 @@
+# 2026-10-16: Союз-Вино
+
+Check Союз-Вино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/soyuz-vino/sources.md.
+
 # 2026-10-16: AGORA WINERY
 
 Check AGORA WINERY against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/agora/sources.md.

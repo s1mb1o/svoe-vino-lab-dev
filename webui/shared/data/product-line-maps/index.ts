@@ -25,4 +25,6 @@ import producer16 from './sober-bash.json'
 
 import producer17 from './agora.json'
 
-export default [producer17, producer16, producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]
+import producer18 from './soyuz-vino.json'
+
+export default [producer18, producer17, producer16, producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]

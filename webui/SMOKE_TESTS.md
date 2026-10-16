@@ -1,3 +1,7 @@
+# 2026-10-16: Союз-Вино
+
+Open /lineup/soyuz-vino with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
 # 2026-10-16: AGORA WINERY
 
 Open /lineup/agora with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.

@@ -1,3 +1,7 @@
+# 2026-10-16: Союз-Вино
+
+Add Союз-Вино: 69 catalog cards, 1 official additions, and 19 groups. Ship normalized bottle assets and independent source evidence.
+
 # 2026-10-16: AGORA WINERY
 
 Add AGORA WINERY: 32 catalog cards, 1 official additions, and 9 groups. Ship normalized bottle assets and independent source evidence.

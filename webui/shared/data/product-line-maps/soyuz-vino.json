@@ -1,0 +1,2717 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "soyuz-vino",
+    "name": "Союз-Вино",
+    "aliases": [
+      "Soyuz-Vino"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Союз-Вино: официальные коллекции",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-terra-pia",
+      "label": "Союз-Вино: Terra Pia",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-green-valley",
+      "label": "Союз-Вино: Зелёная Долина · бутылки",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-green-cans",
+      "label": "Союз-Вино: Зелёная Долина · банки",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-isola-cans",
+      "label": "Союз-Вино: Isola del Sole · банки",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-el-crucero",
+      "label": "Союз-Вино: Эль Крусеро",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-gloria",
+      "label": "Союз-Вино: Gloria de Luna",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-canon",
+      "label": "Союз-Вино: Канонические Традиции",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-kartuli",
+      "label": "Союз-Вино: Картули Суприс",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-confessa",
+      "label": "Союз-Вино: Confessa",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-kubanskoe",
+      "label": "Союз-Вино: Кубанское Традиционное",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-lac",
+      "label": "Союз-Вино: Lac d’Azur",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-lavetti-wine",
+      "label": "Союз-Вино: Lavetti · тихое вино",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-lenty",
+      "label": "Союз-Вино: Ленты",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-mosavali",
+      "label": "Союз-Вино: Мосавали",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-montgolfier",
+      "label": "Союз-Вино: Шато де Монгольфьер",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-sheremetev",
+      "label": "Союз-Вино: Шереметьевские Погреба",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-soyuz-bottles",
+      "label": "Союз-Вино: Союз-Вино · бутылки",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-soyuz-box",
+      "label": "Союз-Вино: Союз-Вино · пакеты и Bag-in-Box",
+      "url": "https://www.soyuz-vino.ru/katalog"
+    },
+    {
+      "id": "official-perle",
+      "label": "Союз-Вино: La Petite Perle · банки",
+      "url": "https://soyuz-vino.ru/collection-perle"
+    },
+    {
+      "id": "official-official-perle-white",
+      "label": "Официальная карточка: La Petite Perle · White",
+      "url": "https://soyuz-vino.ru/collection-perle"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-terra-pia",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-el-crucero",
+        "official-gloria",
+        "official-canon",
+        "official-kartuli",
+        "official-confessa",
+        "official-kubanskoe",
+        "official-lac",
+        "official-lavetti-wine",
+        "official-lenty",
+        "official-mosavali",
+        "official-montgolfier",
+        "official-sheremetev",
+        "official-soyuz-bottles"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-green-cans",
+        "official-isola-cans",
+        "official-soyuz-box",
+        "official-perle"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "terra-pia",
+      "name": "Terra Pia",
+      "tier_id": "tier-2",
+      "method": "Вулканические купажи",
+      "description": "Кальдера Бленд и Лава Бленд. Виноград выращен у подножия вулкана Шуго. Относительная старшая ступень задана редакционно.",
+      "source_ids": [
+        "official-terra-pia",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "green-valley",
+      "name": "Зелёная Долина · бутылки",
+      "tier_id": "tier-2",
+      "method": "Сортовые и купажные тихие вина",
+      "description": "Французские сорта на Кубани. Банки с тем же брендом вынесены отдельно.",
+      "source_ids": [
+        "official-green-valley",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "green-cans",
+      "name": "Зелёная Долина · банки",
+      "tier_id": "tier-0",
+      "method": "Тихое вино в алюминиевой банке",
+      "description": "Компактный формат той же марки. Упаковка не означает отдельную ступень качества.",
+      "source_ids": [
+        "official-green-cans",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "isola-cans",
+      "name": "Isola del Sole · банки",
+      "tier_id": "tier-0",
+      "method": "Тихое вино в алюминиевой банке",
+      "description": "Белое и розовое сухие вина. Снимок сохраняет прежнее оформление банок.",
+      "source_ids": [
+        "official-isola-cans",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "el-crucero",
+      "name": "Эль Крусеро",
+      "tier_id": "tier-1",
+      "method": "Тихое вино в картонной упаковке",
+      "description": "Белое и красное полусладкие вина. Исторический бренд из снимка. Актуальное наличие не подтверждено.",
+      "source_ids": [
+        "official-el-crucero",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "gloria",
+      "name": "Gloria de Luna",
+      "tier_id": "tier-1",
+      "method": "Тихое вино в картонной упаковке",
+      "description": "Белые и красные варианты Secсo и Semidolce. Состав и описание сохранены по карточкам.",
+      "source_ids": [
+        "official-gloria",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "canon",
+      "name": "Канонические Традиции",
+      "tier_id": "tier-1",
+      "method": "Красные сладкие и полусладкие вина",
+      "description": "Коллекция в стилистике церковного вина. Отдельные карточки различаются по сладости.",
+      "source_ids": [
+        "official-canon",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "kartuli",
+      "name": "Картули Суприс",
+      "tier_id": "tier-1",
+      "method": "Тихое красное вино",
+      "description": "Историческая серия из снимка: Саперави и Шереули. Происхождение не определяется по грузинскому названию.",
+      "source_ids": [
+        "official-kartuli",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "confessa",
+      "name": "Confessa",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина",
+      "description": "Пино Гриджио и Санджовезе с разной сладостью. Названия и фотографии взяты из снимка.",
+      "source_ids": [
+        "official-confessa",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "kubanskoe",
+      "name": "Кубанское Традиционное",
+      "tier_id": "tier-1",
+      "method": "Тихие вина; разные упаковки",
+      "description": "Бутылки и картонные упаковки показаны отдельно. Белые и красные варианты различаются по сладости.",
+      "source_ids": [
+        "official-kubanskoe",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "lac",
+      "name": "Lac d’Azur",
+      "tier_id": "tier-1",
+      "method": "Тихое вино в картонной упаковке",
+      "description": "Белые и красные варианты Sec и Moelleux. Серия сохранена как историческая часть снимка.",
+      "source_ids": [
+        "official-lac",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "lavetti-wine",
+      "name": "Lavetti · тихое вино",
+      "tier_id": "tier-1",
+      "method": "Тихие вина из снимка каталога",
+      "description": "Сохраняем винные карточки 2026 года. Их не следует заменять актуальными сидрами Lavetti с похожим названием.",
+      "source_ids": [
+        "official-lavetti-wine",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "lenty",
+      "name": "Ленты",
+      "tier_id": "tier-1",
+      "method": "Тихое вино в картонной упаковке",
+      "description": "Изабелла, Каберне и Шардоне. Разные продукты сохранены с собственным оформлением.",
+      "source_ids": [
+        "official-lenty",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "mosavali",
+      "name": "Мосавали",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина",
+      "description": "Ркацители и два варианта Саперави. Название не служит доказательством страны происхождения.",
+      "source_ids": [
+        "official-mosavali",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "montgolfier",
+      "name": "Шато де Монгольфьер",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина",
+      "description": "Рислинг и Шираз, полусухие и полусладкие варианты. Технология выдержки не подтверждена.",
+      "source_ids": [
+        "official-montgolfier",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sheremetev",
+      "name": "Шереметьевские Погреба",
+      "tier_id": "tier-1",
+      "method": "Тихие вина",
+      "description": "Белые и красные варианты. Названные сортовые карточки отделены от купажных.",
+      "source_ids": [
+        "official-sheremetev",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "soyuz-bottles",
+      "name": "Союз-Вино · бутылки",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина",
+      "description": "Основные сортовые карточки в бутылках. Сухие и полусладкие варианты остаются отдельными продуктами.",
+      "source_ids": [
+        "official-soyuz-bottles",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "soyuz-box",
+      "name": "Союз-Вино · пакеты и Bag-in-Box",
+      "tier_id": "tier-0",
+      "method": "Тихие вина в альтернативной упаковке",
+      "description": "ЕвроПак и Bag-in-Box собраны по формату. Фотографии показывают настоящую упаковку, а не условную бутылку.",
+      "source_ids": [
+        "official-soyuz-box",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "perle",
+      "name": "La Petite Perle · банки",
+      "tier_id": "tier-0",
+      "method": "Резервуарный метод; алюминиевая банка",
+      "description": "Игристая коллекция La Petite Perle. Банки отличаются от бутылочной серии той же марки. Формат не задаёт рейтинг качества.",
+      "source_ids": [
+        "official-perle",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11",
+      "group_id": "el-crucero",
+      "name": "Эль Крусеро Бланко Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 261,
+          "height": 720,
+          "source_width": 273,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "У вина легкий, питкий, гармоничный, мягкий вкус с приятной фруктовой сладостью и тонкой цитрусовой кислинкой. Послевкусие деликатное, нежное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-el-crucero"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-el-krusero-tinto-polusladkoe-krasnye-sorta-vinograda-krasnoe-11",
+      "group_id": "el-crucero",
+      "name": "Эль Крусеро Тинто Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-el-krusero-tinto-polusladkoe-krasnye-sorta-vinograda-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-el-krusero-tinto-polusladkoe-krasnye-sorta-vinograda-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 251,
+          "height": 720,
+          "source_width": 263,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Вино имеет мягкий, приятный, сладковатый, фруктовый вкус с живой ягодной кислинкой, деликатными танинами и нежным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-el-crucero"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-gloriya-de-luna-byanko-sekko-shardone-beloe-suhoe-11",
+      "group_id": "gloria",
+      "name": "Глория де Луна Бьянко Секко",
+      "variant": "",
+      "wine_slug": "soyuz-vino-gloriya-de-luna-byanko-sekko-shardone-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-gloriya-de-luna-byanko-sekko-shardone-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 243,
+          "height": 720,
+          "source_width": 255,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Вино обладает свежим, питким, гармоничным, фруктовым вкусом с живой цитрусовой кислинкой и сухим, приятным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gloria"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-gloriya-de-luna-byanko-semidolche-shardone-beloe-polusladkoe-11",
+      "group_id": "gloria",
+      "name": "Глория де Луна Бьянко Семидольче",
+      "variant": "",
+      "wine_slug": "soyuz-vino-gloriya-de-luna-byanko-semidolche-shardone-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-gloriya-de-luna-byanko-semidolche-shardone-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 251,
+          "height": 720,
+          "source_width": 263,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Вкус вина мягкий, питкий, сладковатый, фруктовый, сбалансированный, благодаря тонкой кислинке, с деликатным, нежным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gloria"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-gloriya-de-luna-rosso-sekko-kaberne-sovinon-krasnoe-suhoe-11",
+      "group_id": "gloria",
+      "name": "Глория де Луна Россо Секко",
+      "variant": "",
+      "wine_slug": "soyuz-vino-gloriya-de-luna-rosso-sekko-kaberne-sovinon-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-gloriya-de-luna-rosso-sekko-kaberne-sovinon-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 247,
+          "height": 720,
+          "source_width": 259,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "У вина свежий, питкий, гладкий, фруктовый вкус с хорошим балансом кислотности и танинности, приятным, сухим послевкусием с легкой ягодной кислинкой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gloria"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-gloriya-de-luna-rosso-semidolche-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "gloria",
+      "name": "Глория де Луна Россо Семидольче",
+      "variant": "",
+      "wine_slug": "soyuz-vino-gloriya-de-luna-rosso-semidolche-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-gloriya-de-luna-rosso-semidolche-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 243,
+          "height": 720,
+          "source_width": 255,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Вино отличается мягким, гармоничным, приятным вкусом с тонами спелых красных фруктов и ягод. Послевкусие нежное, сладковатое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gloria"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-izola-del-sole-beloe-v-banke-shardone-suhoe-11",
+      "group_id": "isola-cans",
+      "name": "Изола дель Соле Белое в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-izola-del-sole-beloe-v-banke-shardone-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-izola-del-sole-beloe-v-banke-shardone-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 6,
+          "width": 276,
+          "height": 721,
+          "source_width": 287,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский",
+        "Шардоне"
+      ],
+      "description": "Легкий, освежающий вкус с нотами цитрусовых, особенно лайма, и меда и идеально сбалансированной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-isola-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-izola-del-sole-roze-v-banke-krasnostop-rozovoe-suhoe-11",
+      "group_id": "isola-cans",
+      "name": "Изола дель Соле Розе в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-izola-del-sole-roze-v-banke-krasnostop-rozovoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-izola-del-sole-roze-v-banke-krasnostop-rozovoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 270,
+          "height": 720,
+          "source_width": 282,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Красностоп",
+        "Шардоне"
+      ],
+      "description": "Вкус освежающий, яркий плодово-ягодный, с тонами яблок, тонкими нотами клюквы и брусники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-isola-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kanonicheskie-traditsii-krasnoe-polusladkoe-kaberne-sovinon-115",
+      "group_id": "canon",
+      "name": "Канонические Традиции Красное Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kanonicheskie-traditsii-krasnoe-polusladkoe-kaberne-sovinon-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kanonicheskie-traditsii-krasnoe-polusladkoe-kaberne-sovinon-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 166,
+          "height": 722,
+          "source_width": 176,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Вкус вина мягкий, нежный, бархатистый, с идеальным балансом сладости и тонкой кислотности, с фруктово-ягодными оттенками и обволакивающим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-canon"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kanonicheskie-traditsii-krasnoe-sladkoe-kaberne-sovinon-115",
+      "group_id": "canon",
+      "name": "Канонические Традиции Красное Сладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kanonicheskie-traditsii-krasnoe-sladkoe-kaberne-sovinon-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kanonicheskie-traditsii-krasnoe-sladkoe-kaberne-sovinon-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 171,
+          "height": 720,
+          "source_width": 183,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сладкое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Вино демонстрирует мягкий, гармоничный, хорошо сбалансированный вкус с акцентами кожи, табака и фруктов, приятной сладостью и длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-canon"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kartuli-supris-saperavi-krasnoe-polusladkoe-11",
+      "group_id": "kartuli",
+      "name": "Картули Суприс Саперави",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kartuli-supris-saperavi-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kartuli-supris-saperavi-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 231,
+          "height": 720,
+          "source_width": 243,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "У вина питкий, теплый, умеренно терпкий и приятно сладкий вкус с насыщенными фруктово-ягодными тонами, мягкими танинами, умеренной кислотностью и деликатными пряными нюансами в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kartuli"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kartuli-supris-saperavi-suhoe-krasnoe-11",
+      "group_id": "kartuli",
+      "name": "Картули Суприс Саперави Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kartuli-supris-saperavi-suhoe-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kartuli-supris-saperavi-suhoe-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 234,
+          "height": 720,
+          "source_width": 246,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус вина легкий, питкий, свежий, с приятно терпкими тонами черной смородины, спелой вишни, ванили и дуба, округлыми танинами, живой кислинкой и сухим послевкусием средней длины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kartuli"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kartuli-supris-shereuli-saperavi-krasnoe-polusladkoe-11",
+      "group_id": "kartuli",
+      "name": "Картули Суприс Шереули",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kartuli-supris-shereuli-saperavi-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kartuli-supris-shereuli-saperavi-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 6,
+          "width": 246,
+          "height": 721,
+          "source_width": 256,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Саперави"
+      ],
+      "description": "Вкус вина мягкий, легкий, приятный, с хорошо сбалансированной фруктовой сладостью, округлыми танинами, умеренной кислотностью и сочными оттенками темной сливы в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kartuli"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-konfessa-pino-gridzhio-beloe-polusladkoe-11",
+      "group_id": "confessa",
+      "name": "Конфесса Пино Гриджио",
+      "variant": "",
+      "wine_slug": "soyuz-vino-konfessa-pino-gridzhio-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-konfessa-pino-gridzhio-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 179,
+          "height": 720,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гриджио"
+      ],
+      "description": "У вина легкий, питкий, деликатно сладковатый и свежий вкус с приятными акцентами орехов и выпечки, тонкой цитрусовой кислинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-confessa"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-konfessa-sandzhoveze-krasnoe-suhoe-11",
+      "group_id": "confessa",
+      "name": "Конфесса Санджовезе",
+      "variant": "",
+      "wine_slug": "soyuz-vino-konfessa-sandzhoveze-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-konfessa-sandzhoveze-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 181,
+          "height": 720,
+          "source_width": 193,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Вино обладает мягким, приятно терпким, сбалансированным вкусом с оттенками спелых фруктов, кислинкой малины и смородины, изысканными танинами и утонченным послевкусием с нюансами пряных трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-confessa"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-konfessa-sandzhoveze-polusladkoe-krasnoe-11",
+      "group_id": "confessa",
+      "name": "Конфесса Санджовезе Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-konfessa-sandzhoveze-polusladkoe-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-konfessa-sandzhoveze-polusladkoe-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 184,
+          "height": 720,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Вкус питкий, мягкий, сбалансированный, с бархатистой текстурой, фруктовым профилем и длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-confessa"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-07-belye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Белое Полусладкое 0.7",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-07-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-07-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 175,
+          "height": 726,
+          "source_width": 182,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина сбалансированный, свежий, легкий, с фруктово-ягодными оттенками и приятной сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Белое Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-polusladkoe-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 240,
+          "height": 720,
+          "source_width": 252,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина сбалансированный, свежий, легкий, с фруктово-ягодными оттенками и приятной сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-07-belye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Белое Сухое 0.7",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-07-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-07-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 173,
+          "height": 720,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина сбалансированный, свежий, легкий, с приятной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-belye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Белое Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-beloe-suhoe-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 246,
+          "height": 720,
+          "source_width": 258,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина сбалансированный, свежий, легкий, с приятной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-07-krasnye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Красное Полусладкое 0.7",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-07-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-07-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 177,
+          "height": 720,
+          "source_width": 189,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Вкус вина округлый, гармоничный, сбалансированный, с мягкими танинами и пряными вишневыми тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Красное Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-polusladkoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 242,
+          "height": 720,
+          "source_width": 254,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Вкус вина округлый, гармоничный, сбалансированный, с мягкими танинами и пряными вишневыми тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-07-krasnye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Красное Сухое 0.7",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-07-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-07-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 174,
+          "height": 728,
+          "source_width": 178,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Гармоничный вкус вина обладает мягкой текстурой, округлой танинной структурой и притягательными нотами сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-krasnye-sorta-vinograda-11",
+      "group_id": "kubanskoe",
+      "name": "Кубанское Традиционное Красное Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-kubanskoe-traditsionnoe-krasnoe-suhoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 243,
+          "height": 720,
+          "source_width": 255,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Гармоничный вкус вина обладает мягкой текстурой, округлой танинной структурой и притягательными нотами сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kubanskoe"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lak-dazyur-blan-moellyo-belye-sorta-vinograda-beloe-polusladkoe-11",
+      "group_id": "lac",
+      "name": "Лак д'Азюр Блан Моэллё",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lak-dazyur-blan-moellyo-belye-sorta-vinograda-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lak-dazyur-blan-moellyo-belye-sorta-vinograda-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 251,
+          "height": 720,
+          "source_width": 263,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вино обладает легким, питким и приятным вкусом с тонкой кислинкой, которая отлично балансирует фруктовую сладость. Послевкусие нежное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lac"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lak-dazyur-blan-sek-belye-sorta-vinograda-beloe-suhoe-11",
+      "group_id": "lac",
+      "name": "Лак д'Азюр Блан Сек",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lak-dazyur-blan-sek-belye-sorta-vinograda-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lak-dazyur-blan-sek-belye-sorta-vinograda-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 258,
+          "height": 720,
+          "source_width": 270,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина легкий, питкий, свежий, с фруктово-цветочными оттенками и яркой цитрусовой кислинкой в сухом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lac"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lak-dazyur-ruzh-moellyo-belye-sorta-vinograda-krasnoe-polusladkoe-11",
+      "group_id": "lac",
+      "name": "Лак д'Азюр Руж Моэллё",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lak-dazyur-ruzh-moellyo-belye-sorta-vinograda-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lak-dazyur-ruzh-moellyo-belye-sorta-vinograda-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 251,
+          "height": 720,
+          "source_width": 263,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Вкус вина повторяет оттенки аромата, впечатляя своей структурой с округлыми танинами, умеренной кислотностью и деликатной фруктовой сладостью в послевкусии, отмеченном также приятной ягодной терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lac"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lak-dazyur-ruzh-sek-krasnye-sorta-vinograda-krasnoe-suhoe-11",
+      "group_id": "lac",
+      "name": "Лак д'Азюр Руж Сек",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lak-dazyur-ruzh-sek-krasnye-sorta-vinograda-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lak-dazyur-ruzh-sek-krasnye-sorta-vinograda-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 259,
+          "height": 720,
+          "source_width": 271,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Вкус вина свежий, питкий, гармоничный, с сочным фруктовым ядром, мягкими танинами и приятной ягодной кислинкой в сухом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lac"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lavetti-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "group_id": "lavetti-wine",
+      "name": "Лаветти Белое Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lavetti-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lavetti-beloe-polusladkoe-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 186,
+          "height": 720,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Гармоничный и мягкий вкус вина обладает превосходно сбалансированной кислотностью, нотами яблока и груши. Послевкусие приятное, с нюансами персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lavetti-wine"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lavetti-beloe-suhoe-belye-sorta-vinograda-11",
+      "group_id": "lavetti-wine",
+      "name": "Лаветти Белое Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lavetti-beloe-suhoe-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lavetti-beloe-suhoe-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 179,
+          "height": 720,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Легкий, сухой, чистый, мягкий и отлично сбалансированный вкус вина обладает утонченной кислинкой, цитрусовыми тонами, минеральными нюансами и приятным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lavetti-wine"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lavetti-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "group_id": "lavetti-wine",
+      "name": "Лаветти Красное Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lavetti-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lavetti-krasnoe-polusladkoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 184,
+          "height": 720,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Сбалансированный, полный и элегантный вкус вина обладает маслянистой текстурой, приятной терпкостью, нотами спелых фруктов и ягод. Послевкусие интенсивное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lavetti-wine"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lavetti-krasnoe-suhoe-krasnye-sorta-vinograda-11",
+      "group_id": "lavetti-wine",
+      "name": "Лаветти Красное Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lavetti-krasnoe-suhoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lavetti-krasnoe-suhoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 182,
+          "height": 720,
+          "source_width": 194,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Богатый, мягкий, округлый вкус вина обладает шелковистой текстурой, тонами вишни, черники и сливы, подчеркнутыми нюансами специй. Послевкусие продолжительное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lavetti-wine"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lavetti-rozovoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "group_id": "lavetti-wine",
+      "name": "Лаветти Розовое Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lavetti-rozovoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lavetti-rozovoe-polusladkoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 182,
+          "height": 720,
+          "source_width": 194,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда",
+        "Красные сорта винограда"
+      ],
+      "description": "Яркий, гармоничный и сбалансированный вкус вина демонстрирует ноты земляники, клубники и смородины, оттенки айвы и нюансы лепестков розы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lavetti-wine"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lenty-izabella-krymskaya-krasnoe-polusladkoe-11",
+      "group_id": "lenty",
+      "name": "Ленты Изабелла Крымская",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lenty-izabella-krymskaya-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lenty-izabella-krymskaya-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 255,
+          "height": 720,
+          "source_width": 267,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Изабелла"
+      ],
+      "description": "Вино обладает гармоничным вкусом с оттенками спелых фруктов и ягод, плавно переходящими в долгое, сладковатое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lenty"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lenty-kaberne-krymskoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "group_id": "lenty",
+      "name": "Ленты Каберне Крымское",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lenty-kaberne-krymskoe-kaberne-sovinon-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lenty-kaberne-krymskoe-kaberne-sovinon-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 239,
+          "height": 720,
+          "source_width": 251,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вино обладает гармоничным вкусом с оттенками спелых фруктов, миндаля и шоколада, плавно переходящими в долгое, сладковатое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lenty"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-lenty-shardone-krymskoe-beloe-polusladkoe-11",
+      "group_id": "lenty",
+      "name": "Ленты Шардоне Крымское",
+      "variant": "",
+      "wine_slug": "soyuz-vino-lenty-shardone-krymskoe-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-lenty-shardone-krymskoe-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 248,
+          "height": 720,
+          "source_width": 260,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус вина мягкий, приятный, с фруктово-цветочными оттенками и сбалансированным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-lenty"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-mosavali-rkatsiteli-beloe-polusladkoe-11",
+      "group_id": "mosavali",
+      "name": "Мосавали Ркацители",
+      "variant": "",
+      "wine_slug": "soyuz-vino-mosavali-rkatsiteli-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-mosavali-rkatsiteli-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 184,
+          "height": 720,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус вина отличается мягкостью, питкостью, свежестью и деликатной фруктовой сладостью, выраженной ноткой спелых яблок и медовыми нюансами, сохраняющимися и в округлом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-mosavali"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-mosavali-saperavi-polusladkoe-krasnoe-11",
+      "group_id": "mosavali",
+      "name": "Мосавали Саперави Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-mosavali-saperavi-polusladkoe-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-mosavali-saperavi-polusladkoe-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 185,
+          "height": 725,
+          "source_width": 193,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вино отличается питким, приятным, гармоничным вкусом с мягкими танинами, тонкой кислинкой лесных ягод и деликатной сладостью зрелых фруктов. Послевкусие продолжительное, с нюансами ванили, пикантными штрихами перца и легким дымным тоном.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-mosavali"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-mosavali-saperavi-suhoe-krasnoe-11",
+      "group_id": "mosavali",
+      "name": "Мосавали Саперави Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-mosavali-saperavi-suhoe-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-mosavali-saperavi-suhoe-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 185,
+          "height": 720,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Питкий, сочный и насыщенный вкус вина отличается хорошей структурой и балансом, приятной танинной терпкостью и умеренной кислотностью. Во вкусовом аккорде солируют ноты черной смородины. Послевкусие долгое, сухое, с нюансами специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-mosavali"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-shato-de-mongolfer-risling-polusuhoe-beloe-11",
+      "group_id": "montgolfier",
+      "name": "Шато де Монгольфьер Рислинг Полусухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-shato-de-mongolfer-risling-polusuhoe-beloe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-shato-de-mongolfer-risling-polusuhoe-beloe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 180,
+          "height": 727,
+          "source_width": 184,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусухое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вино отличается легким и свежим вкусом с отличным балансом кислотности, гладкой текстурой, фруктово-цветочными акцентами, тонкой кислинкой и приятной минеральностью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-montgolfier"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-shato-de-mongolfer-shiraz-moellyo-krasnoe-polusladkoe-11",
+      "group_id": "montgolfier",
+      "name": "Шато де Монгольфьер Шираз Моэллё",
+      "variant": "",
+      "wine_slug": "soyuz-vino-shato-de-mongolfer-shiraz-moellyo-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-shato-de-mongolfer-shiraz-moellyo-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 189,
+          "height": 720,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вино отличается умеренно насыщенным, мягким и гибким вкусом с нотами спелой малины и ежевики, дополненными перечными штрихами, зрелыми и округлыми танинами, хорошим балансом кислотности и продолжительным, приятным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-montgolfier"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-shato-de-mongolfer-shiraz-polusuhoe-krasnoe-11",
+      "group_id": "montgolfier",
+      "name": "Шато де Монгольфьер Шираз Полусухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-shato-de-mongolfer-shiraz-polusuhoe-krasnoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-shato-de-mongolfer-shiraz-polusuhoe-krasnoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 180,
+          "height": 720,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусухое",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вино отличается питким, приятным, округлым вкусом с нотками спелых фруктов и легкими древесными штрихами в обрамлении мелкозернистых танинов. Послевкусие мягкое, продолжительное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-montgolfier"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-sheremetevskie-pogreba-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "group_id": "sheremetev",
+      "name": "Шереметьевские Погреба Белое Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-sheremetevskie-pogreba-beloe-polusladkoe-belye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-sheremetevskie-pogreba-beloe-polusladkoe-belye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 183,
+          "height": 720,
+          "source_width": 195,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Белые сорта винограда"
+      ],
+      "description": "Простой, легкий вкус вина демонстрирует приятную сладость и нежную кислинку. Освежающее послевкусие наполнено нотками садовых фруктов и цветочного нектара.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sheremetev"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-sheremetevskie-pogreba-kaberne-sovinon-krasnoe-suhoe-11",
+      "group_id": "sheremetev",
+      "name": "Шереметьевские Погреба Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "soyuz-vino-sheremetevskie-pogreba-kaberne-sovinon-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-sheremetevskie-pogreba-kaberne-sovinon-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 185,
+          "height": 720,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Приятный, мягкий, сбалансированный вкус вина обладает характерными фруктово-ягодными тонами. Послевкусие теплое, пряное, немного терпкое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sheremetev"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-sheremetevskie-pogreba-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "group_id": "sheremetev",
+      "name": "Шереметьевские Погреба Красное Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-sheremetevskie-pogreba-krasnoe-polusladkoe-krasnye-sorta-vinograda-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-sheremetevskie-pogreba-krasnoe-polusladkoe-krasnye-sorta-vinograda-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 183,
+          "height": 720,
+          "source_width": 195,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Красные сорта винограда"
+      ],
+      "description": "Приятный, мягкий вкус вина демонстрирует восхитительные тона сладких зрелых ягод. Терпкость практически отсутствует в послевкусии, оставляя легкий намек ароматной груши.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sheremetev"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-sheremetevskie-pogreba-shardone-beloe-suhoe-11",
+      "group_id": "sheremetev",
+      "name": "Шереметьевские Погреба Шардоне",
+      "variant": "",
+      "wine_slug": "soyuz-vino-sheremetevskie-pogreba-shardone-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-sheremetevskie-pogreba-shardone-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 179,
+          "height": 720,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Мягкий, нежный, гармоничный вкус вина обладает свежей кислотностью и цветочно-фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sheremetev"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-evropak-shiraz-krasnoe-polusladkoe-11",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино ЕвроПак Шираз",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-evropak-shiraz-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-evropak-shiraz-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 241,
+          "height": 720,
+          "source_width": 253,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вино обладает легким, гармоничным, приятным вкусом с фруктово-пряными акцентами, деликатной ягодной терпкостью, мягкими танинами и насыщенным, сладковатым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-izabella-beg-in-boks-krasnoe-polusladkoe-11",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Изабелла Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-izabella-beg-in-boks-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-izabella-beg-in-boks-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 585,
+          "height": 718,
+          "source_width": 599,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Изабелла"
+      ],
+      "description": "Мягкий, питкий вкус вина покоряет сочностью фруктовых оттенков, деликатной сладостью и тонкой, гармоничной ягодной кислинкой. Округлые танины выстилают нежное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-izabella-krasnoe-polusladkoe-11",
+      "group_id": "soyuz-bottles",
+      "name": "Союз-Вино Изабелла",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-izabella-krasnoe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-izabella-krasnoe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 162,
+          "height": 720,
+          "source_width": 174,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Изабелла"
+      ],
+      "description": "Мягкий, питкий вкус вина покоряет сочностью фруктовых оттенков, деликатной сладостью и тонкой, гармоничной ягодной кислинкой. Округлые танины выстилают нежное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-bottles"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-kaberne-sovinon-beg-in-boks-krasnoe-suhoe-11",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Каберне Совиньон Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-kaberne-sovinon-beg-in-boks-krasnoe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-kaberne-sovinon-beg-in-boks-krasnoe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 607,
+          "height": 718,
+          "source_width": 621,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Щедрый, свежий, отлично сбалансированный вкус демонстрирует яркие фруктово-ягодные оттенки, среди которых особенно выделяются нотки черной смородины, украшенные травянистыми тонами, и продолжительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-kaberne-sovinon-krasnoe-suhoe-12",
+      "group_id": "soyuz-bottles",
+      "name": "Союз-Вино Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-kaberne-sovinon-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-kaberne-sovinon-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 164,
+          "height": 720,
+          "source_width": 176,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус вина мягкий, чистый, сбалансированный, легкий, умеренно терпкий, с бархатистой текстурой и приятными оттенками спелых фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-bottles"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-kaberne-sovinon-polusladkoe-beg-in-boks-krasnoe-12",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Каберне Совиньон Полусладкое Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-kaberne-sovinon-polusladkoe-beg-in-boks-krasnoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-kaberne-sovinon-polusladkoe-beg-in-boks-krasnoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 598,
+          "height": 718,
+          "source_width": 612,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Мягкий, гармоничный, чистый, питкий, приятно сладковатый вкус отличается выразительными фруктово-ягодными тонами, умеренной терпкостью, деликатной танинностью, бархатистой текстурой и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-muskat-beg-in-boks-beloe-polusladkoe-11",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Мускат Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-muskat-beg-in-boks-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-muskat-beg-in-boks-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 567,
+          "height": 719,
+          "source_width": 580,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус вина мягкий, нежный, гармоничный. Фруктово-медовая сладость идеально дополнена пряностью мускатных оттенков. Послевкусие приятное, сбалансированное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-muskat-beloe-polusladkoe-11",
+      "group_id": "soyuz-bottles",
+      "name": "Союз-Вино Мускат",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-muskat-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-muskat-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 162,
+          "height": 720,
+          "source_width": 174,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус вина мягкий, нежный, гармоничный. Фруктово-медовая сладость идеально дополнена пряностью мускатных оттенков. Послевкусие приятное, сбалансированное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-bottles"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-shardone-beloe-polusladkoe-beg-in-boks-12",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Шардоне Белое Полусладкое Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-shardone-beloe-polusladkoe-beg-in-boks-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-shardone-beloe-polusladkoe-beg-in-boks-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 588,
+          "height": 718,
+          "source_width": 602,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Мягкий, свежий, округлый и гармоничный вкус манит нежными фруктовыми оттенками, сладость которых сбалансирована приятной, тонкой кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-shardone-suhoe-beg-in-boks-beloe-11",
+      "group_id": "soyuz-box",
+      "name": "Союз-Вино Шардоне Сухое Бэг-ин-бокс",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-shardone-suhoe-beg-in-boks-beloe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-shardone-suhoe-beg-in-boks-beloe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 605,
+          "height": 718,
+          "source_width": 619,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Мягкий, округлый, питкий, гармоничный, фруктовый вкус отличается хорошо сбалансированной кислотностью и приятным, сухим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-box"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-soyuz-vino-shardone-suhoe-beloe-11",
+      "group_id": "soyuz-bottles",
+      "name": "Союз-Вино Шардоне Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-soyuz-vino-shardone-suhoe-beloe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-soyuz-vino-shardone-suhoe-beloe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 164,
+          "height": 720,
+          "source_width": 176,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино отличается питким, свежим, гармоничным, фруктовым вкусом с хорошо сбалансированной кислотностью и приятным, сухим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-soyuz-bottles"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-terra-pia-kaldera-blend-risling-reynskiy-beloe-suhoe-11",
+      "group_id": "terra-pia",
+      "name": "Терра Пиа Кальдера Бленд",
+      "variant": "",
+      "wine_slug": "soyuz-vino-terra-pia-kaldera-blend-risling-reynskiy-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-terra-pia-kaldera-blend-risling-reynskiy-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 184,
+          "height": 720,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский",
+        "Шардоне"
+      ],
+      "description": "Вкус вина сложный, свежий, с высокой натуральной кислотностью, фруктовыми оттенками и живым, бодрящим послевкусием с минеральными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-terra-pia"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-terra-pia-lava-blend-merlo-krasnoe-suhoe-12",
+      "group_id": "terra-pia",
+      "name": "Терра Пиа Лава Бленд",
+      "variant": "",
+      "wine_slug": "soyuz-vino-terra-pia-lava-blend-merlo-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-terra-pia-lava-blend-merlo-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 188,
+          "height": 720,
+          "source_width": 200,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Шираз"
+      ],
+      "description": "Вкус округлый, сбалансированный, мягкий, с ягодными и фруктовыми штрихами, тонкими цветочными нюансами и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-terra-pia"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-kaberne-merlo-kaberne-sovinon-krasnoe-polusladkoe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Каберне-Мерло",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-kaberne-merlo-kaberne-sovinon-krasnoe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-kaberne-merlo-kaberne-sovinon-krasnoe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 193,
+          "height": 720,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Вкус сбалансированный, питкий, с умеренной сладостью, нотами вишни, малины, ежевики и сливы, приятной терпкостью и долгим, сочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-kaberne-merlo-v-banke-kaberne-sovinon-krasnoe-polusladkoe-12",
+      "group_id": "green-cans",
+      "name": "Зелёная Долина Каберне-Мерло в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-kaberne-merlo-v-banke-kaberne-sovinon-krasnoe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-kaberne-merlo-v-banke-kaberne-sovinon-krasnoe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 283,
+          "height": 720,
+          "source_width": 295,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Вкус вина сбалансированный, питкий, с умеренной сладостью, нотами вишни, малины, ежевики и сливы, приятной терпкостью и долгим, сочным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-kaberne-sovinon-krasnoe-suhoe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-kaberne-sovinon-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-kaberne-sovinon-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 194,
+          "height": 720,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус вина насыщенный, хорошо сбалансированный, приятно танинный и деликатно терпкий, с нотами спелой вишни, специй и шоколада, умеренной кислотностью, пряными штрихами табака и черных ягод в долгом, сухом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-pino-blan-v-banke-beloe-polusladkoe-115",
+      "group_id": "green-cans",
+      "name": "Зелёная Долина Пино Блан в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-pino-blan-v-banke-beloe-polusladkoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-pino-blan-v-banke-beloe-polusladkoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 278,
+          "height": 720,
+          "source_width": 290,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Вкус яркий, выразительный, с доминирующими яблочными оттенками и тонкими медовыми нюансами. Послевкусие сбалансированное и приятное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-pino-nuar-krasnoe-suhoe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Пино Нуар",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-pino-nuar-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-pino-nuar-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 190,
+          "height": 720,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "У вина яркий, сбалансированный, питкий вкус с нотами красных ягод и фруктов, пряностей и подлеска, деликатными танинами и легкой терпкостью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-pino-nuar-v-banke-krasnoe-suhoe-12",
+      "group_id": "green-cans",
+      "name": "Зелёная Долина Пино Нуар в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-pino-nuar-v-banke-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-pino-nuar-v-banke-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 6,
+          "width": 279,
+          "height": 720,
+          "source_width": 289,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "У вина яркий, сбалансированный, питкий вкус с нотами красных ягод и фруктов, пряностей и подлеска, деликатными танинами и легкой терпкостью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-shardone-beloe-suhoe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Шардоне",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-shardone-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-shardone-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 720,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус вина легкий, питкий, освежающий, с нотками спелого яблока и косточковых фруктов (абрикос, персик), бодрящей кислотностью и приятным, сухим послевкусием средней длины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-shardone-v-banke-beloe-suhoe-12",
+      "group_id": "green-cans",
+      "name": "Зелёная Долина Шардоне в банке",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-shardone-v-banke-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-shardone-v-banke-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 6,
+          "width": 274,
+          "height": 720,
+          "source_width": 288,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус вина легкий, питкий, освежающий, с нотками спелого яблока и косточковых фруктов (абрикос, персик), бодрящей кислотностью и приятным, сухим послевкусием средней длины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-cans"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-sovinon-blan-polusladkoe-beloe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Совиньон Блан Полусладкое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-sovinon-blan-polusladkoe-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-sovinon-blan-polusladkoe-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 200,
+          "height": 720,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вино демонстрирует сбалансированный, чистый, мягкий, питкий вкус с фруктово-минеральными оттенками и приятной сладостью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "wine-soyuz-vino-zelyonaya-dolina-sovinon-blan-suhoe-beloe-12",
+      "group_id": "green-valley",
+      "name": "Зелёная Долина Совиньон Блан Сухое",
+      "variant": "",
+      "wine_slug": "soyuz-vino-zelyonaya-dolina-sovinon-blan-suhoe-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-zelyonaya-dolina-sovinon-blan-suhoe-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 203,
+          "height": 720,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус мягкий, питкий, чистый, с цитрусово-травяными оттенками и тонкими минеральными нюансами в сухом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-green-valley"
+      ]
+    },
+    {
+      "id": "official-perle-white",
+      "group_id": "perle",
+      "name": "La Petite Perle · White",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/soyuz-vino/official-perle-white.webp",
+        "source_id": "official-official-perle-white",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 280,
+          "height": 716,
+          "source_width": 296,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое игристое · полусладкое",
+      "grapes": [],
+      "description": "Игристое полусладкое белое вино в алюминиевой банке 0,25 л. Шампанизация резервуарным методом. Цветочный аромат с оттенками персика, ананаса и яблок. Точное название отсутствует в сохранённом снимке каталога.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-perle-white",
+        "official-perle"
+      ]
+    }
+  ]
+}
