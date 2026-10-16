@@ -200,7 +200,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkerman-muskatnoe-beloe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 10,
+          "width": 148,
+          "height": 594,
+          "source_width": 176,
+          "source_height": 614
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -226,7 +234,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkerman-shato-blan.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 27,
+          "y": 19,
+          "width": 148,
+          "height": 594,
+          "source_width": 183,
+          "source_height": 620
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -251,7 +267,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkerman-shato-ruzh.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 11,
+          "y": 7,
+          "width": 148,
+          "height": 594,
+          "source_width": 171,
+          "source_height": 608
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -278,7 +302,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 5,
+          "width": 474,
+          "height": 1495,
+          "source_width": 476,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -306,7 +338,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 830,
+          "y": 0,
+          "width": 704,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -331,7 +371,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 5,
+          "width": 473,
+          "height": 1492,
+          "source_width": 475,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -356,7 +404,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 0,
+          "width": 448,
+          "height": 1494,
+          "source_width": 456,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -381,7 +437,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 5,
+          "width": 466,
+          "height": 1495,
+          "source_width": 466,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -409,7 +473,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 832,
+          "y": 0,
+          "width": 698,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -434,7 +506,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 449,
+          "height": 1495,
+          "source_width": 449,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -462,7 +542,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 446,
+          "height": 1500,
+          "source_width": 446,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -493,7 +581,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 830,
+          "y": 0,
+          "width": 701,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -518,7 +614,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 874,
+          "y": 0,
+          "width": 614,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -543,7 +647,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 850,
+          "y": 0,
+          "width": 662,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -568,7 +680,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/wine-winemaker-selection.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 64,
+          "y": 57,
+          "width": 303,
+          "height": 1103,
+          "source_width": 432,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -593,7 +713,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/official-grand-reserve-cabernet.webp",
-        "source_id": "official-grand-cabernet"
+        "source_id": "official-grand-cabernet",
+        "frame": {
+          "x": 164,
+          "y": 36,
+          "width": 170,
+          "height": 660,
+          "source_width": 500,
+          "source_height": 750
+        }
       },
       "category": "Марочное тихое вино",
       "style": "Красное · сухое",
@@ -617,7 +745,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/inkerman/official-grand-reserve-pearl.webp",
-        "source_id": "official-grand-pearl"
+        "source_id": "official-grand-pearl",
+        "frame": {
+          "x": 164,
+          "y": 36,
+          "width": 170,
+          "height": 660,
+          "source_width": 500,
+          "source_height": 750
+        }
       },
       "category": "Марочное тихое вино",
       "style": "Белое · сухое",
