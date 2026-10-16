@@ -353,13 +353,6 @@ M22. Retention and user deletion MUST delete the inbox rows of the user and the 
 6. The bot receives «Начать» as the `bot_started` update and also accepts the text `/start`.
 7. The privacy answer adds the user's MAX user ID.
 8. Non-functional requirements 14 and 15 (the album receipt tracker) do not apply.
-9. An album photo without the receipt gets its result as a reply when the result photo fails.
-   The Telegram bot sends no result in this case.
-10. An administrator command with a page number or a user ID beyond the SQLite integer range
-    answers "Страница не найдена" or "Пользователь не найден". The Telegram bot gives no answer.
-11. An administration retry stores its files under the date of the first receipt. The Telegram bot
-    uses the retry date, so retention can miss the files of a retry on another day.
-12. A repeated feedback press restores the keyboard of the stored value, not of the pressed button.
 
 ## Out of scope
 

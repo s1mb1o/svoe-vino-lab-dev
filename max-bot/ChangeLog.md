@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-16
+
+- Removed the double point at the end of the queue receipt («около 40 сек..»), the same as in
+  the Telegram bot (issue #11).
+- Removed platform differences 9 to 12 from the specification. The Telegram bot now has the
+  same fixes.
+
 ## 2026-10-15
 
 - Added the MAX messenger bot «Что за вино?» (`@se14697933_bot`), a port of the Telegram bot

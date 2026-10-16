@@ -230,7 +230,7 @@ async def test_each_album_message_gets_its_own_receipt(repository):
     replies = api.calls_of("send_message")
     assert [reply["reply_to"] for reply in replies] == ["mid.album-1", "mid.album-2"]
     assert replies[0]["text"] == ALBUM_RECEIPT
-    assert replies[1]["text"].startswith(
+    assert replies[1]["text"] == (
         "Фотографии приняты и поставлены в очередь.\n"
         "Позиция: 3; примерное ожидание: около 40 сек."
     )

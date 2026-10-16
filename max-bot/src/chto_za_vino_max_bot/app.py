@@ -925,13 +925,14 @@ def _queue_receipt_text(*, album: bool, position: int, wait_seconds: int) -> str
         if album
         else "Фотография принята и поставлена"
     )
+    # The abbreviation point of "сек." and "мин." also ends the sentence.
     if wait_seconds <= 0:
-        wait = "обработка начнётся сразу"
+        wait = "обработка начнётся сразу."
     elif wait_seconds < 60:
         wait = f"примерное ожидание: около {wait_seconds} сек."
     else:
         wait = f"примерное ожидание: около {_minutes(wait_seconds)} мин."
-    return f"{subject} в очередь.\nПозиция: {position}; {wait}."
+    return f"{subject} в очередь.\nПозиция: {position}; {wait}"
 
 
 MOSCOW_TIME = ZoneInfo("Europe/Moscow")
