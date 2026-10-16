@@ -1,0 +1,1071 @@
+{
+  "date": "2026-10-16",
+  "source_revision": "39e93b32",
+  "method": "Find the bounding rectangle of alpha >= 128. Add a margin of 0.5% of the visible height, rounded to at least one source pixel. Clamp the frame to the original image. Measure only. Do not modify pixels.",
+  "renderer": "ProductLineImage.vue",
+  "image_count": 636,
+  "producer_count": 11,
+  "source_image_hashes_unchanged": 636,
+  "resolved_framing_observations": 31,
+  "unit_tests_passed": 232,
+  "typecheck": "passed",
+  "production_build": "passed",
+  "browser_sizing_cases": 44,
+  "node_geometry_checks": 2544,
+  "browser_sizing": [
+    {
+      "engine": "chromium",
+      "status": "passed",
+      "cases": [
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "nodes_checked": 52,
+          "previews_checked": 44,
+          "detail": {
+            "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+            "visible_height": 176,
+            "width": 57.1875,
+            "height": 176,
+            "ratio": 0.3290127840909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 390,
+          "nodes_checked": 52,
+          "previews_checked": 44,
+          "detail": {
+            "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+            "visible_height": 108,
+            "width": 35.09375,
+            "height": 108,
+            "ratio": 0.3289930555555556,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "nodes_checked": 41,
+          "previews_checked": 21,
+          "detail": {
+            "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+            "visible_height": 175.77646062658764,
+            "width": 47.984375,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 390,
+          "nodes_checked": 41,
+          "previews_checked": 21,
+          "detail": {
+            "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+            "visible_height": 107.86282811176969,
+            "width": 29.4375,
+            "height": 108,
+            "ratio": 0.9995659722222222,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "nodes_checked": 66,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+            "visible_height": 174.36665364583334,
+            "width": 43.84375,
+            "height": 176,
+            "ratio": 0.9998236176029632,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 390,
+          "nodes_checked": 66,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+            "visible_height": 106.99736979166666,
+            "width": 26.90625,
+            "height": 108,
+            "ratio": 0.9998562805403852,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "nodes_checked": 107,
+          "previews_checked": 72,
+          "detail": {
+            "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 49.765625,
+            "height": 176,
+            "ratio": 0.9997336647727273,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 390,
+          "nodes_checked": 107,
+          "previews_checked": 72,
+          "detail": {
+            "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 30.53125,
+            "height": 108,
+            "ratio": 0.9995659722222222,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "nodes_checked": 17,
+          "previews_checked": 12,
+          "detail": {
+            "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 52.453125,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 390,
+          "nodes_checked": 17,
+          "previews_checked": 12,
+          "detail": {
+            "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 32.1875,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "nodes_checked": 28,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 39.40625,
+            "height": 176,
+            "ratio": 0.9996448863636364,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 390,
+          "nodes_checked": 28,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 24.1875,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "nodes_checked": 103,
+          "previews_checked": 71,
+          "detail": {
+            "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
+            "visible_height": 175.62743437764607,
+            "width": 63.171875,
+            "height": 176,
+            "ratio": 0.9997336647727273,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 390,
+          "nodes_checked": 103,
+          "previews_checked": 71,
+          "detail": {
+            "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
+            "visible_height": 107.77138018628281,
+            "width": 38.765625,
+            "height": 108,
+            "ratio": 0.9997106481481481,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "nodes_checked": 45,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
+            "visible_height": 174.22794642857144,
+            "width": 43.390625,
+            "height": 176,
+            "ratio": 0.9997346072186837,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 390,
+          "nodes_checked": 45,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
+            "visible_height": 106.90419642857142,
+            "width": 26.625,
+            "height": 108,
+            "ratio": 0.9997116493656286,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "nodes_checked": 97,
+          "previews_checked": 65,
+          "detail": {
+            "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+            "visible_height": 175.10211120401337,
+            "width": 63.671875,
+            "height": 176,
+            "ratio": 0.4481474915795072,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 390,
+          "nodes_checked": 97,
+          "previews_checked": 65,
+          "detail": {
+            "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+            "visible_height": 107.4483173076923,
+            "width": 39.0625,
+            "height": 108,
+            "ratio": 0.44792719919110213,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "nodes_checked": 45,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+            "visible_height": 175.55292125317527,
+            "width": 56.625,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 390,
+          "nodes_checked": 45,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+            "visible_height": 107.72565622353937,
+            "width": 34.75,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "nodes_checked": 35,
+          "previews_checked": 25,
+          "detail": {
+            "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+            "visible_height": 174.21306057563586,
+            "width": 51.4375,
+            "height": 176,
+            "ratio": 0.6678509140236418,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 390,
+          "nodes_checked": 35,
+          "previews_checked": 25,
+          "detail": {
+            "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+            "visible_height": 106.9067938420348,
+            "width": 31.5625,
+            "height": 108,
+            "ratio": 0.6677894736842105,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "status": "passed",
+      "cases": [
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "nodes_checked": 52,
+          "previews_checked": 44,
+          "detail": {
+            "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+            "visible_height": 176,
+            "width": 57.1875,
+            "height": 176,
+            "ratio": 0.3290127840909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 390,
+          "nodes_checked": 52,
+          "previews_checked": 44,
+          "detail": {
+            "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+            "visible_height": 108,
+            "width": 35.09375,
+            "height": 108,
+            "ratio": 0.3289930555555556,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "nodes_checked": 41,
+          "previews_checked": 21,
+          "detail": {
+            "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+            "visible_height": 175.77646062658764,
+            "width": 47.984375,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 390,
+          "nodes_checked": 41,
+          "previews_checked": 21,
+          "detail": {
+            "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+            "visible_height": 107.86282811176969,
+            "width": 29.4375,
+            "height": 108,
+            "ratio": 0.9995659722222222,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "nodes_checked": 66,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+            "visible_height": 174.36665364583334,
+            "width": 43.84375,
+            "height": 176,
+            "ratio": 0.9998236176029632,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 390,
+          "nodes_checked": 66,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+            "visible_height": 106.99736979166666,
+            "width": 26.90625,
+            "height": 108,
+            "ratio": 0.9998562805403852,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "nodes_checked": 107,
+          "previews_checked": 72,
+          "detail": {
+            "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 49.765625,
+            "height": 176,
+            "ratio": 0.9997336647727273,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 390,
+          "nodes_checked": 107,
+          "previews_checked": 72,
+          "detail": {
+            "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 30.53125,
+            "height": 108,
+            "ratio": 0.9995659722222222,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "nodes_checked": 17,
+          "previews_checked": 12,
+          "detail": {
+            "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 52.453125,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 390,
+          "nodes_checked": 17,
+          "previews_checked": 12,
+          "detail": {
+            "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 32.1875,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "nodes_checked": 28,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+            "visible_height": 175.70194750211684,
+            "width": 39.40625,
+            "height": 176,
+            "ratio": 0.9996448863636364,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 390,
+          "nodes_checked": 28,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+            "visible_height": 107.81710414902625,
+            "width": 24.1875,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "nodes_checked": 103,
+          "previews_checked": 71,
+          "detail": {
+            "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
+            "visible_height": 175.62743437764607,
+            "width": 63.171875,
+            "height": 176,
+            "ratio": 0.9997336647727273,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 390,
+          "nodes_checked": 103,
+          "previews_checked": 71,
+          "detail": {
+            "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
+            "visible_height": 107.77138018628281,
+            "width": 38.765625,
+            "height": 108,
+            "ratio": 0.9997106481481481,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "nodes_checked": 45,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
+            "visible_height": 174.22794642857144,
+            "width": 43.390625,
+            "height": 176,
+            "ratio": 0.9997346072186837,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 390,
+          "nodes_checked": 45,
+          "previews_checked": 26,
+          "detail": {
+            "src": "/product-line-maps/massandra/wine-massandra-heres.webp",
+            "visible_height": 106.90419642857142,
+            "width": 26.625,
+            "height": 108,
+            "ratio": 0.9997116493656286,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "nodes_checked": 97,
+          "previews_checked": 65,
+          "detail": {
+            "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+            "visible_height": 175.10211120401337,
+            "width": 63.671875,
+            "height": 176,
+            "ratio": 0.4481474915795072,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 390,
+          "nodes_checked": 97,
+          "previews_checked": 65,
+          "detail": {
+            "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+            "visible_height": 107.4483173076923,
+            "width": 39.0625,
+            "height": 108,
+            "ratio": 0.44792719919110213,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "nodes_checked": 45,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+            "visible_height": 175.55292125317527,
+            "width": 56.625,
+            "height": 176,
+            "ratio": 0.9999112215909091,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 390,
+          "nodes_checked": 45,
+          "previews_checked": 29,
+          "detail": {
+            "src": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+            "visible_height": 107.72565622353937,
+            "width": 34.75,
+            "height": 108,
+            "ratio": 0.9998553240740741,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "nodes_checked": 35,
+          "previews_checked": 25,
+          "detail": {
+            "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+            "visible_height": 174.21306057563586,
+            "width": 51.4375,
+            "height": 176,
+            "ratio": 0.6678509140236418,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 390,
+          "nodes_checked": 35,
+          "previews_checked": 25,
+          "detail": {
+            "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+            "visible_height": 106.9067938420348,
+            "width": 31.5625,
+            "height": 108,
+            "ratio": 0.6677894736842105,
+            "clipped": false,
+            "filter": "drop-shadow(rgba(50, 35, 24, 0.094) 0px 8px 7px)"
+          },
+          "status": "passed"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "producer_regression_suites": [
+    {
+      "browser": "chromium",
+      "status": "passed",
+      "check_count": 45,
+      "errors": []
+    },
+    {
+      "browser": "webkit",
+      "status": "passed",
+      "check_count": 45,
+      "errors": []
+    }
+  ],
+  "abrau_regression_suites": [
+    {
+      "browser": "chromium",
+      "status": "passed"
+    },
+    {
+      "browser": "webkit",
+      "status": "passed"
+    }
+  ],
+  "physical_device_test": false,
+  "resolved_images": [
+    {
+      "producer": "alma-valley",
+      "product_id": "wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
+      "asset": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+      "desktop_before_px": 119.85,
+      "desktop_after_px": 175.78,
+      "sha256": "164efe0c843060963bfe31f133505bfc501e27844a527e07b947f8c7052af30e"
+    },
+    {
+      "producer": "alma-valley",
+      "product_id": "wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "asset": "/product-line-maps/alma-valley/wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14.webp",
+      "desktop_before_px": 119.9,
+      "desktop_after_px": 175.85,
+      "sha256": "4c222b224e91e045d462caf7a9919c9f6f4f8afc6c2c002df79773ab5784e3c5"
+    },
+    {
+      "producer": "alma-valley",
+      "product_id": "wine-alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "asset": "/product-line-maps/alma-valley/wine-alma-valley-shardone-rezerv-beloe-suhoe-135.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "dd0d158dc6b482705b05393cd3fd097ce9ef9b1bce09c83295b08a24d1584809"
+    },
+    {
+      "producer": "derbent-vino",
+      "product_id": "wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10",
+      "asset": "/product-line-maps/derbent-vino/wine-derbent-vino-di-kaspiko-fiori-di-mare-verde-avgustin-rozovoe-polusuhoe-10.webp",
+      "desktop_before_px": 118.1,
+      "desktop_after_px": 174.38,
+      "sha256": "faa7d0c91a2148e88a0b0c6a8ab9470bb767fa71757b2c7986931b5364fdb5c7"
+    },
+    {
+      "producer": "derbent-vino",
+      "product_id": "wine-derbent-vino-endemy-risling-beloe-bryut-105-125",
+      "asset": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-risling-beloe-bryut-105-125.webp",
+      "desktop_before_px": 119,
+      "desktop_after_px": 174.53,
+      "sha256": "f71fe22410b14f1461e2786d9761eeac6ae9df14de039ef0a56543df21d4e6d0"
+    },
+    {
+      "producer": "derbent-vino",
+      "product_id": "wine-derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "asset": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-shardone-beloe-bryut-105-125.webp",
+      "desktop_before_px": 119,
+      "desktop_after_px": 174.53,
+      "sha256": "49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a"
+    },
+    {
+      "producer": "derbent-vino",
+      "product_id": "wine-derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "asset": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-shardone-beloe-suhoe-13.webp",
+      "desktop_before_px": 119,
+      "desktop_after_px": 174.53,
+      "sha256": "49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a"
+    },
+    {
+      "producer": "derbent-vino",
+      "product_id": "wine-derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "asset": "/product-line-maps/derbent-vino/wine-derbent-vino-endemy-sovinon-beloe-bryut-105-125.webp",
+      "desktop_before_px": 119,
+      "desktop_after_px": 174.53,
+      "sha256": "70a686e978f1b75b7e3bad55ced6bc3025fb20326d11b78c44514fc1fecd376f"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "a902e43a5f7768f18c8faf50496ef5e4522b9facb312613e1f4cbc0b3893b236"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12.webp",
+      "desktop_before_px": 119.9,
+      "desktop_after_px": 175.85,
+      "sha256": "04baaefd29386672442d0d88a3989847a1aead009635cf63ca3b209a0d441ed6"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "2fc44843de137e8bc5db677ef847ee5c9388741a47f7458dbe2f8a5c49e70ae5"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "0a69514a499673bb373e946871f958786370d3063c6dd5c78028e4ca1b79779d"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "f686b863e5427a8c662d5c815b33315a103de6592c8de90368db69ae09d6cd98"
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-fanagoriya-saqra-saperavi-krasnoe-suhoe-135",
+      "asset": "/product-line-maps/fanagoria/wine-fanagoriya-saqra-saperavi-krasnoe-suhoe-135.webp",
+      "desktop_before_px": 119.75,
+      "desktop_after_px": 175.63,
+      "sha256": "36e0d00fef96d3c86cffb838945695a88e928bb013c4060973dbc02fff110952"
+    },
+    {
+      "producer": "inkerman",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135",
+      "asset": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "5c7fe319c750a3b6c535ca0f25874cf96065667fd7f7e4a0582a7127e969b74f"
+    },
+    {
+      "producer": "inkerman",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135",
+      "asset": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135.webp",
+      "desktop_before_px": 119.85,
+      "desktop_after_px": 175.78,
+      "sha256": "a4bd55c5371ad466620a5be9b95d4a20a947e02fdf13731a31956cbf53f6381e"
+    },
+    {
+      "producer": "inkerman",
+      "product_id": "wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135",
+      "asset": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135.webp",
+      "desktop_before_px": 119.9,
+      "desktop_after_px": 175.85,
+      "sha256": "e80956802a6e53d5da16074bb85747fe4c964ac31c47c72bbe344b08b2752e08"
+    },
+    {
+      "producer": "inkerman",
+      "product_id": "wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13",
+      "asset": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13.webp",
+      "desktop_before_px": 119.9,
+      "desktop_after_px": 175.85,
+      "sha256": "d24570a8bf4f7846be37951d3f4d61467b35faaf2ea4c1a69349df04bdc7489b"
+    },
+    {
+      "producer": "inkerman",
+      "product_id": "wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12",
+      "asset": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "4fd5052ef334c37a37a191c8a6b9a1b470b7beccdc3b5038647b56fffdc8718c"
+    },
+    {
+      "producer": "koktebel",
+      "product_id": "wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+      "asset": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "dfa49bf60ca526c709f5b86ee7ae732cd75bf1c579b56d8a29cccd6bdfc6f1bf"
+    },
+    {
+      "producer": "kuban-vino",
+      "product_id": "wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12",
+      "asset": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
+      "desktop_before_px": 119.75,
+      "desktop_after_px": 175.63,
+      "sha256": "617f83c23f893cc7e4d43993893b3185262113da41acbaf09d866cfb897646de"
+    },
+    {
+      "producer": "kuban-vino",
+      "product_id": "wine-kuban-vino-aristov-kyuve-aleksandr-millezimato-shardone-beloe-ekstra-bryut-12",
+      "asset": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-millezimato-shardone-beloe-ekstra-bryut-12.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "87c5c97e92cc30c07cf10432172216e58e02d3909dd2dc691d921b1918e92eb7"
+    },
+    {
+      "producer": "kuban-vino",
+      "product_id": "wine-kuban-vino-aristov-kyuve-aleksandr-rose-de-pinot-pino-nuar-rozovoe-ekstra-bryut-12",
+      "asset": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-rose-de-pinot-pino-nuar-rozovoe-ekstra-bryut-12.webp",
+      "desktop_before_px": 119.9,
+      "desktop_after_px": 175.85,
+      "sha256": "8b4a556c1570166ea68cf883cb279ed56c105365147978418a0a7a950963f60c"
+    },
+    {
+      "producer": "massandra",
+      "product_id": "wine-massandra-heres",
+      "asset": "/product-line-maps/massandra/wine-massandra-heres.webp",
+      "desktop_before_px": 118.37,
+      "desktop_after_px": 174.23,
+      "sha256": "392f46158e6b6d8d0a27d2c4d0596ff26dc9095deab56697589c49ad39b980ad"
+    },
+    {
+      "producer": "massandra",
+      "product_id": "wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16",
+      "asset": "/product-line-maps/massandra/wine-massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16.webp",
+      "desktop_before_px": 119.95,
+      "desktop_after_px": 175.93,
+      "sha256": "581823640f4af73b125b77da1cbd57012272509da854d6a892b635ef917a051d"
+    },
+    {
+      "producer": "massandra",
+      "product_id": "wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16",
+      "asset": "/product-line-maps/massandra/wine-massandra-muskat-pozdnego-sbora-muskat-belyy-beloe-sladkoe-16.webp",
+      "desktop_before_px": 119.85,
+      "desktop_after_px": 175.78,
+      "sha256": "67dc3b3bb3334c5d4ebbe434a36a987325207b44cd38ffb91e3a6b8083d07046"
+    },
+    {
+      "producer": "massandra",
+      "product_id": "wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135",
+      "asset": "/product-line-maps/massandra/wine-massandra-portveyn-belyy-gurzuf-kokur-belyy-beloe-sladkoe-135.webp",
+      "desktop_before_px": 119.85,
+      "desktop_after_px": 175.78,
+      "sha256": "1d462c924733fcb59b2936f00fb66467945bde414f51d8d6321fb17ecdcef61d"
+    },
+    {
+      "producer": "vedernikov",
+      "product_id": "wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14",
+      "asset": "/product-line-maps/vedernikov/wine-vinodelnya-vedernikov-tsimlyanskiy-chernyy-bryut-roze-rozovoe-14.webp",
+      "desktop_before_px": 119.7,
+      "desktop_after_px": 175.55,
+      "sha256": "f7cae3b4a4f117cecb14c95812e3190178060850ac6ada9647e4994d4e368cb9"
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-bryut-beloe-zolotaya-balka",
+      "asset": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
+      "desktop_before_px": 126.76,
+      "desktop_after_px": 174.22,
+      "sha256": "7893892fcc4547059f38304a951508a19fe318907714b84070234ac699af151b"
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12",
+      "asset": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12.webp",
+      "desktop_before_px": 118.07,
+      "desktop_after_px": 174.35,
+      "sha256": "cd5d3f62c589b89131cef802bf9d4eb8a786f25211327f48a836708a32965034"
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12",
+      "asset": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12.webp",
+      "desktop_before_px": 119.8,
+      "desktop_after_px": 175.7,
+      "sha256": "22f05729b89c95e416b1d01b9ee970f5c389eb89beffea7f8a36e2cf12f6c9ea"
+    }
+  ],
+  "commits": [
+    {
+      "scope": "renderer",
+      "commit": "1d4b3b4a"
+    },
+    {
+      "scope": "abrau-durso",
+      "commit": "60682360",
+      "images": 52
+    },
+    {
+      "scope": "alma-valley",
+      "commit": "dd3bf5fd",
+      "images": 41
+    },
+    {
+      "scope": "derbent-vino",
+      "commit": "eed880e9",
+      "images": 66
+    },
+    {
+      "scope": "fanagoria",
+      "commit": "82c059ca",
+      "images": 107
+    },
+    {
+      "scope": "inkerman",
+      "commit": "f21dfe02",
+      "images": 17
+    },
+    {
+      "scope": "koktebel",
+      "commit": "70e79363",
+      "images": 28
+    },
+    {
+      "scope": "kuban-vino",
+      "commit": "af83439d",
+      "images": 103
+    },
+    {
+      "scope": "massandra",
+      "commit": "577d183d",
+      "images": 45
+    },
+    {
+      "scope": "myskhako",
+      "commit": "34d2cfa1",
+      "images": 97
+    },
+    {
+      "scope": "vedernikov",
+      "commit": "ad7b56d9",
+      "images": 45
+    },
+    {
+      "scope": "zolotaya-balka",
+      "commit": "f1be6df6",
+      "images": 35
+    }
+  ]
+}

@@ -25,10 +25,11 @@ The other 635 reviewed images have no additional visible background remnant at t
 Read [the Fanagoria prompt manifest](../product-line-maps/fanagoria/imagegen-cutouts.json) for the exact prompt, hashes and rejected output.
 
 The review also found 31 images with an approximate desktop bottle height below 130 px.
-The image files contain large transparent fields. The CSS max-width limit reduces the visible bottle.
-These framing observations remain open in this review. The source pixels and asset bytes are unchanged for these images.
+Before correction, the image files contained large transparent fields that reduced the visible bottle under the CSS max-width limit.
+These framing observations are resolved by the measured-frame renderer.
+Read [the sizing validation](product-image-sizing.md) for the implementation and checks.
 
-| Producer | Reviewed images | Corrected backgrounds | Open framing observations |
+| Producer | Reviewed images | Corrected backgrounds | Resolved framing observations |
 | --- | ---: | ---: | ---: |
 | fanagoria | 107 | 1 | 6 |
 | abrau-durso | 52 | 0 | 0 |
@@ -62,12 +63,12 @@ The `saperavi/` subdirectory contains the corrected-asset screenshots and browse
 The contact sheets show the audit inputs. The Saperavi proof files show the correction.
 Keep the ignored proof files outside Git. The committed JSON record preserves the complete reviewed asset list.
 
-## Open framing observations
+## Resolved framing observations
 
 The height estimate uses the visible alpha frame and the desktop CSS limits.
 The observations identify scale differences. They do not indicate a remaining opaque background.
 
-| Producer | Product | Approximate visible height, px |
+| Producer | Product | Approximate visible height before correction, px |
 | --- | --- | ---: |
 | fanagoria | [100 оттенков красного. Пино Нуар](../../public/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp) | 120 |
 | fanagoria | [Blanc de Blancs](../../public/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12.webp) | 120 |

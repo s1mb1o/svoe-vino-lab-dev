@@ -63,6 +63,9 @@ A square image with transparent side fields can reach max-width before the reque
 Measured JSON frames remove this source-canvas dependency. The renderer preserves the original source pixels.
 Cropping source assets would change their bytes. Runtime alpha scans would add work to mobile navigation.
 Use measured frames for stable server-rendered layout. Read `docs/product-image-sizing.md`.
+A framed source image can extend beyond its clipped wrapper. Use the wrapper bounds in visual checks.
+WebKit can keep decode() pending for a hidden lazy image. Load only the images required by a screenshot check.
+The gray filter can belong to the frame wrapper. Check the rendered image container when verifying the filter.
 
 ## Complete lineup image review, 2026-10-16
 

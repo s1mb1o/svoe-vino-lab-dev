@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Bottle scale validation
+
+- Resolve all 31 small-bottle observations through measured image frames.
+- Verify 636 unchanged image hashes and 44 desktop/mobile sizing cases in Chromium and WebKit.
+- Pass 232 tests, type checks, the build and both existing browser suites in both engines.
+- Record per-producer commits and close the earlier framing observations.
+
 ## 2026-10-16 — zolotaya-balka image frames
 
 - Record measured source-image frames for 35 products.

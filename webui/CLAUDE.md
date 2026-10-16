@@ -87,3 +87,4 @@ A transparent border can surround an image with opaque stripe remnants. Composit
 Use the optional `image.frame` geometry and `ProductLineImage.vue` to normalize visible bottle size. Read `docs/product-image-sizing.md`.
 Do not compare HTML image-box heights when checking bottle scale. Compare the rendered alpha outline.
 Recompute frame geometry when an image asset changes. Keep the original image dimensions consistent with its frame.
+Visual checks MUST account for the clipped image-frame bounds. Do not wait on hidden lazy source images in WebKit.
