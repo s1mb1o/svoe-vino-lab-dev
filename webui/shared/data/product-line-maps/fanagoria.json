@@ -432,7 +432,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-cru-lermont-risling.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 268,
+          "height": 1200,
+          "source_width": 268,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -457,7 +465,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7371,
+          "source_width": 1950,
+          "source_height": 7371
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -482,7 +498,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 847,
+          "y": 0,
+          "width": 668,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -507,7 +531,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-krasnogo-saperavi-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7371,
+          "source_width": 1950,
+          "source_height": 7371
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -532,7 +564,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-100-ottenkov-shardone-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7371,
+          "source_width": 1950,
+          "source_height": 7371
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -557,7 +597,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 507,
+          "height": 1920,
+          "source_width": 507,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -582,7 +630,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-pino-nuar-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1926,
+          "height": 6940,
+          "source_width": 1926,
+          "source_height": 6940
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -607,7 +663,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-101-ottenok-krasnogo-saperavi-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1087,
+          "height": 4118,
+          "source_width": 1087,
+          "source_height": 4118
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -632,7 +696,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-5-elements-bryut-beloe-pino-gri-igristoe-bryut-beloe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7166,
+          "source_width": 2307,
+          "source_height": 7166
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -659,7 +731,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-5-elements-bryut-rozovoe-saperavi-igristoe-bryut-rozovoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7166,
+          "source_width": 2307,
+          "source_height": 7166
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -686,7 +766,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-alta-qortis-saperavi-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 978,
+          "height": 3689,
+          "source_width": 978,
+          "source_height": 3689
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -711,7 +799,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3583,
+          "source_width": 1153,
+          "source_height": 3583
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -737,7 +833,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-bryut-rozovoe-merlo-igristoe-bryut-rozovoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3583,
+          "source_width": 1153,
+          "source_height": 3583
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -763,7 +867,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-beloe-risling-reynskiy-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1154,
+          "height": 3583,
+          "source_width": 1154,
+          "source_height": 3583
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -789,7 +901,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-alveus-ultra-cuvee-ekstra-bryut-rozovoe-merlo-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3583,
+          "source_width": 1153,
+          "source_height": 3583
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -815,7 +935,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-beloe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 301,
+          "height": 950,
+          "source_width": 301,
+          "source_height": 950
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -841,7 +969,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-blancs-shardone-beloe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 803,
+          "y": 0,
+          "width": 756,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -866,7 +1002,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-noir-mene-extra-brut-2019-pino-nuar-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7267,
+          "source_width": 2307,
+          "source_height": 7267
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -891,7 +1035,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-blanc-de-noirs-mene-pino-mene-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 803,
+          "y": 0,
+          "width": 756,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -916,7 +1068,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cabernet-franc-polusuhoe-rozovoe-kaberne-fran-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7257,
+          "source_width": 2307,
+          "source_height": 7257
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -941,7 +1101,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cabernet-sauvignon-polusladkoe-krasnoe-kaberne-sovinon-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7257,
+          "source_width": 2307,
+          "source_height": 7257
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -966,7 +1134,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-cuve-brut-rozovoe-merlo-igristoe-bryut-rozovoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 238,
+          "height": 725,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -993,7 +1169,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1252,
+          "height": 3268,
+          "source_width": 1252,
+          "source_height": 3268
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1020,7 +1204,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1252,
+          "height": 3268,
+          "source_width": 1252,
+          "source_height": 3268
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1047,7 +1239,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1252,
+          "height": 3268,
+          "source_width": 1252,
+          "source_height": 3268
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1074,7 +1274,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-muscat-ottonel-brut-muskat-ottonel-beloe-polusladkoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 501,
+          "height": 1609,
+          "source_width": 501,
+          "source_height": 1609
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1099,7 +1307,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-muscat-ottonel-polusladkoe-muskat-ottonel-beloe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7257,
+          "source_width": 2307,
+          "source_height": 7257
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1124,7 +1340,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-saperavi-saperavi-igristoe-sladkoe-krasnoe-bryut-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7257,
+          "source_width": 2307,
+          "source_height": 7257
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1149,7 +1373,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-brule-sauvignon-blanc-brut-sovinon-blan-beloe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 506,
+          "height": 1573,
+          "source_width": 506,
+          "source_height": 1573
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1174,7 +1406,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-cabernet-franc-kaberne-fran-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 936,
+          "height": 3529,
+          "source_width": 936,
+          "source_height": 3529
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1199,7 +1439,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 977,
+          "height": 3683,
+          "source_width": 977,
+          "source_height": 3683
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1224,7 +1472,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-chardonnay-shardone-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 509,
+          "height": 1920,
+          "source_width": 509,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1249,7 +1505,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-merlo-merlo-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 936,
+          "height": 3529,
+          "source_width": 936,
+          "source_height": 3529
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1274,7 +1538,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-petit-verdot-pti-verdo-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 509,
+          "height": 1920,
+          "source_width": 509,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1299,7 +1571,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-pinot-noir-pino-nuar-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 509,
+          "height": 1920,
+          "source_width": 509,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1324,7 +1604,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-rubinovyy-magaracha-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 936,
+          "height": 3529,
+          "source_width": 936,
+          "source_height": 3529
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1349,7 +1637,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-cru-lermont-saperavi-saperavi-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 509,
+          "height": 1920,
+          "source_width": 509,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1374,7 +1670,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7354,
+          "source_width": 1950,
+          "source_height": 7354
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1399,7 +1703,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-formula-q-kaberne-sovinon-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 335,
+          "y": 260,
+          "width": 1013,
+          "height": 3719,
+          "source_width": 1713,
+          "source_height": 4253
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1427,7 +1739,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-kaberne-fran-2019-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1452,7 +1772,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-kaberne-sovinon-2018-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1477,7 +1805,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-merlo-2018-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1502,7 +1838,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-pino-nuar-2020-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1527,7 +1871,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7354,
+          "source_width": 1950,
+          "source_height": 7354
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1552,7 +1904,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 206,
+          "height": 725,
+          "source_width": 216,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1577,7 +1937,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-dekanter-saperavi-2017-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1602,7 +1970,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoria-extra-brut-rose-2019-pino-nuar-igristoe-bryut-rozovoe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7267,
+          "source_width": 2307,
+          "source_height": 7267
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1628,7 +2004,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1155,
+          "height": 3631,
+          "source_width": 1155,
+          "source_height": 3631
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1653,7 +2037,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-blanc-de-noirs-beloe-iz-chyornogo-merlo-igristoe-bryut-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1155,
+          "height": 3631,
+          "source_width": 1155,
+          "source_height": 3631
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1679,7 +2071,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 237,
+          "height": 728,
+          "source_width": 247,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1709,7 +2109,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 237,
+          "height": 728,
+          "source_width": 247,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1738,7 +2146,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 406,
+          "height": 1500,
+          "source_width": 406,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1764,7 +2180,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2307,
+          "height": 7262,
+          "source_width": 2307,
+          "source_height": 7262
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1792,7 +2216,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-rose-de-noirs-roze-de-nuar-merlo-igristoe-bryut-rozovoe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1155,
+          "height": 3631,
+          "source_width": 1155,
+          "source_height": 3631
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1818,7 +2250,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-fanagoriya-sakra-sennoy-krasnostop-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 398,
+          "height": 1500,
+          "source_width": 398,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1844,7 +2284,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-formula-q-kaberne-sovinon-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 864,
+          "y": 0,
+          "width": 634,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1869,7 +2317,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-formula-q-saperavi-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1897,7 +2353,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-kaberne-kaberne-sovinon-krasnoe-sladkoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 453,
+          "height": 1500,
+          "source_width": 453,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1922,7 +2386,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 7,
+          "width": 235,
+          "height": 718,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1947,7 +2419,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-risling-tihoe-beloe-sladkoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 453,
+          "height": 1500,
+          "source_width": 453,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1972,7 +2452,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ice-wine-saperavi-tihoe-krasnoe-sladkoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 453,
+          "height": 1500,
+          "source_width": 453,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1997,7 +2485,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ledyanoe-vino-muskat-muskat-ottonel-beloe-sladkoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1015,
+          "y": 0,
+          "width": 410,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2022,7 +2518,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ona-skazala-da-beloe-bryut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 386,
+          "height": 1200,
+          "source_width": 386,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2048,7 +2552,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-ona-skazala-da-beloe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 386,
+          "height": 1200,
+          "source_width": 386,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2075,7 +2587,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusladkoe-105-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 204,
+          "height": 728,
+          "source_width": 214,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2101,7 +2621,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-beloe-polusuhoe-105-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 966,
+          "height": 3543,
+          "source_width": 966,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2127,7 +2655,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-pervenets-magaracha-rozovoe-polusuhoe-105-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 966,
+          "height": 3543,
+          "source_width": 966,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2154,7 +2690,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-par-amour-rubin-golodrigi-krasnoe-polusladkoe-105-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 966,
+          "height": 3543,
+          "source_width": 966,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2181,7 +2725,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-pelle-calda-saperavi-krasnoe-suhoe-155.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1926,
+          "height": 7025,
+          "source_width": 1926,
+          "source_height": 7025
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2206,7 +2758,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-blancs-2017-shardone-igristoe-bryut-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 237,
+          "height": 726,
+          "source_width": 247,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2231,7 +2791,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-blancs-ekstra-bryut-2019-shardone-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3625,
+          "source_width": 1153,
+          "source_height": 3625
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2256,7 +2824,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-blanc-de-noirs-meunier-ekstra-bryut-2019-mene-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 626,
+          "height": 1971,
+          "source_width": 626,
+          "source_height": 1971
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2281,7 +2857,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 238,
+          "height": 725,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2308,7 +2892,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2016-shardone-igristoe-bryut-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 238,
+          "height": 725,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2335,7 +2927,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3625,
+          "source_width": 1153,
+          "source_height": 3625
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2362,7 +2962,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-brut-2021-shardone-beloe-bryut-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3625,
+          "source_width": 1153,
+          "source_height": 3625
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2389,7 +2997,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-bryut-2019-pino-nuar-igristoe-bryut-rozovoe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 611,
+          "height": 1922,
+          "source_width": 611,
+          "source_height": 1922
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2414,7 +3030,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-ekstra-bryut-2017-pino-nuar-beloe-11-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 239,
+          "height": 726,
+          "source_width": 249,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2441,7 +3065,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-2014-pino-nuar-beloe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 238,
+          "height": 725,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2467,7 +3099,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-2016-shardone-beloe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 238,
+          "height": 725,
+          "source_width": 248,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2494,7 +3134,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-primum-alveus-extra-brut-rose-2014-pino-nuar-rozovoe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1153,
+          "height": 3625,
+          "source_width": 1153,
+          "source_height": 3625
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2520,7 +3168,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-q-blanc-sovinon-blan-beloe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 976,
+          "height": 3678,
+          "source_width": 976,
+          "source_height": 3678
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2547,7 +3203,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-q-bordeaux-blend-kaberne-sovinon-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7353,
+          "source_width": 1950,
+          "source_height": 7353
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2575,7 +3239,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1155,
+          "height": 3412,
+          "source_width": 1155,
+          "source_height": 3412
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2600,7 +3272,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-kaberne-sovinon-rozovoe-polusuhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7343,
+          "source_width": 1950,
+          "source_height": 7343
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2625,7 +3305,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-rose-saperavi-rozovoe-polusuhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1950,
+          "height": 7343,
+          "source_width": 1950,
+          "source_height": 7343
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2650,7 +3338,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-rs-noir-saperavi-krasnoe-polusladkoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2312,
+          "height": 6852,
+          "source_width": 2312,
+          "source_height": 6852
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2675,7 +3371,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-saqra-saperavi-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 862,
+          "y": 0,
+          "width": 638,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2699,7 +3403,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-moscatel-oro-muskat-ottonel-beloe-suhoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1283,
+          "height": 7917,
+          "source_width": 1283,
+          "source_height": 7917
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2724,7 +3436,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-porto-negro-saperavi-krasnoe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 311,
+          "height": 1920,
+          "source_width": 311,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2749,7 +3469,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-rkatsiteli-ambra-rkatsiteli-beloe-suhoe-15.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1284,
+          "height": 7917,
+          "source_width": 1284,
+          "source_height": 7917
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2774,7 +3502,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-solera-saperavi-ruby-saperavi-krasnoe-suhoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 311,
+          "height": 1920,
+          "source_width": 311,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2801,7 +3537,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-chardonnay-shardone-beloe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1942,
+          "height": 5733,
+          "source_width": 1942,
+          "source_height": 5733
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2826,7 +3570,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-clairet-saperavi-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 2312,
+          "height": 6826,
+          "source_width": 2312,
+          "source_height": 6826
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2853,7 +3605,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-sur-lie-vi-vi-aligote-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1942,
+          "height": 5733,
+          "source_width": 1942,
+          "source_height": 5733
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2880,7 +3640,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-tochka-saperavi-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 351,
+          "height": 728,
+          "source_width": 355,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2905,7 +3673,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 420,
+          "height": 1920,
+          "source_width": 420,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2930,7 +3706,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-velvet-season-risling-beloe-sladkoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 420,
+          "height": 1920,
+          "source_width": 420,
+          "source_height": 1920
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2955,7 +3739,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1735,
+          "height": 7350,
+          "source_width": 1735,
+          "source_height": 7350
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2981,7 +3773,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-merlo-rozovoe-polusuhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1734,
+          "height": 7350,
+          "source_width": 1734,
+          "source_height": 7350
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -3031,7 +3831,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/wine-rozovoe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 301,
+          "height": 950,
+          "source_width": 301,
+          "source_height": 950
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -3057,7 +3865,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-5-elements-aligote-shardone-sovinon.webp",
-        "source_id": "fan-5-elements-aligote-shardone-sovinon"
+        "source_id": "fan-5-elements-aligote-shardone-sovinon",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 106,
+          "height": 400,
+          "source_width": 106,
+          "source_height": 400
+        }
       },
       "category": "Тихое вино",
       "style": "Белое сухое",
@@ -3085,7 +3901,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-5-elements-kaberne-rubin.webp",
-        "source_id": "fan-5-elements-kaberne-rubin"
+        "source_id": "fan-5-elements-kaberne-rubin",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 108,
+          "height": 400,
+          "source_width": 111,
+          "source_height": 400
+        }
       },
       "category": "Тихое вино",
       "style": "Красное сухое",
@@ -3112,7 +3936,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-hay-bay-risling.webp",
-        "source_id": "fan-hay-bay-risling"
+        "source_id": "fan-hay-bay-risling",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 110,
+          "height": 400,
+          "source_width": 110,
+          "source_height": 400
+        }
       },
       "category": "Тихое вино",
       "style": "Белое сухое",
@@ -3138,7 +3970,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-kaberne-fran.webp",
-        "source_id": "fan-the-lines-petnat-kaberne-fran"
+        "source_id": "fan-the-lines-petnat-kaberne-fran",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 400,
+          "source_width": 134,
+          "source_height": 400
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое экстра-брют",
@@ -3164,7 +4004,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-kaberne-sovinon.webp",
-        "source_id": "fan-the-lines-petnat-kaberne-sovinon"
+        "source_id": "fan-the-lines-petnat-kaberne-sovinon",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 400,
+          "source_width": 134,
+          "source_height": 400
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое экстра-брют",
@@ -3190,7 +4038,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/fanagoria/official-fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj.webp",
-        "source_id": "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj"
+        "source_id": "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 400,
+          "source_width": 134,
+          "source_height": 400
+        }
       },
       "category": "Игристое вино",
       "style": "Белое экстра-брют",

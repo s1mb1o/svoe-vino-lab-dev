@@ -127,3 +127,11 @@ A new built-in imagegen edit uses the original Decanter Saperavi 2017 catalog im
 The asset URL and product metadata are unchanged.
 The manifest preserves the rejected output and the new prompt and hashes.
 The corrected bottle passed light and dark desktop and mobile checks in Chromium and WebKit.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 107 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
