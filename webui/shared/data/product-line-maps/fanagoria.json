@@ -98,6 +98,11 @@
       "id": "fan-the-lines-petnat-sovinon-blan-aligote-pino-seryj",
       "label": "PetNat. Совиньон Блан — Алиготе — Менье",
       "url": "https://www.fanagoria.ru/collection/petnat/the-lines-petnat-sovinon-blan-aligote-pino-seryj"
+    },
+    {
+      "id": "photo-fan-rose",
+      "label": "Официальное фото: Она сказала Да!",
+      "url": "https://www.fanagoria.ru/collection/metod-sharma/ona-skazala-da-rozovoe-polusladkoe"
     }
   ],
   "price_positioning": {
@@ -3806,7 +3811,18 @@
       "variant": "",
       "wine_slug": "ona-skazala-da",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/fanagoria/wine-ona-skazala-da.webp",
+        "source_id": "photo-fan-rose",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 240,
+          "height": 728,
+          "source_width": 244,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Розовое",
       "grapes": [
@@ -3819,7 +3835,8 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17"
+        "svoe-vino-2026-09-17",
+        "photo-fan-rose"
       ]
     },
     {

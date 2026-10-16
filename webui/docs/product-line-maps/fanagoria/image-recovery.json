@@ -1,0 +1,31 @@
+{
+  "producer_id": "fanagoria",
+  "date": "2026-10-16",
+  "scope": "Fill every empty bottle-image slot in this producer map. Do not change catalog identities or wine_slug.",
+  "fine_print_limit": "Built-in imagegen can resample fine print and reflections. The official source defines the product facts. Do not use generated text as evidence.",
+  "assets": [
+    {
+      "product_id": "wine-ona-skazala-da",
+      "asset": "/product-line-maps/fanagoria/wine-ona-skazala-da.webp",
+      "source_url": "https://www.fanagoria.ru/collection/metod-sharma/ona-skazala-da-rozovoe-polusladkoe",
+      "source_image_url": "https://www.fanagoria.ru/storage/app/uploads/public/6a9/eac/b76/6a9eacb76062f021410837.png",
+      "input_asset_sha256": "77a674c65bc5ab4d77aa004e7be0b33b9b5302cffb27fd15f8b6ef783e1b2626",
+      "tool": "Pillow",
+      "operation": "Alpha-preserving resize and WebP encoding",
+      "mode": "local",
+      "prompt": null,
+      "generated_png_sha256": null,
+      "output_asset_sha256": "3e06a795d30d511f076bc2f71b258067e91209ea0dc942887386d8607ef3b9ad",
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "width": 240,
+        "height": 728,
+        "source_width": 244,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    }
+  ]
+}

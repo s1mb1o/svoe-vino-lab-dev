@@ -135,3 +135,10 @@ The frame uses the source alpha outline and a small transparent margin.
 The frame changes image presentation only. Source image bytes and product facts are unchanged.
 The renderer uses the frame for group previews, product nodes and product details.
 Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
+
+## Missing bottle-image recovery, 2026-10-16
+
+Restore 1 empty bottle-image slots from exact official product pages.
+Read [image-recovery.json](image-recovery.json) for source URLs, original hashes, exact prompts, output hashes, and measured frames.
+The earlier placeholder notes describe the previous state. This recovery supersedes those notes.
+The official rose semi-sweet product photo replaces the rejected wedding scene. The source has a transparent background. No generated replacement label is used.

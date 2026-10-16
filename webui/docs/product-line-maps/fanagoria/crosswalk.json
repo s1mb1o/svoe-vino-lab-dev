@@ -1236,7 +1236,7 @@
       "catalog_name": "Она сказала Да!",
       "catalog_producer": "Фанагория",
       "source_image": "Generated_Image_June_22_2026_10_44_PM_1_6fd1a74a1b.webp",
-      "asset_sha256": null,
+      "asset_sha256": "3e06a795d30d511f076bc2f71b258067e91209ea0dc942887386d8607ef3b9ad",
       "catalog_url": "https://vino-svoe.ru/wines/ona-skazala-da",
       "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/Generated_Image_June_22_2026_10_44_PM_1_6fd1a74a1b.webp",
       "rejected_image": {
@@ -1245,7 +1245,15 @@
         "input_asset_sha256": "f7dedb8b3922dbaa56a0c63535e99b569208a06b782483022f085061eeebbabd",
         "reason": "The snapshot image is a multi-bottle wedding scene. Its visible labels say WEDDING Bliss. It does not establish the exact product package.",
         "source_git_revision": "89aa3780",
-        "replacement": "The existing labeled placeholder. Keep the product and its catalog link."
+        "replacement": "The existing labeled placeholder. Keep the product and its catalog link.",
+        "resolution": "Replaced by the documented official-photo recovery. See image-recovery.json. The original rejection remains as history."
+      },
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://www.fanagoria.ru/collection/metod-sharma/ona-skazala-da-rozovoe-polusladkoe",
+        "image_url": "https://www.fanagoria.ru/storage/app/uploads/public/6a9/eac/b76/6a9eacb76062f021410837.png",
+        "input_asset_sha256": "77a674c65bc5ab4d77aa004e7be0b33b9b5302cffb27fd15f8b6ef783e1b2626",
+        "manifest": "image-recovery.json"
       }
     },
     {
