@@ -1,0 +1,1331 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "agora",
+    "name": "AGORA WINERY",
+    "aliases": [
+      "Agora Winery",
+      "Агора"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "AGORA WINERY: официальные коллекции",
+      "url": "https://www.agora-group.ru/catalog/range/agora/"
+    },
+    {
+      "id": "official-yachting",
+      "label": "AGORA WINERY: Reserve Yachting",
+      "url": "https://www.agora-group.ru/catalog/range/agora/"
+    },
+    {
+      "id": "official-terroir",
+      "label": "AGORA WINERY: AGORA Терруарное",
+      "url": "https://www.agora-group.ru/catalog/range/agora/"
+    },
+    {
+      "id": "official-core",
+      "label": "AGORA WINERY: AGORA · классическая",
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora/"
+    },
+    {
+      "id": "official-rosa-still",
+      "label": "AGORA WINERY: ROSA VIVA · тихие",
+      "url": "https://www.agora-group.ru/catalog/range/rosa-viva/"
+    },
+    {
+      "id": "official-rosa-sparkling",
+      "label": "AGORA WINERY: ROSA VIVA · игристые",
+      "url": "https://www.agora-group.ru/catalog/range/rosa-viva/"
+    },
+    {
+      "id": "official-cuvee",
+      "label": "AGORA WINERY: AGORA CUVEE",
+      "url": "https://www.agora-group.ru/catalog/range/agora/"
+    },
+    {
+      "id": "official-vintage",
+      "label": "AGORA WINERY: VINTAGE",
+      "url": "https://www.agora-group.ru/news/rossijskoe-shampanskoe-agora-winery-limitirovannaya-kollekcziya-vintage/"
+    },
+    {
+      "id": "official-blush",
+      "label": "AGORA WINERY: BLUSH MIRAGE",
+      "url": "https://www.agora-group.ru/catalog/range/blush-mirage/"
+    },
+    {
+      "id": "official-crispy",
+      "label": "AGORA WINERY: Crispy Wine",
+      "url": "https://www.agora-group.ru/catalog/range/crispy-wine/"
+    },
+    {
+      "id": "official-official-crispy-vinho-blanco",
+      "label": "Официальная карточка: Crispy Wine · Vinho Blanco",
+      "url": "https://www.agora-group.ru/catalog/range/crispy-wine/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-yachting",
+        "official-terroir"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-core"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-rosa-still"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-rosa-sparkling",
+        "official-cuvee",
+        "official-vintage",
+        "official-blush",
+        "official-crispy"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "yachting",
+      "name": "Reserve Yachting",
+      "tier_id": "tier-3",
+      "method": "Выдержка в дубе 12–18 месяцев",
+      "description": "Резервная коллекция AGORA с сортовыми винами. Дубовая выдержка отличает серию от классической линейки.",
+      "source_ids": [
+        "official-yachting",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "terroir",
+      "name": "AGORA Терруарное",
+      "tier_id": "tier-3",
+      "method": "Лимитированные вина",
+      "description": "Отдельные терруарные выпуски Бастардо и Каберне Совиньон. Старшая ступень задана редакционно.",
+      "source_ids": [
+        "official-terroir",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "core",
+      "name": "AGORA · классическая",
+      "tier_id": "tier-2",
+      "method": "Моносортовые тихие вина",
+      "description": "Основная сортовая коллекция. В ней есть сухие, полусухие, полусладкие и сладкие стили. Точный стиль сохраняется из карточки.",
+      "source_ids": [
+        "official-core",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rosa-still",
+      "name": "ROSA VIVA · тихие",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина и купажи",
+      "description": "Коллекция посвящена розе AGORA. Тихие вина отделены от игристых той же марки.",
+      "source_ids": [
+        "official-rosa-still",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rosa-sparkling",
+      "name": "ROSA VIVA · игристые",
+      "tier_id": "tier-0",
+      "method": "Игристые вина",
+      "description": "Белое брют, белое полусладкое и розовое полусладкое. Метод производства не переносится с других коллекций.",
+      "source_ids": [
+        "official-rosa-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "cuvee",
+      "name": "AGORA CUVEE",
+      "tier_id": "tier-0",
+      "method": "Игристые купажи",
+      "description": "Белый и розовый брют. Премиальная игристая серия показана отдельно от тихой ценовой шкалы.",
+      "source_ids": [
+        "official-cuvee",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "vintage",
+      "name": "VINTAGE",
+      "tier_id": "tier-0",
+      "method": "Классический метод; лимитированная коллекция",
+      "description": "Blanc de Blancs и Blanc de Noirs. Вторичное брожение в бутылке отличает эту коллекцию от других игристых серий.",
+      "source_ids": [
+        "official-vintage",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "blush",
+      "name": "BLUSH MIRAGE",
+      "tier_id": "tier-0",
+      "method": "Тихие белые и розовые вина",
+      "description": "Рислинг, Совиньон Зелёный и купаж Ркацители — Шираз. Самостоятельная коллекция без подтверждённого ценового ранга.",
+      "source_ids": [
+        "official-blush",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "crispy",
+      "name": "Crispy Wine",
+      "tier_id": "tier-0",
+      "method": "Лёгкое вино с мягкой шипучестью",
+      "description": "Отдельная марка AGORA WINERY в стилистике Vinho Verde. Ценовое соотношение с коллекциями AGORA не назначено.",
+      "source_ids": [
+        "official-crispy",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-agora-bastardo",
+      "group_id": "core",
+      "name": "AGORA Бастардо",
+      "variant": "",
+      "wine_slug": "agora-bastardo",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-bastardo.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 197,
+          "height": 717,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо"
+      ],
+      "description": "Вкус гармоничный, элегантный с умеренной терпкостью в послевкусии. Аромат интенсивный, с оттенками темных ягод, сливочного шоколада. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-blek-stoun",
+      "group_id": "core",
+      "name": "AGORA Блэк Стоун",
+      "variant": "",
+      "wine_slug": "agora-blek-stoun",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-blek-stoun.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 198,
+          "height": 718,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус глубокий, с характерными тонами чёрной смородины, перца, ежевики, лакрицы и нотами кожи, в послевкусии продолжительные сливочные нюансы. Аромат с нотками черной смородины, вишни, чернослива, пряностей.\n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-kaberne-sovinon",
+      "group_id": "core",
+      "name": "AGORA Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "agora-kaberne-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-kaberne-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 197,
+          "height": 718,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус гармоничный с бархатными танинами в послевкусии. Аромат сложный с тонами сафьяна, черной смородины. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-muskat",
+      "group_id": "core",
+      "name": "AGORA Мускат",
+      "variant": "",
+      "wine_slug": "agora-muskat",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-muskat.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 199,
+          "height": 718,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус мягкий, изысканный, с долгим послевкусием белого изюма. Аромат насыщенный, с оттенками чайной розы и персика. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-muskat-chernyj",
+      "group_id": "core",
+      "name": "AGORA Мускат Черный",
+      "variant": "",
+      "wine_slug": "agora-muskat-chernyj",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-muskat-chernyj.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 199,
+          "height": 718,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус полный, бархатистый, с деликатной сладостью в послевкусии. Аромат насыщенный, с шоколадно-фруктовыми нотами. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-pino-nuar",
+      "group_id": "core",
+      "name": "AGORA Пино нуар",
+      "variant": "",
+      "wine_slug": "agora-pino-nuar",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-pino-nuar.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 200,
+          "height": 718,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус деликатный, гармоничный с приятной терпкостью в послевкусии. Аромат С тонами лесных ягод.\n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-risling",
+      "group_id": "core",
+      "name": "AGORA Рислинг",
+      "variant": "",
+      "wine_slug": "agora-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-risling.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 8,
+          "width": 199,
+          "height": 717,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус легкий, гармоничный, с приятной кислинкой в послевкусии. Аромат тонкий, с деликатными фруктовыми и цветочными нотами.\n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-beloe-bryut",
+      "group_id": "rosa-sparkling",
+      "name": "Agora Rosa Viva Белое Брют",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-beloe-bryut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 254,
+          "height": 728,
+          "source_width": 258,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Рислинг",
+        "Ркацители",
+        "Совиньон Блан",
+        "Совиньон Зеленый"
+      ],
+      "description": "Вкус сухой и чистый, с выразительной свежестью, тонкой структурой и элегантным балансом. Послевкусие продолжительное, освежающее и утонченное.\n\nВ аромате белые цветы, персик, цитрусовые.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-sparkling"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-beloe-polusladkoe",
+      "group_id": "rosa-sparkling",
+      "name": "Agora Rosa Viva Белое Полусладкое",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-beloe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 254,
+          "height": 728,
+          "source_width": 258,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Рислинг",
+        "Ркацители",
+        "Совиньон Блан",
+        "Совиньон Зеленый"
+      ],
+      "description": "Вкус гармоничный и округлый, с деликатной сладостью, подчёркнутой свежей кислотностью. Послевкусие плавное, утончённое и продолжительное.\n\nВ аромате белые цветы, персик, цитрусовые.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-sparkling"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-cabernet-franc",
+      "group_id": "rosa-still",
+      "name": "Agora ROSA VIVA Cabernet Franc",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-cabernet-franc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-cabernet-franc.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 727,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Во вкусе – бархатистая сила красных ягод, тонкие танины и долгое спокойное послевкусие.\nАромат – спелая ежевика, зелёный перец, лёгкая дымка и пряные травы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-still"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-cabernet-sauvignon-shiraz",
+      "group_id": "rosa-still",
+      "name": "Agora ROSA VIVA Cabernet Sauvignon Shiraz",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-cabernet-sauvignon-shiraz",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-cabernet-sauvignon-shiraz.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 727,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Шираз"
+      ],
+      "description": "Во вкусе – насыщенность и шелковистость с оттенками сочных ягод, плавно переходящими в долгое и выразительное послевкусие.\n\nАромат – глубокие ноты чёрной смородины, кизила, клюквы и пряностей, словно огонь, что согревает душу.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-still"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-muscat",
+      "group_id": "rosa-still",
+      "name": "Agora ROSA VIVA Muscat",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-muscat",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-muscat.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Во вкусе — нежность и шелковистость, где естественная сладость встречается со свежестью, оставляя тонкое, долгое фруктовое послевкусие.\n\nАромат – клубника после дождя, лепестки роз и сладость персика на тёплом солнце.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-still"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-riesling",
+      "group_id": "rosa-still",
+      "name": "Agora ROSA VIVA Riesling",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-riesling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-riesling.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Во вкусе – свежесть зеленого яблока и грейпфрута, переплетающаяся с минеральностью, которая плавно перетекает в послевкусие.\n\nАромат – это дыхание грейпфрута и белых цветов, тонкая свежесть утреннего сада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-still"
+      ]
+    },
+    {
+      "id": "wine-agora-rosa-viva-rozovoe-polusladkoe",
+      "group_id": "rosa-sparkling",
+      "name": "Agora Rosa Viva Розовое Полусладкое",
+      "variant": "",
+      "wine_slug": "agora-rosa-viva-rozovoe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-rosa-viva-rozovoe-polusladkoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 254,
+          "height": 728,
+          "source_width": 258,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · полусладкое",
+      "grapes": [
+        "Пино Нуар",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Вкус мягкий и сбалансированный, с выразительной, элегантной сладостью и освежающей структурой. Послевкусие бархатное и продолжительное.\n\nВ аромате красные ягоды, цитрусовые, свежесть.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rosa-sparkling"
+      ]
+    },
+    {
+      "id": "wine-agora-saperavi",
+      "group_id": "core",
+      "name": "AGORA Саперави",
+      "variant": "",
+      "wine_slug": "agora-saperavi",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-saperavi.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 197,
+          "height": 717,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус мягкий, с приятной сладостью в послевкусии. Аромат яркий, с оттенками спелой черешни. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-shardone",
+      "group_id": "core",
+      "name": "AGORA Шардоне",
+      "variant": "",
+      "wine_slug": "agora-shardone",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-shardone.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 8,
+          "width": 199,
+          "height": 717,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус гармоничный, с легкой текстурой в послевкусии. Аромат интенсивный, с цветочно-фруктовыми нотками. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-sovinon",
+      "group_id": "core",
+      "name": "AGORA Совиньон",
+      "variant": "",
+      "wine_slug": "agora-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 199,
+          "height": 717,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус гармоничный, с нотками свежести в послевкусии. Аромат интенсивный, с оттенками белых цветов, луговых трав. \n\nРучной сбор ягод с лучших участков виноградников и выдержка в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-core"
+      ]
+    },
+    {
+      "id": "wine-agora-terruarnoe-bastardo",
+      "group_id": "terroir",
+      "name": "AGORA Терруарное Бастардо",
+      "variant": "",
+      "wine_slug": "agora-terruarnoe-bastardo",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-terruarnoe-bastardo.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 203,
+          "height": 717,
+          "source_width": 217,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо"
+      ],
+      "description": "Вкус фруктовый с легким шлейфом шоколада и сочной черешни, с яркими танинами и сбалансированной кислотностью. Аромат сливочно-фруктовый, с доминирующими нотами лесных ягод и спелой вишни. \n\nВыдержка в бочках из французского дуба от 12 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-terroir"
+      ]
+    },
+    {
+      "id": "wine-agora-terruarnoe-kaberne-sovinon",
+      "group_id": "terroir",
+      "name": "AGORA Терруарное Каберне совиньон",
+      "variant": "",
+      "wine_slug": "agora-terruarnoe-kaberne-sovinon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-terruarnoe-kaberne-sovinon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 203,
+          "height": 717,
+          "source_width": 218,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус насыщенный, с оттенками чернослива и вяленой вишни, структурированный, мощные танины подчеркивают шик и оттенки фруктовой кислотности. Аромат выразительный, с оттенками корицы, ванили, мускатного ореха, вишни и специй. \n\nВыдержка в бочках из французского дуба от 12 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-terroir"
+      ]
+    },
+    {
+      "id": "wine-agora-vintage-blanc-de-blancs-extra-brut",
+      "group_id": "vintage",
+      "name": "AGORA, VINTAGE Blanc de Blancs extra brut",
+      "variant": "",
+      "wine_slug": "agora-vintage-blanc-de-blancs-extra-brut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-vintage-blanc-de-blancs-extra-brut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 238,
+          "height": 726,
+          "source_width": 244,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус лёгкий с оттенками полевых цветов и минеральностью. Аромат с тонами зелёного яблока, груши, цитрусовых и персика.\n\nСделано по классической технологии, с выдержкой на осадке 24 месяца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vintage"
+      ]
+    },
+    {
+      "id": "wine-agora-vintage-blanc-de-noirs-extra-brut",
+      "group_id": "vintage",
+      "name": "AGORA, VINTAGE Blanc de Noirs extra brut",
+      "variant": "",
+      "wine_slug": "agora-vintage-blanc-de-noirs-extra-brut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-vintage-blanc-de-noirs-extra-brut.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 238,
+          "height": 726,
+          "source_width": 244,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус гармоничный, с лёгкой текстурой и элегантностью. Аромат наполнен красными ягодами: клубники, малины, клюквы.\n\nСделано по классической технологии, с выдержкой на осадке 24 месяца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vintage"
+      ]
+    },
+    {
+      "id": "wine-agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125",
+      "group_id": "cuvee",
+      "name": "CUVEE Пино Гриджио Шардоне, брют, белое",
+      "variant": "",
+      "wine_slug": "agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 215,
+          "height": 728,
+          "source_width": 220,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · брют",
+      "grapes": [
+        "Пино Гриджио"
+      ],
+      "description": "Вкус: Гармоничный, свежий, с хрустящей кислотностю Нежный с оттенками цитрусовых, белых цветов и выпечки",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cuvee"
+      ]
+    },
+    {
+      "id": "wine-agora-winery-cuvee-pino-nuar-shardone-bryut-rozovoe-125",
+      "group_id": "cuvee",
+      "name": "CUVEE Пино нуар, Шардоне, брют, розовое",
+      "variant": "",
+      "wine_slug": "agora-winery-cuvee-pino-nuar-shardone-bryut-rozovoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-winery-cuvee-pino-nuar-shardone-bryut-rozovoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 220,
+          "height": 728,
+          "source_width": 224,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое · брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Кремовый, с ягодными и легкими цветочными тонами, с освежающим минеральным послевкусием Свежий с оттенками красных ягод и ноток малины",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cuvee"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-cabernet-sauvignon",
+      "group_id": "yachting",
+      "name": "Agora Yachting Cabernet Sauvignon",
+      "variant": "",
+      "wine_slug": "agora-yachting-cabernet-sauvignon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-cabernet-sauvignon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус приятный, насыщенный, с характерными оттенками черных ягод и продолжительным пряным послевкусием. Аромат богатый, с яркими нотами смородины, сафьяна, фиалки и черного перца. \n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-chardonnay",
+      "group_id": "yachting",
+      "name": "Agora Yachting Chardonnay",
+      "variant": "",
+      "wine_slug": "agora-yachting-chardonnay",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-chardonnay.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 7,
+          "width": 197,
+          "height": 723,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус благородный, маслянистый с тонами печеного яблока, поджаренного хлеба, ванили. В аромате ноты белых фруктов, акации, жасмина.\n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-merlot",
+      "group_id": "yachting",
+      "name": "Agora Yachting Merlot",
+      "variant": "",
+      "wine_slug": "agora-yachting-merlot",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-merlot.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 7,
+          "width": 196,
+          "height": 723,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус гармоничный, округлый с бархатными танинами и прекрасной структурой, сопровождающийся долгим послевкусием. Аромат с нотами спелой малины, ежевики, сливы.\n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-pinot-grigio",
+      "group_id": "yachting",
+      "name": "Agora Yachting Pinot Grigio",
+      "variant": "",
+      "wine_slug": "agora-yachting-pinot-grigio",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-pinot-grigio.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 197,
+          "height": 718,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гриджио"
+      ],
+      "description": "Вкус мягкий, округлый с освежающей кислотностью и долгим послевкусием. Аромат свежий, изящный, сотканный из нот персика, белых цветов, жимолости, трав. \n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-sauvignon",
+      "group_id": "yachting",
+      "name": "Agora Yachting Sauvignon",
+      "variant": "",
+      "wine_slug": "agora-yachting-sauvignon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-sauvignon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 199,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус округлый, сбалансированный с умеренной кислотностью и запоминающимся послевкусием. Аромат с цветочными и ванильными нотами, сменяющимися оттенками цитрусовой цедры.\n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-agora-yachting-shiraz",
+      "group_id": "yachting",
+      "name": "Agora Yachting Shiraz",
+      "variant": "",
+      "wine_slug": "agora-yachting-shiraz",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-agora-yachting-shiraz.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 197,
+          "height": 723,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "Вкус насыщенный, достаточно мягкий, сопровождающийся долгим послевкусием с оттенками спелых фруктов. Аромат богатый, интенсивный, с тонами специй, пряных трав и ягодные ноты. \n\nСбор винограда происходит вручную с последующим охлаждением в специальных холодильных камерах для сохранения нюансов сортовых характеристик. Ферментация при контролируемой температуре с последующей выдержкой в дубовых бочках 12 и более месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-yachting"
+      ]
+    },
+    {
+      "id": "wine-blush-mirage-risling",
+      "group_id": "blush",
+      "name": "BLUSH MIRAGE Рислинг",
+      "variant": "",
+      "wine_slug": "blush-mirage-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-blush-mirage-risling.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 181,
+          "height": 728,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Освежающее и изящное, с лёгкой шипучестью и минеральным нотами. \n\nВ аромате — цитрус, зелёное яблоко и белые цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-blush"
+      ]
+    },
+    {
+      "id": "wine-blush-mirage-rkacziteli-shiraz",
+      "group_id": "blush",
+      "name": "BLUSH MIRAGE Ркацители, Шираз",
+      "variant": "",
+      "wine_slug": "blush-mirage-rkacziteli-shiraz",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-blush-mirage-rkacziteli-shiraz.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 181,
+          "height": 728,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Ркацители",
+        "Шираз"
+      ],
+      "description": "Утонченное и освежающее, с лёгкой шипучестью. Вкус — живой, с деликатными минеральными оттенками. Оставляет чистое, свежее послевкусие.\n\nВ аромате — клубника, грейпфрут и лепестки роз.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-blush"
+      ]
+    },
+    {
+      "id": "wine-blush-mirage-sovinon-zelyonyj",
+      "group_id": "blush",
+      "name": "BLUSH MIRAGE Совиньон Зелёный",
+      "variant": "",
+      "wine_slug": "blush-mirage-sovinon-zelyonyj",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/wine-blush-mirage-sovinon-zelyonyj.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 181,
+          "height": 728,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Зеленый"
+      ],
+      "description": "Нежное, с лёгкой шипучестью. Во вкусе — баланс мягкой сладости и яркой кислотности, оттенки спелой груши, белого персика и цитрусов. Минеральные ноты придают вину изысканную свежесть и утончённость.\n\nВ аромате — цитрус, груша, белый персик.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-blush"
+      ]
+    },
+    {
+      "id": "official-crispy-vinho-blanco",
+      "group_id": "crispy",
+      "name": "Crispy Wine · Vinho Blanco",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/agora/official-crispy-vinho-blanco.webp",
+        "source_id": "official-official-crispy-vinho-blanco",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 121,
+          "height": 506,
+          "source_width": 127,
+          "source_height": 512
+        }
+      },
+      "category": "Белое",
+      "style": "Белое полусухое",
+      "grapes": [],
+      "description": "Лёгкое вино AGORA WINERY с мягкой шипучестью в стилистике Vinho Verde. Отдельная марка Crispy Wine. Состав конкретного выпуска не подтверждён для этой записи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-crispy-vinho-blanco",
+        "official-crispy"
+      ]
+    }
+  ]
+}

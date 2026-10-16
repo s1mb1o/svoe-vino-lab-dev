@@ -1,0 +1,376 @@
+{
+  "producer_id": "agora",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "AGORA WINERY",
+  "entries": [
+    {
+      "wine_slug": "agora-bastardo",
+      "product_id": "wine-agora-bastardo",
+      "group_id": "core",
+      "catalog_name": "AGORA Бастардо",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Bastardo_59a04897ff.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Bastardo_59a04897ff.webp",
+      "input_sha256": "2c36ab2acfba838a14df08273e24ac12246c1a7f862497d29224f0c0511d79f6",
+      "asset_sha256": "e0130772756d68e616a2fa4ea37fff0a35714c76cdf41c314a6f2338581b9bdd"
+    },
+    {
+      "wine_slug": "agora-blek-stoun",
+      "product_id": "wine-agora-blek-stoun",
+      "group_id": "core",
+      "catalog_name": "AGORA Блэк Стоун",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Blek_Stoun_e98339ae1b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Blek_Stoun_e98339ae1b.webp",
+      "input_sha256": "e9608e155a13e10391972d8c0dbacfa40800436377e7bcd31cd5b39d56bcb74f",
+      "asset_sha256": "5bcf7c8bb5018dce1b5229b8274c8c793088838f934b3484dc246bd774acc81c"
+    },
+    {
+      "wine_slug": "agora-kaberne-sovinon",
+      "product_id": "wine-agora-kaberne-sovinon",
+      "group_id": "core",
+      "catalog_name": "AGORA Каберне Совиньон",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Kaberne_Sovinon_cf765cd22e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Kaberne_Sovinon_cf765cd22e.webp",
+      "input_sha256": "671f4dccede2b8bf16a5ecbb77ea542cf03e79d138e437bb608e2066e9e55643",
+      "asset_sha256": "ed9ec4a95f2fcdd1367cea81ea9317d8696f935f834ebcef98cff18007a8e3e1"
+    },
+    {
+      "wine_slug": "agora-muskat",
+      "product_id": "wine-agora-muskat",
+      "group_id": "core",
+      "catalog_name": "AGORA Мускат",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Muskat_d55b57a0af.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Muskat_d55b57a0af.webp",
+      "input_sha256": "6c39ffc8174565931490974c2709e1ed770ac027894bfd4d5d9c2234cf7018ca",
+      "asset_sha256": "fbcba081227119e4110b18b3fb8c1c44af2bb4ebb88e87d12163534d64dad608"
+    },
+    {
+      "wine_slug": "agora-muskat-chernyj",
+      "product_id": "wine-agora-muskat-chernyj",
+      "group_id": "core",
+      "catalog_name": "AGORA Мускат Черный",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Muskat_Chernyj_b3314704fa.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Muskat_Chernyj_b3314704fa.webp",
+      "input_sha256": "5bb94b8d1da150fe268bd17c94b9d98e2beeca18d798027a610d8db39e6dd211",
+      "asset_sha256": "f5c938aeb67fca99e7d90fdeb085b2cc33d3ff1c9ffe7c213c96ff85504f8777"
+    },
+    {
+      "wine_slug": "agora-pino-nuar",
+      "product_id": "wine-agora-pino-nuar",
+      "group_id": "core",
+      "catalog_name": "AGORA Пино нуар",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Pino_Nuar_e81246aa3a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Pino_Nuar_e81246aa3a.webp",
+      "input_sha256": "f03194cb948c07f1e0d5c2859e823512220ec37471a81494dfc1bff1a1fd2025",
+      "asset_sha256": "eedbd41668b1b04ae7493b7117d07356c1b18be2a125edfc72221efd294c84b3"
+    },
+    {
+      "wine_slug": "agora-risling",
+      "product_id": "wine-agora-risling",
+      "group_id": "core",
+      "catalog_name": "AGORA Рислинг",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Risling_1b886b07f8.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Risling_1b886b07f8.webp",
+      "input_sha256": "6f5fc7199aa8a959d2d845043dca899486c91c1a9621564ba58a083320d2d483",
+      "asset_sha256": "c69ec0f65c1ad10b6e8945bd9be90e887c014b793ec80940597446d6ef9a4cc1"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-beloe-bryut",
+      "product_id": "wine-agora-rosa-viva-beloe-bryut",
+      "group_id": "rosa-sparkling",
+      "catalog_name": "Agora Rosa Viva Белое Брют",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "O4nl0_Y_Wdgyo6_H_Nd_1775200002_52181b7f44.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/O4nl0_Y_Wdgyo6_H_Nd_1775200002_52181b7f44.webp",
+      "input_sha256": "de7ce4f7619908f227686f627e12c6ba8f6b250a3f4819e9f559969b439d18d1",
+      "asset_sha256": "c37059090118a0520b4cba66c8f0f88a3c8d9e0db2b4b6b8149f0861af075056"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-beloe-polusladkoe",
+      "product_id": "wine-agora-rosa-viva-beloe-polusladkoe",
+      "group_id": "rosa-sparkling",
+      "catalog_name": "Agora Rosa Viva Белое Полусладкое",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "ugb_HOG_Jxx_J9_Pv_Cj_1775200212_f3b8b5681b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/ugb_HOG_Jxx_J9_Pv_Cj_1775200212_f3b8b5681b.webp",
+      "input_sha256": "5dff3392c24a3a334844c0caa8eb84e7967ff9ac0833ddea6c0b898014263911",
+      "asset_sha256": "4241561e260ed6581db5f7d83d21af902163a4e0b8c10dfb658e571a59a3f5c0"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-cabernet-franc",
+      "product_id": "wine-agora-rosa-viva-cabernet-franc",
+      "group_id": "rosa-still",
+      "catalog_name": "Agora ROSA VIVA Cabernet Franc",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "fp_ZE_Jh_YZ_Pst_BYLV_1775199670_92154c67f4.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/fp_ZE_Jh_YZ_Pst_BYLV_1775199670_92154c67f4.webp",
+      "input_sha256": "4711a6ddd3243555471eea82b1e69323f589c4f9e3c6f08a101b217397cc8f00",
+      "asset_sha256": "9dcb28fcbd50cde6816f22e9d928e5c3a4518fb704d737487db9de4619ebbadd"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-cabernet-sauvignon-shiraz",
+      "product_id": "wine-agora-rosa-viva-cabernet-sauvignon-shiraz",
+      "group_id": "rosa-still",
+      "catalog_name": "Agora ROSA VIVA Cabernet Sauvignon Shiraz",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "22_RA_11a_BWFX_8_Yu9_1775199820_d1ccb7706c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/22_RA_11a_BWFX_8_Yu9_1775199820_d1ccb7706c.webp",
+      "input_sha256": "09ad6ecb4ed21648e10d9da4d9983a6b90804db3aee0cc9670c1cbabf3c4f29c",
+      "asset_sha256": "868bc08727a779bcb069d20dd3e9b6774e2dea562654e69f96c0b29c363d385d"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-muscat",
+      "product_id": "wine-agora-rosa-viva-muscat",
+      "group_id": "rosa-still",
+      "catalog_name": "Agora ROSA VIVA Muscat",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "k_Ot_Rtt_C_Jv_P1_R7j_P_1775199321_a3cb38eb82.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/k_Ot_Rtt_C_Jv_P1_R7j_P_1775199321_a3cb38eb82.webp",
+      "input_sha256": "134da43cfc4cf2bb55a0c1497ee7aba01ae88314199b93627176bfbeaf43b6c9",
+      "asset_sha256": "642c4558bfe4845a6616e732ef3b5df5695cc42d27f4233efd156c75af5b9caa"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-riesling",
+      "product_id": "wine-agora-rosa-viva-riesling",
+      "group_id": "rosa-still",
+      "catalog_name": "Agora ROSA VIVA Riesling",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "B_Yr_Ab_T0x_R_Ed_Rg8j_1775199389_86635deb7f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/B_Yr_Ab_T0x_R_Ed_Rg8j_1775199389_86635deb7f.webp",
+      "input_sha256": "7d0e4b00f21815c4047e3bf984dc2ce1e31f5831076a65e8985ee0ddfa688283",
+      "asset_sha256": "7f6ae2617ee9eb803ac83b39757816c29e2446fec020f07b4aeaef4cea2e6759"
+    },
+    {
+      "wine_slug": "agora-rosa-viva-rozovoe-polusladkoe",
+      "product_id": "wine-agora-rosa-viva-rozovoe-polusladkoe",
+      "group_id": "rosa-sparkling",
+      "catalog_name": "Agora Rosa Viva Розовое Полусладкое",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "obmsa6_YZNZPDCKY_1775200312_524a5e0fbb.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/obmsa6_YZNZPDCKY_1775200312_524a5e0fbb.webp",
+      "input_sha256": "d911df636a1c64e216991134799b30465b0f982fcf04426b2dbc35b66a612d63",
+      "asset_sha256": "24ff1b40790ff5aa0450a38f2d65aa1b304ca32bd1f0b1816ec541ec5c730428"
+    },
+    {
+      "wine_slug": "agora-saperavi",
+      "product_id": "wine-agora-saperavi",
+      "group_id": "core",
+      "catalog_name": "AGORA Саперави",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Saperavi_c472cc0afc.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Saperavi_c472cc0afc.webp",
+      "input_sha256": "bbb88a1a8d23048827b00274fcb97a23d7edf95c9f31794c0144d367666e7e99",
+      "asset_sha256": "83060ac61163ac4d383c80c03bd5f2ea91c20da556488772aaac26531024ead9"
+    },
+    {
+      "wine_slug": "agora-shardone",
+      "product_id": "wine-agora-shardone",
+      "group_id": "core",
+      "catalog_name": "AGORA Шардоне",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Shardone_4e9ddf9c52.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Shardone_4e9ddf9c52.webp",
+      "input_sha256": "42249a23b57ff07af2ef679618f61bb3bfc36fadcb207e52d277af403181bcb5",
+      "asset_sha256": "de244ec4fc1147e3921c7703ca20faabfcefa23df60d09687516e6294231405d"
+    },
+    {
+      "wine_slug": "agora-sovinon",
+      "product_id": "wine-agora-sovinon",
+      "group_id": "core",
+      "catalog_name": "AGORA Совиньон",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Sovinon_6b035f6913.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Sovinon_6b035f6913.webp",
+      "input_sha256": "36e198782a7038614d5ced7b12b669a98a65a839662a2db854380bf29065d96a",
+      "asset_sha256": "08598cde74b4568cf0b652b6adc024665afd2fc937caea0344456693c0789d25"
+    },
+    {
+      "wine_slug": "agora-terruarnoe-bastardo",
+      "product_id": "wine-agora-terruarnoe-bastardo",
+      "group_id": "terroir",
+      "catalog_name": "AGORA Терруарное Бастардо",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Bastardo_terruarnoe_c692ff5ff0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Bastardo_terruarnoe_c692ff5ff0.webp",
+      "input_sha256": "4c0ce8198fef029ca16d0efef8c6fd2fd38a483091ad14ee074a4305e617918b",
+      "asset_sha256": "6552f1ba2bbe75ffaa804cddea8337f9dbab5736b19e250fafb729542f5769e3"
+    },
+    {
+      "wine_slug": "agora-terruarnoe-kaberne-sovinon",
+      "product_id": "wine-agora-terruarnoe-kaberne-sovinon",
+      "group_id": "terroir",
+      "catalog_name": "AGORA Терруарное Каберне совиньон",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Kaberne_Sovinon_terruarnoe_cebc6287a8.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Kaberne_Sovinon_terruarnoe_cebc6287a8.webp",
+      "input_sha256": "e38c36bb268cce0921c301287315cc275f051e7942a5adcbf140eb005f7f2c31",
+      "asset_sha256": "530ed67815cd87333b3635f3c6052a05a8189754767cc1e6b2cea5579676041f"
+    },
+    {
+      "wine_slug": "agora-vintage-blanc-de-blancs-extra-brut",
+      "product_id": "wine-agora-vintage-blanc-de-blancs-extra-brut",
+      "group_id": "vintage",
+      "catalog_name": "AGORA, VINTAGE Blanc de Blancs extra brut",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Blan_de_Blan_2d64f13a73.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Blan_de_Blan_2d64f13a73.webp",
+      "input_sha256": "87eeb32b2a8d36b29018be1995a04fdc0bc6f53d02ce652d6586d84647863af5",
+      "asset_sha256": "fc481d0c44593c96cf7c3763d6e7d847211335620afebfd37bb24b556378d122"
+    },
+    {
+      "wine_slug": "agora-vintage-blanc-de-noirs-extra-brut",
+      "product_id": "wine-agora-vintage-blanc-de-noirs-extra-brut",
+      "group_id": "vintage",
+      "catalog_name": "AGORA, VINTAGE Blanc de Noirs extra brut",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Blan_de_Nuar_f3d5c90643.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Blan_de_Nuar_f3d5c90643.webp",
+      "input_sha256": "597af3b917b52192870b6a643f81934ee3bb3c7a1c8900db0e7affb412c833e9",
+      "asset_sha256": "5c4d14dd400f0cbb285913c2170be4a4f78897ffa0db9e6bc9a2e5c89a575429"
+    },
+    {
+      "wine_slug": "agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125",
+      "product_id": "wine-agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125",
+      "group_id": "cuvee",
+      "catalog_name": "CUVEE Пино Гриджио Шардоне, брют, белое",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "agora_winery_cuvee_pino_gridzhio_shardone_bryut_beloe_igristoe_bryut_beloe_125_16b20c89df.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/agora_winery_cuvee_pino_gridzhio_shardone_bryut_beloe_igristoe_bryut_beloe_125_16b20c89df.webp",
+      "input_sha256": "1b50fb21be76b3d50ac93b6e128aba9c1d9143ffb9b73547853be5f7112094cd",
+      "asset_sha256": "224d7f5ffc57768996f481edff36f9a09bea57d61827344281e1c78d243b3c76"
+    },
+    {
+      "wine_slug": "agora-winery-cuvee-pino-nuar-shardone-bryut-rozovoe-125",
+      "product_id": "wine-agora-winery-cuvee-pino-nuar-shardone-bryut-rozovoe-125",
+      "group_id": "cuvee",
+      "catalog_name": "CUVEE Пино нуар, Шардоне, брют, розовое",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "agora_winery_cuvee_pino_nuar_shardone_bryut_rozovoe_igristoe_bryut_rozovoe_125_c2b30c8f55.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/agora_winery_cuvee_pino_nuar_shardone_bryut_rozovoe_igristoe_bryut_rozovoe_125_c2b30c8f55.webp",
+      "input_sha256": "ac5b8a34a424d58a6377b7d3797e12b3a741f2f0494bc55f84a71950f583edc7",
+      "asset_sha256": "0e2fcd7a9c4908214284d0579ab0acdf833c93c45087f74204d806703c56925a"
+    },
+    {
+      "wine_slug": "agora-yachting-cabernet-sauvignon",
+      "product_id": "wine-agora-yachting-cabernet-sauvignon",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Cabernet Sauvignon",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Sovinon_kopiya_066436e3ad.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Sovinon_kopiya_066436e3ad.webp",
+      "input_sha256": "d1f93c3879d081f17880f9549747f034b74564c155dc729fbe22cf4f7477040a",
+      "asset_sha256": "60cc64732e7247973ce11778426ba0ac1438ad0a060efba0b21418a4826d350d"
+    },
+    {
+      "wine_slug": "agora-yachting-chardonnay",
+      "product_id": "wine-agora-yachting-chardonnay",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Chardonnay",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Shardone_836c91ea71.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Shardone_836c91ea71.webp",
+      "input_sha256": "73793750f21b25170a1f4cd1a623bff759b8c583542ea29d6a6f24366773f3c4",
+      "asset_sha256": "a2229333cf73896a6543d143db7a3d0ab19e6967461cfb6cbd4c8318b80a7716"
+    },
+    {
+      "wine_slug": "agora-yachting-merlot",
+      "product_id": "wine-agora-yachting-merlot",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Merlot",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Merlo_c83c62cf28.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Merlo_c83c62cf28.webp",
+      "input_sha256": "e0cca7d6250437b27dd19fd72859373691bc8aadecf351209de4a836177487ba",
+      "asset_sha256": "74c657b863a848cdf29e3701b7148534cf94ff4afe4a0a111a171922a22fc24b"
+    },
+    {
+      "wine_slug": "agora-yachting-pinot-grigio",
+      "product_id": "wine-agora-yachting-pinot-grigio",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Pinot Grigio",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Pino_Gridzhio_5daf688202.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Pino_Gridzhio_5daf688202.webp",
+      "input_sha256": "e9e040aec0e6e959a6529f2f9779cf96f6ed1b11d50082e67d7ffee7d40ffc39",
+      "asset_sha256": "3947cd57159db43327554d257f8d12b5b5bfb797220ff7650aa2027d5b1b365d"
+    },
+    {
+      "wine_slug": "agora-yachting-sauvignon",
+      "product_id": "wine-agora-yachting-sauvignon",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Sauvignon",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Sovinon_kopiya_25525931ef.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Sovinon_kopiya_25525931ef.webp",
+      "input_sha256": "d1f93c3879d081f17880f9549747f034b74564c155dc729fbe22cf4f7477040a",
+      "asset_sha256": "60cc64732e7247973ce11778426ba0ac1438ad0a060efba0b21418a4826d350d"
+    },
+    {
+      "wine_slug": "agora-yachting-shiraz",
+      "product_id": "wine-agora-yachting-shiraz",
+      "group_id": "yachting",
+      "catalog_name": "Agora Yachting Shiraz",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Agora_Rezerv_Yahting_Shiraz_efe299c1a7.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Agora_Rezerv_Yahting_Shiraz_efe299c1a7.webp",
+      "input_sha256": "0c4d866edfd0047a9f405fce5ca3eae997c5d3832858614fc8e3fbbd1f6be32d",
+      "asset_sha256": "77f970845883ebfb17b4cffec96d5848fecf2685233ed648ea071b20f8fc61a8"
+    },
+    {
+      "wine_slug": "blush-mirage-risling",
+      "product_id": "wine-blush-mirage-risling",
+      "group_id": "blush",
+      "catalog_name": "BLUSH MIRAGE Рислинг",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "Xyw_Lw_M9g_Aj_IZT_Wr_1775202863_a3366cb4a9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Xyw_Lw_M9g_Aj_IZT_Wr_1775202863_a3366cb4a9.webp",
+      "input_sha256": "e5b0b8067b03c91836d8f95b1c84c4d1e910381b94e8d4fc55e88e0c52d41fe6",
+      "asset_sha256": "fc964eecdc675b65fedf11f230008b235e73af7bfcce4999f172a7598816e5a5"
+    },
+    {
+      "wine_slug": "blush-mirage-rkacziteli-shiraz",
+      "product_id": "wine-blush-mirage-rkacziteli-shiraz",
+      "group_id": "blush",
+      "catalog_name": "BLUSH MIRAGE Ркацители, Шираз",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "d4r5_D_Od_P_Tc8okf5_1775202663_1519904964.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/d4r5_D_Od_P_Tc8okf5_1775202663_1519904964.webp",
+      "input_sha256": "debeac8d969296710b2dcc923040ce220a077804989b8c27fc15cff2236acf3f",
+      "asset_sha256": "e9403ce9f6e935dcc86e4431ed498be33b41db62264cd91a21fcb7c1cf34ae88"
+    },
+    {
+      "wine_slug": "blush-mirage-sovinon-zelyonyj",
+      "product_id": "wine-blush-mirage-sovinon-zelyonyj",
+      "group_id": "blush",
+      "catalog_name": "BLUSH MIRAGE Совиньон Зелёный",
+      "catalog_producer": "AGORA WINERY",
+      "source_image": "gx4_Wjjjicwz_UUN_2_1775202973_5df7adf9ac.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/gx4_Wjjjicwz_UUN_2_1775202973_5df7adf9ac.webp",
+      "input_sha256": "1bf459ac26e03e49d6d994083e63a914035a8c690d3f30a86a424238220eec9c",
+      "asset_sha256": "0eaa033c4a27bc98516cb6f7bce57ea3264d5f0b94db275611ce3e4597536b2a"
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-crispy-vinho-blanco",
+      "name": "Crispy Wine · Vinho Blanco",
+      "group_id": "crispy",
+      "official_url": "https://www.agora-group.ru/catalog/range/crispy-wine/",
+      "official_image_url": "https://www.agora-group.ru/assets/images/resources/1110/medium/-3.webp",
+      "source_image_sha256": "91f32c908c45e25e3bed19758f1b70a5a3cb628a8bc6436a8b8b60ad8a235c54",
+      "asset_sha256": "c8d8aafd95815e7e4ac18a02943b887f5598842857bf0edd3d60c84248ca9f44",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "AGORA WINERY",
+        "matched_catalog_slugs": [],
+        "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without collection and release equivalence evidence."
+      }
+    }
+  ]
+}

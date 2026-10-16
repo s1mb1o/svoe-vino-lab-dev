@@ -23,4 +23,6 @@ import producer15 from './belbek.json'
 
 import producer16 from './sober-bash.json'
 
-export default [producer16, producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]
+import producer17 from './agora.json'
+
+export default [producer17, producer16, producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]
