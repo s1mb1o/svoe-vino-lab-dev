@@ -151,6 +151,7 @@ POST /api/website-import/start
 POST /api/website-import/stop
 GET /api/website-import/{run}/diff
 POST /api/website-import/{run}/apply
+POST /api/website-import/{run}/automate
 POST /api/atlas-import/advance
 GET /api/atlas-import/photos
 POST /api/atlas-import/create

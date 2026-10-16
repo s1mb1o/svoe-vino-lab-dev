@@ -21,23 +21,26 @@ Rules of the compare:
 - A plain change is a new wine, a missing wine, a restored wine, or a stored main image.
 - `renames` lists the possible renames for the dialog: a missing wine and a new wine with
   the same main image, a short slug distance, or the same name and producer. The list is
-  display only. The write does not read it.
+  display only in the legacy mode. Automatic mode defers these additions for review.
 - A refusal of the table `website_refusal` matches while its situation stays. A matching
   refusal removes its conflict from the run. A write deletes each refusal that did not
   match. Only a conflict gets a refusal: a plain change is never refused (owner messages
   of 2026-09-26T19:58:00+0300 and 20:05:00).
 - A problem is not a conflict: a list problem, a website slug with the prefix of a
   manual wine (`manual_wines.is_manual`), a website wine with no image, a new wine with
-  an empty required value, a bad extension. A problem stops each mode. A network error
-  or an HTTP error after the retries stops the run at once.
+  an empty required value, a bad extension. The legacy CLI stops on these problems.
+  UI modes retain record-level failures as warnings. An inconsistent source list
+  still stops every mode.
 
 The modes:
 - `COMPARE_ENABLED` switches the compare in the code. While it is False, the CLI and
   `--prepare` stop with the error `COMPARE_DISABLED` and send no request.
 - The CLI stops on a problem or a conflict. The error lists all of them, and nothing
   changes. With none, it applies each plain change.
-- `--prepare DIR` never writes the database. It writes `DIR/diff.json` and the website
-  images that an apply can need to `DIR/images/`. A conflict is no error.
+- `--prepare DIR` writes `DIR/diff.json` and candidate images. It makes no catalogue
+  write unless `--automatic` is supplied. `--review-images` runs image checks alone.
+- `--automate DIR` applies valid new wines and approved native image improvements.
+  Incomplete records, possible duplicates or renames, and image warnings remain for manual review.
 - `--apply DIR` reads `DIR/diff.json` and the choices of a person in `DIR/choices.json`.
   A conflict with no choice and a cleared plain change are skipped: no write, no
   refusal, no comment. The next compare shows them again. It writes `DIR/result.json`.
@@ -51,8 +54,10 @@ Rules of the change:
 - A `Disabled` wine on the website stays `Disabled`.
 - A website wine with no `main` row gets its image as `main`. Comment `COMMENT_MAIN`.
 - A conflict choice of the dialog writes the row of the table in plan 21 and its comment.
-- Each write sets `website_modified_at` of each website wine. Each comment has the
-  source `script`.
+- `skip` defers one conflict without a persistent refusal or source acknowledgement.
+- The control slug `shmelev_shmeleva_risling` is exempt from missing-source removal.
+- A write acknowledges source times only for wines with no pending or failed check.
+  Each comment has the source `script`.
 
 Rules of the store: as in `seed_images.py`. The file is `images/main/<sha256>.<extension>`,
 the extension of the upload name in lower case. `source_name` is the upload name and
@@ -79,6 +84,7 @@ import sys
 import time
 import urllib.parse
 import xml.etree.ElementTree as ElementTree
+from collections import Counter
 
 from PIL import Image
 
@@ -121,7 +127,8 @@ EXTENSION_RE = re.compile(r"^[0-9a-z]+$")
 COMPARED = ("name", "producer", "category", "color", "region")
 # The kinds of a plain change, in the order of the dialog.
 CHANGE_KINDS = ("new", "missing", "back", "main")
-CHOICES = ("database", "website")
+CHOICES = ("database", "website", "skip")
+MISSING_EXCEPTIONS = frozenset({"shmelev_shmeleva_risling"})
 COMMENT_NEW = "New on vino-svoe.ru."
 COMMENT_BACK = "Back on vino-svoe.ru."
 COMMENT_MISSING = "Missing on vino-svoe.ru."
@@ -130,6 +137,7 @@ COMMENT_MAIN = "Main image from vino-svoe.ru."
 DIFF_FILE = "diff.json"
 CHOICES_FILE = "choices.json"
 RESULT_FILE = "result.json"
+AUTOMATION_ERROR_FILE = "automatic-error.json"
 IMAGES_DIR = "images"
 # The number of slugs that one report line names.
 SHOWN = 10
@@ -235,6 +243,11 @@ class Report:
         self.refusals = []        # "slug kind" of the new refusals
         self.unresolved = []      # ids of the conflicts with no choice; nothing is written
         self.skipped = []         # ids of the cleared plain changes; nothing is written
+        self.deferred = []        # explicit skip choices; no persistent refusal
+        self.review_warnings = []
+        self.auto_added = []
+        self.auto_replaced = []
+        self.snapshot_after = None
         self.refused = 0          # conflicts that a refusal skipped
         self.stale = 0            # refusals deleted, because they did not match
         self.times = 0            # values of `website_modified_at` written
@@ -374,12 +387,17 @@ class State:
         self.refusals = {(slug, kind, field): value for slug, kind, field, value in
                          conn.execute("SELECT wine_slug, kind, field, website_value "
                                       "FROM website_refusal")}
+        self.tags = [tuple(row) for row in conn.execute("SELECT wine_slug,tag FROM wine_tag ORDER BY wine_slug,tag")]
+        self.links = [tuple(row) for row in conn.execute(
+            "SELECT wine_slug,image_type,sha256 FROM wine_image ORDER BY wine_slug,image_type,sha256")]
+        self.patches = [tuple(row) for row in conn.execute(
+            "SELECT wine_slug,sha256 FROM wine_image WHERE image_type='main_patched' ORDER BY wine_slug,sha256")]
 
     def digest(self):
         rows = [list(row) for row in self.wines.values()]
         mains = sorted([slug, main[0]] for slug, main in self.mains.items())
         refusals = sorted(list(key) + [value] for key, value in self.refusals.items())
-        data = json.dumps([rows, mains, refusals], ensure_ascii=False, sort_keys=True)
+        data = json.dumps([rows, mains, refusals, self.tags, self.patches, self.links], ensure_ascii=False, sort_keys=True)
         return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
@@ -441,7 +459,7 @@ def _stored(state, slug):
     return {"sha256": digest, "source_name": name, "url": store_url(folder, digest, extension)}
 
 
-def compare(conn, client, log=print):
+def compare(conn, client, log=print, tolerant=False):
     """Compare the website with the database. Return (diff, blobs): the JSON-safe diff of
     plan 21, and sha256 -> bytes of each website image that a write can need."""
     state = State(conn)
@@ -461,7 +479,8 @@ def compare(conn, client, log=print):
             return True
         return False
 
-    conflicts, changes = [], []
+    conflicts, changes, warnings = [], [], []
+    warning_slugs = set()
     for slug, item in items.items():
         old = wines.get(slug)
         if old is None:
@@ -479,16 +498,28 @@ def compare(conn, client, log=print):
     for slug, item in items.items():
         url = image_url(item)
         if url is None:
-            problems.append("%s: the website shows no image" % slug)
+            (warnings if tolerant else problems).append("%s: the website shows no image" % slug)
+            warning_slugs.add(slug)
             continue
-        data = client.get(file_url(url), accept="image/*")
+        try:
+            data = client.get(file_url(url), accept="image/*")
+            if tolerant:
+                with Image.open(io.BytesIO(data)) as decoded:
+                    decoded.load()
+        except (FetchError, OSError, ValueError, Image.DecompressionBombError) as exc:
+            if not tolerant:
+                raise
+            warnings.append("%s: image unavailable or invalid: %s" % (slug, exc))
+            warning_slugs.add(slug)
+            continue
         done += 1
         if done % PROGRESS == 0 or done == len(items):
             log("images: %d/%d" % (done, len(items)))
         digest, name = hashlib.sha256(data).hexdigest(), upload_name(url)
         extension = extension_of(name)
         if not EXTENSION_RE.match(extension):
-            problems.append("%s: the upload name %r has no valid extension" % (slug, name))
+            (warnings if tolerant else problems).append("%s: the upload name %r has no valid extension" % (slug, name))
+            warning_slugs.add(slug)
             continue
         images[slug] = {"sha256": digest, "name": name, "extension": extension,
                         "file": "%s/%s.%s" % (IMAGES_DIR, digest, extension)}
@@ -503,7 +534,16 @@ def compare(conn, client, log=print):
     for slug, item in items.items():
         if slug in wines:
             continue
-        card = client.get_json(CARD_URL % urllib.parse.quote(slug, safe=""))
+        try:
+            card = client.get_json(CARD_URL % urllib.parse.quote(slug, safe=""))
+            if not isinstance(card, dict) or not isinstance(card.get("grapes") or [], list):
+                raise WebsiteError("invalid wine detail")
+        except (FetchError, WebsiteError, TypeError, ValueError) as exc:
+            if not tolerant:
+                raise
+            warnings.append("%s: new wine detail unavailable: %s" % (slug, exc))
+            warning_slugs.add(slug)
+            card = {}
         values = list_values(item)
         grapes = [clean(grape) for grape in card.get("grapes") or []]
         values.update({"wine_slug": slug,
@@ -512,12 +552,15 @@ def compare(conn, client, log=print):
                        "csv_photo_name": images[slug]["name"] if slug in images else None})
         empty = [field for field in FIELDS if field != "grapes" and values[field] is None]
         if empty:
-            problems.append("%s: the new wine has no %s" % (slug, ", ".join(empty)))
+            (warnings if tolerant else problems).append("%s: the new wine has no %s" % (slug, ", ".join(empty)))
+            warning_slugs.add(slug)
         changes.append({"id": "new:%s" % slug, "slug": slug, "kind": "new",
                         "name": values["name"], "producer": values["producer"],
-                        "row": [values[field] for field in FIELDS], "image": images.get(slug)})
+                        "row": [values[field] for field in FIELDS], "image": images.get(slug),
+                        **({"review_required": True} if tolerant and (empty or slug not in images) else {})})
     for slug, row in wines.items():
-        if slug in items or row[status] == "Removed" or manual_wines.is_manual(slug):
+        if (slug in items or row[status] == "Removed" or manual_wines.is_manual(slug)
+                or slug in MISSING_EXCEPTIONS):
             continue
         changes.append({"id": "missing:%s" % slug, "slug": slug, "kind": "missing",
                         "name": row[1], "producer": row[2], "state": row[status],
@@ -539,6 +582,9 @@ def compare(conn, client, log=print):
     diff = {
         "created_at": now_utc(), "snapshot": state.digest(), "website": len(items),
         "images": done, "problems": problems, "conflicts": conflicts, "changes": changes,
+        "warnings": warnings,
+        "warning_slugs": sorted(warning_slugs),
+        "missing_exceptions": sorted(slug for slug in MISSING_EXCEPTIONS if slug in wines and slug not in items),
         "refused": len(matched), "stale": [list(key) for key in refusals if key not in matched],
         "times": {slug: times.get(slug) for slug in items},
         "unchanged": sum(1 for slug in items if slug in wines),
@@ -582,7 +628,7 @@ def _plain(value):
 
 def renames(diff):
     """Return the possible renames of a diff: [{"old", "new", "reasons"}], the slug of a
-    missing wine, the slug of a new wine, and the matched rules. Display only."""
+    missing wine, the slug of a new wine, and the matched rules. Automatic mode defers them."""
     new = [entry for entry in diff["changes"] if entry["kind"] == "new"]
     found = []
     for old in diff["changes"]:
@@ -613,17 +659,28 @@ def check_choices(diff, choices):
     in the first dict. Raise `WebsiteError`."""
     if not isinstance(choices, dict):
         raise WebsiteError("the choice file MUST hold an object")
-    picked = choices.get("conflicts") or {}
-    ticked = choices.get("changes") or {}
+    if set(choices) - {"conflicts", "changes"}:
+        raise WebsiteError("the choice file accepts conflicts and changes only")
+    picked = choices.get("conflicts", {})
+    ticked = choices.get("changes", {})
+    if not isinstance(picked, dict) or not isinstance(ticked, dict):
+        raise WebsiteError("conflicts and changes MUST be objects")
+    if set(picked) - {e["id"] for e in diff["conflicts"]} or set(ticked) - {e["id"] for e in diff["changes"]}:
+        raise WebsiteError("the choice file names a change outside this report")
     ids = [entry["id"] for entry in diff["conflicts"] if entry["id"] in picked]
     bad = [key for key in ids if picked[key] not in CHOICES]
     if bad:
-        raise WebsiteError("the conflicts %s need database or website" % _names(bad))
+        raise WebsiteError("the conflicts %s need database, website or skip" % _names(bad))
+    invalid = [e["id"] for e in diff["conflicts"] if e.get("review_required")
+               and picked.get(e["id"]) == "website"]
+    if invalid:
+        raise WebsiteError("the prepared image is invalid; compare again: " + _names(invalid))
     bad = [key for key, value in ticked.items() if not isinstance(value, bool)]
     if bad:
         raise WebsiteError("the changes %s need true or false" % _names(bad))
     return ({key: picked[key] for key in ids},
-            {entry["id"]: ticked.get(entry["id"], True) for entry in diff["changes"]})
+            {entry["id"]: ticked.get(entry["id"], not (entry.get("review_required") or entry.get("manual_review")))
+             for entry in diff["changes"]})
 
 
 def _notes(by_kind, texts, images, kept):
@@ -653,6 +710,9 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     picked, ticked = check_choices(diff, choices or {})
     by_kind = {kind: [entry for entry in diff["changes"]
                       if entry["kind"] == kind and ticked[entry["id"]]] for kind in CHANGE_KINDS}
+    by_kind["missing"] = [entry for entry in by_kind["missing"] if entry["slug"] not in MISSING_EXCEPTIONS]
+    if any(entry.get("review_required") for entries in by_kind.values() for entry in entries):
+        raise WebsiteError("incomplete new wines require a new compare after the source is corrected")
     skipped = [entry["id"] for entry in diff["changes"] if not ticked[entry["id"]]]
     texts = [entry for entry in diff["conflicts"]
              if entry["kind"] == "text" and picked.get(entry["id"]) == "website"]
@@ -660,6 +720,7 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
               if entry["kind"] == "image" and picked.get(entry["id"]) == "website"]
     kept = [entry for entry in diff["conflicts"] if picked.get(entry["id"]) == "database"]
     unresolved = [entry["id"] for entry in diff["conflicts"] if entry["id"] not in picked]
+    deferred = [entry["id"] for entry in diff["conflicts"] if picked.get(entry["id"]) == "skip"]
     for entry in texts:
         if entry["field"] not in COMPARED:
             raise WebsiteError("%s: the field %r is not compared" % (entry["id"], entry["field"]))
@@ -734,6 +795,16 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
                              % entry["field"], (entry["website"], entry["slug"]))
             for digest, (_, folder, extension, width, height) in files.items():
                 insert_image(conn, digest, folder, extension, width, height)
+            # The existing additional-photo controls can restore this original as Main.
+            conn.executemany(
+                "INSERT INTO wine_image (wine_slug,image_type,sha256,source_name,match_method) "
+                "SELECT wine_slug,'full_front',sha256,source_name,'website-history' FROM wine_image "
+                "WHERE wine_slug=? AND image_type='main' ON CONFLICT DO NOTHING",
+                [(entry["slug"],) for entry in images])
+            for entry in images:
+                if conn.execute("SELECT 1 FROM wine_image WHERE wine_slug=? AND image_type='full_front' AND sha256=?",
+                                (entry["slug"], entry["database"]["sha256"])).fetchone() is None:
+                    raise WebsiteError("The previous main image could not be retained.")
             conn.executemany("DELETE FROM wine_image WHERE wine_slug = ? AND image_type = ?",
                              [(entry["slug"], IMAGE_TYPE) for entry in images])
             conn.executemany(
@@ -754,11 +825,18 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
                 "created_at = excluded.created_at", [row + (stamp,) for row in refusals])
             for slug, text in notes:
                 comments.add(conn, slug, text, "script")
+            pending_slugs = {e["slug"] for e in diff["conflicts"]
+                             if e["id"] in unresolved or e["id"] in deferred}
+            pending_slugs |= {e["slug"] for e in diff["changes"] if not ticked[e["id"]]}
+            pending_slugs.update(diff.get("warning_slugs", []))
             for slug, lastmod in diff["times"].items():
+                if slug in pending_slugs:
+                    continue
                 cursor = conn.execute(
                     "UPDATE wine_catalog SET website_modified_at = ? WHERE wine_slug = ? "
                     "AND website_modified_at IS NOT ?", (lastmod, slug, lastmod))
                 report.times += cursor.rowcount
+            report.snapshot_after = State(conn).digest()
             conn.execute("COMMIT")
         except BaseException:
             conn.execute("ROLLBACK")
@@ -777,9 +855,12 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     report.refusals = ["%s %s" % (row[0], row[1]) for row in refusals]
     report.unresolved = unresolved
     report.skipped = skipped
+    report.deferred = deferred
+    report.review_warnings = [e for e in diff["conflicts"] if e["kind"] == "image"
+                             and (e["id"] in unresolved or e["id"] in deferred)]
     report.refused, report.stale = diff["refused"], len(diff["stale"])
     touched = {e["slug"] for e in diff["changes"] if e["kind"] in ("back", "main")}
-    touched |= {e["slug"] for e in diff["conflicts"] if e["id"] in picked}
+    touched |= {e["slug"] for e in diff["conflicts"] if picked.get(e["id"]) in ("database", "website")}
     report.unchanged = diff["unchanged"] - len(touched)
     report.comments = len(notes)
     report.states = {name: states.get(name, 0) for name in STATES}
@@ -789,13 +870,13 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
 # ---------------------------------------------------------------------------- the modes
 
 
-def _compare(db_path, client, log):
+def _compare(db_path, client, log, tolerant=False):
     if not COMPARE_ENABLED:
         raise WebsiteError(COMPARE_DISABLED)
     client = client or Client()
     conn = labdb.connect(db_path)
     try:
-        return compare(conn, client, log)
+        return compare(conn, client, log, tolerant=tolerant)
     finally:
         conn.close()
         if hasattr(client, "close"):
@@ -821,10 +902,11 @@ def write_json(path, value):
     os.replace(temp, path)
 
 
-def prepare(db_path, directory, client=None, log=print):
+def prepare(db_path, directory, client=None, log=print, automatic=False, reviewer=None, segmenter=None,
+            review_images=False):
     """The UI mode, step 1: write `diff.json` and the images to `directory`. Return the
     diff. Raise `WebsiteError` when the compare found a problem."""
-    diff, blobs = _compare(db_path, client, log)
+    diff, blobs = _compare(db_path, client, log, tolerant=automatic or review_images)
     if diff["problems"]:
         raise WebsiteError("the compare stops. %d problems:\n  %s"
                            % (len(diff["problems"]), "\n  ".join(diff["problems"])))
@@ -837,6 +919,129 @@ def prepare(db_path, directory, client=None, log=print):
         imagestore.store_bytes(blobs[digest], os.path.join(directory, name), digest)
     diff["database"] = os.path.abspath(db_path)
     write_json(os.path.join(directory, DIFF_FILE), diff)
+    if automatic or review_images:
+        diff = automate_directory(db_path, directory, reviewer=reviewer, segmenter=segmenter, log=log,
+                                  apply_updates=automatic)
+    return diff
+
+
+def automate_directory(db_path, directory, reviewer=None, segmenter=None, log=print, apply_updates=True):
+    """Apply valid new wines and verified image improvements. Keep all other choices open."""
+    import website_image_review
+    path = os.path.join(directory, DIFF_FILE)
+    with open(path, encoding="utf-8") as stream:
+        diff = json.load(stream)
+    if diff.get("database") != os.path.abspath(db_path):
+        raise WebsiteError("the diff belongs to another database")
+    conn = labdb.connect(db_path)
+    try:
+        if State(conn).digest() != diff["snapshot"]:
+            raise WebsiteError(CHANGED)
+        records = {row[0]: dict(zip(FIELDS, row)) for row in conn.execute(
+            "SELECT %s FROM wine_catalog" % ",".join(FIELDS))}
+        for slug, tag in conn.execute("SELECT wine_slug,tag FROM wine_tag ORDER BY wine_slug,tag"):
+            if slug in records:
+                records[slug].setdefault("_tags", []).append(tag)
+        patched = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_image WHERE image_type='main_patched'")}
+        linked_images = {row[0] for row in conn.execute("SELECT DISTINCT sha256 FROM wine_image")}
+    finally:
+        conn.close()
+    # Older prepared runs can still contain the protected missing entry.
+    diff["changes"] = [e for e in diff["changes"]
+                       if not (e["kind"] == "missing" and e["slug"] in MISSING_EXCEPTIONS)]
+    choices = {"conflicts": {}, "changes": {e["id"]: False for e in diff["changes"]}}
+    possible_renames = {pair["new"] for pair in renames(diff)}
+    existing_names = {(_plain(record["name"]), _plain(record["producer"])) for record in records.values()}
+    new_entries = [e for e in diff["changes"] if e["kind"] == "new"]
+    new_hashes = Counter(e["image"]["sha256"] for e in new_entries if e.get("image"))
+    new_names = Counter((_plain(e["row"][FIELDS.index("name")]), _plain(e["row"][FIELDS.index("producer")]))
+                        for e in new_entries if len(e.get("row") or []) == len(FIELDS))
+    linked_images.update(e["website"]["sha256"] for e in diff["conflicts"] if e["kind"] == "image")
+    for entry in diff["changes"]:
+        if entry["kind"] == "new":
+            if entry["slug"] in possible_renames:
+                entry["manual_review"] = True
+            row = entry.get("row") or []
+            image = entry.get("image") or {}
+            if len(row) == len(FIELDS):
+                candidate = dict(zip(FIELDS, row))
+                pair = (_plain(candidate["name"]), _plain(candidate["producer"]))
+                if (image.get("sha256") in linked_images or new_hashes[image.get("sha256")] > 1
+                        or pair in existing_names or new_names[pair] > 1):
+                    entry["manual_review"] = True
+            valid = (len(row) == len(FIELDS) and all(row[i] for i, f in enumerate(FIELDS) if f != "grapes")
+                     and bool(entry.get("image")) and not entry.get("review_required")
+                     and not entry.get("manual_review"))
+            choices["changes"][entry["id"]] = valid
+            if not valid and not entry.get("manual_review"):
+                entry["review_required"] = True
+    reviewer = reviewer or website_image_review.ImageReviewer()
+    blobs = {}
+    for entry in diff["changes"] + diff["conflicts"]:
+        image = entry.get("image") or (entry["website"] if entry["kind"] == "image" else None)
+        if image:
+            try:
+                with open(os.path.join(directory, image["file"]), "rb") as stream:
+                    data = stream.read()
+                if hashlib.sha256(data).hexdigest() != image["sha256"]:
+                    raise ValueError("The prepared image checksum does not match.")
+                with Image.open(io.BytesIO(data)) as opened:
+                    opened.load()
+                blobs[image["sha256"]] = data
+            except (OSError, ValueError, Image.DecompressionBombError) as exc:
+                entry["review_required"] = True
+                if entry["id"] in choices["changes"]:
+                    choices["changes"][entry["id"]] = False
+                if entry["kind"] == "image":
+                    entry["review"] = website_image_review.warning(records[entry["slug"]],
+                        entry["database"]["sha256"], image["sha256"], str(exc))
+                continue
+        if entry["kind"] != "image":
+            continue
+        record = records[entry["slug"]]
+        old = entry["database"]
+        if entry["slug"] in patched:
+            entry["review"] = website_image_review.warning(record, old["sha256"], entry["website"]["sha256"],
+                                                            "A manual patch exists. Review the new main and patch together.")
+            continue
+        log("review: " + entry["slug"])
+        try:
+            labdb_connection = labdb.connect(db_path)
+            try:
+                stored = stored_file(labdb_connection, old["sha256"])
+            finally:
+                labdb_connection.close()
+            if stored is None:
+                raise ValueError("The old image is unavailable.")
+            with open(store_path(db_path, stored[0], old["sha256"], stored[1]), "rb") as stream:
+                old_data = stream.read()
+            if hashlib.sha256(old_data).hexdigest() != old["sha256"]:
+                raise ValueError("The old image checksum does not match.")
+            review = reviewer(record, old_data, blobs[entry["website"]["sha256"]], directory)
+        except Exception as exc:
+            review = website_image_review.warning(record, old["sha256"], entry["website"]["sha256"],
+                                                   "Image review unavailable: " + str(exc)[:800])
+        entry["review"] = review
+        if website_image_review.approved(review, record, old["sha256"], entry["website"]["sha256"]):
+            choices["conflicts"][entry["id"]] = "website"
+    applied = set(k for k, v in choices["changes"].items() if v) | set(choices["conflicts"])
+    # Keep evidence before any catalogue write. A crash cannot erase the review.
+    write_json(path, diff)
+    if applied and apply_updates:
+        report = write(db_path, diff, blobs, choices, segmenter, log)
+        previous = diff.get("automatic_result") or {}
+        result = report.as_dict()
+        result["added"] = list(dict.fromkeys(previous.get("added", []) + result["added"]))
+        result["replaced"] = list(dict.fromkeys(previous.get("replaced", []) + result["replaced"]))
+        diff["automatic_result"] = result
+        diff.setdefault("automatic_reviews", []).extend(
+            e for e in diff["conflicts"] if e["id"] in applied and e["kind"] == "image")
+        diff["changes"] = [e for e in diff["changes"] if e["id"] not in applied]
+        diff["conflicts"] = [e for e in diff["conflicts"] if e["id"] not in applied]
+        diff["snapshot"] = report.snapshot_after
+        diff["stale"] = []
+    diff["automation_checked_at"] = now_utc()
+    write_json(path, diff)
     return diff
 
 
@@ -861,7 +1066,11 @@ def apply_directory(db_path, directory, segmenter=None, log=print):
                     blobs[image["sha256"]] = fh.read()
             except OSError:
                 pass
-    return write(db_path, diff, blobs, choices, segmenter, log)
+    report = write(db_path, diff, blobs, choices, segmenter, log)
+    automatic = diff.get("automatic_result") or {}
+    report.auto_added = automatic.get("added", [])
+    report.auto_replaced = automatic.get("replaced", [])
+    return report
 
 
 def _line(label, slugs):
@@ -907,6 +1116,9 @@ def main(argv=None):
                       help="compare, and write the diff and the images to DIR")
     mode.add_argument("--apply", metavar="DIR",
                       help="write the diff of DIR with the choices of DIR/choices.json")
+    mode.add_argument("--automate", metavar="DIR", help="check a prepared run and apply safe updates")
+    parser.add_argument("--automatic", action="store_true", help="apply safe updates after prepare")
+    parser.add_argument("--review-images", action="store_true", help="review images without automatic writes")
     args = parser.parse_args(argv)
 
     def log(message):
@@ -915,13 +1127,23 @@ def main(argv=None):
     errors = (WebsiteError, labdb.SchemaError, sqlite3.Error, OSError, comments.CommentError)
     if args.prepare:
         try:
-            diff = prepare(args.db, args.prepare, log=log)
-        except errors as exc:
+            diff = prepare(args.db, args.prepare, log=log, automatic=args.automatic, review_images=args.review_images)
+        except Exception as exc:
             print("error: %s" % exc, file=sys.stderr)
+            if (args.automatic or args.review_images) and os.path.isfile(os.path.join(args.prepare, DIFF_FILE)):
+                write_json(os.path.join(args.prepare, AUTOMATION_ERROR_FILE), {"error": str(exc)})
             return 1
         print("prepared: %d conflicts, %d changes, %d skipped by a refusal: %s"
               % (len(diff["conflicts"]), len(diff["changes"]), diff["refused"],
                  os.path.join(args.prepare, DIFF_FILE)))
+        return 0
+    if args.automate:
+        try:
+            automate_directory(args.db, args.automate, log=log)
+        except Exception as exc:
+            print("error: %s" % exc, file=sys.stderr)
+            write_json(os.path.join(args.automate, AUTOMATION_ERROR_FILE), {"error": str(exc)})
+            return 1
         return 0
     if args.apply:
         try:

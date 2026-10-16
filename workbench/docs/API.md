@@ -1530,3 +1530,22 @@ transaction. A changed conflict returns HTTP 409. Existing API callers MAY omit
 `check_duplicates` to retain their prior behavior.
 
 Read [wine-draft.md](testing/wine-draft.md) for identity decisions and verification.
+
+## Website import automatic updates
+
+`POST /api/website-import/start` accepts an optional body with one boolean `automatic`.
+An omitted body retains the read-only comparison. `{"automatic":true}` adds valid new wines
+and applies only approved native image improvements. Other changes remain in the prepared report.
+`POST /api/website-import/{run}/automate` checks a current prepared report and performs these
+safe updates. The server reads its own report. The client cannot supply model review flags.
+
+Image decisions contain the source hashes, metadata hash, native package/label crop dimensions,
+image artifacts, independent recognition, model verdict, and reasons for manual review.
+Model failure, unknown identity, missing crops, or unconfirmed quality cannot approve an image.
+The previous Main image remains available as an additional photo for restoration.
+
+Manual conflict choices accept `database`, `website`, and `skip`. `skip` does not save a refusal
+or acknowledge the pending source change. It does not block independent selected changes.
+Results include `deferred`, `review_warnings`, `auto_added`, and `auto_replaced`.
+The exact control slug `shmelev_shmeleva_risling` is exempt from missing-source removal.
+See `docs/testing/website-import-automation.md` for the thresholds and verification limits.

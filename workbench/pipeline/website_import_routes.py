@@ -18,6 +18,7 @@ starts no process, and the dialog script hides the button `Import from website`.
     POST /api/website-import/stop                         stop the job (SIGTERM)
     GET  /api/website-import/<run>/diff                   `diff.json` of a run, with `renames`
     POST /api/website-import/<run>/apply                  write `choices.json`, start `--apply`
+    POST /api/website-import/<run>/automate               check a prepared run and apply safe updates
     GET  /website-import/<run>/images/<sha256>.<ext>      a website image of a run
     GET  /website-import.js                               the script of the dialog
 """
@@ -44,7 +45,7 @@ JOB_FILE = "job.json"
 LOG_FILE = "run.log"
 SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "import_website.py")
 RUN_PATTERN = r"\d{8}T\d{6}"
-RUN_ROUTE = re.compile(r"^%s/(%s)/(diff|apply)$" % (API, RUN_PATTERN))
+RUN_ROUTE = re.compile(r"^%s/(%s)/(diff|apply|automate)$" % (API, RUN_PATTERN))
 IMAGE_ROUTE = re.compile(r"^%s(%s)/images/([0-9a-f]{64})\.([0-9a-z]+)$"
                          % (IMAGES, RUN_PATTERN))
 CONTENT_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
@@ -56,7 +57,7 @@ IMAGE_CACHE = "public, max-age=31536000, immutable"
 # The largest body of an apply: one choice for each conflict and each change.
 BODY_LIMIT = 4 * 1024 * 1024
 # The progress lines of `import_website.py`.
-PROGRESS = re.compile(r"^(list|images): ")
+PROGRESS = re.compile(r"^(list|images|review): ")
 
 # run directory -> the process that this server started. The server reaps it.
 _PROCESSES = {}
@@ -135,7 +136,8 @@ def _counts(diff):
     for entry in diff["changes"]:
         kinds[entry["kind"]] = kinds.get(entry["kind"], 0) + 1
     return {"conflicts": len(diff["conflicts"]), "changes": kinds,
-            "refused": diff.get("refused", 0), "website": diff.get("website", 0)}
+            "refused": diff.get("refused", 0), "website": diff.get("website", 0),
+            "automatic": diff.get("automatic_result", {}), "warnings": len(diff.get("warnings", []))}
 
 
 def run_state(run):
@@ -150,6 +152,7 @@ def run_state(run):
                     started_at=job.get("started_at"))
     result = _read_json(os.path.join(directory, import_website.RESULT_FILE))
     diff = _read_json(os.path.join(directory, import_website.DIFF_FILE))
+    automatic_error = _read_json(os.path.join(directory, import_website.AUTOMATION_ERROR_FILE))
     errors = [line[len("error: "):] for line in lines if line.startswith("error: ")]
     if isinstance(result, dict):
         if result.get("ok"):
@@ -157,6 +160,9 @@ def run_state(run):
         return dict(out, state="failed", phase="apply", error=result.get("error"),
                     counts=_counts(diff) if isinstance(diff, dict) else None)
     if isinstance(diff, dict):
+        if isinstance(automatic_error, dict):
+            return dict(out, state="failed", phase="automate", error=automatic_error.get("error"),
+                        counts=_counts(diff))
         return dict(out, state="prepared", phase="prepare", counts=_counts(diff),
                     created_at=diff.get("created_at"))
     return dict(out, state="failed", phase="prepare",
@@ -181,13 +187,25 @@ def _start(server, run, phase, extra=()):
             return _error(409, "a website import runs: run %s, %s, PID %s"
                           % (job.get("run"), job.get("phase"), job.get("pid")))
         os.makedirs(directory, exist_ok=True)
-        mode = "--prepare" if phase == "prepare" else "--apply"
-        with open(os.path.join(directory, LOG_FILE), "ab") as log:
-            process = subprocess.Popen(
-                [sys.executable, SCRIPT, "--db", os.path.abspath(server.db_path), mode,
-                 directory] + list(extra),
-                stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT,
-                start_new_session=True)
+        mode = {"prepare": "--prepare", "apply": "--apply", "automate": "--automate"}[phase]
+        marker = os.path.join(directory, import_website.AUTOMATION_ERROR_FILE)
+        previous_error = _read_json(marker) if phase == "automate" else None
+        if phase == "automate":
+            try:
+                os.unlink(marker)
+            except FileNotFoundError:
+                pass
+        try:
+            with open(os.path.join(directory, LOG_FILE), "ab") as log:
+                process = subprocess.Popen(
+                    [sys.executable, SCRIPT, "--db", os.path.abspath(server.db_path), mode,
+                     directory] + list(extra),
+                    stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT,
+                    start_new_session=True)
+        except OSError:
+            if previous_error is not None:
+                import_website.write_json(marker, previous_error)
+            raise
         _PROCESSES[directory] = process
         import_website.write_json(os.path.join(WORK, JOB_FILE), {
             "run": run, "phase": phase, "pid": process.pid,
@@ -195,13 +213,21 @@ def _start(server, run, phase, extra=()):
     return _json(202, {"run": run, "phase": phase, "state": "running", "pid": process.pid})
 
 
-def start(server):
+def start(server, automatic=False):
     if not import_website.COMPARE_ENABLED:
         return _error(403, import_website.COMPARE_DISABLED)
     run = time.strftime("%Y%m%dT%H%M%S")
     if run in _runs():
         return _error(409, "a run %s exists; start again in one second" % run)
-    return _start(server, run, "prepare")
+    return _start(server, run, "prepare", ("--automatic",) if automatic else ("--review-images",))
+
+
+def automate(server, run):
+    """Recheck an existing prepared run. Never accept review flags from the client."""
+    state = run_state(run)
+    if state["state"] != "prepared" and not (state["state"] == "failed" and state["phase"] == "automate"):
+        return _error(409, "automatic checks need a prepared run")
+    return _start(server, run, "automate")
 
 
 def stop():
@@ -274,7 +300,18 @@ def respond(server, method, path, read_body):
     if route in (API + "/start", API + "/stop"):
         if method != "POST":
             return _error(405, "use POST")
-        return start(server) if route.endswith("/start") else stop()
+        if route.endswith("/stop"):
+            return stop()
+        raw = read_body(BODY_LIMIT)
+        if raw is None or not raw:
+            return start(server)
+        try:
+            options = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            return _error(400, "the body is not JSON")
+        if not isinstance(options, dict) or set(options) != {"automatic"} or type(options["automatic"]) is not bool:
+            return _error(400, "expected one boolean automatic option")
+        return start(server, automatic=options["automatic"])
     match = RUN_ROUTE.match(route)
     if not match or not os.path.isdir(os.path.join(WORK, match.group(1))):
         return _error(404, "not found")
@@ -285,7 +322,12 @@ def respond(server, method, path, read_body):
         diff = _read_json(os.path.join(WORK, run, import_website.DIFF_FILE))
         if diff is None:
             return _error(404, "run %s has no diff" % run)
+        # Old prepared runs must not present the protected card as a missing wine.
+        diff["changes"] = [e for e in diff["changes"] if not (
+            e["kind"] == "missing" and e["slug"] in import_website.MISSING_EXCEPTIONS)]
         return _json(200, dict(diff, run=run, renames=import_website.renames(diff)))
     if method != "POST":
         return _error(405, "use POST")
+    if action == "automate":
+        return automate(server, run)
     return apply(server, run, read_body)

@@ -460,10 +460,6 @@ class ImportWebsiteTest(WebsiteTestBase):
         self.assertIn("error: no database at", err.getvalue())
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class DisabledCompareTest(WebsiteTestBase):
     """The owner disabled the compare in the code (owner message of
     2026-09-29T23:23:00+0300) and enabled it again (owner message of
@@ -641,7 +637,7 @@ class UiModeTest(WebsiteTestBase):
         self.prepare()
         with self.assertRaises(IMP.WebsiteError) as caught:
             self.apply({"text:a:name": "website", "image:b": "maybe"})
-        self.assertIn("image:b need database or website", str(caught.exception))
+        self.assertIn("image:b need database, website or skip", str(caught.exception))
         report = self.apply({"text:a:name": "website"}, {"new:n": False, "main:e": False})
         self.assertEqual((report.texts, report.replaced), (["a name"], []))
         self.assertEqual(report.unresolved, ["image:b"])
@@ -789,3 +785,236 @@ class ClientTest(unittest.TestCase):
             IMP.time.sleep = real_sleep
         self.assertIn("HTTP 404", str(caught.exception))
         self.assertEqual(client.requests, 3)
+
+
+class AutomationTest(WebsiteTestBase):
+    """Check isolated automatic writes and explicit deferral."""
+
+    def setUp(self):
+        super().setUp()
+        self.old, self.new = picture(20), picture(21)
+        self.add_wine('existing', main=self.old, producer='Example winery')
+        path = Path(IMP.store_path(self.db, 'main', sha(self.old), 'png'))
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(self.old)
+        self.run_dir = self.root / 'automatic'
+
+    def client(self, invalid=False):
+        rows = [item('existing', title='Changed name', manufacturer='Example winery'), item('new')]
+        images = {'/uploads/existing_0a1b2c3d4e.png': self.new,
+                  '/uploads/new_0a1b2c3d4e.png': picture(22)}
+        cards = {'new': card('new')}
+        if invalid:
+            rows.append(item('bad'))
+            images['/uploads/bad_0a1b2c3d4e.png'] = b'not an image'
+            cards['bad'] = card('bad')
+        return FakeClient(rows, images, cards)
+
+    def reviewer(self, allowed):
+        def run(record, old, new, directory):
+            from test_website_image_review import proof
+            result = proof(record, sha(old), sha(new))
+            result['recognized'].update(name=record['name'], producer=record['producer'],
+                                        grapes=record['grapes'], category=record['category'])
+            if not allowed:
+                result.update(eligible=False, state='warning', reasons=['Different wine on the new image.'])
+            return result
+        return run
+
+    def test_safe_addition_continues_with_wrong_image_and_incomplete_new_wine(self):
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(invalid=True),
+                           self.log.append, automatic=True, reviewer=self.reviewer(False), segmenter=FakeSam3())
+        self.assertEqual(diff['automatic_result']['added'], ['new'])
+        self.assertEqual(diff['automatic_result']['replaced'], [])
+        self.assertIn('new', self.states())
+        self.assertNotIn('bad', self.states())
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='main'"), [(sha(self.old),)])
+        self.assertTrue(next(e for e in diff['changes'] if e['slug']=='bad')['review_required'])
+        self.assertTrue(diff['warnings'])
+        self.assertFalse(next(e for e in diff['conflicts'] if e['kind']=='image')['review']['eligible'])
+        # A second automatic check of the same run does not create another wine.
+        again = IMP.automate_directory(self.db, str(self.run_dir), self.reviewer(False), FakeSam3(), self.log.append)
+        self.assertEqual(self.query("SELECT count(*) FROM wine_catalog WHERE wine_slug='new'"), [(1,)])
+        self.assertEqual(again['automatic_result']['added'], ['new'])
+
+    def test_approved_image_retains_previous_original_and_text_conflict(self):
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                           automatic=True, reviewer=self.reviewer(True), segmenter=FakeSam3())
+        self.assertEqual(diff['automatic_result']['replaced'], ['existing'])
+        self.assertEqual(self.query("SELECT name FROM wine_catalog WHERE wine_slug='existing'"), [('Вино existing',)])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='main'"), [(sha(self.new),)])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='full_front'"), [(sha(self.old),)])
+        self.assertTrue(Path(IMP.store_path(self.db, 'main', sha(self.old), 'png')).is_file())
+        self.assertTrue(any(e['kind']=='text' for e in diff['conflicts']))
+        self.assertEqual(len(diff['automatic_reviews']), 1)
+
+    def test_explicit_skip_does_not_write_data_refusal_or_source_acknowledgement(self):
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append)
+        before = self.snapshot()
+        IMP.write_json(str(self.run_dir / IMP.CHOICES_FILE), {
+            'conflicts': {e['id']: 'skip' for e in diff['conflicts']},
+            'changes': {e['id']: False for e in diff['changes']}})
+        result = IMP.apply_directory(self.db, str(self.run_dir), FakeSam3(), self.log.append)
+        self.assertEqual(self.snapshot(), before)
+        self.assertEqual(result.deferred, [e['id'] for e in diff['conflicts']])
+        self.assertEqual(self.query('SELECT * FROM website_refusal'), [])
+        self.assertEqual(self.query("SELECT website_modified_at FROM wine_catalog WHERE wine_slug='existing'"), [(None,)])
+
+    def test_control_wine_is_not_missing_or_a_rename_candidate(self):
+        self.add_wine('shmelev_shmeleva_risling', main=picture(40))
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append)
+        self.assertNotIn('shmelev_shmeleva_risling', [e['slug'] for e in diff['changes']])
+        self.assertEqual(diff['missing_exceptions'], ['shmelev_shmeleva_risling'])
+        self.assertNotIn('shmelev_shmeleva_risling', [e['old'] for e in IMP.renames(diff)])
+
+    def test_stale_prepared_run_is_rejected_before_model_calls(self):
+        IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append)
+        self.add_wine('concurrent')
+        from unittest.mock import Mock
+        reviewer = Mock()
+        with self.assertRaisesRegex(IMP.WebsiteError, 'database changed'):
+            IMP.automate_directory(self.db, str(self.run_dir), reviewer, FakeSam3(), self.log.append)
+        reviewer.assert_not_called()
+
+    def test_model_failure_leaves_image_warning_and_imports_new_wine(self):
+        def unavailable(*args):
+            raise TimeoutError('VLM unavailable')
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                           automatic=True, reviewer=unavailable, segmenter=FakeSam3())
+        self.assertEqual(diff['automatic_result']['added'], ['new'])
+        warning = next(e for e in diff['conflicts'] if e['kind']=='image')['review']
+        self.assertFalse(warning['eligible'])
+        self.assertIn('unavailable', warning['reasons'][0])
+
+    def test_manual_edit_after_auto_commit_is_not_absorbed_into_next_snapshot(self):
+        from unittest.mock import patch
+        real_write = IMP.write
+        def edit_after_write(*args, **kwargs):
+            report = real_write(*args, **kwargs)
+            conn = sqlite3.connect(self.db)
+            with conn:
+                conn.execute("UPDATE wine_catalog SET name='Manual name' WHERE wine_slug='existing'")
+            conn.close()
+            return report
+        with patch.object(IMP, 'write', side_effect=edit_after_write):
+            IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                        automatic=True, reviewer=self.reviewer(True), segmenter=FakeSam3())
+        IMP.write_json(str(self.run_dir / IMP.CHOICES_FILE), {'conflicts': {'text:existing:name':'website'}})
+        with self.assertRaisesRegex(IMP.WebsiteError, 'database changed'):
+            IMP.apply_directory(self.db, str(self.run_dir), FakeSam3(), self.log.append)
+        self.assertEqual(self.query("SELECT name FROM wine_catalog WHERE wine_slug='existing'"), [('Manual name',)])
+
+    def test_manual_patch_blocks_auto_replacement_without_model_calls(self):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO wine_image(wine_slug,image_type,sha256,source_name,match_method) VALUES ('existing','main_patched',?,'patch.png','manual')", (sha(self.old),))
+        conn.close()
+        from unittest.mock import Mock
+        reviewer = Mock()
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                           automatic=True, reviewer=reviewer, segmenter=FakeSam3())
+        reviewer.assert_not_called()
+        self.assertFalse(next(e for e in diff['conflicts'] if e['kind']=='image')['review']['eligible'])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='main'"), [(sha(self.old),)])
+
+    def test_possible_rename_is_not_automatically_added_as_duplicate(self):
+        name = 'existing-new'
+        client = FakeClient([item(name)], {'/uploads/'+name+'_0a1b2c3d4e.png':self.old}, {name:card(name)})
+        diff = IMP.prepare(self.db, str(self.run_dir), client, self.log.append,
+                           automatic=True, reviewer=self.reviewer(False), segmenter=FakeSam3())
+        self.assertNotIn(name, self.states())
+        candidate = next(e for e in diff['changes'] if e['kind']=='new')
+        self.assertTrue(candidate['manual_review'])
+        self.assertFalse(candidate.get('review_required',False))
+        self.assertEqual(IMP.renames(diff)[0]['new'], name)
+
+    def test_failed_image_fetch_does_not_acknowledge_source_time(self):
+        client = self.client()
+        del client.bodies[IMP.file_url('/uploads/existing_0a1b2c3d4e.png')]
+        diff = IMP.prepare(self.db, str(self.run_dir), client, self.log.append,
+                           automatic=True, reviewer=self.reviewer(False), segmenter=FakeSam3())
+        self.assertIn('existing', diff['warning_slugs'])
+        self.assertIn('new', self.states())
+        self.assertEqual(self.query("SELECT website_modified_at FROM wine_catalog WHERE wine_slug='existing'"), [(None,)])
+
+    def test_history_keeps_existing_photos_and_two_replaced_originals(self):
+        other = picture(90)
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO image(sha256,folder,extension) VALUES (?,'main','png')",(sha(other),))
+            conn.execute("INSERT INTO wine_image(wine_slug,image_type,sha256,source_name,match_method) VALUES ('existing','full_front',?,'other.png','manual')",(sha(other),))
+        conn.close()
+        IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                    automatic=True, reviewer=self.reviewer(True), segmenter=FakeSam3())
+        first_new = self.new
+        self.new = picture(25)
+        IMP.prepare(self.db, str(self.root/'second'), self.client(), self.log.append,
+                    automatic=True, reviewer=self.reviewer(True), segmenter=FakeSam3())
+        history = {x[0] for x in self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='full_front'")}
+        self.assertTrue({sha(other),sha(self.old),sha(first_new)} <= history)
+
+    def test_skip_and_other_selected_updates_can_be_applied_together(self):
+        IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append)
+        IMP.write_json(str(self.run_dir/IMP.CHOICES_FILE), {
+            'conflicts':{'image:existing':'skip','text:existing:name':'website'}})
+        report = IMP.apply_directory(self.db, str(self.run_dir), FakeSam3(), self.log.append)
+        self.assertEqual(report.deferred,['image:existing'])
+        self.assertEqual(report.added,['new'])
+        self.assertEqual(self.query("SELECT name FROM wine_catalog WHERE wine_slug='existing'"), [('Changed name',)])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='main'"), [(sha(self.old),)])
+        self.assertEqual(self.query("SELECT website_modified_at FROM wine_catalog WHERE wine_slug='existing'"), [(None,)])
+        self.assertEqual(self.query("SELECT website_modified_at FROM wine_catalog WHERE wine_slug='new'"), [(LASTMOD,)])
+
+    def test_corrupt_prepared_candidate_does_not_block_other_new_wines(self):
+        IMP.prepare(self.db,str(self.run_dir),self.client(),self.log.append)
+        prepared = json.loads((self.run_dir/IMP.DIFF_FILE).read_text())
+        image = next(e for e in prepared['conflicts'] if e['kind']=='image')['website']
+        (self.run_dir/image['file']).write_bytes(b'corrupted')
+        diff=IMP.automate_directory(self.db,str(self.run_dir),self.reviewer(True),FakeSam3(),self.log.append)
+        self.assertIn('new',self.states())
+        self.assertFalse(next(e for e in diff['conflicts'] if e['kind']=='image')['review']['eligible'])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug='existing' AND image_type='main'"),[(sha(self.old),)])
+
+
+    def test_review_only_failure_gets_a_visible_marker_even_for_unexpected_error(self):
+        from unittest.mock import patch
+        IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append)
+        with patch.object(IMP, "prepare", side_effect=RuntimeError("review interrupted")):
+            self.assertEqual(IMP.main(["--db", self.db, "--prepare", str(self.run_dir), "--review-images"]), 1)
+        marker = json.loads((self.run_dir / IMP.AUTOMATION_ERROR_FILE).read_text())
+        self.assertIn("review interrupted", marker["error"])
+
+
+    def duplicate_from_removed(self, duplicate_image):
+        removed_image = picture(22) if duplicate_image else picture(31)
+        self.add_wine("previously-removed", state="Removed", removed_by="person", main=removed_image,
+                      name="Unique old name" if duplicate_image else "Вино new")
+        diff = IMP.prepare(self.db, str(self.run_dir), self.client(), self.log.append,
+                           automatic=True, reviewer=self.reviewer(False), segmenter=FakeSam3())
+        self.assertNotIn("new", self.states())
+        self.assertTrue(next(e for e in diff["changes"] if e["slug"] == "new")["manual_review"])
+
+    def test_duplicate_image_from_removed_wine_requires_manual_addition(self):
+        self.duplicate_from_removed(True)
+
+    def test_duplicate_name_and_producer_from_removed_wine_require_manual_addition(self):
+        self.duplicate_from_removed(False)
+
+
+    def test_same_image_for_two_new_slugs_requires_manual_addition_of_both(self):
+        rows = [item("first"), item("second")]
+        client = FakeClient(rows, {"/uploads/" + slug + "_0a1b2c3d4e.png": picture(30)
+                                   for slug in ("first", "second")},
+                            {slug: card(slug) for slug in ("first", "second")})
+        diff = IMP.prepare(self.db, str(self.run_dir), client, self.log.append,
+                           automatic=True, reviewer=self.reviewer(False), segmenter=FakeSam3())
+        additions = [e for e in diff["changes"] if e["kind"] == "new"]
+        self.assertEqual({e["slug"] for e in additions}, {"first", "second"})
+        self.assertFalse(IMP.renames(diff))
+        self.assertTrue(all(e["manual_review"] for e in additions))
+        self.assertNotIn("first", self.states())
+        self.assertNotIn("second", self.states())
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1796,10 +1796,21 @@ paths:
     post:
       tags: [website-import]
       operationId: startWebsiteImportCompare
-      summary: Start a catalogue comparison without applying changes.
+      summary: Compare the catalogue and optionally apply verified automatic updates.
       description: >-
-        The compare is disabled in the code since 2026-09-29: the answer is 403 and no
-        process starts.
+        An omitted body starts a read-only comparison. With automatic true, valid new
+        wines and verified image improvements are applied. Other changes stay pending.
+        A disabled compare answers 403 and starts no process.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [automatic]
+              properties:
+                automatic: { type: boolean }
       responses:
         "202": { $ref: "#/components/responses/Object" }
         "403": { $ref: "#/components/responses/Error" }
@@ -1825,11 +1836,29 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/website-import/{run}/automate:
+    post:
+      tags: [website-import]
+      operationId: automateWebsiteImport
+      summary: Check prepared images and apply valid new wines and approved improvements.
+      description: >-
+        The server reads the prepared run. The client supplies no review decisions.
+        A stale catalogue snapshot stops the operation before model requests or writes.
+        Warnings and unresolved changes remain available for manual review.
+      parameters:
+        - $ref: "#/components/parameters/WebsiteRun"
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/website-import/{run}/apply:
     post:
       tags: [website-import]
       operationId: applyWebsiteImport
       summary: Store review choices and start the apply job.
+      description: >-
+        Conflict values are database, website, or skip. Skip defers one change without
+        a persistent refusal or acknowledgement of that source value.
       parameters:
         - $ref: "#/components/parameters/WebsiteRun"
       requestBody:

@@ -1420,3 +1420,20 @@ PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_run_compare test_run_
 ```
 
 Read [the comparison test notes](docs/testing/run-comparison.md).
+
+## Website import automation
+
+Run from the Workbench root. Use the existing Python dependencies and Node.js.
+These checks use temporary databases and fake services. They make no model request.
+
+```sh
+PYTHONPATH=pipeline:tests python3 -m unittest test_import_website test_website_import_routes test_website_image_review test_website_import_ui
+```
+
+Read [the automation policy](docs/testing/website-import-automation.md) before a real update.
+The following command changes the catalogue and can call the configured SAM3/VLM services.
+The run directory MUST contain a current prepared report for this database.
+
+```sh
+python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3 --automate work/website-import/SELECTED_RUN
+```

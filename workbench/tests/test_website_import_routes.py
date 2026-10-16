@@ -112,7 +112,7 @@ class WebsiteImportRoutesTest(unittest.TestCase):
         run = answer["run"]
         state = self.wait("prepared")
         self.assertEqual(state["counts"], {"conflicts": 1, "changes": {"new": 1},
-                                           "refused": 0, "website": 1})
+                                           "refused": 0, "website": 1, "automatic": {}, "warnings": 0})
         self.assertEqual(state["progress"], "images: 1/1")
         code, diff, _, _ = self.call("GET", "%s/%s/diff" % (ROUTES.API, run))
         self.assertEqual((code, diff["run"], len(diff["conflicts"])), (200, run, 1))
@@ -127,7 +127,7 @@ class WebsiteImportRoutesTest(unittest.TestCase):
         code, answer, _, _ = self.call("POST", "%s/%s/apply" % (ROUTES.API, run),
                                        {"conflicts": {"text:a:name": "maybe"}})
         self.assertEqual(code, 400)
-        self.assertIn("text:a:name need database or website", answer["error"])
+        self.assertIn("text:a:name need database, website or skip", answer["error"])
         choices = {"conflicts": {"text:a:name": "website"}, "changes": {"new:n": False}}
         code, answer, _, _ = self.call("POST", "%s/%s/apply" % (ROUTES.API, run), choices)
         self.assertEqual((code, answer["phase"]), (202, "apply"))
@@ -166,6 +166,33 @@ class WebsiteImportRoutesTest(unittest.TestCase):
         code, text, ctype, _ = self.call("GET", ROUTES.SCRIPT_ROUTE)
         self.assertEqual((code, ctype), (200, "text/javascript; charset=utf-8"))
         self.assertIn("website-import", text)
+
+
+    def test_start_options_require_an_exact_boolean(self):
+        for options in ({"automatic": "true"}, {"automatic": 1}, {"automatic": True, "extra": True}, {}):
+            self.assertEqual(self.call("POST", ROUTES.API + "/start", options)[0], 400)
+        self.assertFalse(Path(ROUTES.WORK).exists())
+
+    def test_automatic_failure_marker_is_visible_for_prepared_report(self):
+        self.call("POST", ROUTES.API + "/start", {"automatic": False})
+        state = self.wait("prepared")
+        run = state["run"]
+        (Path(ROUTES.WORK) / run / ROUTES.import_website.AUTOMATION_ERROR_FILE).write_text(
+            json.dumps({"error": "the database changed; compare again"}))
+        state = self.call("GET", ROUTES.API)[1]
+        self.assertEqual((state["state"], state["phase"]), ("failed", "automate"))
+        self.assertIn("compare again", state["error"])
+
+
+    def test_busy_automatic_retry_preserves_previous_failure_marker(self):
+        from unittest.mock import patch
+        self.call("POST", ROUTES.API + "/start")
+        state = self.wait("prepared")
+        marker = Path(ROUTES.WORK) / state["run"] / ROUTES.import_website.AUTOMATION_ERROR_FILE
+        marker.write_text(json.dumps({"error": "old failure"}))
+        with patch.object(ROUTES, "_running", return_value={"run": "other", "phase": "prepare", "pid": 12}):
+            self.assertEqual(self.call("POST", ROUTES.API + "/" + state["run"] + "/automate")[0], 409)
+        self.assertTrue(marker.exists())
 
 
 if __name__ == "__main__":

@@ -52,6 +52,13 @@
   color: var(--text); border: 1px solid var(--line); border-radius: 6px; font-size: 13px;
   overflow-wrap: anywhere; }
 .website-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.website-choice.skip { grid-column: 1 / -1; }
+.website-review { border: 1px solid var(--var); border-radius: 6px; padding: 10px; margin-top: 8px; }
+.website-review.approved { border-color: var(--pos); }
+.website-review h4 { margin: 0 0 6px; }
+.website-crops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.website-crops img { max-width: 100%; height: 160px; object-fit: contain; cursor: zoom-in; }
+.website-review ul { margin: 6px 0; padding-left: 20px; }
 .website-choice { display: flex; gap: 8px; align-items: center; padding: 6px 8px;
   border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
 .website-choice:has(input:checked) { border-color: var(--accent); }
@@ -181,9 +188,11 @@
   }
 
   function showRunning() {
-    const what = state.phase === "apply" ? "The apply runs." : "The compare runs.";
+    const what = state.phase === "apply" ? "Applying selected changes."
+      : state.phase === "automate" ? "Checking and applying safe updates." : "Comparing with the website.";
     body.innerHTML = `<p class="validation-intro">${what} It reads the list, the sitemap, and
-      the original image of each wine of vino-svoe.ru. A full compare takes about 10 minutes.
+      the original image of each wine of vino-svoe.ru. Automatic updates also check changed
+      images. Valid new wines and confirmed image improvements can be applied.
       You can close this dialog; the job goes on.</p>`;
     setStatus(state.progress || "starting…");
     actions.innerHTML = `<button type="button" data-website="stop">Stop</button>
@@ -193,11 +202,13 @@
   function showStart(note) {
     diff = null;
     body.innerHTML = `<p class="validation-intro">${note ? esc(note) + " " : ""}Compare the
-      database with vino-svoe.ru. The compare changes nothing. After it, this dialog lists
-      each conflict and each change, and you choose what to apply.</p>`;
+      database with vino-svoe.ru. Check and update adds valid new wines and applies only
+      confirmed image improvements. Other changes wait for your choice. Compare only
+      prepares a report without changing the catalogue.</p>`;
     setStatus("");
     actions.innerHTML = `<button type="button" data-website="close">Cancel</button>
-      <button type="button" class="primary" data-website="start">Compare</button>`;
+      <button type="button" data-website="compare-only">Compare only</button>
+      <button type="button" class="primary" data-website="start">Check and update</button>`;
   }
 
   function image(url, file) {
@@ -210,7 +221,7 @@
     preview.hidden = false;
   }
   function runUrl(file) {
-    return file ? `/website-import/${diff.run}/${file}` : null;
+    return file ? `/website-import/${(diff && diff.run) || state.run}/${file}` : null;
   }
   function slugHtml(entry) {
     // A missing wine has no page on the website.
@@ -248,14 +259,45 @@
       sides = [["database", entry.database.url, entry.database.source_name],
                ["website", runUrl(entry.website.file), entry.website.name]].map(
         ([side, url, file]) => `<label class="website-choice"><input type="radio"
-          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}"><span
+          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}"
+          ${side === "website" && entry.review_required ? "disabled" : ""}><span
           class="website-thumb">${image(url, file)}<span class="dims"></span></span>
           <span><span class="side">${side}</span><br><span class="value">${esc(file)}</span></span></label>`);
     }
     const what = entry.kind === "text" ? `the field <strong>${esc(entry.field)}</strong>`
       : "the <strong>main image</strong>";
+    sides.push(`<label class="website-choice skip"><input type="radio" name="${esc(name)}"
+      value="skip" data-conflict="${esc(entry.id)}"><span><span class="side">Do nothing</span><br>
+      <span class="meta">Skip this change for now. Decide later.</span></span></label>`);
     return `<div class="website-conflict"><div class="meta">vino-svoe.ru changed ${what}.</div>
+      ${entry.kind === "image" ? reviewHtml(entry) : ""}
       <div class="website-choices">${sides.join("")}</div></div>`;
+  }
+  function reviewHtml(entry, applied = false) {
+    const review = entry.review;
+    if (!review) return `<div class="website-review" role="note"><strong>Manual review required.</strong>
+      This image has not passed automatic checks. Check and apply safe updates can add valid new wines
+      and replace images that pass all checks. Other images require a manual choice.</div>`;
+    const cropHtml = ["old", "new"].map(side => {
+      const kinds = review.crops && review.crops[side];
+      if (!kinds) return `<div>${side}: crop unavailable</div>`;
+      return `<div><strong>${side === "old" ? "Database" : "Website"}</strong>${["package", "label"].map(kind => {
+        const crop = kinds[kind];
+        return crop ? `<div class="meta">${kind}: ${esc(crop.size.join(" × "))} px</div>
+          <img src="${esc(runUrl(crop.file))}" alt="${side} ${kind} crop" data-preview
+            data-caption="${esc(side + " " + kind + " · " + crop.size.join(" × ") + " px")}">` : "";
+      }).join("")}</div>`;
+    }).join("");
+    return `<div class="website-review ${review.eligible ? "approved" : "warning"}" role="note">
+      <h4>${review.eligible ? (applied ? "Image improvement applied" : "Checks passed · replacement pending") : "Warning: manual review required"}</h4>
+      <ul>${(review.reasons || []).map(reason => `<li>${esc(reason)}</li>`).join("")}</ul>
+      ${review.recognized ? `<p class="meta">New image reading: ${esc([review.recognized.name,
+        review.recognized.grapes, review.recognized.category, review.recognized.sweetness,
+        review.recognized.vintage].filter(Boolean).join(" · "))}</p>` : ""}
+      ${review.verdict ? `<p class="meta">VLM identity: ${esc(review.verdict.identity)} ·
+        readability: ${esc(review.verdict.readability)} · sharpness: ${esc(review.verdict.sharpness)}</p>
+        <details><summary>VLM assessment details</summary>${esc(review.verdict.reason)}</details>` : ""}
+      <div class="website-crops">${cropHtml}</div></div>`;
   }
   // A prohibition sign on top of the image of a wine that is missing on the website.
   const MISSING_SIGN = `<svg viewBox="0 0 100 100" role="img" aria-label="Missing on the website">
@@ -268,8 +310,10 @@
       ? `<span class="missing-image">${image(url, file)}${MISSING_SIGN}</span>` : image(url, file);
   }
   function changeHtml(entry) {
-    return `<label class="website-row"><input type="checkbox" checked
-      data-change="${esc(entry.id)}">${changePicture(entry)}${wineTitle(entry)}</label>`;
+    return `<label class="website-row"><input type="checkbox" ${entry.review_required ? "disabled" : entry.manual_review ? "" : "checked"}
+      data-change="${esc(entry.id)}">${changePicture(entry)}${wineTitle(entry)}${entry.review_required
+        ? '<div class="meta">Source data needs correction. This change will not be applied.</div>'
+        : entry.manual_review ? '<div class="meta">Possible duplicate or rename. Review before adding a new card.</div>' : ""}</label>`;
   }
   // A possible rename: a slug that left the website and a slug that appeared on it (owner
   // messages of 2026-09-26T19:16:31+0300 to 19:23:19). Display only.
@@ -291,6 +335,18 @@
       A choice <em>database</em> is remembered: a later import skips it while the website
       keeps the value. Apply skips a conflict with no choice and a cleared checkbox; the
       next compare shows them again.</p>`;
+    if (diff.automatic_result) {
+      html += `<div class="website-review approved"><strong>Automatic updates completed</strong><br>
+        New wines: ${(diff.automatic_result.added || []).length} ·
+        Improved images: ${(diff.automatic_result.replaced || []).length}. Other changes still need a choice.
+        Previous main images are retained as additional photos and can be made Main again.</div>`;
+    }
+    if ((diff.missing_exceptions || []).length) html += `<p class="meta">Protected control wine:
+      ${esc(diff.missing_exceptions.join(", "))}. Its absence on the website is expected.</p>`;
+    if ((diff.warnings || []).length) html += `<div class="website-review"><strong>Source warnings</strong>
+      <ul>${diff.warnings.map(w => `<li>${esc(w)}</li>`).join("")}</ul></div>`;
+    if ((diff.automatic_reviews || []).length) html += `<details><summary>Automatically updated images</summary>
+      ${diff.automatic_reviews.map(entry => wineTitle(entry) + reviewHtml(entry, true)).join("")}</details>`;
     if (conflicts.length) {
       html += `<h3>Conflicts <span class="count">${conflicts.length} · ${groups.length} wines</span>
         <button type="button" data-website="all" data-side="database">all database</button>
@@ -317,6 +373,7 @@
     }
     body.innerHTML = html;
     actions.innerHTML = `<button type="button" data-website="restart">Compare again</button>
+      <button type="button" data-website="automate">Check and apply safe updates</button>
       <button type="button" data-website="close">Close</button>
       <button type="button" class="primary" data-website="apply">Apply</button>`;
     refreshApply();
@@ -341,20 +398,24 @@
   function showResult() {
     const r = state.result || {};
     const rows = [["added", r.added], ["removed", r.removed], ["restored", r.restored],
+      ["new wines added automatically", r.auto_added], ["images improved automatically", r.auto_replaced],
       ["main images stored", r.mains], ["text from the website", r.texts],
       ["main images replaced", r.replaced], ["refusals written", r.refusals],
       ["conflicts with no choice, not written", r.unresolved],
+      ["Do nothing, not written", r.deferred],
       ["cleared changes, not written", r.skipped]];
-    body.innerHTML = `<p class="validation-intro">The import is written.</p>
+    body.innerHTML = `<p class="validation-intro">Selected updates are written.
+      ${(r.review_warnings || []).length ? "Some image changes still require manual review." : ""}</p>
       <dl class="website-result">${rows.map(([name, list]) =>
         `<dt>${esc(name)}</dt><dd>${(list || []).length}${(list || []).length
           ? ": " + esc(list.slice(0, 12).join(", ")) + (list.length > 12 ? ", …" : "") : ""}</dd>`).join("")}
       <dt>website times written</dt><dd>${r.times || 0}</dd>
       <dt>comments added</dt><dd>${r.comments || 0}</dd>
       <dt>processed images</dt><dd>${esc(JSON.stringify(r.processed || {}))}${
-        r.no_sam3 ? `; ${r.no_sam3} with no SAM3 answer` : ""}</dd></dl>`;
+        r.no_sam3 ? `; ${r.no_sam3} with no SAM3 answer` : ""}</dd></dl>
+      ${(r.review_warnings || []).map(e => wineTitle(e) + reviewHtml(e)).join("")}`;
     setStatus("");
-    actions.innerHTML = `<button type="button" data-website="start">New compare</button>
+    actions.innerHTML = `<button type="button" data-website="compare-only">New compare</button>
       <button type="button" data-website="close">Close</button>
       <button type="button" class="primary" data-website="reload">Reload the page</button>`;
   }
@@ -375,12 +436,19 @@
       return setStatus(`Cannot read the diff: ${error.message}`, true);
     }
     showDiff();
-    if (state.state === "failed") setStatus(`The last apply failed:\n${state.error || ""}`, true);
+    if (state.state === "failed") {
+      if (state.phase === "automate") {
+        const button = actions.querySelector('[data-website="apply"]');
+        if (button) button.hidden = true;
+      }
+      setStatus(`The last ${state.phase === "automate" ? "automatic update" : "apply"} failed:\n${state.error || ""}\nUse Compare again to refresh the report before applying changes.`, true);
+    }
   }
 
-  async function start() {
+  async function start(automatic = true) {
     try {
-      await getJson(`${API}/start`, {method: "POST"});
+      await getJson(`${API}/start`, {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({automatic})});
     } catch (error) {
       return setStatus(`Cannot start the compare: ${error.message}`, true);
     }
@@ -417,9 +485,14 @@
     if (!target) return;
     const action = target.dataset.website;
     if (action === "close") close();
+    else if (action === "compare-only") await start(false);
+    else if (action === "automate") {
+      try { await getJson(`${API}/${diff.run}/automate`, {method: "POST"}); await poll(); }
+      catch (error) { setStatus(`Cannot check and apply safe updates: ${error.message}`, true); }
+    }
     else if (action === "start" || action === "restart") {
       if (action === "restart" && !confirm("Compare again? The choices of this dialog are lost.")) return;
-      await start();
+      await start(action !== "restart");
     } else if (action === "stop") {
       try { await getJson(`${API}/stop`, {method: "POST"}); } catch (error) { setStatus(error.message, true); }
       await poll();
@@ -431,13 +504,16 @@
     }
     else if (action === "all") {
       for (const input of body.querySelectorAll(`input[data-conflict][value="${target.dataset.side}"]`)) {
+        const entry = diff.conflicts.find(e => e.id === input.dataset.conflict);
+        // An image replacement requires its own explicit choice, including unreviewed images.
+        if (target.dataset.side === "website" && entry && entry.kind === "image") continue;
         input.checked = true;
       }
       refreshApply();
     } else if (action === "tick") {
       for (const entry of diff.changes.filter(e => e.kind === target.dataset.kind)) {
         const input = body.querySelector(`input[data-change="${CSS.escape(entry.id)}"]`);
-        if (input) input.checked = Boolean(target.dataset.on);
+        if (input && !input.disabled && !entry.manual_review) input.checked = Boolean(target.dataset.on);
       }
     }
   });

@@ -7504,3 +7504,27 @@ browser-verification.json, claude-review.json, and live-comparison.jpg at reposi
   draft checks. Ruff and assembled JavaScript checks pass. Live browser checks cover
   recognition, similar cards, empty-only Copy and cancelled duplicate confirmations.
   No live catalogue card was created.
+
+
+## 2026-10-16T09:07:42+03:00: Safe website import automation (GitHub issue 7)
+
+- Protect `shmelev_shmeleva_risling` from missing-source removal in all import paths.
+- Add valid new wines automatically. Keep incomplete records and possible duplicate
+  or renamed wines for manual review. Check collisions across catalogue states and batch entries.
+- Require larger native package and label crops, confirmed image quality, and independent
+  VLM identity before Main replacement. Keep the previous original as an additional photo.
+  Unknown evidence, manual patches, excessive crop gains, and service errors require review.
+- Add explicit Do nothing for image and text conflicts. Save no refusal or source
+  acknowledgement for a deferred change. Let independent selected updates continue.
+- Add read-only comparison, explicit safe-update actions, native crop evidence, visible
+  failures, and stale-snapshot checks inside the write transaction. Update API contracts.
+- Pass 92 scoped checks in the current checkout and an isolated source build without
+  previous uncommitted attribute changes. Pass Ruff, JavaScript syntax, and browser checks.
+  The private browser fixture adds one wine, defers three conflicts, and writes no refusal.
+- Verify the real Muscat/Merlot pair with resident SAM3 and VLM. The new label is
+  1342x1630 pixels versus 114x142. Reject Merlot 2022 as a different wine despite its size.
+- Review with actual Claude Opus 5.5. Resolve identity, concurrency, duplicate, failure-state,
+  and user-action findings. Final review permits the first supervised live batch.
+- Restart idle port 8168 with SIGTERM from PID 22964 to PID 6914. GET /api/dataset
+  returns HTTP 200. Preserve 2296 wines, 3575 image links, 3555 label descriptions,
+  and schema 36. Start no live catalogue import. Old reports require Compare again.
