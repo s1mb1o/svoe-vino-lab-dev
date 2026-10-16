@@ -427,7 +427,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-anima-millesimato.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 12,
+          "y": 19,
+          "width": 428,
+          "height": 1161,
+          "source_width": 452,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -454,7 +462,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-anima-millesimato-beloe-bryut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 1200,
+          "source_width": 434,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -483,7 +499,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-anima-pinot-grigio-blush.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 431,
+          "height": 1200,
+          "source_width": 431,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -508,7 +532,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-kyuve-aleksandr-blan-de-blan.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1270,
+          "height": 3543,
+          "source_width": 1270,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -534,7 +566,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-kyuve-aleksandr-blan-de-nuar.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1270,
+          "height": 3543,
+          "source_width": 1270,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -560,7 +600,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-aristov-kyuve-aleksandr-roze-de-pino.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 459,
+          "height": 1280,
+          "source_width": 459,
+          "source_height": 1280
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -586,7 +634,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-eno-amber.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 15,
+          "y": 44,
+          "width": 236,
+          "height": 831,
+          "source_width": 271,
+          "source_height": 903
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -610,7 +666,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-eno-traminer-i-shardone.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 19,
+          "y": 14,
+          "width": 249,
+          "height": 900,
+          "source_width": 283,
+          "source_height": 940
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -635,7 +699,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-grand-dessert-muscat.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1,
+          "y": 0,
+          "width": 277,
+          "height": 1133,
+          "source_width": 278,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -660,7 +732,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-grand-dessert-nectar.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 275,
+          "height": 1200,
+          "source_width": 278,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -687,7 +767,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-nature-orange.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 824,
+          "height": 3543,
+          "source_width": 824,
+          "source_height": 3543
+        }
       },
       "category": "Вино",
       "style": "Оранжевое",
@@ -711,7 +799,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-nature-vert.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 99,
+          "y": 22,
+          "width": 347,
+          "height": 1446,
+          "source_width": 521,
+          "source_height": 1544
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -735,7 +831,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-select-blanc.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 288,
+          "height": 1063,
+          "source_width": 288,
+          "source_height": 1063
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -761,7 +865,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-select-blanc-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 220,
+          "height": 730,
+          "source_width": 220,
+          "source_height": 730
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -790,7 +902,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-signature-kaberne.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 476,
+          "height": 1772,
+          "source_width": 486,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -815,7 +935,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-signature-saperavi.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 469,
+          "height": 1772,
+          "source_width": 469,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -840,7 +968,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-chateau-tamagne-signature-shardone.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 15,
+          "y": 23,
+          "width": 485,
+          "height": 1722,
+          "source_width": 528,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -865,7 +1001,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-krasnostop-shato-taman.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1212,
+          "height": 3390,
+          "source_width": 1212,
+          "source_height": 3390
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -890,7 +1034,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-8-byanko-07-shardone-beloe-suhoe-8.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 175,
+          "height": 726,
+          "source_width": 184,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -915,7 +1067,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-8-byanko-shardone-beloe-suhoe-8.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 174,
+          "height": 724,
+          "source_width": 184,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -940,7 +1100,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-8-roze-07-merlo-rozovoe-suhoe-8.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 173,
+          "height": 725,
+          "source_width": 183,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -965,7 +1133,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-8-roze-merlo-rozovoe-suhoe-8.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 177,
+          "height": 725,
+          "source_width": 187,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -990,7 +1166,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-amata-byanko-shardone-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 209,
+          "height": 727,
+          "source_width": 219,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1014,7 +1198,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-amata-rosso-kaberne-sovinon-krasnoe-suhoe-145.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 208,
+          "height": 725,
+          "source_width": 218,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1038,7 +1230,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-amata-roze-kaberne-sovinon-rozovoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 210,
+          "height": 725,
+          "source_width": 220,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1062,7 +1262,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-anima-michela-2023-sandzhoveze-krasnoe-suhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 212,
+          "height": 722,
+          "source_width": 222,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1089,7 +1297,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-anima-pino-gridzhio-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 217,
+          "height": 723,
+          "source_width": 227,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1114,7 +1330,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-anima-pino-gridzhio-blash-rozovoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 217,
+          "height": 724,
+          "source_width": 227,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1139,7 +1363,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-anima-pino-nero-sandzhoveze-pino-nuar-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 216,
+          "height": 724,
+          "source_width": 226,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1165,7 +1397,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-byanko-polusladkoe-shardone-beloe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 197,
+          "height": 727,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1190,7 +1430,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-byanko-shardone-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 197,
+          "height": 724,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1215,7 +1463,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kaberne-sovinon-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 182,
+          "height": 723,
+          "source_width": 192,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1240,7 +1496,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kaberne-sovinon-roze-2020-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 189,
+          "height": 726,
+          "source_width": 199,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1265,7 +1529,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kaberne-sovinon-roze-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 189,
+          "height": 726,
+          "source_width": 199,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1290,7 +1562,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 756,
+          "y": 0,
+          "width": 848,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1316,7 +1596,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-millezimato-shardone-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 777,
+          "y": 0,
+          "width": 808,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1342,7 +1630,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-kyuve-aleksandr-rose-de-pinot-pino-nuar-rozovoe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 756,
+          "y": 0,
+          "width": 852,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1368,7 +1664,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-risling-beloe-suhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 172,
+          "height": 728,
+          "source_width": 182,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1393,7 +1697,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-rosso-polusladkoe-saperavi-krasnoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 202,
+          "height": 728,
+          "source_width": 212,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1418,7 +1730,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-sandzhoveze-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 198,
+          "height": 722,
+          "source_width": 208,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1443,7 +1763,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-shardone-318-beloe-suhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 194,
+          "height": 722,
+          "source_width": 204,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1468,7 +1796,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-tsvaygelt-320-rozovoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 201,
+          "height": 722,
+          "source_width": 211,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1493,7 +1829,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-aristov-verde-muskat-beloe-polusuhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 172,
+          "height": 725,
+          "source_width": 181,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1518,7 +1862,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-flyor-dyu-syud-blan-de-tamane-tsvetochnyy-beloe-suhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 212,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1545,7 +1897,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-flyor-dyu-syud-roze-de-tamane-traminer-rozovyy-rozovoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 196,
+          "height": 723,
+          "source_width": 206,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1571,7 +1931,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-flyor-dyu-syud-ruzh-de-tamane-rubin-golodrigi-krasnoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 197,
+          "height": 722,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1597,7 +1965,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 195,
+          "height": 723,
+          "source_width": 205,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1622,7 +1998,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-krasnostop-de-tamane-krasnostop-anapskiy-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 193,
+          "height": 728,
+          "source_width": 203,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1647,7 +2031,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-saperavi-de-tamane-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 186,
+          "height": 726,
+          "source_width": 196,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1672,7 +2064,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-aligote-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 196,
+          "height": 722,
+          "source_width": 206,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1697,7 +2097,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-delikeyt-roze-2024-bianka-rozovoe-suhoe-95.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 171,
+          "height": 720,
+          "source_width": 183,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1724,7 +2132,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2015-kaberne-sovinon-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 193,
+          "height": 720,
+          "source_width": 205,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1750,7 +2166,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2022-kaberne-sovinon-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 194,
+          "height": 720,
+          "source_width": 206,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1776,7 +2200,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-kollekshn-saperavi-2015-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 197,
+          "height": 720,
+          "source_width": 209,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1802,7 +2234,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-kollekshn-shardone-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 195,
+          "height": 722,
+          "source_width": 205,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1828,7 +2268,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 2,
+          "width": 199,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1854,7 +2302,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-merlo-limited-edishn-2018-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 197,
+          "height": 723,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1880,7 +2336,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-2021-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 203,
+          "height": 724,
+          "source_width": 213,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1906,7 +2370,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 212,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1932,7 +2404,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-premer-ruzh-kaberne-sovinon-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 197,
+          "height": 725,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1960,7 +2440,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rezerv-red-blend-kaberne-sovinon-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 197,
+          "height": 726,
+          "source_width": 207,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1987,7 +2475,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-rkatsiteli-myuller-turgau-shardone-2025-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 201,
+          "height": 722,
+          "source_width": 211,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2014,7 +2510,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-ruzh-2023-tsvaygelt-krasnoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 184,
+          "height": 720,
+          "source_width": 196,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2040,7 +2544,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 202,
+          "height": 720,
+          "source_width": 214,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Оранжевое",
@@ -2065,7 +2577,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-selekt-ruzh-saperavi-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 204,
+          "height": 720,
+          "source_width": 216,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2091,7 +2611,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-shardone-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 192,
+          "height": 720,
+          "source_width": 204,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2116,7 +2644,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2022-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 196,
+          "height": 720,
+          "source_width": 208,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2142,7 +2678,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2023-krasnoe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 4,
+          "width": 196,
+          "height": 723,
+          "source_width": 208,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2168,7 +2712,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-vysokiy-bereg-grafit-roze-kaberne-sovinon-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 384,
+          "height": 1500,
+          "source_width": 384,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2193,7 +2745,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-vysokiy-bereg-merlo-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 191,
+          "height": 722,
+          "source_width": 201,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2218,7 +2778,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-kuban-vino-vysokiy-bereg-myuller-turgau-beloe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 202,
+          "height": 720,
+          "source_width": 214,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2243,7 +2811,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-lesnaya-proseka.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 71,
+          "y": 21,
+          "width": 124,
+          "height": 342,
+          "source_width": 259,
+          "source_height": 400
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2269,7 +2845,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-makitra-selection.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 331,
+          "height": 1200,
+          "source_width": 331,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2294,7 +2878,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-molodoe-shato-taman.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 678,
+          "height": 2403,
+          "source_width": 678,
+          "source_height": 2403
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2319,7 +2911,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-molodoe-shato-taman-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 678,
+          "height": 2403,
+          "source_width": 678,
+          "source_height": 2403
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2344,7 +2944,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-muskatnoe-shato-taman.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1214,
+          "height": 3390,
+          "source_width": 1214,
+          "source_height": 3390
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2369,7 +2977,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-risling-shato-taman.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1214,
+          "height": 3390,
+          "source_width": 1214,
+          "source_height": 3390
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2394,7 +3010,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-bryut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1041,
+          "height": 3539,
+          "source_width": 1041,
+          "source_height": 3539
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2419,7 +3043,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-bryut-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1041,
+          "height": 3539,
+          "source_width": 1041,
+          "source_height": 3539
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2444,7 +3076,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-grape-dance.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 411,
+          "height": 1772,
+          "source_width": 411,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2469,7 +3109,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-grape-dance-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 414,
+          "height": 1772,
+          "source_width": 414,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2494,7 +3142,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-kaberne.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 349,
+          "height": 1332,
+          "source_width": 349,
+          "source_height": 1332
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2519,7 +3175,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-kaberne-sovinon.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 3,
+          "width": 356,
+          "height": 1329,
+          "source_width": 356,
+          "source_height": 1332
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2544,7 +3208,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-krasnostop.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 349,
+          "height": 1332,
+          "source_width": 349,
+          "source_height": 1332
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2569,7 +3241,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-par-la-mer-czvajgelt.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 853,
+          "height": 3014,
+          "source_width": 853,
+          "source_height": 3014
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2594,7 +3274,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-par-la-mer-korall.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 853,
+          "height": 3014,
+          "source_width": 853,
+          "source_height": 3014
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2619,7 +3307,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-par-la-mer-pino-blan.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 595,
+          "height": 1772,
+          "source_width": 595,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2644,7 +3340,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-par-la-mer-pino-nuar.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 594,
+          "height": 1772,
+          "source_width": 594,
+          "source_height": 1772
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2669,7 +3373,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-par-la-mer-sovinon.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 853,
+          "height": 3014,
+          "source_width": 853,
+          "source_height": 3014
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2694,7 +3406,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1041,
+          "height": 3539,
+          "source_width": 1041,
+          "source_height": 3539
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2719,7 +3439,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-saperavi.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 349,
+          "height": 1332,
+          "source_width": 349,
+          "source_height": 1332
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -2744,7 +3472,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-shato-taman-shardone.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 345,
+          "height": 1332,
+          "source_width": 345,
+          "source_height": 1332
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2769,7 +3505,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-vysokij-bereg-czvajgelt.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 328,
+          "height": 1200,
+          "source_width": 328,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -2794,7 +3538,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-vysokij-bereg-risling-zelenaya-seriya.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 538,
+          "height": 2315,
+          "source_width": 538,
+          "source_height": 2315
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2819,7 +3571,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-vysokij-bereg-risling-zelenaya-seriya-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1019,
+          "height": 3544,
+          "source_width": 1019,
+          "source_height": 3544
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2844,7 +3604,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-vysokij-bereg-risling-zelenaya-seriya-2.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 17,
+          "y": 21,
+          "width": 504,
+          "height": 1474,
+          "source_width": 536,
+          "source_height": 1538
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2869,7 +3637,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/wine-vysokij-bereg-traminer-zelenaya-seriya.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 538,
+          "height": 2315,
+          "source_width": 538,
+          "source_height": 2315
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -2894,7 +3670,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-nude-saperavi.webp",
-        "source_id": "kuban-nude-saperavi"
+        "source_id": "kuban-nude-saperavi",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 194,
+          "height": 725,
+          "source_width": 204,
+          "source_height": 732
+        }
       },
       "category": "Тихое вино",
       "style": "Красное сухое",
@@ -2920,7 +3704,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-nude-rkatsiteli.webp",
-        "source_id": "kuban-nude-rkatsiteli"
+        "source_id": "kuban-nude-rkatsiteli",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 133,
+          "height": 480,
+          "source_width": 133,
+          "source_height": 480
+        }
       },
       "category": "Тихое вино",
       "style": "Белое сухое",
@@ -2946,7 +3738,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-alta-rosso.webp",
-        "source_id": "kuban-alta-rosso"
+        "source_id": "kuban-alta-rosso",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 480,
+          "source_width": 132,
+          "source_height": 480
+        }
       },
       "category": "Тихое вино",
       "style": "Красное сухое",
@@ -2972,7 +3772,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-resto-white.webp",
-        "source_id": "kuban-resto-white"
+        "source_id": "kuban-resto-white",
+        "frame": {
+          "x": 9,
+          "y": 10,
+          "width": 127,
+          "height": 461,
+          "source_width": 145,
+          "source_height": 480
+        }
       },
       "category": "Тихое вино",
       "style": "Белое сухое",
@@ -2998,7 +3806,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-resto-red.webp",
-        "source_id": "kuban-resto-red"
+        "source_id": "kuban-resto-red",
+        "frame": {
+          "x": 9,
+          "y": 2,
+          "width": 124,
+          "height": 465,
+          "source_width": 138,
+          "source_height": 480
+        }
       },
       "category": "Тихое вино",
       "style": "Красное сухое",
@@ -3024,7 +3840,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/kuban-vino/official-kuban-resto-rose.webp",
-        "source_id": "kuban-resto-rose"
+        "source_id": "kuban-resto-rose",
+        "frame": {
+          "x": 8,
+          "y": 11,
+          "width": 125,
+          "height": 462,
+          "source_width": 139,
+          "source_height": 480
+        }
       },
       "category": "Тихое вино",
       "style": "Розовое сухое",

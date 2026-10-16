@@ -102,3 +102,11 @@ The product facts remain sourced from the catalog and official pages.
 The final frame excludes faint transparent outliers. The conversion preserves alpha and fits the cropped image into 720 px height before padding.
 The WebP quality is 88. The alpha quality is 100. Each file has 6 px transparent padding.
 Unedited images retain their previous bytes. Original edited-image bytes remain in Git revision `89aa3780`.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 103 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
