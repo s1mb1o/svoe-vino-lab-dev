@@ -594,14 +594,15 @@
       "group_id": "unplugged",
       "official_url": "https://essewine.com/wines",
       "official_image_url": "https://static.tildacdn.com/tild3264-3434-4333-b436-663333663230/sov-yellow-glov.png",
-      "source_image_sha256": "cac0c34a84ddeb6bdc9dab5432ec02cd8b8ab24d05a33f419592ca9e4736b474",
+      "source_image_sha256": "f823ba2edbe34bd3cbf55092350221026f3273f9375e49e11d35268f6929c490",
       "asset_sha256": "269df0363b2ff7eb1a93c5c05038307de23856da0bcea63748645129a0db3628",
       "absence_check": {
         "snapshot": "official-2026-09-17",
         "producer": "ESSE",
         "matched_catalog_slugs": [],
         "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without release equivalence evidence."
-      }
+      },
+      "generated_image_sha256": "cac0c34a84ddeb6bdc9dab5432ec02cd8b8ab24d05a33f419592ca9e4736b474"
     }
   ]
 }

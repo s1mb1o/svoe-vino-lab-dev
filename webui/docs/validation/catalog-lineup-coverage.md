@@ -1,28 +1,21 @@
-# Catalog coverage after the Abrau extension
+# Catalog lineup coverage
 
 Date: 2026-10-16.
 Snapshot: `official-2026-09-17`.
 
-The maps represent 618 of 2,103 catalog cards (29.3866%).
-The 11 supported producers account for 619 catalog cards. The maps represent 618 of these cards (99.8384%).
+The maps represent 988 of 2,103 catalog cards (46.9805%).
+The 19 supported producers account for 989 cards. The maps represent 988 of these cards (99.8989%).
 Abrau-Durso coverage is 56 of 57 cards (98.2456%).
-The owner excluded `rozovoe-polusladkoe-2` until exact bottle and collection identification.
-All ten other supported producers have complete snapshot coverage.
-The maps have 668 product nodes. Official additions with no wine_slug are separate from catalog coverage.
+The owner excluded `rozovoe-polusladkoe-2` until exact identification.
+All 18 other supported producers have complete snapshot coverage.
+The maps have 1046 product nodes and 61 null-slug products.
+Gray products do not count as catalog coverage.
 
-Count exact unique wine_slug values and verified aliases. Do not count producer-name fallback.
-The ranking below uses the exact snapshot producer field. It is not a ranking by production volume.
+Count exact unique wine_slug values and verified aliases. Do not count producer fallback.
+The ranking below uses the exact snapshot producer field. It does not measure production volume.
 
 | Producer without a map | Catalog cards |
 | --- | ---: |
-| Союз-Вино | 69 |
-| ESSE | 53 |
-| Шато Пино | 50 |
-| Валерий Захарьин | 46 |
-| Новый Свет. Дом шампанских вин | 44 |
-| Бельбек | 39 |
-| Собер Баш | 37 |
-| AGORA WINERY | 32 |
 | WINEMAFIA | 31 |
 | АРАТТИ | 31 |
 | Golubitskoe Estate | 31 |
@@ -35,5 +28,13 @@ The ranking below uses the exact snapshot producer field. It is not a ranking by
 | Belmas Winery | 22 |
 | Усадьба Перовских | 22 |
 | Denisov Winery | 21 |
+| Имение Сикоры | 21 |
+| Винодельня Бюрнье | 20 |
+| Галицкий и Галицкий | 20 |
+| Скалистый берег | 20 |
+| Domaine Lipko | 20 |
+| Золотое Поле | 19 |
+| Винодельня Батрак | 19 |
+| Агролайн | 18 |
 
-Read [catalog-lineup-coverage.json](catalog-lineup-coverage.json) for every unsupported producer and the source hash.
+Read [catalog-lineup-coverage.json](catalog-lineup-coverage.json) for all unsupported producers and the source hash.

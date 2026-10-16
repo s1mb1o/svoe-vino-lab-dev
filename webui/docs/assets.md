@@ -215,3 +215,13 @@ The images come from the six owner-provided sheets and their recorded source ima
 Read [the full source record](product-line-map-sources.md).
 The asset preparation changes dimensions and format only. It does not generate product imagery.
 The map uses the recorded official single-bottle correction for Victor Dravigny Brut.
+
+## Product-line map extension, 2026-10-16
+
+Eight additional producers ship local WebP display assets.
+Read the per-producer crosswalks in `docs/product-line-maps/` for source URLs and checksums.
+Read `imagegen-cutouts.json` for the ESSE and Soyuz-Vino imagegen prompts and input, generated, and output hashes.
+The extension uses 67 selected imagegen derivatives.
+Original catalog and official source files remain outside the repository.
+Every product has a measured alpha frame.
+Generated fine print is not product evidence.

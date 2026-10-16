@@ -138,7 +138,7 @@ try {
       if (!gray.image) assert.equal(await details.locator('.plm-image-placeholder').innerText(), 'Нет изображения')
       if (mobile) assert.equal(await details.getAttribute('open'), '')
       await assertLayout(page, label)
-      if (['derbent-vino', 'fanagoria', 'massandra'].includes(line.producer.id)) await page.screenshot({ path: `${report}/${label}.png`, fullPage: !mobile })
+      if (['derbent-vino', 'fanagoria', 'massandra', 'soyuz-vino', 'esse', 'chateau-pinot', 'valery-zakharyin', 'novy-svet', 'belbek', 'sober-bash', 'agora'].includes(line.producer.id)) await page.screenshot({ path: `${report}/${label}.png`, fullPage: !mobile })
       if (mobile) await details.getByRole('button', { name: 'Закрыть информацию о вине', exact: true }).click()
       const missingImage = line.products.find(product => !product.image && product.wine_slug)
       if (missingImage) {

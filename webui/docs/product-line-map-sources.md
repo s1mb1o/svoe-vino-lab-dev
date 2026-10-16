@@ -290,3 +290,13 @@ The graph has 73 product nodes, 19 groups, 53 canonical catalog slugs and three 
 The 20 gray products remain unchanged.
 The owner excluded `rozovoe-polusladkoe-2` until exact identification.
 All 21 new bottle photos have source alpha. No generated labels are used.
+
+## Eight additional producers
+
+Date: 2026-10-16.
+Add Soyuz-Vino, ESSE, Chateau Pinot, Valery Zakharyin, Novy Svet, Belbek, Sober Bash, and AGORA WINERY.
+The extension covers 370 exact snapshot cards and eight verified official additions.
+Each addition has a separate JSON, assets, baseline, crosswalk, and source notes.
+Read [the extension plan](plans/03_add-eight-producer-maps.md).
+Read [current catalog coverage](validation/catalog-lineup-coverage.md).
+The registry now contains 19 producer maps.

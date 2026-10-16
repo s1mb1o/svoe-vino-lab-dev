@@ -1,3 +1,7 @@
+# 2026-10-16: Eight producer map verification
+
+Add eight producer maps in eight separate implementation commits. Cover 370 exact catalog cards and eight official additions. Normalize bottle cutouts and image frames. Pass 275 unit tests, type checks, the production build, and 77 producer browser cases per engine. Pass the complete Abrau browser regressions in both engines.
+
 # 2026-10-16: Союз-Вино
 
 Add Союз-Вино: 69 catalog cards, 1 official additions, and 19 groups. Ship normalized bottle assets and independent source evidence.

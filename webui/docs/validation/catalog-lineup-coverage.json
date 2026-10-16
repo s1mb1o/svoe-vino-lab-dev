@@ -4,45 +4,14 @@
   "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
   "method": "Count unique snapshot wine_slug identities. Include verified aliases. Do not count producer-name fallback or null-slug additions as catalog coverage. Rank exact producer field values. Do not interpret card counts as production volume.",
   "catalog_cards": 2103,
-  "covered_catalog_cards": 618,
-  "catalog_coverage_percent": 29.386590584878746,
-  "supported_producers": 11,
-  "supported_producer_catalog_cards": 619,
-  "supported_producer_coverage_percent": 99.83844911147011,
-  "map_products": 668,
+  "covered_catalog_cards": 988,
+  "catalog_coverage_percent": 46.98050404184498,
+  "supported_producers": 19,
+  "supported_producer_catalog_cards": 989,
+  "supported_producer_coverage_percent": 99.89888776541962,
+  "map_products": 1046,
+  "gray_products": 61,
   "unsupported_producers": [
-    {
-      "producer": "Союз-Вино",
-      "catalog_cards": 69
-    },
-    {
-      "producer": "ESSE",
-      "catalog_cards": 53
-    },
-    {
-      "producer": "Шато Пино",
-      "catalog_cards": 50
-    },
-    {
-      "producer": "Валерий Захарьин",
-      "catalog_cards": 46
-    },
-    {
-      "producer": "Новый Свет. Дом шампанских вин",
-      "catalog_cards": 44
-    },
-    {
-      "producer": "Бельбек",
-      "catalog_cards": 39
-    },
-    {
-      "producer": "Собер Баш",
-      "catalog_cards": 37
-    },
-    {
-      "producer": "AGORA WINERY",
-      "catalog_cards": 32
-    },
     {
       "producer": "WINEMAFIA",
       "catalog_cards": 31
@@ -507,12 +476,5 @@
       "producer": "Зимовец",
       "catalog_cards": 1
     }
-  ],
-  "abrau": {
-    "catalog_cards": 57,
-    "covered_catalog_cards": 56,
-    "coverage_percent": 98.24561403508771,
-    "excluded_slug": "rozovoe-polusladkoe-2",
-    "exclusion_basis": "Owner instruction on 2026-10-16. The bottle and collection are not identified."
-  }
+  ]
 }

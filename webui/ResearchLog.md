@@ -1,3 +1,7 @@
+# 2026-10-16: Eight producer map verification
+
+The eight producer extracts contain 370 exact snapshot identities. The full catalog coverage is now 988 of 2103 cards. An exact producer-field check found a separate Сатера card outside the ESSE scope. Source checks distinguished alcoholic and alcohol-free La Petite Perle cans. Read docs/validation/eight-producer-maps.md for evidence and source limits. Automatic approval review rejected the external Claude packet transfer; explicit owner approval is pending.
+
 # 2026-10-16: Союз-Вино
 
 Check Союз-Вино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/soyuz-vino/sources.md.

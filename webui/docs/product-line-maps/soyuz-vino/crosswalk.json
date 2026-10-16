@@ -770,14 +770,15 @@
       "group_id": "perle",
       "official_url": "https://soyuz-vino.ru/collection-perle",
       "official_image_url": "https://static.tildacdn.com/tild3363-3735-4039-b035-666633303736/Perle_025_White.jpg",
-      "source_image_sha256": "cff1e4ad5dd53c42fc22d7813841a19521b11c60a75ae5e8b4bcfe94b34865aa",
+      "source_image_sha256": "079b1c1e292e8c66bb3475e024ec267f4346e434248215e509b9d6ef47e48940",
       "asset_sha256": "fb5e1d7086b972b9b246276b3376d6b77a6312945a723f3f25983c8277bf0512",
       "absence_check": {
         "snapshot": "official-2026-09-17",
         "producer": "Союз-Вино",
         "matched_catalog_slugs": [],
         "reason": "No La Petite Perle card occurs under this exact producer in the snapshot. Do not substitute the still Lavetti wine cards or a different package."
-      }
+      },
+      "generated_image_sha256": "cff1e4ad5dd53c42fc22d7813841a19521b11c60a75ae5e8b4bcfe94b34865aa"
     }
   ]
 }

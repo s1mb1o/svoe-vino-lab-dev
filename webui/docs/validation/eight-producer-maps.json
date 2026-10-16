@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-16",
+  "branch": "product-line-map",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_cards": 370,
+  "official_additions": 8,
+  "products": 378,
+  "groups": 79,
+  "producers": [
+    {
+      "id": "soyuz-vino",
+      "catalog": 69,
+      "products": 70,
+      "groups": 19,
+      "gray": 1,
+      "commit": "b2d39a20"
+    },
+    {
+      "id": "esse",
+      "catalog": 53,
+      "products": 54,
+      "groups": 6,
+      "gray": 1,
+      "commit": "d4f791e6"
+    },
+    {
+      "id": "chateau-pinot",
+      "catalog": 50,
+      "products": 51,
+      "groups": 12,
+      "gray": 1,
+      "commit": "c8d90377"
+    },
+    {
+      "id": "valery-zakharyin",
+      "catalog": 46,
+      "products": 47,
+      "groups": 14,
+      "gray": 1,
+      "commit": "ecfaf230"
+    },
+    {
+      "id": "novy-svet",
+      "catalog": 44,
+      "products": 45,
+      "groups": 5,
+      "gray": 1,
+      "commit": "97ffca61"
+    },
+    {
+      "id": "belbek",
+      "catalog": 39,
+      "products": 40,
+      "groups": 8,
+      "gray": 1,
+      "commit": "0ea8c714"
+    },
+    {
+      "id": "sober-bash",
+      "catalog": 37,
+      "products": 38,
+      "groups": 6,
+      "gray": 1,
+      "commit": "09cfcf0a"
+    },
+    {
+      "id": "agora",
+      "catalog": 32,
+      "products": 33,
+      "groups": 9,
+      "gray": 1,
+      "commit": "2b207ff3"
+    }
+  ],
+  "unit_tests": 275,
+  "typecheck": "passed",
+  "production_build": "passed",
+  "producer_browsers": {
+    "chromium": "passed",
+    "webkit": "passed"
+  },
+  "producer_browser_cases_per_engine": 77,
+  "image_references_measured": 1046,
+  "external_review": "not_sent_pending_explicit_owner_approval_after_automatic_review_rejection",
+  "review_packet_sha256": "f6aa251ff22684e360e4f9867fcbb3f71f2a4850894a374e08cb0362b46a0051",
+  "abrau_regression_browsers": {
+    "chromium": "passed",
+    "webkit": "passed"
+  },
+  "git_diff_check": "passed"
+}

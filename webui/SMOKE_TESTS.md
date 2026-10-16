@@ -1,3 +1,7 @@
+# 2026-10-16: Eight producer map verification
+
+Check all eight routes in docs/validation/eight-producer-maps.md. Verify the selected catalog identity, bottle image, group, price guidance, portal link, and mobile popup. Select each gray addition and verify that it has local details but no portal link. Check 320 px, 390 px, desktop, both themes, and return to the map.
+
 # 2026-10-16: Союз-Вино
 
 Open /lineup/soyuz-vino with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
