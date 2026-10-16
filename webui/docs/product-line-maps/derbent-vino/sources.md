@@ -46,3 +46,11 @@ The two accepted 5000 cutouts remove rocks and the backdrop. Imagegen reconstruc
 The official 5000 page labels its red wine Cabernet Sauvignon. Its supplied bottle image reads Cabernet Franc.
 The map keeps the official product name and uses the labeled image placeholder for this conflicting photo.
 The crosswalk preserves the rejected photo URL and hash.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 66 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](../../product-image-sizing.md) for the measurement method.
