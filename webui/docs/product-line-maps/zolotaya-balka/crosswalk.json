@@ -132,11 +132,18 @@
       "catalog_name": "Полусладкое красное ЗБ вайн Фриззанте",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "818496abf5f4e95742f3beba8a6ab5e90b3dc2ee34624ed921106518b411d40a",
       "group_source_ids": [
         "official-zb-frizzante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-red-semisweet/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/fdd/fdd07d984e5c87016c81ed41e703c11b.jpg",
+        "input_asset_sha256": "7237c3cb1098766523365d07744fa3b6f3db6452e24bab6ddd9c585ab65e5b9a",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "polusladkoe-krasnoe-zolotaya-balka",
@@ -145,11 +152,18 @@
       "catalog_name": "Полусладкое Красное Золотая Балка",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "16f3816f3e31155d5ad91e13780fc76b3e02e9dc0620e89fccc84703d369850b",
       "group_source_ids": [
         "official-zb-classic"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-krasnoe/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/480/mw3owdn0n1hrf894s223ba25w3yv4xqw.jpg",
+        "input_asset_sha256": "19aa5251eb6c89cb0b1276f91abaa0eb0568891c37c6bb573c376c9eeed01fd9",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "polusladkoe-rozovoe-zolotaya-balka",
@@ -158,11 +172,18 @@
       "catalog_name": "Полусладкое Розовое Золотая Балка",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "8935f9943929881ffb061f9180b692859f8e7a73a2b0ad7a97d2a9cee469b062",
       "group_source_ids": [
         "official-zb-classic"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-rozovoe/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/92b/19z49yxq3xhmpry9vrmc4lgav8tizird.jpg",
+        "input_asset_sha256": "19d7d02bd6d4de65e4953b1d59424a1fc55b087573d24f15267686e69422dab1",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "polusuhoe-beloe-zolotaya-balka",
@@ -193,11 +214,18 @@
       "catalog_name": "Полусухое розовое ЗБ вайн Фриззанте",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "74e953b5dabfb2a2e51e45de4d563e89166b58738dedeffba37f9b331ea63cff",
       "group_source_ids": [
         "official-zb-frizzante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-rose-semidry/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/601/601228cc766d173bc6d2598adcc011d4.jpg",
+        "input_asset_sha256": "6c98134d748c64892e3b839014d7d545331ac6e0b048e046606e8a05c64b6c08",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "rozovoe-bryut-1",
@@ -258,11 +286,18 @@
       "catalog_name": "Сухое белое ЗБ вайн Фриззанте",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "591f3a30935789cbef5da3c5881645a7e775b2d0af9b6b389f69127e6205a625",
       "group_source_ids": [
         "official-zb-frizzante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-white-dry/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/a9c/a9c1cd9b643ffa108c3975e06cec2559.jpg",
+        "input_asset_sha256": "e399431173b8557ee036d2c5862168a266ac84a0c37d9a2a691f80e13cb20abe",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "wine",
@@ -328,11 +363,18 @@
       "catalog_name": "ЗБ вайн РИСЛИНГ Полусухое белое",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "1943409967fee4b1d6b281088b1bc6dc229fc5b3c6af7c7a41085635fac7b2c1",
       "group_source_ids": [
         "official-zb-still"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zbwine/beloe-polusukhoe-zbwine-riesling/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/0b1/igfbmpdgtpkds2t9gaadem9xqb0gwnw5.JPG",
+        "input_asset_sha256": "1437fd29118016763e034750dcf2dd99a3397157e876ff64ccfae4956e2c7000",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-roze-suhoe-rozovoe",
@@ -341,11 +383,18 @@
       "catalog_name": "ЗБ вайн РОЗЕ сухое розовое",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "6566bbf71656d5d0abadfae9e1761a5742571b87e22c85f4fab36cf069fc15cd",
       "group_source_ids": [
         "official-zb-still"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zbwine/vino-rozovoe-sukhoe-zbwine-rose/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/13d/zvm5ophv2nrwjz2ce1ptmk8wrnrdafo0.jpg",
+        "input_asset_sha256": "913c197425864721145fae92000ccb24b6841623d559be53674a14a9620523d0",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-spumante-bryut-beloe",
@@ -398,11 +447,18 @@
       "catalog_name": "ЗБ вайн СПУМАНТЕ Полусухое белое",
       "catalog_producer": "Золотая Балка",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "3a9f4497b8d0d8b9e67bfc2bb775b0e0fb1cbd676a2cfe365908e8891cb0a977",
       "group_source_ids": [
         "official-zb-spumante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://zolotayabalka.ru/product/zb-spumante/zb-spumante-semidry/",
+        "image_url": "https://zolotayabalka.ru/upload/iblock/822/8222df49a2ba219eb92debacbc933b43.jpg",
+        "input_asset_sha256": "1af18aabd4c0cbe30be5e3371c7bc02054329cacd7bbefde988ebd08b46f803f",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-vajt-suhoe-beloe",

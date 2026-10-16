@@ -1,0 +1,195 @@
+{
+  "producer_id": "zolotaya-balka",
+  "date": "2026-10-16",
+  "scope": "Fill every empty bottle-image slot in this producer map. Do not change catalog identities or wine_slug.",
+  "fine_print_limit": "Built-in imagegen can resample fine print and reflections. The official source defines the product facts. Do not use generated text as evidence.",
+  "assets": [
+    {
+      "product_id": "wine-polusladkoe-krasnoe-zb-vajn-frizzante",
+      "asset": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zb-vajn-frizzante.webp",
+      "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-red-semisweet/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/fdd/fdd07d984e5c87016c81ed41e703c11b.jpg",
+      "input_asset_sha256": "7237c3cb1098766523365d07744fa3b6f3db6452e24bab6ddd9c585ab65e5b9a",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image is the edit target: ZB Frizzante RED SEMISWEET: dark red glass, black-and-gold neck and main label. Remove only the white background and any external floor/shadow. Preserve exactly the single complete bottle, shape, proportions, cap, foil texture, glass color, reflections, all logos, label artwork and text. Do not redesign or invent text. Output the upright bottle centered with small padding on a genuinely transparent background. Keep opaque pixels inside the glass. No shadow, backdrop, border, opaque stripes or extra objects.",
+      "generated_png_sha256": "27d87bd601a4a961987dde89279959f36cd67d1d61148ecfa2e8cba3d75bea20",
+      "output_asset_sha256": "818496abf5f4e95742f3beba8a6ab5e90b3dc2ee34624ed921106518b411d40a",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 213,
+        "height": 720,
+        "source_width": 225,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-suhoe-beloe-zb-vajn-frizzante",
+      "asset": "/product-line-maps/zolotaya-balka/wine-suhoe-beloe-zb-vajn-frizzante.webp",
+      "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-white-dry/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/a9c/a9c1cd9b643ffa108c3975e06cec2559.jpg",
+      "input_asset_sha256": "e399431173b8557ee036d2c5862168a266ac84a0c37d9a2a691f80e13cb20abe",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image is the edit target: ZB Frizzante WHITE DRY: pale gold wine, gold neck and gold main label. Remove only the white background and any external floor/shadow. Preserve exactly the single complete bottle, shape, proportions, cap, foil texture, glass color, reflections, all logos, label artwork and text. Do not redesign or invent text. Output the upright bottle centered with small padding on a genuinely transparent background. Keep opaque pixels inside the glass. No shadow, backdrop, border, opaque stripes or extra objects.",
+      "generated_png_sha256": "829f807da4e1dd09c6403d3ca6f49806bdee284e80b81e688602fffc921ac299",
+      "output_asset_sha256": "591f3a30935789cbef5da3c5881645a7e775b2d0af9b6b389f69127e6205a625",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 214,
+        "height": 720,
+        "source_width": 226,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-polusuhoe-rozovoe-zb-vajn-frizzante",
+      "asset": "/product-line-maps/zolotaya-balka/wine-polusuhoe-rozovoe-zb-vajn-frizzante.webp",
+      "source_url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-rose-semidry/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/601/601228cc766d173bc6d2598adcc011d4.jpg",
+      "input_asset_sha256": "6c98134d748c64892e3b839014d7d545331ac6e0b048e046606e8a05c64b6c08",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image is the edit target: ZB Frizzante ROSE SEMIDRY: rose-gold foil and pink wine, gold-and-black ZB emblem. Remove only the white background and any external floor/shadow. Preserve exactly the single complete bottle, shape, proportions, cap, foil texture, glass color, reflections, all logos, label artwork and text. Do not redesign or invent text. Output the upright bottle centered with small padding on a genuinely transparent background. Keep opaque pixels inside the glass. No shadow, backdrop, border, opaque stripes or extra objects.",
+      "generated_png_sha256": "6b3a51a613e06c57859124f20097534c5035d2a947f9e6af82e9affb3d33e739",
+      "output_asset_sha256": "74e953b5dabfb2a2e51e45de4d563e89166b58738dedeffba37f9b331ea63cff",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 210,
+        "height": 720,
+        "source_width": 222,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-polusladkoe-krasnoe-zolotaya-balka",
+      "asset": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zolotaya-balka.webp",
+      "source_url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-krasnoe/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/480/mw3owdn0n1hrf894s223ba25w3yv4xqw.jpg",
+      "input_asset_sha256": "19aa5251eb6c89cb0b1276f91abaa0eb0568891c37c6bb573c376c9eeed01fd9",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. The input is the edit target, the exact official product photo: Золотая Балка Полусладкое красное: dark glass, pale gold foil with КРЫМ and round burgundy label. Remove only the white background and external shadow. Preserve the complete bottle silhouette, proportions, glass, foil color, logo, label design and all visible text as supplied. Do not add, replace, or invent label content. Keep only one upright bottle, centered, with small transparent padding. The output background must have actual alpha transparency. No backdrop, props, opaque border, stripes or external cast shadow.",
+      "generated_png_sha256": "fd69d488bb8f52656276d273419e72843f3a396158ea330389ffcc962d029fc0",
+      "output_asset_sha256": "16f3816f3e31155d5ad91e13780fc76b3e02e9dc0620e89fccc84703d369850b",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 216,
+        "height": 722,
+        "source_width": 226,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-polusladkoe-rozovoe-zolotaya-balka",
+      "asset": "/product-line-maps/zolotaya-balka/wine-polusladkoe-rozovoe-zolotaya-balka.webp",
+      "source_url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-rozovoe/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/92b/19z49yxq3xhmpry9vrmc4lgav8tizird.jpg",
+      "input_asset_sha256": "19d7d02bd6d4de65e4953b1d59424a1fc55b087573d24f15267686e69422dab1",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. This is a small 74 by 254 px product photograph, not a lighting reference. Make a simple faithful cutout of this exact existing bottle. Change ONLY the white pixels outside the bottle to alpha zero. Keep the original low-resolution appearance and label design; do not enhance or redesign anything. Place the small bottle in the center of a transparent square canvas, approximately 500 pixels tall with wide fully transparent margins. Crucial: NO glow, NO halo, NO fog, NO gradient, NO spotlight, NO shadow, NO new lighting. The background around the entire cap, neck, shoulders and base must be 100 percent transparent. The bottle is dark glass with pale pink foil, gold-edged round black label, Russian text ЗОЛОТАЯ БАЛКА, Полусладкое розовое. Preserve the existing design as shown.",
+      "generated_png_sha256": "0cf6e8fb055b44a1603c14d92fa0f5f6f739785813b098034ac3f13b095154bb",
+      "output_asset_sha256": "8935f9943929881ffb061f9180b692859f8e7a73a2b0ad7a97d2a9cee469b062",
+      "frame": {
+        "x": 8,
+        "y": 9,
+        "width": 214,
+        "height": 714,
+        "source_width": 230,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original.",
+      "rejected_attempts": [
+        "Two generated versions kept a luminous background halo. Use the final edit from the original 74x254 photograph. Keep the modest source detail."
+      ]
+    },
+    {
+      "product_id": "wine-zb-vajn-risling-polusuhoe-beloe",
+      "asset": "/product-line-maps/zolotaya-balka/wine-zb-vajn-risling-polusuhoe-beloe.webp",
+      "source_url": "https://zolotayabalka.ru/product/zbwine/beloe-polusukhoe-zbwine-riesling/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/0b1/igfbmpdgtpkds2t9gaadem9xqb0gwnw5.JPG",
+      "input_asset_sha256": "1437fd29118016763e034750dcf2dd99a3397157e876ff64ccfae4956e2c7000",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image: edit target. ZB Wine Riesling, a clear pale-yellow wine bottle with a dark screw cap and cream Russian text label ending in blue Riesling. Remove only the white background. Preserve all existing typography, especially the main Russian phrase and Riesling, 2025, logo, color, proportions and reflections. Produce exactly one complete upright bottle on an actual transparent alpha background, centered with small clear padding. Do not add text, redesign packaging, add objects or invent any label details. No opaque background fragments or white/gray stripes.",
+      "generated_png_sha256": "517ad9eb4eef30da686a4cd857c9820d75a1f8a55447331217323831dcd552a9",
+      "output_asset_sha256": "1943409967fee4b1d6b281088b1bc6dc229fc5b3c6af7c7a41085635fac7b2c1",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 177,
+        "height": 722,
+        "source_width": 187,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-zb-vajn-roze-suhoe-rozovoe",
+      "asset": "/product-line-maps/zolotaya-balka/wine-zb-vajn-roze-suhoe-rozovoe.webp",
+      "source_url": "https://zolotayabalka.ru/product/zbwine/vino-rozovoe-sukhoe-zbwine-rose/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/13d/zvm5ophv2nrwjz2ce1ptmk8wrnrdafo0.jpg",
+      "input_asset_sha256": "913c197425864721145fae92000ccb24b6841623d559be53674a14a9620523d0",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image: edit target. ZB Wine Rosé, clear pink wine bottle with dark screw cap and cream Russian script label ending in pink Rose. Remove only the white background. Preserve all existing typography, 2025, logo, colors, bottle proportions and reflections. Produce exactly one complete upright bottle on an actual transparent alpha background, centered with small clear padding. Do not add text, redesign packaging, add objects or invent any label details. No opaque background fragments or white/gray stripes.",
+      "generated_png_sha256": "523292cfe007aaca5b4c577226bce6da4236994782c6ad963563ff4a95150629",
+      "output_asset_sha256": "6566bbf71656d5d0abadfae9e1761a5742571b87e22c85f4fab36cf069fc15cd",
+      "frame": {
+        "x": 5,
+        "y": 4,
+        "width": 176,
+        "height": 723,
+        "source_width": 186,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    },
+    {
+      "product_id": "wine-zb-vajn-spumante-polusuhoe-beloe",
+      "asset": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-polusuhoe-beloe.webp",
+      "source_url": "https://zolotayabalka.ru/product/zb-spumante/zb-spumante-semidry/",
+      "source_image_url": "https://zolotayabalka.ru/upload/iblock/822/8222df49a2ba219eb92debacbc933b43.jpg",
+      "input_asset_sha256": "1af18aabd4c0cbe30be5e3371c7bc02054329cacd7bbefde988ebd08b46f803f",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. The input is the edit target, the exact official product photo: ZB SPUMANTE WHITE SEMIDRY: pale golden wine and mauve foil and rectangular label. Remove only the white background and external shadow. Preserve the complete bottle silhouette, proportions, glass, foil color, logo, label design and all visible text as supplied. Do not add, replace, or invent label content. Keep only one upright bottle, centered, with small transparent padding. The output background must have actual alpha transparency. No backdrop, props, opaque border, stripes or external cast shadow.",
+      "generated_png_sha256": "4682ca98ca238a19d2a3916eaa25437ee7d0e62353345b3f524ac28e3d81cff1",
+      "output_asset_sha256": "3a9f4497b8d0d8b9e67bfc2bb775b0e0fb1cbd676a2cfe365908e8891cb0a977",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 210,
+        "height": 722,
+        "source_width": 220,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    }
+  ]
+}

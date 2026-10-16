@@ -85,6 +85,46 @@
       "id": "official-more-nebo-white",
       "label": "Официальная карточка: Море & Небо · белое брют",
       "url": "https://zolotayabalka.ru/product/more-nebo/more-nebo-bryut-beloe/"
+    },
+    {
+      "id": "photo-zb-red-frizzante",
+      "label": "Официальное фото: Полусладкое красное ЗБ вайн Фриззанте",
+      "url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-red-semisweet/"
+    },
+    {
+      "id": "photo-zb-white-frizzante",
+      "label": "Официальное фото: Сухое белое ЗБ вайн Фриззанте",
+      "url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-white-dry/"
+    },
+    {
+      "id": "photo-zb-rose-frizzante",
+      "label": "Официальное фото: Полусухое розовое ЗБ вайн Фриззанте",
+      "url": "https://zolotayabalka.ru/product/zb-frizzante/zb-frizzante-rose-semidry/"
+    },
+    {
+      "id": "photo-zb-red-classic",
+      "label": "Официальное фото: Полусладкое Красное Золотая Балка",
+      "url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-krasnoe/"
+    },
+    {
+      "id": "photo-zb-rose-classic",
+      "label": "Официальное фото: Полусладкое Розовое Золотая Балка",
+      "url": "https://zolotayabalka.ru/product/zolotaya-balka/polusladkoe-rozovoe/"
+    },
+    {
+      "id": "photo-zb-riesling",
+      "label": "Официальное фото: ЗБ вайн РИСЛИНГ Полусухое белое",
+      "url": "https://zolotayabalka.ru/product/zbwine/beloe-polusukhoe-zbwine-riesling/"
+    },
+    {
+      "id": "photo-zb-rose-still",
+      "label": "Официальное фото: ЗБ вайн РОЗЕ сухое розовое",
+      "url": "https://zolotayabalka.ru/product/zbwine/vino-rozovoe-sukhoe-zbwine-rose/"
+    },
+    {
+      "id": "photo-zb-semidry-spumante",
+      "label": "Официальное фото: ЗБ вайн СПУМАНТЕ Полусухое белое",
+      "url": "https://zolotayabalka.ru/product/zb-spumante/zb-spumante-semidry/"
     }
   ],
   "price_positioning": {
@@ -524,7 +564,18 @@
       "variant": "",
       "wine_slug": "polusladkoe-krasnoe-zb-vajn-frizzante",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zb-vajn-frizzante.webp",
+        "source_id": "photo-zb-red-frizzante",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 213,
+          "height": 720,
+          "source_width": 225,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Красное",
       "grapes": [
@@ -536,7 +587,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-frizzante"
+        "official-zb-frizzante",
+        "photo-zb-red-frizzante"
       ]
     },
     {
@@ -546,7 +598,18 @@
       "variant": "",
       "wine_slug": "polusladkoe-krasnoe-zolotaya-balka",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zolotaya-balka.webp",
+        "source_id": "photo-zb-red-classic",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 216,
+          "height": 722,
+          "source_width": 226,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Красное",
       "grapes": [
@@ -558,7 +621,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-classic"
+        "official-zb-classic",
+        "photo-zb-red-classic"
       ]
     },
     {
@@ -568,7 +632,18 @@
       "variant": "",
       "wine_slug": "polusladkoe-rozovoe-zolotaya-balka",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-rozovoe-zolotaya-balka.webp",
+        "source_id": "photo-zb-rose-classic",
+        "frame": {
+          "x": 8,
+          "y": 9,
+          "width": 214,
+          "height": 714,
+          "source_width": 230,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Розовое",
       "grapes": [
@@ -580,7 +655,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-classic"
+        "official-zb-classic",
+        "photo-zb-rose-classic"
       ]
     },
     {
@@ -623,7 +699,18 @@
       "variant": "",
       "wine_slug": "polusuhoe-rozovoe-zb-vajn-frizzante",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-polusuhoe-rozovoe-zb-vajn-frizzante.webp",
+        "source_id": "photo-zb-rose-frizzante",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 210,
+          "height": 720,
+          "source_width": 222,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Розовое",
       "grapes": [
@@ -635,7 +722,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-frizzante"
+        "official-zb-frizzante",
+        "photo-zb-rose-frizzante"
       ]
     },
     {
@@ -790,7 +878,18 @@
       "variant": "",
       "wine_slug": "suhoe-beloe-zb-vajn-frizzante",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-suhoe-beloe-zb-vajn-frizzante.webp",
+        "source_id": "photo-zb-white-frizzante",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 214,
+          "height": 720,
+          "source_width": 226,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Белое",
       "grapes": [
@@ -802,7 +901,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-frizzante"
+        "official-zb-frizzante",
+        "photo-zb-white-frizzante"
       ]
     },
     {
@@ -911,7 +1011,18 @@
       "variant": "",
       "wine_slug": "zb-vajn-risling-polusuhoe-beloe",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-risling-polusuhoe-beloe.webp",
+        "source_id": "photo-zb-riesling",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 177,
+          "height": 722,
+          "source_width": 187,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Белое",
       "grapes": [
@@ -923,7 +1034,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-still"
+        "official-zb-still",
+        "photo-zb-riesling"
       ]
     },
     {
@@ -933,7 +1045,18 @@
       "variant": "",
       "wine_slug": "zb-vajn-roze-suhoe-rozovoe",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-roze-suhoe-rozovoe.webp",
+        "source_id": "photo-zb-rose-still",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 176,
+          "height": 723,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Розовое",
       "grapes": [
@@ -945,7 +1068,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-still"
+        "official-zb-still",
+        "photo-zb-rose-still"
       ]
     },
     {
@@ -1021,7 +1145,18 @@
       "variant": "",
       "wine_slug": "zb-vajn-spumante-polusuhoe-beloe",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-polusuhoe-beloe.webp",
+        "source_id": "photo-zb-semidry-spumante",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 210,
+          "height": 722,
+          "source_width": 220,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Белое",
       "grapes": [
@@ -1033,7 +1168,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-zb-spumante"
+        "official-zb-spumante",
+        "photo-zb-semidry-spumante"
       ]
     },
     {

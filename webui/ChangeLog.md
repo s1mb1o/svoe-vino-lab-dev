@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Zolotaya Balka missing bottle images
+
+- Restore 8 missing bottle images from official product sources.
+- Record source hashes, preparation details and measured image frames.
+- Verify the restored images in desktop cards and mobile popups in Chromium and WebKit.
+
+
 ## 2026-10-16 — Massandra missing bottle images
 
 - Restore 1 missing bottle image from official product sources.
