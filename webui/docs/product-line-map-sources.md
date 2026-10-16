@@ -268,3 +268,11 @@ It does not claim complete live assortment coverage.
 Read [myskhako sources](product-line-maps/myskhako/sources.md).
 The map includes 92 snapshot cards and 5 verified additions in 20 groups.
 It does not claim complete live assortment coverage.
+
+## Visible image frames, 2026-10-16
+
+The producer JSON records measured frame geometry for 52 images.
+The frame uses the source alpha outline and a small transparent margin.
+The frame changes image presentation only. Source image bytes and product facts are unchanged.
+The renderer uses the frame for group previews, product nodes and product details.
+Read [the sizing contract](product-image-sizing.md) for the measurement method.

@@ -274,7 +274,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 0,
+          "width": 156,
+          "height": 480,
+          "source_width": 158,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -303,7 +311,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-gift-box.webp",
-        "source_id": "cuvee-box-image"
+        "source_id": "cuvee-box-image",
+        "frame": {
+          "x": 2,
+          "y": 0,
+          "width": 309,
+          "height": 480,
+          "source_width": 311,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Игристое вино",
@@ -330,7 +346,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperial-brut-lart-nouveau.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 154,
+          "height": 480,
+          "source_width": 154,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -360,7 +384,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperial-brut-vintage.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 151,
+          "height": 480,
+          "source_width": 151,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -388,7 +420,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperial-brut-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 153,
+          "height": 480,
+          "source_width": 153,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -413,7 +453,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperial-cuvee-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 150,
+          "height": 480,
+          "source_width": 150,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -440,7 +488,15 @@
       ],
       "image": {
         "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-blancs.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -467,7 +523,15 @@
       ],
       "image": {
         "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-noirs.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -492,7 +556,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/brut-dor-riesling.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -517,7 +589,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/brut-dor-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 152,
+          "height": 480,
+          "source_width": 152,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -544,7 +624,15 @@
       ],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-brut.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 480,
+          "source_width": 132,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -572,7 +660,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-extra-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое экстра-брют",
@@ -599,7 +695,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-brut-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -626,7 +730,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-dry.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусухое",
@@ -653,7 +765,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-sweet.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 130,
+          "height": 480,
+          "source_width": 130,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -680,7 +800,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-red-semi-sweet.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Красное полусладкое",
@@ -705,7 +833,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-kosher-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 129,
+          "height": 480,
+          "source_width": 129,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -734,7 +870,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/victor-dravigny-zero-dosage.webp",
-        "source_id": "zero-dosage-release-image"
+        "source_id": "zero-dosage-release-image",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 148,
+          "height": 480,
+          "source_width": 148,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Zero Dosage",
@@ -761,7 +905,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/reserve-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 480,
+          "source_width": 135,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -788,7 +940,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/reserve-brut-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -817,7 +977,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperatorskoe-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -844,7 +1012,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-dry.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусухое",
@@ -871,7 +1047,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-sweet.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -898,7 +1082,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 480,
+          "source_width": 137,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -927,7 +1119,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-semi-sweet.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 480,
+          "source_width": 136,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -956,7 +1156,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-white.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусухое",
@@ -985,7 +1193,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-white.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -1014,7 +1230,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое полусухое",
@@ -1042,7 +1266,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-red.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 135,
+          "height": 479,
+          "source_width": 135,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Красное полусладкое",
@@ -1070,7 +1302,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 126,
+          "height": 480,
+          "source_width": 126,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -1101,7 +1341,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-semi-sweet.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 125,
+          "height": 480,
+          "source_width": 125,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -1132,7 +1380,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-brut-white.webp",
-        "source_id": "russian-brut-image"
+        "source_id": "russian-brut-image",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 134,
+          "height": 480,
+          "source_width": 134,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -1158,7 +1414,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/russian-sparkling-dry-white.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 480,
+          "source_width": 137,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое сухое",
@@ -1181,7 +1445,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/spumante-brut-rose.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -1206,7 +1478,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/spumante-brut-white.webp",
-        "source_id": "spumante-brut-image"
+        "source_id": "spumante-brut-image",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 133,
+          "height": 454,
+          "source_width": 133,
+          "source_height": 454
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -1230,7 +1510,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/spumante-semi-dry-white.webp",
-        "source_id": "spumante-semi-dry-image"
+        "source_id": "spumante-semi-dry-image",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 144,
+          "height": 480,
+          "source_width": 144,
+          "source_height": 480
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусухое",
@@ -1254,7 +1542,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-white.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 340,
+          "source_width": 132,
+          "source_height": 340
+        }
       },
       "category": "Игристое вино",
       "style": "Белое брют",
@@ -1285,7 +1581,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-rose.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 132,
+          "height": 340,
+          "source_width": 132,
+          "source_height": 340
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое брют",
@@ -1310,7 +1614,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-white.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 131,
+          "height": 338,
+          "source_width": 131,
+          "source_height": 338
+        }
       },
       "category": "Игристое вино",
       "style": "Белое полусладкое",
@@ -1341,7 +1653,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-rose.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 131,
+          "height": 338,
+          "source_width": 131,
+          "source_height": 338
+        }
       },
       "category": "Игристое вино",
       "style": "Розовое полусладкое",
@@ -1366,7 +1686,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-purple.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Стиль не уточнён",
@@ -1389,7 +1717,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-pink.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Стиль не уточнён",
@@ -1412,7 +1748,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fiori-red.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 144,
+          "height": 480,
+          "source_width": 144,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Красное",
@@ -1435,7 +1779,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fiori-white-green.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 480,
+          "source_width": 140,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Белое",
@@ -1458,7 +1810,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fiori-rose.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 480,
+          "source_width": 140,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Розовое",
@@ -1481,7 +1841,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-fiori-white-purple.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 139,
+          "height": 480,
+          "source_width": 139,
+          "source_height": 480
+        }
       },
       "category": "Искристый напиток",
       "style": "Белое",
@@ -1504,7 +1872,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-collection-white.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 137,
+          "height": 341,
+          "source_width": 137,
+          "source_height": 341
+        }
       },
       "category": "Категория не уточнена",
       "style": "Белое",
@@ -1529,7 +1905,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-collection-rose.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 339,
+          "source_width": 136,
+          "source_height": 339
+        }
       },
       "category": "Категория не уточнена",
       "style": "Розовое",
@@ -1554,7 +1938,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-bottle.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        }
       },
       "category": "Безалкогольный искристый напиток",
       "style": "Стиль не уточнён",
@@ -1580,7 +1972,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-bottle.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 142,
+          "height": 480,
+          "source_width": 142,
+          "source_height": 480
+        }
       },
       "category": "Безалкогольный искристый напиток",
       "style": "Стиль не уточнён",
@@ -1606,7 +2006,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-can.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 119,
+          "height": 287,
+          "source_width": 119,
+          "source_height": 287
+        }
       },
       "category": "Безалкогольный искристый напиток",
       "style": "Стиль не уточнён",
@@ -1632,7 +2040,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-can.webp",
-        "source_id": "official-catalog-2025"
+        "source_id": "official-catalog-2025",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 117,
+          "height": 288,
+          "source_width": 117,
+          "source_height": 288
+        }
       },
       "category": "Безалкогольный искристый напиток",
       "style": "Стиль не уточнён",

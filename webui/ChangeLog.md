@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — abrau-durso image frames
+
+- Record measured source-image frames for 52 products.
+- Normalize visible bottle scale in group previews, product nodes and product details.
+- Retain original image bytes and existing product identities.
+
 ## 2026-10-16 — Visible bottle sizing
 
 - Size producer-map images from their measured visible frame.
