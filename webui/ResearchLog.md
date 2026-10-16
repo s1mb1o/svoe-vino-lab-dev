@@ -1,3 +1,7 @@
+# 2026-10-16: Собер Баш
+
+Check Собер Баш against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/sober-bash/sources.md.
+
 # 2026-10-16: Бельбек
 
 Check Бельбек against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/belbek/sources.md.

@@ -1,3 +1,7 @@
+# 2026-10-16: Собер Баш
+
+Open /lineup/sober-bash with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
 # 2026-10-16: Бельбек
 
 Open /lineup/belbek with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.

@@ -1,0 +1,431 @@
+{
+  "producer_id": "sober-bash",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Собер Баш",
+  "entries": [
+    {
+      "wine_slug": "sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125",
+      "product_id": "wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "reserve",
+      "catalog_name": "Афа",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_afa_kaberne_sovinon_krasnoe_suhoe_125_d85dc3b521.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_afa_kaberne_sovinon_krasnoe_suhoe_125_d85dc3b521.webp",
+      "input_sha256": "2f776ed62cbfc785423b011e0dc579f415edde87fd55f0aac9065ba61a6b33d1",
+      "asset_sha256": "5c7ba78ac47290b7588c36d21a3a9bcc436baaa5a7c68e6ec0b14ceffbd27de1"
+    },
+    {
+      "wine_slug": "sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14",
+      "product_id": "wine-sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14",
+      "group_id": "classic",
+      "catalog_name": "Аврора 2024",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_avrora_2024_krasnostop_zolotovskiy_rozovoe_suhoe_14_016209463e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_avrora_2024_krasnostop_zolotovskiy_rozovoe_suhoe_14_016209463e.webp",
+      "input_sha256": "41be9b4608980737ab185bb754df6fe341ecec5d1593923004cc4e348c89cd83",
+      "asset_sha256": "31dc238b9991738cc4d47a8aa914b675670870d863c149183bf0e0ecc389ed25"
+    },
+    {
+      "wine_slug": "sober-bash-dostoynyy-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-dostoynyy-krasnoe-suhoe-14",
+      "group_id": "grani",
+      "catalog_name": "Достойный",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dostoynyy_krasnoe_suhoe_14_b2d3facf49.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dostoynyy_krasnoe_suhoe_14_b2d3facf49.webp",
+      "input_sha256": "f9122d7375cf0cc895598175c64746eb24bbdc15dde08c1ffb5e2574855613ea",
+      "asset_sha256": "ac7ea920fad29975c57be74817e0cdb96dbb78f82945cb69c20eef0fc0013b74"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-auri-mtsvane-kahetinskiy-beloe-suhoe-125",
+      "product_id": "wine-sober-bash-dve-doliny-auri-mtsvane-kahetinskiy-beloe-suhoe-125",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Аури",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_auri_mtsvane_kahetinskiy_beloe_suhoe_125_a76407b8bc.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_auri_mtsvane_kahetinskiy_beloe_suhoe_125_a76407b8bc.webp",
+      "input_sha256": "22e61d0bb36e3b310e8fb25229ce5b1da735fbe8f744a52cd56ccb0889dfe157",
+      "asset_sha256": "c69f945e44b28099c879e10662889ef0f0fc8bc9516ed73e806bba05f9aed884"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-kaberne-fran-2023-krasnoe-polusuhoe-14",
+      "product_id": "wine-sober-bash-dve-doliny-kaberne-fran-2023-krasnoe-polusuhoe-14",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Каберне Фран 2023",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_kaberne_fran_2023_krasnoe_polusuhoe_14_fae22fb7b6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_kaberne_fran_2023_krasnoe_polusuhoe_14_fae22fb7b6.webp",
+      "input_sha256": "57e87b4d8d17468aa834ea9109e487fc6ce31f515173af56396cf518233a09b5",
+      "asset_sha256": "b8b463247c6c18e5d43b1591af742efee54a3c1c92d9d01921b3115c07ef6b5d"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-liuri-2023-dostoynyy-rozovoe-suhoe-13",
+      "product_id": "wine-sober-bash-dve-doliny-liuri-2023-dostoynyy-rozovoe-suhoe-13",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Лиури 2023",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_liuri_2023_dostoynyy_rozovoe_suhoe_13_cb46b8033e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_liuri_2023_dostoynyy_rozovoe_suhoe_13_cb46b8033e.webp",
+      "input_sha256": "1c69817e707908f6ba9c9f909e19db336a3443d65361c76ae970efc4f68edd69",
+      "asset_sha256": "695af9a5f219e556de5e1e699488eb7062f4d5da00f61bf3d96bcd53e42641f0"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-myuller-turgau-2023-beloe-suhoe-117",
+      "product_id": "wine-sober-bash-dve-doliny-myuller-turgau-2023-beloe-suhoe-117",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Мюллер Тургау 2023",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_myuller_turgau_2023_beloe_suhoe_117_a86924eb95.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_myuller_turgau_2023_beloe_suhoe_117_a86924eb95.webp",
+      "input_sha256": "5ce03d2d0f2b5f79311ba0652c72c26e421215e6452148ae72625864c8ef50a8",
+      "asset_sha256": "b7b2a164b09109dce1aef82ad280901b1d545af32ea475373c713df2119e22fa"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-saperavi-kachich-krasnoe-polusuhoe-15",
+      "product_id": "wine-sober-bash-dve-doliny-saperavi-kachich-krasnoe-polusuhoe-15",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Саперави-Качич",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_saperavi_kachich_krasnoe_polusuhoe_15_05e046e50c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_saperavi_kachich_krasnoe_polusuhoe_15_05e046e50c.webp",
+      "input_sha256": "c8854624486b6f52ee8c5f10d9059ce94f679ac849c5b0c94d18f882d86282bd",
+      "asset_sha256": "220971a52e14daeec2d6a0e4f97540643d9d7a500c23880bff1f5aec2aeb2c8e"
+    },
+    {
+      "wine_slug": "sober-bash-dve-doliny-tsimlyanskiy-2023-tsimlyanskiy-chernyy-krasnoe-suhoe-13",
+      "product_id": "wine-sober-bash-dve-doliny-tsimlyanskiy-2023-tsimlyanskiy-chernyy-krasnoe-suhoe-13",
+      "group_id": "two-valleys",
+      "catalog_name": "Две долины. Цимлянский 2023",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_dve_doliny_tsimlyanskiy_2023_tsimlyanskiy_chernyy_krasnoe_suhoe_13_b4e53e75c9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_dve_doliny_tsimlyanskiy_2023_tsimlyanskiy_chernyy_krasnoe_suhoe_13_b4e53e75c9.webp",
+      "input_sha256": "0e9149c7fee0e5587beadf71d2dec3413b8936548291ba9e64d473d9bfa5bece",
+      "asset_sha256": "394ed4b1876de48792f86a5db3ab5c6702200d5563615d0f87aa0babc7ccf84a"
+    },
+    {
+      "wine_slug": "sober-bash-grani-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "product_id": "wine-sober-bash-grani-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "group_id": "grani",
+      "catalog_name": "Грани. Кумшацкий",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_grani_kumshatskiy_kumshatskiy_belyy_beloe_suhoe_11_6cb0d67e2f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_grani_kumshatskiy_kumshatskiy_belyy_beloe_suhoe_11_6cb0d67e2f.webp",
+      "input_sha256": "3a0c002aadf3c23463e61d6f3e38e052ca9408c6f72de61db5c7a6e805030638",
+      "asset_sha256": "81406cb3f4a9603a9bf8fdb866b3c9c20cdf4409c3a1f7489525736ff0f7dc9c"
+    },
+    {
+      "wine_slug": "sober-bash-grani-muskat-muskat-dzhialo-beloe-suhoe-12",
+      "product_id": "wine-sober-bash-grani-muskat-muskat-dzhialo-beloe-suhoe-12",
+      "group_id": "grani",
+      "catalog_name": "Грани. Мускат",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_grani_muskat_muskat_dzhialo_beloe_suhoe_12_9d46b2c399.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_grani_muskat_muskat_dzhialo_beloe_suhoe_12_9d46b2c399.webp",
+      "input_sha256": "bfed437825f0f23b7054fe705f67c592b5cc2788003e7e6809600872fc805a3d",
+      "asset_sha256": "924df9e4a371402dc2a5963aafc2be00ccbc045d8de3c273c68f6385a98fcbab"
+    },
+    {
+      "wine_slug": "sober-bash-grani-plechistik-krasnoe-suhoe-12",
+      "product_id": "wine-sober-bash-grani-plechistik-krasnoe-suhoe-12",
+      "group_id": "grani",
+      "catalog_name": "Грани. Плечистик",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_grani_plechistik_krasnoe_suhoe_12_c4203547d4.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_grani_plechistik_krasnoe_suhoe_12_c4203547d4.webp",
+      "input_sha256": "2da94c66d42f6aeaf8b55a49f125da0e39280759905c2bf1649dd96a692290b5",
+      "asset_sha256": "942c18d1b6b81e994a2ca6e24292cecac7edbf740533ae373a77e6d3ac0b3d80"
+    },
+    {
+      "wine_slug": "sober-bash-hihvi-amfora-beloe-suhoe-14",
+      "product_id": "wine-sober-bash-hihvi-amfora-beloe-suhoe-14",
+      "group_id": "amphora",
+      "catalog_name": "Хихви Амфора",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_hihvi_amfora_beloe_suhoe_14_188ebf7e8e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_hihvi_amfora_beloe_suhoe_14_188ebf7e8e.webp",
+      "input_sha256": "b84292afc43371f60c0b111f69de0ba9644d6476b2fa0a98583c74de1d2a0dee",
+      "asset_sha256": "1824854f33a065ec8691493bd19b02ca0beea7ab137e3894a488911688fcf0f2"
+    },
+    {
+      "wine_slug": "sober-bash-hihvi-beloe-suhoe-15",
+      "product_id": "wine-sober-bash-hihvi-beloe-suhoe-15",
+      "group_id": "grani",
+      "catalog_name": "Хихви",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_hihvi_beloe_suhoe_15_bccbba3f0b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_hihvi_beloe_suhoe_15_bccbba3f0b.webp",
+      "input_sha256": "b84292afc43371f60c0b111f69de0ba9644d6476b2fa0a98583c74de1d2a0dee",
+      "asset_sha256": "1824854f33a065ec8691493bd19b02ca0beea7ab137e3894a488911688fcf0f2"
+    },
+    {
+      "wine_slug": "sober-bash-kaberne-fran-krasnoe-suhoe-127",
+      "product_id": "wine-sober-bash-kaberne-fran-krasnoe-suhoe-127",
+      "group_id": "classic",
+      "catalog_name": "Каберне Фран",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_kaberne_fran_krasnoe_suhoe_127_b52ebced7b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_kaberne_fran_krasnoe_suhoe_127_b52ebced7b.webp",
+      "input_sha256": "ecbdf3a33b3549a150fd711b3fb14f9845ba56712caa30b8833282d145766af3",
+      "asset_sha256": "9d5b06de1d60e0968f08f9263cd27c56c09ca9f94b70a40ac07cb8ddc74380f7"
+    },
+    {
+      "wine_slug": "sober-bash-kaberne-fran-krasnoe-suhoe-13",
+      "product_id": "wine-sober-bash-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "catalog_name": "Каберне Фран",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_kaberne_fran_krasnoe_suhoe_13_7b677af99d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_kaberne_fran_krasnoe_suhoe_13_7b677af99d.webp",
+      "input_sha256": "f67c39ab44345284b9dca465b5658108bc1178dbd6d06daaa02ec6d0219258f9",
+      "asset_sha256": "6df38189d35679eed5061a736a38c5c8dc69333d40ea792025ad9f1acaaf8673"
+    },
+    {
+      "wine_slug": "sober-bash-kaberne-fran-rozovoe-suhoe-12",
+      "product_id": "wine-sober-bash-kaberne-fran-rozovoe-suhoe-12",
+      "group_id": "classic",
+      "catalog_name": "Каберне Фран",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_kaberne_fran_rozovoe_suhoe_12_4177891820.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_kaberne_fran_rozovoe_suhoe_12_4177891820.webp",
+      "input_sha256": "436034d12672f7bcc4f14a4f1e097107598d6714ded9b7a2ff7b3f7ee5440ebb",
+      "asset_sha256": "1c9d076757998e5d2aeb4e4c5f9f86f6978e6e574f0d48594ee7ae3ca8ee5559"
+    },
+    {
+      "wine_slug": "sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "catalog_name": "Корвина",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_korvina_krasnostop_zolotovskiy_krasnoe_suhoe_14_bf19f3161d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_korvina_krasnostop_zolotovskiy_krasnoe_suhoe_14_bf19f3161d.webp",
+      "input_sha256": "11389a02d4be078e05ca9e19f10b593fa55473b6bff00ff75be69791edd66de4",
+      "asset_sha256": "5064a366d782a2463c50ba95fd0f1d4f2ad34c95764e212102def23335f582c0"
+    },
+    {
+      "wine_slug": "sober-bash-krasnostop-amfora-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "product_id": "wine-sober-bash-krasnostop-amfora-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "group_id": "amphora",
+      "catalog_name": "Красностоп Амфора",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_krasnostop_amfora_krasnostop_zolotovskiy_krasnoe_suhoe_13_221a756dbb.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_krasnostop_amfora_krasnostop_zolotovskiy_krasnoe_suhoe_13_221a756dbb.webp",
+      "input_sha256": "5d2bb2a59364833f817eb94b0fc5b24c1649ab41096d61268bc09f37768d4544",
+      "asset_sha256": "f689aea944675fd14f3913a460dfec2b36a31d8421f576f45913de7796fd93d5"
+    },
+    {
+      "wine_slug": "sober-bash-krasnostop-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-krasnostop-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Красностоп",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_krasnostop_krasnostop_zolotovskiy_krasnoe_suhoe_14_061d6f8d46.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_krasnostop_krasnostop_zolotovskiy_krasnoe_suhoe_14_061d6f8d46.webp",
+      "input_sha256": "31b8eed4672b429c9783e796ffbb6d91d487b6d7147876e12be44e3ab1a980de",
+      "asset_sha256": "e61f879f14095bae0a694265559799a46e5b3f9838e20eabdd588a7f683808e0"
+    },
+    {
+      "wine_slug": "sober-bash-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "product_id": "wine-sober-bash-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "group_id": "classic",
+      "catalog_name": "Кумшацкий",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_kumshatskiy_kumshatskiy_belyy_beloe_suhoe_11_d67e1de2a8.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_kumshatskiy_kumshatskiy_belyy_beloe_suhoe_11_d67e1de2a8.webp",
+      "input_sha256": "03c088ec05e9b6e8345f4e482e22be5fc5eab815be5bb222aa538c2142c7c744",
+      "asset_sha256": "da851caf24ceb13f1a8bb61c7559fd04687f3f2450d5f80d253993a8d76c0d55"
+    },
+    {
+      "wine_slug": "sober-bash-pino-gri-beloe-suhoe-11",
+      "product_id": "wine-sober-bash-pino-gri-beloe-suhoe-11",
+      "group_id": "classic",
+      "catalog_name": "Пино Гри",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_pino_gri_beloe_suhoe_11_725e59e401.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_pino_gri_beloe_suhoe_11_725e59e401.webp",
+      "input_sha256": "13c9af95da74b2ae4173d11f7a70295845894f5b56ef5d367467f8a6b1675798",
+      "asset_sha256": "d105cb3540b9c9b6ec0d0d23239df07055d446569b36cfeb80287d318498b845"
+    },
+    {
+      "wine_slug": "sober-bash-puhlyakovskiy-beloe-suhoe-12",
+      "product_id": "wine-sober-bash-puhlyakovskiy-beloe-suhoe-12",
+      "group_id": "classic",
+      "catalog_name": "Пухляковский",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_puhlyakovskiy_beloe_suhoe_12_c809d55527.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_puhlyakovskiy_beloe_suhoe_12_c809d55527.webp",
+      "input_sha256": "7da95de3004381dbe1e5062121309d3082808d1dedeb52395b61f5e6cc6f420c",
+      "asset_sha256": "2e5a80ebf131108670aed4602b7d1673227d7c05a378c31010ce35fd272ee9af"
+    },
+    {
+      "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+      "product_id": "wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+      "group_id": "classic",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_risling_risling_reynskiy_beloe_suhoe_11_3886abbe5d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_risling_risling_reynskiy_beloe_suhoe_11_3886abbe5d.webp",
+      "input_sha256": "7da95de3004381dbe1e5062121309d3082808d1dedeb52395b61f5e6cc6f420c",
+      "asset_sha256": "2e5a80ebf131108670aed4602b7d1673227d7c05a378c31010ce35fd272ee9af"
+    },
+    {
+      "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-12",
+      "product_id": "wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-12",
+      "group_id": "reserve",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_risling_risling_reynskiy_beloe_suhoe_12_1781eda577.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_risling_risling_reynskiy_beloe_suhoe_12_1781eda577.webp",
+      "input_sha256": "d73f36bec46b0abbdaa6ba862e65bc3ad4e8ae3d4e7908303a61d87366338e4e",
+      "asset_sha256": "12f9150c02707147e944e44daeb5ce81c402d44110e291d0950f676c8513c331"
+    },
+    {
+      "wine_slug": "sober-bash-rkatsiteli-amfora-beloe-suhoe-135",
+      "product_id": "wine-sober-bash-rkatsiteli-amfora-beloe-suhoe-135",
+      "group_id": "amphora",
+      "catalog_name": "Ркацители Амфора",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_rkatsiteli_amfora_beloe_suhoe_135_7ad32c6fab.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_rkatsiteli_amfora_beloe_suhoe_135_7ad32c6fab.webp",
+      "input_sha256": "201f2454b26c09e584b8afed85b6e3cc1cd77cd9c4b9fd703cf1194e2d27c5db",
+      "asset_sha256": "f158be135fc13d5303ba9ef53308f664cf250163ecd8573fc0da807800c5464c"
+    },
+    {
+      "wine_slug": "sober-bash-rkatsiteli-beloe-suhoe-14",
+      "product_id": "wine-sober-bash-rkatsiteli-beloe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Ркацители",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_rkatsiteli_beloe_suhoe_14_5c76e13a55.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_rkatsiteli_beloe_suhoe_14_5c76e13a55.webp",
+      "input_sha256": "9154a9766642afaacba949d61da62dcfdbcd8f50858fa83bdfb49564432d7bee",
+      "asset_sha256": "db3407d6c91b28d1b279a92a4bd227709e0c7b05f69ae817d80cd1a5653a177f"
+    },
+    {
+      "wine_slug": "sober-bash-rubin-rubin-rubin-azos-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-rubin-rubin-rubin-azos-krasnoe-suhoe-14",
+      "group_id": "grani",
+      "catalog_name": "Рубин & Рубин",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_rubin_rubin_rubin_azos_krasnoe_suhoe_14_e6ce9172ae.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_rubin_rubin_rubin_azos_krasnoe_suhoe_14_e6ce9172ae.webp",
+      "input_sha256": "2af4fb6c71b72a2d190f75b68962f67a1ac9759c99647161b779437ca26d8844",
+      "asset_sha256": "3e8e75e47634b70db45b994d56316f859303a66dd9f73d6c6702321e2015b193"
+    },
+    {
+      "wine_slug": "sober-bash-saperavi-amfora-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-saperavi-amfora-krasnoe-suhoe-14",
+      "group_id": "amphora",
+      "catalog_name": "Саперави Амфора",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_saperavi_amfora_krasnoe_suhoe_14_dcfa6b09f6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_saperavi_amfora_krasnoe_suhoe_14_dcfa6b09f6.webp",
+      "input_sha256": "d799f725727501ea50e1a6683e1839fc7e844f45f10858c615c461ef1091c299",
+      "asset_sha256": "e6a37d959c413af0f2600ae852d7f71e95932d3891c6533fdc354a70a67472e9"
+    },
+    {
+      "wine_slug": "sober-bash-saperavi-krasnoe-suhoe-13",
+      "product_id": "wine-sober-bash-saperavi-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "catalog_name": "Саперави",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_saperavi_krasnoe_suhoe_13_07a0953b2b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_saperavi_krasnoe_suhoe_13_07a0953b2b.webp",
+      "input_sha256": "79a6f038f3aff4d2628082eeea6e0cd5d32e9cfc837d3cdb00aadbf0a8d20178",
+      "asset_sha256": "051ed6857d68263f85d691ca4efe932c2d3b8b9f482a225db90c0555c2021bb9"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-kaberne-fran-krasnostop-krasnoe-suhoe-13",
+      "product_id": "wine-sober-bash-trezvaya-golova-kaberne-fran-krasnostop-krasnoe-suhoe-13",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Каберне Фран + Красностоп",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_kaberne_fran_krasnostop_krasnoe_suhoe_13_c95bc5ed9d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_kaberne_fran_krasnostop_krasnoe_suhoe_13_c95bc5ed9d.webp",
+      "input_sha256": "b4c80b9100e9b00afe3da08e7bdf838a850744f2ebb3b890ec5cf7524cdb62ef",
+      "asset_sha256": "9ca519aa628f09003e61feeb4be1fb6c7010ca1e2b5292480735bda6df41354e"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-risling-risling-reynskiy-beloe-suhoe-10",
+      "product_id": "wine-sober-bash-trezvaya-golova-risling-risling-reynskiy-beloe-suhoe-10",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Рислинг",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_risling_risling_reynskiy_beloe_suhoe_10_146c313d41.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_risling_risling_reynskiy_beloe_suhoe_10_146c313d41.webp",
+      "input_sha256": "1f73f67f83b96ae21ed52aaff511e2951146df5faf96e63a697e474c5d308a39",
+      "asset_sha256": "cdbd4de2cf1e964112cd122e4eb34091a93588b5b58b5377352d0a5d3854de91"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-rkatsiteli-beloe-suhoe-12",
+      "product_id": "wine-sober-bash-trezvaya-golova-rkatsiteli-beloe-suhoe-12",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Ркацители",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_rkatsiteli_beloe_suhoe_12_511c1cd6b2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_rkatsiteli_beloe_suhoe_12_511c1cd6b2.webp",
+      "input_sha256": "5d490dc2cbd4b34b8d3b3b546ce44c70c711b2a96664ef7c6b55f648c1e4e9cd",
+      "asset_sha256": "bbfd1f72f0ae135188c582865c2cc806307302f6b84cd12d44994bad1f59616a"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-rozovoe-krasnostop-zolotovskiy-suhoe-115",
+      "product_id": "wine-sober-bash-trezvaya-golova-rozovoe-krasnostop-zolotovskiy-suhoe-115",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Розовое",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_rozovoe_krasnostop_zolotovskiy_suhoe_115_7f51424925.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_rozovoe_krasnostop_zolotovskiy_suhoe_115_7f51424925.webp",
+      "input_sha256": "149376e74137e3e28f0589f3e21431d1271752028e5cce6782d5617c9d00a584",
+      "asset_sha256": "91f8571674c8a4853f900bf3d9bbc7b86b5b86167ff55bb7b511bb2c28308157"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-saperavi-krasnoe-suhoe-14",
+      "product_id": "wine-sober-bash-trezvaya-golova-saperavi-krasnoe-suhoe-14",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Саперави",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_saperavi_krasnoe_suhoe_14_496206d9ee.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_saperavi_krasnoe_suhoe_14_496206d9ee.webp",
+      "input_sha256": "44b00c3fde318b92b90c8f8b09753d36b40b238b5d3abb1af19e57ea6ef3c8aa",
+      "asset_sha256": "1a642a97bdd5911a3dc0370bc266404fac2a74e4d9ab53b848e68cb17583dbea"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-sibirkovyypino-gri-beloe-suhoe-11",
+      "product_id": "wine-sober-bash-trezvaya-golova-sibirkovyypino-gri-beloe-suhoe-11",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Сибирьковый+Пино Гри",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_sibirkovyypino_gri_beloe_suhoe_11_a02eb5c6fc.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_sibirkovyypino_gri_beloe_suhoe_11_a02eb5c6fc.webp",
+      "input_sha256": "4fea0cdf715d593fac3833f82b008d13e86ae4085b2896258dbab21b8eff121a",
+      "asset_sha256": "2a2386d5988b41d33cdb0f281ef2b94434797345827f5d3d6d0367b850808b1c"
+    },
+    {
+      "wine_slug": "sober-bash-trezvaya-golova-tsimlyanskiygolubok-tsimlyanskiy-chernyy-krasnoe-suhoe-135",
+      "product_id": "wine-sober-bash-trezvaya-golova-tsimlyanskiygolubok-tsimlyanskiy-chernyy-krasnoe-suhoe-135",
+      "group_id": "sober-head",
+      "catalog_name": "Трезвая голова. Цимлянский+Голубок",
+      "catalog_producer": "Собер Баш",
+      "source_image": "sober_bash_trezvaya_golova_tsimlyanskiygolubok_tsimlyanskiy_chernyy_krasnoe_suhoe_135_e92fe32066.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/sober_bash_trezvaya_golova_tsimlyanskiygolubok_tsimlyanskiy_chernyy_krasnoe_suhoe_135_e92fe32066.webp",
+      "input_sha256": "18f32fa917eaaa415c6ff07eca293ef5b96c30e8ba7f621a6cfba29399d6b54b",
+      "asset_sha256": "d56c92fc9eb1471b55c43147d77da3b333162ac801b90a667a5bc7f889baf600"
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-aza-2016",
+      "name": "Аза · 2016",
+      "group_id": "classic",
+      "official_url": "https://soberbashvino.ru/wine/aza2016/",
+      "official_image_url": "https://soberbashvino.ru/wp-content/cache/thumb/82/5a927c1b32f9b82_300x0.png",
+      "source_image_sha256": "0ed72e647fe5e110e16966612294432bf82688e5ea60fe1156e40013555a7964",
+      "asset_sha256": "2e16708a85d72b9a7a28cbb6584ae3c5a7b9f4f7ed4f85e82ab484d30a919eff",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Собер Баш",
+        "matched_catalog_slugs": [],
+        "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without release equivalence evidence."
+      }
+    }
+  ]
+}

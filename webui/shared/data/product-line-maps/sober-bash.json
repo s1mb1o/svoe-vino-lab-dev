@@ -1,0 +1,1456 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "sober-bash",
+    "name": "Собер Баш",
+    "aliases": [
+      "Sober Bash"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Собер Баш: официальные коллекции",
+      "url": "https://soberbashvino.ru/wine/aza2016/"
+    },
+    {
+      "id": "official-reserve",
+      "label": "Собер Баш: Резервные вина",
+      "url": "https://soberbashvino.ru/wine/kollekcija-rezervnoe/"
+    },
+    {
+      "id": "official-amphora",
+      "label": "Собер Баш: Грани · Амфора",
+      "url": "https://soberbashvino.ru/wine/kollekcija-rezervnoe/"
+    },
+    {
+      "id": "official-grani",
+      "label": "Собер Баш: Грани",
+      "url": "https://soberbashvino.ru/wine/kollekcija-grani/"
+    },
+    {
+      "id": "official-classic",
+      "label": "Собер Баш: Классика",
+      "url": "https://soberbashvino.ru/wine/kollekcija-klassika/"
+    },
+    {
+      "id": "official-two-valleys",
+      "label": "Собер Баш: Две долины",
+      "url": "https://soberbashvino.ru/wine/dve-dolini/"
+    },
+    {
+      "id": "official-sober-head",
+      "label": "Собер Баш: Трезвая голова",
+      "url": "https://soberbashvino.ru/wine/kollekcija-trezvaja-golova/"
+    },
+    {
+      "id": "official-official-aza-2016",
+      "label": "Официальная карточка: Аза · 2016",
+      "url": "https://soberbashvino.ru/wine/aza2016/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-amphora",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-classic",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-sober-head"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "reserve",
+      "name": "Резервные вина",
+      "tier_id": "tier-3",
+      "method": "Резервная коллекция",
+      "description": "Авторские резервные выпуски с чёрной этикеткой. Группа служит редакционным ориентиром относительно Классики. Технология уточняется для каждого вина.",
+      "source_ids": [
+        "official-reserve",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "amphora",
+      "name": "Грани · Амфора",
+      "tier_id": "tier-2",
+      "method": "Винификация в амфоре",
+      "description": "Хихви, Красностоп, Ркацители и Саперави. Специальный метод показан самостоятельной группой. Его положение не означает более высокое качество.",
+      "source_ids": [
+        "official-amphora",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "grani",
+      "name": "Грани",
+      "tier_id": "tier-2",
+      "method": "Сортовые авторские вина",
+      "description": "Коллекция выделяет характер отдельных сортов. Кумшацкий, Мускат и Плечистик из снимка сохранены отдельно.",
+      "source_ids": [
+        "official-grani",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Классика",
+      "tier_id": "tier-1",
+      "method": "Тихие сортовые вина",
+      "description": "Основные сортовые вина и купажи. Красные, белые и розовые карточки остаются самостоятельными позициями.",
+      "source_ids": [
+        "official-classic",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "two-valleys",
+      "name": "Две долины",
+      "tier_id": "tier-1",
+      "method": "Сортовые вина и купажи",
+      "description": "Самостоятельная коллекция с белыми, розовыми и красными винами. Разные сорта и годы сохранены по снимку.",
+      "source_ids": [
+        "official-two-valleys",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sober-head",
+      "name": "Трезвая голова",
+      "tier_id": "tier-0",
+      "method": "Тихие вина; технология зависит от выпуска",
+      "description": "Коллекция с отдельным оформлением. Название не означает отсутствие алкоголя. В снимке представлены сухие белые, розовые и красные вина.",
+      "source_ids": [
+        "official-sober-head",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125",
+      "group_id": "reserve",
+      "name": "Афа",
+      "variant": "",
+      "wine_slug": "sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 7,
+          "width": 198,
+          "height": 718,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Корвина",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты черных спелых ягод, вишни и специй. Вкус объемный и многогранный, с умеренной кислотностью, выразительными танинами и продолжительным послевкусием черной смородины, спелой вишни и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14",
+      "group_id": "classic",
+      "name": "Аврора 2024",
+      "variant": "",
+      "wine_slug": "sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 178,
+          "height": 718,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты красной смородины, клубники и леденцов барбариса. Вкус сочный, с нюансами красных ягод, умеренной кислотностью и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dostoynyy-krasnoe-suhoe-14",
+      "group_id": "grani",
+      "name": "Достойный",
+      "variant": "",
+      "wine_slug": "sober-bash-dostoynyy-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dostoynyy-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 172,
+          "height": 705,
+          "source_width": 178,
+          "source_height": 712
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Достойный"
+      ],
+      "description": "В аромате тона пряностей и красных ягод. Во вкусе оттенки черёмухи, продолжительное послевкусие, умеренная кислотность и ощутимые танины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-auri-mtsvane-kahetinskiy-beloe-suhoe-125",
+      "group_id": "two-valleys",
+      "name": "Две долины. Аури",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-auri-mtsvane-kahetinskiy-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-auri-mtsvane-kahetinskiy-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 182,
+          "height": 722,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мцване Кахетинский",
+        "Мюллер тургау",
+        "Ркацители"
+      ],
+      "description": "В аромате ноты зелёного яблока и цитрусовые оттенки. Во вкусе цветочные нюансы и яркая кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-kaberne-fran-2023-krasnoe-polusuhoe-14",
+      "group_id": "two-valleys",
+      "name": "Две долины. Каберне Фран 2023",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-kaberne-fran-2023-krasnoe-polusuhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-kaberne-fran-2023-krasnoe-polusuhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 182,
+          "height": 722,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран"
+      ],
+      "description": "В аромате ноты красных и черных ягод. Вкус сочный, с шелковистыми танинами и умеренной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-liuri-2023-dostoynyy-rozovoe-suhoe-13",
+      "group_id": "two-valleys",
+      "name": "Две долины. Лиури 2023",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-liuri-2023-dostoynyy-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-liuri-2023-dostoynyy-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 183,
+          "height": 722,
+          "source_width": 193,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Достойный",
+        "Каберне Фран",
+        "Красностоп Золотовский",
+        "Пино Гри"
+      ],
+      "description": "В аромате спелые красные ягоды и сливочные оттенки. Вкус яркий, сочный, спелый, с гармоничной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-myuller-turgau-2023-beloe-suhoe-117",
+      "group_id": "two-valleys",
+      "name": "Две долины. Мюллер Тургау 2023",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-myuller-turgau-2023-beloe-suhoe-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-myuller-turgau-2023-beloe-suhoe-117.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 182,
+          "height": 722,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мюллер тургау"
+      ],
+      "description": "Аромат цитрусов, белых цветов и полевых трав. Во вкусе тропические нюансы, цитрусы, сбалансированная кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-saperavi-kachich-krasnoe-polusuhoe-15",
+      "group_id": "two-valleys",
+      "name": "Две долины. Саперави-Качич",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-saperavi-kachich-krasnoe-polusuhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-saperavi-kachich-krasnoe-polusuhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 181,
+          "height": 716,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ноты черных ягод. Вкус полнотелый и сочный, с нюансами черноплодной рябины, мягкими танинами и гармоничной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-dve-doliny-tsimlyanskiy-2023-tsimlyanskiy-chernyy-krasnoe-suhoe-13",
+      "group_id": "two-valleys",
+      "name": "Две долины. Цимлянский 2023",
+      "variant": "",
+      "wine_slug": "sober-bash-dve-doliny-tsimlyanskiy-2023-tsimlyanskiy-chernyy-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-dve-doliny-tsimlyanskiy-2023-tsimlyanskiy-chernyy-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 181,
+          "height": 716,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Голубок",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате ноты спелых красных ягод и нюансы пряностей. Вкус насыщенный, с обволакивающими танинами, умеренной кислотностью и продолжительным послевкусием сочных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-two-valleys"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-grani-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "group_id": "grani",
+      "name": "Грани. Кумшацкий",
+      "variant": "",
+      "wine_slug": "sober-bash-grani-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-grani-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 175,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кумшацкий белый"
+      ],
+      "description": "В аромате жёлтые яблоки, воск, ноты белой смородины. Во вкусе сухофрукты, воск, яркая и деликатная кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-grani-muskat-muskat-dzhialo-beloe-suhoe-12",
+      "group_id": "grani",
+      "name": "Грани. Мускат",
+      "variant": "",
+      "wine_slug": "sober-bash-grani-muskat-muskat-dzhialo-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-grani-muskat-muskat-dzhialo-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 175,
+          "height": 716,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Джалло"
+      ],
+      "description": "В аромате цветочные оттенки, с нюансами цитрусовой группы и леденцов. Во вкусе минеральные тона, яркая кислотность и продолжительное послевкусие, цитрусы, леденцы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-grani-plechistik-krasnoe-suhoe-12",
+      "group_id": "grani",
+      "name": "Грани. Плечистик",
+      "variant": "",
+      "wine_slug": "sober-bash-grani-plechistik-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-grani-plechistik-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 176,
+          "height": 722,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Плечистик"
+      ],
+      "description": "В аромате ноты сочных северных ягод и специй. Вкус лёгкий, увяленные красные и чёрные ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-hihvi-amfora-beloe-suhoe-14",
+      "group_id": "amphora",
+      "name": "Хихви Амфора",
+      "variant": "",
+      "wine_slug": "sober-bash-hihvi-amfora-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-hihvi-amfora-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 175,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Хихви"
+      ],
+      "description": "В аромате ноты печёного яблока, сладких косточковых фруктов и специй. Во вкусе минеральные ноты и и шелковистые танины, косточковые фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-amphora"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-hihvi-beloe-suhoe-15",
+      "group_id": "grani",
+      "name": "Хихви",
+      "variant": "",
+      "wine_slug": "sober-bash-hihvi-beloe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-hihvi-beloe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 175,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Хихви"
+      ],
+      "description": "В аромате тона цитрусов, сухофруктов, полевых цветов и ванили. Вкус сочный и многогранный с гармоничной кислотностью, сладкими медовыми оттенками и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-kaberne-fran-krasnoe-suhoe-127",
+      "group_id": "classic",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "sober-bash-kaberne-fran-krasnoe-suhoe-127",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-kaberne-fran-krasnoe-suhoe-127.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 177,
+          "height": 718,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате ноты малины, фиалки и черной смородины, с нюансами зеленого перца. Во вкусе полнотелое, с приятной кислотностью, средними округлыми танинами и продолжительным послевкусием красных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "sober-bash-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 200,
+          "height": 722,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате лесные красные ягоды. Во вкусе округлое, структурное, с хорошим балансом танинов и кислотности. длительное послевкусие чёрных спелых ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-kaberne-fran-rozovoe-suhoe-12",
+      "group_id": "classic",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "sober-bash-kaberne-fran-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-kaberne-fran-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 4,
+          "width": 179,
+          "height": 722,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате ноты красных спелых ягод с тонким леденцовым оттенком. Во вкусе освежающая кислотность, ягоды и леденцы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "name": "Корвина",
+      "variant": "",
+      "wine_slug": "sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 180,
+          "height": 728,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты ягод красной смородины, вишни и специй. Во вкусе полнотелое, мягкие танины, умеренная кислотность и продолжительное послевкусие красных сочных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-krasnostop-amfora-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "group_id": "amphora",
+      "name": "Красностоп Амфора",
+      "variant": "",
+      "wine_slug": "sober-bash-krasnostop-amfora-krasnostop-zolotovskiy-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-krasnostop-amfora-krasnostop-zolotovskiy-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 176,
+          "height": 722,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты красных ягод и широкая палитра специй. Пкус структурированный, красные ягоды со специями.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-amphora"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-krasnostop-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Красностоп",
+      "variant": "",
+      "wine_slug": "sober-bash-krasnostop-krasnostop-zolotovskiy-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-krasnostop-krasnostop-zolotovskiy-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 197,
+          "height": 716,
+          "source_width": 232,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты увяленной вишни, пряностей и хвойные нюансы. Во вкусе полнотелое, с мягкими танинами, гармоничной кислотностью и продолжительным послевкусием чёрных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "group_id": "classic",
+      "name": "Кумшацкий",
+      "variant": "",
+      "wine_slug": "sober-bash-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-kumshatskiy-kumshatskiy-belyy-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 7,
+          "width": 176,
+          "height": 717,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кумшацкий белый"
+      ],
+      "description": "В аромате ноты листа смородины, крыжовника и полевых трав. Во вкусе нюансы сочных тропических фруктов, с яркой кислотностью и освежающим продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-pino-gri-beloe-suhoe-11",
+      "group_id": "classic",
+      "name": "Пино Гри",
+      "variant": "",
+      "wine_slug": "sober-bash-pino-gri-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-pino-gri-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 178,
+          "height": 722,
+          "source_width": 188,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "В аромате ноты спелой груши, леденцов и белых цветов. Вкус освежающий с минеральными нюансами, мягкой кислотностью и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-puhlyakovskiy-beloe-suhoe-12",
+      "group_id": "classic",
+      "name": "Пухляковский",
+      "variant": "",
+      "wine_slug": "sober-bash-puhlyakovskiy-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-puhlyakovskiy-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 178,
+          "height": 717,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пухляковский"
+      ],
+      "description": "В аромате ноты цитрусовых, косточковых фруктов и нюансы полевых цветов. Во вкусе хрустящая кислотность и продолжительное послевкусие, цитрусы, цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+      "group_id": "classic",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 178,
+          "height": 717,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате ноты зелёного яблока, полевых цветов и цитрусовой группы. Во вкусе хрустящая кислотность и продолжительное послевкусие, цитрусы, цветы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-12",
+      "group_id": "reserve",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 7,
+          "width": 199,
+          "height": 717,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате цветочные ноты с нюансами цитрусовой группы и специй. Во вкусе сладкие медовые оттенки, яркая кислотность, цитрусы, специи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-rkatsiteli-amfora-beloe-suhoe-135",
+      "group_id": "amphora",
+      "name": "Ркацители Амфора",
+      "variant": "",
+      "wine_slug": "sober-bash-rkatsiteli-amfora-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-rkatsiteli-amfora-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 175,
+          "height": 722,
+          "source_width": 185,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате спелые сладкие фрукты с тонами дюшеса. Во вкусе лёгкая минеральность, ноты груши в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-amphora"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-rkatsiteli-beloe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Ркацители",
+      "variant": "",
+      "wine_slug": "sober-bash-rkatsiteli-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-rkatsiteli-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 198,
+          "height": 718,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате ноты цитрусов, белых цветов, сочных косточковых фруктов, с медовыми нюансами. Вкус объемный, многогранный, с освежающей кислотностью и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-rubin-rubin-rubin-azos-krasnoe-suhoe-14",
+      "group_id": "grani",
+      "name": "Рубин & Рубин",
+      "variant": "",
+      "wine_slug": "sober-bash-rubin-rubin-rubin-azos-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-rubin-rubin-rubin-azos-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 174,
+          "height": 716,
+          "source_width": 189,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Рубин АЗОС"
+      ],
+      "description": "В аромате чёрные ягоды, перечные ноты. Во вкусе сочные чёрные ягоды, с тонкой нотой ванили, с длительным послевкусием и деликатными танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-grani"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-saperavi-amfora-krasnoe-suhoe-14",
+      "group_id": "amphora",
+      "name": "Саперави Амфора",
+      "variant": "",
+      "wine_slug": "sober-bash-saperavi-amfora-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-saperavi-amfora-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 176,
+          "height": 722,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате ноты вишни, лесных ягод. Во вкусе минеральность, ноты вишни и лесных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-amphora"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-saperavi-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Саперави",
+      "variant": "",
+      "wine_slug": "sober-bash-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 200,
+          "height": 722,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате спелые красные ягоды. Во вкусе элегантное, сбалансированное с тонами пряностей, специй с умеренной кислотностью и мягкими, но выразительными танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-kaberne-fran-krasnostop-krasnoe-suhoe-13",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Каберне Фран + Красностоп",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-kaberne-fran-krasnostop-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-kaberne-fran-krasnostop-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 179,
+          "height": 722,
+          "source_width": 189,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран",
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате ноты черных ягод. Во вкусе объёмное, со средними танинами. Длительное послевкусие чёрных ягод и пряных специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-risling-risling-reynskiy-beloe-suhoe-10",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Рислинг",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-risling-risling-reynskiy-beloe-suhoe-10",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-risling-risling-reynskiy-beloe-suhoe-10.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 178,
+          "height": 722,
+          "source_width": 188,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате кожура зелёного яблока, белые цветы. Вкус освежающий, минеральный с мягкой кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-rkatsiteli-beloe-suhoe-12",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Ркацители",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-rkatsiteli-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-rkatsiteli-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 178,
+          "height": 722,
+          "source_width": 188,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате цитрусовые ноты. Вкус легкий, цветочные нюансы и гармоничная кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-rozovoe-krasnostop-zolotovskiy-suhoe-115",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Розовое",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-rozovoe-krasnostop-zolotovskiy-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-rozovoe-krasnostop-zolotovskiy-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 5,
+          "width": 178,
+          "height": 720,
+          "source_width": 192,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран",
+        "Красностоп Золотовский",
+        "Пино Гри",
+        "Ркацители"
+      ],
+      "description": "В аромате красные ягоды с нотами сливочной карамели. Во вкусе красные ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-saperavi-krasnoe-suhoe-14",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Саперави",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-saperavi-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-saperavi-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 8,
+          "width": 177,
+          "height": 716,
+          "source_width": 193,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "В аромате красные и черные ягоды. Во вкусе сочные ягодные ноты, с освежающим послевкусием и ощутимыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-sibirkovyypino-gri-beloe-suhoe-11",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Сибирьковый+Пино Гри",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-sibirkovyypino-gri-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-sibirkovyypino-gri-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 182,
+          "height": 723,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри",
+        "Сибирьковый"
+      ],
+      "description": "В аромате цитрусовые ноты с цветочными оттенками. Вкус лёгкий, с освежающей кислотностью и намёком на минеральность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "wine-sober-bash-trezvaya-golova-tsimlyanskiygolubok-tsimlyanskiy-chernyy-krasnoe-suhoe-135",
+      "group_id": "sober-head",
+      "name": "Трезвая голова. Цимлянский+Голубок",
+      "variant": "",
+      "wine_slug": "sober-bash-trezvaya-golova-tsimlyanskiygolubok-tsimlyanskiy-chernyy-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/wine-sober-bash-trezvaya-golova-tsimlyanskiygolubok-tsimlyanskiy-chernyy-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 179,
+          "height": 722,
+          "source_width": 189,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Голубок",
+        "Цимлянский черный"
+      ],
+      "description": "В аромате красные спелые ягоды, пряные ноты. Вкус насыщенный, сбалансированный, с мягкими и обволакивающими танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sober-head"
+      ]
+    },
+    {
+      "id": "official-aza-2016",
+      "group_id": "classic",
+      "name": "Аза · 2016",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sober-bash/official-aza-2016.webp",
+        "source_id": "official-official-aza-2016",
+        "frame": {
+          "x": 7,
+          "y": 7,
+          "width": 172,
+          "height": 718,
+          "source_width": 186,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Пино Гри",
+        "Мускат",
+        "Мюллер Тургау"
+      ],
+      "description": "Архивный купаж коллекции Классика. Холодная мацерация и ферментация в нержавеющей стали при контролируемой температуре. В аромате белая слива и зелёное яблоко. Вкус свежий, с фруктовым послевкусием.",
+      "release_status": "archive",
+      "badges": [
+        "Архив · 2016"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-official-aza-2016",
+        "official-classic"
+      ]
+    }
+  ]
+}

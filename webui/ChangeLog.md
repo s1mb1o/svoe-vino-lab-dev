@@ -1,3 +1,7 @@
+# 2026-10-16: Собер Баш
+
+Add Собер Баш: 37 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
+
 # 2026-10-16: Бельбек
 
 Add Бельбек: 39 catalog cards, 1 official additions, and 8 groups. Ship normalized bottle assets and independent source evidence.
