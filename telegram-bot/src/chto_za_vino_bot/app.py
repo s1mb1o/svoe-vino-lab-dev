@@ -73,6 +73,7 @@ from .result_card import (
     normalize_result_photo,
 )
 from .storage import (
+    SQLITE_MAX_INTEGER,
     AdminRequestRecord,
     ArtifactStore,
     CandidateRecord,
@@ -244,6 +245,9 @@ class PhotoJob:
     status_enabled: bool = True
     keep_status: bool = False
     image_body: bytes | None = None
+    # The first receipt time of the request. A retry keeps the date directory of its files, so
+    # retention and user deletion find every copy. None means `received_at`.
+    stored_at: int | None = None
     delivery_enabled: bool = True
     completion: asyncio.Future[None] | None = None
 
@@ -375,7 +379,7 @@ class PhotoProcessor:
             image_dhash = difference_hash(body)
         with self._timed_step(job, "image_storage"):
             relative_path, digest = self._services.store.save(
-                job.request_id, job.received_at, body, moderation.accepted
+                job.request_id, _storage_time(job), body, moderation.accepted
             )
         self._services.repository.update(
             job.request_id,
@@ -630,7 +634,7 @@ class PhotoProcessor:
         rows = persist_artifacts(
             self._services.artifact_store,
             request_id=job.request_id,
-            received_at=job.received_at,
+            received_at=_storage_time(job),
             artifacts=artifacts,
         )
         now = int(time.time())
@@ -703,7 +707,8 @@ class PhotoProcessor:
                 LOG.exception("Submitted result image is invalid", extra={"request_id": job.request_id})
 
         if image is None:
-            await self._set_status(
+            # A job without a status message replies to the source message instead.
+            await self._set_terminal_status(
                 job,
                 caption,
                 disable_link_preview=True,
@@ -736,7 +741,7 @@ class PhotoProcessor:
             )
         except Exception:
             LOG.exception("Telegram result photo failed", extra={"request_id": job.request_id})
-            await self._set_status(
+            await self._set_terminal_status(
                 job,
                 caption,
                 disable_link_preview=True,
@@ -766,17 +771,26 @@ class PhotoProcessor:
         job: PhotoJob,
         text: str,
         *,
+        disable_link_preview: bool = False,
         reply_markup: InlineKeyboardMarkup | None = None,
     ) -> None:
         if not job.delivery_enabled:
             return
         if job.status_enabled:
-            await self._set_status(job, text, reply_markup=reply_markup)
+            await self._set_status(
+                job,
+                text,
+                disable_link_preview=disable_link_preview,
+                reply_markup=reply_markup,
+            )
             return
         try:
             await self._bot.send_message(
                 job.chat_id,
                 text,
+                link_preview_options=(
+                    LinkPreviewOptions(is_disabled=True) if disable_link_preview else None
+                ),
                 reply_markup=reply_markup,
                 reply_parameters=ReplyParameters(
                     message_id=job.source_message_id,
@@ -825,6 +839,10 @@ class PhotoProcessor:
             LOG.exception("Telegram status update failed", extra={"request_id": job.request_id})
 
 
+def _storage_time(job: PhotoJob) -> int:
+    return job.stored_at if job.stored_at is not None else job.received_at
+
+
 def _minutes(seconds: int) -> int:
     return max(1, (seconds + 59) // 60)
 
@@ -835,13 +853,14 @@ def _queue_receipt_text(*, album: bool, position: int, wait_seconds: int) -> str
         if album
         else "Фотография принята и поставлена"
     )
+    # The abbreviation point of "сек." and "мин." also ends the sentence.
     if wait_seconds <= 0:
-        wait = "обработка начнётся сразу"
+        wait = "обработка начнётся сразу."
     elif wait_seconds < 60:
         wait = f"примерное ожидание: около {wait_seconds} сек."
     else:
         wait = f"примерное ожидание: около {_minutes(wait_seconds)} мин."
-    return f"{subject} в очередь.\nПозиция: {position}; {wait}."
+    return f"{subject} в очередь.\nПозиция: {position}; {wait}"
 
 
 MOSCOW_TIME = ZoneInfo("Europe/Moscow")
@@ -987,12 +1006,21 @@ async def handle_users_command(
         await message.answer("Использование: /users [номер страницы]")
         return
     current_time = int(time.time()) if now is None else now
-    users, total = services.repository.list_users(
-        page=page,
-        page_size=USERS_PAGE_SIZE,
-        now=current_time,
-        window_seconds=services.settings.rate_window_seconds,
-    )
+    try:
+        users, total = services.repository.list_users(
+            page=page,
+            page_size=USERS_PAGE_SIZE,
+            now=current_time,
+            window_seconds=services.settings.rate_window_seconds,
+        )
+    except ValueError:
+        # The page offset exceeds the SQLite integer range, so the page cannot exist.
+        users, total = services.repository.list_users(
+            page=1,
+            page_size=USERS_PAGE_SIZE,
+            now=current_time,
+            window_seconds=services.settings.rate_window_seconds,
+        )
     page_count = max(1, (total + USERS_PAGE_SIZE - 1) // USERS_PAGE_SIZE)
     if page > page_count:
         await message.answer(f"Страница не найдена. Доступно страниц: {page_count}.")
@@ -1040,7 +1068,12 @@ async def handle_reset_limit_command(
         target = services.repository.user_by_username(raw_target[1:])
     elif raw_target.isdecimal() and int(raw_target) > 0:
         target_id = int(raw_target)
-        target = services.repository.user_by_id(target_id)
+        # SQLite stores 64-bit integers. A larger ID cannot belong to a stored user.
+        target = (
+            services.repository.user_by_id(target_id)
+            if target_id <= SQLITE_MAX_INTEGER
+            else None
+        )
         if target is None and target_id == services.settings.admin_user_id:
             target = _message_user_identity(message)
     else:
@@ -1223,7 +1256,13 @@ async def handle_result_feedback(callback: CallbackQuery, services: Services) ->
         )
         return
     already_saved = result == "already_saved"
-    if parts[1] == "no":
+    negative = parts[1] == "no"
+    if already_saved:
+        # A stale keyboard can show the other button. Restore the keyboard of the stored value.
+        record = services.repository.admin_request(request_id)
+        if record is not None and record.feedback_match is not None:
+            negative = not record.feedback_match
+    if negative:
         alternatives = [
             (candidate.rank, candidate_wine(candidate))
             for candidate in services.repository.candidates(request_id)
@@ -1688,6 +1727,7 @@ def enqueue_admin_retries(
             status_message_id=None,
             feedback_enabled=request.feedback_enabled,
             status_enabled=True,
+            stored_at=request.stored_at,
         )
         try:
             work_queue.submit(job)
@@ -1696,6 +1736,26 @@ def enqueue_admin_retries(
             break
         submitted += 1
     return submitted
+
+
+def restore_pending_jobs(repository: Repository, work_queue: WorkQueue[PhotoJob]) -> int:
+    pending = repository.pending_requests()
+    for request in pending:
+        work_queue.submit(
+            PhotoJob(
+                request_id=request.request_id,
+                chat_id=request.chat_id,
+                source_message_id=request.message_id,
+                received_at=request.received_at,
+                file_id=request.file_id,
+                status_message_id=None,
+                feedback_enabled=request.feedback_enabled,
+                status_enabled=request.feedback_enabled,
+                stored_at=request.stored_at,
+            ),
+            restore=True,
+        )
+    return len(pending)
 
 
 async def watch_admin_retries(
@@ -1820,21 +1880,7 @@ async def run() -> None:
             await sync_profile(bot, settings.admin_user_id)
         await work_queue.start()
         interrupted_api_requests = repository.fail_interrupted_api_requests()
-        pending = repository.pending_requests()
-        for request in pending:
-            work_queue.submit(
-                PhotoJob(
-                    request_id=request.request_id,
-                    chat_id=request.chat_id,
-                    source_message_id=request.message_id,
-                    received_at=request.received_at,
-                    file_id=request.file_id,
-                    status_message_id=None,
-                    feedback_enabled=request.feedback_enabled,
-                    status_enabled=request.feedback_enabled,
-                ),
-                restore=True,
-            )
+        restored_jobs = restore_pending_jobs(repository, work_queue)
         retry_watcher = asyncio.create_task(
             watch_admin_retries(repository, work_queue),
             name="admin-retry-watcher",
@@ -1860,7 +1906,7 @@ async def run() -> None:
                 "moderation_enabled": settings.moderation_enabled,
                 "queue_workers": settings.queue_workers,
                 "queue_capacity": settings.queue_capacity,
-                "restored_jobs": len(pending),
+                "restored_jobs": restored_jobs,
                 "interrupted_api_requests": interrupted_api_requests,
                 "http_api_host": settings.http_api_host,
                 "http_api_port": settings.http_api_port,

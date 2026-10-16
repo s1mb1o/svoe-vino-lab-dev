@@ -311,3 +311,60 @@ async def test_alternative_and_moderation_callbacks_are_saved(tmp_path, monkeypa
     assert appeal.answers == [("Спасибо! Проверим срабатывание фильтра.", False)]
     assert appeal.message.markups == [None]
     repository.close()
+
+
+def add_candidates(repository: Repository, request_id: str) -> None:
+    repository.replace_candidates(
+        request_id,
+        [
+            CandidateRecord(rank, f"wine-{rank}", 1.0 - rank / 10, card(f"wine-{rank}"))
+            for rank in range(1, 5)
+        ],
+    )
+
+
+async def test_stale_negative_button_after_positive_feedback_removes_the_keyboard(
+    tmp_path, monkeypatch
+):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    request_id = recognized_request(repository)
+    add_candidates(repository, request_id)
+    # The positive answer is saved, but its keyboard removal failed, so both buttons stay.
+    assert (
+        repository.save_feedback(request_id=request_id, user_id=200, matched=True, now=1100)
+        == "saved"
+    )
+    callback = FakeCallback(f"feedback:no:{request_id}", 200)
+    callback.message = FakeCallbackMessage()
+    monkeypatch.setattr("chto_za_vino_bot.app.Message", FakeCallbackMessage)
+
+    await handle_result_feedback(callback, SimpleNamespace(repository=repository))
+
+    # The stored value decides. A positive answer has no alternatives to show.
+    assert callback.answers == [("Оценка уже сохранена.", False)]
+    assert callback.message.markups == [None]
+    assert callback.message.answers == []
+    assert repository.admin_request(request_id).feedback_match is True
+    repository.close()
+
+
+async def test_stale_positive_button_after_negative_feedback_restores_alternatives(
+    tmp_path, monkeypatch
+):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    request_id = recognized_request(repository)
+    add_candidates(repository, request_id)
+    assert (
+        repository.save_feedback(request_id=request_id, user_id=200, matched=False, now=1100)
+        == "saved"
+    )
+    callback = FakeCallback(f"feedback:yes:{request_id}", 200)
+    callback.message = FakeCallbackMessage()
+    monkeypatch.setattr("chto_za_vino_bot.app.Message", FakeCallbackMessage)
+
+    await handle_result_feedback(callback, SimpleNamespace(repository=repository))
+
+    assert callback.answers == [("Оценка уже сохранена. Показываю варианты.", False)]
+    assert len(callback.message.markups[0].inline_keyboard) == 4
+    assert repository.admin_request(request_id).feedback_match is False
+    repository.close()

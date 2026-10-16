@@ -1,5 +1,26 @@
 # Change log
 
+## 2026-10-16
+
+Fixed the defects of issue #11. The tests of the MAX port found them.
+
+- `/users` with a page offset beyond the SQLite integer range now answers
+  `Страница не найдена`. `/reset_limit` with a user ID beyond the SQLite integer range now
+  answers `Пользователь не найден`. Before, the handler failed and the administrator got no
+  answer.
+- An album photo without the queue receipt now gets the result text as a reply to the source
+  photo when the result photo fails or no result image is available. Before, the user got no
+  result.
+- An administration retry now writes the source copy and the artifacts under the date directory
+  of the first receipt. Before, a retry on another UTC day wrote them under the retry date, and
+  retention and user deletion did not find them. The queue wait still starts at the retry.
+  Files that earlier retries wrote under a retry date are not moved.
+- A repeated feedback press now follows the stored feedback value. A stale `❌ Не совпало`
+  button after a positive answer removes the keyboard and does not show alternatives that
+  cannot be saved.
+- Removed the double point at the end of the queue receipt («около 40 сек..»).
+- Tests: 253 pass. `ruff check .` passes.
+
 ## 2026-09-29
 
 - Added a confidence line to each result and each `Не уверен` answer in the private chat of

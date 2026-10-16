@@ -1,14 +1,17 @@
 import io
 from types import SimpleNamespace
 
+import pytest
 from PIL import Image
 
 from chto_za_vino_bot.app import (
     AlbumReceiptTracker,
     PhotoJob,
     PhotoProcessor,
+    _queue_receipt_text,
     enqueue_photo_message,
 )
+from chto_za_vino_bot.result_card import format_result_caption
 from chto_za_vino_bot.storage import Repository
 from chto_za_vino_bot.wine import Wine
 
@@ -66,9 +69,14 @@ class FakeBot:
         self.photos: list[dict[str, object]] = []
         self.deleted: list[tuple[int, int]] = []
         self.edits: list[dict[str, object]] = []
+        self.messages: list[dict[str, object]] = []
 
     async def send_photo(self, **kwargs: object) -> None:
         self.photos.append(kwargs)
+
+    async def send_message(self, chat_id: int, text: str, **kwargs: object):
+        self.messages.append({"chat_id": chat_id, "text": text, **kwargs})
+        return SimpleNamespace(message_id=2000 + len(self.messages))
 
     async def delete_message(self, chat_id: int, message_id: int) -> None:
         self.deleted.append((chat_id, message_id))
@@ -86,6 +94,20 @@ def result_jpeg() -> bytes:
     buffer = io.BytesIO()
     Image.new("RGB", (32, 64), "white").save(buffer, format="JPEG")
     return buffer.getvalue()
+
+
+def sample_wine() -> Wine:
+    return Wine(
+        slug="test-wine",
+        name="Тестовое вино",
+        page_url="https://vino-svoe.ru/wines/test-wine",
+        producer=None,
+        category="Красное",
+        color="Рубиновый",
+        grapes="Пино Нуар",
+        sugar="Сухое",
+        image_url=None,
+    )
 
 
 async def test_album_photos_create_separate_ordered_jobs(tmp_path):
@@ -262,3 +284,69 @@ async def test_rejection_photo_failure_falls_back_to_status_text():
 
     assert len(bot.edits) == 1
     assert "Контент признан неподходящим" in bot.edits[0]["text"]
+
+
+@pytest.mark.parametrize(
+    ("album", "wait_seconds", "subject", "wait"),
+    [
+        (False, 0, "Фотография принята и поставлена", "обработка начнётся сразу."),
+        (True, 40, "Фотографии приняты и поставлены", "примерное ожидание: около 40 сек."),
+        (False, 90, "Фотография принята и поставлена", "примерное ожидание: около 2 мин."),
+    ],
+)
+def test_queue_receipt_ends_with_one_point(album, wait_seconds, subject, wait):
+    assert _queue_receipt_text(album=album, position=1, wait_seconds=wait_seconds) == (
+        f"{subject} в очередь.\nПозиция: 1; {wait}"
+    )
+
+
+async def test_result_photo_failure_falls_back_to_the_status_text():
+    bot = FailingPhotoBot()
+    processor = PhotoProcessor(SimpleNamespace(image_loader=None), bot)
+
+    await processor._send_result(
+        PhotoJob("request-1", 100, 10, 1000, "file-1", 1010),
+        sample_wine(),
+        result_jpeg(),
+    )
+
+    assert [edit["text"] for edit in bot.edits] == [format_result_caption(sample_wine())]
+    assert bot.edits[0]["message_id"] == 1010
+    assert bot.edits[0]["link_preview_options"].is_disabled
+    assert [button.callback_data for button in bot.edits[0]["reply_markup"].inline_keyboard[1]] == [
+        "feedback:yes:request-1",
+        "feedback:no:request-1",
+    ]
+    assert bot.messages == []
+    assert bot.deleted == []
+
+
+@pytest.mark.parametrize("failure", ["send_photo", "result_image"])
+async def test_album_result_failure_without_a_status_still_reaches_the_user(failure):
+    bot = FailingPhotoBot() if failure == "send_photo" else FakeBot()
+    submitted_body = result_jpeg() if failure == "send_photo" else b"not an image"
+    processor = PhotoProcessor(SimpleNamespace(image_loader=None), bot)
+    job = PhotoJob(
+        "request-2",
+        100,
+        11,
+        1000,
+        "file-2",
+        None,
+        feedback_enabled=False,
+        status_enabled=False,
+    )
+
+    await processor._send_result(job, sample_wine(), submitted_body)
+
+    assert bot.photos == []
+    assert [message["text"] for message in bot.messages] == [
+        format_result_caption(sample_wine())
+    ]
+    reply = bot.messages[0]
+    assert reply["chat_id"] == 100
+    assert reply["reply_parameters"].message_id == 11
+    assert reply["link_preview_options"].is_disabled
+    assert [row[0].text for row in reply["reply_markup"].inline_keyboard] == [
+        "Открыть страницу вина"
+    ]

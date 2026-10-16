@@ -86,6 +86,8 @@ class PendingRequest:
     received_at: int
     file_id: str
     feedback_enabled: bool
+    # The first receipt time. Files of every attempt use its date, so retention finds them.
+    stored_at: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1015,6 +1017,7 @@ class Repository:
                     chat_id,
                     message_id,
                     received_at,
+                    received_at AS stored_at,
                     telegram_file_id,
                     feedback_enabled
                 FROM requests
@@ -1031,6 +1034,7 @@ class Repository:
                 received_at=int(row["received_at"]),
                 file_id=row["telegram_file_id"],
                 feedback_enabled=bool(row["feedback_enabled"]),
+                stored_at=int(row["stored_at"]),
             )
             for row in rows
         ]
@@ -1430,7 +1434,7 @@ class Repository:
                 SELECT
                     request_id, chat_id, message_id,
                     COALESCE(retry_requested_at, received_at) AS received_at,
-                    telegram_file_id, feedback_enabled
+                    received_at AS stored_at, telegram_file_id, feedback_enabled
                 FROM requests
                 WHERE status = 'retry_requested'
                   AND (moderation_safe = 1 OR
@@ -1449,6 +1453,7 @@ class Repository:
                 received_at=int(row["received_at"]),
                 file_id=row["telegram_file_id"],
                 feedback_enabled=bool(row["feedback_enabled"]),
+                stored_at=int(row["stored_at"]),
             )
             for row in rows
         ]

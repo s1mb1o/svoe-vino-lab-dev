@@ -188,3 +188,43 @@ async def test_admin_commands_are_rejected_outside_private_chat(tmp_path):
 
     assert message.answers == ["Команда доступна только администратору."]
     repository.close()
+
+
+HUGE_NUMBER = "99999999999999999999"
+
+
+async def test_users_with_a_huge_page_number_reports_a_missing_page(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    add_request(
+        repository,
+        user_id=ADMIN_USER_ID,
+        username="s1mb1o",
+        message_id=1,
+        now=1000,
+    )
+    message = FakeMessage(ADMIN_USER_ID, username="s1mb1o", first_name="Shasa (ALOLA)")
+
+    await handle_users_command(
+        message,
+        SimpleNamespace(args=HUGE_NUMBER),
+        make_services(repository),
+        now=1100,
+    )
+
+    assert message.answers == ["Страница не найдена. Доступно страниц: 1."]
+    repository.close()
+
+
+async def test_reset_limit_with_a_huge_user_id_reports_an_unknown_user(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    message = FakeMessage(ADMIN_USER_ID, username="s1mb1o", first_name="Shasa (ALOLA)")
+
+    await handle_reset_limit_command(
+        message,
+        SimpleNamespace(args=HUGE_NUMBER),
+        make_services(repository),
+        now=1100,
+    )
+
+    assert message.answers == ["Пользователь не найден."]
+    repository.close()

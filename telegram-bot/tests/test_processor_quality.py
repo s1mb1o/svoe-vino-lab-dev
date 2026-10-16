@@ -7,6 +7,7 @@ import pytest
 from PIL import Image
 
 from chto_za_vino_bot.app import PhotoJob, PhotoProcessor, enqueue_admin_retries
+from chto_za_vino_bot.data_lifecycle import delete_user_data, purge_expired_data
 from chto_za_vino_bot.matcher import RecognitionCandidate, RecognitionResult
 from chto_za_vino_bot.moderation import DisabledModerator, ModerationResult
 from chto_za_vino_bot.quality import QualityResult, QualityUnavailable
@@ -472,7 +473,7 @@ async def test_unsafe_retry_removes_the_earlier_safe_copies(tmp_path):
     assert repository.admin_request(request_id).status == "recognized"
     assert len(list((data_root / "accepted").rglob(f"{request_id}.*"))) == 1
 
-    # The retry comes two days later, so its job uses another date directory.
+    # The retry comes two days later. Its files keep the date directory of the first receipt.
     assert repository.request_retry(request_id, 1000 + 2 * 86400) == "requested"
     queue = RetryQueue()
     assert enqueue_admin_retries(repository, queue) == 1
@@ -489,4 +490,84 @@ async def test_unsafe_retry_removes_the_earlier_safe_copies(tmp_path):
     assert [item.artifact_key for item in repository.artifacts(request_id)] == [
         "censored_preview"
     ]
+    repository.close()
+
+
+@pytest.mark.parametrize("cleanup", ["retention", "user_deletion"])
+async def test_admin_retry_on_another_day_keeps_the_date_directory_of_the_files(
+    tmp_path, cleanup
+):
+    class RetryQueue:
+        at_capacity = False
+
+        def __init__(self) -> None:
+            self.jobs: list[PhotoJob] = []
+
+        def submit(self, job: PhotoJob) -> None:
+            self.jobs.append(job)
+
+    data_root = tmp_path / "images"
+    repository = Repository(tmp_path / "bot.sqlite3")
+    reservation = repository.reserve(
+        chat_id=100,
+        message_id=10,
+        user_id=200,
+        username="tester",
+        first_name="Test",
+        last_name=None,
+        file_id="file-1",
+        file_unique_id="unique-1",
+        now=1000,
+        limit=50,
+        window_seconds=3600,
+    )
+    request_id = reservation.request_id
+    assert request_id is not None
+    services = SimpleNamespace(
+        settings=SimpleNamespace(
+            max_image_bytes=20 * 1024 * 1024,
+            match_min_score=0.70,
+            match_min_margin=0.015,
+            admin_user_id=ADMIN_USER_ID,
+        ),
+        repository=repository,
+        store=ImageStore(data_root),
+        artifact_store=ArtifactStore(data_root),
+        moderator=SafeModerator(),
+        quality_inspector=UnavailableQualityInspector(),
+        matcher=FakeMatcher(),
+        image_loader=None,
+        rejection_image=b"unused",
+    )
+    processor = PhotoProcessor(services, FakeBot(jpeg()))
+    await processor.process(
+        PhotoJob(request_id, 100, 10, 1000, "file-1", None, status_enabled=False)
+    )
+    first_path = repository.safe_source(request_id)[1]
+    retry_time = 1000 + 3 * 86400
+
+    assert repository.request_retry(request_id, retry_time) == "requested"
+    queue = RetryQueue()
+    assert enqueue_admin_retries(repository, queue) == 1
+    job = queue.jobs[0]
+    # The queue wait starts at the retry. The files keep the first receipt date.
+    assert (job.received_at, job.stored_at) == (retry_time, 1000)
+    await processor.process(job)
+
+    assert repository.admin_request(request_id).status == "recognized"
+    assert repository.safe_source(request_id)[1] == first_path
+    assert first_path.startswith("accepted/1970/01/01/")
+    assert not (data_root / "accepted" / "1970" / "01" / "04").exists()
+    assert not (data_root / "artifacts" / "1970" / "01" / "04").exists()
+    assert (data_root / "artifacts" / "1970" / "01" / "01" / request_id).is_dir()
+
+    # Retention and user deletion find every file of the request.
+    if cleanup == "retention":
+        result = purge_expired_data(repository, data_root, cutoff=retry_time + 1)
+    else:
+        result = delete_user_data(repository, data_root, user_id=200)
+
+    assert result.requests == 1
+    assert [path for path in (data_root / "accepted").rglob("*") if path.is_file()] == []
+    assert [path for path in (data_root / "artifacts").rglob("*") if path.is_file()] == []
     repository.close()

@@ -85,16 +85,22 @@ non-production moderation bypass.
 52. The bot MUST send only one queue receipt for one Telegram album.
 53. The bot MUST continue to process each album photo as a separate request.
 54. The bot MUST continue to return one result for each album photo.
+54.1. When the result photo fails, an album photo without the receipt MUST get the result
+text as a reply to the source photo.
 55. The bot MUST identify the administrator by the configured Telegram user ID.
 56. `BOT_ADMIN_USER_ID` MUST be explicit. The bot MUST NOT default to a real account.
 57. The administrator `/stats` response MUST show aggregate statistics and personal hourly use.
 58. The `/users` command MUST be available only to the administrator.
 59. The `/users` command MUST show 20 users on one page.
 60. The `/users` command MUST accept an optional positive page number.
+60.1. A `/users` page number after the last page MUST give `Страница не найдена`, also when
+the page offset is beyond the SQLite integer range.
 61. A user entry MUST show the username, name, Telegram user ID, request count, hourly use, and last request time.
 62. The `/reset_limit` command MUST be available only to the administrator.
 63. `/reset_limit` without an argument MUST reset the administrator's current rate use.
 64. `/reset_limit` MUST accept a Telegram user ID or a stored username.
+64.1. A `/reset_limit` user ID beyond the SQLite integer range MUST give
+`Пользователь не найден`.
 65. A rate reset MUST preserve request history and statistics.
 66. A rate reset MUST survive a process restart.
 67. An administrator command MUST work only in the administrator's private chat.
@@ -155,6 +161,8 @@ When fewer candidates exist, the action shows the available candidates.
 115. The matcher response MUST contain at most four ranked candidates. An empty list MUST give
 `Не уверен`.
 116. A repeated negative feedback action MUST show the stored alternatives.
+116.1. A repeated feedback action MUST follow the stored feedback value, not the pressed
+button. A stale `❌ Не совпало` button after a positive value MUST remove the keyboard.
 117. An alternative keyboard edit failure MUST send a new alternative message.
 118. The bot MUST store the queue wait duration for each processing attempt.
 119. The bot MUST store the duration of each main processing step.
@@ -193,6 +201,8 @@ moderation step.
 140. The bot MUST send an administration retry through the existing work queue.
 141. The bot MUST run moderation again during an administration retry when moderation is enabled.
 142. A retry request MUST survive a restart of the web service or bot service.
+142.1. An administration retry MUST write its source copy and artifacts under the date
+directory of the first receipt, so retention and user deletion find them.
 143. The administration web service MUST NOT serve accepted source files directly.
 144. The administration web service MUST NOT serve quarantine images.
 145. Every state-changing web form MUST include CSRF protection.
