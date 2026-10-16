@@ -171,10 +171,20 @@ runs all tests, and runs the deterministic host demo.
 
 ## Deployment
 
-Build the image from a committed revision (see [Dockerfile](Dockerfile)). One image runs two
-containers: the bot and the administration interface. Use a separate data directory, for
-example `/srv/svoe-vino-lab/prod/max-bot/data`, and a separate protected environment file.
-In webhook mode, publish the container port `8081` only through the TLS proxy on port 443.
+Production uses Docker Compose on `gx10`, the same approach as the Telegram bot. The procedure
+is in [deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md).
+
+- Build the image from a committed revision:
+  `git archive "$REV:max-bot" | docker build --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -`.
+- One image runs two containers: `max-bot` (MAX updates and the recognition API on `28004`) and
+  `max-admin` (the administration interface on the host loopback address `127.0.0.1:28005`).
+  The Compose file is [deploy/gx10/max-bot-prod.compose.yaml](deploy/gx10/max-bot-prod.compose.yaml).
+- The secrets are in `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` (mode `0600`).
+  Compose passes the file to both containers. The template is
+  [deploy/gx10/max-bot.env.example](deploy/gx10/max-bot.env.example).
+- The data directory is `/srv/svoe-vino-lab/prod/max-bot/data`.
+- The bot uses long polling until gx10 gets a public HTTPS name for a webhook. In webhook mode,
+  publish the container port `8081` only through the TLS proxy on port 443.
 
 ## Open items for the owner
 

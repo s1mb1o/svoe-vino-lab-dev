@@ -1,0 +1,68 @@
+# Production deployment of the «Что за вино?» MAX bot on gx10.
+#
+# The approach is the same as for the Telegram bot (telegram-bot-prod): one image built from a
+# committed revision, two containers from that image, a protected environment file with the
+# secrets, and a bind-mounted data directory. Read max-bot-prod.md before a change.
+#
+# Install directory on gx10: /srv/svoe-vino-lab/prod/max-bot
+#   compose.yaml         this file
+#   .env                 MAX_BOT_IMAGE=svoe-vino-lab-max-bot:<revision>
+#   config/max-bot.env   the secrets and the service endpoints, mode 0600, never in git
+#   data/                bot.sqlite3, accepted/, quarantine/, artifacts/; owner uid 1000
+name: svoe-vino-lab-max-bot
+
+x-max-bot-common: &common
+  image: ${MAX_BOT_IMAGE:?set MAX_BOT_IMAGE in .env, for example svoe-vino-lab-max-bot:<revision>}
+  # Compose reads this file on the host and passes each line as an environment variable.
+  # The image holds no secret.
+  env_file:
+    - ./config/max-bot.env
+  volumes:
+    - ./data:/data
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+services:
+  max-bot:
+    <<: *common
+    command: ["chto-za-vino-max-bot"]
+    # Long polling and all MAX API calls are outbound. Long polling needs no inbound port.
+    ports:
+      # The recognition HTTP API for the home LAN. The bearer token and
+      # BOT_HTTP_API_ALLOWED_NETWORKS restrict it. The Telegram bot uses 28002.
+      - "28004:8080"
+      # Webhook mode only: the TLS proxy forwards https://<public name>/<path> to this port.
+      # - "127.0.0.1:28006:8081"
+    stop_grace_period: 30s
+
+  max-admin:
+    <<: *common
+    command: ["chto-za-vino-max-admin"]
+    # The administration interface listens only on the loopback interface of gx10.
+    # Operators use an SSH tunnel: ssh -N -L 28005:127.0.0.1:28005 gx10
+    # The Telegram bot uses 28003.
+    network_mode: host
+    environment:
+      BOT_ADMIN_WEB_HOST: "127.0.0.1"
+      BOT_ADMIN_WEB_PORT: "28005"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:28005/readyz', timeout=4)"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3

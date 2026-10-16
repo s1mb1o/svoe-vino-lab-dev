@@ -329,12 +329,19 @@
 
 - Run `docker compose ps` in `/srv/svoe-vino-lab/prod/max-bot`.
 - Confirm that both containers are `healthy`.
+- Confirm that `config/max-bot.env` has mode `600` and that `.env` names the deployed revision.
 - Confirm that the production `config.yaml` sets `moderation.enabled` to `true`.
-- Confirm that the HTTPS administration route asks for the administration password.
+- Confirm that `docker compose logs max-bot` contains `MAX bot connected` and no token.
+- Confirm that the administration interface answers only on `127.0.0.1:28005` of gx10.
+- Open it through `ssh -N -L 28005:127.0.0.1:28005 gx10` and confirm that it asks for the
+  administration password.
+- Confirm that another LAN host cannot connect to port `28005`.
 - Confirm that `http://192.168.86.14:28004/healthz` answers `ok`.
 - Confirm that `http://192.168.86.14:28004/readyz` reports every dependency as ready.
+- Confirm that `docker compose exec max-bot touch /app/x` fails (read-only root file system).
 - Restart the bot container while no photo job runs.
 - Confirm that the bot answers a new photo after the restart.
+- Run `docker compose stop` and confirm that both containers exit with code 0.
 
 ## Host verification and data lifecycle
 
