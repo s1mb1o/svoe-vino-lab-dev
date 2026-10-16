@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — koktebel image frames
+
+- Record measured source-image frames for 28 products.
+- Normalize visible bottle scale in group previews, product nodes and product details.
+- Retain original image bytes and existing product identities.
+
 ## 2026-10-16 — inkerman image frames
 
 - Record measured source-image frames for 17 products.

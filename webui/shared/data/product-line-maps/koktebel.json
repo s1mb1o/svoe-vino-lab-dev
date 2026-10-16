@@ -203,7 +203,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-koktebel-casa-belyj-kupazh.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 309,
+          "height": 1200,
+          "source_width": 309,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -229,7 +237,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 648,
+          "y": 117,
+          "width": 739,
+          "height": 2680,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -255,7 +271,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 641,
+          "y": 129,
+          "width": 731,
+          "height": 2678,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -282,7 +306,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 642,
+          "y": 126,
+          "width": 734,
+          "height": 2681,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -308,7 +340,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 632,
+          "y": 131,
+          "width": 737,
+          "height": 2675,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -336,7 +376,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 649,
+          "y": 132,
+          "width": 733,
+          "height": 2675,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -364,7 +412,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-bastardo-krasnoe-suhoe-14.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 116,
+          "y": 76,
+          "width": 800,
+          "height": 3038,
+          "source_width": 1031,
+          "source_height": 3187
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -388,7 +444,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-blan-aligote-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 644,
+          "y": 122,
+          "width": 758,
+          "height": 2688,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -414,7 +478,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -441,7 +513,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 163,
+          "y": 120,
+          "width": 558,
+          "height": 2113,
+          "source_width": 858,
+          "source_height": 2316
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -468,7 +548,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-kokur-bryut-beloe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 143,
+          "y": 32,
+          "width": 1235,
+          "height": 3887,
+          "source_width": 1548,
+          "source_height": 4032
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -492,7 +580,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-madera-albilo-beloe-sladkoe-19.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 100,
+          "y": 34,
+          "width": 550,
+          "height": 2103,
+          "source_width": 748,
+          "source_height": 2179
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -521,7 +617,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-merlo-krasnoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -545,7 +649,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 107,
+          "y": 40,
+          "width": 390,
+          "height": 1569,
+          "source_width": 604,
+          "source_height": 1664
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -569,7 +681,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 64,
+          "y": 66,
+          "width": 438,
+          "height": 1749,
+          "source_width": 547,
+          "source_height": 1859
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -593,7 +713,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 643,
+          "y": 131,
+          "width": 759,
+          "height": 2682,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -619,7 +747,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 313,
+          "y": 199,
+          "width": 870,
+          "height": 3975,
+          "source_width": 1502,
+          "source_height": 4401
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -645,7 +781,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-pino-nuar-bryut-rozovoe-11.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 127,
+          "y": 68,
+          "width": 1120,
+          "height": 3547,
+          "source_width": 1356,
+          "source_height": 3720
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -669,7 +813,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 100,
+          "y": 34,
+          "width": 549,
+          "height": 2102,
+          "source_width": 748,
+          "source_height": 2179
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -697,7 +849,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 100,
+          "y": 34,
+          "width": 549,
+          "height": 2102,
+          "source_width": 748,
+          "source_height": 2179
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -725,7 +885,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 916,
+          "y": 0,
+          "width": 529,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -751,7 +919,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 319,
+          "y": 200,
+          "width": 869,
+          "height": 3964,
+          "source_width": 1502,
+          "source_height": 4401
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -777,7 +953,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-roze-merlo-rozovoe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 643,
+          "y": 136,
+          "width": 764,
+          "height": 2661,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -803,7 +987,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 645,
+          "y": 120,
+          "width": 769,
+          "height": 2686,
+          "source_width": 2000,
+          "source_height": 3000
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -829,7 +1021,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-shardone-beloe-suhoe-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 137,
+          "y": 109,
+          "width": 809,
+          "height": 3076,
+          "source_width": 1080,
+          "source_height": 3276
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -853,7 +1053,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/wine-zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 3,
+          "width": 217,
+          "height": 995,
+          "source_width": 217,
+          "source_height": 1000
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -879,7 +1087,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/official-geometry-pinot-gris.webp",
-        "source_id": "koktebel-geometry-pinot"
+        "source_id": "koktebel-geometry-pinot",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 173,
+          "height": 722,
+          "source_width": 183,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое сухое",
@@ -903,7 +1119,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/koktebel/official-planerskoe-traminer-magnum.webp",
-        "source_id": "koktebel-planerskoe-traminer"
+        "source_id": "koktebel-planerskoe-traminer",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 211,
+          "height": 722,
+          "source_width": 221,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое полусладкое",
