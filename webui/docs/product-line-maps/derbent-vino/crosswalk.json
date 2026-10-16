@@ -630,14 +630,22 @@
       "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
       "image_url": "https://derbentwine.ru/upload/iblock/cf9/cf999e54fd2184fe276b03b31b415116.png",
       "absence_check": "All 63 producer rows inspected by name and slug. The 5000 art package is absent. Monte Garu contains only white brut, white semi-sweet, and rose brut.",
-      "asset_sha256": null,
+      "asset_sha256": "b68a9554db61193988915ea05b2188d2b453eb98078f85720b4aa67fda797387",
       "rejected_image": {
         "date": "2026-10-16",
         "original_asset": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
         "input_asset_sha256": "d19e02deb574b957b3620f4414b421669c4bb666d4d0e9decee1e5836e4d1ef3",
         "reason": "The official page caption says Cabernet Sauvignon. The supplied bottle label says Cabernet Franc. Do not use this image as the Cabernet Sauvignon package.",
         "source_git_revision": "89aa3780",
-        "replacement": "The existing labeled placeholder. Keep the product and its catalog link."
+        "replacement": "The existing labeled placeholder. Keep the product and its catalog link.",
+        "resolution": "Replaced by the documented official-photo recovery. See image-recovery.json. The original rejection remains as history."
+      },
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
+        "image_url": "https://derbentwine.ru/upload/iblock/cf9/cf999e54fd2184fe276b03b31b415116.png",
+        "input_asset_sha256": "bf7623b0713e97e9403b5a74e469e121be7da3d5964a02ed7c6fa1c3472e8373",
+        "manifest": "image-recovery.json"
       }
     },
     {

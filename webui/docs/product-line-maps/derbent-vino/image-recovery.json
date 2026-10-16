@@ -1,0 +1,32 @@
+{
+  "producer_id": "derbent-vino",
+  "date": "2026-10-16",
+  "scope": "Fill every empty bottle-image slot in this producer map. Do not change catalog identities or wine_slug.",
+  "fine_print_limit": "Built-in imagegen can resample fine print and reflections. The official source defines the product facts. Do not use generated text as evidence.",
+  "assets": [
+    {
+      "product_id": "official-5000-cabernet-sauvignon",
+      "asset": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
+      "source_url": "https://derbentwine.ru/catalog/spetsproekt/5000/",
+      "source_image_url": "https://derbentwine.ru/upload/iblock/cf9/cf999e54fd2184fe276b03b31b415116.png",
+      "input_asset_sha256": "bf7623b0713e97e9403b5a74e469e121be7da3d5964a02ed7c6fa1c3472e8373",
+      "tool": "image_gen",
+      "operation": "background-extraction",
+      "mode": "built-in",
+      "prompt": "Use case: background-extraction. Input image: edit target, the official Derbent Vino 5000 red-wine product photograph. Remove only the entire background, rocks, ground and shadows outside the bottle. Keep exactly the central single upright bottle, including its amber wax cap, dark glass, reflections, all label artwork and visible text unchanged. Preserve the small print as shown, including Cabernet Franc; do not rewrite it as Cabernet Sauvignon. Reconstruct only any tiny occluded base edge if needed. Output a centered complete bottle on a genuinely transparent background with small clear padding. No backdrop, props, cast shadow, decorative frame, stripes or other bottles. This is a faithful product cutout, not a redesign.",
+      "generated_png_sha256": "4a92958ff82bd9d9042ca3baf928ebf82b1e6efcf5e2a8af2f70a65e3e978d07",
+      "output_asset_sha256": "b68a9554db61193988915ea05b2188d2b453eb98078f85720b4aa67fda797387",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 195,
+        "height": 720,
+        "source_width": 207,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original.",
+      "source_conflict": "The exact official page assigns this photo to Cabernet Sauvignon. The photo label says Cabernet Franc. Preserve the photo label. Show the discrepancy in a product badge. Do not infer a catalog slug."
+    }
+  ]
+}

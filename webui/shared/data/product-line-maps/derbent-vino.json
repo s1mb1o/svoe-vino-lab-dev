@@ -76,6 +76,11 @@
       "id": "endemy-bianca",
       "label": "«Эндемы Бианка»: официальная карточка",
       "url": "https://derbentwine.ru/catalog/endemy/igristye/bianka/"
+    },
+    {
+      "id": "photo-derbent",
+      "label": "Официальное фото: 5000 · Desono Каберне Совиньон",
+      "url": "https://derbentwine.ru/catalog/spetsproekt/5000/"
     }
   ],
   "price_positioning": {
@@ -2425,7 +2430,18 @@
       "variant": "",
       "wine_slug": null,
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
+        "source_id": "photo-derbent",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 195,
+          "height": 720,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Красное сухое",
       "grapes": [
@@ -2433,10 +2449,13 @@
       ],
       "description": "Лимитированный выпуск Desono в отдельном оформлении коллекции «5000». Красное сухое вино.",
       "release_status": "limited",
-      "badges": [],
+      "badges": [
+        "На фото производителя — Каберне Фран"
+      ],
       "price": null,
       "source_ids": [
-        "five-thousand"
+        "five-thousand",
+        "photo-derbent"
       ]
     },
     {

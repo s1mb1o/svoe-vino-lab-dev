@@ -37,6 +37,14 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Derbent Vino missing bottle images
+
+- Restore 1 missing bottle image from official product sources.
+- Record source hashes, preparation details and measured image frames.
+- Verify the restored images in desktop cards and mobile popups in Chromium and WebKit.
+- Show the official caption and photo-label discrepancy in a product badge.
+
+
 ## 2026-10-16 — Bottle scale validation
 
 - Resolve all 31 small-bottle observations through measured image frames.
