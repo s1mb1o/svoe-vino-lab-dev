@@ -41,10 +41,13 @@ The presentation files and video remain byte-identical to the previous release.
 
 ## Additional producer maps
 
+Check `official-5000-cabernet-sauvignon`, `wine-ona-skazala-da`, `wine-beloe-polusladkoe`, and all eight restored Zolotaya Balka images.
+Check their full outlines on light and dark backgrounds. Compare bottle height inside one group.
+
 1. Open `/lineup/<producer-id>?wine=<exact-slug>` for each registered producer.
 2. Confirm that the exact product is selected and its collection is expanded.
 3. Confirm that a gray product opens details without a portal link.
-4. Confirm that a product with no image shows «Нет изображения».
+4. Expand every group. Confirm that every current product has a bottle image. Block one image request. Confirm that «Нет изображения» replaces only the failed image.
 5. Change the producer with the preview selector. Confirm that old selection and popup state are cleared.
 6. At 390 px, open details, return to the map, and confirm that the map position is preserved.
 7. Repeat in light and dark themes. Check the 320 px layout and desktop side card.

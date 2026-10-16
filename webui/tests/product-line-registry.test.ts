@@ -34,6 +34,13 @@ const snapshotRecords: SnapshotRecord[] = snapshotBytes
   : []
 
 describe('producer map registry', () => {
+  it('has a bottle image and a measured frame for every current map product', () => {
+    const missing = PRODUCT_LINE_MAPS.flatMap(line => line.products
+      .filter(product => !product.image || !product.image.frame)
+      .map(product => `${line.producer.id}: ${product.id}`))
+    expect(missing).toEqual([])
+  })
+
   it('registers every producer JSON and rejects cross-producer ambiguity', () => {
     const files = readdirSync(new URL('../shared/data/product-line-maps/', import.meta.url)).filter(file => file.endsWith('.json'))
     expect(PRODUCT_LINE_MAPS.map(line => `${line.producer.id}.json`).sort()).toEqual(files.sort())

@@ -37,6 +37,14 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Complete bottle-image coverage
+
+- Require an image and a measured frame for every current map product.
+- Verify all 647 images across 11 producer maps. Preserve all 636 previous image files.
+- Pass 233 unit tests, the production build and 88 desktop/mobile browser cases.
+- Record official-photo recovery evidence and update smoke checks.
+
+
 ## 2026-10-16 — Zolotaya Balka missing bottle images
 
 - Restore 8 missing bottle images from official product sources.

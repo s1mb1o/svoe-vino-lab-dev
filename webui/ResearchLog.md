@@ -55,6 +55,22 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Missing bottle-image recovery, 2026-10-16
+
+The owner clarified that the reported card means the bottle image.
+The registry contains 647 products in 11 producer maps. Eleven image values were null.
+Eight unresolved Zolotaya Balka snapshot photos have exact official product photos.
+The Massandra base collection supplies its missing white semi-sweet bottle photo.
+The Fanagoria rose semi-sweet official card supplies a real single-bottle photo for «Она сказала Да!».
+This photo replaces an unrelated generated wedding scene.
+The official 5000 page assigns a Cabernet Franc label photo to a Cabernet Sauvignon caption.
+Use that assigned official photo with a visible discrepancy badge. Do not change the label or infer a wine_slug.
+A small 74x254 Zolotaya Balka source triggered two unwanted generated halos.
+The accepted edit starts from the original small photograph and retains its modest detail.
+Inspect light and dark composites. An alpha channel alone does not prove a clean outline.
+Read each changed producer’s `image-recovery.json` for URLs, hashes and exact built-in imagegen prompts.
+Catalog identities, descriptions, grapes, groups and links stay unchanged.
+
 ## Visible bottle size, 2026-10-16
 
 The image element height does not establish the visible bottle height.

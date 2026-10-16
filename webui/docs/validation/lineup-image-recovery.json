@@ -1,0 +1,957 @@
+{
+  "date": "2026-10-16",
+  "status": "passed",
+  "producers": 11,
+  "products": 647,
+  "missing_images": 0,
+  "existing_images_unchanged": 636,
+  "recovered_images": [
+    {
+      "producer": "derbent-vino",
+      "product_id": "official-5000-cabernet-sauvignon",
+      "src": "/product-line-maps/derbent-vino/official-5000-cabernet-sauvignon.webp",
+      "sha256": "b68a9554db61193988915ea05b2188d2b453eb98078f85720b4aa67fda797387",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 195,
+        "height": 720,
+        "source_width": 207,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 10,
+        "y": 10,
+        "width": 187,
+        "height": 712
+      }
+    },
+    {
+      "producer": "fanagoria",
+      "product_id": "wine-ona-skazala-da",
+      "src": "/product-line-maps/fanagoria/wine-ona-skazala-da.webp",
+      "sha256": "3e06a795d30d511f076bc2f71b258067e91209ea0dc942887386d8607ef3b9ad",
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "width": 240,
+        "height": 728,
+        "source_width": 244,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 6,
+        "y": 6,
+        "width": 232,
+        "height": 720
+      }
+    },
+    {
+      "producer": "massandra",
+      "product_id": "wine-beloe-polusladkoe",
+      "src": "/product-line-maps/massandra/wine-beloe-polusladkoe.webp",
+      "sha256": "babb0bc32601258272386b8786c6a5978e93520d871accba5365d3fdb7d66133",
+      "frame": {
+        "x": 7,
+        "y": 2,
+        "width": 175,
+        "height": 723,
+        "source_width": 189,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 11,
+        "y": 6,
+        "width": 167,
+        "height": 715
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-polusladkoe-krasnoe-zb-vajn-frizzante",
+      "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zb-vajn-frizzante.webp",
+      "sha256": "818496abf5f4e95742f3beba8a6ab5e90b3dc2ee34624ed921106518b411d40a",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 213,
+        "height": 720,
+        "source_width": 225,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 10,
+        "y": 10,
+        "width": 205,
+        "height": 712
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-polusladkoe-krasnoe-zolotaya-balka",
+      "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-krasnoe-zolotaya-balka.webp",
+      "sha256": "16f3816f3e31155d5ad91e13780fc76b3e02e9dc0620e89fccc84703d369850b",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 216,
+        "height": 722,
+        "source_width": 226,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 9,
+        "y": 9,
+        "width": 208,
+        "height": 714
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-polusladkoe-rozovoe-zolotaya-balka",
+      "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-rozovoe-zolotaya-balka.webp",
+      "sha256": "8935f9943929881ffb061f9180b692859f8e7a73a2b0ad7a97d2a9cee469b062",
+      "frame": {
+        "x": 8,
+        "y": 9,
+        "width": 214,
+        "height": 714,
+        "source_width": 230,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 12,
+        "y": 13,
+        "width": 206,
+        "height": 706
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-polusuhoe-rozovoe-zb-vajn-frizzante",
+      "src": "/product-line-maps/zolotaya-balka/wine-polusuhoe-rozovoe-zb-vajn-frizzante.webp",
+      "sha256": "74e953b5dabfb2a2e51e45de4d563e89166b58738dedeffba37f9b331ea63cff",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 210,
+        "height": 720,
+        "source_width": 222,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 10,
+        "y": 10,
+        "width": 202,
+        "height": 712
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-suhoe-beloe-zb-vajn-frizzante",
+      "src": "/product-line-maps/zolotaya-balka/wine-suhoe-beloe-zb-vajn-frizzante.webp",
+      "sha256": "591f3a30935789cbef5da3c5881645a7e775b2d0af9b6b389f69127e6205a625",
+      "frame": {
+        "x": 6,
+        "y": 6,
+        "width": 214,
+        "height": 720,
+        "source_width": 226,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 10,
+        "y": 10,
+        "width": 206,
+        "height": 712
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-zb-vajn-risling-polusuhoe-beloe",
+      "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-risling-polusuhoe-beloe.webp",
+      "sha256": "1943409967fee4b1d6b281088b1bc6dc229fc5b3c6af7c7a41085635fac7b2c1",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 177,
+        "height": 722,
+        "source_width": 187,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 9,
+        "y": 9,
+        "width": 169,
+        "height": 714
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-zb-vajn-roze-suhoe-rozovoe",
+      "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-roze-suhoe-rozovoe.webp",
+      "sha256": "6566bbf71656d5d0abadfae9e1761a5742571b87e22c85f4fab36cf069fc15cd",
+      "frame": {
+        "x": 5,
+        "y": 4,
+        "width": 176,
+        "height": 723,
+        "source_width": 186,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 9,
+        "y": 8,
+        "width": 168,
+        "height": 715
+      }
+    },
+    {
+      "producer": "zolotaya-balka",
+      "product_id": "wine-zb-vajn-spumante-polusuhoe-beloe",
+      "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-polusuhoe-beloe.webp",
+      "sha256": "3a9f4497b8d0d8b9e67bfc2bb775b0e0fb1cbd676a2cfe365908e8891cb0a977",
+      "frame": {
+        "x": 5,
+        "y": 5,
+        "width": 210,
+        "height": 722,
+        "source_width": 220,
+        "source_height": 732
+      },
+      "visible": {
+        "x": 9,
+        "y": 9,
+        "width": 202,
+        "height": 714
+      }
+    }
+  ],
+  "browsers": [
+    {
+      "engine": "chromium",
+      "status": "passed",
+      "cases": [
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        }
+      ],
+      "recovered_http_images": 11
+    },
+    {
+      "engine": "webkit",
+      "status": "passed",
+      "cases": [
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "abrau-durso",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 52,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "alma-valley",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 41,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "derbent-vino",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 67,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "fanagoria",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 108,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "inkerman",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 17,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "koktebel",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 28,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "kuban-vino",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 103,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "massandra",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 46,
+          "recovered_details_checked": 1,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "myskhako",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 97,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "vedernikov",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 45,
+          "recovered_details_checked": 0,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "theme": "light",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 1440,
+          "theme": "dark",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 390,
+          "theme": "light",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        },
+        {
+          "producer": "zolotaya-balka",
+          "width": 320,
+          "theme": "dark",
+          "nodes_checked": 43,
+          "recovered_details_checked": 8,
+          "status": "passed"
+        }
+      ],
+      "recovered_http_images": 11
+    }
+  ],
+  "tests": {
+    "unit_tests": 233,
+    "unit_files": 16,
+    "full_catalog_snapshot": "official-2026-09-17",
+    "build": "passed",
+    "git_diff_check": "passed"
+  }
+}
