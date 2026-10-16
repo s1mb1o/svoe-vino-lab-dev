@@ -258,7 +258,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 959,
+          "y": 547,
+          "width": 1157,
+          "height": 3596,
+          "source_width": 3090,
+          "source_height": 4631
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -283,7 +291,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-balaklava-muskat.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1191,
+          "y": 700,
+          "width": 1498,
+          "height": 4616,
+          "source_width": 3882,
+          "source_height": 5811
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -308,7 +324,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-balaklava-muskat-beloe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 43,
+          "y": 19,
+          "width": 383,
+          "height": 1161,
+          "source_width": 459,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -335,7 +359,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-balaklava-pino-nuar.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 993,
+          "y": 603,
+          "width": 1147,
+          "height": 3570,
+          "source_width": 3157,
+          "source_height": 4725
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -360,7 +392,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-bryut-beloe-zolotaya-balka.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 1354,
+          "y": 881,
+          "width": 1271,
+          "height": 4348,
+          "source_width": 3992,
+          "source_height": 5976
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -385,7 +425,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-bryut-rozovoe-zolotaya-balka.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 213,
+          "height": 720,
+          "source_width": 225,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -410,7 +458,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-cuvee-de-vitmer-brut.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 991,
+          "y": 705,
+          "width": 1147,
+          "height": 3570,
+          "source_width": 3137,
+          "source_height": 4694
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -437,7 +493,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-polusladkoe-beloe-zolotaya-balka.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 6,
+          "width": 210,
+          "height": 720,
+          "source_width": 223,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -528,7 +592,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-polusuhoe-beloe-zolotaya-balka.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 212,
+          "height": 720,
+          "source_width": 224,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -575,7 +647,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-bryut-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 67,
+          "y": 47,
+          "width": 328,
+          "height": 1133,
+          "source_width": 470,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -606,7 +686,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-bryut-spumante.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 9,
+          "y": 6,
+          "width": 350,
+          "height": 1193,
+          "source_width": 368,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -636,7 +724,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-rozovoe-polusladkoe-1.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 12,
+          "y": 0,
+          "width": 355,
+          "height": 1180,
+          "source_width": 380,
+          "source_height": 1180
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -663,7 +759,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-shardone-balaklava.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 935,
+          "y": 499,
+          "width": 1149,
+          "height": 3576,
+          "source_width": 3043,
+          "source_height": 4554
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -710,7 +814,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-wine.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 964,
+          "y": 553,
+          "width": 1150,
+          "height": 3591,
+          "source_width": 3098,
+          "source_height": 4637
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -735,7 +847,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-moskato-polusladkoe-beloe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 214,
+          "height": 720,
+          "source_width": 226,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -760,7 +880,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-moskato-polusladkoe-rozovoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 216,
+          "height": 720,
+          "source_width": 228,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -829,7 +957,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-bryut-beloe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 216,
+          "height": 720,
+          "source_width": 228,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -854,7 +990,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-spumante-bryut-rozovoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 213,
+          "height": 720,
+          "source_width": 225,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -901,7 +1045,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-vajn-vajt-suhoe-beloe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 181,
+          "height": 720,
+          "source_width": 193,
+          "source_height": 732
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -926,7 +1078,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zb-wine-moscato-beloe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 12,
+          "y": 52,
+          "width": 323,
+          "height": 1096,
+          "source_width": 346,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -952,7 +1112,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-black-prince-crimea-prestige-cuvee-extra-brut-limited-edition-shardone-beloe-ekstra-bryut-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 454,
+          "height": 1500,
+          "source_width": 454,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -977,7 +1145,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-blanc-de-neige-shardone-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 490,
+          "height": 1500,
+          "source_width": 490,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1003,7 +1179,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 810,
+          "y": 16,
+          "width": 746,
+          "height": 2346,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1028,7 +1212,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-cuvee-de-vitmer-rose-pino-blan-rozovoe-bryut-12.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 800,
+          "y": 0,
+          "width": 762,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1053,7 +1245,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-igristoe-krasnoe-polusladkoe.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 18,
+          "y": 17,
+          "width": 336,
+          "height": 1166,
+          "source_width": 380,
+          "source_height": 1200
+        }
       },
       "category": "Вино",
       "style": "Красное",
@@ -1080,7 +1280,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-pink-sira-rozovoe-suhoe-13.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 515,
+          "height": 1500,
+          "source_width": 515,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1106,7 +1314,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-frizzante-dry-risling-beloe-suhoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 424,
+          "height": 1500,
+          "source_width": 424,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1133,7 +1349,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 424,
+          "height": 1500,
+          "source_width": 424,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1166,7 +1390,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-moscato-semi-sweet-rose-muskat-yantarnyy-rozovoe-polusladkoe-9.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 1500,
+          "source_width": 434,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Розовое",
@@ -1192,7 +1424,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-spumante-brut-risling-beloe-bryut-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 428,
+          "height": 1500,
+          "source_width": 428,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1218,7 +1458,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 428,
+          "height": 1500,
+          "source_width": 428,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1244,7 +1492,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 366,
+          "height": 1500,
+          "source_width": 366,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1269,7 +1525,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/wine-zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125.webp",
-        "source_id": "svoe-vino-2026-09-17"
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 373,
+          "height": 1500,
+          "source_width": 373,
+          "source_height": 1500
+        }
       },
       "category": "Вино",
       "style": "Белое",
@@ -1294,7 +1558,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/official-more-nebo-red-semi-dry.webp",
-        "source_id": "official-more-nebo-red"
+        "source_id": "official-more-nebo-red",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 198,
+          "height": 722,
+          "source_width": 208,
+          "source_height": 732
+        }
       },
       "category": "Тихое вино",
       "style": "Красное · полусухое",
@@ -1318,7 +1590,15 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/zolotaya-balka/official-more-nebo-white-brut.webp",
-        "source_id": "official-more-nebo-white"
+        "source_id": "official-more-nebo-white",
+        "frame": {
+          "x": 5,
+          "y": 5,
+          "width": 208,
+          "height": 722,
+          "source_width": 218,
+          "source_height": 732
+        }
       },
       "category": "Игристое вино",
       "style": "Белое · брют",
