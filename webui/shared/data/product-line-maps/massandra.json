@@ -80,6 +80,11 @@
       "id": "official-black-muscat",
       "label": "Официальная карточка: Мускат чёрный Массандра",
       "url": "https://massandra.ru/catalog/vina-tikhie-kreplenye/desertnye/marochnoe-vino/muskaty/muskat-chernyy-massandra/"
+    },
+    {
+      "id": "photo-massandra-white",
+      "label": "Официальное фото: Белое полусладкое",
+      "url": "https://massandra.ru/catalog/vino-tikhoe/bazovaya-lineyka/polusladkoe-beloe/"
     }
   ],
   "price_positioning": {
@@ -295,7 +300,18 @@
       "variant": "",
       "wine_slug": "beloe-polusladkoe",
       "wine_slug_aliases": [],
-      "image": null,
+      "image": {
+        "src": "/product-line-maps/massandra/wine-beloe-polusladkoe.webp",
+        "source_id": "photo-massandra-white",
+        "frame": {
+          "x": 7,
+          "y": 2,
+          "width": 175,
+          "height": 723,
+          "source_width": 189,
+          "source_height": 732
+        }
+      },
       "category": "Вино",
       "style": "Белое",
       "grapes": [],
@@ -305,7 +321,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-base"
+        "official-base",
+        "photo-massandra-white"
       ]
     },
     {

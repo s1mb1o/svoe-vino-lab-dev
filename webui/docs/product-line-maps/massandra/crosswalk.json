@@ -36,11 +36,18 @@
       "catalog_name": "Белое полусладкое",
       "catalog_producer": "Массандра",
       "source_image": null,
-      "asset_sha256": null,
+      "asset_sha256": "babb0bc32601258272386b8786c6a5978e93520d871accba5365d3fdb7d66133",
       "group_source_ids": [
         "official-base"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "image_recovery": {
+        "date": "2026-10-16",
+        "source_url": "https://massandra.ru/catalog/vino-tikhoe/bazovaya-lineyka/polusladkoe-beloe/",
+        "image_url": "https://massandra.ru/upload/iblock/916/j0cxuj6j04neio78j24y2mnzset50zrl.png",
+        "input_asset_sha256": "9f0a3fe49d2d7683533eef4f32e0c54e50c191932b61b1fccde57f7e467a9946",
+        "manifest": "image-recovery.json"
+      }
     },
     {
       "wine_slug": "caperavi-avtorskoe-vino",

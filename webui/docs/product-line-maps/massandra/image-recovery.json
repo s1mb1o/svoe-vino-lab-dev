@@ -1,0 +1,31 @@
+{
+  "producer_id": "massandra",
+  "date": "2026-10-16",
+  "scope": "Fill every empty bottle-image slot in this producer map. Do not change catalog identities or wine_slug.",
+  "fine_print_limit": "Built-in imagegen can resample fine print and reflections. The official source defines the product facts. Do not use generated text as evidence.",
+  "assets": [
+    {
+      "product_id": "wine-beloe-polusladkoe",
+      "asset": "/product-line-maps/massandra/wine-beloe-polusladkoe.webp",
+      "source_url": "https://massandra.ru/catalog/vino-tikhoe/bazovaya-lineyka/polusladkoe-beloe/",
+      "source_image_url": "https://massandra.ru/upload/iblock/916/j0cxuj6j04neio78j24y2mnzset50zrl.png",
+      "input_asset_sha256": "9f0a3fe49d2d7683533eef4f32e0c54e50c191932b61b1fccde57f7e467a9946",
+      "tool": "Pillow",
+      "operation": "Alpha-preserving resize and WebP encoding",
+      "mode": "local",
+      "prompt": null,
+      "generated_png_sha256": null,
+      "output_asset_sha256": "babb0bc32601258272386b8786c6a5978e93520d871accba5365d3fdb7d66133",
+      "frame": {
+        "x": 7,
+        "y": 2,
+        "width": 175,
+        "height": 723,
+        "source_width": 189,
+        "source_height": 732
+      },
+      "postprocess": "Crop to alpha >= 128 with 8 source px margin. Fit to maximum 720 px height. Add 6 transparent px. Encode WebP quality 88, alpha quality 100. Measure the final frame with 0.5% outline-height margin.",
+      "review": "Accepted after comparison with the official source at map and detail sizes. Light and dark composites show the complete bottle outline without an opaque backdrop or halo. Main product design is retained. Generated fine print and reflections can differ from the original."
+    }
+  ]
+}
