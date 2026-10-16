@@ -89,3 +89,10 @@ On 2026-10-16, the owner replaced the mobile bottom card with a popup widget.
 Grouping reduces the initial number of visible products.
 A neutral formats section avoids unsupported price comparisons between bottles, cans, and alcohol-free drinks.
 The implementation uses native scroll surfaces and Vue components. It does not need a new graph dependency.
+
+## Image framing extension, 2026-10-16
+
+Each image MAY contain a measured `frame` rectangle and source dimensions.
+The renderer MUST size the visible frame consistently across products.
+The renderer MUST retain source aspect ratio and keep the complete visible outline.
+Read `../product-image-sizing.md` for the contract and measurement method.

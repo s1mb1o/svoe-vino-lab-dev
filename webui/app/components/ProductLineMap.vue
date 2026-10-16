@@ -56,6 +56,7 @@ const selectedImage = computed(() => {
   const src = activeUnknown.value?.image || selectedProduct.value?.image?.src
   return src && !failedImages.value.has(src) ? src : undefined
 })
+const selectedFrame = computed(() => activeUnknown.value ? undefined : selectedProduct.value?.image?.frame)
 const selectedUrl = computed(() => {
   if (selectedProduct.value) return productPortalUrl(selectedProduct.value)
   return activeUnknown.value ? sourceWineUrl(activeUnknown.value.slug) : null
@@ -450,11 +451,11 @@ defineExpose({ centerInitial })
                       <span class="plm-group-heading"><strong>{{ group.name }}</strong><span>{{ productCountLabel(groupProducts(group).length) }}<span v-if="recognized && initialProduct?.group_id === group.id" class="plm-group-current"> · Ваше вино</span></span></span><span class="plm-group-toggle-icon"><AppIcon :name="expandedGroups.has(group.id) ? 'minus' : 'plus'" /></span>
                     </button>
                     <p v-if="groupMethod(group)" class="plm-group-method">{{ groupMethod(group) }}</p>
-                    <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть группу ${group.name}`" @click="toggleGroup(group, true)"><template v-for="product in groupProducts(group).slice(0, 4)" :key="product.id"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async"><span v-else class="plm-image-placeholder" :aria-label="`${product.name}: нет изображения`"><AppIcon name="image" /><span>Нет изображения</span></span></template><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button></template>
+                    <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть группу ${group.name}`" @click="toggleGroup(group, true)"><template v-for="product in groupProducts(group).slice(0, 4)" :key="product.id"><ProductLineImage v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :frame="product.image.frame" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async" /><span v-else class="plm-image-placeholder" :aria-label="`${product.name}: нет изображения`"><AppIcon name="image" /><span>Нет изображения</span></span></template><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button></template>
                     <p class="plm-group-description">{{ group.description }}</p>
                     <div v-show="expandedGroups.has(group.id)" :id="`${mapId}-products-${group.id}`" class="plm-products" role="group" :aria-label="`Вина группы ${group.name}`">
                       <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product, $event)">
-                        <span class="plm-product-bottle"><img v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет карточки</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
+                        <span class="plm-product-bottle"><ProductLineImage v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :frame="product.image.frame" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет карточки</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
                       </button>
                     </div>
                   </article>
@@ -470,7 +471,7 @@ defineExpose({ centerInitial })
         <template v-if="(isMobile || showDetails) && (selectedProduct || activeUnknown)">
           <div v-if="isMobile" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
           <div class="plm-detail-scroll">
-          <div class="plm-detail-summary"><div class="plm-detail-image"><img v-if="selectedImage" :src="selectedImage" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async"><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
+          <div class="plm-detail-summary"><div class="plm-detail-image"><ProductLineImage v-if="selectedImage" :src="selectedImage" :frame="selectedFrame" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
           <div class="plm-detail-content">
             <template v-if="selectedProduct">
               <div class="plm-detail-badges"><span v-if="selectedTier">{{ selectedTier.label }}</span><span v-if="releaseLabel(selectedProduct)">{{ releaseLabel(selectedProduct) }}</span><span v-for="badge in selectedProduct.badges" :key="badge">{{ badge }}</span></div>
@@ -545,7 +546,8 @@ defineExpose({ centerInitial })
 .plm-group-toggle-icon { display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--accent); }
 .plm-group-toggle-icon .icon { width: 15px; height: 15px; }
 .plm-group-method { margin: 9px 16px 13px; color: var(--muted); font-size: 10px; line-height: 1.5; }
-.plm-group-preview { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 10px; width: calc(100% - 32px); min-height: 145px; margin: 0 16px; padding: 9px 8px 30px; border-radius: 9px; background: linear-gradient(180deg, transparent, var(--cream)); }
+.plm-group-preview { --plm-image-height: 106px; --plm-image-width: 52px; position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 10px; width: calc(100% - 32px); min-height: 145px; margin: 0 16px; padding: 9px 8px 30px; border-radius: 9px; background: linear-gradient(180deg, transparent, var(--cream)); }
+.plm-group-preview>.plm-image-frame { filter: drop-shadow(0 5px 4px #32231814); }
 .plm-group-preview>img { width: auto; max-width: 52px; height: 106px; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 4px #32231814); }
 .plm-image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 66px; min-height: 100px; padding: 7px; color: var(--muted); font-size: 9px; line-height: 1.3; text-align: center; }
 .plm-image-placeholder .icon { width: 28px; height: 40px; opacity: .6; }
@@ -557,7 +559,8 @@ defineExpose({ centerInitial })
 .plm-product { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; min-height: 210px; padding: 10px 7px 9px; border: 1px solid transparent; border-radius: 10px; color: var(--ink); background: var(--paper); text-align: center; }
 .plm-product:hover { border-color: var(--line); }
 .plm-product.is-selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.plm-product-bottle { display: flex; justify-content: center; align-items: flex-end; height: 112px; width: 100%; margin-bottom: 9px; }
+.plm-product-bottle { --plm-image-height: 112px; --plm-image-width: 70px; display: flex; justify-content: center; align-items: flex-end; height: 112px; width: 100%; margin-bottom: 9px; }
+.plm-product-bottle>.plm-image-frame { filter: drop-shadow(0 5px 4px #32231814); }
 .plm-product-bottle img { width: auto; height: 112px; max-width: 70px; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 4px #32231814); }
 .plm-product strong { font-size: 12px; line-height: 1.35; font-weight: 600; overflow-wrap: anywhere; }
 .plm-product-style { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.4; }
@@ -565,7 +568,7 @@ defineExpose({ centerInitial })
 .plm-selected-marker, .plm-unavailable-marker { display: block; margin-top: auto; padding-top: 7px; color: var(--accent); font-size: 8px; line-height: 1.3; }
 .plm-product.is-unavailable { background: var(--plm-muted-bg); color: var(--plm-muted-ink); }
 .plm-product.is-unavailable .plm-product-style { color: var(--plm-muted-ink); }
-.plm-product.is-unavailable img, img.is-unavailable { filter: grayscale(1) opacity(.7); }
+.plm-product.is-unavailable img, .plm-product.is-unavailable .plm-image-frame, img.is-unavailable, .plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
 .plm-unavailable-marker { color: var(--plm-muted-ink); }
 .plm-position-note { display: flex; gap: 7px; margin: 11px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .plm-position-note>.icon { width: 14px; height: 14px; margin-top: 1px; }
@@ -574,9 +577,10 @@ defineExpose({ centerInitial })
 .plm-detail-summary { flex-shrink: 0; }
 .plm-detail-content { min-height: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .plm-tier-disclaimer { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 10px 0; }
-.plm-detail-image { display: flex; justify-content: center; align-items: center; height: 190px; margin: -4px 0 14px; background: radial-gradient(ellipse at center bottom, var(--cream), transparent 65%); }
+.plm-detail-image { --plm-image-height: 176px; --plm-image-width: 120px; display: flex; justify-content: center; align-items: center; height: 190px; margin: -4px 0 14px; background: radial-gradient(ellipse at center bottom, var(--cream), transparent 65%); }
+.plm-detail-image>.plm-image-frame { filter: drop-shadow(0 8px 7px #32231818); }
 .plm-detail-image img { width: auto; height: 176px; max-width: 120px; object-fit: contain; filter: drop-shadow(0 8px 7px #32231818); }
-.plm-detail-image img.is-unavailable { filter: grayscale(1) opacity(.7); }
+.plm-detail-image img.is-unavailable, .plm-detail-image>.plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
 .plm-detail-heading h3 { margin: 7px 0; font: 500 25px/1.2 'Playfair Display', Georgia, serif; overflow-wrap: anywhere; }
 .plm-detail-heading h3:focus { outline: none; }
 .plm-detail-style { color: var(--muted); font-size: 12px; line-height: 1.5; }
@@ -630,7 +634,7 @@ defineExpose({ centerInitial })
   .plm-position-note { font-size: 10px; }
   aside.plm-details { display: none; }
   .plm-detail-summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
-  .plm-detail-image { height: 112px; margin: 0; }
+  .plm-detail-image { --plm-image-height: 108px; --plm-image-width: 68px; height: 112px; margin: 0; }
   .plm-detail-image img { height: 108px; max-width: 68px; }
   .plm-detail-heading h3 { font-size: 23px; margin: 6px 0; }
   .plm-detail-style { font-size: 12px; }

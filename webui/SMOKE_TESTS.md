@@ -457,3 +457,12 @@ Check both sides of the neck on flat light and dark backgrounds.
 Confirm that no white rectangle remains outside the bottle.
 Check the desktop detail panel and the mobile popup.
 Read `docs/validation/lineup-image-visual-review.md` before accepting a complete lineup image review.
+
+## Visible bottle scale
+
+Open `/lineup/fanagoria?wine=fanagoriya-100-ottenkov-krasnogo-pino-nuar-krasnoe-suhoe-135`.
+Compare Pinot Noir with the other 100 Shades bottles. Check the actual outline height.
+Check the Formula Q, Blanc de Blancs and Ice Wine groups.
+Repeat in group previews, expanded nodes, desktop details and the mobile popup.
+Check both themes. Confirm that no cap, base, box or label is clipped.
+Check a gray product and an image HTTP 404. The placeholder and portal rules MUST remain correct.

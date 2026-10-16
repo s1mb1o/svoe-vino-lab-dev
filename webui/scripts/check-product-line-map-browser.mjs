@@ -240,7 +240,7 @@ async function screenshotsAndResponsiveStates() {
 
       await chooseProduct(map, 'victor-dravigny', grayId)
       assert(await map.locator(`[data-product-id="${grayId}"]`).evaluate(element => element.classList.contains('is-unavailable')))
-      assert.match(await map.locator(`[data-product-id="${grayId}"] img`).evaluate(element => getComputedStyle(element).filter), /grayscale\(1\)/)
+      assert.match(await map.locator(`[data-product-id="${grayId}"] img`).evaluate(element => getComputedStyle(element.closest('[data-image-frame]') || element).filter), /grayscale\(1\)/)
       const contrasts = await map.locator(`[data-product-id="${grayId}"]`).evaluate(element => {
         const luminance = color => {
           const channels = color.match(/[\d.]+/g).slice(0, 3).map(Number).map(value => {

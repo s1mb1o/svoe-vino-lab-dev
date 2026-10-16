@@ -101,6 +101,25 @@ describe('producer product-line graph', () => {
     expect(errors.some(error => error.startsWith('Unsafe source URL:'))).toBe(true)
   })
 
+  it('rejects image frames that cannot fit the source image', () => {
+    const invalidFrames = [
+      { x: -1, y: 0, width: 30, height: 100, source_width: 100, source_height: 100 },
+      { x: 0, y: 0, width: 0, height: 100, source_width: 100, source_height: 100 },
+      { x: 80, y: 0, width: 30, height: 100, source_width: 100, source_height: 100 },
+      { x: 0, y: 20, width: 30, height: 100, source_width: 100, source_height: 100 },
+      { x: 0, y: 0, width: 30, height: 100, source_width: 0, source_height: 100 },
+      { x: 0, y: 0, width: 30.5, height: 100, source_width: 100, source_height: 100 },
+    ]
+    for (const frame of invalidFrames) {
+      const broken = structuredClone(line)
+      broken.products[0]!.image!.frame = frame
+      expect(validateProductLineMap(broken)).toContain(`Invalid image frame: ${broken.products[0]!.id}`)
+    }
+    const valid = structuredClone(line)
+    valid.products[0]!.image!.frame = { x: 35, y: 0, width: 30, height: 100, source_width: 100, source_height: 100 }
+    expect(validateProductLineMap(valid)).toEqual([])
+  })
+
   it('rejects ambiguous premium ranks and empty tiers', () => {
     const broken = structuredClone(line)
     broken.tiers[1]!.rank = broken.tiers[0]!.rank

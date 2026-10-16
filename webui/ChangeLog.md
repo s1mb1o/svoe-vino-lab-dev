@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Visible bottle sizing
+
+- Size producer-map images from their measured visible frame.
+- Preserve source aspect ratio and use one sizing component for previews, nodes and product details.
+- Validate optional frame geometry and keep image-error placeholders available.
+- Add a read-only frame measurement script and document the frame contract.
+
 ## 2026-10-16 — Complete lineup image review
 
 - Review all 636 images on flat light and dark backgrounds.

@@ -55,6 +55,15 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Visible bottle size, 2026-10-16
+
+The image element height does not establish the visible bottle height.
+A square image with transparent side fields can reach max-width before the requested height.
+31 reviewed images rendered at approximately 118–127 px inside a 176 px desktop image area.
+Measured JSON frames remove this source-canvas dependency. The renderer preserves the original source pixels.
+Cropping source assets would change their bytes. Runtime alpha scans would add work to mobile navigation.
+Use measured frames for stable server-rendered layout. Read `docs/product-image-sizing.md`.
+
 ## Complete lineup image review, 2026-10-16
 
 The manual review covers 636 image files in 22 light and dark contact sheets.

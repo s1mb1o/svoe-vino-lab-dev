@@ -6,6 +6,14 @@ import { sourceWineUrl } from './catalog'
 export interface LineSource { id: string; label: string; url: string }
 export interface LineTier { id: string; label: string; rank: number; description: string; price_label: string; source_ids: string[] }
 export interface LineGroup { id: string; name: string; tier_id: string; method: string; description: string; source_ids: string[] }
+export interface LineImageFrame {
+  x: number
+  y: number
+  width: number
+  height: number
+  source_width: number
+  source_height: number
+}
 export interface LineProduct {
   id: string
   group_id: string
@@ -13,7 +21,7 @@ export interface LineProduct {
   variant: string
   wine_slug: string | null
   wine_slug_aliases: string[]
-  image: { src: string; source_id: string } | null
+  image: { src: string; source_id: string; frame?: LineImageFrame } | null
   category: string
   style: string
   grapes: string[]
@@ -122,6 +130,10 @@ export function validateProductLineMap(line: ProductLineMapData): string[] {
     if (!groups.has(product.group_id)) errors.push(`Unknown group: ${product.id}`)
     if (!product.name || !product.description || !product.style) errors.push(`Incomplete product: ${product.id}`)
     if (product.image !== null && (!product.image.src.startsWith(`/product-line-maps/${line.producer.id}/`) || !/^[a-z0-9/.-]+\.webp$/.test(product.image.src) || product.image.src.includes('..'))) errors.push(`Unsafe image path: ${product.id}`)
+    const frame = product.image?.frame
+    if (frame && (![frame.x, frame.y, frame.width, frame.height, frame.source_width, frame.source_height].every(Number.isSafeInteger)
+      || frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 || frame.source_width <= 0 || frame.source_height <= 0
+      || frame.x + frame.width > frame.source_width || frame.y + frame.height > frame.source_height)) errors.push(`Invalid image frame: ${product.id}`)
     checkSources([...product.source_ids, ...(product.image ? [product.image.source_id] : [])], product.id)
     if (product.wine_slug === null && product.wine_slug_aliases.length) errors.push(`Unlinked product has aliases: ${product.id}`)
     for (const slug of [product.wine_slug, ...product.wine_slug_aliases]) {
