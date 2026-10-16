@@ -432,3 +432,44 @@ Its SHA-256 is
 `9066ff9c377305d8eef2880d0c127a276d841bfd52d50af31c16740b53503279`.
 Gradle found NanoHTTPD 2.3.1 in the debug runtime.
 Gradle found no NanoHTTPD dependency in the release runtime.
+
+## Realme RMX3890 debug endpoint verification
+
+Date: 2026-10-17
+
+The test used a Realme RMX3890 with Android 14 and API level 34.
+The installed debug application had version 0.1.5 and version code 6.
+The installed model pack was `20261005-dis-current`.
+The pack contained 2,178 wines, 2,178 vectors, and 2,178 images.
+The vector dimension was 768.
+
+The cold application start completed in 1,046 ms.
+The application process stayed active for all tests.
+`GET /healthz` returned HTTP 200 through ADB forwarding.
+The health response reported the correct pack version and wine count.
+
+Workbench sent the first 10 queries of `my` to each endpoint.
+Both runs had zero request errors and zero empty responses.
+
+| Endpoint | R@1 | R@5 | R@10 | MRR | Median latency | P95 latency |
+|---|---:|---:|---:|---:|---:|---:|
+| `/v1/eval/predict` | 0.5 | — | — | 0.5 | 4,158 ms | 14,516 ms |
+| `/v1/match?k=20` | 0.5 | 0.7 | 0.7 | 0.5833 | 4,217 ms | 5,711 ms |
+
+The first request included model initialization time.
+No request met the configured 3,000 ms latency objective.
+This 10-query smoke test does not represent the complete test set.
+
+The automatic accelerator selection used GPU for DIS.
+The automatic accelerator selection used CPU for SigLIP2.
+LiteRT delegated all 247 DIS nodes to `LITERT_CL`.
+LiteRT used XNNPACK for SigLIP2.
+Logcat contained no `FATAL EXCEPTION`, `SIGABRT`, or model inference error.
+
+The test disabled the debug HTTP server after the run.
+The test removed the ADB port forward after the run.
+
+The Workbench runs are:
+
+- `2026-10-16T213239Z-lab-android-device-eval-predict-my-realme-usb-smoke-20261017-rerun`.
+- `2026-10-16T213339Z-lab-android-device-match-k20-my-realme-usb-smoke-20261017`.

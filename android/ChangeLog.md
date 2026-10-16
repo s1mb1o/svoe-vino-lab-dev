@@ -1,5 +1,19 @@
 # Change log
 
+## 2026-10-17
+
+### Realme USB smoke test
+
+- Verified cold start on a Realme RMX3890 with Android 14.
+- Verified the installed 0.1.5 debug application and model pack.
+- Ran 10 queries through `/v1/eval/predict` with zero request errors.
+- Ran 10 queries through `/v1/match?k=20` with zero request errors.
+- Measured recall@1 0.5 for both endpoints.
+- Measured recall@5 0.7 for `/v1/match?k=20`.
+- Confirmed that Logcat contained no `FATAL EXCEPTION` or `SIGABRT`.
+- Disabled the debug HTTP server after the test.
+- Removed the ADB port forward after the test.
+
 ## 2026-10-03
 
 ### Five-degree Android reference rotation
