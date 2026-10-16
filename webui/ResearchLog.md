@@ -1,3 +1,7 @@
+# 2026-10-16: ESSE
+
+Check ESSE against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/esse/sources.md.
+
 # Research log
 
 ## Matcher answer for HEIC without HEIF support, 2026-10-18

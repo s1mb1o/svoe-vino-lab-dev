@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-16",
+  "review": "Inspect the complete alpha outline on light and dark surfaces. Imagegen can change fine print. Product facts come from the source catalog, not generated text.",
+  "records": [
+    {
+      "product_id": "official-yellow-gloves",
+      "input_sha256": "f823ba2edbe34bd3cbf55092350221026f3273f9375e49e11d35268f6929c490",
+      "generated_sha256": "cac0c34a84ddeb6bdc9dab5432ec02cd8b8ab24d05a33f419592ca9e4736b474",
+      "prompt": "Use case: background-extraction. Remove only the gray/white rectangle background and stripe remnants outside this exact ESSE Yellow Gloves Sauvignon Blanc wine bottle. Preserve the complete bottle, white cap, glass color, reflections, black label, yellow gloves artwork and existing lettering. One upright bottle, real transparent alpha, generous clear margins, no floor shadow and no stray pixels. Do not redesign the label or generate new wording.",
+      "tool": "built-in imagegen",
+      "source_url": "https://static.tildacdn.com/tild3264-3434-4333-b436-663333663230/sov-yellow-glov.png",
+      "asset_sha256": "269df0363b2ff7eb1a93c5c05038307de23856da0bcea63748645129a0db3628"
+    }
+  ]
+}

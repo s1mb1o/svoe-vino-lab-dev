@@ -6,6 +6,7 @@ import { PRODUCT_LINE_MAPS, resolveProductLine, findProducerLine, productPortalU
 const snapshotSha256 = 'e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961'
 // Pin the agreed snapshot coverage independently of the generated baselines.
 const expectedCatalog: Record<string, { producer: string; count: number }> = {
+  'esse': { producer: 'ESSE', count: 53 },
   'derbent-vino': { producer: 'Дербент Вино', count: 63 },
   fanagoria: { producer: 'Фанагория', count: 102 },
   'kuban-vino': { producer: 'Кубань-Вино', count: 97 },

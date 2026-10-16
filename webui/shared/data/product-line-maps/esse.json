@@ -1,0 +1,1964 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "esse",
+    "name": "ESSE",
+    "aliases": [
+      "Esse Wine"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "ESSE: официальные коллекции",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-kacha-valley",
+      "label": "ESSE: KACHA VALLEY",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-classic",
+      "label": "ESSE: ESSE classic",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-stones",
+      "label": "ESSE: ESSE stones / Отборное",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-unplugged",
+      "label": "ESSE: Unplugged · авторские стили",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-natural-sweet",
+      "label": "ESSE: Природно полусладкие",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "ESSE: ESSE sparkling",
+      "url": "https://essewine.com/wines"
+    },
+    {
+      "id": "official-official-yellow-gloves",
+      "label": "Официальная карточка: YELLOW GLOVES Unplugged",
+      "url": "https://essewine.com/wines"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-classic"
+      ]
+    },
+    {
+      "id": "tier-1",
+      "label": "Базовые коллекции",
+      "rank": 1,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-stones"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-unplugged",
+        "official-natural-sweet",
+        "official-sparkling"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "kacha-valley",
+      "name": "KACHA VALLEY",
+      "tier_id": "tier-3",
+      "method": "Терруарные вина; отбор участков и дубовая выдержка",
+      "description": "Вина долины реки Кача. Производитель выделяет лучшие участки и работу с французским дубом. Выпуски и купажи из снимка сохранены отдельно.",
+      "source_ids": [
+        "official-kacha-valley",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "ESSE classic",
+      "tier_id": "tier-2",
+      "method": "Тихие вина; технология зависит от сорта",
+      "description": "Основная коллекция ESSE. В ней сочетаются международные сорта, местные сорта и разные режимы выдержки. Срок выдержки нужно проверять для конкретного выпуска.",
+      "source_ids": [
+        "official-classic",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "stones",
+      "name": "ESSE stones / Отборное",
+      "tier_id": "tier-1",
+      "method": "Молодые тихие вина",
+      "description": "Свежий и ароматный профиль. Здесь собраны сортовые вина и позиции «Отборное». Названия и состав сохранены из снимка каталога.",
+      "source_ids": [
+        "official-stones",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "unplugged",
+      "name": "Unplugged · авторские стили",
+      "tier_id": "tier-0",
+      "method": "Оранжевые, розовые и экспериментальные тихие вина",
+      "description": "Мацерация, необычные сорта и авторские купажи. Группа объединяет продукты по стилю официальной Unplugged. Прежние оформления KACHA VALLEY сохранены на фотографиях.",
+      "source_ids": [
+        "official-unplugged",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "natural-sweet",
+      "name": "Природно полусладкие",
+      "tier_id": "tier-0",
+      "method": "Сохранение природной сладости",
+      "description": "Белое и красное природно полусладкие вина. Это отдельный стиль, а не ступень качества относительно сухих вин.",
+      "source_ids": [
+        "official-natural-sweet",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "ESSE sparkling",
+      "tier_id": "tier-0",
+      "method": "Классический метод; вторичное брожение в бутылке",
+      "description": "Игристая коллекция с белыми и розовыми кюве. Дозаж и выдержка различаются между выпусками. Grand Cuvee и Millesime можно сравнить с основными кюве.",
+      "source_ids": [
+        "official-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Blanc De Noirs",
+      "variant": "",
+      "wine_slug": "esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 220,
+          "height": 728,
+          "source_width": 224,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Глубокий, с маслянистым наполнением и нежной кислотностью. Cложный букет с тонами орехов, сливочных оттенков, ароматами зимних ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Brut Cuvee Prestige",
+      "variant": "",
+      "wine_slug": "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 213,
+          "height": 727,
+          "source_width": 219,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Полнотелое, с продолжением фруктовых тонов: белая черешня, созревающий абрикос. Корочка хлеба, сдоба, оттенки белых цветов, легкий медовый тон, акация.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "name": "Brut Zero Dosage",
+      "variant": "",
+      "wine_slug": "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 7,
+          "y": 2,
+          "width": 214,
+          "height": 728,
+          "source_width": 223,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Приятная кислотность, тона садовых ягод, послевкусие с приятным минеральным окончанием. Свежий, минеральный, с легкими цветочными нотами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135",
+      "group_id": "sparkling",
+      "name": "Brut Zero Dosage",
+      "variant": "",
+      "wine_slug": "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 218,
+          "height": 726,
+          "source_width": 226,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Устойчивый мусс с изящной игрой красивых пузырьков. Аромат свежий, с тонкими цветочными оттенками, сочной ноткой персика, изящной свежестью розового грейпфрута, нюансами сладковатого помело и яблочного тарта с карамелью. Вкус яркий, гармоничный, с сочной свежестью и приятным сливочно-фруктовым послевкусием с оттенами бисквитной крошки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-chenin-blanc-shenen-blan-beloe-suhoe-12",
+      "group_id": "kacha-valley",
+      "name": "Chenin Blanc",
+      "variant": "",
+      "wine_slug": "esse-chenin-blanc-shenen-blan-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-chenin-blanc-shenen-blan-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 216,
+          "height": 725,
+          "source_width": 224,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шенен Блан"
+      ],
+      "description": "Вкус: Звонкий, сбалансированный с долгим послевкусием. Бриошь, ваниль, карамельная груша и желтая черешня.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-demi-sec-muscat-nectar-muskat-belyy-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Demi-Sec Muscat Nectar",
+      "variant": "",
+      "wine_slug": "esse-demi-sec-muscat-nectar-muskat-belyy-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-demi-sec-muscat-nectar-muskat-belyy-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 231,
+          "height": 726,
+          "source_width": 237,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Спелый абрикос, свежесть и минеральность. Экзотические фрукты: ананас, персик, медовые тона.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-dolinnoe-cabernet-franc-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "kacha-valley",
+      "name": "Dolinnoe Cabernet Franc",
+      "variant": "",
+      "wine_slug": "esse-dolinnoe-cabernet-franc-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-dolinnoe-cabernet-franc-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 222,
+          "height": 727,
+          "source_width": 227,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Фруктово-ягодное с длительным пикантным послевкусием. Черная и красная смородина, голубика, спелая слива, черешня, сладкая шелковица, брусничные нотки, легкий\n ноты вишни в шоколаде.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-dolinnoe-chrdvnr-shardone-beloe-suhoe-13",
+      "group_id": "kacha-valley",
+      "name": "Dolinnoe CHRD+VNR",
+      "variant": "",
+      "wine_slug": "esse-dolinnoe-chrdvnr-shardone-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-dolinnoe-chrdvnr-shardone-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 213,
+          "height": 727,
+          "source_width": 219,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Полнотелый, маслянистый с тонами белой черешни и персика. Послевкусие минеральное. Сложный с тонами выдержки. Ноты груши, сливоные оттенки и сдоба.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-esse-grand-cuvee-60-shardone-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Esse Grand Cuvee 60",
+      "variant": "",
+      "wine_slug": "esse-esse-grand-cuvee-60-shardone-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-esse-grand-cuvee-60-shardone-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 212,
+          "height": 728,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Цитрусовые, орехи, карамельные ноты. Богатое, минеральное. \n  послевкусие с легким пряным оттенком. Сочные спелые яблоки, масло тоста, бисквит; насыщенное , полнотелое, сбалансированное. Яркая , живая кислотность.\n  цитруса и кориандра.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-esse-millesime-brut-zero-dosage-shardone-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Esse Millesime Brut Zero Dosage",
+      "variant": "",
+      "wine_slug": "esse-esse-millesime-brut-zero-dosage-shardone-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-esse-millesime-brut-zero-dosage-shardone-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 209,
+          "height": 727,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Фруктово-ягодное, с медовыми нотами и минералными оттенками. Луговые травы, полевые цветы, акация, корочка белого хлеба, желтые фрукты с медовыми нотами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-esse-rose-zero-dosage-shardone-rozovoe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Esse Rose Zero Dosage",
+      "variant": "",
+      "wine_slug": "esse-esse-rose-zero-dosage-shardone-rozovoe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-esse-rose-zero-dosage-shardone-rozovoe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 201,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий, сбалансированный. Тонкий, пряно-цветочный с оттенками красного грейпфрута, спелой клубники и барбариса.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-esse-shardone-beloe-suhoe-125",
+      "group_id": "classic",
+      "name": "Esse Шардоне",
+      "variant": "",
+      "wine_slug": "esse-esse-shardone-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-esse-shardone-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 207,
+          "height": 728,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Полнотелое с хорошей сбалансированной кислотностью и долгим, приятным послевкусием. Ваниль, тропические фрукты, акация.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-esse-sira-krasnoe-suhoe-12",
+      "group_id": "classic",
+      "name": "Esse Сира",
+      "variant": "",
+      "wine_slug": "esse-esse-sira-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-esse-sira-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 197,
+          "height": 727,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Полнотелый насыщенный, в послевкусии вишня, спелый кизил. Пряный с тонами спелой черешни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-gevyurtstraminer-beloe-suhoe-12",
+      "group_id": "classic",
+      "name": "Гевюрцтраминер",
+      "variant": "",
+      "wine_slug": "esse-gevyurtstraminer-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-gevyurtstraminer-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Гевюрцтраминер"
+      ],
+      "description": "Вкус: Приятное длительное послевкусие с пряным окончанием. Грейпфрут, цитрусовые. Лайм, спелый грейпфрут.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "classic",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "esse-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, с живой кислотностью и нежными танинами. Специи, красная слива, вишня и перец чили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-kaberne-otbornoe-kaberne-sovinon-krasnoe-suhoe-12",
+      "group_id": "stones",
+      "name": "Каберне Отборное",
+      "variant": "",
+      "wine_slug": "esse-kaberne-otbornoe-kaberne-sovinon-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-kaberne-otbornoe-kaberne-sovinon-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Питкое, деликатные танины. Спелая вишня, черная смородина, черные лесные ягоды. Тона черной смородины, сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "esse-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 197,
+          "height": 728,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Спелая вишня Тона черной смородины, сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-mama-marselan-krasnoe-suhoe-115",
+      "group_id": "unplugged",
+      "name": "MaMa",
+      "variant": "",
+      "wine_slug": "esse-mama-marselan-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-mama-marselan-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 208,
+          "height": 728,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Вкус: Красные ягоды, пикантная остринка гармонирует с фруктовым вкусом. Чернослив, комбинация специй и вяленной вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-mama-marselan-krasnoe-suhoe-135",
+      "group_id": "unplugged",
+      "name": "МаМа",
+      "variant": "",
+      "wine_slug": "esse-mama-marselan-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-mama-marselan-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 204,
+          "height": 727,
+          "source_width": 212,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Марселан"
+      ],
+      "description": "Аромат глубокий и пикантный, с доминирующими нотами черных ягод, вишневого конфитюра и легкими оттенками черничного йогурта. Фоном — утонченная пряность, добавляющая аромату сложности. Вкус сочный и свежий, с яркими тонами красных ягод и гармоничной пикантной остринкой. Аккуратные танины и выразительная кислотность создают сбалансированное, легкое впечатление.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-merlo-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Мерло",
+      "variant": "",
+      "wine_slug": "esse-merlo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-merlo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 196,
+          "height": 726,
+          "source_width": 202,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Среднетелое, питкое с тонами красных ягод. Оттенки свежих ягод: ежевики, красной сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-merlo-otbornoe-krasnoe-suhoe-13",
+      "group_id": "stones",
+      "name": "Мерло Отборное",
+      "variant": "",
+      "wine_slug": "esse-merlo-otbornoe-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-merlo-otbornoe-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Сочный, наполненный деликатными танинами и вишневым послевкусием. Тона специй, табака и лесных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-muskat-belyy-beloe-suhoe-135",
+      "group_id": "stones",
+      "name": "Мускат Белый",
+      "variant": "",
+      "wine_slug": "esse-muskat-belyy-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-muskat-belyy-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Аромат тонкий и нежный, с мягкими тонами жасмина, утреннего цветущего сада, спелого персика и свежими брызгами мандарина. Вкус изящный, с яркой гастрономической кислотностью, стройным телом и приятным фруктовым послевкусием с легкой горчинкой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-muskat-muskat-belyy-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Muskat",
+      "variant": "",
+      "wine_slug": "esse-muskat-muskat-belyy-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-muskat-muskat-belyy-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 4,
+          "width": 231,
+          "height": 726,
+          "source_width": 237,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Гармоничный, сбалансированный. Яркий, цветочно-минеральный, с оттенками ванили, персика и спелого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-muskat-muskat-belyy-beloe-suhoe-115",
+      "group_id": "stones",
+      "name": "Мускат",
+      "variant": "",
+      "wine_slug": "esse-muskat-muskat-belyy-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-muskat-muskat-belyy-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Свежий с тонами цитрусовых. Белые цветы, чайная роза.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-muskat-oranzh-muskat-belyy-beloe-suhoe-115",
+      "group_id": "unplugged",
+      "name": "Мускат Оранж",
+      "variant": "",
+      "wine_slug": "esse-muskat-oranzh-muskat-belyy-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-muskat-oranzh-muskat-belyy-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Пряный, сбалансированный с мягкой кислотностью и круглым танином. Насыщенный, многоуровневый, с нотами белых фруктов и цветов, с оттенками меда и мягкой карамели.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-nectar-muscat-muskat-belyy-beloe-polusuhoe-12",
+      "group_id": "sparkling",
+      "name": "Nectar Muscat",
+      "variant": "",
+      "wine_slug": "esse-nectar-muscat-muskat-belyy-beloe-polusuhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-nectar-muscat-muskat-belyy-beloe-polusuhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 232,
+          "height": 727,
+          "source_width": 241,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Яркий мускатный букет раскрывается соблазнительными оттенками сочного лимона, белого абрикоса, цветущей липы, лепестков розы и джема из крыжовника с лаймом и мятой. Вкус гармоничный, с приятной сладостью, освежающей кислотностью и фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-odessa-black-odesskiy-chernyy-krasnoe-suhoe-12",
+      "group_id": "kacha-valley",
+      "name": "Odessa black",
+      "variant": "",
+      "wine_slug": "esse-odessa-black-odesskiy-chernyy-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-odessa-black-odesskiy-chernyy-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 203,
+          "height": 728,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Одесский черный"
+      ],
+      "description": "Вкус: Черносмородиновое варенье, кожа, восточные специи. Красные спелые сливы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-petit-verdot-pti-verdo-krasnoe-suhoe-13",
+      "group_id": "kacha-valley",
+      "name": "Petit Verdot",
+      "variant": "",
+      "wine_slug": "esse-petit-verdot-pti-verdo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-petit-verdot-pti-verdo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 212,
+          "height": 728,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пти Вердо"
+      ],
+      "description": "Вкус: Среднетелый, сбалансированный с мягкими тонами ежевики, кизила, земляники. Тона вишни, лесных ягод, ежевики.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-pino-gri-beloe-suhoe-12",
+      "group_id": "unplugged",
+      "name": "Пино Гри",
+      "variant": "",
+      "wine_slug": "esse-pino-gri-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-pino-gri-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 203,
+          "height": 727,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Пряные дыни-груши, крем-брюле с пикантной горчинкой. Легкая сливочность, цедра подсолнуха, семечки в меду.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-pino-gri-beloe-suhoe-135",
+      "group_id": "unplugged",
+      "name": "Пино Гри",
+      "variant": "",
+      "wine_slug": "esse-pino-gri-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-pino-gri-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 205,
+          "height": 726,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат соткан из нот спелых желтых фруктов, цитрусов и цветущего миндаля. Вкус округлый, приятный, с бодрой живой кислотностью. В послевкусии сочные фруктовые ноты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-pino-gri-blash-rozovoe-suhoe-125",
+      "group_id": "unplugged",
+      "name": "Пино Гри Блаш",
+      "variant": "",
+      "wine_slug": "esse-pino-gri-blash-rozovoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-pino-gri-blash-rozovoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 206,
+          "height": 727,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "В аромате ноты спелых косточковых фруктов, садовых ягод и леденцов. Вкус сбалансированный, свежий, с цепкой кислотностью и ягодным послевкусием. Самодостаточное и гастрономичное розе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-pino-gri-blush-rozovoe-suhoe-115",
+      "group_id": "unplugged",
+      "name": "Пино Гри Blush",
+      "variant": "",
+      "wine_slug": "esse-pino-gri-blush-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-pino-gri-blush-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 206,
+          "height": 726,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Вкус: Дымный шлейф, ягодный микс ежевики и клубники, барбарис, черешня, сливки. Аромат тонкий с легими нотами фруктов и ягод: малина, клюква, смородина, слива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-pino-nuar-krasnoe-suhoe-115",
+      "group_id": "kacha-valley",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "esse-pino-nuar-krasnoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-pino-nuar-krasnoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, с выразительной кислотностью и элегантными танинами. Ноты красных ягод, специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-prirodno-polusladkoe-beloe-risling-125",
+      "group_id": "natural-sweet",
+      "name": "Природно Полусладкое белое",
+      "variant": "",
+      "wine_slug": "esse-prirodno-polusladkoe-beloe-risling-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-prirodno-polusladkoe-beloe-risling-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 148,
+          "height": 727,
+          "source_width": 153,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое · полусладкое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Груша, айва, дыня, бархатистая кислотность. Ноты дыни, меда, полевых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-natural-sweet"
+      ]
+    },
+    {
+      "id": "wine-esse-prirodno-polusladkoe-krasnoe-merlo-13",
+      "group_id": "natural-sweet",
+      "name": "Природно Полусладкое красное",
+      "variant": "",
+      "wine_slug": "esse-prirodno-polusladkoe-krasnoe-merlo-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-prirodno-polusladkoe-krasnoe-merlo-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 148,
+          "height": 727,
+          "source_width": 153,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · полусладкое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Яркий, ягодный. С плавной кислотностью и оттенками черного шоколада. Спелый кизил, вишня, смородиновый джем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-natural-sweet"
+      ]
+    },
+    {
+      "id": "wine-esse-ridicule-sira-krasnoe-suhoe-125",
+      "group_id": "unplugged",
+      "name": "Ridicule",
+      "variant": "",
+      "wine_slug": "esse-ridicule-sira-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-ridicule-sira-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Округлый, структурный. Яркая кислотность и сочные оттенки ягод. Дымный шлейф, ягодный микс ежевики и клубники, барбарис, черешня, сливки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-risling-beloe-suhoe-115",
+      "group_id": "classic",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "esse-risling-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-risling-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Тропические фрукты, пикантная кислотность. Свежий, с характерным южным сортовым ароматом.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-rkatsiteli-beloe-suhoe-125",
+      "group_id": "stones",
+      "name": "Ркацители",
+      "variant": "",
+      "wine_slug": "esse-rkatsiteli-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rkatsiteli-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 202,
+          "height": 726,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Полный, гармоничный. Пикантная горчинка в послевкусии. Цветочно-пряный, с медовыми оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-rkatsiteli-oranzh-beloe-suhoe-12",
+      "group_id": "unplugged",
+      "name": "Ркацители Оранж",
+      "variant": "",
+      "wine_slug": "esse-rkatsiteli-oranzh-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rkatsiteli-oranzh-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 205,
+          "height": 728,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Карамельно-финиковый, ореховый бисквит с пряным ликером. Поджаренные хлебные корочки, запеченое яблоко.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unplugged"
+      ]
+    },
+    {
+      "id": "wine-esse-rkatsiteli-syur-li-beloe-suhoe-125",
+      "group_id": "classic",
+      "name": "Ркацители Сюр Ли",
+      "variant": "",
+      "wine_slug": "esse-rkatsiteli-syur-li-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rkatsiteli-syur-li-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Полный, гармоничный, с легкой горчинкой в послевкусии. Сливочно-пряный, цветочный, свежий.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115",
+      "group_id": "sparkling",
+      "name": "Rose Cuvee Prestige",
+      "variant": "",
+      "wine_slug": "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 4,
+          "width": 217,
+          "height": 725,
+          "source_width": 223,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Среднетелое, ягодное, с оттенком вишневой косточки. Ягодные тона: клубника, вишня, земляника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13",
+      "group_id": "sparkling",
+      "name": "Rose Cuvee Prestige",
+      "variant": "",
+      "wine_slug": "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 217,
+          "height": 726,
+          "source_width": 225,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Тончайшая игра пузырьков, выстраивающихся в изящные непрерывные нити. Аромат раскрывается акварельными ягодными нотами: спелая красная смородина, воздушный мусс из лесной земляники, легкие акценты сушеной малины и нежная пенка вишневого варенья. Фоном звучат тонкие теплые оттенки яблочных чипсов. Вкус утонченный, свежий, с изящной кислотностью и шелковистой игрой пузырьков. Послевкусие легкое, освежающее, с ягодными обертонами. Прекрасный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-esse-rose-sira-rozovoe-suhoe-12",
+      "group_id": "kacha-valley",
+      "name": "Rose",
+      "variant": "",
+      "wine_slug": "esse-rose-sira-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rose-sira-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 223,
+          "height": 728,
+          "source_width": 227,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Сложный с хорошей кислотностью, тонами красных ягод и сливок. Яркий. Оттенки красных лесных ягод и земляники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-roze-kaberne-sovinon-rozovoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Розе",
+      "variant": "",
+      "wine_slug": "esse-roze-kaberne-sovinon-rozovoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-roze-kaberne-sovinon-rozovoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 204,
+          "height": 727,
+          "source_width": 213,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Воздушный аромат собран из нот вишни, клюквы и красной смородины с тонким звучанием цитрусовых и цветочных нот. Вкус легкий, приятный, с умеренной кислотностью и свежим ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-rubinovyy-rubinovyy-magaracha-krasnoe-suhoe-12",
+      "group_id": "classic",
+      "name": "Рубиновый",
+      "variant": "",
+      "wine_slug": "esse-rubinovyy-rubinovyy-magaracha-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-rubinovyy-rubinovyy-magaracha-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 194,
+          "height": 726,
+          "source_width": 200,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Рубиновый Магарача"
+      ],
+      "description": "Вкус: Плотный, обволакивающий спелыми танинами и мягкой кислотностью. Пряная вишня и вяленая слива, табак, кардамон, шоколад.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-sangiovese-sandzhoveze-krasnoe-suhoe-135",
+      "group_id": "kacha-valley",
+      "name": "Sangiovese",
+      "variant": "",
+      "wine_slug": "esse-sangiovese-sandzhoveze-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-sangiovese-sandzhoveze-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 221,
+          "height": 727,
+          "source_width": 226,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Вкус: Сглаженная, округлая кислотность, послевкусие пряное. Тона вишни, шелковицы, сливы, умеренные ноты бочковой ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-saperavi-heaven-krasnoe-suhoe-13",
+      "group_id": "kacha-valley",
+      "name": "Саперави Heaven",
+      "variant": "",
+      "wine_slug": "esse-saperavi-heaven-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-saperavi-heaven-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 206,
+          "height": 727,
+          "source_width": 211,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Чернослив, смородина, вишня и специи. Черная смородина, ноты кожи, белый перец.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-saperavi-krasnoe-suhoe-13",
+      "group_id": "classic",
+      "name": "Саперави",
+      "variant": "",
+      "wine_slug": "esse-saperavi-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-saperavi-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 194,
+          "height": 728,
+          "source_width": 198,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Округлый, полный с фруктово-пряными оттенками, стойким послевкусием. Ноты вишни, ежевики и черной смородины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-shardone-otbornoe-beloe-suhoe-12",
+      "group_id": "stones",
+      "name": "Шардоне Отборное",
+      "variant": "",
+      "wine_slug": "esse-shardone-otbornoe-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-shardone-otbornoe-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 201,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Гармоничный, с приятной кислотностью и легким медовым послевкусием. Яркий, с нотами зеленых яблок, дюшеса, свежего сена и нюансами восточных сладостей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-shenen-blan-beloe-suhoe-13",
+      "group_id": "kacha-valley",
+      "name": "Шенен Блан",
+      "variant": "",
+      "wine_slug": "esse-shenen-blan-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-shenen-blan-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 202,
+          "height": 727,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шенен Блан"
+      ],
+      "description": "Вкус: Легкий, минеральный, с освежающей кислотностью и фруктово-цветочными оттенками. Тонкий, многогранный. Преобладают белые цветы акации, нектарин и ананас.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-kacha-valley"
+      ]
+    },
+    {
+      "id": "wine-esse-sovinon-blan-beloe-suhoe-12",
+      "group_id": "stones",
+      "name": "Совиньон Блан",
+      "variant": "",
+      "wine_slug": "esse-sovinon-blan-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-sovinon-blan-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 200,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Среднетелый, свежий с хорошей кислотностью. Крыжовник, тропические фрукты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-stones"
+      ]
+    },
+    {
+      "id": "wine-esse-sovinon-blan-fyume-beloe-suhoe-128",
+      "group_id": "classic",
+      "name": "Совиньон Блан Фюме",
+      "variant": "",
+      "wine_slug": "esse-sovinon-blan-fyume-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-sovinon-blan-fyume-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 727,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Свежий с яркой кислотностью. Крыжовник, характерные ноты цитрусов и мяты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "wine-esse-vione-beloe-suhoe-13",
+      "group_id": "classic",
+      "name": "Вионье",
+      "variant": "",
+      "wine_slug": "esse-vione-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/wine-esse-vione-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 204,
+          "height": 728,
+          "source_width": 208,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Послевкусие длительное с легкой миндальной горчинкой. Перезрелые абрикосы, цветы акации. вкус сливочный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-classic"
+      ]
+    },
+    {
+      "id": "official-yellow-gloves",
+      "group_id": "unplugged",
+      "name": "YELLOW GLOVES Unplugged",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/esse/official-yellow-gloves.webp",
+        "source_id": "official-official-yellow-gloves",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 208,
+          "height": 720,
+          "source_width": 220,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Совиньон Блан из долины реки Кача. Брожение завершается в старых дубовых бочках. Выдержка на плотном осадке — шесть месяцев. Точное название отсутствует в сохранённом снимке.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-yellow-gloves",
+        "official-unplugged"
+      ]
+    }
+  ]
+}

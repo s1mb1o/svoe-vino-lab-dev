@@ -1,3 +1,7 @@
+# 2026-10-16: ESSE
+
+Add ESSE: 53 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
+
 # Change log
 
 ## 2026-10-18 — Message for an unreadable HEIC photo
