@@ -1,3 +1,7 @@
+# 2026-10-16: Бельбек
+
+Check Бельбек against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/belbek/sources.md.
+
 # 2026-10-16: Новый Свет
 
 Check Новый Свет against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/novy-svet/sources.md.

@@ -1,0 +1,453 @@
+{
+  "producer_id": "belbek",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Бельбек",
+  "entries": [
+    {
+      "wine_slug": "belbek-aligote-beloe-suhoe-125",
+      "product_id": "wine-belbek-aligote-beloe-suhoe-125",
+      "group_id": "white",
+      "catalog_name": "Алиготе",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_aligote_beloe_suhoe_125_3994f84c11.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_aligote_beloe_suhoe_125_3994f84c11.webp",
+      "input_sha256": "bd854f81702022a2d437b28006c5b8fdcd1d71d95d2836ee33c039585a53dc72",
+      "asset_sha256": "d128648d24f311e91b3239623336380694aaa74a530486f360360d75c0f66576"
+    },
+    {
+      "wine_slug": "belbek-belbek-fiolent-muskat-beloe-polusladkoe-125",
+      "product_id": "wine-belbek-belbek-fiolent-muskat-beloe-polusladkoe-125",
+      "group_id": "sweet",
+      "catalog_name": "Бельбек Фиолент Мускат",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_fiolent_muskat_beloe_polusladkoe_125_a8f84e49d2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_fiolent_muskat_beloe_polusladkoe_125_a8f84e49d2.webp",
+      "input_sha256": "f86b08f21e41430acf7ae2e12af339a256ae6a80dde2879edb63ef0e8debb2af",
+      "asset_sha256": "2f5225e22c804a269579ccd23ab1ed98e83d0a39e3bfb4f777944031f7787092"
+    },
+    {
+      "wine_slug": "belbek-belbek-kaberne-fran-krasnoe-suhoe-13",
+      "product_id": "wine-belbek-belbek-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "red",
+      "catalog_name": "Бельбек Каберне Фран",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_kaberne_fran_krasnoe_suhoe_13_1dc81c94ac.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_kaberne_fran_krasnoe_suhoe_13_1dc81c94ac.webp",
+      "input_sha256": "4888ebdd3fe06f5cb3f004b5107955a2b5bf0d66266d3f3a6a44a1d52d9deb06",
+      "asset_sha256": "0f9fb5697a1bc2aa51571979de2c94642112b6155cabec7e8a4f838e4c4add4a"
+    },
+    {
+      "wine_slug": "belbek-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-135",
+      "product_id": "wine-belbek-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "red",
+      "catalog_name": "Бельбек Меритаж",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_meritazh_kaberne_sovinon_krasnoe_suhoe_135_3ac532f36b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_meritazh_kaberne_sovinon_krasnoe_suhoe_135_3ac532f36b.webp",
+      "input_sha256": "51e86f66d3e3f882f52eb45fd138cb8d21e10d98746676f1f04e7bfb9b9c065a",
+      "asset_sha256": "6ab8a6262ff845ec89310eed4e7609d1fdc509289aa4a1b5215464f935746bad"
+    },
+    {
+      "wine_slug": "belbek-belbek-merlo-krasnoe-suhoe-129",
+      "product_id": "wine-belbek-belbek-merlo-krasnoe-suhoe-129",
+      "group_id": "red",
+      "catalog_name": "Бельбек Мерло",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_merlo_krasnoe_suhoe_129_721da2ee04.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_merlo_krasnoe_suhoe_129_721da2ee04.webp",
+      "input_sha256": "6cf9809d1b2846dd3630cbc83c6562897ae3f9aab885fad9a4ff56e1e08f80a8",
+      "asset_sha256": "90117ce4a15bcfc33994fea7365f081678ce1bfc73262ba1239c67c38146fa76"
+    },
+    {
+      "wine_slug": "belbek-belbek-muskat-beloe-suhoe-128",
+      "product_id": "wine-belbek-belbek-muskat-beloe-suhoe-128",
+      "group_id": "white",
+      "catalog_name": "Бельбек Мускат",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_muskat_beloe_suhoe_128_630defdbb3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_muskat_beloe_suhoe_128_630defdbb3.webp",
+      "input_sha256": "097f3cbf826aa7ac370ca0124aea547a95244da45a5bad69ad77679163ac0f68",
+      "asset_sha256": "dd67e6e59542134c1a55906f20f970e565585a12060d3a126ffaf4e6de6592bf"
+    },
+    {
+      "wine_slug": "belbek-belbek-pino-nuar-krasnoe-suhoe-13",
+      "product_id": "wine-belbek-belbek-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "red",
+      "catalog_name": "Бельбек Пино Нуар",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_pino_nuar_krasnoe_suhoe_13_f1519564c9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_pino_nuar_krasnoe_suhoe_13_f1519564c9.webp",
+      "input_sha256": "1653c77b7074cb28e95c34cca8909365e78d1e4360d14da720375b61f238658d",
+      "asset_sha256": "8a1c0eca6f33df05797b30c93f712901f81dcb7512e7771082cad7726be8ea7b"
+    },
+    {
+      "wine_slug": "belbek-belbek-pti-verdo-krasnoe-suhoe-121",
+      "product_id": "wine-belbek-belbek-pti-verdo-krasnoe-suhoe-121",
+      "group_id": "red",
+      "catalog_name": "Бельбек Пти Вердо",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_pti_verdo_krasnoe_suhoe_121_40c032fb64.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_pti_verdo_krasnoe_suhoe_121_40c032fb64.webp",
+      "input_sha256": "9c409159289ce649a49c35e6c1124525a64084fca8b1b7c95fd4870265e483ba",
+      "asset_sha256": "cb9fca59c70d519b15612daadc946c08432c47400efec944517da78c898ab02f"
+    },
+    {
+      "wine_slug": "belbek-belbek-risling-beloe-suhoe-128",
+      "product_id": "wine-belbek-belbek-risling-beloe-suhoe-128",
+      "group_id": "white",
+      "catalog_name": "Бельбек Рислинг",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_risling_beloe_suhoe_128_cb6f66781a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_risling_beloe_suhoe_128_cb6f66781a.webp",
+      "input_sha256": "85bc05800672954be4ad8fb31e82461ba2cc667e9776c7377225f707e2cc2eb5",
+      "asset_sha256": "50523cbba0d508898ca0064836da8cce2d87f50db9f7ce52b0399c4b3fdb2b9a"
+    },
+    {
+      "wine_slug": "belbek-belbek-risling-rezerv-beloe-suhoe-13",
+      "product_id": "wine-belbek-belbek-risling-rezerv-beloe-suhoe-13",
+      "group_id": "reserve",
+      "catalog_name": "Бельбек Рислинг Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_risling_rezerv_beloe_suhoe_13_618fbe6775.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_risling_rezerv_beloe_suhoe_13_618fbe6775.webp",
+      "input_sha256": "914fe877e14892c33c25de98720648430bfa5820993d8c81643de967bdcbe748",
+      "asset_sha256": "158e756feae259f802f80d7a738cd3cd3a45babcbf06fa56d243df74b41cddbb"
+    },
+    {
+      "wine_slug": "belbek-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "product_id": "wine-belbek-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "group_id": "reserve",
+      "catalog_name": "Бельбек Ркацители Баррик",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_rkatsiteli_barrik_beloe_suhoe_13_44d3a11b2f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_rkatsiteli_barrik_beloe_suhoe_13_44d3a11b2f.webp",
+      "input_sha256": "badf865e128f4da2daaabb6c37dca031a622ca566c06a4a0ed5df61feebe9898",
+      "asset_sha256": "c3e14cadf6a7c52cb66c37b4962ceeb8f7f8494c79ec885ead929770f8733139"
+    },
+    {
+      "wine_slug": "belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129",
+      "product_id": "wine-belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129",
+      "group_id": "rose",
+      "catalog_name": "Бельбек Розе",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_roze_pino_nuar_rozovoe_suhoe_129_051d90b1ff.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_roze_pino_nuar_rozovoe_suhoe_129_051d90b1ff.webp",
+      "input_sha256": "df5adbdcd5ec4f9e545e70ecf30f4c70cb2bdb64a675901510650a17869d84f5",
+      "asset_sha256": "f2a2806f2f624c1f043749308a41f70c6de04c1e4bfdebf4f0f3ad3aeee4e9cc"
+    },
+    {
+      "wine_slug": "belbek-belbek-sandzhoveze-krasnoe-suhoe-138",
+      "product_id": "wine-belbek-belbek-sandzhoveze-krasnoe-suhoe-138",
+      "group_id": "red",
+      "catalog_name": "Бельбек Санджовезе",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_sandzhoveze_krasnoe_suhoe_138_9bf09c1a82.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_sandzhoveze_krasnoe_suhoe_138_9bf09c1a82.webp",
+      "input_sha256": "7e27204bc48ed41341b721d438f1faa3a79716a8547fecb94353f8d900b62a0f",
+      "asset_sha256": "bf3edf77946c7de505524c74ad328dd5cf2b07ae7a0f4d761f59f45303b1d4a1"
+    },
+    {
+      "wine_slug": "belbek-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-belbek-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Бельбек Саперави Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_saperavi_rezerv_krasnoe_suhoe_14_d920558ff2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_saperavi_rezerv_krasnoe_suhoe_14_d920558ff2.webp",
+      "input_sha256": "0243a0542f6372b6d98e3385c3db3459649c8252eb1e17d4d84ec5e10dc204ad",
+      "asset_sha256": "fcf83dd6fcaf527de94b8f74e294458e35f9b5f276e5e581e86162ba51293849"
+    },
+    {
+      "wine_slug": "belbek-belbek-sira-krasnoe-suhoe-132",
+      "product_id": "wine-belbek-belbek-sira-krasnoe-suhoe-132",
+      "group_id": "red",
+      "catalog_name": "Бельбек Сира",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_belbek_sira_krasnoe_suhoe_132_e2a205e856.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_belbek_sira_krasnoe_suhoe_132_e2a205e856.webp",
+      "input_sha256": "cd7ad971e645bcf6398940cdfe42f003dac546cb5387790932c81911215049e2",
+      "asset_sha256": "f777640174c3c524d572a7347dd217947a2586ed211f6fc954a8bca9476c1c7e"
+    },
+    {
+      "wine_slug": "belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14",
+      "product_id": "wine-belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14",
+      "group_id": "unresolved",
+      "catalog_name": "Белое сухое",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_beloe_suhoe_kaberne_sovinon_krasnoe_suhoe_14_82f8b0eda2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_beloe_suhoe_kaberne_sovinon_krasnoe_suhoe_14_82f8b0eda2.webp",
+      "input_sha256": "fa5b30ae724a43d155cfd1e312aeeb2e51048ad579a0d4eef0237b732afc8730",
+      "asset_sha256": "f3b30ad53a1df74617cacf80f0d641d98dc87934321d11ce12a21b193ad9a5ac"
+    },
+    {
+      "wine_slug": "belbek-kaberne-fran-krasnoe-suhoe-134",
+      "product_id": "wine-belbek-kaberne-fran-krasnoe-suhoe-134",
+      "group_id": "red",
+      "catalog_name": "Каберне Фран",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_kaberne_fran_krasnoe_suhoe_134_bb8ab4763e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_kaberne_fran_krasnoe_suhoe_134_bb8ab4763e.webp",
+      "input_sha256": "f61b0c6c28215bf964f0322ef0e90f564fc663b3c8b8ca25a23af229e7b26640",
+      "asset_sha256": "e650058bf9895ca48ecbd1ae4d470f21f06e6085ab09c6f13bc4f370dee93be1"
+    },
+    {
+      "wine_slug": "belbek-kaberne-sovinon-krasnoe-suhoe-138",
+      "product_id": "wine-belbek-kaberne-sovinon-krasnoe-suhoe-138",
+      "group_id": "red",
+      "catalog_name": "Каберне Совиньон",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_kaberne_sovinon_krasnoe_suhoe_138_96f7db37a0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_kaberne_sovinon_krasnoe_suhoe_138_96f7db37a0.webp",
+      "input_sha256": "a2f10c7a002a9c3e46b40023b227718f5fd99d51d1e0019d0d3b135cca2ed7a3",
+      "asset_sha256": "009281522d00126fd0c641f27ee0a35909fb44f93bee38c8586220e133bb3355"
+    },
+    {
+      "wine_slug": "belbek-kokur-kokur-belyy-beloe-suhoe-13",
+      "product_id": "wine-belbek-kokur-kokur-belyy-beloe-suhoe-13",
+      "group_id": "white",
+      "catalog_name": "Кокур",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_kokur_kokur_belyy_beloe_suhoe_13_ac497b5531.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_kokur_kokur_belyy_beloe_suhoe_13_ac497b5531.webp",
+      "input_sha256": "8bef8117474b1b126dece87f143010e3a134bb80f5b5d9be4eabae75f4918eb6",
+      "asset_sha256": "fbf4442641bc9e833e72e181f5be09e99f5e24a1fbc76cc895ad60db5a52dd75"
+    },
+    {
+      "wine_slug": "belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136",
+      "product_id": "wine-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "red",
+      "catalog_name": "Меритаж",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_meritazh_kaberne_sovinon_krasnoe_suhoe_136_b0152ba5c6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_meritazh_kaberne_sovinon_krasnoe_suhoe_136_b0152ba5c6.webp",
+      "input_sha256": "51838112c0ebcb02df1d1526ca97f289b306b22f7bee9f584be0b7b33f7a90bf",
+      "asset_sha256": "c25644a70f0a77b2ecdeb1797d5c7a1e1c24a3bd0dbb9c8e74c7a403ecf14520"
+    },
+    {
+      "wine_slug": "belbek-merlo-krasnoe-suhoe-13",
+      "product_id": "wine-belbek-merlo-krasnoe-suhoe-13",
+      "group_id": "red",
+      "catalog_name": "Мерло",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_merlo_krasnoe_suhoe_13_62ef7bfee8.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_merlo_krasnoe_suhoe_13_62ef7bfee8.webp",
+      "input_sha256": "adc1b37d3ccd1f114aca8345e1f92805ef4c5a89cb9d8dd197277fd156b1858d",
+      "asset_sha256": "62dd810ef2bf571b39356b13f184f2b9fdd588602ab9294875a15989df268d43"
+    },
+    {
+      "wine_slug": "belbek-muskat-muskat-belyy-beloe-suhoe-127",
+      "product_id": "wine-belbek-muskat-muskat-belyy-beloe-suhoe-127",
+      "group_id": "white",
+      "catalog_name": "Мускат",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_muskat_muskat_belyy_beloe_suhoe_127_d8229478b6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_muskat_muskat_belyy_beloe_suhoe_127_d8229478b6.webp",
+      "input_sha256": "ea3ccd52aae65e7d43676739888252b66a0c5714fbf19c0567982b3c2efa922f",
+      "asset_sha256": "d3c16169b416bd89a37a08bb64323329a5a23d1215a3fa9b32c213f643203bc8"
+    },
+    {
+      "wine_slug": "belbek-muskat-oranzh-muskat-belyy-oranzhevoe-suhoe-125",
+      "product_id": "wine-belbek-muskat-oranzh-muskat-belyy-oranzhevoe-suhoe-125",
+      "group_id": "orange",
+      "catalog_name": "Мускат Оранж",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_muskat_oranzh_muskat_belyy_oranzhevoe_suhoe_125_15ac5f6bc6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_muskat_oranzh_muskat_belyy_oranzhevoe_suhoe_125_15ac5f6bc6.webp",
+      "input_sha256": "ce9ae9e06d70053ecfcbf123094593bca3cb9ae463cd4357cba42e23108505c0",
+      "asset_sha256": "67b0389b580cf7bfa73ffbb3e4e2ede8566b61c8e2d8bde4d611a569aee0a0d8"
+    },
+    {
+      "wine_slug": "belbek-pino-mene-krasnoe-suhoe-128",
+      "product_id": "wine-belbek-pino-mene-krasnoe-suhoe-128",
+      "group_id": "red",
+      "catalog_name": "Пино Менье",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_pino_mene_krasnoe_suhoe_128_e2f0538eec.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_pino_mene_krasnoe_suhoe_128_e2f0538eec.webp",
+      "input_sha256": "e278450cb16be5ba643f24d7103b2a9f6b7525550327dc3ccf7b506d8158fa11",
+      "asset_sha256": "cd89f15da113ac16050334ed4f3a62c8caf35a21885044a31090e4fc56d9171e"
+    },
+    {
+      "wine_slug": "belbek-pino-nuar-krasnoe-suhoe-133",
+      "product_id": "wine-belbek-pino-nuar-krasnoe-suhoe-133",
+      "group_id": "red",
+      "catalog_name": "Пино Нуар",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_pino_nuar_krasnoe_suhoe_133_a2cb505435.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_pino_nuar_krasnoe_suhoe_133_a2cb505435.webp",
+      "input_sha256": "318f8c62b5ae22e1d2d32317865d778d21d7782cd41dfe5711c977a33fdfc528",
+      "asset_sha256": "109876a9e875e9a0cdf6d21d4af45153bfd435c9d27cb7c0c63581ebc913672f"
+    },
+    {
+      "wine_slug": "belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+      "product_id": "wine-belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+      "group_id": "reserve",
+      "catalog_name": "Пино Нуар Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_pino_nuar_rezerv_krasnoe_suhoe_135_7e9ad8a8e2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_pino_nuar_rezerv_krasnoe_suhoe_135_7e9ad8a8e2.webp",
+      "input_sha256": "e2ca9cefe1af1491af39d0fb40e4de4075850632d804fce2583017715b37f995",
+      "asset_sha256": "27f5395750f7e608307bb068a4a4ab3df20e6fe43086e81602abca3bdb5e7313"
+    },
+    {
+      "wine_slug": "belbek-pino-nuar-roze-rozovoe-suhoe-115",
+      "product_id": "wine-belbek-pino-nuar-roze-rozovoe-suhoe-115",
+      "group_id": "rose",
+      "catalog_name": "Пино Нуар розе",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_pino_nuar_roze_rozovoe_suhoe_115_19d98fb390.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_pino_nuar_roze_rozovoe_suhoe_115_19d98fb390.webp",
+      "input_sha256": "9ef27854ea168cd2adb0d65ed2ca94548350b17c904a0280c40c222c237aa058",
+      "asset_sha256": "e79da8973e090aea4f283fefc6100534345b091e8e9f8884d7a7182e48fb3143"
+    },
+    {
+      "wine_slug": "belbek-risling-pozdniy-sbor-risling-reynskiy-beloe-sladkoe-117",
+      "product_id": "wine-belbek-risling-pozdniy-sbor-risling-reynskiy-beloe-sladkoe-117",
+      "group_id": "sweet",
+      "catalog_name": "Рислинг. Поздний Сбор",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_risling_pozdniy_sbor_risling_reynskiy_beloe_sladkoe_117_02352777b6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_risling_pozdniy_sbor_risling_reynskiy_beloe_sladkoe_117_02352777b6.webp",
+      "input_sha256": "4329e5554653b86ea032ad0a93e5d6f27308cd69253fc7b876d7d3159dbbbfaf",
+      "asset_sha256": "659f877b8e4f67580c2c016d679d402e359bfdaca956bf61783b1c88f6c2bb58"
+    },
+    {
+      "wine_slug": "belbek-risling-risling-reynskiy-beloe-suhoe-12",
+      "product_id": "wine-belbek-risling-risling-reynskiy-beloe-suhoe-12",
+      "group_id": "white",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_risling_risling_reynskiy_beloe_suhoe_12_8eaeddd994.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_risling_risling_reynskiy_beloe_suhoe_12_8eaeddd994.webp",
+      "input_sha256": "7f19357efb9f875a351b352d7662420666c4b56c46b6140b84a4a0377196833e",
+      "asset_sha256": "990fd66864583f4c0702ba75a379461645ec9944e1cd5255f3126972c635d41d"
+    },
+    {
+      "wine_slug": "belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "product_id": "wine-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "group_id": "reserve",
+      "catalog_name": "Ркацители Баррик",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_rkatsiteli_barrik_beloe_suhoe_13_42076e5365.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_rkatsiteli_barrik_beloe_suhoe_13_42076e5365.webp",
+      "input_sha256": "e3386a9be99fb78f3541ef4693c1879a08872f40738a6bab8ef6ac7ae6b71055",
+      "asset_sha256": "8e070d143323a5c58c9201d6560a5636333bf0f1494534ea2bac12d722c5e3a0"
+    },
+    {
+      "wine_slug": "belbek-rkatsiteli-beloe-suhoe-13",
+      "product_id": "wine-belbek-rkatsiteli-beloe-suhoe-13",
+      "group_id": "white",
+      "catalog_name": "Ркацители",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_rkatsiteli_beloe_suhoe_13_72dc1f9029.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_rkatsiteli_beloe_suhoe_13_72dc1f9029.webp",
+      "input_sha256": "ac84232036cded6349b12114d1635e148f2bb976d91e9c8484119211f736316d",
+      "asset_sha256": "96ad078bfdcf6691e9317f0e3c00deb7d2f4e7d7a397828c6b49aa6422ab2aaf"
+    },
+    {
+      "wine_slug": "belbek-roze-sira-rozovoe-suhoe-125",
+      "product_id": "wine-belbek-roze-sira-rozovoe-suhoe-125",
+      "group_id": "rose",
+      "catalog_name": "Розе Сира",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_roze_sira_rozovoe_suhoe_125_2131a8be30.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_roze_sira_rozovoe_suhoe_125_2131a8be30.webp",
+      "input_sha256": "df4c655f0061c839a1207ec1514cd5a196c19188727ea48631acf6b6564bad59",
+      "asset_sha256": "4b6b9381ac7e19d151cbdbf096ffc483b979f143016b2568a312e7cf4bfce648"
+    },
+    {
+      "wine_slug": "belbek-sandzhoveze-krasnoe-suhoe-14",
+      "product_id": "wine-belbek-sandzhoveze-krasnoe-suhoe-14",
+      "group_id": "red",
+      "catalog_name": "Санджовезе",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_sandzhoveze_krasnoe_suhoe_14_a0ba68a6c3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_sandzhoveze_krasnoe_suhoe_14_a0ba68a6c3.webp",
+      "input_sha256": "759dbcc57a41bbd84dfb7347933dc2d511efc90cc93b19a2b6eb3122626482e5",
+      "asset_sha256": "fbbd749ff5ef74da3198b609725ce9a506d6ea1173893d9dd51344a4a618232b"
+    },
+    {
+      "wine_slug": "belbek-saperavi-krasnoe-suhoe-137",
+      "product_id": "wine-belbek-saperavi-krasnoe-suhoe-137",
+      "group_id": "red",
+      "catalog_name": "Саперави",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_saperavi_krasnoe_suhoe_137_469b436cb9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_saperavi_krasnoe_suhoe_137_469b436cb9.webp",
+      "input_sha256": "7167aae8cd2ce850c09113da4af2061e8d899e9551d4740591e2dfc8f48c7793",
+      "asset_sha256": "a19f8b4fad892d487cd8eeb02264a2e049d6322890ed58aec47010469711bbd2"
+    },
+    {
+      "wine_slug": "belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Саперави Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_saperavi_rezerv_krasnoe_suhoe_14_c9a3cc2e46.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_saperavi_rezerv_krasnoe_suhoe_14_c9a3cc2e46.webp",
+      "input_sha256": "2f7e3b4baba13e331dc31898e63883a7b64a349014eb13fd1d5c4a0322194b01",
+      "asset_sha256": "cf9eedfdcfdaac76a11ce72cc5c80e204cdf4339569417a8139eaf28e74d36fa"
+    },
+    {
+      "wine_slug": "belbek-semilon-rezerv-beloe-suhoe-127",
+      "product_id": "wine-belbek-semilon-rezerv-beloe-suhoe-127",
+      "group_id": "reserve",
+      "catalog_name": "Семильон Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_semilon_rezerv_beloe_suhoe_127_64909a173d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_semilon_rezerv_beloe_suhoe_127_64909a173d.webp",
+      "input_sha256": "f5481cfc2717fa05793a5a0637139621237ee2e716cb0ee49d6cbbf4e65b45be",
+      "asset_sha256": "b88372205a883fbf6b8d1814292579304ca94e4cbcdbc6b98e49660a4e55e30f"
+    },
+    {
+      "wine_slug": "belbek-sira-rezerv-krasnoe-suhoe-132",
+      "product_id": "wine-belbek-sira-rezerv-krasnoe-suhoe-132",
+      "group_id": "reserve",
+      "catalog_name": "Сира Резерв",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_sira_rezerv_krasnoe_suhoe_132_ad3192b478.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_sira_rezerv_krasnoe_suhoe_132_ad3192b478.webp",
+      "input_sha256": "4882b520b8fb7a889a7a9d86afaf1040a6444f7576bc64a94318cf208efedfa9",
+      "asset_sha256": "262dbba7d948c050598cdaec88e221b037108f13b33c30fb3f1a7e912032ad90"
+    },
+    {
+      "wine_slug": "belbek-sovinon-blan-beloe-suhoe-12",
+      "product_id": "wine-belbek-sovinon-blan-beloe-suhoe-12",
+      "group_id": "white",
+      "catalog_name": "Совиньон Блан",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_sovinon_blan_beloe_suhoe_12_f6ebdcced9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_sovinon_blan_beloe_suhoe_12_f6ebdcced9.webp",
+      "input_sha256": "03577b6104b0a97abe9986f15fe3bda9b24c44352b69fb39028f36da4e7d7ce1",
+      "asset_sha256": "819dcae8281d8598197f8cf2706f752b08e1adbdc66b6ccc93b150eee0d372b5"
+    },
+    {
+      "wine_slug": "belbek-zakat-merlo-sira-krasnoe-suhoe-132",
+      "product_id": "wine-belbek-zakat-merlo-sira-krasnoe-suhoe-132",
+      "group_id": "zakat",
+      "catalog_name": "Закат. Мерло Сира",
+      "catalog_producer": "Бельбек",
+      "source_image": "belbek_zakat_merlo_sira_krasnoe_suhoe_132_1a2112ceb7.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/belbek_zakat_merlo_sira_krasnoe_suhoe_132_1a2112ceb7.webp",
+      "input_sha256": "a670c382eed87e3062bd16bd134c811fec83987573a1f13a38ac5ef87964803c",
+      "asset_sha256": "24788936169618a2cdf89718cfca98be154fcbe5ecb3bc2fa373963996d1ec94"
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-cabernet-reserve",
+      "name": "Каберне Совиньон Reserve",
+      "group_id": "reserve",
+      "official_url": "https://belbekwine.com/red-wines/",
+      "official_image_url": "https://belbekwine.com/wp-content/uploads/2022/03/cabernet-sovinion-reserve-500.png",
+      "source_image_sha256": "ce4c1d7a5861021394e2074efce86feb49c8d99e85d876211984e50d3023cfe7",
+      "asset_sha256": "6ee50557d95c1589e6ee49e8316923f2ad3a85ee6d7a5789440ab8fe000399f2",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Бельбек",
+        "matched_catalog_slugs": [],
+        "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without collection and release equivalence evidence."
+      }
+    }
+  ]
+}

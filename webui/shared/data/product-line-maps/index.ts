@@ -19,4 +19,6 @@ import producer13 from './valery-zakharyin.json'
 
 import producer14 from './novy-svet.json'
 
-export default [producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]
+import producer15 from './belbek.json'
+
+export default [producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]

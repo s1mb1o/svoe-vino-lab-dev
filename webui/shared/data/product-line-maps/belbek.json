@@ -1,0 +1,1533 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "belbek",
+    "name": "Бельбек",
+    "aliases": [
+      "Belbek",
+      "Винодельня Бельбек"
+    ],
+    "slug_prefixes": []
+  },
+  "scope": {
+    "label": "Вина из снимка «Свое Вино» и проверенные дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Бельбек: официальные коллекции",
+      "url": "https://belbekwine.com/"
+    },
+    {
+      "id": "official-reserve",
+      "label": "Бельбек: Резерв и Баррик",
+      "url": "https://belbekwine.com/red-wines/"
+    },
+    {
+      "id": "official-red",
+      "label": "Бельбек: Красные сортовые и купажи",
+      "url": "https://belbekwine.com/red-wines/"
+    },
+    {
+      "id": "official-white",
+      "label": "Бельбек: Белые сортовые",
+      "url": "https://belbekwine.com/white-wines/"
+    },
+    {
+      "id": "official-rose",
+      "label": "Бельбек: Розовые вина",
+      "url": "https://belbekwine.com/rose-wines/"
+    },
+    {
+      "id": "official-orange",
+      "label": "Бельбек: Мускат Оранж",
+      "url": "https://belbekwine.com/orange-wines/"
+    },
+    {
+      "id": "official-sweet",
+      "label": "Бельбек: Фиолент и Поздний сбор",
+      "url": "https://belbekwine.com/white-wines/"
+    },
+    {
+      "id": "official-zakat",
+      "label": "Бельбек: Закат",
+      "url": "https://belbekwine.com/red-wines/"
+    },
+    {
+      "id": "official-unresolved",
+      "label": "Бельбек: Карточка с противоречием",
+      "url": "https://belbekwine.com/"
+    },
+    {
+      "id": "official-official-cabernet-reserve",
+      "label": "Официальная карточка: Каберне Совиньон Reserve",
+      "url": "https://belbekwine.com/red-wines/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке от 17.09.2026. Самостоятельные стили и форматы не сравниваются по цене."
+  },
+  "tiers": [
+    {
+      "id": "tier-3",
+      "label": "Резерв и специальные коллекции",
+      "rank": 3,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "tier-2",
+      "label": "Основные коллекции",
+      "rank": 2,
+      "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-red",
+        "official-white"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и форматы",
+      "rank": 0,
+      "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-rose",
+        "official-orange",
+        "official-sweet",
+        "official-zakat",
+        "official-unresolved"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "reserve",
+      "name": "Резерв и Баррик",
+      "tier_id": "tier-3",
+      "method": "Выдержка; технология зависит от выпуска",
+      "description": "Резервные вина и Ркацители Баррик. Дубовая выдержка служит ориентиром старшей ступени. Это не рейтинг качества.",
+      "source_ids": [
+        "official-reserve",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "red",
+      "name": "Красные сортовые и купажи",
+      "tier_id": "tier-2",
+      "method": "Тихие красные вина",
+      "description": "Сортовые вина и бордоский купаж Меритаж. Старые и новые оформления, а также отдельные карточки сохранены.",
+      "source_ids": [
+        "official-red",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "white",
+      "name": "Белые сортовые",
+      "tier_id": "tier-2",
+      "method": "Тихие белые вина",
+      "description": "Алиготе, Мускат, Рислинг, Кокур, Ркацители и Совиньон Блан. Выдержка не назначается всей группе.",
+      "source_ids": [
+        "official-white",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "rose",
+      "name": "Розовые вина",
+      "tier_id": "tier-0",
+      "method": "Тихие розовые вина",
+      "description": "Розе из Пино Нуар и Сиры. Отдельный стиль без заданного соотношения цены с красными и белыми.",
+      "source_ids": [
+        "official-rose",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "orange",
+      "name": "Мускат Оранж",
+      "tier_id": "tier-0",
+      "method": "Мацерация белого винограда",
+      "description": "Оранжевый стиль представлен отдельно от белых сортовых вин. Длительность мацерации зависит от выпуска.",
+      "source_ids": [
+        "official-orange",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "sweet",
+      "name": "Фиолент и Поздний сбор",
+      "tier_id": "tier-0",
+      "method": "Полусладкие и сладкие тихие вина",
+      "description": "Фиолент Мускат и Рислинг Поздний Сбор различаются по сладости и стилю. Их не следует считать одной технологической линейкой.",
+      "source_ids": [
+        "official-sweet",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "zakat",
+      "name": "Закат",
+      "tier_id": "tier-0",
+      "method": "Купаж Мерло и Сиры",
+      "description": "Отдельный купаж из снимка каталога. Ценовое позиционирование относительно основных коллекций не подтверждено.",
+      "source_ids": [
+        "official-zakat",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "unresolved",
+      "name": "Карточка с противоречием",
+      "tier_id": "tier-0",
+      "method": "Метод не указан",
+      "description": "Карточка «Белое сухое» содержит красный цвет и Каберне Совиньон. Сохраняем исходную запись и фотографию без назначения сорта или линейки.",
+      "source_ids": [
+        "official-unresolved",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-belbek-aligote-beloe-suhoe-125",
+      "group_id": "white",
+      "name": "Алиготе",
+      "variant": "",
+      "wine_slug": "belbek-aligote-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-aligote-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 187,
+          "height": 727,
+          "source_width": 191,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус: Яркий, освежающий, с цитрусовыми оттенками, нотами груши Дюшес и приятным послевкусием. Гармоничный, свежий, с цитрусово-цветочными акцентами, нюансами груши Дюшес и зеленого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-fiolent-muskat-beloe-polusladkoe-125",
+      "group_id": "sweet",
+      "name": "Бельбек Фиолент Мускат",
+      "variant": "",
+      "wine_slug": "belbek-belbek-fiolent-muskat-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-fiolent-muskat-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 206,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат мускатный, с нотами белых цветов, персика и мёда; вкус гармоничный, с приятной сладостью и хорошей кислотностью. К морепродуктам, птице, фруктовым десертам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sweet"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-kaberne-fran-krasnoe-suhoe-13",
+      "group_id": "red",
+      "name": "Бельбек Каберне Фран",
+      "variant": "",
+      "wine_slug": "belbek-belbek-kaberne-fran-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-kaberne-fran-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 214,
+          "height": 728,
+          "source_width": 218,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Аромат с нотами красных ягод, лёгкой паприки и трав; вкус средней полноты, с мягкой танинностью и освежающей кислотностью. К мясным блюдам, телятине, сырам типа камамбер.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "red",
+      "name": "Бельбек Меритаж",
+      "variant": "",
+      "wine_slug": "belbek-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 200,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло"
+      ],
+      "description": "Аромат сложный — тёмные ягоды, чёрная смородина, вишня, ноты кедра и специй; вкус полнотелый, с мягкими танинами и долгим пряным послевкусием. Бордоский ассамбляж на крымском терруаре. К красному мясу, стейкам, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-merlo-krasnoe-suhoe-129",
+      "group_id": "red",
+      "name": "Бельбек Мерло",
+      "variant": "",
+      "wine_slug": "belbek-belbek-merlo-krasnoe-suhoe-129",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-merlo-krasnoe-suhoe-129.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 205,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Аромат с нотами спелой вишни, слив, шоколада и лёгкими пряностями; вкус округлый, бархатистый, с мягкими танинами и долгим ягодным послевкусием. К мясным блюдам, птице, зрелым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-muskat-beloe-suhoe-128",
+      "group_id": "white",
+      "name": "Бельбек Мускат",
+      "variant": "",
+      "wine_slug": "belbek-belbek-muskat-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-muskat-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 206,
+          "height": 728,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат свежий мускатный, с нотами белых цветов, цитруса и персика; вкус сухой, лёгкий, с хорошей кислотностью и чистым цветочным послевкусием. К рыбным блюдам, морепродуктам, птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "red",
+      "name": "Бельбек Пино Нуар",
+      "variant": "",
+      "wine_slug": "belbek-belbek-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-pino-nuar-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 6,
+          "width": 209,
+          "height": 720,
+          "source_width": 221,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат тонкий — вишня, малина, лёгкие нотки земляники и пряностей; вкус элегантный, с мягкими танинами, свежей кислотностью и продолжительным ягодным послевкусием. К мясным блюдам, птице, нежирным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-pti-verdo-krasnoe-suhoe-121",
+      "group_id": "red",
+      "name": "Бельбек Пти Вердо",
+      "variant": "",
+      "wine_slug": "belbek-belbek-pti-verdo-krasnoe-suhoe-121",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-pti-verdo-krasnoe-suhoe-121.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 208,
+          "height": 727,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пти Вердо"
+      ],
+      "description": "Аромат интенсивный — черника, ежевика, фиалка и лёгкие кожаные нотки; вкус полнотелый, с заметными танинами и пряным послевкусием. К красному мясу, дичи, выдержанным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-risling-beloe-suhoe-128",
+      "group_id": "white",
+      "name": "Бельбек Рислинг",
+      "variant": "",
+      "wine_slug": "belbek-belbek-risling-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-risling-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 3,
+          "width": 168,
+          "height": 727,
+          "source_width": 172,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат свежий, с нотами лимона, зелёного яблока и белых цветов; вкус живой, с хорошей кислотностью и освежающим минеральным послевкусием. К рыбным блюдам, морепродуктам, птице.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-risling-rezerv-beloe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Бельбек Рислинг Резерв",
+      "variant": "",
+      "wine_slug": "belbek-belbek-risling-rezerv-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-risling-rezerv-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 161,
+          "height": 727,
+          "source_width": 166,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Аромат утончённый — белые цветы, зелёное яблоко, лёгкие нотки персика и цитруса; вкус с хрустящей кислотностью, минеральностью и долгим фруктовым послевкусием. Выдержка в бочке добавляет бисквитную нотку. К рыбе, морепродуктам, нежирным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Бельбек Ркацители Баррик",
+      "variant": "",
+      "wine_slug": "belbek-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-rkatsiteli-barrik-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 201,
+          "height": 727,
+          "source_width": 207,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Аромат с нотами жёлтых яблок, айвы и ванили от бочковой выдержки; вкус округлый, маслянистый, с хорошей кислотностью и долгим фруктово-ванильным послевкусием. К рыбным блюдам в сливочном соусе, птице, пасте.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129",
+      "group_id": "rose",
+      "name": "Бельбек Розе",
+      "variant": "",
+      "wine_slug": "belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 200,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Пино Нуар"
+      ],
+      "description": "Аромат нежный — клубника, малина, розовый персик и лёгкие цветочные нотки; вкус свежий, сбалансированный, с приятной кислотностью и лёгким ягодным послевкусием. К птице, рыбе, нежирным сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rose"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-sandzhoveze-krasnoe-suhoe-138",
+      "group_id": "red",
+      "name": "Бельбек Санджовезе",
+      "variant": "",
+      "wine_slug": "belbek-belbek-sandzhoveze-krasnoe-suhoe-138",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-sandzhoveze-krasnoe-suhoe-138.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 194,
+          "height": 726,
+          "source_width": 200,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Аромат с нотами вишни, сливы, кожи и лёгкими пряными акцентами; вкус средней полноты, с живой кислотностью и элегантными танинами. Выдержка в бочке придаёт ванильно-пряные нюансы. К пасте с томатным соусом, мясу, твёрдым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Бельбек Саперави Резерв",
+      "variant": "",
+      "wine_slug": "belbek-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-saperavi-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 189,
+          "height": 727,
+          "source_width": 195,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Аромат интенсивный — тёмные ягоды, тутовник, слива с пряными тонами от бочковой выдержки; вкус насыщенный, плотный, с ярко выраженными танинами и долгим тёмно-ягодным послевкусием. К шашлыку, баранине, острым закускам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-belbek-sira-krasnoe-suhoe-132",
+      "group_id": "red",
+      "name": "Бельбек Сира",
+      "variant": "",
+      "wine_slug": "belbek-belbek-sira-krasnoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-belbek-sira-krasnoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 214,
+          "height": 728,
+          "source_width": 218,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Аромат интенсивный — тёмные ягоды, ежевика, фиалка, нотки перца и копчения; вкус полнотелый, плотный, с хорошей структурой и долгим пряным послевкусием. К красному мясу, дичи, зрелым сырам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14",
+      "group_id": "unresolved",
+      "name": "Белое сухое",
+      "variant": "",
+      "wine_slug": "belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 195,
+          "height": 726,
+          "source_width": 201,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Богатый, насыщенный, со зрелыми танинами, гармоничной кислотностью и продолжительным послевкусием. Наполненный тонами черной смородины, сушеной вишни, горького шоколада и сладкой ванили.",
+      "release_status": "catalog",
+      "badges": [
+        "Противоречие в данных каталога"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-unresolved"
+      ]
+    },
+    {
+      "id": "wine-belbek-kaberne-fran-krasnoe-suhoe-134",
+      "group_id": "red",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "belbek-kaberne-fran-krasnoe-suhoe-134",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-kaberne-fran-krasnoe-suhoe-134.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Насыщенный, богатый, с сочным фруктовым ядром, элегантными танинами и долгим, гладким послевкусием с ягодными и пряными нюансами. Мощный, с оттенками сухофруктов, сладких специй, граната, темных ягод, дополненных нежными ликерными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-kaberne-sovinon-krasnoe-suhoe-138",
+      "group_id": "red",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "belbek-kaberne-sovinon-krasnoe-suhoe-138",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-kaberne-sovinon-krasnoe-suhoe-138.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 190,
+          "height": 726,
+          "source_width": 200,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Гармоничное, с высокой кислотностью и необузданными танинами, с нотами вишни, черных ягод, кожи, черного чая и ванили, с долгим приятным послевкусием. Богатый, с нотами черных ягод и вишни с косточкой, с оттенками сладкого перца, ванили и кожи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-kokur-kokur-belyy-beloe-suhoe-13",
+      "group_id": "white",
+      "name": "Кокур",
+      "variant": "",
+      "wine_slug": "belbek-kokur-kokur-belyy-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-kokur-kokur-belyy-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 3,
+          "width": 203,
+          "height": 726,
+          "source_width": 210,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Вкус: С яркой фруктовостью, тонкой кислотностью и сухим, свежим, гармоничным послевкусием. Выразительный, с оттенками спелой груши и медовой дыни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "red",
+      "name": "Меритаж",
+      "variant": "",
+      "wine_slug": "belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 203,
+          "height": 726,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Насыщенный, шелковистый, с ягодно-пряными акцентами, гладкими, отлично интегрированными танинами, свежей кислотностью и продолжительным, сухим послевкусием. Соблазнительный с оттенками черных ягод, сладких специй и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-merlo-krasnoe-suhoe-13",
+      "group_id": "red",
+      "name": "Мерло",
+      "variant": "",
+      "wine_slug": "belbek-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 191,
+          "height": 726,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Питкий, очень приятный, фруктово-пряный, с умеренной танинностью и деликатной кислотностью, гармоничным, сухим послевкусием. Яркий с нотками заспиртованной вишни, спелой малины тонами вишни в ликере, сладкого дыма и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-muskat-muskat-belyy-beloe-suhoe-127",
+      "group_id": "white",
+      "name": "Мускат",
+      "variant": "",
+      "wine_slug": "belbek-muskat-muskat-belyy-beloe-suhoe-127",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-muskat-muskat-belyy-beloe-suhoe-127.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 203,
+          "height": 727,
+          "source_width": 209,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Насыщенный, с гармоничной кислотностью и длительным послевкусием. Богатый мускатный, с оттенками самых экзотических фруктов и легкой ноткой бергамота.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-muskat-oranzh-muskat-belyy-oranzhevoe-suhoe-125",
+      "group_id": "orange",
+      "name": "Мускат Оранж",
+      "variant": "",
+      "wine_slug": "belbek-muskat-oranzh-muskat-belyy-oranzhevoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-muskat-oranzh-muskat-belyy-oranzhevoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 201,
+          "height": 728,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Оранжевое",
+      "style": "Оранжевое",
+      "grapes": [
+        "Мускат Белый"
+      ],
+      "description": "Вкус: Выразительный, насыщенный, свежий и сочный, с пряными тонами, с едва заметным танином и освежающей кислотностью в послевкусии. Богатый, с нотами персика, личи, апельсиновой цедры и ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-orange"
+      ]
+    },
+    {
+      "id": "wine-belbek-pino-mene-krasnoe-suhoe-128",
+      "group_id": "red",
+      "name": "Пино Менье",
+      "variant": "",
+      "wine_slug": "belbek-pino-mene-krasnoe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-pino-mene-krasnoe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 192,
+          "height": 728,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Менье"
+      ],
+      "description": "Вкус: Мягкий, хорошо сбалансированный, с фруктово-пряными акцентами, освежающей кислотностью, мелкозернистыми танинами и сухим послевкусием. Свежий с яркими ягодными тонами, с пряными и ванильными нотками, с оттенками спелой вишни и кожи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-pino-nuar-krasnoe-suhoe-133",
+      "group_id": "red",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "belbek-pino-nuar-krasnoe-suhoe-133",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-pino-nuar-krasnoe-suhoe-133.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Округлый, с шелковистой текстурой, фруктово-пряными оттенками и долгим послевкусием. Щедрый, сотканный из нот ванили, малины, сушеной розы и вишни в ликере.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+      "group_id": "reserve",
+      "name": "Пино Нуар Резерв",
+      "variant": "",
+      "wine_slug": "belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-pino-nuar-rezerv-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Сбалансированный и сочный, с элегантными танинами и продолжительным ягодным послевкусием, в котором ощущаются деликатные пряные нотки. Многослойный, с нотами дикой вишни и малины, дополненными тонкими оттенками дубовой выдержки, табачного листа и пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-pino-nuar-roze-rozovoe-suhoe-115",
+      "group_id": "rose",
+      "name": "Пино Нуар розе",
+      "variant": "",
+      "wine_slug": "belbek-pino-nuar-roze-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-pino-nuar-roze-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 193,
+          "height": 728,
+          "source_width": 197,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Свежий, элегантный, легкий, фруктово-ягодный, с шелковистой текстурой и долгим финалом с нотами цитрусовых и минералов. Изящный с нотами фруктовых леденцов, сладкой ваты, малины и розового грейпфрута.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rose"
+      ]
+    },
+    {
+      "id": "wine-belbek-risling-pozdniy-sbor-risling-reynskiy-beloe-sladkoe-117",
+      "group_id": "sweet",
+      "name": "Рислинг. Поздний Сбор",
+      "variant": "",
+      "wine_slug": "belbek-risling-pozdniy-sbor-risling-reynskiy-beloe-sladkoe-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-risling-pozdniy-sbor-risling-reynskiy-beloe-sladkoe-117.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 4,
+          "y": 3,
+          "width": 162,
+          "height": 726,
+          "source_width": 169,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Интенсивный, плотный, сладкий, но не приторный, с нотами спелых косточковых фруктов, меда, цитрусовыми нюансами, свежей кислотностью, выраженной минеральностью, обволакивающей текстурой и очень продолжительным послевкусием. Утонченный, свежий, с тонами цитрусовых и спелых тропических фруктов (манго, гуава, ананас), легким флером груши Дюшес, персика и меда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sweet"
+      ]
+    },
+    {
+      "id": "wine-belbek-risling-risling-reynskiy-beloe-suhoe-12",
+      "group_id": "white",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "belbek-risling-risling-reynskiy-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-risling-risling-reynskiy-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 167,
+          "height": 727,
+          "source_width": 173,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Энергичный, яркий, хорошо структурированный, с освежающей минеральной кислотностью и фруктово-цитрусовыми нотками в долгом послевкусии. Элегантный. с цветочными тонами, оттенками зеленого яблока и мёда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Ркацители Баррик",
+      "variant": "",
+      "wine_slug": "belbek-rkatsiteli-barrik-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-rkatsiteli-barrik-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 6,
+          "y": 3,
+          "width": 201,
+          "height": 727,
+          "source_width": 215,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Мягкий, чистый, с фруктово-цветочным профилем и тонкими ванильными штрихами в послевкусии. Гармоничный, освежающий, с оттенками персика, груши, цитрусовых и морского бриза.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-rkatsiteli-beloe-suhoe-13",
+      "group_id": "white",
+      "name": "Ркацители",
+      "variant": "",
+      "wine_slug": "belbek-rkatsiteli-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-rkatsiteli-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 2,
+          "width": 190,
+          "height": 728,
+          "source_width": 196,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Вкус: Слегка маслянистый, с оттенками пряностей, фруктов в карамели и минералов. С акцентами лаймовой цедры, печеных яблок и мускатного ореха.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-roze-sira-rozovoe-suhoe-125",
+      "group_id": "rose",
+      "name": "Розе Сира",
+      "variant": "",
+      "wine_slug": "belbek-roze-sira-rozovoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-roze-sira-rozovoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 200,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Чистый, мягкий, с ягодным профилем и свежей кислинкой в очаровательном послевкусии. Гармоничный, освежающий, с оттенками красных ягод, леденцов и сливок.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-rose"
+      ]
+    },
+    {
+      "id": "wine-belbek-sandzhoveze-krasnoe-suhoe-14",
+      "group_id": "red",
+      "name": "Санджовезе",
+      "variant": "",
+      "wine_slug": "belbek-sandzhoveze-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-sandzhoveze-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 201,
+          "height": 726,
+          "source_width": 206,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Санджовезе"
+      ],
+      "description": "Вкус: Яркий, выразительно ягодный, сочный, с доминирующими тонами ежевики и черники, деликатной дубовой сладостью и продолжительным послевкусием. Насыщенный с оттенками черных спелых ягод со сливочными и ванильными нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-saperavi-krasnoe-suhoe-137",
+      "group_id": "red",
+      "name": "Саперави",
+      "variant": "",
+      "wine_slug": "belbek-saperavi-krasnoe-suhoe-137",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-saperavi-krasnoe-suhoe-137.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 200,
+          "height": 728,
+          "source_width": 204,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Мощный, с выраженной танинной структурой, хорошим балансом, ощутимой, свежей кислотностью и затяжным, стойким, ягодным послевкусием. С яркими тонами черносмородинового варенья, ягодного джема, граната, темной сливы, вишневого ликера, дополненными пряными и сливочными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-red"
+      ]
+    },
+    {
+      "id": "wine-belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Саперави Резерв",
+      "variant": "",
+      "wine_slug": "belbek-saperavi-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-saperavi-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вкус: Богатый, с объемными танинами, гармоничной кислотностью и продолжительным ягодным послевкусием с легкими пряными нюансами. С мощными тонами черносмородинового джема, ягодного ликера и сливок.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-semilon-rezerv-beloe-suhoe-127",
+      "group_id": "reserve",
+      "name": "Семильон Резерв",
+      "variant": "",
+      "wine_slug": "belbek-semilon-rezerv-beloe-suhoe-127",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-semilon-rezerv-beloe-suhoe-127.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Семильон"
+      ],
+      "description": "Вкус: Хорошо выраженный, со сбалансированной кислотностью, с нежным и гармоничным послевкусием. Свежий, с сочными косточковыми фруктами — белой сливы и алычи, с легкими цветочными нотами и деликатным оттенком ванили и пряностей от выдержки в дубе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-sira-rezerv-krasnoe-suhoe-132",
+      "group_id": "reserve",
+      "name": "Сира Резерв",
+      "variant": "",
+      "wine_slug": "belbek-sira-rezerv-krasnoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-sira-rezerv-krasnoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 3,
+          "width": 210,
+          "height": 726,
+          "source_width": 216,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Насыщенный, сбалансированный, с бархатистой текстурой, легкой бочковой сладостью и чистым ягодным послевкусием. С нотками черных ягод и спелой вишни, которые украшают легкие сливочные оттенки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-belbek-sovinon-blan-beloe-suhoe-12",
+      "group_id": "white",
+      "name": "Совиньон Блан",
+      "variant": "",
+      "wine_slug": "belbek-sovinon-blan-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-sovinon-blan-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 4,
+          "width": 202,
+          "height": 725,
+          "source_width": 214,
+          "source_height": 732
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Яркий, свежий, с гармоничной кислотностью и приятным послевкусием с цитрусовыми нюансами. Освежающий, с оттенками зеленого персика, крыжовника, черносмородинового листа и цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-white"
+      ]
+    },
+    {
+      "id": "wine-belbek-zakat-merlo-sira-krasnoe-suhoe-132",
+      "group_id": "zakat",
+      "name": "Закат. Мерло Сира",
+      "variant": "",
+      "wine_slug": "belbek-zakat-merlo-sira-krasnoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/wine-belbek-zakat-merlo-sira-krasnoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "width": 213,
+          "height": 728,
+          "source_width": 219,
+          "source_height": 732
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Сочный с мягкими спелыми танинами. Яркий, с обилием черных и красных ягод, приправленных пряными травами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-zakat"
+      ]
+    },
+    {
+      "id": "official-cabernet-reserve",
+      "group_id": "reserve",
+      "name": "Каберне Совиньон Reserve",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/belbek/official-cabernet-reserve.webp",
+        "source_id": "official-official-cabernet-reserve",
+        "frame": {
+          "x": 4,
+          "y": 7,
+          "width": 136,
+          "height": 500,
+          "source_width": 144,
+          "source_height": 512
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Резервное выдержанное сухое красное вино. Официальный каталог показывает серию отдельно от основного Каберне Совиньон. Карточки обычного Каберне не используются как ссылка на Reserve.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-official-cabernet-reserve",
+        "official-reserve"
+      ]
+    }
+  ]
+}

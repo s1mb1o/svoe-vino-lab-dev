@@ -1,3 +1,7 @@
+# 2026-10-16: Бельбек
+
+Add Бельбек: 39 catalog cards, 1 official additions, and 8 groups. Ship normalized bottle assets and independent source evidence.
+
 # 2026-10-16: Новый Свет
 
 Add Новый Свет: 44 catalog cards, 1 official additions, and 5 groups. Ship normalized bottle assets and independent source evidence.
