@@ -1,3 +1,7 @@
+# 2026-10-17: sober-bash review correction
+
+The official Грани collection lists all six retained varietal and blend identities. Collection membership is not limited to the first three entries.
+
 # 2026-10-17: belbek review correction
 
 The contradictory Белое сухое card can be a Reserve counterpart. Its conflicting fields do not establish exact equivalence.

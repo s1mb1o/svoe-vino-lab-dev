@@ -1,3 +1,7 @@
+# 2026-10-17: sober-bash review correction
+
+Check all six Грани products and all four amphora products. Keep separate catalog records distinct.
+
 # 2026-10-17: belbek review correction
 
 Check the rose blend descriptions and the unresolved card. Keep the Reserve addition selectable with no portal link.

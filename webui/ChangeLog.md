@@ -1,3 +1,7 @@
+# 2026-10-17: sober-bash review correction
+
+List all six Грани products. Record exact source captures and original-label membership evidence.
+
 # 2026-10-17: belbek review correction
 
 Describe the different rose blends. Record the possible Reserve counterpart without creating an unverified catalog link.

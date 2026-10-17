@@ -1,0 +1,72 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://soberbashvino.ru/wine/kollekcija-rezervnoe/",
+      "retrieved_at": "2026-10-17T20:26:44.153278+00:00",
+      "sha256": "03443c98236e808f105376aa911f43019381968586a1c38890c00c7f020439be",
+      "final_url": "https://soberbashvino.ru/wine/kollekcija-rezervnoe/",
+      "source_id": "official-reserve",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/kollekcija-grani/",
+      "retrieved_at": "2026-10-17T20:26:44.063425+00:00",
+      "sha256": "67f110f5ec5f1a8756c8b625d9660b91f83d6b1ff78ea976a75fce7c417e69d5",
+      "final_url": "https://soberbashvino.ru/wine/kollekcija-grani/",
+      "source_id": "official-amphora",
+      "section": null,
+      "basis": "The official Грани page lists all four amphora products. The Reserve page does not establish their membership."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/kollekcija-grani/",
+      "retrieved_at": "2026-10-17T20:26:44.063425+00:00",
+      "sha256": "67f110f5ec5f1a8756c8b625d9660b91f83d6b1ff78ea976a75fce7c417e69d5",
+      "final_url": "https://soberbashvino.ru/wine/kollekcija-grani/",
+      "source_id": "official-grani",
+      "section": null,
+      "basis": "The official Грани page lists Достойный, Хихви, Рубин & Рубин, Кумшацкий, Мускат and Плечистик."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/kollekcija-klassika/",
+      "retrieved_at": "2026-10-17T20:26:44.118495+00:00",
+      "sha256": "3eadc65cdd4a15049050467f0f30e34256274f303d835a6a90949d68e304a842",
+      "final_url": "https://soberbashvino.ru/wine/kollekcija-klassika/",
+      "source_id": "official-classic",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/dve-dolini/",
+      "retrieved_at": "2026-10-17T20:26:44.016731+00:00",
+      "sha256": "e457ed892e565affa5571cbcd134ab44fe3fec39ed2cf11d9b502fd8a79faa9c",
+      "final_url": "https://soberbashvino.ru/wine/dve-dolini/",
+      "source_id": "official-two-valleys",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/kollekcija-trezvaja-golova/",
+      "retrieved_at": "2026-10-17T20:26:44.201829+00:00",
+      "sha256": "376718f2d469def52afa193896a513f428823f2257cbf9cf3cff7611ac560bcc",
+      "final_url": "https://soberbashvino.ru/wine/kollekcija-trezvaja-golova/",
+      "source_id": "official-sober-head",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://soberbashvino.ru/wine/aza2016/",
+      "retrieved_at": "2026-10-17T20:26:43.985170+00:00",
+      "sha256": "bcc0e7c62967ea6822a93c758365a718b371a36de2f61da19f2007a0d0fa49dc",
+      "final_url": "https://soberbashvino.ru/wine/aza2016/",
+      "source_id": "official-product-aza-2016",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    }
+  ],
+  "snapshot_only_groups": [],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

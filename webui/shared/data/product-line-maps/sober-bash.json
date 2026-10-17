@@ -20,43 +20,38 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Собер Баш: официальные коллекции",
-      "url": "https://soberbashvino.ru/wine/aza2016/"
-    },
-    {
       "id": "official-reserve",
-      "label": "Собер Баш: Резервные вина",
+      "label": "Собер Баш: официальный источник · Коллекция Pезервное » Собер Баш",
       "url": "https://soberbashvino.ru/wine/kollekcija-rezervnoe/"
     },
     {
       "id": "official-amphora",
-      "label": "Собер Баш: Грани · Амфора",
+      "label": "Собер Баш: официальный источник · Коллекция Грани » Собер Баш",
       "url": "https://soberbashvino.ru/wine/kollekcija-grani/"
     },
     {
       "id": "official-grani",
-      "label": "Собер Баш: Грани",
+      "label": "Собер Баш: официальный источник · Коллекция Грани » Собер Баш",
       "url": "https://soberbashvino.ru/wine/kollekcija-grani/"
     },
     {
       "id": "official-classic",
-      "label": "Собер Баш: Классика",
+      "label": "Собер Баш: официальный источник · Коллекция Kлассика » Собер Баш",
       "url": "https://soberbashvino.ru/wine/kollekcija-klassika/"
     },
     {
       "id": "official-two-valleys",
-      "label": "Собер Баш: Две долины",
+      "label": "Собер Баш: официальный источник · Две долины » Собер Баш",
       "url": "https://soberbashvino.ru/wine/dve-dolini/"
     },
     {
       "id": "official-sober-head",
-      "label": "Собер Баш: Трезвая голова",
+      "label": "Собер Баш: официальный источник · Коллекция Трезвая голова » Собер Баш",
       "url": "https://soberbashvino.ru/wine/kollekcija-trezvaja-golova/"
     },
     {
-      "id": "official-official-aza-2016",
-      "label": "Официальная карточка: Аза · 2016",
+      "id": "official-product-aza-2016",
+      "label": "Собер Баш: официальный источник · Аза 2016 » Собер Баш",
       "url": "https://soberbashvino.ru/wine/aza2016/"
     }
   ],
@@ -73,7 +68,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
-        "official-reserve"
+        "official-reserve",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -84,6 +80,7 @@
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
         "official-amphora",
+        "svoe-vino-2026-09-17",
         "official-grani"
       ]
     },
@@ -95,6 +92,7 @@
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
         "official-classic",
+        "svoe-vino-2026-09-17",
         "official-two-valleys"
       ]
     },
@@ -105,7 +103,8 @@
       "description": "Для этих стилей и форматов ценовое соотношение с остальными коллекциями не подтверждено.",
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
-        "official-sober-head"
+        "official-sober-head",
+        "svoe-vino-2026-09-17"
       ]
     }
   ],
@@ -137,7 +136,7 @@
       "name": "Грани",
       "tier_id": "tier-2",
       "method": "Сортовые авторские вина",
-      "description": "Коллекция выделяет характер отдельных сортов. Кумшацкий, Мускат и Плечистик из снимка сохранены отдельно.",
+      "description": "Достойный, Хихви, Рубин & Рубин, Кумшацкий, Мускат и Плечистик. Официальная коллекция объединяет разные сорта и купажи. Каждая карточка снимка сохранена отдельно.",
       "source_ids": [
         "official-grani",
         "svoe-vino-2026-09-17"
@@ -680,7 +679,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-classic"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 3"
     },
     {
       "id": "wine-sober-bash-kaberne-fran-krasnoe-suhoe-13",
@@ -713,7 +713,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-reserve"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 3"
     },
     {
       "id": "wine-sober-bash-kaberne-fran-rozovoe-suhoe-12",
@@ -746,7 +747,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-classic"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 3 из 3"
     },
     {
       "id": "wine-sober-bash-korvina-krasnostop-zolotovskiy-krasnoe-suhoe-14",
@@ -978,7 +980,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-classic"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-sober-bash-risling-risling-reynskiy-beloe-suhoe-12",
@@ -1011,7 +1014,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-reserve"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-sober-bash-rkatsiteli-amfora-beloe-suhoe-135",
@@ -1424,7 +1428,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/sober-bash/official-aza-2016.webp",
-        "source_id": "official-official-aza-2016",
+        "source_id": "official-product-aza-2016",
         "frame": {
           "x": 7,
           "y": 7,
@@ -1448,7 +1452,7 @@
       ],
       "price": null,
       "source_ids": [
-        "official-official-aza-2016",
+        "official-product-aza-2016",
         "official-classic"
       ]
     }
