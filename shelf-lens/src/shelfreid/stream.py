@@ -106,6 +106,15 @@ class StreamConfig:
     # anyway: the ground is new after all.
     trust_steps: int = 30
     max_wait: int = 30
+    # A jump. When the motion of the camera between two frames is not found (the optical
+    # flow fails: a frame of another place, a whip, a covered lens), the place of the
+    # frame is lost: the tracks end (their bottles have left the view), nothing is given
+    # by place, no new bottle starts (the boxes wait, white), the labels wait, and every
+    # step registers the frame to all the keyframes until a registration is strong
+    # (`strong_inliers`, `strong_coverage`). After `max_wait` lost steps the place is new
+    # ground: a keyframe of its own, away from the map. The search near the predicted
+    # place (`search_radius`) never tries the keyframes of a far place: four frames of the
+    # video fed after its end took the ids of the place where the video ended, red.
     # Bottles are compared by the projected centre alone, across the shelf, in widths of the
     # detection, and in one row (each centre inside the other's vertical span). Not by the
     # projected box: a bottle is a cylinder, not a part of the shelf plane, so a homography
@@ -279,6 +288,11 @@ class ShelfTracker:
         self.pending: tuple[int, int, float] | None = None   # (step, keyframe, error)
         self.localized = -10 ** 9        # the step of the last registration to a keyframe
         self.untrusted = 0               # untrusted steps in a row
+        self.lost = False                # the place of the frame is lost (see `max_wait`)
+        self.lost_steps = 0
+        self.jumps = 0
+        self.found = 0                   # places found again after a jump
+        self.new_grounds = 0
         self.merged_young = 0
         self.trusted = True
         self.poses: dict[int, np.ndarray] = {}   # source frame number -> H (frame -> map)
@@ -694,6 +708,45 @@ class ShelfTracker:
         self.anchored = self.count
         self.verified[index] = self.count
 
+    def _jump(self) -> None:
+        """The place of the frame is lost (see `max_wait`)."""
+        self.lost = True
+        self.lost_steps = 0
+        self.jumps += 1
+        self.anchored = self.localized = -10 ** 9   # P is no chain of motions any more
+        self.verified = {}
+        self.wanted = set()
+        self.need_registration = False
+        for bottle in self.bottles:
+            bottle.left = True
+
+    def _find(self, number: int, features: FrameFeatures) -> None:
+        """Look for the lost frame among all the keyframes; after `max_wait` lost steps
+        the place is new ground."""
+        cfg = self.cfg
+        verified = dict(self.verified)
+        good = [g for g in self._registrations(features, list(range(len(self.keyframes))))
+                if g[2]]
+        if good:
+            best, R, _, _ = max(good, key=lambda g: g[3])
+            self.ref, self.P = best, R
+            self.anchored = self.localized = self.count
+            self.lost = False
+            self.found += 1
+            return
+        self.verified = verified
+        self.lost_steps += 1
+        if self.lost_steps > cfg.max_wait:
+            # New ground: a keyframe of its own, to the right of the whole map.
+            right = max(self._keyframe_quad(k)[:, 0].max() for k in range(len(self.keyframes)))
+            index = self.graph.add(np.array([[1, 0, right + self.size[0]], [0, 1, 0], [0, 0, 1]], float))
+            self.keyframes.append(Keyframe(number, self.count, features))
+            self.ref, self.P = index, np.eye(3)
+            self.anchored = self.localized = self.count
+            self.verified[index] = self.count
+            self.lost = False
+            self.new_grounds += 1
+
     def _near_old_keyframe(self) -> bool:
         """Whether an old keyframe (not of this visit) lies near the predicted place."""
         cfg = self.cfg
@@ -708,6 +761,8 @@ class ShelfTracker:
     def _trusted(self) -> bool:
         """Whether the place of the frame is trusted (see `trust_steps`)."""
         cfg = self.cfg
+        if self.lost:
+            return False
         if self.count - self.localized <= cfg.trust_steps or not self._near_old_keyframe():
             self.untrusted = 0
             return True
@@ -797,7 +852,7 @@ class ShelfTracker:
                 break
         # Check every row against the labels of its boxes; the boxes left free take the
         # released bottles by place.
-        released = self._check_rows(number, boxes, matched, centres, spans)
+        released = set() if self.lost else self._check_rows(number, boxes, matched, centres, spans)
         if released:
             owned = set(matched.values())
             free = [i for i in range(len(detections)) if i not in matched and not self._cut(boxes[i])]
@@ -1160,6 +1215,7 @@ class ShelfTracker:
             H_step = self._flow(self.previous[0], gray, self.previous[1])
             if H_step is None:
                 self.lost_motion += 1
+                self._jump()
             else:
                 self.P = self.P @ H_step
                 self.M = self.M @ H_step
@@ -1170,6 +1226,9 @@ class ShelfTracker:
         if not self.keyframes:                # the first frame anchors the map
             features = self._features(frame, detections)
             self._add_keyframe(number, features)
+        elif self.lost:
+            features = self._features(frame, detections)
+            self._find(number, features)
         elif self.count % cfg.reloc_every == 0 or not self.trusted or self.need_registration:
             self.need_registration = False
             features = self._features(frame, detections)
@@ -1178,7 +1237,7 @@ class ShelfTracker:
 
         started = perf_counter()
         descriptors = self._box_descriptors(features, [d.box for d in detections])
-        self.votes = self._label_votes(descriptors, [d.box for d in detections])
+        self.votes = {} if self.lost else self._label_votes(descriptors, [d.box for d in detections])
         times["labels"] = perf_counter() - started
 
         started = perf_counter()
