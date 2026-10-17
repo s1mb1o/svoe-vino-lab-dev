@@ -1,3 +1,11 @@
+# 2026-10-17: Sober Bash amphora source
+
+Correct the Sober Bash amphora subgroup source URL. Cite the official Грани collection.
+
+# 2026-10-17: Novy Svet absence scope
+
+Use the exact Novy Svet snapshot producer value in the official-addition absence check. Check structured absence scopes against independent producer baselines.
+
 # 2026-10-16: Eight producer map verification
 
 Add eight producer maps in eight separate implementation commits. Cover 370 exact catalog cards and eight official additions. Normalize bottle cutouts and image frames. Pass 275 unit tests, type checks, the production build, and 77 producer browser cases per engine. Pass the complete Abrau browser regressions in both engines.

@@ -1,3 +1,11 @@
+# 2026-10-17: Sober Bash amphora source
+
+The saved official Грани page lists all four amphora products in the map. The reserve collection URL did not establish this membership. Keep the existing products, groups, and relative tiers.
+
+# 2026-10-17: Novy Svet absence scope
+
+The Novy Svet display name differs from the exact snapshot producer value. A literal query with the display name can select zero rows. Scope the absence check to Новый Свет. Дом шампанских вин and retain the 44-card baseline.
+
 # 2026-10-16: Eight producer map verification
 
 The eight producer extracts contain 370 exact snapshot identities. The full catalog coverage is now 988 of 2103 cards. An exact producer-field check found a separate Сатера card outside the ESSE scope. Source checks distinguished alcoholic and alcohol-free La Petite Perle cans. Read docs/validation/eight-producer-maps.md for evidence and source limits. Automatic approval review rejected the external Claude packet transfer; explicit owner approval is pending.

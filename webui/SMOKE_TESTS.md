@@ -1,3 +1,11 @@
+# 2026-10-17: Sober Bash amphora source
+
+Verify the Грани · Амфора source against the official Грани collection. Retain the four amphora product identities and their selection behavior.
+
+# 2026-10-17: Novy Svet absence scope
+
+Verify the Коронационное addition against the 44 exact Новый Свет. Дом шампанских вин catalog records. A display-name alias MUST NOT prove absence.
+
 # 2026-10-16: Eight producer map verification
 
 Check all eight routes in docs/validation/eight-producer-maps.md. Verify the selected catalog identity, bottle image, group, price guidance, portal link, and mobile popup. Select each gray addition and verify that it has local details but no portal link. Check 320 px, 390 px, desktop, both themes, and return to the map.
