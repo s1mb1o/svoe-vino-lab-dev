@@ -22,83 +22,73 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Валерий Захарьин: официальные коллекции",
-      "url": "https://valeryzaharin.com/ru/"
-    },
-    {
       "id": "official-reserve",
-      "label": "Валерий Захарьин: Резерв · автохтоны и Opus Magnum",
+      "label": "Валерий Захарьин: официальный источник · Купить Опус Магнум дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/rubedo"
     },
     {
       "id": "official-autochthon",
-      "label": "Валерий Захарьин: Автохтонные вина Крыма",
+      "label": "Валерий Захарьин: официальный источник · Купить Автохтонные вина дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/avtohtonnyie-vina"
     },
     {
       "id": "official-authors",
-      "label": "Валерий Захарьин: Авторские вина",
+      "label": "Валерий Захарьин: официальный источник · Купить Авторские вина дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/avtorskie-vina"
     },
     {
       "id": "official-bakkal-su",
-      "label": "Валерий Захарьин: Баккал Су",
+      "label": "Валерий Захарьин: официальный источник · Купить Баккал Су дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/bakkal-su"
     },
     {
       "id": "official-house",
-      "label": "Валерий Захарьин: Дом Захарьиных",
+      "label": "Валерий Захарьин: официальный источник · Купить Дом Захарьиных дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/dom-zaharinyih"
     },
     {
       "id": "official-burluk",
-      "label": "Валерий Захарьин: Бурлюк · тихие",
+      "label": "Валерий Захарьин: официальный источник · Купить Коллекция тихих вин Бурлюк дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-tihih-vin-burlyuk"
     },
     {
-      "id": "official-varietal",
-      "label": "Валерий Захарьин: Валерий Захарьин · сортовые",
-      "url": "https://valeryzaharin.com/ru/"
-    },
-    {
       "id": "official-four-colours",
-      "label": "Валерий Захарьин: Four Colours",
+      "label": "Валерий Захарьин: официальный источник · Купить Four colours дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/fourcolours"
     },
     {
       "id": "official-paterum",
-      "label": "Валерий Захарьин: Paterum",
+      "label": "Валерий Захарьин: официальный источник · Купить Paterum дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/paterum"
     },
     {
       "id": "official-tango",
-      "label": "Валерий Захарьин: Танговое Манто",
+      "label": "Валерий Захарьин: официальный источник · Купить Танговое Манто дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/tangovoe-manto"
     },
     {
       "id": "official-kokur-sparkling",
-      "label": "Валерий Захарьин: Кокур & K°",
+      "label": "Валерий Захарьин: официальный источник · Купить Кокур &amp; K°  дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/kokurko"
     },
     {
       "id": "official-author-sparkling",
-      "label": "Валерий Захарьин: Авторское игристое",
+      "label": "Валерий Захарьин: официальный источник · Купить Авторская коллекция игристых вин  дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/avtorskaya-kollektsiya-igristyih-vin-"
     },
     {
       "id": "official-burluk-sparkling",
-      "label": "Валерий Захарьин: Бурлюк · игристые",
+      "label": "Валерий Захарьин: официальный источник · Купить Коллекция игристых вин  Бурлюк дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-igristyih-vin--burlyuk"
     },
     {
       "id": "official-chateau-antique",
-      "label": "Валерий Захарьин: Chateau Antique",
+      "label": "Валерий Захарьин: официальный источник · Купить Chateau Antique дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/catalog/chateau-antique"
     },
     {
-      "id": "official-official-chateau-antique-sauvignon",
-      "label": "Официальная карточка: Chateau Antique · Sauvignon",
+      "id": "official-product-chateau-antique-sauvignon",
+      "label": "Валерий Захарьин: официальный источник · Купить Sauvignon дешево в интернет-магазине",
       "url": "https://valeryzaharin.com/ru/product/sauvingnon"
     }
   ],
@@ -115,7 +105,9 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
-        "official-reserve"
+        "official-reserve",
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
       ]
     },
     {
@@ -126,6 +118,7 @@
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
         "official-autochthon",
+        "svoe-vino-2026-09-17",
         "official-authors",
         "official-house"
       ]
@@ -137,7 +130,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-bakkal-su"
+        "official-bakkal-su",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -148,7 +142,7 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-burluk",
-        "official-varietal",
+        "svoe-vino-2026-09-17",
         "official-four-colours",
         "official-paterum",
         "official-tango",
@@ -165,10 +159,11 @@
       "name": "Резерв · автохтоны и Opus Magnum",
       "tier_id": "tier-3",
       "method": "Отбор винограда; дубовая выдержка",
-      "description": "Кефесия Резерв, Сары Пандас Резерв и купажи Albedo/Rubedo. Старшая ступень задана редакционно по резервному статусу и работе с дубом.",
+      "description": "Редакционная группа резервных вин: Кефесия Резерв, Сары Пандас Резерв, Albedo и Rubedo. Надпись Reserve или «Резерв» подтверждается исходными этикетками. Это разные коллекции, а не одна официальная серия.",
       "source_ids": [
         "official-reserve",
-        "svoe-vino-2026-09-17"
+        "svoe-vino-2026-09-17",
+        "official-autochthon"
       ]
     },
     {
@@ -233,7 +228,6 @@
       "method": "Тихие вина; технология зависит от выпуска",
       "description": "Сортовые вина из снимка. Среди них есть сухие и полусладкие карточки. Общая цена или выдержка для всей группы не назначена.",
       "source_ids": [
-        "official-varietal",
         "svoe-vino-2026-09-17"
       ]
     },
@@ -371,7 +365,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Кокур Белый",
         "Ркацители",
@@ -406,7 +400,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусладкое",
+      "style": "Белое игристое · полусладкое",
       "grapes": [
         "Кокур Белый",
         "Ркацители",
@@ -451,7 +445,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-reserve"
+        "official-reserve",
+        "official-autochthon"
       ]
     },
     {
@@ -507,7 +502,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Алиготе"
       ],
@@ -540,7 +535,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Алиготе"
       ],
@@ -551,7 +546,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-burluk-sparkling"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-valeriy-zaharin-aligote-burlyuk-beloe-suhoe-13",
@@ -584,7 +580,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-burluk"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-valeriy-zaharin-aligote-valeriy-zaharin-beloe-suhoe-13",
@@ -615,8 +612,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -748,7 +744,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-reserve"
+        "official-reserve",
+        "official-autochthon"
       ]
     },
     {
@@ -814,7 +811,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-reserve"
+        "official-reserve",
+        "official-autochthon"
       ]
     },
     {
@@ -1275,8 +1273,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1299,7 +1296,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Кокур Белый"
       ],
@@ -1341,8 +1338,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1374,8 +1370,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1440,8 +1435,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1473,8 +1467,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1507,7 +1500,8 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-reserve"
+        "official-reserve",
+        "official-autochthon"
       ]
     },
     {
@@ -1605,8 +1599,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1638,8 +1631,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1671,8 +1663,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1704,8 +1695,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1836,8 +1826,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-varietal"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1849,7 +1838,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/valery-zakharyin/official-chateau-antique-sauvignon.webp",
-        "source_id": "official-official-chateau-antique-sauvignon",
+        "source_id": "official-product-chateau-antique-sauvignon",
         "frame": {
           "x": 10,
           "y": 3,
@@ -1869,7 +1858,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-chateau-antique-sauvignon",
+        "official-product-chateau-antique-sauvignon",
         "official-chateau-antique"
       ]
     }

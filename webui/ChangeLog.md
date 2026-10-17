@@ -1,3 +1,7 @@
+# 2026-10-17: valery-zakharyin review correction
+
+Record the reserve label evidence for each reserve wine. Keep the group explicitly editorial.
+
 # 2026-10-17: chateau-pinot review correction
 
 Use original labels to confirm Gravity membership. Keep historical blends without a confirmed collection in a neutral group.

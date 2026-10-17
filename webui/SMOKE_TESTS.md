@@ -1,3 +1,7 @@
+# 2026-10-17: valery-zakharyin review correction
+
+Check all four reserve entries. Confirm that the group description identifies distinct collections.
+
 # 2026-10-17: chateau-pinot review correction
 
 Check the confirmed Gravity labels and the seven unconfirmed blends. Confirm that neutral positioning does not change their portal links.

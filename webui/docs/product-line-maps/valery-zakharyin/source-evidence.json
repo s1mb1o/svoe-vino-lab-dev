@@ -1,0 +1,137 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/rubedo",
+      "retrieved_at": "2026-10-17T20:26:47.766320+00:00",
+      "sha256": "afe38b08c74e7578fecb807d312168642f978191d199873b4de94473dce76012",
+      "final_url": "https://valeryzaharin.com/ru/catalog/rubedo",
+      "source_id": "official-reserve",
+      "section": null,
+      "basis": "This is an editorial reserve group. Original photographs show РЕЗЕРВ on Kefesia and Sary Pandas, and Reserve on Albedo and Rubedo. The Rubedo page does not establish all four identities."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/avtohtonnyie-vina",
+      "retrieved_at": "2026-10-17T20:26:44.835110+00:00",
+      "sha256": "2b698daebde6d35d2dbf0c456423e26f6667bbc6e91a0f5fe48c765d940c97b9",
+      "final_url": "https://valeryzaharin.com/ru/catalog/avtohtonnyie-vina",
+      "source_id": "official-autochthon",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/avtorskie-vina",
+      "retrieved_at": "2026-10-17T20:26:45.300042+00:00",
+      "sha256": "ae8b5e22f28a1c7dd5fab695e850ad2d715dc5da9eb9c1099e07543e9225dc08",
+      "final_url": "https://valeryzaharin.com/ru/catalog/avtorskie-vina",
+      "source_id": "official-authors",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/bakkal-su",
+      "retrieved_at": "2026-10-17T20:26:46.132243+00:00",
+      "sha256": "19541f3a22447b199e491356e665a832a96bf203495d0fcd4c27237a3e9ce105",
+      "final_url": "https://valeryzaharin.com/ru/catalog/bakkal-su",
+      "source_id": "official-bakkal-su",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/dom-zaharinyih",
+      "retrieved_at": "2026-10-17T20:26:46.772354+00:00",
+      "sha256": "c4155d942276a4ad5136f13edf9d1e54a1c984d40c5c0469e4c8d6a89903238a",
+      "final_url": "https://valeryzaharin.com/ru/catalog/dom-zaharinyih",
+      "source_id": "official-house",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-tihih-vin-burlyuk",
+      "retrieved_at": "2026-10-17T20:26:47.548826+00:00",
+      "sha256": "4b280ebd6b3c23f31c263f37f60dc40f67e782903a691591585ba014c8ee8ee3",
+      "final_url": "https://valeryzaharin.com/ru/catalog/kollektsiya-tihih-vin-burlyuk",
+      "source_id": "official-burluk",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/fourcolours",
+      "retrieved_at": "2026-10-17T20:26:46.931539+00:00",
+      "sha256": "7e1da61f478e0d99eaa09ce08df08dbb70a8075436cd0f6b17092ab2b050ca0a",
+      "final_url": "https://valeryzaharin.com/ru/catalog/fourcolours",
+      "source_id": "official-four-colours",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/paterum",
+      "retrieved_at": "2026-10-17T20:26:47.753974+00:00",
+      "sha256": "b9bda591e98abe5d0a21e63f6e24027c3c6854ae7fbfd64e4069b59c905045fc",
+      "final_url": "https://valeryzaharin.com/ru/catalog/paterum",
+      "source_id": "official-paterum",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/tangovoe-manto",
+      "retrieved_at": "2026-10-17T20:26:47.870839+00:00",
+      "sha256": "abd88baeaefa0aa479549ad6cbd5004525c2ae4841efb121a98398532f73217a",
+      "final_url": "https://valeryzaharin.com/ru/catalog/tangovoe-manto",
+      "source_id": "official-tango",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/kokurko",
+      "retrieved_at": "2026-10-17T20:26:46.931613+00:00",
+      "sha256": "dd49f0e6be8fceb5fa53610c4dfca930dc8231689cd1cf18ebc2fdb09fc7baa6",
+      "final_url": "https://valeryzaharin.com/ru/catalog/kokurko",
+      "source_id": "official-kokur-sparkling",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/avtorskaya-kollektsiya-igristyih-vin-",
+      "retrieved_at": "2026-10-17T20:26:45.139110+00:00",
+      "sha256": "ca813521ce25f4b02ff84071bec21b791844f8d7b953b8e9794359579def814c",
+      "final_url": "https://valeryzaharin.com/ru/catalog/avtorskaya-kollektsiya-igristyih-vin-",
+      "source_id": "official-author-sparkling",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/kollektsiya-igristyih-vin--burlyuk",
+      "retrieved_at": "2026-10-17T20:26:47.084392+00:00",
+      "sha256": "20775fbb6444817294723448178d145133c9259f2f6a6fce9463dfe3650788cc",
+      "final_url": "https://valeryzaharin.com/ru/catalog/kollektsiya-igristyih-vin--burlyuk",
+      "source_id": "official-burluk-sparkling",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/catalog/chateau-antique",
+      "retrieved_at": "2026-10-17T20:26:46.138179+00:00",
+      "sha256": "1aea441cfbacab7c9a69feddbece768a80af12876fcf1e99a087e7b84ece9df2",
+      "final_url": "https://valeryzaharin.com/ru/catalog/chateau-antique",
+      "source_id": "official-chateau-antique",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://valeryzaharin.com/ru/product/sauvingnon",
+      "retrieved_at": "2026-10-17T20:26:48.335553+00:00",
+      "sha256": "737a575b9490e1cacf7d92cf72148a61ebd4dfd9b164e1e84053649c0b3b0a25",
+      "final_url": "https://valeryzaharin.com/ru/product/sauvingnon",
+      "source_id": "official-product-chateau-antique-sauvignon",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    }
+  ],
+  "snapshot_only_groups": [
+    "varietal"
+  ],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

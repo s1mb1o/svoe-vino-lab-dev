@@ -10,35 +10,37 @@ Do not treat this map as the complete live assortment.
 
 ## Collections and positioning
 
-Ranks are editorial navigation. Numeric prices are not available.
-Rank 0 does not assert price equivalence with other collections.
-The official collection structure can differ from historical labels.
-Keep the historical package image when the snapshot supplies that image.
+Ranks compare groups within this producer. Numeric prices remain null.
+Rank 0 means that no relative price rank is confirmed.
+Read `source-evidence.json` for exact URLs, document sections, retrieval dates, source hashes, and snapshot-only groups.
+Read `group_basis` in the crosswalk for each product membership decision.
+Read collection labels from original input photographs. Do not use generated text.
 
-- `reserve`: [Резерв · автохтоны и Opus Magnum](https://valeryzaharin.com/ru/catalog/rubedo). Rank 3. Catalog row indices: 3, 12, 14, 35.
-- `autochthon`: [Автохтонные вина Крыма](https://valeryzaharin.com/ru/catalog/avtohtonnyie-vina). Rank 2. Catalog row indices: 0, 4, 9, 10, 11, 13, 23.
-- `authors`: [Авторские вина](https://valeryzaharin.com/ru/catalog/avtorskie-vina). Rank 2. Catalog row indices: 15, 16, 17.
-- `bakkal-su`: [Баккал Су](https://valeryzaharin.com/ru/catalog/bakkal-su). Rank 1. Catalog row indices: 18, 19, 20, 21, 22, 37.
-- `house`: [Дом Захарьиных](https://valeryzaharin.com/ru/catalog/dom-zaharinyih). Rank 2. Catalog row indices: 25, 26.
-- `burluk`: [Бурлюк · тихие](https://valeryzaharin.com/ru/catalog/kollektsiya-tihih-vin-burlyuk). Rank 0. Catalog row indices: 7, 27, 36, 44.
-- `varietal`: [Валерий Захарьин · сортовые](https://valeryzaharin.com/ru/). Rank 0. Catalog row indices: 8, 28, 30, 31, 33, 34, 38, 39, 40, 41, 45.
-- `four-colours`: [Four Colours](https://valeryzaharin.com/ru/catalog/fourcolours). Rank 0. Catalog row indices: 24.
-- `paterum`: [Paterum](https://valeryzaharin.com/ru/catalog/paterum). Rank 0. Catalog row indices: 32.
-- `tango`: [Танговое Манто](https://valeryzaharin.com/ru/catalog/tangovoe-manto). Rank 0. Catalog row indices: 42, 43.
-- `kokur-sparkling`: [Кокур & K°](https://valeryzaharin.com/ru/catalog/kokurko). Rank 0. Catalog row indices: 1, 2, 29.
-- `author-sparkling`: [Авторское игристое](https://valeryzaharin.com/ru/catalog/avtorskaya-kollektsiya-igristyih-vin-). Rank 0. Catalog row indices: 5.
-- `burluk-sparkling`: [Бурлюк · игристые](https://valeryzaharin.com/ru/catalog/kollektsiya-igristyih-vin--burlyuk). Rank 0. Catalog row indices: 6.
-- `chateau-antique`: [Chateau Antique](https://valeryzaharin.com/ru/catalog/chateau-antique). Rank 0. Catalog row indices: .
+- `reserve`: Резерв · автохтоны и Opus Magnum. Rank 3. Catalog row indices: 3, 12, 14, 35. Sources: official-reserve, svoe-vino-2026-09-17, official-autochthon.
+- `autochthon`: Автохтонные вина Крыма. Rank 2. Catalog row indices: 0, 4, 9, 10, 11, 13, 23. Sources: official-autochthon, svoe-vino-2026-09-17.
+- `authors`: Авторские вина. Rank 2. Catalog row indices: 15, 16, 17. Sources: official-authors, svoe-vino-2026-09-17.
+- `bakkal-su`: Баккал Су. Rank 1. Catalog row indices: 18, 19, 20, 21, 22, 37. Sources: official-bakkal-su, svoe-vino-2026-09-17.
+- `house`: Дом Захарьиных. Rank 2. Catalog row indices: 25, 26. Sources: official-house, svoe-vino-2026-09-17.
+- `burluk`: Бурлюк · тихие. Rank 0. Catalog row indices: 7, 27, 36, 44. Sources: official-burluk, svoe-vino-2026-09-17.
+- `varietal`: Валерий Захарьин · сортовые. Rank 0. Catalog row indices: 8, 28, 30, 31, 33, 34, 38, 39, 40, 41, 45. Sources: svoe-vino-2026-09-17.
+- `four-colours`: Four Colours. Rank 0. Catalog row indices: 24. Sources: official-four-colours, svoe-vino-2026-09-17.
+- `paterum`: Paterum. Rank 0. Catalog row indices: 32. Sources: official-paterum, svoe-vino-2026-09-17.
+- `tango`: Танговое Манто. Rank 0. Catalog row indices: 42, 43. Sources: official-tango, svoe-vino-2026-09-17.
+- `kokur-sparkling`: Кокур & K°. Rank 0. Catalog row indices: 1, 2, 29. Sources: official-kokur-sparkling, svoe-vino-2026-09-17.
+- `author-sparkling`: Авторское игристое. Rank 0. Catalog row indices: 5. Sources: official-author-sparkling, svoe-vino-2026-09-17.
+- `burluk-sparkling`: Бурлюк · игристые. Rank 0. Catalog row indices: 6. Sources: official-burluk-sparkling, svoe-vino-2026-09-17.
+- `chateau-antique`: Chateau Antique. Rank 0. Catalog row indices: none. Sources: official-chateau-antique, svoe-vino-2026-09-17.
 
 ## Images
 
-Read the crosswalk for every source URL, input hash, and output hash.
-Crop transparent margins. Downsize to at most 720 px. Add transparent padding.
-Compute image.frame from alpha values of at least 128 after WebP encoding.
-Inspect every image on light and dark surfaces.
-Do not use generated lettering as product evidence.
+The crosswalk records input and output SHA-256 values.
+Use `imagegen-cutouts.json` where present for exact prompts and generated hashes.
+Use `scripts/measure-product-image-frames.mjs` for actual image dimensions, alpha outlines, and frame containment.
+Inspect cutouts on light and dark surfaces. Generated fine print is not product evidence.
 
-## Additional products
+## Review correction, 2026-10-17
 
-Include 1 verified official additions with null wine_slug.
-Read official_additions in crosswalk.json for each absence check.
+The owner authorized the exact review packet. Claude Opus 5.5 Max reviewed that packet.
+Source records now distinguish official collection evidence from snapshot-only navigation.
+Separate catalog records retain separate nodes. Neutral card numbers do not assert a vintage or package difference.
+Official additions remain unlinked when a possible historical catalog counterpart cannot be verified.

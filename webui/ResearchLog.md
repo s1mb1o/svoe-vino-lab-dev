@@ -1,3 +1,7 @@
+# 2026-10-17: valery-zakharyin review correction
+
+The original labels confirm Reserve status in different collections. The Rubedo page alone cannot establish the autochthon reserve identities.
+
 # 2026-10-17: chateau-pinot review correction
 
 A current blend with the same grapes does not prove the historical collection. Two original labels explicitly identify Gravity.

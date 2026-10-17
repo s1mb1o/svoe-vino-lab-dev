@@ -12,7 +12,15 @@
       "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_FN_55l_Pr_Hs_K4e_S_Lja8tm9_Ur62n50_Pyxhl_RO_1_RU_4s3e_N_Zb1_Yq_GT_4_HJPD_77_Qg_W_Tf3_Ng_e4a467fffd.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_FN_55l_Pr_Hs_K4e_S_Lja8tm9_Ur62n50_Pyxhl_RO_1_RU_4s3e_N_Zb1_Yq_GT_4_HJPD_77_Qg_W_Tf3_Ng_e4a467fffd.webp",
       "input_sha256": "9253bb7435cabe995db0bd29d288ceae00ebc2735a88607db423e2decfc82cf4",
-      "asset_sha256": "3a4db9eb409cd8b4f01fef0445dd0319bc4c9915588784be58ee6caa6d0a9011"
+      "asset_sha256": "3a4db9eb409cd8b4f01fef0445dd0319bc4c9915588784be58ee6caa6d0a9011",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valerij-zaharin-kokur-i-ko-beloe-bryut",
@@ -23,7 +31,15 @@
       "source_image": "Valerij_Zaharin_Kokur_i_Ko_igristoe_beloe_bryut_127fa85774.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Valerij_Zaharin_Kokur_i_Ko_igristoe_beloe_bryut_127fa85774.webp",
       "input_sha256": "c84f1b20d41bcde4d3dc7a6f303ee4597a24f4ca3ee14ac672ed85971cf24bbf",
-      "asset_sha256": "cdb15340b92e24720a1e1f2a383f5585951de269aeb34b54d5b42e4aa71bf409"
+      "asset_sha256": "cdb15340b92e24720a1e1f2a383f5585951de269aeb34b54d5b42e4aa71bf409",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-kokur-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "valerij-zaharin-kokur-i-ko-beloe-polusladkoe",
@@ -34,7 +50,15 @@
       "source_image": "Valerij_Zaharin_Kokur_i_Ko_igristoe_beloe_polusladkoe_1334dee26c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Valerij_Zaharin_Kokur_i_Ko_igristoe_beloe_polusladkoe_1334dee26c.webp",
       "input_sha256": "6f312d8ca60ffa1cee8f2f8c13905319e620a56fbfa345c272b25b10474f3dc6",
-      "asset_sha256": "ad440f1e6fd49ef82de978bc680c851a7d1e5d709e05291014a172f0b60268bd"
+      "asset_sha256": "ad440f1e6fd49ef82de978bc680c851a7d1e5d709e05291014a172f0b60268bd",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-kokur-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-albedo-reserve-sary-pandas-beloe-suhoe-115",
@@ -45,7 +69,15 @@
       "source_image": "valeriy_zaharin_albedo_reserve_sary_pandas_beloe_suhoe_115_b108af9fde.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_albedo_reserve_sary_pandas_beloe_suhoe_115_b108af9fde.webp",
       "input_sha256": "0009ff20726b543403bd48ea2f7b7da3bc4ef40fec7e33645d8201c534f56731",
-      "asset_sha256": "a70b8068c67fef2379b87ab34a6576f9337bc447b9c42ee2b5b0c82e66286dc9"
+      "asset_sha256": "a70b8068c67fef2379b87ab34a6576f9337bc447b9c42ee2b5b0c82e66286dc9",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label states РЕЗЕРВ or Reserve. This editorial group combines distinct reserve collections. Rubedo is not evidence for the identity of the autochthon reserve products.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-aleatiko-kefesiya-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-rozovoe-suhoe-125",
@@ -56,7 +88,15 @@
       "source_image": "valeriy_zaharin_aleatiko_kefesiya_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_rozovoe_suhoe_125_135a858d15.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_aleatiko_kefesiya_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_rozovoe_suhoe_125_135a858d15.webp",
       "input_sha256": "c58e87cdf4727ef8d58354a41f76b177888730394ada920e38bd60aeb481b128",
-      "asset_sha256": "2d596cea65e355aeb7339a366057487e4c0b17ad35a09be132c8e69a3b496651"
+      "asset_sha256": "2d596cea65e355aeb7339a366057487e4c0b17ad35a09be132c8e69a3b496651",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-aligote-avtorskoe-valeriy-zaharin-beloe-bryut-115",
@@ -67,7 +107,15 @@
       "source_image": "valeriy_zaharin_aligote_avtorskoe_valeriy_zaharin_igristoe_bryut_beloe_115_3b74fa58cc.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_aligote_avtorskoe_valeriy_zaharin_igristoe_bryut_beloe_115_3b74fa58cc.webp",
       "input_sha256": "0cda47bbe3564867145b860e66ae6f730921a23559abc45f13bdb315c938ca92",
-      "asset_sha256": "10e3b724fc016d6534a63d61f376207e95c73e54b83f2ab08aaeeb01dd902444"
+      "asset_sha256": "10e3b724fc016d6534a63d61f376207e95c73e54b83f2ab08aaeeb01dd902444",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-author-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-aligote-burlyuk-beloe-bryut-115",
@@ -78,7 +126,15 @@
       "source_image": "valeriy_zaharin_aligote_burlyuk_igristoe_bryut_beloe_115_adb6620d61.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_aligote_burlyuk_igristoe_bryut_beloe_115_adb6620d61.webp",
       "input_sha256": "ecac6df3b493f002028161787a483a67bd8d1a27c555ce693c426d4c483aedda",
-      "asset_sha256": "91327b5853d24f21ee40e0118f7f5c2c698d681b03873df7458c22b8d00a42ed"
+      "asset_sha256": "91327b5853d24f21ee40e0118f7f5c2c698d681b03873df7458c22b8d00a42ed",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-burluk-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-aligote-burlyuk-beloe-suhoe-13",
@@ -89,7 +145,15 @@
       "source_image": "valeriy_zaharin_aligote_burlyuk_beloe_suhoe_13_6a0eb14c98.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_aligote_burlyuk_beloe_suhoe_13_6a0eb14c98.webp",
       "input_sha256": "8236f774083d0aedfdaf7f636f783ffe7aa428cb647031d3b015ca85544324af",
-      "asset_sha256": "52ff046ff81c75f4f71d82e7ec2446a05e4f0300094e78611a07de1e18becc28"
+      "asset_sha256": "52ff046ff81c75f4f71d82e7ec2446a05e4f0300094e78611a07de1e18becc28",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-burluk"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-aligote-valeriy-zaharin-beloe-suhoe-13",
@@ -100,7 +164,14 @@
       "source_image": "valeriy_zaharin_aligote_valeriy_zaharin_beloe_suhoe_13_42ca83c531.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_aligote_valeriy_zaharin_beloe_suhoe_13_42ca83c531.webp",
       "input_sha256": "b8793e18e3d3b04608daa63284a46c35e3e7feb2454a6e31f676dd3f288827a8",
-      "asset_sha256": "e320572487b98091d0085727739ec38f494d4b91db26c88439a144c79134c5d4"
+      "asset_sha256": "e320572487b98091d0085727739ec38f494d4b91db26c88439a144c79134c5d4",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-avtorskiy-kupazh-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
@@ -111,7 +182,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_avtorskiy_kupazh_bastardo_saperavi_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_12_1d86b29cfe.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_avtorskiy_kupazh_bastardo_saperavi_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_12_1d86b29cfe.webp",
       "input_sha256": "1666d8b3058a2f3586e05529936011590638ea7db86beabab6c4800e29d134ed",
-      "asset_sha256": "392e3f10cff2650a4704922719cf167ea86eead63d0b2af402b7e9715ef06d91"
+      "asset_sha256": "392e3f10cff2650a4704922719cf167ea86eead63d0b2af402b7e9715ef06d91",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-aleatiko-kefesiya-rozovoe-suhoe-11",
@@ -122,7 +201,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_aleatiko_kefesiya_rozovoe_suhoe_11_8a5f697ad1.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_aleatiko_kefesiya_rozovoe_suhoe_11_8a5f697ad1.webp",
       "input_sha256": "a422c720fcfd061ecda89de3bb72d01dbe3cd95735d174428b8ca645cc5cd3f2",
-      "asset_sha256": "357ddcac7493d8ccbf38427e1427ea39858422314cf54d612ad73bde715a8f9e"
+      "asset_sha256": "357ddcac7493d8ccbf38427e1427ea39858422314cf54d612ad73bde715a8f9e",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
@@ -133,7 +220,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_bastardo_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_115_292d4c5970.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_bastardo_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_115_292d4c5970.webp",
       "input_sha256": "47d31836522a42e9b4df2320c94b645b7e7c47b6edb81ed944cc8a92edbdcb10",
-      "asset_sha256": "7b8ff030c77abafcb41198123564cfe0c0197b8f38713a334b155d6765b63189"
+      "asset_sha256": "7b8ff030c77abafcb41198123564cfe0c0197b8f38713a334b155d6765b63189",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13",
@@ -144,7 +239,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_kefesiya_rezerv_krasnoe_suhoe_13_a236e73a0c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_kefesiya_rezerv_krasnoe_suhoe_13_a236e73a0c.webp",
       "input_sha256": "fd5c68ae6bffed56a6a9ab338f93331de80819babc99c32522233eb2b60651d8",
-      "asset_sha256": "d02472e33dd2ab4de6e30778d85c1abc990a027008350cb5363470a6c58187ff"
+      "asset_sha256": "d02472e33dd2ab4de6e30778d85c1abc990a027008350cb5363470a6c58187ff",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label states РЕЗЕРВ or Reserve. This editorial group combines distinct reserve collections. Rubedo is not evidence for the identity of the autochthon reserve products.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kokur-sary-pandas-kokur-belyy-beloe-suhoe-115",
@@ -155,7 +258,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_kokur_sary_pandas_kokur_belyy_beloe_suhoe_115_c97a8b21ba.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_ot_valeriya_zaharina_kokur_sary_pandas_kokur_belyy_beloe_suhoe_115_c97a8b21ba.webp",
       "input_sha256": "4f145e2625c9d2160366a78e73481ac929184fe553ed7cbffc0d8a72e5386caa",
-      "asset_sha256": "bfa4957d95d2ed3097c86b71374f952d8a9e9ba3386552fe0b98ac2fc9e57720"
+      "asset_sha256": "bfa4957d95d2ed3097c86b71374f952d8a9e9ba3386552fe0b98ac2fc9e57720",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-sary-pandas-rezerv-beloe-suhoe-115",
@@ -166,7 +277,15 @@
       "source_image": "valeriy_zaharin_avtohtonnoe_vino_kryma_sary_pandas_rezerv_beloe_suhoe_115_10be7b7189.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtohtonnoe_vino_kryma_sary_pandas_rezerv_beloe_suhoe_115_10be7b7189.webp",
       "input_sha256": "31f07ebcd461fe5f6d7f6471f66405e65c71ce16676647860bd7a5f4782df66a",
-      "asset_sha256": "14f8b668a618cc330fc5b3e6df22b02f43f0ffd6ec4861c2afc30800ad1bdafe"
+      "asset_sha256": "14f8b668a618cc330fc5b3e6df22b02f43f0ffd6ec4861c2afc30800ad1bdafe",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label states РЕЗЕРВ or Reserve. This editorial group combines distinct reserve collections. Rubedo is not evidence for the identity of the autochthon reserve products.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-aleatiko-rozovoe-suhoe-115",
@@ -177,7 +296,15 @@
       "source_image": "valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_aleatiko_rozovoe_suhoe_115_433a921c43.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_aleatiko_rozovoe_suhoe_115_433a921c43.webp",
       "input_sha256": "49663bc4a3aa7de935fa578fdc50fb84f2650104f270609c9abc12317afae715",
-      "asset_sha256": "3012cc0032a117e496257bfa85e16d97dc7d8659f790b6546471e7a10d788240"
+      "asset_sha256": "3012cc0032a117e496257bfa85e16d97dc7d8659f790b6546471e7a10d788240",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-authors"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-bastardo-bastardo-magarachskiy-krasnoe-suhoe-12",
@@ -188,7 +315,15 @@
       "source_image": "valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_bastardo_bastardo_magarachskiy_krasnoe_suhoe_12_9ae8962a73.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_bastardo_bastardo_magarachskiy_krasnoe_suhoe_12_9ae8962a73.webp",
       "input_sha256": "002052e2fd67449f8f5fd00b199834a2febf8570a8f39254ab995940d0a1ca9a",
-      "asset_sha256": "f29515814f3b34c6fa9df72fc7cb55f74a68d691ed356081b3dbe35a2a6eeb0e"
+      "asset_sha256": "f29515814f3b34c6fa9df72fc7cb55f74a68d691ed356081b3dbe35a2a6eeb0e",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-authors"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-avtorskoe-vino-ot-valeriya-zaharina-krasnoe-pino-nuar-suhoe-125",
@@ -199,7 +334,15 @@
       "source_image": "valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_krasnoe_pino_nuar_krasnoe_suhoe_125_32e5dd1102.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_avtorskoe_vino_ot_valeriya_zaharina_krasnoe_pino_nuar_krasnoe_suhoe_125_32e5dd1102.webp",
       "input_sha256": "43636ef409f5070093d0544a9ddcec4d07e52ac1c8492cc59f0f5bd822f47b5c",
-      "asset_sha256": "42180222b32c34a06300f1da9e4f3bb239907ab8010d3f75d6828a82883dfaf8"
+      "asset_sha256": "42180222b32c34a06300f1da9e4f3bb239907ab8010d3f75d6828a82883dfaf8",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-authors"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bakkal-su-aligote-beloe-suhoe-115",
@@ -210,7 +353,15 @@
       "source_image": "valeriy_zaharin_bakkal_su_aligote_beloe_suhoe_115_5fe4cf81cf.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bakkal_su_aligote_beloe_suhoe_115_5fe4cf81cf.webp",
       "input_sha256": "51f173c55a769f2593d1c9783039794d98574d8bac2896897d93a91162962782",
-      "asset_sha256": "81207373c8f96552820836719d61757563fc9bce5b6239fe9f0951e2bd582111"
+      "asset_sha256": "81207373c8f96552820836719d61757563fc9bce5b6239fe9f0951e2bd582111",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bakkal-su-kaberne-kaberne-sovinon-krasnoe-suhoe-125",
@@ -221,7 +372,15 @@
       "source_image": "valeriy_zaharin_bakkal_su_kaberne_kaberne_sovinon_krasnoe_suhoe_125_53073ba214.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bakkal_su_kaberne_kaberne_sovinon_krasnoe_suhoe_125_53073ba214.webp",
       "input_sha256": "57a2635fa32f3827c438158b8ff47e52b0f31961342303ce11ad0cbd8eeadef3",
-      "asset_sha256": "9cc3789754c69d3b87c64dd191d742ba357f94e16f789672d599372e9968c2cc"
+      "asset_sha256": "9cc3789754c69d3b87c64dd191d742ba357f94e16f789672d599372e9968c2cc",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bakkal-su-muskat-ottonel-beloe-polusladkoe-115",
@@ -232,7 +391,15 @@
       "source_image": "valeriy_zaharin_bakkal_su_muskat_ottonel_beloe_polusladkoe_115_34542492ff.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bakkal_su_muskat_ottonel_beloe_polusladkoe_115_34542492ff.webp",
       "input_sha256": "e02eca3bc8c328676058b2455faf0515f505524906f5944375a84197a70d2a94",
-      "asset_sha256": "01d2b66c5fd4005b042c2a4a38049796377cf5c379742a7e9ccf0f62588254a5"
+      "asset_sha256": "01d2b66c5fd4005b042c2a4a38049796377cf5c379742a7e9ccf0f62588254a5",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bakkal-su-saperavi-bastardo-kaberne-sovinon-krasnoe-polusladkoe-11",
@@ -243,7 +410,15 @@
       "source_image": "valeriy_zaharin_bakkal_su_saperavi_bastardo_kaberne_sovinon_krasnoe_polusladkoe_11_b8d351c52f.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bakkal_su_saperavi_bastardo_kaberne_sovinon_krasnoe_polusladkoe_11_b8d351c52f.webp",
       "input_sha256": "1eaa3eaea8dd5854a1ff621b9e2cad04c07b12b6e57bf38eb0490fc3b3691739",
-      "asset_sha256": "c942f8e9763a79afadb91fdf1fad1051b48f93a59c561ce1c5c14acc3430fa54"
+      "asset_sha256": "c942f8e9763a79afadb91fdf1fad1051b48f93a59c561ce1c5c14acc3430fa54",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bakkal-su-saperavi-kaberne-sovinon-krasnoe-suhoe-12",
@@ -254,7 +429,15 @@
       "source_image": "valeriy_zaharin_bakkal_su_saperavi_kaberne_sovinon_krasnoe_suhoe_12_f6ce17d50e.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bakkal_su_saperavi_kaberne_sovinon_krasnoe_suhoe_12_f6ce17d50e.webp",
       "input_sha256": "374d8adc658b447a57c199f2b78e9ffae39c82111003764ddafefbe2abe09428",
-      "asset_sha256": "8b5baf9d5f2d32f4d430af41602fd155d20b1d35f268f1823f37f5101a2609b4"
+      "asset_sha256": "8b5baf9d5f2d32f4d430af41602fd155d20b1d35f268f1823f37f5101a2609b4",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-bastardo-kefesiya-avtohtonnoe-vino-kryma-bastardo-magarachskiy-krasnoe-suhoe-115",
@@ -265,7 +448,15 @@
       "source_image": "valeriy_zaharin_bastardo_kefesiya_avtohtonnoe_vino_kryma_bastardo_magarachskiy_krasnoe_suhoe_115_e521ee5147.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_bastardo_kefesiya_avtohtonnoe_vino_kryma_bastardo_magarachskiy_krasnoe_suhoe_115_e521ee5147.webp",
       "input_sha256": "665d0e6bef52de4a27023360ce5fc011ff61b3fea3989928a46a517ec94cdbf7",
-      "asset_sha256": "065f0b2a8d7cac3a87e6b8305d12b2781a3efcde39070dd7f1033a248c00cc2e"
+      "asset_sha256": "065f0b2a8d7cac3a87e6b8305d12b2781a3efcde39070dd7f1033a248c00cc2e",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-autochthon"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-chetyre-tsveta-bastardo-bastardo-magarachskiy-krasnoe-suhoe-115",
@@ -276,7 +467,15 @@
       "source_image": "valeriy_zaharin_chetyre_tsveta_bastardo_bastardo_magarachskiy_krasnoe_suhoe_115_ed7714b616.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_chetyre_tsveta_bastardo_bastardo_magarachskiy_krasnoe_suhoe_115_ed7714b616.webp",
       "input_sha256": "f84831a95c7c7fb79302e11d7d1f4965688ecfcd9f1152bfd9f1e86bab689560",
-      "asset_sha256": "4d176052225a5e1f3e7832ff0cbd775970ab13bd3e08478f42d96c10701309d9"
+      "asset_sha256": "4d176052225a5e1f3e7832ff0cbd775970ab13bd3e08478f42d96c10701309d9",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-four-colours"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-dom-zaharinyh-beloe-sary-pandas-suhoe-115",
@@ -287,7 +486,15 @@
       "source_image": "valeriy_zaharin_dom_zaharinyh_beloe_sary_pandas_beloe_suhoe_115_d6510ac4dc.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_dom_zaharinyh_beloe_sary_pandas_beloe_suhoe_115_d6510ac4dc.webp",
       "input_sha256": "0c4f8576261fad4805e7180f335bd1cd6d32e01014a355f03e47317809bf26a4",
-      "asset_sha256": "01f56556c2484dbe1b44f8a07705874cfd881568bd879d2299e06660491ee043"
+      "asset_sha256": "01f56556c2484dbe1b44f8a07705874cfd881568bd879d2299e06660491ee043",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-house"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-dom-zaharinyh-krasnoe-kaberne-sovinon-suhoe-125",
@@ -298,7 +505,15 @@
       "source_image": "valeriy_zaharin_dom_zaharinyh_krasnoe_kaberne_sovinon_krasnoe_suhoe_125_c129a97c03.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_dom_zaharinyh_krasnoe_kaberne_sovinon_krasnoe_suhoe_125_c129a97c03.webp",
       "input_sha256": "16954e20020d262f58b895fcdfbfed43a57cda87a2556bf225f86368d2473558",
-      "asset_sha256": "0ee8a01699c3872121aa6b7368e026dde606b702dbe3d149ecc8b2fe130a6cf7"
+      "asset_sha256": "0ee8a01699c3872121aa6b7368e026dde606b702dbe3d149ecc8b2fe130a6cf7",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-house"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-kaberne-fran-burlyuk-krasnoe-suhoe-13",
@@ -309,7 +524,15 @@
       "source_image": "valeriy_zaharin_kaberne_fran_burlyuk_krasnoe_suhoe_13_759e000bb4.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_kaberne_fran_burlyuk_krasnoe_suhoe_13_759e000bb4.webp",
       "input_sha256": "89c0274a787e31d6fdf3544572d6f21b94d91f9e3cda55098f7bafeff63a8e26",
-      "asset_sha256": "d4e2b9ed799b4b71b20b15908f6c5f3e3f76e66a005e939b549a73d15c0227e5"
+      "asset_sha256": "d4e2b9ed799b4b71b20b15908f6c5f3e3f76e66a005e939b549a73d15c0227e5",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-burluk"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-kefesiya-valeriy-zaharin-krasnoe-suhoe-12",
@@ -320,7 +543,14 @@
       "source_image": "valeriy_zaharin_kefesiya_valeriy_zaharin_krasnoe_suhoe_12_8233409122.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_kefesiya_valeriy_zaharin_krasnoe_suhoe_12_8233409122.webp",
       "input_sha256": "d8be2613ef8438d9f96f1b6501e0d1e790da3136fc76f84e82c96636c6125f16",
-      "asset_sha256": "175d360681362ad6c05cdfafa79c1a1719df1dd5aac4083fc9f4f8de11053db7"
+      "asset_sha256": "175d360681362ad6c05cdfafa79c1a1719df1dd5aac4083fc9f4f8de11053db7",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-kokur-klassika-kokur-belyy-beloe-bryut-115",
@@ -331,7 +561,15 @@
       "source_image": "valeriy_zaharin_kokur_klassika_kokur_belyy_igristoe_bryut_beloe_115_4d15edacbd.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_kokur_klassika_kokur_belyy_igristoe_bryut_beloe_115_4d15edacbd.webp",
       "input_sha256": "3c929735a6bd22f1c6677b8ed3de21dc7ed076d50d648712f75b4e15b7c59a0b",
-      "asset_sha256": "6fba749b99aca21907c95d4ae00b801105f0a3452a55c3f70e2380bbee9abed8"
+      "asset_sha256": "6fba749b99aca21907c95d4ae00b801105f0a3452a55c3f70e2380bbee9abed8",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-kokur-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-kokur-valeriy-zaharin-kokur-belyy-beloe-polusladkoe-125",
@@ -342,7 +580,14 @@
       "source_image": "valeriy_zaharin_kokur_valeriy_zaharin_kokur_belyy_beloe_polusladkoe_125_f1a78bab87.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_kokur_valeriy_zaharin_kokur_belyy_beloe_polusladkoe_125_f1a78bab87.webp",
       "input_sha256": "598b3c573c970a3aa163a7e3fe95ba31de057414529e41fb974edb455cf12d99",
-      "asset_sha256": "d161a388de1721588a956a7edc79484c4e8e0d4cdcd657aec574dbf377a9966a"
+      "asset_sha256": "d161a388de1721588a956a7edc79484c4e8e0d4cdcd657aec574dbf377a9966a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-muskat-valeriy-zaharin-muskat-ottonel-beloe-polusladkoe-12",
@@ -353,7 +598,14 @@
       "source_image": "valeriy_zaharin_muskat_valeriy_zaharin_muskat_ottonel_beloe_polusladkoe_12_a78dbaf48c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_muskat_valeriy_zaharin_muskat_ottonel_beloe_polusladkoe_12_a78dbaf48c.webp",
       "input_sha256": "aab3e937f87975ccd65d8c7955412ba7b75d4b127137fc64f8107587abfcb58b",
-      "asset_sha256": "13ad82ef82f39f86cae8be08ce4ad76bd270fc4ab53cd56886a015e9abc6d6ee"
+      "asset_sha256": "13ad82ef82f39f86cae8be08ce4ad76bd270fc4ab53cd56886a015e9abc6d6ee",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-paterum-bastardo-saperavi-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-12",
@@ -364,7 +616,15 @@
       "source_image": "valeriy_zaharin_paterum_bastardo_saperavi_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_12_f8cd350db5.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_paterum_bastardo_saperavi_kefesiya_bastardo_magarachskiy_krasnoe_suhoe_12_f8cd350db5.webp",
       "input_sha256": "fb3a2ee531b9be322f4524d07e8c89473b70ae047adb84685fcd76186aa0c2e3",
-      "asset_sha256": "6667870217868e65f08ce007c441f34d8a577be1db0eee3af5fcb2ecf2f47e49"
+      "asset_sha256": "6667870217868e65f08ce007c441f34d8a577be1db0eee3af5fcb2ecf2f47e49",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-paterum"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-pino-nuar-valeriy-zaharin-krasnoe-polusladkoe-105",
@@ -375,7 +635,14 @@
       "source_image": "valeriy_zaharin_pino_nuar_valeriy_zaharin_krasnoe_polusladkoe_105_5ffb538f5f.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_pino_nuar_valeriy_zaharin_krasnoe_polusladkoe_105_5ffb538f5f.webp",
       "input_sha256": "452c400f3e8e9495543b195b37d1d79674d53209566e89b79d9b562e56a8c550",
-      "asset_sha256": "1cb0c8db87db15e1991bb3c9f5ef05fa3e33efc72595e00a7ebed1142b467e49"
+      "asset_sha256": "1cb0c8db87db15e1991bb3c9f5ef05fa3e33efc72595e00a7ebed1142b467e49",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-risling-valeriy-zaharin-risling-reynskiy-beloe-polusladkoe-125",
@@ -386,7 +653,14 @@
       "source_image": "valeriy_zaharin_risling_valeriy_zaharin_risling_reynskiy_beloe_polusladkoe_125_e821394cf1.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_risling_valeriy_zaharin_risling_reynskiy_beloe_polusladkoe_125_e821394cf1.webp",
       "input_sha256": "1a892c2e04a3a30a2e410e5a7773f6ede9ae7f475f1088f71e7ddd700764cdbc",
-      "asset_sha256": "3c19015f2c4cda573bc7d521102c5f410446ecd60f9c7b8c027074848f3fa110"
+      "asset_sha256": "3c19015f2c4cda573bc7d521102c5f410446ecd60f9c7b8c027074848f3fa110",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-rubedo-reserve-merlo-krasnoe-suhoe-13",
@@ -397,7 +671,15 @@
       "source_image": "valeriy_zaharin_rubedo_reserve_merlo_krasnoe_suhoe_13_bb611a1ce9.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_rubedo_reserve_merlo_krasnoe_suhoe_13_bb611a1ce9.webp",
       "input_sha256": "1a3f118763c7b70ab6d8f05cd38304303841c50eed6635cadd3e73afde94c456",
-      "asset_sha256": "ad55b91efba8b8e557761a838b81c7e09fd4fbc30c759103089c5ea7cf1681c3"
+      "asset_sha256": "ad55b91efba8b8e557761a838b81c7e09fd4fbc30c759103089c5ea7cf1681c3",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label states РЕЗЕРВ or Reserve. This editorial group combines distinct reserve collections. Rubedo is not evidence for the identity of the autochthon reserve products.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-sandzhoveze-burlyuk-krasnoe-suhoe-13",
@@ -408,7 +690,15 @@
       "source_image": "valeriy_zaharin_sandzhoveze_burlyuk_krasnoe_suhoe_13_b9ac510815.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_sandzhoveze_burlyuk_krasnoe_suhoe_13_b9ac510815.webp",
       "input_sha256": "d0004a317481986aab1274d4dad0960b42129e479a02ba610f990784d6b0c749",
-      "asset_sha256": "c16ccdcbc4057ee42e4b66baaba505bcb826031fda2414ca90f8f4bdbb7f5d35"
+      "asset_sha256": "c16ccdcbc4057ee42e4b66baaba505bcb826031fda2414ca90f8f4bdbb7f5d35",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-burluk"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-saperavi-kaberne-sovinon-bakkal-su-krasnoe-suhoe-12",
@@ -419,7 +709,15 @@
       "source_image": "valeriy_zaharin_saperavi_kaberne_sovinon_bakkal_su_krasnoe_suhoe_12_27f454f43f.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_saperavi_kaberne_sovinon_bakkal_su_krasnoe_suhoe_12_27f454f43f.webp",
       "input_sha256": "3535ea1e89fe49df877bd973f3479f670ac129f866e4516d0fe14d594b4cc71c",
-      "asset_sha256": "ddf4a0f03085b4ba5e6abb1a6da614181ed5b20f2abc94aaad3dfff985f116c6"
+      "asset_sha256": "ddf4a0f03085b4ba5e6abb1a6da614181ed5b20f2abc94aaad3dfff985f116c6",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-bakkal-su"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-sary-pandas-valeriy-zaharin-beloe-suhoe-125",
@@ -430,7 +728,14 @@
       "source_image": "valeriy_zaharin_sary_pandas_valeriy_zaharin_beloe_suhoe_125_5e1d79e615.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_sary_pandas_valeriy_zaharin_beloe_suhoe_125_5e1d79e615.webp",
       "input_sha256": "c5cc0d3b120d1bb0bcf366d95285100de36742f1ba1962bc17a8d57ea901646b",
-      "asset_sha256": "835331f0df60b2fd8dc5e3ef5a2cb6d06d5d08b428e64dbe1c9f7baadc3a18f1"
+      "asset_sha256": "835331f0df60b2fd8dc5e3ef5a2cb6d06d5d08b428e64dbe1c9f7baadc3a18f1",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-sira-valeriy-zaharin-krasnoe-polusladkoe-125",
@@ -441,7 +746,14 @@
       "source_image": "valeriy_zaharin_sira_valeriy_zaharin_krasnoe_polusladkoe_125_7c99c350d3.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_sira_valeriy_zaharin_krasnoe_polusladkoe_125_7c99c350d3.webp",
       "input_sha256": "8ff1adaeb791aaf8858985d077e1434b03de74808cd24051d6afc6d54f4fdd15",
-      "asset_sha256": "e2c1cd47751c1c063d7cf9682ee198fbac3b3c753765c3cf9aff2fdaa66041c1"
+      "asset_sha256": "e2c1cd47751c1c063d7cf9682ee198fbac3b3c753765c3cf9aff2fdaa66041c1",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-sovinon-blan-valeriy-zaharin-beloe-polusladkoe-105",
@@ -452,7 +764,14 @@
       "source_image": "valeriy_zaharin_sovinon_blan_valeriy_zaharin_beloe_polusladkoe_105_8aec03d544.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_sovinon_blan_valeriy_zaharin_beloe_polusladkoe_105_8aec03d544.webp",
       "input_sha256": "4db579fd641d205f1614a75514a280501e59dca85238026616d98d70e97deccb",
-      "asset_sha256": "7411d52ccd92691a47a81b4577c39fae73ccf5bb9b413828ce4cd08a56cfa4aa"
+      "asset_sha256": "7411d52ccd92691a47a81b4577c39fae73ccf5bb9b413828ce4cd08a56cfa4aa",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-sovinon-valeriy-zaharin-beloe-polusladkoe-125",
@@ -463,7 +782,14 @@
       "source_image": "valeriy_zaharin_sovinon_valeriy_zaharin_beloe_polusladkoe_125_8494e4a11e.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_sovinon_valeriy_zaharin_beloe_polusladkoe_125_8494e4a11e.webp",
       "input_sha256": "1f808884116f746a2e25b0e7d180e441b27cda2daeadcea87aaaa6e9364868f6",
-      "asset_sha256": "ce32e17bc2c953c28f2ecfa0087fd2de4f68da2958e2a7624dd255bfa0a7b822"
+      "asset_sha256": "ce32e17bc2c953c28f2ecfa0087fd2de4f68da2958e2a7624dd255bfa0a7b822",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-tangovoe-manto-pino-nuar-krasnoe-suhoe-13",
@@ -474,7 +800,15 @@
       "source_image": "valeriy_zaharin_tangovoe_manto_pino_nuar_krasnoe_suhoe_13_a0df9308e1.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_tangovoe_manto_pino_nuar_krasnoe_suhoe_13_a0df9308e1.webp",
       "input_sha256": "5b0f44b0d2e3188ba5682211093de4242a13a91caf4f6d2543c8c4fe97618829",
-      "asset_sha256": "1aad5785af2615cdc0a416e3a12ab856a4e960b4619898b6014d80c35811d24a"
+      "asset_sha256": "1aad5785af2615cdc0a416e3a12ab856a4e960b4619898b6014d80c35811d24a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tango"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-tangovoe-manto-sovinon-sovinon-blan-beloe-suhoe-125",
@@ -485,7 +819,15 @@
       "source_image": "valeriy_zaharin_tangovoe_manto_sovinon_sovinon_blan_beloe_suhoe_125_e437fbd64f.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_tangovoe_manto_sovinon_sovinon_blan_beloe_suhoe_125_e437fbd64f.webp",
       "input_sha256": "7b857128c5c51a3893c87e5feda6f933abf96c90cd08e7a65b238ba00468bc51",
-      "asset_sha256": "beb598025f63a496fcbe1601d8c5a66577227ffcaeaa8f1bcf0a411858cd17df"
+      "asset_sha256": "beb598025f63a496fcbe1601d8c5a66577227ffcaeaa8f1bcf0a411858cd17df",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tango"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-traminer-burlyuk-traminer-rozovyy-beloe-suhoe-135",
@@ -496,7 +838,15 @@
       "source_image": "valeriy_zaharin_traminer_burlyuk_traminer_rozovyy_beloe_suhoe_135_229b0c4d18.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_traminer_burlyuk_traminer_rozovyy_beloe_suhoe_135_229b0c4d18.webp",
       "input_sha256": "a90b1f338eb753bda6b1c9a43c4ab1247f9ed02d15f522c8fd26a61b1a1483cb",
-      "asset_sha256": "16175265be570b8671e632b1c05cadcf9410426b765d98a3266f206d3ef8f066"
+      "asset_sha256": "16175265be570b8671e632b1c05cadcf9410426b765d98a3266f206d3ef8f066",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-burluk"
+        ]
+      }
     },
     {
       "wine_slug": "valeriy-zaharin-traminer-valeriy-zaharin-traminer-rozovyy-beloe-polusladkoe-105",
@@ -507,7 +857,14 @@
       "source_image": "valeriy_zaharin_traminer_valeriy_zaharin_traminer_rozovyy_beloe_polusladkoe_105_8a6a05ec27.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/valeriy_zaharin_traminer_valeriy_zaharin_traminer_rozovyy_beloe_polusladkoe_105_8a6a05ec27.webp",
       "input_sha256": "2b4c78e2dd2001f020904a12dd187eaec5e174824837fe6c9cee8ed038c7a8f6",
-      "asset_sha256": "430c118528d98d5c348c3d0c08c49f686e0cf0ac1b18e7c1bab9d7976fcd0f3b"
+      "asset_sha256": "430c118528d98d5c348c3d0c08c49f686e0cf0ac1b18e7c1bab9d7976fcd0f3b",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     }
   ],
   "official_additions": [
@@ -524,6 +881,14 @@
         "producer": "Валерий Захарьин",
         "matched_catalog_slugs": [],
         "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without collection and release equivalence evidence."
+      },
+      "group_basis": {
+        "kind": "official_product",
+        "evidence": "The recorded official product page establishes this addition. No catalog equivalence is inferred.",
+        "source_ids": [
+          "official-product-chateau-antique-sauvignon",
+          "official-chateau-antique"
+        ]
       }
     }
   ]
