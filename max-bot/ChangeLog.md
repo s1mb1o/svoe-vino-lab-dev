@@ -2,6 +2,10 @@
 
 ## 2026-10-17
 
+- A rejected album gets one reply per image (age gate, rate limit, full queue), the same as
+  Telegram. All the replies quote the album message. Platform difference 1 changed. When the
+  receipt owner fails to enter the queue, the next admitted image claims a new receipt. A failed
+  rejection notice is logged and does not stop the other images of the album.
 - Accept HEIC and HEIF images sent through «Файл» (`.heic`, `.heif`). The worker converts them
   to JPEG with `pillow-heif` 1.8.0 before moderation: the HEIF rotation is applied, EXIF data
   (with the location) is removed, only the primary image is used, and the longest side is at

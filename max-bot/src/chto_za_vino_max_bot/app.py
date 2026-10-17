@@ -5,7 +5,7 @@ import contextlib
 import logging
 import signal
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -1322,6 +1322,14 @@ async def handle_reset_limit_command(
     )
 
 
+async def _send_rejection_notice(send: Awaitable[object]) -> None:
+    """Send one rejection notice of an album image. A failure MUST NOT stop the other images."""
+    try:
+        await send
+    except Exception:
+        LOG.exception("MAX rejection notice failed")
+
+
 async def enqueue_photo_message(
     message: IncomingMessage,
     services: Services,
@@ -1331,7 +1339,8 @@ async def enqueue_photo_message(
     """Add each image of one message to the queue as a separate request.
 
     A MAX album is one message with two or more images or videos. The first admitted image
-    owns the album receipt. A rejection gives one reply for the message.
+    owns the album receipt. As in Telegram, each rejected image gets its own reply. All the
+    replies quote the album message, because MAX delivers the album as one message.
     """
     sender = message.sender
     if sender is None or not message.images:
@@ -1347,20 +1356,23 @@ async def enqueue_photo_message(
                 message_id=message.message_id,
                 now=int(time.time()),
             )
-        await chat.reply(
-            AGE_GATE_TEXT,
-            keyboard=AGE_CONFIRMATION_KEYBOARD,
-            disable_link_preview=True,
-        )
-        return
-    if work_queue.at_capacity:
-        await chat.reply(QUEUE_FULL_TEXT)
+        for _ in message.images:
+            await _send_rejection_notice(
+                chat.reply(
+                    AGE_GATE_TEXT,
+                    keyboard=AGE_CONFIRMATION_KEYBOARD,
+                    disable_link_preview=True,
+                )
+            )
         return
     album = message.is_album
     now = int(time.time())
     status_message_id: str | None = None
     receipt_claimed = False
     for photo_index, image in enumerate(message.images):
+        if work_queue.at_capacity:
+            await _send_rejection_notice(chat.reply(QUEUE_FULL_TEXT))
+            continue
         reservation = services.repository.reserve(
             chat_id=message.chat_id,
             chat_type=message.chat_type,
@@ -1382,11 +1394,14 @@ async def enqueue_photo_message(
         if reservation.duplicate:
             continue
         if not reservation.allowed or reservation.request_id is None:
-            await chat.reply(
-                f"Лимит — {services.settings.rate_limit} фотографий за один час. "
-                f"Попробуйте снова примерно через {_minutes(reservation.retry_after_seconds)} мин."
+            await _send_rejection_notice(
+                chat.reply(
+                    f"Лимит — {services.settings.rate_limit} фотографий за один час. "
+                    "Попробуйте снова примерно через "
+                    f"{_minutes(reservation.retry_after_seconds)} мин."
+                )
             )
-            return
+            continue
 
         request_id = reservation.request_id
         claims_receipt = not receipt_claimed
@@ -1435,17 +1450,25 @@ async def enqueue_photo_message(
             services.repository.update(
                 request_id, status="queue_rejected", error_code="queue_capacity"
             )
-            if claims_receipt and status_message_id is not None:
-                await api.edit_message(
-                    message.chat_id,
-                    status_message_id,
-                    text=QUEUE_FULL_TEXT,
-                    attachments=[],
-                    text_format=HTML,
+            rejected_receipt = status_message_id if claims_receipt else None
+            if claims_receipt:
+                # The receipt shows the rejection. As in Telegram, the next admitted image
+                # claims a new receipt, also when the rejection notice fails.
+                receipt_claimed = False
+                status_message_id = None
+            if rejected_receipt is not None:
+                await _send_rejection_notice(
+                    api.edit_message(
+                        message.chat_id,
+                        rejected_receipt,
+                        text=QUEUE_FULL_TEXT,
+                        attachments=[],
+                        text_format=HTML,
+                    )
                 )
             else:
-                await chat.reply(QUEUE_FULL_TEXT)
-            return
+                await _send_rejection_notice(chat.reply(QUEUE_FULL_TEXT))
+            continue
 
 
 def candidate_wine(candidate: CandidateRecord) -> Wine:

@@ -373,8 +373,8 @@ M22. Retention and user deletion MUST delete the inbox rows of the user and the 
 
 ## Platform differences
 
-1. A rate-limit, queue-capacity, or age-gate rejection of an album gives one reply for the
-   message, because the MAX album is one message.
+1. The MAX album is one message. A rate-limit, queue-capacity, or age-gate rejection gives one
+   reply for each image, as in Telegram. All the replies quote the album message.
 2. MAX has no alert dialog. A `show_alert` answer is a notification.
 3. MAX has no command scope. The administrator commands are not in the menu, but they work.
 4. MAX has no API for the bot description. The owner sets it on business.max.ru.

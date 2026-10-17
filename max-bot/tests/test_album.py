@@ -47,11 +47,17 @@ LINK_ONLY = [["Открыть страницу вина"]]
 
 
 class FakeQueue:
-    """The queue interface of `enqueue_photo_message`. `capacity` makes `submit` fail."""
+    """The queue interface of `enqueue_photo_message`. `capacity` makes `submit` fail.
 
-    def __init__(self, *, at_capacity: bool = False, capacity: int | None = None) -> None:
+    `failures` makes that many submits fail before capacity becomes available again.
+    """
+
+    def __init__(
+        self, *, at_capacity: bool = False, capacity: int | None = None, failures: int = 0
+    ) -> None:
         self.at_capacity = at_capacity
         self.capacity = capacity
+        self.failures = failures
         self.jobs: list[PhotoJob] = []
 
     @property
@@ -62,6 +68,9 @@ class FakeQueue:
         return max(0, position - 1) * 20
 
     def submit(self, job: PhotoJob) -> None:
+        if self.failures:
+            self.failures -= 1
+            raise QueueCapacityError("queue capacity is full")
         if self.capacity is not None and len(self.jobs) >= self.capacity:
             raise QueueCapacityError("queue capacity is full")
         self.jobs.append(job)
@@ -312,7 +321,7 @@ async def test_image_and_video_message_is_an_album(repository):
     assert (pending.feedback_enabled, pending.photo_source) == (False, "forward")
 
 
-async def test_rate_limit_in_the_middle_of_an_album_gives_one_reply(repository):
+async def test_rate_limit_in_the_middle_of_an_album_gives_one_reply_per_photo(repository):
     services = queue_services(repository, rate_limit=2)
     api = FakeMaxApi()
     queue = FakeQueue()
@@ -322,19 +331,19 @@ async def test_rate_limit_in_the_middle_of_an_album_gives_one_reply(repository):
 
     assert [job.photo_index for job in queue.jobs] == [0, 1]
     replies = api.calls_of("send_message")
+    limit = "Лимит — 2 фотографий за один час. Попробуйте снова примерно через 60 мин."
+    # As in Telegram, each rejected image gets its own reply. MAX has one album message.
     assert [(reply["text"], reply["reply_to"]) for reply in replies] == [
         (ALBUM_RECEIPT, "mid.album"),
-        (
-            "Лимит — 2 фотографий за один час. Попробуйте снова примерно через 60 мин.",
-            "mid.album",
-        ),
+        (limit, "mid.album"),
+        (limit, "mid.album"),
     ]
     # The admitted images keep their requests. The remaining images use no quota.
     assert total_requests(repository) == 2
     assert request_states(repository) == [("queued", None), ("queued", None)]
 
 
-async def test_full_queue_rejects_an_album_with_one_reply(repository):
+async def test_full_queue_rejects_an_album_with_one_reply_per_photo(repository):
     services = queue_services(repository)
     api = FakeMaxApi()
     queue = FakeQueue(at_capacity=True)
@@ -345,7 +354,8 @@ async def test_full_queue_rejects_an_album_with_one_reply(repository):
 
     assert queue.jobs == []
     assert [(reply["text"], reply["reply_to"]) for reply in api.calls_of("send_message")] == [
-        (QUEUE_FULL_TEXT, "mid.album")
+        (QUEUE_FULL_TEXT, "mid.album"),
+        (QUEUE_FULL_TEXT, "mid.album"),
     ]
     assert total_requests(repository) == 0
 
@@ -360,22 +370,94 @@ async def test_queue_rejection_of_the_receipt_owner_edits_the_receipt(repository
     )
 
     assert queue.jobs == []
-    assert [reply["text"] for reply in api.calls_of("send_message")] == [ALBUM_RECEIPT]
+    # The failed receipt owner releases the receipt, so the next image claims a new one.
+    assert [reply["text"] for reply in api.calls_of("send_message")] == [
+        ALBUM_RECEIPT,
+        ALBUM_RECEIPT,
+    ]
     assert api.calls_of("edit_message") == [
         {
             "chat_id": DIALOG_CHAT_ID,
-            "message_id": "mid.bot-1",
+            "message_id": message_id,
             "text": QUEUE_FULL_TEXT,
             "attachments": [],
             "text_format": "html",
         }
+        for message_id in ("mid.bot-1", "mid.bot-2")
     ]
-    # The next image is not reserved, and the rejected image does not use the rate limit.
-    assert request_states(repository) == [("queue_rejected", "queue_capacity")]
+    # Each image gets its own rejection. A rejected image does not use the rate limit.
+    assert request_states(repository) == [
+        ("queue_rejected", "queue_capacity"),
+        ("queue_rejected", "queue_capacity"),
+    ]
     assert counted_requests(repository) == 0
 
 
-async def test_queue_rejection_in_the_middle_of_an_album_gives_one_reply(repository):
+async def test_next_image_claims_a_new_receipt_after_a_failed_receipt_owner(repository):
+    services = queue_services(repository)
+    api = FakeMaxApi()
+    queue = FakeQueue(failures=1)
+
+    await enqueue_photo_message(
+        message(message_id="mid.album", images=(image(1), image(2))), services, api, queue
+    )
+
+    # The first receipt shows the rejection. The second image gets its own receipt and status.
+    assert [reply["text"] for reply in api.calls_of("send_message")] == [
+        ALBUM_RECEIPT,
+        ALBUM_RECEIPT,
+    ]
+    assert [call["text"] for call in api.calls_of("edit_message")] == [QUEUE_FULL_TEXT]
+    (job,) = queue.jobs
+    assert job.photo_index == 1
+    assert job.status_message_id == "mid.bot-2"
+    assert job.status_enabled is True
+    assert job.keep_status is True
+
+
+async def test_a_failed_receipt_edit_does_not_stop_the_album(repository):
+    from chto_za_vino_max_bot.max_api import MaxApiError
+
+    services = queue_services(repository)
+    api = FakeMaxApi()
+    api.fail_on["edit_message"] = MaxApiError(500, "internal", "temporary failure")
+    queue = FakeQueue(failures=1)
+
+    await enqueue_photo_message(
+        message(message_id="mid.album", images=(image(1), image(2), image(3))),
+        services,
+        api,
+        queue,
+    )
+
+    # The rejection edit of the first receipt fails. The next image claims a new receipt.
+    assert [job.photo_index for job in queue.jobs] == [1, 2]
+    assert [reply["text"] for reply in api.calls_of("send_message")] == [
+        ALBUM_RECEIPT,
+        ALBUM_RECEIPT,
+    ]
+    assert queue.jobs[0].status_message_id == "mid.bot-2"
+
+
+async def test_a_failed_rejection_reply_does_not_stop_the_album(repository):
+    from chto_za_vino_max_bot.max_api import MaxApiError
+
+    services = queue_services(repository)
+    api = FakeMaxApi()
+    api.fail_on["send_message"] = MaxApiError(500, "internal", "temporary failure")
+
+    await enqueue_photo_message(
+        message(message_id="mid.album", images=(image(1), image(2), image(3))),
+        services,
+        api,
+        FakeQueue(at_capacity=True),
+    )
+
+    # Each image still gets its own attempt after a failed reply.
+    assert [reply["text"] for reply in api.calls_of("send_message")] == [QUEUE_FULL_TEXT] * 3
+
+
+async def test_queue_rejection_in_the_middle_of_an_album_gives_one_reply_per_photo(repository):
     services = queue_services(repository)
     api = FakeMaxApi()
     queue = FakeQueue(capacity=1)
@@ -387,16 +469,18 @@ async def test_queue_rejection_in_the_middle_of_an_album_gives_one_reply(reposit
     assert [(reply["text"], reply["reply_to"]) for reply in api.calls_of("send_message")] == [
         (ALBUM_RECEIPT, "mid.album"),
         (QUEUE_FULL_TEXT, "mid.album"),
+        (QUEUE_FULL_TEXT, "mid.album"),
     ]
     assert api.calls_of("edit_message") == []
     assert request_states(repository) == [
         ("queued", None),
         ("queue_rejected", "queue_capacity"),
+        ("queue_rejected", "queue_capacity"),
     ]
     assert counted_requests(repository) == 1
 
 
-async def test_age_gate_gives_one_reply_for_an_album(repository):
+async def test_age_gate_gives_one_reply_per_album_photo(repository):
     services = queue_services(repository, adult=False)
     api = FakeMaxApi()
     queue = FakeQueue()
@@ -405,11 +489,13 @@ async def test_age_gate_gives_one_reply_for_an_album(repository):
         message(message_id="mid.album", images=(image(1), image(2))), services, api, queue
     )
 
-    (reply,) = api.calls_of("send_message")
-    assert reply["text"] == AGE_GATE_TEXT
-    assert reply["reply_to"] == "mid.album"
-    assert reply["disable_link_preview"] is True
-    assert button_texts(reply["attachments"]) == [["Мне есть 18 лет", "Мне нет 18 лет"]]
+    replies = api.calls_of("send_message")
+    assert len(replies) == 2
+    for reply in replies:
+        assert reply["text"] == AGE_GATE_TEXT
+        assert reply["reply_to"] == "mid.album"
+        assert reply["disable_link_preview"] is True
+        assert button_texts(reply["attachments"]) == [["Мне есть 18 лет", "Мне нет 18 лет"]]
     assert queue.jobs == []
     assert total_requests(repository) == 0
 

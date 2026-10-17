@@ -406,6 +406,14 @@
 - Send five photos as five separate messages without waiting.
 - Confirm that the bot keeps two or fewer message operations per second in the dialog.
 
+## Album rejections
+
+- Send an album of three photos when only one request remains in the rate limit.
+- Confirm that the first photo gets the queue receipt and a result.
+- Confirm that each of the other two photos gets its own limit reply to the album message.
+- Send an album of two photos before the age confirmation.
+- Confirm that the bot sends two age gate replies.
+
 ## Worker threads
 
 - Run `uv run pytest -q tests/test_cpu_dispatch.py tests/test_storage_dispatch.py`.

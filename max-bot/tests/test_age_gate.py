@@ -119,7 +119,8 @@ async def test_unconfirmed_photo_does_not_enter_queue_or_use_limit(
     if age_status is not None:
         set_age(repository, age_status)
     api = FakeMaxApi()
-    # A MAX album is one message with several image attachments. It gets one age gate reply.
+    # A MAX album is one message with several image attachments. As in Telegram, each image
+    # gets its own age gate reply.
     photo = message(images=tuple(image(index) for index in range(1, image_count + 1)))
 
     await enqueue_photo_message(photo, make_services(repository), api, RejectingQueue())
@@ -134,8 +135,8 @@ async def test_unconfirmed_photo_does_not_enter_queue_or_use_limit(
             "text_format": "html",
             "disable_link_preview": True,
         }
-    ]
-    assert [call.method for call in api.calls] == ["send_message"]
+    ] * image_count
+    assert [call.method for call in api.calls] == ["send_message"] * image_count
     assert repository.stats(USER_ID, 1000, 3600).total == 0
     repository.close()
 
