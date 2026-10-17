@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# Videos, frames, photos, and run outputs stay out of git.
+data/
+out/
+.DS_Store
