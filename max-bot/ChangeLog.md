@@ -2,6 +2,12 @@
 
 ## 2026-10-17
 
+- Accept HEIC and HEIF images sent through «Файл» (`.heic`, `.heif`). The worker converts them
+  to JPEG with `pillow-heif` 1.8.0 before moderation: the HEIF rotation is applied, EXIF data
+  (with the location) is removed, only the primary image is used, and the longest side is at
+  most 4096 pixels. A converted copy MUST fit `BOT_MAX_IMAGE_BYTES`. `chto-za-vino-max-probe`
+  converts HEIC first. Synced `image_types.py`, `moderation.py`, and `probe.py` from
+  `../telegram-bot`. Specification FR 2.1, 221.2–221.4; rules 26.5, 56.1.
 - Run image CPU work and photo persistence in worker threads, the same as the Telegram bot
   (`28bc6981`, `f6653377`). One persistence lock per processor serializes the writes; a
   cancelled job waits for an active write. MAX-only writes also use it: sent messages, the

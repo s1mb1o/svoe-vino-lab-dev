@@ -129,6 +129,7 @@ async def run_processor(
     matcher=None,
     chat_id=100,
     bot=None,
+    max_image_bytes=20 * 1024 * 1024,
 ):
     database = tmp_path / "bot.sqlite3"
     repository = Repository(database)
@@ -154,7 +155,7 @@ async def run_processor(
     bot = bot or FakeBot(jpeg())
     services = SimpleNamespace(
         settings=SimpleNamespace(
-            max_image_bytes=20 * 1024 * 1024,
+            max_image_bytes=max_image_bytes,
             match_min_score=0.70,
             match_min_margin=0.015,
             admin_user_id=ADMIN_USER_ID,

@@ -49,8 +49,8 @@ The workspace rules are in `../../CLAUDE.md`.
 26.2. Show the Top-1 wine card for a low score or a low margin.
 26.3. Give low-score wording precedence when both confidence conditions fail.
 26.4. Keep the confidence status and HTTP confidence flag accurate for a tentative card.
-26.5. Accept a document as a photo only when its MIME type is `image/jpeg`, `image/png`, or
-     `image/webp`. The worker checks the image bytes as for a photo.
+26.5. Accept a document as a photo only when its MIME type is `image/jpeg`, `image/png`,
+     `image/webp`, `image/heic`, or `image/heif`. The worker checks the image bytes as for a photo.
 27. Keep the queue wait estimate in environment configuration.
 28. A negative Top-1 feedback action MUST show ranks 2 through 4 and `Ничего из этого`.
 29. Run the administration web interface as a separate service.
@@ -84,6 +84,7 @@ The workspace rules are in `../../CLAUDE.md`.
 54. Production MUST delete terminal request data after 30 days.
 55. Allow only `vino-svoe.ru` and `www.vino-svoe.ru` as result page hosts.
 56. Preserve JPEG, PNG, and WebP source types in storage and matcher requests.
+56.1. Convert a HEIC or HEIF image to JPEG without EXIF data before moderation.
 57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
 58. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
 59. Limit failed administration authentication attempts by socket client address.

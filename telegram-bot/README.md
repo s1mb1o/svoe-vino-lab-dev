@@ -2,7 +2,8 @@
 
 This project runs the Telegram bot at [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot).
 The bot accepts one wine photo or a Telegram photo album.
-It also accepts a JPEG, PNG, or WebP image that the user sends as a file (a document).
+It also accepts a JPEG, PNG, WebP, HEIC, or HEIF image that the user sends as a file (a document).
+A HEIC or HEIF image becomes a JPEG copy without EXIF data before moderation.
 It processes each photo as a separate request.
 It returns one result per photo.
 Each result contains a result photo, the wine name, producer, color, sugar class,

@@ -95,6 +95,8 @@
 - Confirm that the bot answers `Не уверен` without a wine card or feedback buttons.
 - Send a JPEG wine photo as a file (a Telegram document without compression).
 - Confirm that the bot shows the queue receipt and then a result card.
+- Send a HEIC photo from an iPhone as a file.
+- Confirm that the bot shows a result card and that the stored source copy is a JPEG.
 - Send a PDF file.
 - Confirm that the bot answers `Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 

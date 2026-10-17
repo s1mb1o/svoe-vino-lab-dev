@@ -32,7 +32,7 @@ The service also collects difficult test images for recognition improvement.
 1. The bot MUST use a MAX webhook in production. It MAY use long polling in development and tests.
 2. The bot MUST accept MAX messages with `image` attachments.
 2.1. The bot MUST accept a `file` attachment as a photo when its `filename` ends with `.jpg`,
-`.jpeg`, `.png`, or `.webp`. The suffix check MUST ignore letter case.
+`.jpeg`, `.png`, `.webp`, `.heic`, or `.heif`. The suffix check MUST ignore letter case.
 2.2. The bot MUST answer a message with another `file` attachment and no photo with
 `Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 3. The bot MUST limit one MAX user ID to 50 image requests in a rolling hour.
@@ -298,6 +298,13 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 221.1. The bot MUST reject an image with more than one frame, for example an animated PNG or
 WebP file. Moderation checks only one frame. The answer is
 `Файл не похож на поддерживаемую фотографию.`
+221.2. The bot MUST convert a HEIC or HEIF image to JPEG before moderation. The conversion
+MUST apply the HEIF rotation and MUST NOT keep EXIF data. Moderation, storage, recognition, and
+the result use the JPEG copy.
+221.3. A HEIC or HEIF file with several images MUST give only its primary image. The bot MUST NOT
+store, moderate, or recognize the other images.
+221.4. The longest side of the JPEG copy MUST be at most 4096 pixels. A JPEG copy larger than
+`BOT_MAX_IMAGE_BYTES` MUST give `Файл не похож на поддерживаемую фотографию.`
 222. The project MUST provide a deterministic host demo that needs no private service.
 223. `BOT_HTTP_API_TOKEN` MUST contain at least 32 characters.
 224. Retention MUST delete the complete artifact directory of each expired request.

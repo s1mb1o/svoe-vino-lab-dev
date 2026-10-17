@@ -190,6 +190,31 @@ async def test_image_sent_as_a_file_gives_a_result(tmp_path):
         repository.close()
 
 
+async def test_heic_sent_as_a_file_gives_a_result_from_its_jpeg_copy(tmp_path):
+    from test_moderation import heic_bytes
+
+    repository, api, queue, dispatcher, client, _ = await make_bot(tmp_path)
+    api.downloads[FILE_URL] = heic_bytes()
+    try:
+        dispatcher.admit([created([image_file("IMG_0001.HEIC")])])
+        await dispatcher.run_once()
+        await queue.wait_idle()
+
+        result = api.calls_of("send_message")[-1]
+        assert "Демонстрационное вино" in result["text"]
+        requests, total = repository.list_admin_requests(page=1, page_size=10)
+        assert total == 1
+        assert requests[0].status == "recognized"
+        stored = [path for path in (tmp_path / "data").rglob("*") if path.is_file()]
+        accepted = [path for path in stored if "accepted" in path.parts]
+        assert len(accepted) == 1
+        assert accepted[0].read_bytes()[:3] == b"\xff\xd8\xff"
+    finally:
+        await queue.stop()
+        await client.aclose()
+        repository.close()
+
+
 async def test_other_file_gets_the_photo_request(tmp_path):
     repository, api, queue, dispatcher, client, _ = await make_bot(tmp_path)
     try:

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import httpx
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from .image_types import UnsupportedImage, detect_image_type
+from .image_types import UnsupportedImage, detect_image_type, heif_to_jpeg
 
 MODEL_NAME = "shieldgemma-2-4b-it"
 POLICIES = ("dangerous", "sexual", "violence")
@@ -38,6 +38,14 @@ class ModerationResult:
     @property
     def accepted(self) -> bool:
         return self.safe is True or self.bypassed
+
+
+def prepare_source_image(body: bytes) -> bytes:
+    """Return the source image of the pipeline. A HEIC or HEIF image becomes a JPEG copy."""
+    try:
+        return heif_to_jpeg(body)
+    except UnsupportedImage as exc:
+        raise InvalidImage("MAX file is not a supported image") from exc
 
 
 def make_moderation_jpeg(body: bytes, max_side: int = 1024) -> bytes:

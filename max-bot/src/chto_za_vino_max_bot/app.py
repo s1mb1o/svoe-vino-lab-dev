@@ -47,6 +47,7 @@ from .moderation import (
     Moderator,
     make_moderation_jpeg,
     make_moderator,
+    prepare_source_image,
 )
 from .pipeline_artifacts import (
     GeneratedArtifact,
@@ -352,6 +353,11 @@ class PhotoProcessor:
 
         try:
             async with self._timed_step(job, "image_prepare"):
+                body = await asyncio.to_thread(prepare_source_image, body)
+                # A converted HEIC copy MUST also fit the limit, or an administration retry
+                # cannot read the stored copy.
+                if len(body) > self._services.settings.max_image_bytes:
+                    raise InvalidImage("converted image is too large")
                 moderation_jpeg = await asyncio.to_thread(make_moderation_jpeg, body)
         except InvalidImage:
             await self._persist(

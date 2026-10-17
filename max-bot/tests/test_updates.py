@@ -123,7 +123,10 @@ def file(filename: str | None) -> dict[str, object]:
     return item
 
 
-@pytest.mark.parametrize("filename", ["bottle.jpg", "Bottle.JPEG", "label.png", "label.WebP"])
+@pytest.mark.parametrize(
+    "filename",
+    ["bottle.jpg", "Bottle.JPEG", "label.png", "label.WebP", "IMG_0001.HEIC", "photo.heif"],
+)
 def test_image_file_attachment_is_a_photo(filename):
     update = parse_update(created([file(filename)]))
 
@@ -141,7 +144,7 @@ def test_two_image_files_are_an_album():
     assert update.is_album
 
 
-@pytest.mark.parametrize("filename", ["label.pdf", "bottle.heic", "jpg", None])
+@pytest.mark.parametrize("filename", ["label.pdf", "bottle.gif", "jpg", None])
 def test_other_file_attachment_is_not_a_photo(filename):
     update = parse_update(created([file(filename)]))
 

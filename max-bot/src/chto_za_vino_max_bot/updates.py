@@ -12,8 +12,9 @@ from typing import Any
 DIALOG = "dialog"
 MAX_IMAGES_PER_MESSAGE = 12
 # A MAX client sends a `file` attachment when the user selects «Файл». The file name is the only
-# type information in the update. The worker checks the downloaded bytes.
-IMAGE_FILE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp")
+# type information in the update. The worker checks the downloaded bytes. A HEIC or HEIF file
+# becomes a JPEG copy before moderation.
+IMAGE_FILE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif")
 # A message that contains only a forwarded message can have no body and no own `mid`
 # (https://dev.max.ru/docs-api/objects/Message). The bot gives it a stable synthetic ID.
 FORWARD_ID_PREFIX = "forward:"

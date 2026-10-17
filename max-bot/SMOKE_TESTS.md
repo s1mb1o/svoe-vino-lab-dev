@@ -99,6 +99,8 @@
 - Send a JPEG wine photo with the MAX menu item «Файл».
 - Confirm that the bot shows the queue receipt and then a result card.
 - Confirm that the result card replies to the file message.
+- Send a HEIC photo from an iPhone with the MAX menu item «Файл».
+- Confirm that the bot shows a result card and that the stored source copy is a JPEG.
 - Send a PDF file with the MAX menu item «Файл».
 - Confirm that the bot answers `Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 

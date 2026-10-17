@@ -691,6 +691,28 @@ async def test_an_empty_or_oversized_download_is_invalid(tmp_path, body):
     assert sent_texts(api) == [INVALID_SIZE_TEXT]
 
 
+async def test_a_converted_heic_must_fit_the_size_limit(tmp_path):
+    from test_moderation import noisy_heic_bytes
+
+    from chto_za_vino_max_bot.moderation import prepare_source_image
+
+    heic = noisy_heic_bytes()
+    converted = len(prepare_source_image(heic))
+    assert converted > len(heic)
+    api = max_api()
+    api.downloads[PHOTO.url] = heic
+
+    row, _, matcher_calls, photos, _ = await run_processor(
+        tmp_path, AdvisoryQualityInspector(), api=api, max_image_bytes=(len(heic) + converted) // 2
+    )
+
+    # The stored copy would fail the limit at an administration retry, so it is never stored.
+    assert row[:2] == ("invalid_image", "decode")
+    assert matcher_calls == 0
+    assert photos == []
+    assert not list((tmp_path / "images" / "accepted").rglob("*.jpg"))
+
+
 async def test_an_expired_url_is_refreshed_from_the_source_message(tmp_path):
     fresh = ImageRef(photo_id=PHOTO.photo_id, url=f"{PHOTO.url}?fresh", token=PHOTO.token)
     api = MediaMaxApi()

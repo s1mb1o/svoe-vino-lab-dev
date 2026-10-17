@@ -28,7 +28,9 @@ def document(mime_type: str | None, file_id: str = "document-1") -> Document:
     return Document(file_id=file_id, file_unique_id=f"unique-{file_id}", mime_type=mime_type)
 
 
-@pytest.mark.parametrize("mime_type", ["image/jpeg", "image/png", "image/webp"])
+@pytest.mark.parametrize(
+    "mime_type", ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]
+)
 def test_photo_filter_accepts_an_image_document(mime_type):
     assert PHOTO_MESSAGE_FILTER.resolve(telegram_message(document=document(mime_type)))
 
@@ -39,7 +41,7 @@ def test_photo_filter_accepts_a_photo():
     assert PHOTO_MESSAGE_FILTER.resolve(telegram_message(photo=[photo]))
 
 
-@pytest.mark.parametrize("mime_type", ["application/pdf", "image/heic", "image/gif", None])
+@pytest.mark.parametrize("mime_type", ["application/pdf", "image/gif", "image/avif", None])
 def test_photo_filter_rejects_another_document(mime_type):
     assert not PHOTO_MESSAGE_FILTER.resolve(telegram_message(document=document(mime_type)))
 
@@ -148,3 +150,38 @@ async def test_age_gate_holds_the_document_file_reference(tmp_path):
         ("document-1", "unique-document-1")
     ]
     bot_services.repository.close()
+
+
+async def test_heic_document_is_recognized_and_stored_as_jpeg(tmp_path):
+    from test_moderation import heic_bytes
+    from test_processor_quality import AdvisoryQualityInspector, FakeBot, run_processor
+
+    row, *_ = await run_processor(tmp_path, AdvisoryQualityInspector(), bot=FakeBot(heic_bytes()))
+
+    assert row[0] == "recognized"
+    stored = list((tmp_path / "images" / "accepted").rglob("*"))
+    files = [path for path in stored if path.is_file()]
+    assert len(files) == 1
+    assert files[0].read_bytes()[:3] == b"\xff\xd8\xff"
+
+
+async def test_a_converted_heic_must_fit_the_size_limit(tmp_path):
+    from test_moderation import noisy_heic_bytes
+    from test_processor_quality import AdvisoryQualityInspector, FakeBot, run_processor
+
+    from chto_za_vino_bot.moderation import prepare_source_image
+
+    heic = noisy_heic_bytes()
+    converted = len(prepare_source_image(heic))
+    assert converted > len(heic)
+
+    row, *_ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        bot=FakeBot(heic),
+        max_image_bytes=(len(heic) + converted) // 2,
+    )
+
+    assert row[0] == "invalid_image"
+    assert not list((tmp_path / "images" / "accepted").rglob("*.jpg"))
+

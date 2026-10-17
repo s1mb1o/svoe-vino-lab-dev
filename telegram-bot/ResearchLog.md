@@ -313,3 +313,18 @@ These values do not measure production request latency.
 Stored photo bytes match the input bytes.
 All 326 bot tests and the Ruff check pass.
 The changes are not deployed.
+
+## 2026-10-17: HEIC images
+
+An iPhone saves photos as HEIC by default.
+A photo sent as a photo reaches a Telegram bot as a JPEG `PhotoSize`.
+A photo sent as a file can keep the original HEIC bytes. Public sources do not describe the
+exact behavior of the iOS app. The bot therefore accepts `image/heic` and `image/heif` documents.
+
+`pillow-heif` registers a Pillow plugin. In plugin mode it applies the HEIF rotation on open and
+resets the EXIF orientation tag. A test HEIC with EXIF orientation 6 became an upright JPEG.
+The JPEG copy is saved without EXIF data, so it has no location.
+
+Version choice: 1.8.0 (2026-09-22). 1.8.1 was 6 days old on 2026-10-17. Both have `cp312`
+wheels for `manylinux_2_28_aarch64` (gx10) and `macosx_11_0_arm64`. 1.8.0 requires `pillow>=11.1.0`.
+

@@ -12,6 +12,7 @@ from chto_za_vino_bot.moderation import (
     make_moderation_jpeg,
     make_moderator,
     parse_moderation_response,
+    prepare_source_image,
 )
 
 
@@ -164,3 +165,65 @@ def test_moderation_jpeg_rejects_an_animated_image(image_format):
     # Moderation sees only one frame, so a later frame could hide unsafe content.
     with pytest.raises(InvalidImage):
         make_moderation_jpeg(image_bytes(image_format, frames=2))
+
+
+def heic_bytes() -> bytes:
+    """A 40 by 20 HEIC image, left half red, with EXIF rotation 6 and a GPS tag."""
+    image = Image.new("RGB", (40, 20), "white")
+    image.paste((255, 0, 0), (0, 0, 20, 20))
+    exif = Image.Exif()
+    exif[0x0112] = 6
+    exif[0x8825] = {2: (55.0, 45.0, 0.0)}
+    buffer = io.BytesIO()
+    image.save(buffer, format="HEIF", exif=exif.tobytes())
+    return buffer.getvalue()
+
+
+def test_heic_becomes_an_upright_jpeg_without_exif():
+    with Image.open(io.BytesIO(prepare_source_image(heic_bytes()))) as image:
+        assert image.format == "JPEG"
+        assert image.size == (20, 40)
+        assert image.getpixel((10, 2))[0] > 200
+        assert image.getpixel((10, 2))[1] < 50
+        assert image.getpixel((10, 37)) == (255, 255, 255)
+        assert "exif" not in image.info
+
+
+def test_heic_is_moderated_as_its_jpeg_copy():
+    with Image.open(io.BytesIO(make_moderation_jpeg(prepare_source_image(heic_bytes())))) as image:
+        assert image.format == "JPEG"
+
+
+@pytest.mark.parametrize("image_format", ["JPEG", "PNG", "WEBP"])
+def test_another_image_is_not_converted(image_format):
+    body = image_bytes(image_format)
+    assert prepare_source_image(body) is body
+
+
+def test_raw_heic_is_not_a_supported_pipeline_image():
+    # Each path converts HEIC with prepare_source_image first. A raw HEIC fails closed.
+    with pytest.raises(InvalidImage):
+        make_moderation_jpeg(heic_bytes())
+
+
+def test_invalid_heic_is_an_invalid_image():
+    with pytest.raises(InvalidImage):
+        prepare_source_image(b"\x00\x00\x00\x18ftypheic" + bytes(40))
+
+
+def noisy_heic_bytes(size: tuple[int, int] = (300, 300)) -> bytes:
+    """A HEIC image whose JPEG copy is larger than the HEIC file."""
+    image = Image.frombytes("RGB", size, bytes((index * 7919) % 251 for index in range(size[0] * size[1] * 3)))
+    buffer = io.BytesIO()
+    image.save(buffer, format="HEIF")
+    return buffer.getvalue()
+
+
+def test_a_large_heic_is_scaled_to_the_maximum_side():
+    image = Image.new("RGB", (5000, 100), "white")
+    buffer = io.BytesIO()
+    image.save(buffer, format="HEIF")
+
+    with Image.open(io.BytesIO(prepare_source_image(buffer.getvalue()))) as converted:
+        assert converted.size == (4096, 82)
+

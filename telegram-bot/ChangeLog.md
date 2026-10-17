@@ -2,6 +2,12 @@
 
 ## 2026-10-17
 
+- Accept HEIC and HEIF documents (`image/heic`, `image/heif`). The worker converts them to JPEG
+  with `pillow-heif` 1.8.0 before moderation: the HEIF rotation is applied and EXIF data (with the
+  location) is removed. A raw HEIC image still fails the type check, so every path converts it
+  first. A converted image is scaled to at most 4096 pixels and MUST fit `BOT_MAX_IMAGE_BYTES`.
+  The probe command converts HEIC first. Shared `image_types.py`, `moderation.py`, and
+  `probe.py`. Specification FR 2.1, 221.2–221.4; rules 26.5, 56.1. 379 tests pass.
 - Accept an image that the user sends as a file: a document with the MIME type
   `image/jpeg`, `image/png`, or `image/webp` goes through the photo pipeline, the age gate,
   and the rate limit. Another document still gets «Пришлите фотографию бутылки или

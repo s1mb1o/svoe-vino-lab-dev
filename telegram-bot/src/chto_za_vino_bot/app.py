@@ -50,6 +50,7 @@ from .moderation import (
     Moderator,
     make_moderation_jpeg,
     make_moderator,
+    prepare_source_image,
 )
 from .pipeline_artifacts import (
     GeneratedArtifact,
@@ -127,7 +128,10 @@ HELD_PHOTO_UNAVAILABLE_TEXT = (
     "Отправьте её ещё раз."
 )
 # Telegram sends an image as a document when the user sends it as a file.
-IMAGE_DOCUMENT_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
+# A HEIC or HEIF document becomes a JPEG copy before moderation.
+IMAGE_DOCUMENT_TYPES = frozenset(
+    {"image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"}
+)
 PHOTO_MESSAGE_FILTER = F.photo | F.document.mime_type.in_(IMAGE_DOCUMENT_TYPES)
 
 def confidence_note(
@@ -396,6 +400,11 @@ class PhotoProcessor:
 
         try:
             async with self._timed_step(job, "image_prepare"):
+                body = await asyncio.to_thread(prepare_source_image, body)
+                # A converted HEIC copy MUST also fit the limit, or an administration retry
+                # cannot read the stored copy.
+                if len(body) > self._services.settings.max_image_bytes:
+                    raise InvalidImage("converted image is too large")
                 moderation_jpeg = await asyncio.to_thread(make_moderation_jpeg, body)
         except InvalidImage:
             await self._persist(

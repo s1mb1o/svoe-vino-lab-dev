@@ -8,12 +8,13 @@ from pathlib import Path
 import httpx
 
 from .matcher import Matcher, is_confident
-from .moderation import Moderator, make_moderation_jpeg
+from .moderation import Moderator, make_moderation_jpeg, prepare_source_image
 from .quality import QualityInspector, QualityThresholds
 
 
 async def run(args: argparse.Namespace) -> None:
-    body = args.image.read_bytes()
+    # A HEIC or HEIF file becomes the same JPEG copy as in the bot.
+    body = prepare_source_image(args.image.read_bytes())
     async with httpx.AsyncClient() as client:
         moderation_jpeg = make_moderation_jpeg(body)
         moderation = await Moderator(args.moderation_endpoint, client).classify(moderation_jpeg)
