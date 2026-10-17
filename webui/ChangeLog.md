@@ -1,3 +1,7 @@
+# 2026-10-17: soyuz-vino review correction
+
+Use snapshot-only evidence for historical brands. Remove unsupported relative ranks. Flag the red-wine and white-grape contradiction.
+
 # 2026-10-17: valery-zakharyin review correction
 
 Record the reserve label evidence for each reserve wine. Keep the group explicitly editorial.

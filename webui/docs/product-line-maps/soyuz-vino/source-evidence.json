@@ -1,0 +1,86 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://www.soyuz-vino.ru/katalog",
+      "retrieved_at": "2026-10-17T20:26:49.874695+00:00",
+      "sha256": "f811b668c3637713da5c1956fa7751190b7147387464f63282f3ec2cdf226e74",
+      "final_url": "https://www.soyuz-vino.ru/katalog",
+      "source_id": "official-terra-pia",
+      "section": null,
+      "basis": "The official range index describes volcanic blends from grapes grown near Shugo. The relative step is editorial."
+    },
+    {
+      "url": "https://www.soyuz-vino.ru/katalog",
+      "retrieved_at": "2026-10-17T20:26:49.874695+00:00",
+      "sha256": "f811b668c3637713da5c1956fa7751190b7147387464f63282f3ec2cdf226e74",
+      "final_url": "https://www.soyuz-vino.ru/katalog",
+      "source_id": "official-green-valley",
+      "section": null,
+      "basis": "The official range index identifies ZELЁNAYA DOLINA as varietal and blended wine. The relative step is editorial."
+    },
+    {
+      "url": "https://www.soyuz-vino.ru/katalog",
+      "retrieved_at": "2026-10-17T20:26:49.874695+00:00",
+      "sha256": "f811b668c3637713da5c1956fa7751190b7147387464f63282f3ec2cdf226e74",
+      "final_url": "https://www.soyuz-vino.ru/katalog",
+      "source_id": "official-green-cans",
+      "section": null,
+      "basis": "Historical can identities come from the snapshot. No package price comparison is made."
+    },
+    {
+      "url": "https://www.soyuz-vino.ru/katalog",
+      "retrieved_at": "2026-10-17T20:26:49.874695+00:00",
+      "sha256": "f811b668c3637713da5c1956fa7751190b7147387464f63282f3ec2cdf226e74",
+      "final_url": "https://www.soyuz-vino.ru/katalog",
+      "source_id": "official-isola-cans",
+      "section": null,
+      "basis": "The range index identifies canned ISOLA DEL SOLE. Preserve the historical snapshot label and style."
+    },
+    {
+      "url": "https://www.soyuz-vino.ru/katalog",
+      "retrieved_at": "2026-10-17T20:26:49.874695+00:00",
+      "sha256": "f811b668c3637713da5c1956fa7751190b7147387464f63282f3ec2cdf226e74",
+      "final_url": "https://www.soyuz-vino.ru/katalog",
+      "source_id": "official-canon",
+      "section": null,
+      "basis": "The official index identifies КАНОНИЧЕСКИЕ ТРАДИЦИИ. No comparative price rank is assigned."
+    },
+    {
+      "url": "https://soyuz-vino.ru/collection-perle",
+      "retrieved_at": "2026-10-16",
+      "sha256": "1a916dcdcce31fa7f4217ac193051abc201d3e2c9a2960450692aa3106b24b6d",
+      "capture_status": "Dated saved official HTML. Current retrieval returned HTTP 403.",
+      "source_id": "official-perle",
+      "section": null,
+      "basis": "The saved alcoholic collection page identifies White, 0.25 l, 11.5% alcohol. The alcohol-free homepage promotion is a different product."
+    },
+    {
+      "url": "https://soyuz-vino.ru/collection-perle",
+      "retrieved_at": "2026-10-16",
+      "sha256": "1a916dcdcce31fa7f4217ac193051abc201d3e2c9a2960450692aa3106b24b6d",
+      "capture_status": "Dated saved official HTML. Current retrieval returned HTTP 403.",
+      "source_id": "official-product-perle-white",
+      "section": null,
+      "basis": "The saved alcoholic collection page identifies White, 0.25 l, 11.5% alcohol. The alcohol-free homepage promotion is a different product."
+    }
+  ],
+  "snapshot_only_groups": [
+    "confessa",
+    "el-crucero",
+    "gloria",
+    "kartuli",
+    "kubanskoe",
+    "lac",
+    "lavetti-wine",
+    "lenty",
+    "montgolfier",
+    "mosavali",
+    "sheremetev",
+    "soyuz-bottles",
+    "soyuz-box"
+  ],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

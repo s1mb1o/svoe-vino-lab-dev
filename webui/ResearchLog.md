@@ -1,3 +1,7 @@
+# 2026-10-17: soyuz-vino review correction
+
+The current catalog does not establish the historical wine collections or their price ranks. Current Lavetti ciders do not identify older wine records.
+
 # 2026-10-17: valery-zakharyin review correction
 
 The original labels confirm Reserve status in different collections. The Rubedo page alone cannot establish the autochthon reserve identities.

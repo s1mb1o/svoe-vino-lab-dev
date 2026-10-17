@@ -20,108 +20,38 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Союз-Вино: официальные коллекции",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
       "id": "official-terra-pia",
-      "label": "Союз-Вино: Terra Pia",
+      "label": "Союз-Вино: официальный источник · Каталог Продукции",
       "url": "https://www.soyuz-vino.ru/katalog"
     },
     {
       "id": "official-green-valley",
-      "label": "Союз-Вино: Зелёная Долина · бутылки",
+      "label": "Союз-Вино: официальный источник · Каталог Продукции",
       "url": "https://www.soyuz-vino.ru/katalog"
     },
     {
       "id": "official-green-cans",
-      "label": "Союз-Вино: Зелёная Долина · банки",
+      "label": "Союз-Вино: официальный источник · Каталог Продукции",
       "url": "https://www.soyuz-vino.ru/katalog"
     },
     {
       "id": "official-isola-cans",
-      "label": "Союз-Вино: Isola del Sole · банки",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-el-crucero",
-      "label": "Союз-Вино: Эль Крусеро",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-gloria",
-      "label": "Союз-Вино: Gloria de Luna",
+      "label": "Союз-Вино: официальный источник · Каталог Продукции",
       "url": "https://www.soyuz-vino.ru/katalog"
     },
     {
       "id": "official-canon",
-      "label": "Союз-Вино: Канонические Традиции",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-kartuli",
-      "label": "Союз-Вино: Картули Суприс",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-confessa",
-      "label": "Союз-Вино: Confessa",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-kubanskoe",
-      "label": "Союз-Вино: Кубанское Традиционное",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-lac",
-      "label": "Союз-Вино: Lac d’Azur",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-lavetti-wine",
-      "label": "Союз-Вино: Lavetti · тихое вино",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-lenty",
-      "label": "Союз-Вино: Ленты",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-mosavali",
-      "label": "Союз-Вино: Мосавали",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-montgolfier",
-      "label": "Союз-Вино: Шато де Монгольфьер",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-sheremetev",
-      "label": "Союз-Вино: Шереметьевские Погреба",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-soyuz-bottles",
-      "label": "Союз-Вино: Союз-Вино · бутылки",
-      "url": "https://www.soyuz-vino.ru/katalog"
-    },
-    {
-      "id": "official-soyuz-box",
-      "label": "Союз-Вино: Союз-Вино · пакеты и Bag-in-Box",
+      "label": "Союз-Вино: официальный источник · Каталог Продукции",
       "url": "https://www.soyuz-vino.ru/katalog"
     },
     {
       "id": "official-perle",
-      "label": "Союз-Вино: La Petite Perle · банки",
+      "label": "Союз-Вино: сохранённый официальный каталог 16.10.2026",
       "url": "https://soyuz-vino.ru/collection-perle"
     },
     {
-      "id": "official-official-perle-white",
-      "label": "Официальная карточка: La Petite Perle · White",
+      "id": "official-product-perle-white",
+      "label": "Союз-Вино: сохранённый официальный каталог 16.10.2026",
       "url": "https://soyuz-vino.ru/collection-perle"
     }
   ],
@@ -133,13 +63,13 @@
   "tiers": [
     {
       "id": "tier-2",
-      "label": "Основные коллекции",
+      "label": "Специальные купажи Terra Pia",
       "rank": 2,
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
-      "price_label": "Средний ориентир · ₽₽",
+      "price_label": "Внутри производителя · ₽₽",
       "source_ids": [
         "official-terra-pia",
-        "official-green-valley"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -149,19 +79,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-el-crucero",
-        "official-gloria",
-        "official-canon",
-        "official-kartuli",
-        "official-confessa",
-        "official-kubanskoe",
-        "official-lac",
-        "official-lavetti-wine",
-        "official-lenty",
-        "official-mosavali",
-        "official-montgolfier",
-        "official-sheremetev",
-        "official-soyuz-bottles"
+        "official-green-valley",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -172,8 +91,9 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-green-cans",
+        "svoe-vino-2026-09-17",
         "official-isola-cans",
-        "official-soyuz-box",
+        "official-canon",
         "official-perle"
       ]
     }
@@ -193,7 +113,7 @@
     {
       "id": "green-valley",
       "name": "Зелёная Долина · бутылки",
-      "tier_id": "tier-2",
+      "tier_id": "tier-1",
       "method": "Сортовые и купажные тихие вина",
       "description": "Французские сорта на Кубани. Банки с тем же брендом вынесены отдельно.",
       "source_ids": [
@@ -226,29 +146,27 @@
     {
       "id": "el-crucero",
       "name": "Эль Крусеро",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихое вино в картонной упаковке",
       "description": "Белое и красное полусладкие вина. Исторический бренд из снимка. Актуальное наличие не подтверждено.",
       "source_ids": [
-        "official-el-crucero",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "gloria",
       "name": "Gloria de Luna",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихое вино в картонной упаковке",
-      "description": "Белые и красные варианты Secсo и Semidolce. Состав и описание сохранены по карточкам.",
+      "description": "Белые и красные варианты Secco и Semidolce. Состав и описание сохранены по карточкам.",
       "source_ids": [
-        "official-gloria",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "canon",
       "name": "Канонические Традиции",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Красные сладкие и полусладкие вина",
       "description": "Коллекция в стилистике церковного вина. Отдельные карточки различаются по сладости.",
       "source_ids": [
@@ -259,110 +177,100 @@
     {
       "id": "kartuli",
       "name": "Картули Суприс",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихое красное вино",
       "description": "Историческая серия из снимка: Саперави и Шереули. Происхождение не определяется по грузинскому названию.",
       "source_ids": [
-        "official-kartuli",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "confessa",
       "name": "Confessa",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие сортовые вина",
       "description": "Пино Гриджио и Санджовезе с разной сладостью. Названия и фотографии взяты из снимка.",
       "source_ids": [
-        "official-confessa",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "kubanskoe",
       "name": "Кубанское Традиционное",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие вина; разные упаковки",
       "description": "Бутылки и картонные упаковки показаны отдельно. Белые и красные варианты различаются по сладости.",
       "source_ids": [
-        "official-kubanskoe",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "lac",
       "name": "Lac d’Azur",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихое вино в картонной упаковке",
       "description": "Белые и красные варианты Sec и Moelleux. Серия сохранена как историческая часть снимка.",
       "source_ids": [
-        "official-lac",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "lavetti-wine",
       "name": "Lavetti · тихое вино",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие вина из снимка каталога",
       "description": "Сохраняем винные карточки 2026 года. Их не следует заменять актуальными сидрами Lavetti с похожим названием.",
       "source_ids": [
-        "official-lavetti-wine",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "lenty",
       "name": "Ленты",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихое вино в картонной упаковке",
       "description": "Изабелла, Каберне и Шардоне. Разные продукты сохранены с собственным оформлением.",
       "source_ids": [
-        "official-lenty",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "mosavali",
       "name": "Мосавали",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие сортовые вина",
       "description": "Ркацители и два варианта Саперави. Название не служит доказательством страны происхождения.",
       "source_ids": [
-        "official-mosavali",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "montgolfier",
       "name": "Шато де Монгольфьер",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие сортовые вина",
       "description": "Рислинг и Шираз, полусухие и полусладкие варианты. Технология выдержки не подтверждена.",
       "source_ids": [
-        "official-montgolfier",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "sheremetev",
       "name": "Шереметьевские Погреба",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие вина",
       "description": "Белые и красные варианты. Названные сортовые карточки отделены от купажных.",
       "source_ids": [
-        "official-sheremetev",
         "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "soyuz-bottles",
       "name": "Союз-Вино · бутылки",
-      "tier_id": "tier-1",
+      "tier_id": "tier-0",
       "method": "Тихие сортовые вина",
       "description": "Основные сортовые карточки в бутылках. Сухие и полусладкие варианты остаются отдельными продуктами.",
       "source_ids": [
-        "official-soyuz-bottles",
         "svoe-vino-2026-09-17"
       ]
     },
@@ -373,7 +281,6 @@
       "method": "Тихие вина в альтернативной упаковке",
       "description": "ЕвроПак и Bag-in-Box собраны по формату. Фотографии показывают настоящую упаковку, а не условную бутылку.",
       "source_ids": [
-        "official-soyuz-box",
         "svoe-vino-2026-09-17"
       ]
     },
@@ -419,8 +326,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-el-crucero"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -452,8 +358,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-el-crucero"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -486,8 +391,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-gloria"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -520,8 +424,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-gloria"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -554,8 +457,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-gloria"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -588,8 +490,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-gloria"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -757,8 +658,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kartuli"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -790,8 +690,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kartuli"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -824,8 +723,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kartuli"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -857,8 +755,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-confessa"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -890,8 +787,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-confessa"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -923,8 +819,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-confessa"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -956,8 +851,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -989,8 +883,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1022,8 +915,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1055,8 +947,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1088,8 +979,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1121,8 +1011,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1154,8 +1043,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1187,8 +1075,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-kubanskoe"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1220,8 +1107,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lac"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1253,8 +1139,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lac"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1283,11 +1168,12 @@
       ],
       "description": "Вкус вина повторяет оттенки аромата, впечатляя своей структурой с округлыми танинами, умеренной кислотностью и деликатной фруктовой сладостью в послевкусии, отмеченном также приятной ягодной терпкостью.",
       "release_status": "catalog",
-      "badges": [],
+      "badges": [
+        "Противоречие: красное вино, указаны белые сорта"
+      ],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lac"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1319,8 +1205,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lac"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1352,8 +1237,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lavetti-wine"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1385,8 +1269,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lavetti-wine"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1418,8 +1301,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lavetti-wine"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1451,8 +1333,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lavetti-wine"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1485,8 +1366,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lavetti-wine"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1518,8 +1398,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lenty"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1551,8 +1430,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lenty"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1584,8 +1462,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-lenty"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1617,8 +1494,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-mosavali"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1650,8 +1526,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-mosavali"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1683,8 +1558,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-mosavali"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1716,8 +1590,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-montgolfier"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1749,8 +1622,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-montgolfier"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1782,8 +1654,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-montgolfier"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1815,8 +1686,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-sheremetev"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1848,8 +1718,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-sheremetev"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1881,8 +1750,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-sheremetev"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1914,8 +1782,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-sheremetev"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1947,8 +1814,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1980,8 +1846,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2013,8 +1878,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-bottles"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2046,8 +1910,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2079,8 +1942,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-bottles"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2112,8 +1974,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2145,8 +2006,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2178,8 +2038,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-bottles"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2211,8 +2070,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2244,8 +2102,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-box"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2277,8 +2134,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-soyuz-bottles"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -2691,7 +2547,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/soyuz-vino/official-perle-white.webp",
-        "source_id": "official-official-perle-white",
+        "source_id": "official-product-perle-white",
         "frame": {
           "x": 8,
           "y": 8,
@@ -2709,7 +2565,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-perle-white",
+        "official-product-perle-white",
         "official-perle"
       ]
     }

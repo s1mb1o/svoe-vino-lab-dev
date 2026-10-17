@@ -1,3 +1,7 @@
+# 2026-10-17: soyuz-vino review correction
+
+Check historical brands at rank zero, the red Lac d’Azur conflict badge, package silhouettes, the alcoholic Perle can, and the 767/768 px transition.
+
 # 2026-10-17: valery-zakharyin review correction
 
 Check all four reserve entries. Confirm that the group description identifies distinct collections.
