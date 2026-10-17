@@ -45,6 +45,8 @@ The workspace rules are in `../../CLAUDE.md`.
 24. Continue recognition when the quality service fails or reports an issue.
 25. Request four ranked matcher candidates.
 26. Keep matcher score and margin thresholds in environment configuration.
+26.1. Accept a document as a photo only when its MIME type is `image/jpeg`, `image/png`, or
+     `image/webp`. The worker checks the image bytes as for a photo.
 27. Keep the queue wait estimate in environment configuration.
 28. A negative Top-1 feedback action MUST show ranks 2 through 4 and `Ничего из этого`.
 29. Run the administration web interface as a separate service.

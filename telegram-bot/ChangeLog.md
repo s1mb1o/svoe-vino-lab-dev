@@ -1,5 +1,35 @@
 # Change log
 
+## 2026-10-17
+
+- Accept an image that the user sends as a file: a document with the MIME type
+  `image/jpeg`, `image/png`, or `image/webp` goes through the photo pipeline, the age gate,
+  and the rate limit. Another document still gets «Пришлите фотографию бутылки или
+  этикетки». Specification FR 2.1–2.2, rule 26.1.
+- Reject an image with more than one frame (animated PNG or WebP) with «Файл не похож на
+  поддерживаемую фотографию.» (Codex review finding). A document keeps its original bytes,
+  and moderation checks only the first frame. Specification FR 221.1. 19 new tests (283 in total).
+- Added the `introduction` argument of `format_result_caption` from `svoe-vino-lab` commit
+  `4ce43a8f0` for the MAX bot. The default keeps «Похоже, это:». This copy does not show
+  tentative cards; the production Telegram bot in `svoe-vino-lab` does.
+- Fixed three Codex review findings of the held-photo fix: the minor choice and the adult
+  replay no longer depend on a successful callback answer; a held row is removed only after
+  its photo was admitted or explicitly rejected, so a restart during the replay loses no
+  photo; scheduled retention removes held rows after 24 hours, not after the 30-day request
+  retention. 4 new tests.
+- Fixed two second-round Codex findings: an API failure in one chat (receipt or notice) no
+  longer stops the replay of the other held photos; the Telegram held photos keep the arrival order
+  when two photos have the same second (insertion order breaks the tie).
+- Fixed: a photo sent before the age confirmation was lost. After «Мне есть 18 лет» the
+  bot answered only with the start text. Now the age gate keeps the Telegram file reference
+  of the photo (table `age_pending_photos`: `file_id`, `file_unique_id`, chat, message, and
+  media group IDs; no image data). The adult choice queues the held photos through
+  `HeldPhotoMessage`; an album still gets one receipt. The minor choice, the user data
+  deletion, retention, and a 24-hour limit remove the held photos. A failed receipt gets
+  «Не удалось получить фотографию, отправленную до подтверждения возраста. Отправьте её
+  ещё раз.». Specification FR 225–227, README, smoke test, 5 new tests. The MAX bot has the
+  same fix.
+
 ## 2026-10-16
 
 Fixed the defects of issue #11. The tests of the MAX port found them.

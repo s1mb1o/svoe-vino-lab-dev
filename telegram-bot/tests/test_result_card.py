@@ -60,7 +60,15 @@ def test_result_caption_marks_missing_parameters():
     assert caption.count("нет данных") == 4
 
 
-def test_result_caption_fits_telegram_limit_with_long_parameters():
+@pytest.mark.parametrize(
+    "introduction",
+    [
+        "Похоже, это:",
+        "У меня есть пара вариантов, скорей всего это:",
+        "Пришлите еще фотографию, но скорее всего, это:",
+    ],
+)
+def test_result_caption_fits_telegram_limit_with_long_parameters(introduction):
     caption = format_result_caption(
         wine(
             name="Н" * 1000,
@@ -69,7 +77,8 @@ def test_result_caption_fits_telegram_limit_with_long_parameters():
             color="Ц" * 1000,
             sugar="С" * 1000,
             grapes="В" * 1000,
-        )
+        ),
+        introduction=introduction,
     )
 
     assert len(caption) <= 1024

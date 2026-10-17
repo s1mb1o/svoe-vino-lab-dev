@@ -2,6 +2,7 @@
 
 This project runs the Telegram bot at [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot).
 The bot accepts one wine photo or a Telegram photo album.
+It also accepts a JPEG, PNG, or WebP image that the user sends as a file (a document).
 It processes each photo as a separate request.
 It returns one result per photo.
 Each result contains a result photo, the wine name, producer, color, sugar class,
@@ -21,6 +22,9 @@ The `/start` command asks the user to confirm an age of at least 18 years.
 The bot stores the selected answer in SQLite.
 The bot does not accept a photo before the adult confirmation.
 An unconfirmed photo does not use the rate limit.
+The age gate keeps the Telegram file reference of an unconfirmed photo, not the image.
+After `Мне есть 18 лет`, the bot queues that photo. The user does not send it again.
+After `Мне нет 18 лет` or after 24 hours, the bot forgets the file reference.
 The bot does not perform identity or document verification.
 The confirmation screen and each successful result show the alcohol notice.
 

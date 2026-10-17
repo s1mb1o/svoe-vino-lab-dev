@@ -17,6 +17,8 @@ from typing import ClassVar
 from .image_types import SUPPORTED_IMAGE_TYPES, detect_image_type
 
 SQLITE_MAX_INTEGER = (1 << 63) - 1
+# A photo that the age gate held back waits this long for the age confirmation.
+AGE_PENDING_SECONDS = 24 * 3600
 
 
 def _pagination_offset(page: int, page_size: int) -> int:
@@ -57,6 +59,17 @@ class Stats:
     quarantined: int
     abstained: int
     user_window: int
+
+
+@dataclass(frozen=True, slots=True)
+class HeldPhoto:
+    """A photo that the age gate held back: the Telegram file reference, not the image."""
+
+    chat_id: int
+    message_id: int
+    media_group_id: str | None
+    file_id: str
+    file_unique_id: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -218,6 +231,18 @@ class Repository:
                     last_seen_at INTEGER NOT NULL,
                     age_status TEXT,
                     age_decided_at INTEGER
+                );
+
+                -- The photos that the age gate held back: file references only, no image data.
+                CREATE TABLE IF NOT EXISTS age_pending_photos (
+                    user_id INTEGER NOT NULL,
+                    chat_id INTEGER NOT NULL,
+                    message_id INTEGER NOT NULL,
+                    media_group_id TEXT,
+                    file_id TEXT NOT NULL,
+                    file_unique_id TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    PRIMARY KEY(user_id, chat_id, message_id)
                 );
 
                 CREATE TABLE IF NOT EXISTS requests (
@@ -447,6 +472,81 @@ class Repository:
                     now,
                 ),
             )
+
+    def add_age_pending_photo(
+        self, *, user_id: int, photo: HeldPhoto, now: int
+    ) -> None:
+        """Keep the file reference of a photo that waits for the age confirmation."""
+        with self._lock, self._connection:
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE created_at < ?",
+                (now - AGE_PENDING_SECONDS,),
+            )
+            self._connection.execute(
+                """
+                INSERT OR IGNORE INTO age_pending_photos(
+                    user_id, chat_id, message_id, media_group_id, file_id, file_unique_id,
+                    created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    user_id,
+                    photo.chat_id,
+                    photo.message_id,
+                    photo.media_group_id,
+                    photo.file_id,
+                    photo.file_unique_id,
+                    now,
+                ),
+            )
+
+    def age_pending_photos(self, user_id: int, now: int) -> list[HeldPhoto]:
+        """Return the held photos of the user, oldest first.
+
+        The rows stay until `remove_age_pending_photo`, so a restart during the replay loses
+        no photo. A photo older than AGE_PENDING_SECONDS is removed and not returned.
+        """
+        with self._lock, self._connection:
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE created_at < ?",
+                (now - AGE_PENDING_SECONDS,),
+            )
+            rows = self._connection.execute(
+                """
+                SELECT chat_id, message_id, media_group_id, file_id, file_unique_id
+                FROM age_pending_photos
+                WHERE user_id = ?
+                ORDER BY created_at, rowid
+                """,
+                (user_id,),
+            ).fetchall()
+        return [
+            HeldPhoto(
+                chat_id=int(row["chat_id"]),
+                message_id=int(row["message_id"]),
+                media_group_id=row["media_group_id"],
+                file_id=str(row["file_id"]),
+                file_unique_id=str(row["file_unique_id"]),
+            )
+            for row in rows
+        ]
+
+    def remove_age_pending_photo(self, *, user_id: int, chat_id: int, message_id: int) -> None:
+        with self._lock, self._connection:
+            self._connection.execute(
+                """
+                DELETE FROM age_pending_photos
+                WHERE user_id = ? AND chat_id = ? AND message_id = ?
+                """,
+                (user_id, chat_id, message_id),
+            )
+
+    def drop_age_pending_photos(self, user_id: int) -> int:
+        with self._lock, self._connection:
+            cursor = self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE user_id = ?", (user_id,)
+            )
+        return cursor.rowcount
 
     def reserve(
         self,
@@ -1554,6 +1654,9 @@ class Repository:
                 ).fetchone()[0]
             )
             self._connection.execute("DELETE FROM requests WHERE user_id = ?", (user_id,))
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE user_id = ?", (user_id,)
+            )
             user_cursor = self._connection.execute(
                 "DELETE FROM users WHERE user_id = ?",
                 (user_id,),
@@ -1602,6 +1705,11 @@ class Repository:
                 self._connection.execute(
                     f"DELETE FROM requests WHERE received_at < ? AND {terminal}",
                     (cutoff,),
+                )
+                # Held photos have their own 24-hour lifetime, not the request retention.
+                self._connection.execute(
+                    "DELETE FROM age_pending_photos WHERE created_at < ?",
+                    (int(datetime.now(UTC).timestamp()) - AGE_PENDING_SECONDS,),
                 )
                 user_cursor = self._connection.execute(
                     """

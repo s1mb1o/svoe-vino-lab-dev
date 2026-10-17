@@ -30,19 +30,20 @@ def _caption_value(value: str | None, limit: int) -> str:
     return html.escape(normalized)
 
 
-def format_result_caption(wine: Wine) -> str:
+def format_result_caption(wine: Wine, *, introduction: str = "Похоже, это:") -> str:
+    grapes_limit = max(1, 180 - max(0, len(introduction) - len("Похоже, это:")))
     color_values = []
     for value in (wine.category, wine.color):
         if value and value.casefold() not in {item.casefold() for item in color_values}:
             color_values.append(value)
     color = " · ".join(color_values) if color_values else None
     return (
-        "Похоже, это:\n\n"
+        f"{html.escape(introduction)}\n\n"
         f"<b>{_caption_value(wine.name, 140)}</b>\n\n"
         f"🏡 <b>Винодельня:</b> {_caption_value(wine.producer, 120)}\n"
         f"🍷 <b>Цвет:</b> {_caption_value(color, 120)}\n"
         f"🍬 <b>Сахар:</b> {_caption_value(wine.sugar, 60)}\n"
-        f"🍇 <b>Виноград:</b> {_caption_value(wine.grapes, 180)}\n\n"
+        f"🍇 <b>Виноград:</b> {_caption_value(wine.grapes, grapes_limit)}\n\n"
         f'<a href="{html.escape(wine.page_url, quote=True)}">Открыть страницу вина</a>\n\n'
         "Результат может быть неточным.\n\n"
         f"{LEGAL_NOTICE}"

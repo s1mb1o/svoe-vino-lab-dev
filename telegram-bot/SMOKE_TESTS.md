@@ -28,6 +28,16 @@
 - Select `Мне есть 18 лет` from a new `/start` message.
 - Confirm that the bot accepts a subsequent photo.
 
+## Photo before the age confirmation
+
+- Start a new chat. Do not confirm the age. Send one wine photo.
+- Confirm that the bot answers the photo with the age gate.
+- Select `Мне есть 18 лет` in that age gate.
+- Confirm that the bot then answers the same photo with the queue receipt.
+- Confirm that the bot returns the result of that photo without a second upload.
+- Repeat with `Мне нет 18 лет`, then select `Мне есть 18 лет` from a new `/start` message.
+- Confirm that the bot does not process the photo of the minor choice.
+
 ## Recognition
 
 - Confirm that each matcher request uses `k=4` and does not select a pipeline.
@@ -73,6 +83,10 @@
 - Confirm that the bot answers `Не уверен` and does not show a confident wine card.
 - Send a result with a score margin below `BOT_MATCH_MIN_MARGIN`.
 - Confirm that the bot answers `Не уверен` and stores the candidates.
+- Send a JPEG wine photo as a file (a Telegram document without compression).
+- Confirm that the bot shows the queue receipt and then a result card.
+- Send a PDF file.
+- Confirm that the bot answers `Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 
 ## Photo quality
 

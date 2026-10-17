@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from html import escape
+from types import SimpleNamespace
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
@@ -16,15 +17,18 @@ import uvicorn
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.exceptions import TelegramAPIError
 from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.types import (
     BotCommandScopeChat,
     BufferedInputFile,
     CallbackQuery,
+    Document,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     LinkPreviewOptions,
     Message,
+    PhotoSize,
     ReplyParameters,
 )
 
@@ -77,6 +81,7 @@ from .storage import (
     AdminRequestRecord,
     ArtifactStore,
     CandidateRecord,
+    HeldPhoto,
     ImageStore,
     Repository,
     UserIdentity,
@@ -116,6 +121,13 @@ CONTENT_REJECTED_TEXT = (
     "Контент признан неподходящим и не передан в распознавание.\n\n"
     "Если фильтр ошибся, сообщите об этом кнопкой ниже."
 )
+HELD_PHOTO_UNAVAILABLE_TEXT = (
+    "Не удалось получить фотографию, отправленную до подтверждения возраста. "
+    "Отправьте её ещё раз."
+)
+# Telegram sends an image as a document when the user sends it as a file.
+IMAGE_DOCUMENT_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
+PHOTO_MESSAGE_FILTER = F.photo | F.document.mime_type.in_(IMAGE_DOCUMENT_TYPES)
 
 def confidence_note(
     result: RecognitionResult,
@@ -1095,15 +1107,102 @@ async def handle_reset_limit_command(
     )
 
 
-async def enqueue_photo_message(
-    message: Message,
+class HeldPhotoMessage:
+    """A photo message that the age gate held back, rebuilt from its stored file reference.
+
+    Telegram has no method that reads a message again. The object has the attributes that
+    `enqueue_photo_message` reads, and `reply` sends a reply to the source message.
+    """
+
+    def __init__(self, bot: Bot, photo: HeldPhoto, user: object) -> None:
+        self._bot = bot
+        self.message_id = photo.message_id
+        self.media_group_id = photo.media_group_id
+        self.chat = SimpleNamespace(id=photo.chat_id)
+        self.from_user = user
+        self.photo = [SimpleNamespace(file_id=photo.file_id, file_unique_id=photo.file_unique_id)]
+
+    async def reply(self, text: str, **kwargs: object) -> Message:
+        return await self._bot.send_message(
+            self.chat.id,
+            text,
+            reply_parameters=ReplyParameters(
+                message_id=self.message_id,
+                allow_sending_without_reply=True,
+            ),
+            **kwargs,
+        )
+
+
+async def enqueue_held_photos(
+    callback: CallbackQuery,
     services: Services,
     work_queue: WorkQueue[PhotoJob],
     album_receipts: AlbumReceiptTracker,
 ) -> None:
-    if message.from_user is None or not message.photo:
+    """Queue the photos that the age gate held back, in the order of their arrival.
+
+    A held row is removed only after its photo was admitted or explicitly rejected. A restart
+    in between replays the callback, and the reservation ignores a duplicate photo.
+    """
+    user = callback.from_user
+    repository = services.repository
+    for photo in repository.age_pending_photos(user.id, int(time.time())):
+        try:
+            await enqueue_photo_message(
+                HeldPhotoMessage(callback.bot, photo, user),
+                services,
+                work_queue,
+                album_receipts,
+            )
+        except TelegramAPIError:
+            LOG.warning("A photo held by the age gate cannot be queued")
+            # A failed notice is an explicit rejection of this photo only. It MUST NOT stop
+            # the replay of the other held photos.
+            try:
+                await callback.bot.send_message(photo.chat_id, HELD_PHOTO_UNAVAILABLE_TEXT)
+            except TelegramAPIError:
+                LOG.warning("A photo held by the age gate cannot be answered in its chat")
+        repository.remove_age_pending_photo(
+            user_id=user.id, chat_id=photo.chat_id, message_id=photo.message_id
+        )
+
+
+def _photo_file(
+    message: Message | HeldPhotoMessage,
+) -> PhotoSize | Document | SimpleNamespace | None:
+    """Return the largest photo size or an image document. Both have a Telegram file ID."""
+    if message.photo:
+        return message.photo[-1]
+    document = getattr(message, "document", None)
+    if document is not None and document.mime_type in IMAGE_DOCUMENT_TYPES:
+        return document
+    return None
+
+
+async def enqueue_photo_message(
+    message: Message | HeldPhotoMessage,
+    services: Services,
+    work_queue: WorkQueue[PhotoJob],
+    album_receipts: AlbumReceiptTracker,
+) -> None:
+    photo = _photo_file(message)
+    if message.from_user is None or photo is None:
         return
     if services.repository.age_status(message.from_user.id) != "adult":
+        # Keep only the Telegram file reference. After the adult confirmation the bot
+        # queues the photo with it. The bot does not download the image before that.
+        services.repository.add_age_pending_photo(
+            user_id=message.from_user.id,
+            photo=HeldPhoto(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                media_group_id=message.media_group_id,
+                file_id=photo.file_id,
+                file_unique_id=photo.file_unique_id,
+            ),
+            now=int(time.time()),
+        )
         await message.reply(
             AGE_GATE_TEXT,
             reply_markup=AGE_CONFIRMATION_KEYBOARD,
@@ -1115,7 +1214,6 @@ async def enqueue_photo_message(
             "Сейчас очередь заполнена. Фотография не учтена в лимите. Попробуйте позже."
         )
         return
-    photo = message.photo[-1]
     now = int(time.time())
     reservation = services.repository.reserve(
         chat_id=message.chat.id,
@@ -1207,7 +1305,12 @@ async def enqueue_photo_message(
             await status.edit_text(text)
 
 
-async def handle_age_confirmation(callback: CallbackQuery, services: Services) -> None:
+async def handle_age_confirmation(
+    callback: CallbackQuery,
+    services: Services,
+    work_queue: WorkQueue[PhotoJob] | None = None,
+    album_receipts: AlbumReceiptTracker | None = None,
+) -> None:
     if callback.data not in {"age:adult", "age:minor"}:
         await callback.answer()
         return
@@ -1227,13 +1330,20 @@ async def handle_age_confirmation(callback: CallbackQuery, services: Services) -
     else:
         response = MINOR_TEXT
         notification = "Бот доступен только пользователям старше 18 лет."
-    await callback.answer(notification)
-    if isinstance(callback.message, Message):
-        await callback.message.edit_text(
-            response,
-            reply_markup=None,
-            link_preview_options=LinkPreviewOptions(is_disabled=True),
-        )
+    # The held photos follow the stored choice, also when the callback answer fails.
+    if status != "adult":
+        services.repository.drop_age_pending_photos(user.id)
+    try:
+        await callback.answer(notification)
+        if isinstance(callback.message, Message):
+            await callback.message.edit_text(
+                response,
+                reply_markup=None,
+                link_preview_options=LinkPreviewOptions(is_disabled=True),
+            )
+    finally:
+        if status == "adult" and work_queue is not None and album_receipts is not None:
+            await enqueue_held_photos(callback, services, work_queue, album_receipts)
 
 
 async def handle_result_feedback(callback: CallbackQuery, services: Services) -> None:
@@ -1396,7 +1506,7 @@ def build_router(services: Services, work_queue: WorkQueue[PhotoJob]) -> Router:
 
     @router.callback_query(F.data.startswith("age:"))
     async def age_confirmation(callback: CallbackQuery) -> None:
-        await handle_age_confirmation(callback, services)
+        await handle_age_confirmation(callback, services, work_queue, album_receipts)
 
     @router.callback_query(F.data.startswith("feedback:"))
     async def result_feedback(callback: CallbackQuery) -> None:
@@ -1430,7 +1540,7 @@ def build_router(services: Services, work_queue: WorkQueue[PhotoJob]) -> Router:
     async def reset_limit(message: Message, command: CommandObject) -> None:
         await handle_reset_limit_command(message, command, services)
 
-    @router.message(F.photo)
+    @router.message(PHOTO_MESSAGE_FILTER)
     async def photo(message: Message) -> None:
         await enqueue_photo_message(message, services, work_queue, album_receipts)
 

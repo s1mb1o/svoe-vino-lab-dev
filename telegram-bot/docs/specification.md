@@ -27,6 +27,10 @@ The service also collects difficult test images for recognition improvement.
 
 1. The bot MUST use Telegram long polling.
 2. The bot MUST accept Telegram photo messages.
+2.1. The bot MUST accept a Telegram document as a photo message when its MIME type is
+`image/jpeg`, `image/png`, or `image/webp`.
+2.2. The bot MUST answer another document with
+`Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 3. The bot MUST limit one Telegram user ID to 50 image requests in a rolling hour.
 4. The rate limit MUST survive a process restart.
 5. `moderation.enabled` in `config.yaml` MUST control image moderation.
@@ -289,9 +293,20 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 219. The HTTP service MUST provide separate liveness and readiness routes.
 220. Readiness MUST check the database, queue, and configured upstream TCP endpoints.
 221. Source storage and matcher requests MUST preserve JPEG, PNG, and WebP media types.
+221.1. The bot MUST reject an image with more than one frame, for example an animated PNG or
+WebP file. Moderation checks only one frame. The answer is
+`Файл не похож на поддерживаемую фотографию.`
 222. The project MUST provide a deterministic host demo that needs no private service.
 223. `BOT_HTTP_API_TOKEN` MUST contain at least 32 characters.
 224. Retention MUST delete the complete artifact directory of each expired request.
+225. When the age gate holds back a photo, the bot MUST keep only its Telegram file reference
+     (`file_id`, `file_unique_id`), the chat ID, the message ID, the media group ID, the user ID,
+     and the time. It MUST NOT keep, download, or moderate the image.
+226. After the adult confirmation, the bot MUST queue each held photo in the order of arrival.
+     The rate limit, moderation, and storage rules apply as for a new photo. When the queue
+     receipt of a held photo fails, the bot MUST ask the user to send the photo again.
+227. The bot MUST forget the held photos of a user after the minor choice, after the deletion
+     of the user data, and 24 hours after the photo.
 
 ## Non-functional requirements
 
@@ -315,5 +330,4 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 
 ## Out of scope
 
-1. The first release does not accept image documents.
-2. The administration UI is not public.
+1. The administration UI is not public.
