@@ -2,6 +2,8 @@
 
 ## 2026-10-17
 
+- Added `ResearchLog.md` with the MAX platform findings: the command menu has no scope, the
+  `file` attachment shape, HEIC, and update delivery.
 - Keep long polling in production (owner decision for the hackathon, issue #10 section 1).
   `updates.mode` in `config.yaml` (`polling` or `webhook`) is the only source of the update
   mode. The variables `MAX_UPDATE_MODE` and `MAX_ALLOW_PRODUCTION_POLLING` are removed; the bot
