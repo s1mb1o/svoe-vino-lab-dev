@@ -28,7 +28,8 @@ The workspace rules are in `../../CLAUDE.md`.
 4. Keep the request limit in environment configuration.
 5. Keep the default limit at 50 image requests in 3600 seconds per MAX user ID.
 6. Keep user-visible bot text in Russian.
-7. Keep technical documentation in English and use STE-style text.
+7. Keep technical documentation in English and use STE-style text. Exception: `README.md` is
+   in Russian (owner decision of 2026-10-16). Write it in short active Russian sentences.
 8. Send all photo processing through the shared work queue.
 9. Keep the default queue worker count at one until a GPU load test approves a higher value.
 10. Fetch catalogue result images only from `https://api.vino-svoe.ru`.
@@ -49,6 +50,12 @@ The workspace rules are in `../../CLAUDE.md`.
 24. Continue recognition when the quality service fails or reports an issue.
 25. Request four ranked matcher candidates.
 26. Keep matcher score and margin thresholds in environment configuration.
+26.1. Use these thresholds to choose the result wording when a candidate exists.
+26.2. Show the Top-1 wine card for a low score or a low margin.
+26.3. Give low-score wording precedence when both confidence conditions fail.
+26.4. Keep the confidence status and HTTP confidence flag accurate for a tentative card.
+26.5. Accept a `file` attachment as a photo only when its file name ends with `.jpg`, `.jpeg`,
+     `.png`, or `.webp`. The worker checks the image bytes as for an `image` attachment.
 27. Keep the queue wait estimate in environment configuration.
 28. A negative Top-1 feedback action MUST show ranks 2 through 4 and `Ничего из этого`.
 29. Run the administration web interface as a separate service.

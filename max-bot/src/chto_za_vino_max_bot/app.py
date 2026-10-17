@@ -7,7 +7,7 @@ import signal
 import time
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from html import escape
 from typing import Any
@@ -31,6 +31,7 @@ from .matcher import Matcher, RecognitionResult, RecognitionUnavailable, is_conf
 from .max_api import (
     UPDATE_TYPES,
     MaxApi,
+    MaxApiError,
     MediaTooLarge,
     MediaUnavailable,
     callback_button,
@@ -140,6 +141,10 @@ CONTENT_REJECTED_TEXT = (
 QUEUE_FULL_TEXT = "Сейчас очередь заполнена. Фотография не учтена в лимите. Попробуйте позже."
 FALLBACK_TEXT = "Пришлите фотографию бутылки или этикетки. Помощь: /help"
 ALTERNATIVES_TEXT = "Возможные варианты:"
+HELD_PHOTO_UNAVAILABLE_TEXT = (
+    "Не удалось получить фотографию, отправленную до подтверждения возраста. "
+    "Отправьте её ещё раз."
+)
 
 
 def confidence_note(
@@ -484,16 +489,14 @@ class PhotoProcessor:
             min_margin=self._services.settings.match_min_margin,
         )
         admin_note = self._admin_confidence_note(job, result)
-        if not confident:
-            # An empty candidate list means that the matcher found no wine.
-            top = result.top if result.candidates else None
+        if not result.candidates:
             self._services.repository.update(
                 job.request_id,
-                recognition_slug=top.slug if top else None,
-                recognition_name=top.wine.name if top else None,
-                recognition_page_url=top.wine.page_url if top else None,
-                recognition_score=top.score if top else None,
-                recognition_margin=result.margin if top else None,
+                recognition_slug=None,
+                recognition_name=None,
+                recognition_page_url=None,
+                recognition_score=None,
+                recognition_margin=None,
                 matcher_pipeline=result.pipeline,
                 status="abstained",
                 duration_ms=int((time.monotonic() - started) * 1000),
@@ -516,11 +519,18 @@ class PhotoProcessor:
             recognition_score=result.top.score,
             recognition_margin=result.margin,
             matcher_pipeline=result.pipeline,
-            status="recognized",
+            status="recognized" if confident else "abstained",
             duration_ms=int((time.monotonic() - started) * 1000),
         )
+        introduction = "Похоже, это:"
+        if result.top.score < self._services.settings.match_min_score:
+            introduction = "Пришлите еще фотографию, но скорее всего, это:"
+        elif result.margin < self._services.settings.match_min_margin:
+            introduction = "У меня есть пара вариантов, скорей всего это:"
         with self._timed_step(job, "result_delivery"):
-            await self._send_result(job, wine, body, admin_note=admin_note)
+            await self._send_result(
+                job, wine, body, introduction=introduction, admin_note=admin_note,
+            )
 
     async def _read_source(self, job: PhotoJob) -> bytes:
         """Return the image bytes of the job. The job keeps no bytes while it waits."""
@@ -738,9 +748,10 @@ class PhotoProcessor:
         wine: Wine,
         submitted_body: bytes,
         *,
+        introduction: str = "Похоже, это:",
         admin_note: str | None = None,
     ) -> None:
-        caption = format_result_caption(wine)
+        caption = format_result_caption(wine, introduction=introduction)
         if admin_note:
             caption = f"{caption}\n\n{admin_note}"
         feedback_markup = (
@@ -1248,6 +1259,15 @@ async def enqueue_photo_message(
         return
     chat = Chat(api, message.chat_id, message_id=message.message_id)
     if services.repository.age_status(sender.user_id) != "adult":
+        # Keep only the message ID. After the adult confirmation the bot reads the message
+        # again and queues its photos. A forwarded message without its own ID cannot be read.
+        if not is_synthetic_message_id(message.message_id):
+            services.repository.add_age_pending_photo(
+                user_id=sender.user_id,
+                chat_id=message.chat_id,
+                message_id=message.message_id,
+                now=int(time.time()),
+            )
         await chat.reply(
             AGE_GATE_TEXT,
             keyboard=AGE_CONFIRMATION_KEYBOARD,
@@ -1446,10 +1466,52 @@ class CallbackReplies:
             LOG.exception("Sent message storage failed", extra={"request_id": request_id})
 
 
+async def enqueue_held_photos(
+    user: MaxUser,
+    services: Services,
+    api: Any,
+    work_queue: WorkQueue[PhotoJob],
+) -> None:
+    """Queue the photos that the age gate held back, in the order of their arrival.
+
+    A held row is removed only after its photo was admitted or explicitly rejected. A restart
+    in between replays the stored callback, and the reservation ignores a duplicate photo.
+    """
+    repository = services.repository
+    for chat_id, message_id in repository.age_pending_photos(user.user_id, int(time.time())):
+        held: IncomingMessage | None
+        try:
+            held = parse_message(await api.get_message(message_id))
+        except MaxApiError:
+            LOG.warning("A photo held by the age gate cannot be read again")
+            held = None
+        if held is not None and held.sender is None:
+            held = replace(held, sender=user)
+        # An API failure in one chat is an explicit rejection of that photo only. It MUST NOT
+        # stop the replay of the other held photos.
+        try:
+            if (
+                held is None
+                or not held.images
+                or held.chat_id != chat_id
+                or held.sender is None
+                or held.sender.user_id != user.user_id
+            ):
+                await Chat(api, chat_id).answer(HELD_PHOTO_UNAVAILABLE_TEXT)
+            else:
+                await enqueue_photo_message(held, services, api, work_queue)
+        except MaxApiError:
+            LOG.warning("A photo held by the age gate cannot be answered in its chat")
+        repository.remove_age_pending_photo(
+            user_id=user.user_id, chat_id=chat_id, message_id=message_id
+        )
+
+
 async def handle_age_confirmation(
     callback: CallbackEvent,
     services: Services,
     api: Any,
+    work_queue: WorkQueue[PhotoJob] | None = None,
 ) -> None:
     replies = CallbackReplies(api, services, callback)
     if callback.payload not in {"age:adult", "age:minor"}:
@@ -1471,17 +1533,24 @@ async def handle_age_confirmation(
     else:
         response = MINOR_TEXT
         notification = "Бот доступен только пользователям старше 18 лет."
-    if callback.message is None:
-        await replies.answer(notification)
-        return
-    # One answer shows the notification and replaces the age gate without its keyboard.
-    await api.answer_callback(
-        callback.chat_id,
-        callback.callback_id,
-        notification=notification,
-        message={"text": response, "attachments": [], "format": HTML},
-        disable_link_preview=True,
-    )
+    # The held photos follow the stored choice, also when the callback answer fails.
+    if status != "adult":
+        services.repository.drop_age_pending_photos(user.user_id)
+    try:
+        if callback.message is None:
+            await replies.answer(notification)
+        else:
+            # One answer shows the notification and replaces the age gate without its keyboard.
+            await api.answer_callback(
+                callback.chat_id,
+                callback.callback_id,
+                notification=notification,
+                message={"text": response, "attachments": [], "format": HTML},
+                disable_link_preview=True,
+            )
+    finally:
+        if status == "adult" and work_queue is not None:
+            await enqueue_held_photos(user, services, api, work_queue)
 
 
 async def handle_result_feedback(
@@ -1647,7 +1716,9 @@ class BotHandlers:
     async def on_callback(self, callback: CallbackEvent) -> None:
         payload = callback.payload
         if payload.startswith("age:"):
-            await handle_age_confirmation(callback, self._services, self._api)
+            await handle_age_confirmation(
+                callback, self._services, self._api, self._work_queue
+            )
         elif payload.startswith("feedback:"):
             await handle_result_feedback(callback, self._services, self._api)
         elif payload.startswith("alternative:"):

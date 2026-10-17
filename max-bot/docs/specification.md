@@ -31,6 +31,10 @@ The service also collects difficult test images for recognition improvement.
 
 1. The bot MUST use a MAX webhook in production. It MAY use long polling in development and tests.
 2. The bot MUST accept MAX messages with `image` attachments.
+2.1. The bot MUST accept a `file` attachment as a photo when its `filename` ends with `.jpg`,
+`.jpeg`, `.png`, or `.webp`. The suffix check MUST ignore letter case.
+2.2. The bot MUST answer a message with another `file` attachment and no photo with
+`Пришлите фотографию бутылки или этикетки. Помощь: /help`.
 3. The bot MUST limit one MAX user ID to 50 image requests in a rolling hour.
 4. The rate limit MUST survive a process restart.
 5. `moderation.enabled` in `config.yaml` MUST control image moderation.
@@ -67,7 +71,7 @@ non-production moderation bypass.
 30. A successful result MUST show the grape varieties.
 31. The bot MUST show `нет данных` when a requested wine parameter is unavailable.
 32. The bot MUST treat each photo in a MAX album as a separate request. A MAX album is one message
-    with two or more `image` or `video` attachments.
+    with two or more `image`, `video`, or accepted image `file` attachments (FR 2.1).
 33. The bot MUST add album photos to the queue in attachment order.
 34. The bot MUST return one result for each album photo.
 35. Each result MUST reply to its source message.
@@ -142,7 +146,14 @@ candidates from its `/v1/match` path.
 100. The bot MUST store every returned candidate rank, slug, score, and wine card.
 101. The bot MUST use a configurable minimum Top-1 score.
 102. The bot MUST use a configurable minimum Top-1 score margin.
-103. The bot MUST answer `Не уверен` when either confidence condition fails.
+103. The bot MUST show the Top-1 wine card when a candidate exists.
+103.2. When the Top-1 score is below its threshold, the card MUST start with
+`Пришлите еще фотографию, но скорее всего, это:`.
+103.3. When only the score margin is below its threshold, the card MUST start with
+`У меня есть пара вариантов, скорей всего это:`.
+103.4. When both confidence conditions fail, the low-score wording MUST take precedence.
+103.5. A card that fails either confidence condition MUST keep status `abstained`.
+103.6. A tentative single-photo card MUST accept match feedback and alternative selection.
 103.1. In the dialog of the administrator, a result and a `Не уверен` answer MUST show
 the Top-1 score, the Top-1 margin, and both thresholds. Other chats MUST NOT show these values.
 104. A negative Top-1 feedback action MUST show the stored candidates at ranks 2 through 4.
@@ -284,9 +295,20 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 219. The HTTP service MUST provide separate liveness and readiness routes.
 220. Readiness MUST check the database, queue, and configured upstream TCP endpoints.
 221. Source storage and matcher requests MUST preserve JPEG, PNG, and WebP media types.
+221.1. The bot MUST reject an image with more than one frame, for example an animated PNG or
+WebP file. Moderation checks only one frame. The answer is
+`Файл не похож на поддерживаемую фотографию.`
 222. The project MUST provide a deterministic host demo that needs no private service.
 223. `BOT_HTTP_API_TOKEN` MUST contain at least 32 characters.
 224. Retention MUST delete the complete artifact directory of each expired request.
+225. When the age gate holds back a photo message, the bot MUST keep only its MAX message ID,
+     the chat ID, the user ID, and the time. It MUST NOT keep, download, or moderate the image.
+226. After the adult confirmation, the bot MUST read each held message again with
+     `GET /messages/{messageId}` and queue its photos in the order of arrival. The rate limit,
+     moderation, and storage rules apply as for a new photo. When a held message cannot be read
+     again, the bot MUST ask the user to send the photo again.
+227. The bot MUST forget the held message IDs of a user after the minor choice, after the
+     deletion of the user data, and 24 hours after the photo.
 
 ## Non-functional requirements
 
@@ -356,5 +378,4 @@ M22. Retention and user deletion MUST delete the inbox rows of the user and the 
 
 ## Out of scope
 
-1. The first release does not accept image documents.
-2. The administration UI is not public.
+1. The administration UI is not public.

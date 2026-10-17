@@ -154,6 +154,61 @@ async def test_photo_update_gives_a_result_and_feedback_flow(tmp_path):
         repository.close()
 
 
+FILE_URL = "https://fd.oneme.example/file?r=bottle"
+
+
+def image_file(filename: str) -> dict[str, object]:
+    # The shape follows the attachment of the official MAX Go client: the file name and size
+    # are next to the payload.
+    return {
+        "type": "file",
+        "payload": {"token": "f", "url": FILE_URL},
+        "filename": filename,
+        "size": 1000,
+    }
+
+
+async def test_image_sent_as_a_file_gives_a_result(tmp_path):
+    repository, api, queue, dispatcher, client, _ = await make_bot(tmp_path)
+    api.downloads[FILE_URL] = _demo_image()
+    try:
+        dispatcher.admit([created([image_file("Bottle.JPG")])])
+        await dispatcher.run_once()
+        await queue.wait_idle()
+
+        result = api.calls_of("send_message")[-1]
+        assert api.calls_of("download")[0]["url"] == FILE_URL
+        assert result["reply_to"] == "mid.photo"
+        assert "Демонстрационное вино" in result["text"]
+        assert result["attachments"][0]["type"] == "image"
+        requests, total = repository.list_admin_requests(page=1, page_size=10)
+        assert total == 1
+        assert requests[0].status == "recognized"
+    finally:
+        await queue.stop()
+        await client.aclose()
+        repository.close()
+
+
+async def test_other_file_gets_the_photo_request(tmp_path):
+    repository, api, queue, dispatcher, client, _ = await make_bot(tmp_path)
+    try:
+        dispatcher.admit([created([image_file("label.pdf")])])
+        await dispatcher.run_once()
+        await queue.wait_idle()
+
+        sends = api.calls_of("send_message")
+        assert [call["text"] for call in sends] == [
+            "Пришлите фотографию бутылки или этикетки. Помощь: /help"
+        ]
+        assert api.calls_of("download") == []
+        assert repository.list_admin_requests(page=1, page_size=10)[1] == 0
+    finally:
+        await queue.stop()
+        await client.aclose()
+        repository.close()
+
+
 async def test_repeated_delivery_of_a_photo_creates_one_request(tmp_path):
     repository, _, queue, _, client, handlers = await make_bot(tmp_path)
     try:

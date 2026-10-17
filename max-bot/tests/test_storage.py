@@ -662,12 +662,13 @@ def test_admin_retry_rejects_unsafe_or_unmoderated_request(tmp_path):
     repository.close()
 
 
-def test_feedback_is_saved_once_and_survives_restart(tmp_path):
+@pytest.mark.parametrize("status", ["recognized", "abstained"])
+def test_feedback_is_saved_once_and_survives_restart(tmp_path, status):
     path = tmp_path / "bot.sqlite3"
     repository = Repository(path)
     reservation = reserve(repository, 1000, "mid.1")
     assert reservation.request_id is not None
-    repository.update(reservation.request_id, status="recognized")
+    repository.update(reservation.request_id, status=status, recognition_slug="wine-a")
 
     assert (
         repository.save_feedback(
@@ -701,11 +702,12 @@ def test_feedback_is_saved_once_and_survives_restart(tmp_path):
     assert stored == (1, 1200)
 
 
-def test_feedback_rejects_another_user_and_album_request(tmp_path):
+@pytest.mark.parametrize("status", ["recognized", "abstained"])
+def test_feedback_rejects_another_user_and_album_request(tmp_path, status):
     repository = Repository(tmp_path / "bot.sqlite3")
     single = reserve(repository, 1000, "mid.1")
     assert single.request_id is not None
-    repository.update(single.request_id, status="recognized")
+    repository.update(single.request_id, status=status, recognition_slug="wine-a")
     assert (
         repository.save_feedback(
             request_id=single.request_id,
@@ -719,7 +721,7 @@ def test_feedback_rejects_another_user_and_album_request(tmp_path):
     # A MAX album is one message with several image attachments.
     album = reserve(repository, 1001, "mid.album", photo_index=0, feedback_enabled=False)
     assert album.request_id is not None
-    repository.update(album.request_id, status="recognized")
+    repository.update(album.request_id, status=status, recognition_slug="wine-a")
     assert (
         repository.save_feedback(
             request_id=album.request_id,
@@ -729,6 +731,27 @@ def test_feedback_rejects_another_user_and_album_request(tmp_path):
         )
         == "unavailable"
     )
+    repository.close()
+
+
+def test_an_empty_abstention_has_no_feedback(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    reservation = reserve(repository, 1000, "mid.1")
+    request_id = reservation.request_id
+    assert request_id is not None
+    repository.update(request_id, status="abstained")
+
+    assert repository.save_feedback(
+        request_id=request_id, user_id=200, matched=False, now=1200,
+    ) == "unavailable"
+    repository.update(request_id, status="recognized")
+    assert repository.save_feedback(
+        request_id=request_id, user_id=200, matched=False, now=1200,
+    ) == "saved"
+    repository.update(request_id, status="abstained")
+    assert repository.save_alternative_feedback(
+        request_id=request_id, user_id=200, rank=0, now=1300,
+    ) == "unavailable"
     repository.close()
 
 
@@ -859,13 +882,14 @@ def test_new_database_has_max_request_columns_and_no_telegram_file_fields(tmp_pa
     assert {"sent_messages", "update_inbox", "bot_state"} <= tables
 
 
-def test_candidates_and_alternative_feedback_are_persistent(tmp_path):
+@pytest.mark.parametrize("status", ["recognized", "abstained"])
+def test_candidates_and_alternative_feedback_are_persistent(tmp_path, status):
     path = tmp_path / "bot.sqlite3"
     repository = Repository(path)
     reservation = reserve(repository, 1000, "mid.1")
     assert reservation.request_id is not None
     request_id = reservation.request_id
-    repository.update(request_id, status="recognized")
+    repository.update(request_id, status=status, recognition_slug="wine-a")
     repository.replace_candidates(
         request_id,
         [

@@ -11,6 +11,9 @@ from typing import Any
 
 DIALOG = "dialog"
 MAX_IMAGES_PER_MESSAGE = 12
+# A MAX client sends a `file` attachment when the user selects «Файл». The file name is the only
+# type information in the update. The worker checks the downloaded bytes.
+IMAGE_FILE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp")
 # A message that contains only a forwarded message can have no body and no own `mid`
 # (https://dev.max.ru/docs-api/objects/Message). The bot gives it a stable synthetic ID.
 FORWARD_ID_PREFIX = "forward:"
@@ -48,7 +51,7 @@ class MaxUser:
 
 @dataclass(frozen=True, slots=True)
 class ImageRef:
-    """One `image` attachment of a message."""
+    """One `image` attachment of a message, or one `file` attachment with an image file name."""
 
     photo_id: int | None
     url: str
@@ -153,10 +156,19 @@ def _attachments(body: object) -> list[dict[str, Any]]:
     return [item for item in raw if isinstance(item, dict)]
 
 
+def _is_image_file(item: dict[str, Any]) -> bool:
+    filename = _text(item.get("filename")) or ""
+    return item.get("type") == "file" and filename.lower().endswith(IMAGE_FILE_SUFFIXES)
+
+
+def _is_image(item: dict[str, Any]) -> bool:
+    return item.get("type") == "image" or _is_image_file(item)
+
+
 def _images(attachments: list[dict[str, Any]]) -> tuple[ImageRef, ...]:
     images: list[ImageRef] = []
     for item in attachments:
-        if item.get("type") != "image":
+        if not _is_image(item):
             continue
         payload = item.get("payload")
         if not isinstance(payload, dict):
@@ -205,8 +217,10 @@ def parse_message(value: object) -> IncomingMessage | None:
         attachments = _attachments(link["message"])
         photo_source = "forward"
     images = _images(attachments)
-    other = any(item.get("type") not in {"image", "inline_keyboard"} for item in attachments)
-    media_count = sum(item.get("type") in {"image", "video"} for item in attachments)
+    other = any(
+        not _is_image(item) and item.get("type") != "inline_keyboard" for item in attachments
+    )
+    media_count = sum(_is_image(item) or item.get("type") == "video" for item in attachments)
     return IncomingMessage(
         message_id=message_id,
         chat_id=chat_id,

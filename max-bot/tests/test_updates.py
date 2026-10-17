@@ -5,6 +5,7 @@ import pytest
 from chto_za_vino_max_bot.updates import (
     BotStarted,
     CallbackEvent,
+    ImageRef,
     IncomingMessage,
     parse_command,
     parse_update,
@@ -111,9 +112,38 @@ def test_reply_to_a_photo_is_not_a_photo_message():
     assert update.images == ()
 
 
-def test_file_attachment_is_not_a_photo():
-    document = {"type": "file", "payload": {"token": "f", "url": "https://f.example/x.jpg"}}
-    update = parse_update(created([document]))
+def file(filename: str | None) -> dict[str, object]:
+    item: dict[str, object] = {
+        "type": "file",
+        "payload": {"token": "f", "url": "https://f.example/x"},
+        "size": 1000,
+    }
+    if filename is not None:
+        item["filename"] = filename
+    return item
+
+
+@pytest.mark.parametrize("filename", ["bottle.jpg", "Bottle.JPEG", "label.png", "label.WebP"])
+def test_image_file_attachment_is_a_photo(filename):
+    update = parse_update(created([file(filename)]))
+
+    assert isinstance(update, IncomingMessage)
+    assert update.images == (ImageRef(photo_id=None, url="https://f.example/x", token="f"),)
+    assert not update.has_other_attachments
+    assert not update.is_album
+
+
+def test_two_image_files_are_an_album():
+    update = parse_update(created([file("a.jpg"), file("b.png")]))
+
+    assert isinstance(update, IncomingMessage)
+    assert len(update.images) == 2
+    assert update.is_album
+
+
+@pytest.mark.parametrize("filename", ["label.pdf", "bottle.heic", "jpg", None])
+def test_other_file_attachment_is_not_a_photo(filename):
+    update = parse_update(created([file(filename)]))
 
     assert isinstance(update, IncomingMessage)
     assert update.images == ()

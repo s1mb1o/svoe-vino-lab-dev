@@ -27,10 +27,14 @@ SUPPORTED_IMAGE_TYPES = {
 def detect_image_type(body: bytes) -> ImageType:
     try:
         with Image.open(io.BytesIO(body)) as source:
+            # Moderation sees only the first frame. An image file can be an animated PNG or WebP.
+            animated = getattr(source, "n_frames", 1) > 1
             source.verify()
             image_type = SUPPORTED_IMAGE_TYPES.get(source.format or "")
     except (UnidentifiedImageError, OSError, ValueError) as exc:
         raise UnsupportedImage("image is invalid") from exc
     if image_type is None:
         raise UnsupportedImage("image format must be JPEG, PNG, or WebP")
+    if animated:
+        raise UnsupportedImage("image must have one frame")
     return image_type

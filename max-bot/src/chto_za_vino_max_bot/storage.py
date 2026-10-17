@@ -17,6 +17,8 @@ from typing import ClassVar
 from .image_types import SUPPORTED_IMAGE_TYPES, detect_image_type
 
 SQLITE_MAX_INTEGER = (1 << 63) - 1
+# A photo that the age gate held back waits this long for the age confirmation.
+AGE_PENDING_SECONDS = 24 * 3600
 
 
 def _pagination_offset(page: int, page_size: int) -> int:
@@ -252,6 +254,15 @@ class Repository:
                     updated_at INTEGER NOT NULL
                 );
 
+                -- The message IDs of the photos that the age gate held back. No image data.
+                CREATE TABLE IF NOT EXISTS age_pending_photos (
+                    user_id INTEGER NOT NULL,
+                    chat_id INTEGER NOT NULL,
+                    message_id TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    PRIMARY KEY(user_id, chat_id, message_id)
+                );
+
                 CREATE TABLE IF NOT EXISTS requests (
                     request_id TEXT PRIMARY KEY,
                     request_source TEXT NOT NULL DEFAULT 'max',
@@ -430,6 +441,61 @@ class Repository:
                     now,
                 ),
             )
+
+    def add_age_pending_photo(
+        self, *, user_id: int, chat_id: int, message_id: str, now: int
+    ) -> None:
+        """Keep the message ID of a photo that waits for the age confirmation."""
+        with self._lock, self._connection:
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE created_at < ?",
+                (now - AGE_PENDING_SECONDS,),
+            )
+            self._connection.execute(
+                """
+                INSERT OR IGNORE INTO age_pending_photos(user_id, chat_id, message_id, created_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (user_id, chat_id, message_id, now),
+            )
+
+    def age_pending_photos(self, user_id: int, now: int) -> list[tuple[int, str]]:
+        """Return the held photos of the user as (chat ID, message ID), oldest first.
+
+        The rows stay until `remove_age_pending_photo`, so a restart during the replay loses
+        no photo. A photo older than AGE_PENDING_SECONDS is removed and not returned.
+        """
+        with self._lock, self._connection:
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE created_at < ?",
+                (now - AGE_PENDING_SECONDS,),
+            )
+            rows = self._connection.execute(
+                """
+                SELECT chat_id, message_id FROM age_pending_photos
+                WHERE user_id = ?
+                ORDER BY created_at, rowid
+                """,
+                (user_id,),
+            ).fetchall()
+        return [(int(row["chat_id"]), str(row["message_id"])) for row in rows]
+
+    def remove_age_pending_photo(self, *, user_id: int, chat_id: int, message_id: str) -> None:
+        with self._lock, self._connection:
+            self._connection.execute(
+                """
+                DELETE FROM age_pending_photos
+                WHERE user_id = ? AND chat_id = ? AND message_id = ?
+                """,
+                (user_id, chat_id, message_id),
+            )
+
+    def drop_age_pending_photos(self, user_id: int) -> int:
+        with self._lock, self._connection:
+            cursor = self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE user_id = ?", (user_id,)
+            )
+        return cursor.rowcount
 
     def reserve(
         self,
@@ -891,7 +957,7 @@ class Repository:
         with self._lock, self._connection:
             row = self._connection.execute(
                 """
-                SELECT user_id, status, feedback_enabled, feedback_match
+                SELECT user_id, status, feedback_enabled, feedback_match, recognition_slug
                 FROM requests
                 WHERE request_id = ?
                 """,
@@ -900,7 +966,8 @@ class Repository:
             if (
                 row is None
                 or int(row["user_id"]) != user_id
-                or row["status"] != "recognized"
+                or row["status"] not in {"recognized", "abstained"}
+                or (row["status"] == "abstained" and not row["recognition_slug"])
                 or not bool(row["feedback_enabled"])
             ):
                 return "unavailable"
@@ -1040,7 +1107,7 @@ class Repository:
             row = self._connection.execute(
                 """
                 SELECT user_id, status, feedback_enabled, feedback_match,
-                       feedback_alternative_at
+                       feedback_alternative_at, recognition_slug
                 FROM requests
                 WHERE request_id = ?
                 """,
@@ -1049,7 +1116,8 @@ class Repository:
             if (
                 row is None
                 or int(row["user_id"]) != user_id
-                or row["status"] != "recognized"
+                or row["status"] not in {"recognized", "abstained"}
+                or (row["status"] == "abstained" and not row["recognition_slug"])
                 or not bool(row["feedback_enabled"])
                 or row["feedback_match"] != 0
             ):
@@ -1713,6 +1781,9 @@ class Repository:
             )
             self._connection.execute("DELETE FROM requests WHERE user_id = ?", (user_id,))
             self._connection.execute("DELETE FROM update_inbox WHERE user_id = ?", (user_id,))
+            self._connection.execute(
+                "DELETE FROM age_pending_photos WHERE user_id = ?", (user_id,)
+            )
             user_cursor = self._connection.execute(
                 "DELETE FROM users WHERE user_id = ?",
                 (user_id,),
@@ -1765,6 +1836,11 @@ class Repository:
                 self._connection.execute(
                     "DELETE FROM update_inbox WHERE received_at < ?",
                     (cutoff,),
+                )
+                # Held photos have their own 24-hour lifetime, not the request retention.
+                self._connection.execute(
+                    "DELETE FROM age_pending_photos WHERE created_at < ?",
+                    (int(datetime.now(UTC).timestamp()) - AGE_PENDING_SECONDS,),
                 )
                 user_cursor = self._connection.execute(
                     """

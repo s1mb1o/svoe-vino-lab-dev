@@ -1,7 +1,51 @@
 # Change log
 
+## 2026-10-17
+
+- Show a tentative wine card for a low-confidence match, the same as the production Telegram
+  bot (`svoe-vino-lab` commit `4ce43a8f0`). A low Top-1 score gives
+  «Пришлите еще фотографию, но скорее всего, это:». A low margin gives «У меня есть пара
+  вариантов, скорей всего это:». The request keeps status `abstained`; single-photo feedback
+  and alternatives work. Only an empty matcher answer gives «Не уверен». Reason: the live
+  MAX run `20261016T211135Z-max-918f4447` had 18 abstentions; their stored Top-1 candidates
+  give 14 exact and 1 alternative match. Specification FR 103–103.6, rules 26.1–26.4.
+- Accept an image sent through the MAX menu «Файл»: a `file` attachment with the file name
+  suffix `.jpg`, `.jpeg`, `.png`, or `.webp` (any letter case) goes through the photo
+  pipeline. Two such files make an album. Another file still gets «Пришлите фотографию
+  бутылки или этикетки». Specification FR 2.1–2.2, rule 26.5.
+- Live check on the local bot, 2026-10-17 10:43 MSK: a WebP photo sent as an image and the
+  same photo sent through «Файл» both gave the tentative card «У меня есть пара вариантов…»
+  (score 0.91, margin 0.013). The `file` update had `filename`, `size`, and
+  `payload` {`fileId`, `token`, `url`}. «✅ Совпало» on the tentative card was saved.
+- Reject an image with more than one frame (animated PNG or WebP) with «Файл не похож на
+  поддерживаемую фотографию.» (Codex review finding). An image file keeps its original bytes,
+  and moderation checks only the first frame. Shared `image_types.py`, specification FR 221.1.
+  FR 32 now counts accepted image files in an album.
+- Synced the shared `result_card.py` (`format_result_caption(introduction=...)`),
+  `image_types.py`, and their tests from `../telegram-bot`. 27 new tests (569 in total).
+- Fixed three Codex review findings of the held-photo fix: the minor choice and the adult
+  replay no longer depend on a successful callback answer; a held row is removed only after
+  its photo was admitted or explicitly rejected, so a restart during the replay loses no
+  photo; scheduled retention removes held rows after 24 hours, not after the 30-day request
+  retention. 4 new tests.
+- Fixed two second-round Codex findings: an API failure in one chat (receipt or notice) no
+  longer stops the replay of the other held photos.
+- Fixed: a photo sent before the age confirmation was lost. After «Мне есть 18 лет» the
+  bot answered only with the start text. Now the age gate keeps the message ID of the photo
+  (table `age_pending_photos`, no image data). The adult choice reads the message again with
+  `GET /messages/{messageId}` and queues its photos. The minor choice, the user data
+  deletion, retention, and a 24-hour limit remove the held IDs. A message that cannot be read
+  again gets «Не удалось получить фотографию, отправленную до подтверждения возраста.
+  Отправьте её ещё раз.». Specification FR 225–227, README step 7, smoke test, 7 new tests.
+
 ## 2026-10-16
 
+- Translated `README.md` to Russian (owner decision). Added the section «Первая настройка:
+  токен и ID администратора»: where to get `MAX_BOT_TOKEN`, how to keep it in the macOS
+  Keychain (service `chtozavino-max-bot-token`), how to check it with `GET /me`, how to write
+  it into `config/max-bot.env` on gx10 without printing it, and how to find
+  `BOT_ADMIN_USER_ID` with `GET /updates` or `/privacy`. Rule 7 of `CLAUDE.md` now names the
+  exception.
 - Removed the double point at the end of the queue receipt («около 40 сек..»), the same as in
   the Telegram bot (issue #11).
 - Removed platform differences 9 to 12 from the specification. The Telegram bot now has the

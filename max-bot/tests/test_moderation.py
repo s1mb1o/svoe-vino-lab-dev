@@ -1,10 +1,15 @@
+import io
+
 import httpx
 import pytest
+from PIL import Image
 
 from chto_za_vino_max_bot.moderation import (
     DisabledModerator,
+    InvalidImage,
     ModerationUnavailable,
     Moderator,
+    make_moderation_jpeg,
     make_moderator,
     parse_moderation_response,
 )
@@ -136,3 +141,26 @@ async def test_enabled_moderation_requires_an_endpoint():
     async with httpx.AsyncClient() as client:
         with pytest.raises(ValueError, match="moderation endpoint"):
             make_moderator(True, None, client)
+
+
+def image_bytes(image_format: str, *, frames: int = 1) -> bytes:
+    images = [Image.new("RGB", (16, 16), color) for color in ("white", "red", "blue")[:frames]]
+    buffer = io.BytesIO()
+    if frames == 1:
+        images[0].save(buffer, format=image_format)
+    else:
+        images[0].save(buffer, format=image_format, save_all=True, append_images=images[1:])
+    return buffer.getvalue()
+
+
+@pytest.mark.parametrize("image_format", ["JPEG", "PNG", "WEBP"])
+def test_moderation_jpeg_accepts_a_still_image(image_format):
+    with Image.open(io.BytesIO(make_moderation_jpeg(image_bytes(image_format)))) as image:
+        assert image.format == "JPEG"
+
+
+@pytest.mark.parametrize("image_format", ["PNG", "WEBP"])
+def test_moderation_jpeg_rejects_an_animated_image(image_format):
+    # Moderation sees only one frame, so a later frame could hide unsafe content.
+    with pytest.raises(InvalidImage):
+        make_moderation_jpeg(image_bytes(image_format, frames=2))

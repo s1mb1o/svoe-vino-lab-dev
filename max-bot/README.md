@@ -1,199 +1,363 @@
-# Что за вино? — MAX bot
+# Что за вино? — бот MAX
 
-This project runs the MAX messenger bot «Что за вино?» with the nickname `@se14697933_bot`
-(<https://max.ru/se14697933_bot>). It has the same functionality as the Telegram bot in
+Этот проект запускает бот «Что за вино?» в мессенджере MAX. Ник бота — `@se14697933_bot`
+(<https://max.ru/se14697933_bot>). Бот повторяет функции Telegram-бота из
 [`../telegram-bot`](../telegram-bot/README.md).
 
-The bot accepts one wine photo or a MAX album.
-It processes each photo as a separate request.
-It returns one result per photo.
-Each result contains a result photo, the wine name, producer, color, sugar class,
-grape varieties, and the catalogue page on `vino-svoe.ru`.
+Бот принимает одну фотографию вина или альбом MAX.
+Изображение JPEG, PNG или WebP, отправленное через «Файл», бот тоже обрабатывает как фотографию.
+Бот обрабатывает каждую фотографию как отдельный запрос.
+Бот возвращает один результат на каждую фотографию.
+Каждый результат содержит фотографию результата, название вина, производителя, цвет,
+класс сахара, сорта винограда и страницу каталога на `vino-svoe.ru`.
 
-The bot is a thin client of the matcher `svoe-vino-lab/matcher`.
-The matcher returns the ranked candidates and the wine cards.
-The bot does not read a local catalogue.
+Бот — тонкий клиент матчера `svoe-vino-lab/matcher`.
+Матчер возвращает ранжированных кандидатов и карточки вин.
+Бот не читает локальный каталог.
 
-Read [the plan](docs/plans/01_max-port.md), [the decision record](docs/decisions/001-max-port.md),
-and [the specification](docs/specification.md) before a change.
+Перед изменением прочитайте [план](docs/plans/01_max-port.md),
+[запись решения](docs/decisions/001-max-port.md) и [спецификацию](docs/specification.md).
 
-## What is the same as the Telegram bot
+## Что совпадает с Telegram-ботом
 
-The processing core is a checked copy of the Telegram bot core: the work queue, moderation,
-quality inspection, matcher client, wine cards, result photo, pipeline artifacts, HTTP API,
-administration web interface, data lifecycle, artifact backfill, probe, and host demo.
-`scripts/sync_shared.py` copies these modules from `../telegram-bot` and changes only the
-names `chto_za_vino_bot`, `Telegram`, and `telegram`. `tests/test_shared_modules.py` fails
-when a copy differs. Change the Telegram bot first, then run:
+Ядро обработки — проверяемая копия ядра Telegram-бота: очередь задач, модерация,
+проверка качества, клиент матчера, карточки вин, фотография результата, артефакты конвейера,
+HTTP API, веб-интерфейс администрирования, жизненный цикл данных, дозаполнение артефактов,
+проба и демо на хосте.
+`scripts/sync_shared.py` копирует эти модули из `../telegram-bot` и меняет только имена
+`chto_za_vino_bot`, `Telegram` и `telegram`. `tests/test_shared_modules.py` падает, когда
+копия отличается. Сначала измените Telegram-бот, затем выполните:
 
 ```bash
 python scripts/sync_shared.py
 ```
 
-The MAX-specific modules are:
+Модули, которые есть только у бота MAX:
 
-| Module | Purpose |
+| Модуль | Назначение |
 |---|---|
-| `max_api.py` | Thin async client of the MAX Bot API: auth, TLS trust, rate limits, retries, upload, download. |
-| `updates.py` | Normalized `message_created`, `message_callback`, and `bot_started` updates. |
-| `delivery.py` | Durable SQLite inbox, long polling, and the webhook receiver. |
-| `app.py` | Handlers and the photo processor (the port of the Telegram `app.py`). |
-| `storage.py` | The Telegram storage with MAX message IDs, photo locators, sent messages, and the inbox. |
-| `config.py`, `profile.py`, `profile_sync.py` | MAX settings, texts, and the command menu. |
+| `max_api.py` | Тонкий асинхронный клиент MAX Bot API: авторизация, доверие TLS, лимиты запросов, повторы, загрузка и скачивание файлов. |
+| `updates.py` | Нормализованные обновления `message_created`, `message_callback` и `bot_started`. |
+| `delivery.py` | Надёжный входящий буфер в SQLite, long polling и приёмник вебхука. |
+| `app.py` | Обработчики и обработчик фотографий (порт `app.py` Telegram-бота). |
+| `storage.py` | Хранилище Telegram-бота с ID сообщений MAX, локаторами фотографий, отправленными сообщениями и входящим буфером. |
+| `config.py`, `profile.py`, `profile_sync.py` | Настройки MAX, тексты и меню команд. |
 
-## User flow
+## Сценарий пользователя
 
-The flow is the same as in the Telegram bot:
+Сценарий тот же, что у Telegram-бота:
 
-1. «Начать», `/start`, or a deep link shows the invitation, the data notice, the alcohol notice,
-   and the buttons `Мне есть 18 лет` and `Мне нет 18 лет`.
-2. An adult user sends a photo. The bot reserves one request in the rate window, records it,
-   and adds it to the shared FIFO queue. The receipt shows the queue position and the wait.
-3. A queue worker downloads the photo, moderates it with ShieldGemma 2, stores it, checks its
-   quality with SAM3, and asks the matcher for four candidates.
-4. The bot sends the result photo with the caption and the `Открыть страницу вина` button.
-   A single photo also gets `✅ Совпало` and `❌ Не совпало`.
-5. `❌ Не совпало` shows candidates 2 to 4 and `Ничего из этого`.
-6. An unsafe photo gets the rejection illustration and `Сообщить об ошибке фильтра`.
+1. «Начать», `/start` или deep link показывают приглашение, уведомление о данных,
+   уведомление об алкоголе и кнопки `Мне есть 18 лет` и `Мне нет 18 лет`.
+2. Совершеннолетний пользователь отправляет фотографию. Бот резервирует один запрос в окне
+   лимита, записывает запрос и добавляет его в общую очередь FIFO. Квитанция показывает
+   позицию в очереди и время ожидания.
+3. Обработчик очереди скачивает фотографию и проверяет её моделью ShieldGemma 2. Затем он
+   сохраняет фотографию, проверяет её качество моделью SAM3 и запрашивает у матчера четырёх
+   кандидатов.
+4. Бот отправляет фотографию результата с подписью и кнопкой `Открыть страницу вина`.
+   Одиночная фотография также получает кнопки `✅ Совпало` и `❌ Не совпало`.
+   Если оценка ниже порога, подпись начинается с `Пришлите еще фотографию, но скорее всего, это:`.
+   Если мал только отрыв от второго кандидата, подпись начинается с
+   `У меня есть пара вариантов, скорей всего это:`. Такой запрос получает статус `abstained`.
+   Если матчер не вернул кандидатов, бот отвечает `Не уверен, что правильно распознал вино.`
+5. `❌ Не совпало` показывает кандидатов 2–4 и кнопку `Ничего из этого`.
+6. Небезопасная фотография получает иллюстрацию отказа и кнопку `Сообщить об ошибке фильтра`.
+7. Если пользователь отправил фотографию до подтверждения возраста, бот отвечает на неё
+   запросом возраста. Бот хранит только ID сообщения, а не изображение. После
+   `Мне есть 18 лет` бот снова читает это сообщение и ставит фотографию в очередь. Повторная
+   отправка не нужна. После `Мне нет 18 лет` и через 24 часа бот забывает ID сообщения.
 
-## Platform differences
+## Отличия платформ
 
-MAX is not Telegram. The bot keeps the behavior where the platform permits it.
+MAX — не Telegram. Бот сохраняет поведение Telegram-бота там, где платформа это позволяет.
 
-| Topic | Telegram bot | MAX bot |
+| Тема | Telegram-бот | Бот MAX |
 |---|---|---|
-| Album | One message per photo with `media_group_id` | One message with two or more images or videos |
-| Age-gate, rate-limit, or queue-capacity rejection of an album | One reply per photo | One reply per message. A moderation rejection still gives one illustration per photo |
-| Private chat | Chat ID equals user ID | `chat_type == "dialog"`; the chat ID differs |
-| Start | `/start` | `bot_started` («Начать», deep link) and the text `/start` |
-| Privacy deep link | `t.me/ChtoZaVinoBot?start=privacy` | `max.ru/se14697933_bot?start=privacy` |
-| Privacy answer | Constant text | The same text plus the user's own MAX user ID |
-| Callback alert | `show_alert=True` dialog | A notification; MAX has no alert dialog |
-| Keyboard edit | `edit_reply_markup` | `PUT /messages` with the stored text, the image token, and the new keyboard |
-| Admin command menu | Scoped to the administrator's chat | Not shown; MAX has no command scope. The commands work |
-| Bot description | `set_my_description` API | Bot card on business.max.ru, with moderation |
-| Updates | Long polling | Webhook in production, long polling in development |
-| API host trust | Public CA | Russian Trusted Root CA (Минцифры) for `platform-api2.max.ru` |
+| Альбом | Одно сообщение на каждую фотографию с `media_group_id` | Одно сообщение с двумя и более изображениями или видео |
+| Изображение, отправленное файлом | Документ с MIME-типом `image/jpeg`, `image/png` или `image/webp` | Вложение `file` с именем на `.jpg`, `.jpeg`, `.png` или `.webp` |
+| Отказ альбому по возрасту, лимиту запросов или ёмкости очереди | Один ответ на каждую фотографию | Один ответ на сообщение. Отказ модерации всё равно даёт одну иллюстрацию на каждую фотографию |
+| Личный чат | ID чата равен ID пользователя | `chat_type == "dialog"`; ID чата отличается от ID пользователя |
+| Старт | `/start` | `bot_started` («Начать», deep link) и текст `/start` |
+| Deep link о конфиденциальности | `t.me/ChtoZaVinoBot?start=privacy` | `max.ru/se14697933_bot?start=privacy` |
+| Ответ о конфиденциальности | Постоянный текст | Тот же текст и MAX user ID самого пользователя |
+| Уведомление на callback | Диалог `show_alert=True` | Уведомление; в MAX нет диалога alert |
+| Изменение клавиатуры | `edit_reply_markup` | `PUT /messages` с сохранённым текстом, токеном изображения и новой клавиатурой |
+| Меню команд администратора | Только в чате администратора | Не показывается: в MAX нет области видимости команд. Команды работают |
+| Описание бота | API `set_my_description` | Карточка бота на business.max.ru, с модерацией |
+| Обновления | Long polling | Вебхук в production, long polling в разработке |
+| Доверие к хосту API | Публичный УЦ | Russian Trusted Root CA (Минцифры) для `platform-api2.max.ru` |
 
-## MAX API notes
+## Заметки об API MAX
 
-- Base URL: `https://platform-api2.max.ru`. The old host `platform-api.max.ru` is deprecated
-  since 2026-07-19.
-- The token goes in the header `Authorization: <token>`, without `Bearer`.
-- `platform-api2.max.ru` presents a certificate of the Russian Trusted Sub CA. The package
-  contains the public root certificate (`src/chto_za_vino_max_bot/certs/`). A test checks its
-  SHA-256 fingerprint `D2:6D:2D:02:…:8E:CF:31`. The client adds this root to the public trust
-  store. Do not disable TLS verification.
-- Limits: 30 requests per second in total; 2 message operations per second in one chat;
-  4000 characters of text; 12 images in one message.
-- `PUT /messages`, `DELETE /messages`, and `POST /answers` can answer HTTP 200 with
-  `success: false`. The client treats it as an error.
-- A send is repeated only after HTTP 429, because the API has no idempotency key.
+- Базовый URL: `https://platform-api2.max.ru`. Старый хост `platform-api.max.ru` устарел
+  с 2026-07-19.
+- Токен передаётся в заголовке `Authorization: <token>`, без `Bearer`.
+- `platform-api2.max.ru` предъявляет сертификат Russian Trusted Sub CA. Пакет содержит
+  публичный корневой сертификат (`src/chto_za_vino_max_bot/certs/`). Тест проверяет его
+  отпечаток SHA-256 `D2:6D:2D:02:…:8E:CF:31`. Клиент добавляет этот корень к публичному
+  хранилищу доверия. Не отключайте проверку TLS.
+- Лимиты: всего 30 запросов в секунду; 2 операции с сообщениями в секунду в одном чате;
+  4000 символов текста; 12 изображений в одном сообщении.
+- `PUT /messages`, `DELETE /messages` и `POST /answers` могут ответить HTTP 200 с
+  `success: false`. Клиент считает такой ответ ошибкой.
+- Клиент повторяет отправку только после HTTP 429, потому что у API нет ключа идемпотентности.
 
-## Update delivery
+## Доставка обновлений
 
-MAX requires a webhook for production (<https://dev.max.ru/docs-api/methods/GET/updates>).
+MAX требует вебхук для production (<https://dev.max.ru/docs-api/methods/GET/updates>).
 
-- `MAX_UPDATE_MODE=webhook` (the production default): the bot listens on
-  `MAX_WEBHOOK_HOST:MAX_WEBHOOK_PORT`. A TLS proxy MUST publish it as `MAX_WEBHOOK_URL` on HTTPS
-  port 443 with a certificate of a trusted CA or a Минцифры certificate. Self-signed
-  certificates and plain HTTP are rejected by MAX. The receiver checks
-  `X-Max-Bot-Api-Secret` and answers in milliseconds. At startup the bot subscribes the URL.
-- `MAX_UPDATE_MODE=polling` (the development default): `GET /updates` with a persistent marker.
-  The bot refuses to start when a webhook subscription is active. Production polling requires
-  `MAX_ALLOW_PRODUCTION_POLLING=true`.
+- `MAX_UPDATE_MODE=webhook` (значение по умолчанию в production): бот слушает
+  `MAX_WEBHOOK_HOST:MAX_WEBHOOK_PORT`. TLS-прокси ДОЛЖЕН (MUST) публиковать этот адрес как
+  `MAX_WEBHOOK_URL` по HTTPS на порту 443, с сертификатом доверенного УЦ или сертификатом
+  Минцифры. MAX отклоняет самоподписанные сертификаты и обычный HTTP. Приёмник проверяет
+  `X-Max-Bot-Api-Secret` и отвечает за миллисекунды. При старте бот подписывает URL на
+  обновления.
+- `MAX_UPDATE_MODE=polling` (значение по умолчанию в разработке): `GET /updates` с
+  сохраняемым маркером. Бот не запускается, когда активна подписка на вебхук. Polling в
+  production требует `MAX_ALLOW_PRODUCTION_POLLING=true`.
 
-Both modes write each update to the SQLite table `update_inbox` before the bot handles it.
-After a crash, the bot handles the stored updates again. Photo reservations are idempotent.
+Оба режима записывают каждое обновление в таблицу SQLite `update_inbox`, и только потом бот
+обрабатывает обновление. После сбоя бот снова обрабатывает сохранённые обновления.
+Резервирование запросов для фотографий идемпотентно.
 
-## Commands
+## Команды
 
-| Command | Result |
+| Команда | Результат |
 |---|---|
-| `/start` | Show the invitation and the data notice. |
-| `/help` | Show photo tips. |
-| `/stats` | Show personal statistics. Show aggregate statistics to the administrator. |
-| `/privacy` | Show the short privacy notice and the user's MAX user ID. |
-| `/users [page]` | Show a paginated user list to the administrator. |
-| `/reset_limit [user_id or @username]` | Reset the current rate use for an administrator-selected user. |
+| `/start` | Показывает приглашение и уведомление о данных. |
+| `/help` | Показывает советы по фотографии. |
+| `/stats` | Показывает личную статистику. Администратору показывает общую статистику. |
+| `/privacy` | Показывает краткое уведомление о конфиденциальности и MAX user ID пользователя. |
+| `/users [page]` | Показывает администратору список пользователей по страницам. |
+| `/reset_limit [user_id or @username]` | Сбрасывает текущий расход лимита пользователя, которого выбрал администратор. |
 
-The administrator commands work only for `BOT_ADMIN_USER_ID` in the administrator's dialog.
-To find the MAX user ID, send `/privacy` to the bot.
+Команды администратора работают только для `BOT_ADMIN_USER_ID` и только в диалоге
+администратора с ботом. Работающий бот показывает MAX user ID в ответе на `/privacy`.
+Как узнать ID до первого запуска, описано в разделе
+[«Первая настройка: токен и ID администратора»](#первая-настройка-токен-и-id-администратора).
 
-## Configuration
+## Конфигурация
 
-The bot reads the service endpoints from `config.yaml`, the same as the Telegram bot.
-Copy `.env.example` outside the repository and set the secrets there.
+Бот читает адреса сервисов из `config.yaml`, как и Telegram-бот.
+Скопируйте `.env.example` за пределы репозитория и задайте секреты в копии.
 
-| Variable | Default |
+| Переменная | Значение по умолчанию |
 |---|---|
-| `MAX_BOT_TOKEN` | Required. business.max.ru → Чат-боты → ⋮ → Настройки. |
-| `BOT_ADMIN_USER_ID` | Required MAX user ID. No default. |
+| `MAX_BOT_TOKEN` | Обязательна. business.max.ru → «Чат-боты» → ⋮ → «Настройки». Читайте «Первая настройка». |
+| `BOT_ADMIN_USER_ID` | Обязательный MAX user ID. Значения по умолчанию нет. Читайте «Первая настройка». |
 | `BOT_ENVIRONMENT` | `production` |
 | `MAX_API_BASE_URL` | `https://platform-api2.max.ru` |
-| `MAX_API_CA_FILE` | Empty: the bundled Минцифры root. `none`: the public store only. |
-| `MAX_MEDIA_ALLOWED_HOSTS` | Empty: any HTTPS host. Example: `oneme.ru,okcdn.ru`. |
-| `MAX_UPDATE_MODE` | `webhook` in production, `polling` otherwise |
+| `MAX_API_CA_FILE` | Пусто: встроенный корневой сертификат Минцифры. `none`: только публичное хранилище. |
+| `MAX_MEDIA_ALLOWED_HOSTS` | Пусто: любой HTTPS-хост. Пример: `oneme.ru,okcdn.ru`. |
+| `MAX_UPDATE_MODE` | `webhook` в production, иначе `polling` |
 | `MAX_ALLOW_PRODUCTION_POLLING` | `false` |
-| `MAX_POLL_TIMEOUT_SECONDS` | `30` (0 to 90) |
-| `MAX_WEBHOOK_URL` | Required in webhook mode. HTTPS, no port. |
-| `MAX_WEBHOOK_SECRET` | Required in webhook mode. 32 to 256 characters of `A-Za-z0-9_-`. |
+| `MAX_POLL_TIMEOUT_SECONDS` | `30` (от 0 до 90) |
+| `MAX_WEBHOOK_URL` | Обязательна в режиме вебхука. HTTPS, без порта. |
+| `MAX_WEBHOOK_SECRET` | Обязательна в режиме вебхука. От 32 до 256 символов из `A-Za-z0-9_-`. |
 | `MAX_WEBHOOK_HOST` / `MAX_WEBHOOK_PORT` | `127.0.0.1` / `28006` |
-| `MAX_WEBHOOK_PATH` | The path of `MAX_WEBHOOK_URL` |
+| `MAX_WEBHOOK_PATH` | Путь из `MAX_WEBHOOK_URL` |
 | `MAX_WEBHOOK_SUBSCRIBE` | `true` |
-| `BOT_HTTP_API_PORT` | `28004` (the Telegram bot uses `28002`) |
-| `BOT_ADMIN_WEB_PORT` | `28005` (the Telegram bot uses `28003`) |
+| `BOT_HTTP_API_PORT` | `28004` (Telegram-бот использует `28002`) |
+| `BOT_ADMIN_WEB_PORT` | `28005` (Telegram-бот использует `28003`) |
 
-All other `BOT_*` variables have the same meaning and defaults as in the Telegram bot.
-`MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN`, and `MAX_WEBHOOK_SECRET` MUST differ.
+Все остальные переменные `BOT_*` имеют тот же смысл и те же значения по умолчанию, что у
+Telegram-бота. `MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN` и `MAX_WEBHOOK_SECRET` ДОЛЖНЫ (MUST)
+различаться.
 
-## Local run
+## Первая настройка: токен и ID администратора
+
+Бот не запускается без двух значений: `MAX_BOT_TOKEN` и `BOT_ADMIN_USER_ID`.
+
+| Значение | Секрет | Где хранить |
+|---|---|---|
+| `MAX_BOT_TOKEN` | да | Связка ключей macOS, сервис `chtozavino-max-bot-token`. На gx10 — `config/max-bot.env`, режим `0600` |
+| `BOT_ADMIN_USER_ID` | нет | `config/max-bot.env` |
+| `BOT_HTTP_API_TOKEN`, `BOT_ADMIN_WEB_PASSWORD` | да | `config/max-bot.env`. Создайте каждое значение отдельно, например `openssl rand -hex 32` |
+
+### Токен бота `MAX_BOT_TOKEN`
+
+Токен — секрет. Владелец токена управляет ботом.
+
+Не вставляйте токен в чат. Это относится и к чату с ИИ-ассистентом: чат сохраняется в
+истории. Не передавайте токен в аргументе команды: аргументы видны в истории оболочки и в
+списке процессов.
+
+Шаг 1. Откройте business.max.ru → «Чат-боты» → ⋮ → «Настройки». Скопируйте токен.
+
+Шаг 2. Сохраните токен в Связке ключей macOS. Выполните команду в своём терминале:
+
+```bash
+security add-generic-password -U -a "$USER" -s chtozavino-max-bot-token -w
+```
+
+Параметр `-w` стоит последним и не имеет значения. Поэтому `security` запрашивает токен
+скрытым вводом. Вставьте токен в ответ на запрос. Параметр `-U` заменяет старое значение.
+
+Шаг 3. Проверьте токен. Выполните команду в каталоге `max-bot`. Команда не печатает токен.
+Ответ содержит `user_id` и `username` бота: `se14697933_bot`.
+
+```bash
+( T="$(security find-generic-password -a "$USER" -s chtozavino-max-bot-token -w)"
+  printf 'header = "Authorization: %s"\n' "$T" \
+    | curl -sS --cacert src/chto_za_vino_max_bot/certs/russian_trusted_root_ca.pem -K - \
+        https://platform-api2.max.ru/me \
+    | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+print({k: d.get(k) for k in ("user_id", "username", "name", "code", "message")})
+'
+  unset T )
+```
+
+curl читает заголовок из стандартного ввода (`-K -`). Поэтому токен не попадает в аргументы
+команды. Параметр `--cacert` нужен, потому что `platform-api2.max.ru` использует сертификат
+Минцифры. Без него curl сообщает `SSL certificate problem`.
+
+Шаг 4. Запишите токен в `config/max-bot.env` на gx10. Сначала создайте этот файл из шаблона
+(раздел «First installation» в [deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md)).
+Команда читает токен из Связки ключей и передаёт его на gx10 через стандартный ввод SSH.
+Она заменяет строку `MAX_BOT_TOKEN=` и записывает токен в одинарных кавычках. Права файла
+остаются `0600`.
+
+```bash
+( T="$(security find-generic-password -a "$USER" -s chtozavino-max-bot-token -w)"
+  printf '%s\n' "$T" | ssh ashmelev@192.168.86.14 'umask 077
+F=/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env
+[ -f "$F" ] || { echo "missing: $F" >&2; exit 1; }
+IFS= read -r T
+grep -v "^MAX_BOT_TOKEN=" "$F" > "$F.new"
+printf "MAX_BOT_TOKEN=\047%s\047\n" "$T" >> "$F.new"
+cat "$F.new" > "$F" && rm -f "$F.new"
+unset T'
+  unset T )
+```
+
+Одинарные кавычки обязательны: Compose раскрывает `$NAME` в значении без кавычек. Другой
+способ: откройте файл на gx10 в редакторе (`nano`) и впишите `MAX_BOT_TOKEN='...'` вручную.
+Бот читает файл только при создании контейнера. После изменения выполните
+`docker compose up -d` в `/srv/svoe-vino-lab/prod/max-bot`.
+
+Замена токена: обновите токен на business.max.ru (значок обновления в «Настройки»).
+Затем повторите шаги 2–4 и выполните `docker compose up -d`. Старый токен перестаёт работать.
+
+### ID администратора `BOT_ADMIN_USER_ID`
+
+`BOT_ADMIN_USER_ID` — числовой MAX user ID администратора бота, например `123456789`.
+Это не ник и не номер телефона.
+
+- Команды администратора работают только для этого ID и только в личном диалоге с ботом:
+  общая статистика в `/stats`, `/users` и `/reset_limit`.
+- Значение обязательно. Значения по умолчанию нет. Без него бот не запускается.
+- Значение не секретное. Бот показывает его каждому пользователю в ответе на `/privacy`.
+- Число в адресе `https://web.max.ru/<число>` — это ID чата с ботом, а не user ID.
+
+Узнайте ID одним из двух способов.
+
+Способ 1: через API MAX до первого запуска бота.
+
+Шаг 1. Сохраните токен в Связке ключей (раздел выше).
+
+Шаг 2. Отправьте боту любое сообщение со своего аккаунта MAX.
+
+Шаг 3. Выполните команду в каталоге `max-bot`. Команда печатает только тип обновления,
+user ID и имя отправителя. Она не печатает токен, текст сообщений и адреса вложений.
+
+```bash
+( T="$(security find-generic-password -a "$USER" -s chtozavino-max-bot-token -w)"
+  printf 'header = "Authorization: %s"\n' "$T" \
+    | curl -sS --cacert src/chto_za_vino_max_bot/certs/russian_trusted_root_ca.pem -K - \
+        'https://platform-api2.max.ru/updates?limit=100&timeout=0' \
+    | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+if "updates" not in d:
+    print(d)
+for u in d.get("updates", []):
+    s = (u.get("message") or {}).get("sender") or u.get("user") or {}
+    print(u.get("update_type"), s.get("user_id"), s.get("first_name"))
+'
+  unset T )
+```
+
+Пример вывода:
+
+```text
+bot_started 123456789 Имя
+message_created 123456789 Имя
+```
+
+Число во второй колонке — ваш `BOT_ADMIN_USER_ID`. Проверьте имя в третьей колонке.
+
+Ограничения способа 1:
+
+- Бот в это время не должен работать. Long polling бота забирает те же обновления.
+- Способ не работает, когда активна подписка на вебхук.
+- API возвращает каждое обновление только один раз. Бот не получит обновления, которые
+  прочитала эта команда. После запуска бота нажмите «Начать» или отправьте `/start` снова.
+- Пустой вывод означает, что новых обновлений нет. Отправьте боту ещё одно сообщение и
+  повторите шаг 3.
+
+Способ 2: через `/privacy` после запуска бота.
+
+Шаг 1. Запустите бот с временным значением `BOT_ADMIN_USER_ID=1`.
+
+Шаг 2. Отправьте боту `/privacy`. Бот покажет ваш MAX user ID. Список пользователей в
+интерфейсе администрирования тоже показывает `user_id` под именем пользователя.
+
+Шаг 3. Запишите настоящее значение в `config/max-bot.env` и выполните `docker compose up -d`.
+
+Запишите ID без кавычек: `BOT_ADMIN_USER_ID=123456789`.
+
+## Локальный запуск
 
 ```bash
 uv sync --extra dev
-cp .env.example ../../max-bot.env   # keep secrets outside the repository
+cp .env.example ../../max-bot.env   # храните секреты вне репозитория
 set -a; . ../../max-bot.env; set +a
 uv run chto-za-vino-max-bot
 ```
 
-Other entry points: `chto-za-vino-max-admin`, `chto-za-vino-max-profile`,
+Другие точки входа: `chto-za-vino-max-admin`, `chto-za-vino-max-profile`,
 `chto-za-vino-max-probe`, `chto-za-vino-max-artifacts`, `chto-za-vino-max-delete-user`,
 `chto-za-vino-max-host-demo`.
 
-## Verification
+## Проверка
 
 ```bash
 ./scripts/verify.sh
 ```
 
-The script checks the lock file, runs Ruff, checks the shared modules against `../telegram-bot`,
-runs all tests, and runs the deterministic host demo.
+Скрипт проверяет файл блокировки зависимостей и запускает Ruff. Затем он сравнивает общие
+модули с `../telegram-bot`, запускает все тесты и детерминированное демо на хосте.
 
-## Deployment
+## Развёртывание
 
-Production uses Docker Compose on `gx10`, the same approach as the Telegram bot. The procedure
-is in [deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md).
+Production работает в Docker Compose на `gx10`, так же как Telegram-бот. Процедура описана в
+[deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md).
 
-- Build the image from a committed revision:
+- Соберите образ из закоммиченной ревизии:
   `git archive "$REV:max-bot" | docker build --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -`.
-- One image runs two containers: `max-bot` (MAX updates and the recognition API on `28004`) and
-  `max-admin` (the administration interface on the host loopback address `127.0.0.1:28005`).
-  The Compose file is [deploy/gx10/max-bot-prod.compose.yaml](deploy/gx10/max-bot-prod.compose.yaml).
-- The secrets are in `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` (mode `0600`).
-  Compose passes the file to both containers. The template is
+- Один образ запускает два контейнера: `max-bot` (обновления MAX и API распознавания на
+  `28004`) и `max-admin` (интерфейс администрирования на адресе loopback хоста
+  `127.0.0.1:28005`). Файл Compose:
+  [deploy/gx10/max-bot-prod.compose.yaml](deploy/gx10/max-bot-prod.compose.yaml).
+- Секреты хранятся в `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` (режим `0600`).
+  Compose передаёт этот файл обоим контейнерам. Шаблон:
   [deploy/gx10/max-bot.env.example](deploy/gx10/max-bot.env.example).
-- The data directory is `/srv/svoe-vino-lab/prod/max-bot/data`.
-- The bot uses long polling until gx10 gets a public HTTPS name for a webhook. In webhook mode,
-  publish the container port `8081` only through the TLS proxy on port 443.
+- Каталог данных: `/srv/svoe-vino-lab/prod/max-bot/data`.
+- Бот использует long polling, пока у gx10 нет публичного HTTPS-имени для вебхука. В режиме
+  вебхука публикуйте порт контейнера `8081` только через TLS-прокси на порту 443.
 
-## Open items for the owner
+## Открытые вопросы для владельца
 
-1. A public HTTPS name on port 443 for the webhook, or an explicit decision to use long polling.
-2. Platform requirements 2.1 and 3.1 (<https://dev.max.ru/docs/legal/requirements>): operator
-   details and an explicit acceptance of the content rules by the user.
-3. The contact `@s1mb1o` in the start and privacy texts is a Telegram username.
-4. The bot card description on business.max.ru: at most 200 characters, no 18+ content.
+1. Публичное HTTPS-имя на порту 443 для вебхука или явное решение использовать long polling.
+2. Требования платформы 2.1 и 3.1 (<https://dev.max.ru/docs/legal/requirements>): сведения
+   об операторе и явное согласие пользователя с правилами контента.
+3. Контакт `@s1mb1o` в текстах старта и конфиденциальности — это имя пользователя Telegram.
+4. Описание карточки бота на business.max.ru: не более 200 символов, без контента 18+.
 
-## License
+## Лицензия
 
-This project does not grant reuse or distribution rights. Read [LICENSE.md](LICENSE.md).
+Проект не даёт прав на повторное использование и распространение. Читайте
+[LICENSE.md](LICENSE.md).
