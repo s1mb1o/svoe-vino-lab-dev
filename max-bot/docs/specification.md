@@ -29,7 +29,9 @@ The service also collects difficult test images for recognition improvement.
 
 ## Functional requirements
 
-1. The bot MUST use a MAX webhook in production. It MAY use long polling in development and tests.
+1. The bot MUST read the update mode from `updates.mode` in `config.yaml`: `polling` or
+   `webhook`. Production MUST use long polling during the hackathon (owner decision, issue #10).
+   The webhook switch is issue #23.
 2. The bot MUST accept MAX messages with `image` attachments.
 2.1. The bot MUST accept a `file` attachment as a photo when its `filename` ends with `.jpg`,
 `.jpeg`, `.png`, `.webp`, `.heic`, or `.heif`. The suffix check MUST ignore letter case.
@@ -357,7 +359,8 @@ M11. Long polling MUST store the marker in the same transaction as the updates.
 M12. Long polling MUST refuse to start while a webhook subscription is active.
 M13. The webhook receiver MUST check `X-Max-Bot-Api-Secret` in constant time and MUST answer
      HTTP 200 only after the update is stored. It MUST answer HTTP 503 when storage fails.
-M14. Production MUST refuse long polling without `MAX_ALLOW_PRODUCTION_POLLING=true`.
+M14. Production with long polling MUST log a warning that MAX recommends a webhook. The bot
+     MUST refuse to start when `MAX_UPDATE_MODE` or `MAX_ALLOW_PRODUCTION_POLLING` is set.
 M15. The bot MUST store the text, format, and image token of each message with a callback
      keyboard. A callback MUST edit the clicked message with the complete attachment list.
 M16. When an attachment download fails, the bot MUST read the source message again and retry

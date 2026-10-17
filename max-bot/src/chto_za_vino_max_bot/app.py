@@ -2372,6 +2372,11 @@ async def run() -> None:
                 server.serve(), name=f"http-server-{index}"
             )
         stop_task = asyncio.create_task(stop.wait(), name="stop-signal")
+        if settings.environment == "production" and settings.update_mode == "polling":
+            LOG.warning(
+                "MAX recommends a webhook in production. The bot uses long polling "
+                "(updates.mode in config.yaml, issue #23)."
+            )
         LOG.info(
             "MAX bot and HTTP API started",
             extra={

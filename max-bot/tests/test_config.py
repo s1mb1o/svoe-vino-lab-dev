@@ -36,9 +36,25 @@ def endpoint_environment(monkeypatch) -> None:
     monkeypatch.setenv("BOT_ADMIN_USER_ID", "123456789")
     monkeypatch.setenv("BOT_HTTP_API_TOKEN", HTTP_API_TOKEN)
     monkeypatch.setenv("MAX_BOT_TOKEN", MAX_TOKEN)
-    # Production uses a webhook by default, so the default environment configures one.
+    # The webhook variables are set, but only updates.mode: webhook reads them.
     monkeypatch.setenv("MAX_WEBHOOK_URL", WEBHOOK_URL)
     monkeypatch.setenv("MAX_WEBHOOK_SECRET", WEBHOOK_SECRET)
+
+
+def write_update_mode(tmp_path, monkeypatch, update_mode: object | None) -> Path:
+    """Write config.yaml with another updates.mode. None removes the updates section."""
+    text = CONFIG_FILE.read_text(encoding="utf-8")
+    assert "updates:\n  mode: polling\n" in text
+    section = "" if update_mode is None else f"updates:\n  mode: {update_mode}\n"
+    path = tmp_path / "config.yaml"
+    path.write_text(text.replace("updates:\n  mode: polling\n", section), encoding="utf-8")
+    monkeypatch.setenv("BOT_CONFIG", str(path))
+    return path
+
+
+@pytest.fixture
+def webhook_mode(tmp_path, monkeypatch) -> None:
+    write_update_mode(tmp_path, monkeypatch, "webhook")
 
 
 def test_default_rate_limit_is_50() -> None:
@@ -76,7 +92,8 @@ def test_default_rate_limit_is_50() -> None:
     )
     assert settings.max_api_base_url == "https://platform-api2.max.ru"
     assert settings.max_api_ca_file == DEFAULT_CA_FILE
-    assert settings.update_mode == "webhook"
+    assert settings.update_mode == "polling"
+    assert settings.webhook is None
     assert settings.poll_timeout_seconds == 30
     assert settings.media_allowed_hosts == ()
 
@@ -418,10 +435,19 @@ def test_max_api_ca_file_must_name_an_existing_file(tmp_path, monkeypatch, name)
         Settings.from_env()
 
 
-def test_production_defaults_to_a_webhook() -> None:
+def test_production_uses_long_polling_from_config_yaml() -> None:
+    # Owner decision for the hackathon (issue #10). A webhook is issue #23.
     settings = Settings.from_env()
 
     assert settings.environment == "production"
+    assert settings.update_mode == "polling"
+    assert settings.webhook is None
+
+
+@pytest.mark.usefixtures("webhook_mode")
+def test_config_yaml_selects_a_webhook() -> None:
+    settings = Settings.from_env()
+
     assert settings.update_mode == "webhook"
     assert settings.webhook == WebhookSettings(
         url=WEBHOOK_URL,
@@ -434,9 +460,8 @@ def test_production_defaults_to_a_webhook() -> None:
 
 
 @pytest.mark.parametrize("environment", ["development", "test"])
-def test_polling_is_the_default_outside_production(monkeypatch, environment) -> None:
+def test_polling_does_not_read_the_webhook_settings(monkeypatch, environment) -> None:
     monkeypatch.setenv("BOT_ENVIRONMENT", environment)
-    # Polling mode does not read the webhook settings.
     monkeypatch.setenv("MAX_WEBHOOK_URL", "http://bot.example:8080/hook")
     monkeypatch.setenv("MAX_WEBHOOK_SECRET", "short")
 
@@ -446,9 +471,9 @@ def test_polling_is_the_default_outside_production(monkeypatch, environment) -> 
     assert settings.webhook is None
 
 
+@pytest.mark.usefixtures("webhook_mode")
 def test_development_can_use_a_webhook(monkeypatch) -> None:
     monkeypatch.setenv("BOT_ENVIRONMENT", "development")
-    monkeypatch.setenv("MAX_UPDATE_MODE", " Webhook ")
 
     settings = Settings.from_env()
 
@@ -457,54 +482,26 @@ def test_development_can_use_a_webhook(monkeypatch) -> None:
     assert settings.webhook.url == WEBHOOK_URL
 
 
-def test_production_rejects_polling_without_the_override(monkeypatch) -> None:
-    monkeypatch.setenv("MAX_UPDATE_MODE", "polling")
+def test_config_yaml_without_updates_selects_polling(tmp_path, monkeypatch) -> None:
+    write_update_mode(tmp_path, monkeypatch, None)
 
-    with pytest.raises(ValueError, match="MAX_ALLOW_PRODUCTION_POLLING=true"):
+    assert Settings.from_env().update_mode == "polling"
+
+
+@pytest.mark.parametrize("value", ["long-polling", "websocket", "Webhook", "true", "[polling]"])
+def test_update_mode_must_be_polling_or_webhook(tmp_path, monkeypatch, value) -> None:
+    write_update_mode(tmp_path, monkeypatch, value)
+
+    with pytest.raises(ConfigError, match="updates.mode MUST be polling or webhook"):
         Settings.from_env()
 
 
-@pytest.mark.parametrize("value", ["1", "true", "yes", "on", " TRUE "])
-def test_production_polling_requires_the_explicit_override(monkeypatch, value) -> None:
-    monkeypatch.setenv("MAX_UPDATE_MODE", "polling")
-    monkeypatch.setenv("MAX_ALLOW_PRODUCTION_POLLING", value)
+@pytest.mark.parametrize("name", ["MAX_UPDATE_MODE", "MAX_ALLOW_PRODUCTION_POLLING"])
+def test_removed_update_variables_stop_the_start(monkeypatch, name) -> None:
+    # A stale variable from an old environment file must not be ignored silently.
+    monkeypatch.setenv(name, "webhook")
 
-    settings = Settings.from_env()
-
-    assert settings.environment == "production"
-    assert settings.update_mode == "polling"
-    assert settings.webhook is None
-
-
-@pytest.mark.parametrize("value", ["0", "false", "no", "off"])
-def test_production_polling_override_false_keeps_the_rejection(monkeypatch, value) -> None:
-    monkeypatch.setenv("MAX_UPDATE_MODE", "polling")
-    monkeypatch.setenv("MAX_ALLOW_PRODUCTION_POLLING", value)
-
-    with pytest.raises(ValueError, match="production requires MAX_UPDATE_MODE=webhook"):
-        Settings.from_env()
-
-
-def test_production_polling_override_must_be_a_boolean(monkeypatch) -> None:
-    monkeypatch.setenv("MAX_UPDATE_MODE", "polling")
-    monkeypatch.setenv("MAX_ALLOW_PRODUCTION_POLLING", "maybe")
-
-    with pytest.raises(ValueError, match="MAX_ALLOW_PRODUCTION_POLLING must be true or false"):
-        Settings.from_env()
-
-
-def test_production_polling_override_does_not_select_polling(monkeypatch) -> None:
-    monkeypatch.setenv("MAX_ALLOW_PRODUCTION_POLLING", "true")
-
-    assert Settings.from_env().update_mode == "webhook"
-
-
-@pytest.mark.parametrize("value", ["long-polling", "websocket"])
-def test_update_mode_must_be_polling_or_webhook(monkeypatch, value) -> None:
-    monkeypatch.setenv("BOT_ENVIRONMENT", "development")
-    monkeypatch.setenv("MAX_UPDATE_MODE", value)
-
-    with pytest.raises(ValueError, match="MAX_UPDATE_MODE must be polling or webhook"):
+    with pytest.raises(ValueError, match=f"{name} is removed; set updates.mode in config.yaml"):
         Settings.from_env()
 
 
@@ -533,6 +530,7 @@ def test_poll_timeout_must_be_an_integer(monkeypatch) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 def test_webhook_listener_settings_are_configurable(monkeypatch) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_HOST", "0.0.0.0")
     monkeypatch.setenv("MAX_WEBHOOK_PORT", "8443")
@@ -549,6 +547,7 @@ def test_webhook_listener_settings_are_configurable(monkeypatch) -> None:
     )
 
 
+@pytest.mark.usefixtures("webhook_mode")
 def test_webhook_path_of_a_url_without_a_path_is_the_root(monkeypatch) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_URL", "https://bot.example")
 
@@ -558,6 +557,7 @@ def test_webhook_path_of_a_url_without_a_path_is_the_root(monkeypatch) -> None:
     assert webhook.path == "/"
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize(
     "value",
     [
@@ -577,6 +577,7 @@ def test_webhook_url_must_be_an_https_url(monkeypatch, value) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize(
     "value",
     ["https://bot.example:443/max/webhook", "https://bot.example:8443/max/webhook"],
@@ -588,6 +589,7 @@ def test_webhook_url_must_not_name_a_port(monkeypatch, value) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize(
     "value",
     [
@@ -606,6 +608,7 @@ def test_webhook_secret_must_have_32_to_256_allowed_characters(monkeypatch, valu
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize("value", ["A" * 32, "Az09_-" * 42 + "abcd"])
 def test_webhook_secret_accepts_the_boundary_lengths(monkeypatch, value) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_SECRET", value)
@@ -616,6 +619,7 @@ def test_webhook_secret_accepts_the_boundary_lengths(monkeypatch, value) -> None
     assert webhook.secret == value
 
 
+@pytest.mark.usefixtures("webhook_mode")
 def test_webhook_path_must_start_with_a_slash(monkeypatch) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_PATH", "max/webhook")
 
@@ -623,6 +627,7 @@ def test_webhook_path_must_start_with_a_slash(monkeypatch) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 def test_webhook_host_must_not_be_blank(monkeypatch) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_HOST", "   ")
 
@@ -630,6 +635,7 @@ def test_webhook_host_must_not_be_blank(monkeypatch) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize("value", ["0", "65536", "port"])
 def test_webhook_port_must_be_a_tcp_port(monkeypatch, value) -> None:
     monkeypatch.setenv("MAX_WEBHOOK_PORT", value)
@@ -638,6 +644,7 @@ def test_webhook_port_must_be_a_tcp_port(monkeypatch, value) -> None:
         Settings.from_env()
 
 
+@pytest.mark.usefixtures("webhook_mode")
 @pytest.mark.parametrize(
     ("max_token", "http_api_token", "webhook_secret"),
     [

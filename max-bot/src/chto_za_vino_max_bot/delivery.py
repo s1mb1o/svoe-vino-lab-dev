@@ -133,7 +133,7 @@ class Poller:
         if subscriptions:
             raise RuntimeError(
                 "A MAX webhook subscription is active, so long polling gets no updates. "
-                "Delete the subscription or set MAX_UPDATE_MODE=webhook."
+                "Delete the subscription or set updates.mode: webhook in config.yaml."
             )
 
     async def poll_once(self, marker: int | None) -> int | None:

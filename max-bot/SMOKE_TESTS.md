@@ -390,11 +390,12 @@
 - Confirm that TLS verification fails (curl exit code 60). The host needs the Минцифры root.
 - Start the bot and confirm that the log shows `MAX bot connected bot_user_id=...`.
 - Confirm that the log contains no bot token, webhook secret, image URL, or user name.
-- Set `MAX_UPDATE_MODE=polling` while a webhook subscription is active.
+- Keep `updates.mode: polling` in `config.yaml` while a webhook subscription is active.
 - Confirm that the bot refuses to start and names the active subscription.
-- Set `BOT_ENVIRONMENT=production` and `MAX_UPDATE_MODE=polling` without
-  `MAX_ALLOW_PRODUCTION_POLLING=true`.
-- Confirm that the bot refuses to start.
+- Start the bot with `BOT_ENVIRONMENT=production` and `updates.mode: polling`.
+- Confirm that the bot starts and the log warns that MAX recommends a webhook.
+- Set `MAX_UPDATE_MODE` in the environment.
+- Confirm that the bot refuses to start and names `updates.mode` in `config.yaml`.
 - In webhook mode, confirm that `GET /subscriptions` shows the configured HTTPS URL.
 - Send a webhook request with a wrong `X-Max-Bot-Api-Secret` header.
 - Confirm that the receiver answers HTTP 401 and stores nothing.

@@ -5,6 +5,13 @@ moderation:
   # A false value skips ShieldGemma and accepts each valid image for recognition.
   enabled: true
 
+# polling: long polling, no public address. The owner chose it for production during the
+#   hackathon (issue #10).
+# webhook: HTTPS on port 443 through a TLS proxy, as MAX recommends for production (issue #23).
+#   It needs MAX_WEBHOOK_URL and MAX_WEBHOOK_SECRET.
+updates:
+  mode: polling
+
 endpoints:
   moderation: "{env:MODERATION_ENDPOINT}"
   sam3: "{env:SAM3_ENDPOINT}"

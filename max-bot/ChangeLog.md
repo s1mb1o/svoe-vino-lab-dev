@@ -2,6 +2,12 @@
 
 ## 2026-10-17
 
+- Keep long polling in production (owner decision for the hackathon, issue #10 section 1).
+  `updates.mode` in `config.yaml` (`polling` or `webhook`) is the only source of the update
+  mode. The variables `MAX_UPDATE_MODE` and `MAX_ALLOW_PRODUCTION_POLLING` are removed; the bot
+  refuses to start when one of them is set. Production polling logs a warning that MAX
+  recommends a webhook. The webhook switch is issue #23. The README platform table, plan 01,
+  and decision 001 no longer require a production webhook. Specification FR 1, M14; rule 1.
 - A rejected album gets one reply per image (age gate, rate limit, full queue), the same as
   Telegram. All the replies quote the album message. Platform difference 1 changed. When the
   receipt owner fails to enter the queue, the next admitted image claims a new receipt. A failed

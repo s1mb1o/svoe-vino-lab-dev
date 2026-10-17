@@ -86,7 +86,7 @@ MAX — не Telegram. Бот сохраняет поведение Telegram-б�
 | Изменение клавиатуры | `edit_reply_markup` | `PUT /messages` с сохранённым текстом, токеном изображения и новой клавиатурой |
 | Меню команд администратора | Только в чате администратора | Не показывается: в MAX нет области видимости команд. Команды работают |
 | Описание бота | API `set_my_description` | Карточка бота на business.max.ru, с модерацией |
-| Обновления | Long polling | Вебхук в production, long polling в разработке |
+| Обновления | Long polling | Long polling, в том числе в production на время хакатона (`updates.mode` в `config.yaml`, #10). Вебхук — задача #23 |
 | Доверие к хосту API | Публичный УЦ | Russian Trusted Root CA (Минцифры) для `platform-api2.max.ru` |
 
 ## Заметки об API MAX
@@ -106,17 +106,21 @@ MAX — не Telegram. Бот сохраняет поведение Telegram-б�
 
 ## Доставка обновлений
 
-MAX требует вебхук для production (<https://dev.max.ru/docs-api/methods/GET/updates>).
+Режим задаёт `updates.mode` в `config.yaml`. Решение владельца на время хакатона: production
+работает через long polling (#10). MAX рекомендует вебхук для production
+(<https://dev.max.ru/docs-api/methods/GET/updates>). Переход на вебхук — задача #23.
 
-- `MAX_UPDATE_MODE=webhook` (значение по умолчанию в production): бот слушает
+- `updates.mode: polling` (значение по умолчанию, в том числе в production): `GET /updates` с
+  сохраняемым маркером. Бот не запускается, когда активна подписка на вебхук. В production бот
+  пишет в журнал предупреждение, что MAX рекомендует вебхук.
+- `updates.mode: webhook`: бот слушает
   `MAX_WEBHOOK_HOST:MAX_WEBHOOK_PORT`. TLS-прокси ДОЛЖЕН (MUST) публиковать этот адрес как
   `MAX_WEBHOOK_URL` по HTTPS на порту 443, с сертификатом доверенного УЦ или сертификатом
   Минцифры. MAX отклоняет самоподписанные сертификаты и обычный HTTP. Приёмник проверяет
   `X-Max-Bot-Api-Secret` и отвечает за миллисекунды. При старте бот подписывает URL на
   обновления.
-- `MAX_UPDATE_MODE=polling` (значение по умолчанию в разработке): `GET /updates` с
-  сохраняемым маркером. Бот не запускается, когда активна подписка на вебхук. Polling в
-  production требует `MAX_ALLOW_PRODUCTION_POLLING=true`.
+- Переменных `MAX_UPDATE_MODE` и `MAX_ALLOW_PRODUCTION_POLLING` больше нет. Если одна из них
+  задана, бот не запускается.
 
 Оба режима записывают каждое обновление в таблицу SQLite `update_inbox`, и только потом бот
 обрабатывает обновление. После сбоя бот снова обрабатывает сохранённые обновления.
@@ -151,8 +155,6 @@ MAX требует вебхук для production (<https://dev.max.ru/docs-api/
 | `MAX_API_BASE_URL` | `https://platform-api2.max.ru` |
 | `MAX_API_CA_FILE` | Пусто: встроенный корневой сертификат Минцифры. `none`: только публичное хранилище. |
 | `MAX_MEDIA_ALLOWED_HOSTS` | Пусто: любой HTTPS-хост. Пример: `oneme.ru,okcdn.ru`. |
-| `MAX_UPDATE_MODE` | `webhook` в production, иначе `polling` |
-| `MAX_ALLOW_PRODUCTION_POLLING` | `false` |
 | `MAX_POLL_TIMEOUT_SECONDS` | `30` (от 0 до 90) |
 | `MAX_WEBHOOK_URL` | Обязательна в режиме вебхука. HTTPS, без порта. |
 | `MAX_WEBHOOK_SECRET` | Обязательна в режиме вебхука. От 32 до 256 символов из `A-Za-z0-9_-`. |

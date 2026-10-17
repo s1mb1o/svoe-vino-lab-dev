@@ -84,6 +84,10 @@ artifact key `telegram_result`. A logic change in a shared module MUST be made i
 
 ## Update delivery
 
+> Superseded on 2026-10-17: `updates.mode` in `config.yaml` selects the mode. Production uses
+> long polling during the hackathon (issue #10). `MAX_UPDATE_MODE` and
+> `MAX_ALLOW_PRODUCTION_POLLING` are removed. The webhook switch is issue #23.
+
 MAX documentation requires a webhook for production. Long polling is limited in rate and in
 event retention (`docs-api/methods/GET/updates`). The bot supports both modes with
 `MAX_UPDATE_MODE`. The default is `webhook` when `BOT_ENVIRONMENT=production` and `polling`

@@ -20,8 +20,8 @@ The workspace rules are in `../../CLAUDE.md`.
 
 ## Service rules
 
-1. Use a MAX webhook in production. Use long polling only in development and tests, or with
-   the explicit `MAX_ALLOW_PRODUCTION_POLLING=true` override.
+1. Use long polling in production during the hackathon (owner decision, issue #10).
+   `updates.mode` in `config.yaml` selects `polling` or `webhook`. The webhook switch is issue #23.
 2. Use `192.168.86.14:18081` for the `llama-swap` service on `gx10`. In a container,
    `127.0.0.1` is the container itself.
 3. Use the prod matcher endpoint `http://192.168.86.14:28000/v1/match` on `gx10`.

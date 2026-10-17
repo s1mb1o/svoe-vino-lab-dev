@@ -67,6 +67,7 @@ class EndpointSettings:
     moderation: str | None
     sam3: str
     matcher: str
+    update_mode: str = "polling"
 
     @classmethod
     def from_config(
@@ -105,11 +106,16 @@ class EndpointSettings:
         # A trailing slash gets a redirect. httpx does not follow it for POST.
         if not matcher_parts.path.endswith(MATCH_PATH):
             raise ConfigError(f"endpoints.matcher MUST name the matcher endpoint {MATCH_PATH}")
+        updates = _mapping(root.get("updates", {}), "updates")
+        update_mode = updates.get("mode", "polling")
+        if update_mode not in UPDATE_MODES:
+            raise ConfigError("updates.mode MUST be polling or webhook")
         return cls(
             moderation_enabled=moderation_enabled,
             moderation=moderation,
             sam3=sam3.rstrip("/"),
             matcher=matcher,
+            update_mode=update_mode,
         )
 
 
@@ -346,20 +352,12 @@ class Settings:
             "MAX_API_BASE_URL",
             os.getenv("MAX_API_BASE_URL", DEFAULT_MAX_API_BASE_URL).strip().rstrip("/"),
         )
-        # MAX requires a webhook for production. Long polling is for development and tests.
-        default_mode = "webhook" if environment == "production" else "polling"
-        update_mode = os.getenv("MAX_UPDATE_MODE", default_mode).strip().lower()
-        if update_mode not in UPDATE_MODES:
-            raise ValueError("MAX_UPDATE_MODE must be polling or webhook")
-        if (
-            environment == "production"
-            and update_mode == "polling"
-            and not _boolean("MAX_ALLOW_PRODUCTION_POLLING", False)
-        ):
-            raise ValueError(
-                "production requires MAX_UPDATE_MODE=webhook; "
-                "set MAX_ALLOW_PRODUCTION_POLLING=true to use long polling"
-            )
+        # updates.mode in config.yaml is the only source of the update mode (issue #10).
+        # Production uses long polling during the hackathon. A webhook is issue #23.
+        for removed in ("MAX_UPDATE_MODE", "MAX_ALLOW_PRODUCTION_POLLING"):
+            if os.getenv(removed) is not None:
+                raise ValueError(f"{removed} is removed; set updates.mode in config.yaml")
+        update_mode = endpoints.update_mode
         raw_poll_timeout = os.getenv("MAX_POLL_TIMEOUT_SECONDS", "30").strip()
         try:
             poll_timeout = int(raw_poll_timeout)

@@ -40,6 +40,8 @@ Write a thin MAX API client instead of a third-party SDK: MAX publishes official
 Go and TypeScript, and the bot needs few methods.
 Use a durable SQLite inbox for both update delivery modes.
 Use a webhook in production. Keep long polling for development and tests.
+Superseded on 2026-10-17 by the owner decision of issue #10: production uses long polling during
+the hackathon, selected by `updates.mode` in `config.yaml`. The webhook switch is issue #23.
 
 ## Consequences
 

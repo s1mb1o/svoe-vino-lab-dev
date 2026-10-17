@@ -182,9 +182,10 @@ certificate of a trusted CA or a Минцифры certificate, and a TLS proxy t
 path to gx10.
 
 1. Uncomment `127.0.0.1:28006:8081` in `compose.yaml`, and point the TLS proxy at that port.
-2. In `config/max-bot.env`, set `MAX_UPDATE_MODE=webhook`, `MAX_WEBHOOK_URL`, and a separate
-   random `MAX_WEBHOOK_SECRET` (32 to 256 characters of `A-Za-z0-9_-`). Remove
-   `MAX_ALLOW_PRODUCTION_POLLING`.
+2. Set `updates.mode: webhook` in `config.yaml`. The image has `/app/config.yaml`: rebuild the
+   image, or mount another file and name it with `BOT_CONFIG`. In `config/max-bot.env`, set
+   `MAX_WEBHOOK_URL` and a separate random `MAX_WEBHOOK_SECRET` (32 to 256 characters of
+   `A-Za-z0-9_-`). The switch is issue #23.
 3. Run `docker compose up -d`. The bot subscribes the URL at startup.
 4. To go back to long polling, delete the subscription first (`DELETE /subscriptions?url=...`).
    The bot refuses to start long polling while a subscription is active.
