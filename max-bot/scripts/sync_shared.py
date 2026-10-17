@@ -43,12 +43,15 @@ SHARED_MODULES = (
 )
 
 SHARED_TESTS = (
+    "test_artifact_png.py",
     "test_assets.py",
+    "test_fingerprint_parity.py",
     "test_fingerprints.py",
     "test_host_demo.py",
     "test_matcher.py",
     "test_moderation.py",
     "test_quality.py",
+    "test_quality_performance.py",
     "test_result_card.py",
     "test_wine.py",
     "test_work_queue.py",

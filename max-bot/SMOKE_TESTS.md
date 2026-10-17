@@ -403,3 +403,11 @@
 - Confirm that the result is sent without the reply link.
 - Send five photos as five separate messages without waiting.
 - Confirm that the bot keeps two or fewer message operations per second in the dialog.
+
+## Worker threads
+
+- Run `uv run pytest -q tests/test_cpu_dispatch.py tests/test_storage_dispatch.py`.
+- Send a photo in an isolated deployment. Send `/stats` while image processing runs.
+- Confirm that the command responds while image processing runs.
+- Confirm that an unsafe photo stays under `quarantine`.
+- Stop processing during a delayed write. Confirm that the write finishes before shutdown completes.

@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import binascii
 import io
 import json
 import math
+from array import array
+from collections import Counter
 from dataclasses import dataclass
 
 import httpx
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageChops, ImageMath, ImageOps, UnidentifiedImageError
 
 PROMPTS = ("wine bottle", "label", "wine bottle label")
 SAM3_THRESHOLD = 0.35
@@ -174,23 +177,33 @@ def laplacian_variance(image: Image.Image) -> float:
     width, height = gray.size
     if width < 3 or height < 3:
         return 0.0
-    pixels = gray.load()
-    total = 0.0
-    total_squared = 0.0
-    count = 0
+    laplace = ImageMath.lambda_eval(
+        lambda values: (
+            4 * values["center"]
+            - values["left"]
+            - values["right"]
+            - values["top"]
+            - values["bottom"]
+        ),
+        center=gray.crop((1, 1, width - 1, height - 1)),
+        left=gray.crop((0, 1, width - 2, height - 1)),
+        right=gray.crop((2, 1, width, height - 1)),
+        top=gray.crop((1, 0, width - 1, height - 2)),
+        bottom=gray.crop((1, 2, width - 1, height)),
+    )
+    values = array("i", laplace.tobytes())
     step = 2 if width * height > 500_000 else 1
-    for y in range(1, height - 1, step):
-        for x in range(1, width - 1, step):
-            value = (
-                4 * pixels[x, y]
-                - pixels[x - 1, y]
-                - pixels[x + 1, y]
-                - pixels[x, y - 1]
-                - pixels[x, y + 1]
-            )
-            total += value
-            total_squared += value * value
-            count += 1
+    if step == 1:
+        histogram = Counter(values)
+    else:
+        histogram = Counter()
+        row_width = width - 2
+        for row in range(0, height - 2, step):
+            histogram.update(values[row * row_width : (row + 1) * row_width : step])
+    # The 1024-pixel bound keeps both integer sums exact in the former float sums.
+    count = sum(histogram.values())
+    total = sum(value * frequency for value, frequency in histogram.items())
+    total_squared = sum(value * value * frequency for value, frequency in histogram.items())
     mean = total / count
     return max(0.0, total_squared / count - mean * mean)
 
@@ -199,15 +212,14 @@ def glare_ratio(image: Image.Image) -> float:
     rgb = image.convert("RGB")
     if max(rgb.size) > 512:
         rgb.thumbnail((512, 512), Image.Resampling.LANCZOS)
-    pixels = list(rgb.get_flattened_data())
-    if not pixels:
+    count = rgb.width * rgb.height
+    if not count:
         return 0.0
-    clipped = sum(
-        1
-        for red, green, blue in pixels
-        if min(red, green, blue) >= 253 and max(red, green, blue) - min(red, green, blue) <= 4
-    )
-    return clipped / len(pixels)
+    red, green, blue = rgb.split()
+    minimum = ImageChops.darker(ImageChops.darker(red, green), blue)
+    mask = minimum.point(lambda value: 255 if value >= 253 else 0)
+    # With an 8-bit minimum of 253, the channel range is at most two.
+    return mask.histogram()[255] / count
 
 
 def evaluate_quality(
@@ -268,9 +280,7 @@ class QualityInspector:
 
     async def inspect(self, jpeg: bytes) -> QualityResult:
         try:
-            with Image.open(io.BytesIO(jpeg)) as source:
-                image = ImageOps.exif_transpose(source).convert("RGB")
-                image.load()
+            image = await asyncio.to_thread(self._image, jpeg)
         except (UnidentifiedImageError, OSError, ValueError) as exc:
             raise QualityUnavailable("quality image is invalid") from exc
         try:
@@ -285,13 +295,19 @@ class QualityInspector:
                 timeout=120,
             )
             response.raise_for_status()
-            segments = parse_sam3_response(
-                response.json(),
-                image.size,
-                require_masks=True,
-            )
+            return await asyncio.to_thread(self._evaluate, response, image)
         except QualityUnavailable:
             raise
         except (httpx.HTTPError, json.JSONDecodeError, TypeError, ValueError) as exc:
             raise QualityUnavailable("quality service is unavailable") from exc
+
+    @staticmethod
+    def _image(jpeg: bytes) -> Image.Image:
+        with Image.open(io.BytesIO(jpeg)) as source:
+            image = ImageOps.exif_transpose(source).convert("RGB")
+            image.load()
+        return image
+
+    def _evaluate(self, response: httpx.Response, image: Image.Image) -> QualityResult:
+        segments = parse_sam3_response(response.json(), image.size, require_masks=True)
         return evaluate_quality(image, segments, self._thresholds)

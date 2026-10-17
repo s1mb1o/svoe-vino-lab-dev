@@ -5,8 +5,8 @@ import contextlib
 import logging
 import signal
 import time
-from collections.abc import Iterator
-from contextlib import contextmanager
+from collections.abc import Callable, Iterator
+from contextlib import asynccontextmanager
 from dataclasses import dataclass, replace
 from datetime import datetime
 from html import escape
@@ -20,7 +20,7 @@ import uvicorn
 from .config import Settings
 from .data_lifecycle import purge_expired_data
 from .delivery import Poller, UpdateDispatcher, create_webhook_app
-from .fingerprints import difference_hash, perceptual_hash
+from .fingerprints import image_hashes
 from .http_api import (
     HttpQueueFull,
     HttpQueueUnavailable,
@@ -239,6 +239,34 @@ class PhotoProcessor:
         self._api = api
         self._rejection_payload: dict[str, object] | None = None
         self._rejection_token: str | None = None
+        self._persistence_lock = asyncio.Lock()
+
+    async def _persist[T](self, operation: Callable[..., T], *args, **kwargs) -> T:
+        """Serialize persistence. Finish an active write before cancellation returns."""
+        async with self._persistence_lock:
+            task = asyncio.create_task(asyncio.to_thread(operation, *args, **kwargs))
+            cancelled = False
+            while not task.done():
+                try:
+                    await asyncio.shield(task)
+                except asyncio.CancelledError:
+                    cancelled = True
+                except Exception:
+                    if not cancelled:
+                        raise
+                    break
+            if cancelled:
+                if not task.cancelled():
+                    try:
+                        task.result()
+                    except Exception:
+                        LOG.exception("Persistence failed during cancellation")
+                raise asyncio.CancelledError
+            return task.result()
+
+    def _remove_previous_safe_copies(self, request_id: str) -> None:
+        self._services.store.delete_accepted(request_id)
+        self._services.artifact_store.delete_request(request_id)
 
     async def process(self, job: PhotoJob) -> None:
         processing_started = time.monotonic()
@@ -247,7 +275,8 @@ class PhotoProcessor:
         except asyncio.CancelledError:
             LOG.info("Photo processing interrupted", extra={"request_id": job.request_id})
             if job.image_body is not None:
-                self._services.repository.update(
+                await self._persist(
+                    self._services.repository.update,
                     job.request_id,
                     status="internal_failed",
                     error_code="interrupted",
@@ -255,7 +284,8 @@ class PhotoProcessor:
             raise
         except Exception:
             LOG.exception("Unexpected photo processing failure", extra={"request_id": job.request_id})
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 status="internal_failed",
                 error_code="internal",
@@ -266,7 +296,8 @@ class PhotoProcessor:
             )
         finally:
             if job.image_body is not None:
-                self._services.repository.update(
+                await self._persist(
+                    self._services.repository.update,
                     job.request_id,
                     duration_ms=max(
                         0,
@@ -278,14 +309,15 @@ class PhotoProcessor:
 
     async def _process(self, job: PhotoJob) -> None:
         started = time.monotonic()
-        self._record_step_timing(
+        await self._record_step_timing(
             job,
             step="queue_wait",
             started_at_ms=job.received_at * 1000,
             duration_ms=max(0, int(time.time() * 1000) - job.received_at * 1000),
             outcome="ok",
         )
-        self._services.repository.update(
+        await self._persist(
+            self._services.repository.update,
             job.request_id,
             status="processing",
             error_code=None,
@@ -299,7 +331,8 @@ class PhotoProcessor:
         try:
             body = await self._read_source(job)
         except InvalidImage:
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id, status="invalid_image", error_code="invalid_size"
             )
             await self._set_terminal_status(
@@ -308,7 +341,8 @@ class PhotoProcessor:
             return
         except Exception:
             LOG.exception("MAX image download failed", extra={"request_id": job.request_id})
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id, status="download_failed", error_code="max"
             )
             await self._set_terminal_status(
@@ -317,10 +351,11 @@ class PhotoProcessor:
             return
 
         try:
-            with self._timed_step(job, "image_prepare"):
-                moderation_jpeg = make_moderation_jpeg(body)
+            async with self._timed_step(job, "image_prepare"):
+                moderation_jpeg = await asyncio.to_thread(make_moderation_jpeg, body)
         except InvalidImage:
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id, status="invalid_image", error_code="decode"
             )
             await self._set_terminal_status(
@@ -329,11 +364,12 @@ class PhotoProcessor:
             return
 
         try:
-            with self._timed_step(job, "moderation"):
+            async with self._timed_step(job, "moderation"):
                 moderation = await self._services.moderator.classify(moderation_jpeg)
         except ModerationUnavailable:
             LOG.exception("Image moderation failed", extra={"request_id": job.request_id})
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id, status="moderation_failed", error_code="upstream"
             )
             await self._set_terminal_status(
@@ -343,14 +379,15 @@ class PhotoProcessor:
             )
             return
 
-        with self._timed_step(job, "fingerprints"):
-            image_phash = perceptual_hash(body)
-            image_dhash = difference_hash(body)
-        with self._timed_step(job, "image_storage"):
-            relative_path, digest = self._services.store.save(
+        async with self._timed_step(job, "fingerprints"):
+            image_phash, image_dhash = await asyncio.to_thread(image_hashes, body)
+        async with self._timed_step(job, "image_storage"):
+            relative_path, digest = await self._persist(
+                self._services.store.save,
                 job.request_id, _storage_time(job), body, moderation.accepted
             )
-        self._services.repository.update(
+        await self._persist(
+            self._services.repository.update,
             job.request_id,
             image_bytes=len(body),
             image_sha256=digest,
@@ -366,18 +403,18 @@ class PhotoProcessor:
         if not moderation.accepted:
             # An earlier safe attempt of an admin retry left accepted and full-fidelity copies.
             try:
-                self._services.store.delete_accepted(job.request_id)
-                self._services.artifact_store.delete_request(job.request_id)
+                await self._persist(self._remove_previous_safe_copies, job.request_id)
             except Exception:
                 LOG.exception(
                     "Earlier safe copy removal failed request_id=%s",
                     job.request_id,
                 )
             try:
-                with self._timed_step(job, "artifact_censored"):
-                    self._save_artifacts(
+                async with self._timed_step(job, "artifact_censored"):
+                    await self._persist(
+                        self._save_artifacts,
                         job,
-                        [censored_artifact(moderation_jpeg)],
+                        [await asyncio.to_thread(censored_artifact, moderation_jpeg)],
                         replace=True,
                     )
             except Exception:
@@ -385,20 +422,22 @@ class PhotoProcessor:
                     "Censored artifact generation failed",
                     extra={"request_id": job.request_id},
                 )
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 status="quarantined",
                 duration_ms=int((time.monotonic() - started) * 1000),
             )
-            with self._timed_step(job, "result_delivery"):
+            async with self._timed_step(job, "result_delivery"):
                 await self._send_rejection(job)
             return
 
         try:
-            with self._timed_step(job, "artifact_base"):
-                self._save_artifacts(
+            async with self._timed_step(job, "artifact_base"):
+                await self._persist(
+                    self._save_artifacts,
                     job,
-                    base_artifacts(body, moderation_jpeg),
+                    await asyncio.to_thread(base_artifacts, body, moderation_jpeg),
                     replace=True,
                 )
         except Exception:
@@ -409,7 +448,7 @@ class PhotoProcessor:
 
         await self._set_status(job, "Проверяю качество фотографии…")
         try:
-            with self._timed_step(job, "quality"):
+            async with self._timed_step(job, "quality"):
                 quality = await self._services.quality_inspector.inspect(moderation_jpeg)
         except QualityUnavailable:
             LOG.warning(
@@ -417,13 +456,15 @@ class PhotoProcessor:
                 exc_info=True,
                 extra={"request_id": job.request_id},
             )
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 quality_acceptable=None,
                 quality_issues="check_unavailable",
             )
         else:
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 quality_acceptable=int(quality.acceptable),
                 quality_issues=",".join(quality.issues),
@@ -439,10 +480,11 @@ class PhotoProcessor:
                     ",".join(quality.issues),
                 )
             try:
-                with self._timed_step(job, "artifact_quality"):
-                    self._save_artifacts(
+                async with self._timed_step(job, "artifact_quality"):
+                    await self._persist(
+                        self._save_artifacts,
                         job,
-                        quality_artifacts(moderation_jpeg, quality),
+                        await asyncio.to_thread(quality_artifacts, moderation_jpeg, quality),
                     )
             except Exception:
                 LOG.exception(
@@ -452,11 +494,12 @@ class PhotoProcessor:
 
         await self._set_status(job, "Ищу вино в каталоге…")
         try:
-            with self._timed_step(job, "recognition"):
+            async with self._timed_step(job, "recognition"):
                 result = await self._services.matcher.recognize(body)
         except RecognitionUnavailable:
             LOG.exception("Wine recognition failed", extra={"request_id": job.request_id})
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 status="recognition_failed",
                 error_code="upstream",
@@ -469,8 +512,9 @@ class PhotoProcessor:
             )
             return
 
-        with self._timed_step(job, "candidate_storage"):
-            self._services.repository.replace_candidates(
+        async with self._timed_step(job, "candidate_storage"):
+            await self._persist(
+                self._services.repository.replace_candidates,
                 job.request_id,
                 [
                     CandidateRecord(
@@ -490,7 +534,8 @@ class PhotoProcessor:
         )
         admin_note = self._admin_confidence_note(job, result)
         if not result.candidates:
-            self._services.repository.update(
+            await self._persist(
+                self._services.repository.update,
                 job.request_id,
                 recognition_slug=None,
                 recognition_name=None,
@@ -511,7 +556,8 @@ class PhotoProcessor:
             return
 
         wine = result.top.wine
-        self._services.repository.update(
+        await self._persist(
+            self._services.repository.update,
             job.request_id,
             recognition_slug=wine.slug,
             recognition_name=wine.name,
@@ -527,7 +573,7 @@ class PhotoProcessor:
             introduction = "Пришлите еще фотографию, но скорее всего, это:"
         elif result.margin < self._services.settings.match_min_margin:
             introduction = "У меня есть пара вариантов, скорей всего это:"
-        with self._timed_step(job, "result_delivery"):
+        async with self._timed_step(job, "result_delivery"):
             await self._send_result(
                 job, wine, body, introduction=introduction, admin_note=admin_note,
             )
@@ -536,15 +582,15 @@ class PhotoProcessor:
         """Return the image bytes of the job. The job keeps no bytes while it waits."""
         max_bytes = self._services.settings.max_image_bytes
         if job.image_body is not None:
-            with self._timed_step(job, "http_input"):
+            async with self._timed_step(job, "http_input"):
                 body = job.image_body
                 if not body or len(body) > max_bytes:
                     raise InvalidImage("image size is invalid")
                 return body
         if job.local_path is not None:
             try:
-                with self._timed_step(job, "accepted_source"):
-                    body = self._services.store.read_accepted(job.local_path)
+                async with self._timed_step(job, "accepted_source"):
+                    body = await self._persist(self._services.store.read_accepted, job.local_path)
             except (OSError, ValueError):
                 LOG.warning(
                     "Accepted copy is unavailable; the image is downloaded again",
@@ -554,7 +600,7 @@ class PhotoProcessor:
                 if not body or len(body) > max_bytes:
                     raise InvalidImage("image size is invalid")
                 return body
-        with self._timed_step(job, "max_download"):
+        async with self._timed_step(job, "max_download"):
             try:
                 body = await self._download(job)
             except MediaTooLarge as exc:
@@ -587,7 +633,7 @@ class PhotoProcessor:
                 raise MediaUnavailable("the source message has no such image")
             image = matches[0]
         job.photo_url = image.url
-        self._services.repository.set_photo_url(job.request_id, image.url)
+        await self._persist(self._services.repository.set_photo_url, job.request_id, image.url)
         return await self._api.download(image.url, max_bytes=max_bytes)
 
     def _admin_confidence_note(self, job: PhotoJob, result: RecognitionResult) -> str | None:
@@ -602,8 +648,8 @@ class PhotoProcessor:
             min_margin=settings.match_min_margin,
         )
 
-    @contextmanager
-    def _timed_step(self, job: PhotoJob, step: str):
+    @asynccontextmanager
+    async def _timed_step(self, job: PhotoJob, step: str):
         started_at_ms = time.time_ns() // 1_000_000
         started = time.monotonic()
         outcome = "ok"
@@ -616,7 +662,7 @@ class PhotoProcessor:
             outcome = "failed"
             raise
         finally:
-            self._record_step_timing(
+            await self._record_step_timing(
                 job,
                 step=step,
                 started_at_ms=started_at_ms,
@@ -624,7 +670,7 @@ class PhotoProcessor:
                 outcome=outcome,
             )
 
-    def _record_step_timing(
+    async def _record_step_timing(
         self,
         job: PhotoJob,
         *,
@@ -634,7 +680,8 @@ class PhotoProcessor:
         outcome: str,
     ) -> None:
         try:
-            self._services.repository.record_step_timing(
+            await self._persist(
+                self._services.repository.record_step_timing,
                 request_id=job.request_id,
                 step=step,
                 started_at_ms=started_at_ms,
@@ -737,7 +784,8 @@ class PhotoProcessor:
                 reply_markup=keyboard,
             )
             return
-        self._remember_message(
+        await self._persist(
+            self._remember_message,
             job, message, text=CONTENT_REJECTED_TEXT, text_format=HTML, photo_token=token
         )
         await self._finish_status(job)
@@ -767,7 +815,7 @@ class PhotoProcessor:
                 LOG.warning("Catalog image unavailable", extra={"request_id": job.request_id})
         if image is None:
             try:
-                image = normalize_result_photo(submitted_body)
+                image = await asyncio.to_thread(normalize_result_photo, submitted_body)
             except CatalogImageUnavailable:
                 LOG.exception("Submitted result image is invalid", extra={"request_id": job.request_id})
 
@@ -782,8 +830,12 @@ class PhotoProcessor:
             return
 
         try:
-            with self._timed_step(job, "artifact_result"):
-                self._save_artifacts(job, [result_artifact(image)])
+            async with self._timed_step(job, "artifact_result"):
+                await self._persist(
+                    self._save_artifacts,
+                    job,
+                    [await asyncio.to_thread(result_artifact, image)],
+                )
         except Exception:
             LOG.exception(
                 "Result artifact generation failed",
@@ -814,7 +866,14 @@ class PhotoProcessor:
             )
             return
 
-        self._remember_message(job, message, text=caption, text_format=HTML, photo_token=token)
+        await self._persist(
+            self._remember_message,
+            job,
+            message,
+            text=caption,
+            text_format=HTML,
+            photo_token=token,
+        )
         await self._finish_status(job, preserve_album=True)
 
     async def _finish_status(self, job: PhotoJob, *, preserve_album: bool = False) -> None:
@@ -866,7 +925,14 @@ class PhotoProcessor:
             )
             return
         if reply_markup:
-            self._remember_message(job, message, text=text, text_format=HTML, photo_token=None)
+            await self._persist(
+                self._remember_message,
+                job,
+                message,
+                text=text,
+                text_format=HTML,
+                photo_token=None,
+            )
 
     async def _set_status(
         self,
@@ -904,7 +970,14 @@ class PhotoProcessor:
             LOG.exception("MAX status update failed", extra={"request_id": job.request_id})
             return
         if reply_markup:
-            self._remember_message(job, message, text=text, text_format=HTML, photo_token=None)
+            await self._persist(
+                self._remember_message,
+                job,
+                message,
+                text=text,
+                text_format=HTML,
+                photo_token=None,
+            )
 
 
 def _storage_time(job: PhotoJob) -> int:

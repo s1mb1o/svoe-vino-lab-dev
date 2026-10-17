@@ -2,6 +2,14 @@
 
 ## 2026-10-17
 
+- Run image CPU work and photo persistence in worker threads, the same as the Telegram bot
+  (`28bc6981`, `f6653377`). One persistence lock per processor serializes the writes; a
+  cancelled job waits for an active write. MAX-only writes also use it: sent messages, the
+  refreshed attachment URL, and the read of the accepted copy for an administration retry.
+- Synced the shared `fingerprints.py`, `quality.py`, `pipeline_artifacts.py`, and
+  `result_card.py` from `../telegram-bot`. `sync_shared.py` now also shares
+  `test_artifact_png.py`, `test_fingerprint_parity.py`, and `test_quality_performance.py`.
+  Ported `test_cpu_dispatch.py` and `test_storage_dispatch.py`.
 - Show a tentative wine card for a low-confidence match, the same as the production Telegram
   bot (`svoe-vino-lab` commit `4ce43a8f0`). A low Top-1 score gives
   «Пришлите еще фотографию, но скорее всего, это:». A low margin gives «У меня есть пара
