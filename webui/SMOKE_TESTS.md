@@ -1,3 +1,7 @@
+# 2026-10-17: Eight producer review resolution
+
+Check repeated record labels, exact linked identities, neutral unconfirmed groups, the Novy Svet and Soyuz conflict badges, and gray bottle visibility in both themes. Verify the 767/768 px Soyuz transition and the longest Novy Svet title. Verify that a gray addition has no portal link. Run both producer and Abrau browser suites.
+
 # 2026-10-17: soyuz-vino review correction
 
 Check historical brands at rank zero, the red Lac d’Azur conflict badge, package silhouettes, the alcoholic Perle can, and the 767/768 px transition.

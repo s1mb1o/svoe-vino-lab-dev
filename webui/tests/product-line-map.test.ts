@@ -149,6 +149,12 @@ describe('producer product-line graph', () => {
     expect(errors.some(error => error.startsWith('Unsafe source URL:'))).toBe(true)
   })
 
+  it('reports a missing image field without throwing on a partial JSON record', () => {
+    const broken = structuredClone(line)
+    delete (broken.products[0] as Partial<typeof broken.products[number]>).image
+    expect(validateProductLineMap(broken)).toContain(`Missing image field: ${broken.products[0]!.id}`)
+  })
+
   it('rejects image frames that cannot fit the source image', () => {
     const invalidFrames = [
       { x: -1, y: 0, width: 30, height: 100, source_width: 100, source_height: 100 },

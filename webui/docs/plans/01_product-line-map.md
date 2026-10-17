@@ -28,6 +28,8 @@ Each product MUST reference one group through `group_id`.
 The renderer MUST derive containment edges from these references.
 Each product MUST have a stable ID, name, variant, local image, style, description, source IDs, and nullable `wine_slug`.
 Each product MAY have explicit `wine_slug_aliases`.
+Each product MAY have a `catalog_card_label` to distinguish separate saved records.
+This label MUST NOT infer a vintage, size, or quality difference from a slug.
 An alias MUST refer to the same product. An alias MUST NOT merge kosher variants or distinct packages.
 Catalog availability MUST derive from `wine_slug`. Release status MUST remain separate.
 The validator MUST reject duplicate IDs, ambiguous slugs, broken references, and unsafe source or asset URLs.

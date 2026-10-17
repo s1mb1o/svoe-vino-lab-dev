@@ -19,6 +19,7 @@ export interface LineProduct {
   group_id: string
   name: string
   variant: string
+  catalog_card_label?: string
   wine_slug: string | null
   wine_slug_aliases: string[]
   image: { src: string; source_id: string; frame?: LineImageFrame } | null
@@ -129,7 +130,8 @@ export function validateProductLineMap(line: ProductLineMapData): string[] {
   for (const product of line.products) {
     if (!groups.has(product.group_id)) errors.push(`Unknown group: ${product.id}`)
     if (!product.name || !product.description || !product.style) errors.push(`Incomplete product: ${product.id}`)
-    if (product.image !== null && (!product.image.src.startsWith(`/product-line-maps/${line.producer.id}/`) || !/^[a-z0-9/.-]+\.webp$/.test(product.image.src) || product.image.src.includes('..'))) errors.push(`Unsafe image path: ${product.id}`)
+    if (product.image === undefined) errors.push(`Missing image field: ${product.id}`)
+    if (product.image != null && (!product.image.src.startsWith(`/product-line-maps/${line.producer.id}/`) || !/^[a-z0-9/.-]+\.webp$/.test(product.image.src) || product.image.src.includes('..'))) errors.push(`Unsafe image path: ${product.id}`)
     const frame = product.image?.frame
     if (frame && (![frame.x, frame.y, frame.width, frame.height, frame.source_width, frame.source_height].every(Number.isSafeInteger)
       || frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 || frame.source_width <= 0 || frame.source_height <= 0

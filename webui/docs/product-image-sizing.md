@@ -23,6 +23,7 @@ Store the rectangle and original image dimensions in the producer JSON.
 Recompute the frame when the source image changes.
 Set `SHARP_MODULE` to the installed Sharp module entry.
 Run `node scripts/measure-product-image-frames.mjs` from `webui`.
+The script MUST reject a missing alpha channel, fully opaque images, wrong source dimensions, or a frame that clips the measured alpha outline.
 The read-only script writes measured frames and source hashes to `reports/product-image-frames/frames.json`.
 Copy the measured frame into the corresponding producer JSON after review.
 The producer crosswalk retains the source-image SHA-256.
@@ -59,3 +60,17 @@ Check the rendered visible height, source aspect ratio and complete outline in C
 Check previews, nodes, desktop details and mobile popups.
 Keep gray rendering and image-error placeholders available.
 Read `docs/validation/product-image-sizing.md` for the current results.
+
+## Display derivatives
+
+Imagegen cutouts are display derivatives. They do not guarantee unchanged fine print.
+Use original photos and source records for product identity.
+Accept a display derivative only when the complete package shape, capsule color, main label layout, and main artwork match the input.
+Reject visible brand, package, color, or artwork substitutions.
+Inspect the contour on light and dark surfaces.
+Keep input, generated, and output hashes and the exact prompt in provenance.
+Do not describe a generated label as pixel-identical to its input.
+
+Apply consumer class and style to the frame once.
+Keep native image attributes on the inner image.
+Use 112 px by 70 px sizing limits when custom properties are absent.

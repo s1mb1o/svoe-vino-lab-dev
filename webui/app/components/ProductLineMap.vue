@@ -49,8 +49,9 @@ const selectedName = computed(() => {
   if (activeUnknown.value) return activeUnknown.value.name
   const product = selectedProduct.value
   if (!product) return ''
-  return product.variant && !product.name.toLocaleLowerCase('ru').includes(product.variant.toLocaleLowerCase('ru'))
+  const name = product.variant && !product.name.toLocaleLowerCase('ru').includes(product.variant.toLocaleLowerCase('ru'))
     ? `${product.name} · ${product.variant}` : product.name
+  return product.catalog_card_label ? `${name} · ${product.catalog_card_label}` : name
 })
 const selectedImage = computed(() => {
   const src = activeUnknown.value?.image || selectedProduct.value?.image?.src
@@ -456,8 +457,8 @@ defineExpose({ centerInitial })
                     <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть группу ${group.name}`" @click="toggleGroup(group, true)"><template v-for="product in groupProducts(group).slice(0, 4)" :key="product.id"><ProductLineImage v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :frame="product.image.frame" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async" /><span v-else class="plm-image-placeholder" :aria-label="`${product.name}: нет изображения`"><AppIcon name="image" /><span>Нет изображения</span></span></template><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button></template>
                     <p class="plm-group-description">{{ group.description }}</p>
                     <div v-show="expandedGroups.has(group.id)" :id="`${mapId}-products-${group.id}`" class="plm-products" role="group" :aria-label="`Вина группы ${group.name}`">
-                      <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product, $event)">
-                        <span class="plm-product-bottle"><ProductLineImage v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :frame="product.image.frame" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет карточки</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
+                      <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${product.catalog_card_label ? `, ${product.catalog_card_label}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product, $event)">
+                        <span class="plm-product-bottle"><ProductLineImage v-if="product.image && !failedImages.has(product.image.src)" :src="product.image.src" :frame="product.image.frame" :data-map-image="product.image.src" @error="imageFailed(product.image.src)" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span v-if="product.catalog_card_label" class="plm-catalog-card-label">{{ product.catalog_card_label }}</span><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет карточки</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
                       </button>
                     </div>
                   </article>
@@ -466,7 +467,7 @@ defineExpose({ centerInitial })
             </div>
           </div>
         </div>
-        <p class="plm-position-note"><AppIcon name="info" /><span>{{ line.price_positioning.disclaimer }}</span></p>
+        <p class="plm-position-note"><AppIcon name="info" /><span>{{ line.price_positioning.disclaimer }} Ступени относятся только к производителю {{ line.producer.name }}.</span></p>
       </div>
 
       <component :is="isMobile ? 'dialog' : 'aside'" :id="`${mapId}-details`" ref="detailPanel" class="plm-details" data-product-detail :data-product-dialog="isMobile || undefined" :data-selected-product="selectedProduct?.id || (activeUnknown ? 'unmatched' : '')" :class="{ 'is-compact': !isMobile && !showDetails, 'plm-mobile-dialog': isMobile }" aria-label="Выбранное вино" :aria-labelledby="isMobile && selectedName ? `${mapId}-detail-title` : undefined" @cancel.prevent.stop="closeMobileDetails()" @close.stop="mobileClosed" @click.stop="detailBackdrop" @keydown="trapMobileTab">
@@ -477,10 +478,10 @@ defineExpose({ centerInitial })
           <div class="plm-detail-content">
             <template v-if="selectedProduct">
               <div class="plm-detail-badges"><span v-if="selectedTier">{{ selectedTier.label }}</span><span v-if="releaseLabel(selectedProduct)">{{ releaseLabel(selectedProduct) }}</span><span v-for="badge in selectedProduct.badges" :key="badge">{{ badge }}</span></div>
-              <p class="plm-tier-disclaimer">Позиционирование группы — редакционный ориентир. Это не текущая цена и не оценка качества.</p>
+              <p class="plm-tier-disclaimer">Позиционирование группы — редакционный ориентир. Это не текущая цена и не оценка качества. Ступени сравнивают группы только этого производителя.</p>
               <p class="plm-detail-description">{{ selectedProduct.description }}</p>
-              <dl class="plm-facts"><div v-if="selectedGroup"><dt>Группа</dt><dd>{{ selectedGroup.name }}<p class="plm-detail-group-description">{{ selectedGroup.description }}</p></dd></div><div v-if="selectedTier"><dt>Позиционирование</dt><dd>{{ selectedTier.price_label }}</dd></div><div v-if="groupMethod(selectedGroup)"><dt>Производство в группе</dt><dd>{{ groupMethod(selectedGroup) }}</dd></div><div><dt>Категория</dt><dd>{{ selectedProduct.category }}</dd></div><div v-if="selectedProduct.grapes.length"><dt>Сорта винограда</dt><dd>{{ selectedProduct.grapes.join(', ') }}</dd></div></dl>
-              <div v-if="isUnavailable(selectedProduct)" class="plm-availability"><AppIcon name="info" /><p>Карточки на «Свое Вино» нет в снимке каталога от {{ catalogSnapshotDate }}. Это не означает, что продукт снят с производства.</p></div>
+              <dl class="plm-facts"><div v-if="selectedGroup"><dt>Группа</dt><dd>{{ selectedGroup.name }}<p class="plm-detail-group-description">{{ selectedGroup.description }}</p></dd></div><div v-if="selectedTier"><dt>Позиционирование</dt><dd>{{ selectedTier.price_label }}</dd></div><div v-if="groupMethod(selectedGroup)"><dt>Производство в группе</dt><dd>{{ groupMethod(selectedGroup) }}</dd></div><div><dt>Категория</dt><dd>{{ selectedProduct.category }}</dd></div><div v-if="selectedProduct.grapes.length"><dt>{{ selectedProduct.wine_slug ? 'Сорта винограда в каталоге' : 'Сорта винограда в источнике' }}</dt><dd>{{ selectedProduct.grapes.join(', ') }}<p v-if="selectedProduct.wine_slug" class="plm-detail-group-description">Список из снимка каталога может быть неполным.</p></dd></div></dl>
+              <div v-if="isUnavailable(selectedProduct)" class="plm-availability"><AppIcon name="info" /><p>Подтверждённая ссылка на карточку «Свое Вино» не найдена в снимке от {{ catalogSnapshotDate }}. Это не означает, что продукт снят с производства.</p></div>
             </template>
             <template v-else-if="activeUnknown"><div class="plm-availability"><AppIcon name="info" /><p>Это вино производителя {{ line.producer.name }}. Отдельной позиции на карте пока нет. Группа и ценовой уровень не определены.</p></div><p v-if="activeUnknown.description" class="plm-detail-description">{{ activeUnknown.description }}</p><dl class="plm-facts"><div v-if="activeUnknown.grapes.length"><dt>Сорта винограда</dt><dd>{{ activeUnknown.grapes.join(', ') }}</dd></div><div v-if="activeUnknown.alcohol"><dt>Алкоголь</dt><dd>{{ activeUnknown.alcohol }}</dd></div></dl></template>
           </div>
@@ -563,14 +564,15 @@ defineExpose({ centerInitial })
 .plm-product.is-selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .plm-product-bottle { --plm-image-height: 112px; --plm-image-width: 70px; display: flex; justify-content: center; align-items: flex-end; height: 112px; width: 100%; margin-bottom: 9px; }
 .plm-product-bottle>.plm-image-frame { filter: drop-shadow(0 5px 4px #32231814); }
-.plm-product-bottle img { width: auto; height: 112px; max-width: 70px; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 4px #32231814); }
+.plm-product-bottle > img { width: auto; height: 112px; max-width: 70px; object-fit: contain; object-position: bottom; filter: drop-shadow(0 5px 4px #32231814); }
 .plm-product strong { font-size: 12px; line-height: 1.35; font-weight: 600; overflow-wrap: anywhere; }
+.plm-catalog-card-label { font-size: 9px; line-height: 1.4; color: var(--muted); }
 .plm-product-style { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.4; }
 .plm-current-marker { margin: -4px 0 6px; padding: 4px 6px; border-radius: 5px; background: var(--accent); color: var(--paper); font-size: 7px; font-weight: 700; letter-spacing: .06em; }
 .plm-selected-marker, .plm-unavailable-marker { display: block; margin-top: auto; padding-top: 7px; color: var(--accent); font-size: 8px; line-height: 1.3; }
 .plm-product.is-unavailable { background: var(--plm-muted-bg); color: var(--plm-muted-ink); }
-.plm-product.is-unavailable .plm-product-style { color: var(--plm-muted-ink); }
-.plm-product.is-unavailable img, .plm-product.is-unavailable .plm-image-frame, img.is-unavailable, .plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
+.plm-product.is-unavailable .plm-product-style, .plm-product.is-unavailable .plm-catalog-card-label { color: var(--plm-muted-ink); }
+.plm-product.is-unavailable .plm-product-bottle > img, .plm-product.is-unavailable .plm-product-bottle > .plm-image-frame, img.is-unavailable, .plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
 .plm-unavailable-marker { color: var(--plm-muted-ink); }
 .plm-position-note { display: flex; gap: 7px; margin: 11px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .plm-position-note>.icon { width: 14px; height: 14px; margin-top: 1px; }
@@ -581,7 +583,7 @@ defineExpose({ centerInitial })
 .plm-tier-disclaimer { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 10px 0; }
 .plm-detail-image { --plm-image-height: 176px; --plm-image-width: 120px; display: flex; justify-content: center; align-items: center; height: 190px; margin: -4px 0 14px; background: radial-gradient(ellipse at center bottom, var(--cream), transparent 65%); }
 .plm-detail-image>.plm-image-frame { filter: drop-shadow(0 8px 7px #32231818); }
-.plm-detail-image img { width: auto; height: 176px; max-width: 120px; object-fit: contain; filter: drop-shadow(0 8px 7px #32231818); }
+.plm-detail-image > img { width: auto; height: 176px; max-width: 120px; object-fit: contain; filter: drop-shadow(0 8px 7px #32231818); }
 .plm-detail-image img.is-unavailable, .plm-detail-image>.plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
 .plm-detail-heading h3 { margin: 7px 0; font: 500 25px/1.2 'Playfair Display', Georgia, serif; overflow-wrap: anywhere; }
 .plm-detail-heading h3:focus { outline: none; }
@@ -612,7 +614,6 @@ defineExpose({ centerInitial })
 .plm-empty-selection>p:not(.plm-kicker) { color: var(--muted); font-size: 12px; line-height: 1.75; }
 .plm-empty-selection>span { display: block; padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; line-height: 1.7; }
 :global(:root[data-theme='dark'] .plm) { --muted: #b0a396; --plm-grid: #d6b98b12; --plm-band: #6b51322b; --plm-muted-bg: #343230; --plm-muted-ink: #b1aca5; --plm-shadow: #00000020; }
-:global(:root[data-theme='dark'] .plm-product.is-unavailable img), :global(:root[data-theme='dark'] .plm img.is-unavailable) { filter: grayscale(1) opacity(.65); }
 @media (max-width: 1100px) { .plm-workspace { grid-template-columns: minmax(0, 1fr) 258px; gap: 14px; } .plm-details { padding: 16px; max-height: none; overflow: visible; } .plm-detail-content { overflow: visible; } .plm-keyboard-help { display: none; } .plm-controls { gap: 0; } .plm-controls button { width: 36px; } .plm-zoom { width: 32px; } }
 @media (max-width: 767px) {
   .plm { padding-top: 15px; }
@@ -637,7 +638,7 @@ defineExpose({ centerInitial })
   aside.plm-details { display: none; }
   .plm-detail-summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
   .plm-detail-image { --plm-image-height: 108px; --plm-image-width: 68px; height: 112px; margin: 0; }
-  .plm-detail-image img { height: 108px; max-width: 68px; }
+  .plm-detail-image > img { height: 108px; max-width: 68px; }
   .plm-detail-heading h3 { font-size: 23px; margin: 6px 0; }
   .plm-detail-style { font-size: 12px; }
   .plm-detail-heading .plm-kicker { font-size: 9px; }

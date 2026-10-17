@@ -1,3 +1,7 @@
+# 2026-10-17: Eight producer review resolution
+
+Complete the owner-authorized Claude Opus 5.5 Max review. Correct eight producer maps in separate commits. Fix image attribute forwarding and double gray filters. Add neutral record labels and default CI attribution. Pass 276 full-snapshot tests, type checks, the build, 81 producer cases per engine, and both Abrau suites.
+
 # 2026-10-17: soyuz-vino review correction
 
 Use snapshot-only evidence for historical brands. Remove unsupported relative ranks. Flag the red-wine and white-grape contradiction.

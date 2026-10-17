@@ -44,7 +44,8 @@ Update GitHub issue 2 with the completion evidence.
 
 ## External review
 
-The owner previously requested Claude Opus 5.5 Max.
-Automatic approval review rejected the external transfer of the private review packet.
-The prepared packet remains local. The agent requested explicit owner approval.
-No external review has occurred for this extension.
+The owner approved the exact prepared packet on 2026-10-17.
+Claude Opus 5.5 with effort max completed the review.
+Confirmed findings were corrected and verified locally.
+Read [the review resolution](../reviews/2026-10-17-eight-producer-maps-resolution.md).
+The revised eight maps have 81 groups. Product and catalog coverage counts remain unchanged.

@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-17",
+  "reviewer": "Claude Opus 5.5",
+  "canonical_model": "claude-opus-5-5",
+  "effort": "max",
+  "packet_sha256": "f6aa251ff22684e360e4f9867fcbb3f71f2a4850894a374e08cb0362b46a0051",
+  "packet_base_commit": "49349ccf",
+  "response_sha256": "a980987038b740025010f474abecda9247a9c2bb57d7f0835f21ec24c53dbf80",
+  "result_sha256": "f5adeffd8dbbd3e2122896361cd2e97a1bdac71d2ec4f954aea04d182fe45dcb",
+  "duration_ms": 2322082,
+  "tool_access": false,
+  "image_pixels_in_packet": false,
+  "followup_external_review": false,
+  "producer_fix_commits": [
+    {
+      "id": "novy-svet",
+      "commit": "3c145580",
+      "title": "remove unsupported Novy Svet premium placements"
+    },
+    {
+      "id": "agora",
+      "commit": "7f6a9e75",
+      "title": "qualify Agora methods and range evidence"
+    },
+    {
+      "id": "belbek",
+      "commit": "58d01f04",
+      "title": "clarify Belbek blends and unverified reserve match"
+    },
+    {
+      "id": "sober-bash",
+      "commit": "b61ad647",
+      "title": "document Sober Bash group membership evidence"
+    },
+    {
+      "id": "esse",
+      "commit": "039333de",
+      "title": "resolve ESSE collections from original labels"
+    },
+    {
+      "id": "chateau-pinot",
+      "commit": "86fc87e5",
+      "title": "separate verified Chateau Pinot collections"
+    },
+    {
+      "id": "valery-zakharyin",
+      "commit": "84fce9d7",
+      "title": "source Zakharyin reserve group explicitly"
+    },
+    {
+      "id": "soyuz-vino",
+      "commit": "4fc73700",
+      "title": "leave unsourced Soyuz-Vino brands unranked"
+    }
+  ],
+  "unit_tests": 276,
+  "unit_skipped": 0,
+  "typecheck": "passed",
+  "production_build": "passed",
+  "producer_browser_cases_per_engine": 81,
+  "producer_browsers": {
+    "chromium": "passed",
+    "webkit": "passed"
+  },
+  "abrau_browsers": {
+    "chromium": "passed",
+    "webkit": "passed"
+  },
+  "images_checked": 1046,
+  "snapshot_image_inputs_checked": 370,
+  "imagegen_records_checked": 67
+}

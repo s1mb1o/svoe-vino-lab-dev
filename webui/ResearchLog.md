@@ -1,3 +1,7 @@
+# 2026-10-17: Eight producer review resolution
+
+The external review identified evidence gaps and unsafe group-level generalizations. Original-label checks corrected four ESSE placements and separated uncertain historical Chateau Pinot blends. Some AGORA concerns were disproved by exact official pages. Read docs/reviews/2026-10-17-eight-producer-maps-resolution.md for every disposition and verification limit.
+
 # 2026-10-17: soyuz-vino review correction
 
 The current catalog does not establish the historical wine collections or their price ranks. Current Lavetti ciders do not identify older wine records.

@@ -56,6 +56,9 @@ Keep one JSON file per producer in `shared/data/product-line-maps/`.
 Register each JSON through an explicit import in `shared/data/product-line-maps/index.ts`.
 Do not use `import.meta.glob` in this shared module. Nitro does not transform it in the server build.
 Keep each producer's independent catalog extract, crosswalk, and source provenance in `docs/product-line-maps/`.
+Record exact source URLs, catalog sections, retrieval dates, and source hashes for reviewed maps.
+Record the membership basis for each crosswalk entry.
+Snapshot-only groups without a confirmed price position MUST use rank 0.
 Run `npm run test:producer-maps` for new producers in addition to the Abrau regression suite.
 A null or failed image MUST use the labeled placeholder. Image availability MUST NOT change catalog link availability.
 Use `group_id` as the authoritative containment relation.
@@ -90,3 +93,6 @@ Recompute frame geometry when an image asset changes. Keep the original image di
 Visual checks MUST account for the clipped image-frame bounds. Do not wait on hidden lazy source images in WebKit.
 
 Wait for `document.fonts.ready` before measuring a map centering target. A new group can wrap after the web font loads and move the selected product away from the center. Keep the delayed-font centering regression in `test:line-map`.
+
+Apply image consumer class and style once to the frame. Keep native attributes on the inner image.
+Run the pixel/frame checker after asset or frame changes. It checks actual dimensions and alpha containment.

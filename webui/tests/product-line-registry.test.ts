@@ -32,6 +32,9 @@ interface AssetEntry { product_id: string; asset_sha256: string | null; absence_
 interface CatalogEntry extends AssetEntry { wine_slug: string; group_id: string; catalog_producer: string }
 interface CatalogCrosswalk { producer_id: string; catalog_snapshot: string; catalog_producer: string; entries: CatalogEntry[]; official_additions: AssetEntry[] }
 
+const projectionBytes = readFileSync(new URL('../docs/validation/catalog-producer-index.json', import.meta.url))
+const producerProjection: { source_sha256: string; records: { slug: string; producer: string }[] } = JSON.parse(projectionBytes.toString('utf8'))
+
 const sha256 = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
 const bySlug = (a: CatalogRecord, b: CatalogRecord) => a.slug.localeCompare(b.slug, 'en')
 // The full snapshot is optional in CI. When supplied, verify its exact bytes and rows.
@@ -51,6 +54,9 @@ describe('producer map registry', () => {
 
   it('registers every producer JSON and rejects cross-producer ambiguity', () => {
     const files = readdirSync(new URL('../shared/data/product-line-maps/', import.meta.url)).filter(file => file.endsWith('.json'))
+    expect(sha256(projectionBytes)).toBe('8df686238a9f7d24a5e8bc7f1f4adc93ac6db6d0ba57ef0fa59d002db2c5bae8')
+    expect(producerProjection.source_sha256).toBe(snapshotSha256)
+    expect(producerProjection.records).toHaveLength(2103)
     expect(PRODUCT_LINE_MAPS.map(line => `${line.producer.id}.json`).sort()).toEqual(files.sort())
     expect(validateProductLineMaps(PRODUCT_LINE_MAPS)).toEqual([])
     const duplicate = structuredClone(PRODUCT_LINE_MAPS[0]!)
@@ -67,14 +73,15 @@ describe('producer map registry', () => {
 
   it.skipIf(!snapshotBytes)('verifies the full catalog snapshot checksum', () => {
     expect(sha256(snapshotBytes!)).toBe(snapshotSha256)
+    expect(producerProjection.records).toEqual(snapshotRecords.map(({ slug, producer }) => ({ slug, producer })))
   })
 
-  it.skipIf(!snapshotBytes)('does not attribute another snapshot producer through a slug or name fallback', () => {
+  it('does not attribute another snapshot producer through a slug or name fallback', () => {
     const expectedByProducer = new Map(PRODUCT_LINE_MAPS.map(line => [
       line.producer.id === 'abrau-durso' ? 'Абрау-Дюрсо' : expectedCatalog[line.producer.id]!.producer,
       line.producer.id,
     ]))
-    const mismatches = snapshotRecords.flatMap(record => {
+    const mismatches = producerProjection.records.flatMap(record => {
       const resolution = resolveProductLine(record)
       const actual = 'line' in resolution ? resolution.line.producer.id : undefined
       const expected = expectedByProducer.get(record.producer)
@@ -156,6 +163,24 @@ describe('producer map registry', () => {
         // A display-name alias can select zero snapshot rows and falsely prove absence.
         expect(entry.absence_check.producer, entry.product_id).toBe(expectedCatalog[line.producer.id]!.producer)
         expect(entry.absence_check.snapshot, entry.product_id).toBe(baseline.catalog_snapshot)
+      }
+      if (['soyuz-vino', 'esse', 'chateau-pinot', 'valery-zakharyin', 'novy-svet', 'belbek', 'sober-bash', 'agora'].includes(line.producer.id)) {
+        const evidence = JSON.parse(readFileSync(new URL(`../docs/product-line-maps/${line.producer.id}/source-evidence.json`, import.meta.url), 'utf8'))
+        const sourceIds = new Set(line.sources.map(source => source.id))
+        for (const entry of [...crosswalk.entries, ...crosswalk.official_additions]) {
+          const basis = (entry as AssetEntry & { group_basis: { evidence: string; source_ids: string[] } }).group_basis
+          expect(basis.evidence.length, entry.product_id).toBeGreaterThan(20)
+          expect(basis.source_ids.every(id => sourceIds.has(id)), entry.product_id).toBe(true)
+        }
+        expect(evidence.sources.map((source: { source_id: string }) => source.source_id).sort()).toEqual([...sourceIds].filter(id => id !== 'svoe-vino-2026-09-17').sort())
+        for (const source of evidence.sources) {
+          expect(source.sha256).toMatch(/^[a-f0-9]{64}$/)
+          expect(source.retrieved_at).toMatch(/^2026-10-1[67]/)
+        }
+        for (const group of line.groups.filter(group => evidence.snapshot_only_groups.includes(group.id))) {
+          expect(group.source_ids).toEqual(['svoe-vino-2026-09-17'])
+          expect(line.tiers.find(tier => tier.id === group.tier_id)?.rank).toBe(0)
+        }
       }
       for (const entry of crosswalk.entries) {
         expect(entry.catalog_producer).toBe(expectedCatalog[line.producer.id]!.producer)

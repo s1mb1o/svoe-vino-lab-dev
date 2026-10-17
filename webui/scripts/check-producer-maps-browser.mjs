@@ -92,10 +92,14 @@ async function imageFailureBeforeHydration() {
 
 try {
   for (const [lineIndex, line] of producerMaps.entries()) {
-    const initial = line.products.find(product => product.wine_slug)
+    const initial = line.producer.id === 'novy-svet'
+      ? line.products.filter(product => product.wine_slug).sort((a, b) => b.name.length - a.name.length)[0]
+      : line.products.find(product => product.wine_slug)
     const gray = line.products.find(product => product.wine_slug === null)
     assert(initial && gray, `${line.producer.id}: linked and unlinked evidence required`)
-    for (const [width, theme] of [[1440, 'light'], [1440, 'dark'], [390, 'light'], [320, 'dark']]) {
+    const viewports = [[1440, 'light'], [1440, 'dark'], [390, 'light'], [320, 'dark']]
+    if (line.producer.id === 'soyuz-vino') viewports.push([767, 'light'], [768, 'dark'])
+    for (const [width, theme] of viewports) {
       const mobile = width < 768
       const label = `${line.producer.id}-${width}-${theme}`
       activeCase = label
@@ -118,6 +122,9 @@ try {
         await page.getByRole('button', { name: 'О выбранном вине', exact: true }).click()
         assert.equal(await details.getAttribute('open'), '')
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${initial.wine_slug}`)
+        await assertLayout(page, `${label}-initial-popup`)
+        const bounds = await details.boundingBox()
+        assert(bounds && bounds.x >= 0 && bounds.y >= 0 && bounds.width <= width && bounds.y + bounds.height <= 845, `${label}: popup exceeds viewport`)
         await details.getByRole('button', { name: 'Вернуться к карте', exact: true }).click()
         assert.equal(await details.getAttribute('open'), null)
         assert.deepEqual(await viewportState(page), before, `${label}: return changed map position`)
@@ -125,6 +132,7 @@ try {
         assert.equal(await details.evaluate(element => element.tagName), 'ASIDE')
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${initial.wine_slug}`)
       }
+      await assertLayout(page, `${label}-initial`)
       await openProduct(page, gray)
       assert(await page.locator(`[data-product-id="${gray.id}"]`).evaluate(element => element.classList.contains('is-unavailable')))
       assert.equal(await details.locator('.plm-portal-link').count(), 0)
@@ -135,6 +143,14 @@ try {
       assert.equal(await page.locator(`[data-product-id="${gray.id}"] .plm-unavailable-marker`).innerText(), 'Нет карточки')
       const methodFact = details.locator('.plm-facts > div').filter({ has: page.locator('dt', { hasText: 'Производство в группе' }) })
       assert.equal(await methodFact.count(), /^(?:Метод )?не указан/i.test(grayGroup.method.trim()) ? 0 : 1)
+      if (gray.image?.frame) {
+        const frame = details.locator('.plm-detail-image > [data-image-frame]')
+        assert(await frame.evaluate(element => element.classList.contains('is-unavailable')), `${label}: gray frame class missing`)
+        assert.equal(await frame.locator('img').evaluate(image => getComputedStyle(image).filter), 'none', `${label}: gray filter applied twice`)
+        assert.equal(await page.locator(`[data-product-id="${gray.id}"] [data-image-frame] img`).evaluate(image => getComputedStyle(image).filter), 'none', `${label}: tile filter applied twice`)
+        assert.equal(await frame.locator('img').getAttribute('class'), null, `${label}: consumer class leaked to the image`)
+        assert(await frame.evaluate(element => element.getBoundingClientRect().height > 0), `${label}: empty frame`)
+      }
       if (!gray.image) assert.equal(await details.locator('.plm-image-placeholder').innerText(), 'Нет изображения')
       if (mobile) assert.equal(await details.getAttribute('open'), '')
       await assertLayout(page, label)
@@ -147,7 +163,7 @@ try {
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${missingImage.wine_slug}`)
         if (mobile) await page.keyboard.press('Escape')
       }
-      if (['fanagoria', 'kuban-vino'].includes(line.producer.id) && ((width === 1440 && theme === 'light') || (width === 320 && theme === 'dark'))) {
+      if (['fanagoria', 'kuban-vino', 'soyuz-vino'].includes(line.producer.id) && ((width === 1440 && theme === 'light') || (width === 320 && theme === 'dark'))) {
         await page.getByRole('button', { name: 'Открыть все', exact: true }).click()
         await page.waitForFunction(count => {
           const groups = [...document.querySelectorAll('[data-group-id]')]
