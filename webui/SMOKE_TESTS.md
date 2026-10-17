@@ -1,3 +1,7 @@
+# 2026-10-17: belbek review correction
+
+Check the rose blend descriptions and the unresolved card. Keep the Reserve addition selectable with no portal link.
+
 # 2026-10-17: agora review correction
 
 Check BLUSH MIRAGE, historical Yachting ageing, CUVEE source wording, and VINTAGE without claims about other series.

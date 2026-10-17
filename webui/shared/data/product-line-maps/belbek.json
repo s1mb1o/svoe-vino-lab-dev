@@ -21,53 +21,38 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Бельбек: официальные коллекции",
-      "url": "https://belbekwine.com/"
-    },
-    {
       "id": "official-reserve",
-      "label": "Бельбек: Резерв и Баррик",
+      "label": "Бельбек: официальный источник · Красные вина",
       "url": "https://belbekwine.com/red-wines/"
     },
     {
       "id": "official-red",
-      "label": "Бельбек: Красные сортовые и купажи",
+      "label": "Бельбек: официальный источник · Красные вина",
       "url": "https://belbekwine.com/red-wines/"
     },
     {
       "id": "official-white",
-      "label": "Бельбек: Белые сортовые",
+      "label": "Бельбек: официальный источник · Белые вина",
       "url": "https://belbekwine.com/white-wines/"
     },
     {
       "id": "official-rose",
-      "label": "Бельбек: Розовые вина",
+      "label": "Бельбек: официальный источник · Розовые вина",
       "url": "https://belbekwine.com/rose-wines/"
     },
     {
       "id": "official-orange",
-      "label": "Бельбек: Мускат Оранж",
+      "label": "Бельбек: официальный источник · Оранжевые вина",
       "url": "https://belbekwine.com/orange-wines/"
     },
     {
       "id": "official-sweet",
-      "label": "Бельбек: Фиолент и Поздний сбор",
+      "label": "Бельбек: официальный источник · Белые вина",
       "url": "https://belbekwine.com/white-wines/"
     },
     {
-      "id": "official-zakat",
-      "label": "Бельбек: Закат",
-      "url": "https://belbekwine.com/red-wines/"
-    },
-    {
-      "id": "official-unresolved",
-      "label": "Бельбек: Карточка с противоречием",
-      "url": "https://belbekwine.com/"
-    },
-    {
-      "id": "official-official-cabernet-reserve",
-      "label": "Официальная карточка: Каберне Совиньон Reserve",
+      "id": "official-product-cabernet-reserve",
+      "label": "Бельбек: официальный источник · Красные вина",
       "url": "https://belbekwine.com/red-wines/"
     }
   ],
@@ -84,7 +69,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
-        "official-reserve"
+        "official-reserve",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -95,6 +81,7 @@
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
         "official-red",
+        "svoe-vino-2026-09-17",
         "official-white"
       ]
     },
@@ -106,10 +93,9 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-rose",
+        "svoe-vino-2026-09-17",
         "official-orange",
-        "official-sweet",
-        "official-zakat",
-        "official-unresolved"
+        "official-sweet"
       ]
     }
   ],
@@ -152,7 +138,7 @@
       "name": "Розовые вина",
       "tier_id": "tier-0",
       "method": "Тихие розовые вина",
-      "description": "Розе из Пино Нуар и Сиры. Отдельный стиль без заданного соотношения цены с красными и белыми.",
+      "description": "Розовые вина с разными купажами, включая Каберне Совиньон, Пино Нуар и Сиру. Точный состав сохраняется в каждой карточке. Соотношение цены с красными и белыми не задано.",
       "source_ids": [
         "official-rose",
         "svoe-vino-2026-09-17"
@@ -187,7 +173,6 @@
       "method": "Купаж Мерло и Сиры",
       "description": "Отдельный купаж из снимка каталога. Ценовое позиционирование относительно основных коллекций не подтверждено.",
       "source_ids": [
-        "official-zakat",
         "svoe-vino-2026-09-17"
       ]
     },
@@ -198,7 +183,6 @@
       "method": "Метод не указан",
       "description": "Карточка «Белое сухое» содержит красный цвет и Каберне Совиньон. Сохраняем исходную запись и фотографию без назначения сорта или линейки.",
       "source_ids": [
-        "official-unresolved",
         "svoe-vino-2026-09-17"
       ]
     }
@@ -733,8 +717,7 @@
       ],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-unresolved"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1492,8 +1475,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-zakat"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1505,7 +1487,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/belbek/official-cabernet-reserve.webp",
-        "source_id": "official-official-cabernet-reserve",
+        "source_id": "official-product-cabernet-reserve",
         "frame": {
           "x": 4,
           "y": 7,
@@ -1525,7 +1507,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-cabernet-reserve",
+        "official-product-cabernet-reserve",
         "official-reserve"
       ]
     }

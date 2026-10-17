@@ -1,0 +1,75 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://belbekwine.com/red-wines/",
+      "retrieved_at": "2026-10-17T20:26:37.858647+00:00",
+      "sha256": "7a3f254029d69218b79fd401b66d432e786c5bf9e074f98e59e63ff6f436b01d",
+      "final_url": "https://belbekwine.com/red-wines/",
+      "source_id": "official-reserve",
+      "section": null,
+      "basis": "The red-wine page separates Cabernet Sauvignon Reserve from ordinary Cabernet. White reserve and barrique identities also come from exact snapshot names."
+    },
+    {
+      "url": "https://belbekwine.com/red-wines/",
+      "retrieved_at": "2026-10-17T20:26:37.858647+00:00",
+      "sha256": "7a3f254029d69218b79fd401b66d432e786c5bf9e074f98e59e63ff6f436b01d",
+      "final_url": "https://belbekwine.com/red-wines/",
+      "source_id": "official-red",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://belbekwine.com/white-wines/",
+      "retrieved_at": "2026-10-17T20:26:39.286264+00:00",
+      "sha256": "9ea4c49136abaeb7919928b568bf9c66d1453be724d35438135f7e7d1c489287",
+      "final_url": "https://belbekwine.com/white-wines/",
+      "source_id": "official-white",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://belbekwine.com/rose-wines/",
+      "retrieved_at": "2026-10-17T20:26:37.858681+00:00",
+      "sha256": "328cd74a0f3628854f93dea638ba83f32344f548d0bfe08102920c8be2fe0f10",
+      "final_url": "https://belbekwine.com/rose-wines/",
+      "source_id": "official-rose",
+      "section": null,
+      "basis": "The group contains different rose blends. Preserve each snapshot grape field. Do not assign one blend to the group."
+    },
+    {
+      "url": "https://belbekwine.com/orange-wines/",
+      "retrieved_at": "2026-10-17T20:26:37.858601+00:00",
+      "sha256": "e049f1d82698b3c37cca64bef61a0d78b1044a3984103c3a6c7e031e46234734",
+      "final_url": "https://belbekwine.com/orange-wines/",
+      "source_id": "official-orange",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://belbekwine.com/white-wines/",
+      "retrieved_at": "2026-10-17T20:26:39.286264+00:00",
+      "sha256": "9ea4c49136abaeb7919928b568bf9c66d1453be724d35438135f7e7d1c489287",
+      "final_url": "https://belbekwine.com/white-wines/",
+      "source_id": "official-sweet",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://belbekwine.com/red-wines/",
+      "retrieved_at": "2026-10-17T20:26:37.858647+00:00",
+      "sha256": "7a3f254029d69218b79fd401b66d432e786c5bf9e074f98e59e63ff6f436b01d",
+      "final_url": "https://belbekwine.com/red-wines/",
+      "source_id": "official-product-cabernet-reserve",
+      "section": null,
+      "basis": "The red-wine page separates Cabernet Sauvignon Reserve from ordinary Cabernet. White reserve and barrique identities also come from exact snapshot names."
+    }
+  ],
+  "snapshot_only_groups": [
+    "unresolved",
+    "zakat"
+  ],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

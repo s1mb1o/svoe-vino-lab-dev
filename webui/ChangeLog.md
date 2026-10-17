@@ -1,3 +1,7 @@
+# 2026-10-17: belbek review correction
+
+Describe the different rose blends. Record the possible Reserve counterpart without creating an unverified catalog link.
+
 # 2026-10-17: agora review correction
 
 Correct BLUSH MIRAGE effervescence. Scope oak ageing to historical card evidence. Cite exact official range pages.

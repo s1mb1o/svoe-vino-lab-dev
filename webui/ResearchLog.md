@@ -1,3 +1,7 @@
+# 2026-10-17: belbek review correction
+
+The contradictory Белое сухое card can be a Reserve counterpart. Its conflicting fields do not establish exact equivalence.
+
 # 2026-10-17: agora review correction
 
 The official range index supports CUVEE premium wording and the current 12–18 month Reserve Yachting range. Historical cards only establish 12 months or more.
