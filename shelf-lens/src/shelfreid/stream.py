@@ -19,6 +19,7 @@ For each frame:
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from time import perf_counter
 
@@ -183,8 +184,14 @@ class StreamConfig:
     # of one frame two bottles apart, 67 s, while the bottles of this pass stand in
     # place). A single cell would leave the twins: at 67 s it gave 32, 34, 36, 40 for 32,
     # 34, 36, 38 (36 and 38 are both Fiore). The boxes that lose their bottles are left
-    # free, and the free boxes take the released bottles by place. With `label_fix` off
-    # the check only logs.
+    # free, and the free boxes take the released bottles by place. Two guards, from a row
+    # of six Abrau-Durso 1870 at 20.7 s of 115301, which the check moved two bottles off
+    # while the tracks held it right (a box with no id named 121, a label of 1870, that
+    # another box held): a bottle that two boxes of the row name is a twin, and neither
+    # box is an anchor; a box whose label confirms its bottle keeps it (121, 110 votes).
+    # (A third, no row off by boxes with no id alone, also refused the right names of
+    # the upper row of the first rack at 39.1 s of 115611.) With `label_fix` off the
+    # check only logs.
     label_views: int = 3
     label_gap: int = 5
     label_size: int = 200
@@ -1007,10 +1014,13 @@ class ShelfTracker:
                 outcome))
 
         for row in self._rows_of(boxes):
+            named = Counter(says[i] for i in row if says.get(i) is not None)
+            confirmed = {i for i in row if says.get(i) is not None and matched.get(i) == says[i]}
+            kept = {matched[i] for i in confirmed}
             anchors = {}
             for i in row:
                 k, held = says.get(i), matched.get(i)
-                if k is None or (held is not None and held != k and (
+                if k is None or named[k] > 1 or (held is not None and held != k and (
                         not self.bottles[held].label or self._twins(held, k))):
                     continue
                 anchors[i] = k
@@ -1039,15 +1049,18 @@ class ShelfTracker:
             shift = np.median([shifts[i] for i in group], axis=0)
             target = {i: anchors[i] for i in group}
             keyframes = {self.bottles[k].anchor for k in target.values()}
-            others = [i for i in row if i not in target and not self._cut(boxes[i])]
-            pool = [k for k, b in enumerate(self.bottles) if k not in set(target.values())
+            others = [i for i in row if i not in target and i not in confirmed
+                      and not self._cut(boxes[i])]
+            pool = [k for k, b in enumerate(self.bottles)
+                    if k not in set(target.values()) and k not in kept
                     and any(abs(b.anchor - a) <= cfg.anchor_window for a in keyframes)]
             if others and pool:
                 distance = self._point_distance([boxes[i] for i in others], centres[pool] + shift,
                                                 spans[pool] + shift[1])
                 target.update({others[a]: pool[b]
                                for a, b in hungarian(distance, cfg.reid_distance).items()})
-            changes = [i for i in row if i in target and matched.get(i) != target[i]]
+            changes = [i for i in row if i in target and matched.get(i) != target[i]
+                       and i not in confirmed and target[i] not in kept - {matched.get(i)}]
             for i in changes:
                 log(i, target[i], "fixed" if cfg.label_fix else "logged")
             if not cfg.label_fix:
