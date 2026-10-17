@@ -1,3 +1,7 @@
+# 2026-10-17: chateau-pinot review correction
+
+Check the confirmed Gravity labels and the seven unconfirmed blends. Confirm that neutral positioning does not change their portal links.
+
 # 2026-10-17: esse review correction
 
 Open the four corrected exact slugs. Check Unplugged membership, neutral positioning, separate duplicate-card labels, and the gray YELLOW GLOVES entry.

@@ -20,73 +20,68 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Шато Пино: официальные коллекции",
-      "url": "https://chateau-pinot.ru/winery"
-    },
-    {
       "id": "official-poezdnik",
-      "label": "Шато Пино: A. G. Поездник",
+      "label": "Шато Пино: официальный источник · Коллекция Поездник - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/poezdnik"
     },
     {
       "id": "official-grand-reserve",
-      "label": "Шато Пино: Grand Reserve",
+      "label": "Шато Пино: официальный источник · Коллекция Grand Reserve - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/grand-reserve"
     },
     {
       "id": "official-exclusive",
-      "label": "Шато Пино: Exclusive",
+      "label": "Шато Пино: официальный источник · Коллекция Эксклюзив - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/ehksklyuziv"
     },
     {
       "id": "official-gravity",
-      "label": "Шато Пино: Гравитация",
+      "label": "Шато Пино: официальный источник · Коллекция Гравитация - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/gravitaciya"
     },
     {
       "id": "official-koldun",
-      "label": "Шато Пино: Колдун",
+      "label": "Шато Пино: официальный источник · Коллекция Колдуны - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/kolduny"
     },
     {
       "id": "official-shantazh",
-      "label": "Шато Пино: Шантаж",
+      "label": "Шато Пино: официальный источник · Коллекция Шантаж - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/shantazh"
     },
     {
       "id": "official-classic",
-      "label": "Шато Пино: Классика и сортовые вина",
+      "label": "Шато Пино: официальный источник · Коллекция Классика - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/klassika"
     },
     {
       "id": "official-wild",
-      "label": "Шато Пино: Дикари / Дичь",
+      "label": "Шато Пино: официальный источник · Коллекция Дикари - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/dikari"
     },
     {
       "id": "official-sorcerer-balls",
-      "label": "Шато Пино: Шары Колдуна",
+      "label": "Шато Пино: официальный источник · Коллекция Шары колдуна - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/shary-kolduna"
     },
     {
       "id": "official-ice-wine",
-      "label": "Шато Пино: ICE Wine",
+      "label": "Шато Пино: официальный источник · Коллекция ICE Wine - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/ice-wine"
     },
     {
       "id": "official-petnat",
-      "label": "Шато Пино: Петнат",
+      "label": "Шато Пино: официальный источник · Коллекция Петнат - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/petnat"
     },
     {
       "id": "official-sparkling",
-      "label": "Шато Пино: Классическое игристое",
+      "label": "Шато Пино: официальный источник · Коллекция Игристое - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/igristoe"
     },
     {
-      "id": "official-official-grand-reserve-rose",
-      "label": "Официальная карточка: Grand Reserve · игристое Rosé",
+      "id": "official-product-grand-reserve-rose",
+      "label": "Шато Пино: официальный источник · Коллекция Grand Reserve - Агротуристический комплекс Chateau Pinot",
       "url": "https://chateau-pinot.ru/collections/grand-reserve"
     }
   ],
@@ -103,7 +98,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Старший ориентир · ₽₽₽₽",
       "source_ids": [
-        "official-poezdnik"
+        "official-poezdnik",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -113,7 +109,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
-        "official-grand-reserve"
+        "official-grand-reserve",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -124,6 +121,7 @@
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
         "official-exclusive",
+        "svoe-vino-2026-09-17",
         "official-gravity",
         "official-koldun",
         "official-shantazh"
@@ -136,7 +134,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-classic"
+        "official-classic",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -147,6 +146,7 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-wild",
+        "svoe-vino-2026-09-17",
         "official-sorcerer-balls",
         "official-ice-wine",
         "official-petnat",
@@ -182,7 +182,7 @@
       "name": "Exclusive",
       "tier_id": "tier-2",
       "method": "Авторские купажи",
-      "description": "Белые, красные и розовые купажи. Внутри коллекции удобно сравнивать сочетания сортов.",
+      "description": "Каберне Совиньон — Шираз, Пино Нуар — Мерло, Шардоне — Пино Гри и Вионье — Рислинг. Эти карточки прямо называют Exclusive; прочие купажи не отнесены к серии по одному составу.",
       "source_ids": [
         "official-exclusive",
         "svoe-vino-2026-09-17"
@@ -193,7 +193,7 @@
       "name": "Гравитация",
       "tier_id": "tier-2",
       "method": "Особый купаж",
-      "description": "Каберне Совиньон и Мерло в самостоятельной коллекции. Положение рядом с Exclusive задано редакционно.",
+      "description": "Карточки с подтверждённой надписью «Гравитация»: Каберне Совиньон — Мерло и Пино Нуар — Саперави. Разные записи каталога сохранены отдельно. Положение рядом с Exclusive задано редакционно.",
       "source_ids": [
         "official-gravity",
         "svoe-vino-2026-09-17"
@@ -284,6 +284,16 @@
       "description": "Белое и розовые игристые вина. Их позиционирование показано отдельно от тихих коллекций.",
       "source_ids": [
         "official-sparkling",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "unassigned",
+      "name": "Без подтверждённой коллекции",
+      "tier_id": "tier-0",
+      "method": "Метод не указан",
+      "description": "Исторические купажи без подтверждённого названия коллекции на исходной фотографии. Одинаковый состав с нынешней серией не доказывает принадлежность старого выпуска. Ценовая ступень не назначена.",
+      "source_ids": [
         "svoe-vino-2026-09-17"
       ]
     }
@@ -382,7 +392,7 @@
         "Шардоне"
       ],
       "description": "Вкус: Минеральный, свежий с преобладанием тропических фруктов и груши. Яркий с медово-цветочными нотами, переходящие в ноты засахаренной цедры.",
-      "release_status": "catalog",
+      "release_status": "limited",
       "badges": [],
       "price": null,
       "source_ids": [
@@ -415,7 +425,7 @@
         "Каберне Фран"
       ],
       "description": "Вкус: Сбалансированный, с вишневыми нотами и оттенками дуба. Продолжительное послевкусие. Спелые фрукты и ягоды: слива, красная смородина, кизил",
-      "release_status": "catalog",
+      "release_status": "limited",
       "badges": [],
       "price": null,
       "source_ids": [
@@ -425,7 +435,7 @@
     },
     {
       "id": "wine-shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "name": "Алиготе - Ркацители белое сухое",
       "variant": "",
       "wine_slug": "shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
@@ -452,13 +462,12 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-classic"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
       "id": "wine-shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "name": "Алиготе - Ркацители сухое белое",
       "variant": "",
       "wine_slug": "shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
@@ -485,8 +494,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-classic"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -509,7 +517,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -887,7 +895,7 @@
     },
     {
       "id": "wine-shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "name": "Каберне Фран - Каберне Совиньон",
       "variant": "",
       "wine_slug": "shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
@@ -914,8 +922,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-classic"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -953,7 +960,7 @@
     },
     {
       "id": "wine-shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
-      "group_id": "classic",
+      "group_id": "gravity",
       "name": "Каберне Совиньон - Мерло",
       "variant": "",
       "wine_slug": "shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
@@ -981,7 +988,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-classic"
+        "official-gravity"
       ]
     },
     {
@@ -1118,7 +1125,7 @@
     },
     {
       "id": "wine-shato-pino-marselan-merlo-krasnoe-suhoe-13",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "name": "Марселан - Мерло",
       "variant": "",
       "wine_slug": "shato-pino-marselan-merlo-krasnoe-suhoe-13",
@@ -1145,8 +1152,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-classic"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1169,7 +1175,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Вионье"
       ],
@@ -1202,7 +1208,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Пино Гри"
       ],
@@ -1213,7 +1219,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-petnat"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-shato-pino-petnat-pino-gri-rozovoe-ekstra-bryut-11",
@@ -1235,7 +1242,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Гри"
       ],
@@ -1246,7 +1253,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-petnat"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-shato-pino-petnat-pino-nuar-rozovoe-ekstra-bryut-11",
@@ -1268,7 +1276,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1301,7 +1309,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Совиньон Блан"
       ],
@@ -1334,7 +1342,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Гри"
       ],
@@ -1415,7 +1423,7 @@
     },
     {
       "id": "wine-shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "name": "Пино Нуар - Пино Гри",
       "variant": "",
       "wine_slug": "shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
@@ -1442,8 +1450,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-exclusive"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1466,7 +1473,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1481,7 +1488,7 @@
     },
     {
       "id": "wine-shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
-      "group_id": "exclusive",
+      "group_id": "gravity",
       "name": "Пино Нуар - Саперави",
       "variant": "",
       "wine_slug": "shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
@@ -1509,7 +1516,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-exclusive"
+        "official-gravity"
       ]
     },
     {
@@ -1580,7 +1587,7 @@
     },
     {
       "id": "wine-shato-pino-shardone-risling-beloe-suhoe-12",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "name": "Шардоне - Рислинг",
       "variant": "",
       "wine_slug": "shato-pino-shardone-risling-beloe-suhoe-12",
@@ -1607,8 +1614,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-exclusive"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1876,7 +1882,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-classic"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-shato-pino-shiraz-krasnoe-suhoe-14",
@@ -1909,11 +1916,12 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-classic"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "name": "Совиньон Блан - Семильон",
       "variant": "",
       "wine_slug": "shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
@@ -1940,8 +1948,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-exclusive"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1953,7 +1960,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/chateau-pinot/official-grand-reserve-rose.webp",
-        "source_id": "official-official-grand-reserve-rose",
+        "source_id": "official-product-grand-reserve-rose",
         "frame": {
           "x": 5,
           "y": 5,
@@ -1971,7 +1978,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-grand-reserve-rose",
+        "official-product-grand-reserve-rose",
         "official-grand-reserve"
       ]
     }

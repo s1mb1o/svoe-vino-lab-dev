@@ -12,7 +12,15 @@
       "source_image": "bez_fona_no_bg_preview_carve_photos_d1b6f3d608.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/bez_fona_no_bg_preview_carve_photos_d1b6f3d608.webp",
       "input_sha256": "351b82668b5b5a90de441366d34551122df8bdf05323aca1bed8b9cd723519fb",
-      "asset_sha256": "a582b231a55b2714fe082754cc81996306a2d97d2f4414d5ddc9a6c6f482a8fe"
+      "asset_sha256": "a582b231a55b2714fe082754cc81996306a2d97d2f4414d5ddc9a6c6f482a8fe",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "koldun-beloe-suhoe",
@@ -23,7 +31,15 @@
       "source_image": "Koldun_belyj_cb86264c80.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Koldun_belyj_cb86264c80.webp",
       "input_sha256": "0d474f89a3dc82c87163555d4f8ef6165fb26c448d7f7d75bdd4459a82e63777",
-      "asset_sha256": "67cd3c55a4dc7d94770fa30afee23be4050fe5c5c44e7173d602aa1d36393d07"
+      "asset_sha256": "67cd3c55a4dc7d94770fa30afee23be4050fe5c5c44e7173d602aa1d36393d07",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-koldun"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-agpoezdnik-beloe-shardone-suhoe-13",
@@ -34,7 +50,15 @@
       "source_image": "shato_pino_beloe_shardone_beloe_suhoe_13_8b4d6eb365.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_beloe_shardone_beloe_suhoe_13_8b4d6eb365.webp",
       "input_sha256": "2a17ddeff1c5a2c0fb41e0929c83a89babc87055a77df0815481862408b56345",
-      "asset_sha256": "2abc1f374297d5bc3513eaf14c2b9d65893d8dbc311f8125c43f2c4b2272f428"
+      "asset_sha256": "2abc1f374297d5bc3513eaf14c2b9d65893d8dbc311f8125c43f2c4b2272f428",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-poezdnik"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-agpoezdnik-krasnoe-kaberne-fran-suhoe-14",
@@ -45,29 +69,51 @@
       "source_image": "shato_pino_krasnoe_kaberne_fran_krasnoe_suhoe_14_074ad489ef.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_krasnoe_kaberne_fran_krasnoe_suhoe_14_074ad489ef.webp",
       "input_sha256": "ba2baac5b1856bacf15c39568b8867157a41ffb576ee665117526d6092f0458b",
-      "asset_sha256": "b1acf9b45a694c0699cdfa830b1d9b47516527dbd84363023e44654f42d9aa78"
+      "asset_sha256": "b1acf9b45a694c0699cdfa830b1d9b47516527dbd84363023e44654f42d9aa78",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-poezdnik"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
       "product_id": "wine-shato-pino-aligote-rkatsiteli-beloe-suhoe-12",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "catalog_name": "Алиготе - Ркацители белое сухое",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_aligote_rkatsiteli_beloe_suhoe_12_c9a1a8a474.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_aligote_rkatsiteli_beloe_suhoe_12_c9a1a8a474.webp",
       "input_sha256": "27bc636f5db18f118667e7bf4f23276aed239b254ef21fbd57b3d535873c8f56",
-      "asset_sha256": "1ba55d8f5f3e51ce20e14d8e380b954ac9564ec36038774df562133473c4dc93"
+      "asset_sha256": "1ba55d8f5f3e51ce20e14d8e380b954ac9564ec36038774df562133473c4dc93",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
       "product_id": "wine-shato-pino-aligote-rkatsiteli-suhoe-beloe-12",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "catalog_name": "Алиготе - Ркацители сухое белое",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_aligoterkatsiteli_beloe_suhoe_12_c00c55cc32.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_aligoterkatsiteli_beloe_suhoe_12_c00c55cc32.webp",
       "input_sha256": "052f478a7244f5470deb46392666f7e6855e2753522ac4d7359421b9b53c518c",
-      "asset_sha256": "c95bb37ce2a7c44a098dca9cf29102444535f6518b031cf33462cd7a1e7d0abe"
+      "asset_sha256": "c95bb37ce2a7c44a098dca9cf29102444535f6518b031cf33462cd7a1e7d0abe",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-blan-de-blan-shardone-beloe-ekstra-bryut-12",
@@ -78,7 +124,15 @@
       "source_image": "shato_pino_blan_de_blan_shardone_igristoe_ekstra_bryut_beloe_12_655949f151.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_blan_de_blan_shardone_igristoe_ekstra_bryut_beloe_12_655949f151.webp",
       "input_sha256": "82e9121f2ad542ecffe13cbe902e260f166a3b2622c9c521a0775bed3c013466",
-      "asset_sha256": "01157f1bfeeff9a8b08b8dbf317fdf4fe909b962970c4fd5a101ad1e917125e7"
+      "asset_sha256": "01157f1bfeeff9a8b08b8dbf317fdf4fe909b962970c4fd5a101ad1e917125e7",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-dichkaberne-fran-krasnoe-suhoe-14",
@@ -89,7 +143,15 @@
       "source_image": "shato_pino_kaberne_fran_krasnoe_suhoe_14_2be9b0f50c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_fran_krasnoe_suhoe_14_2be9b0f50c.webp",
       "input_sha256": "49042f98de36c0b2cc504e705972e8bcb1964e5b7343b9400bdd707e210aad7e",
-      "asset_sha256": "5bfd4e35f69b616d018e01babc8401e0ce3361d6ea1e9b56c894b262bbe7483a"
+      "asset_sha256": "5bfd4e35f69b616d018e01babc8401e0ce3361d6ea1e9b56c894b262bbe7483a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-wild"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
@@ -100,7 +162,15 @@
       "source_image": "shato_pino_kaberne_sovinon_shiraz_krasnoe_suhoe_135_943e3e76b8.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_sovinon_shiraz_krasnoe_suhoe_135_943e3e76b8.webp",
       "input_sha256": "403cdbb3dde3b721556b4f854cfb6b38a9bf10aaf0fed6efe7b7eb1afebea823",
-      "asset_sha256": "dda70d2e407c0506a911caa289f791b32f57353668a1eba6fff9cffa787afe27"
+      "asset_sha256": "dda70d2e407c0506a911caa289f791b32f57353668a1eba6fff9cffa787afe27",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-exclusive"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-exclusive-pino-nuar-merlo-krasnoe-suhoe-135",
@@ -111,7 +181,15 @@
       "source_image": "shato_pino_pino_nuarmerlo_krasnoe_suhoe_135_976c341758.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuarmerlo_krasnoe_suhoe_135_976c341758.webp",
       "input_sha256": "c581d9de28c9e3fde123bf42654197b30df9a47ea757890893a03af90050dc2e",
-      "asset_sha256": "7d611ab374dd2d4617143165ec8e5f2ec507d8a42221f78f15e99abdf4f29198"
+      "asset_sha256": "7d611ab374dd2d4617143165ec8e5f2ec507d8a42221f78f15e99abdf4f29198",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-exclusive"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-exclusive-shardone-pino-gri-beloe-suhoe-125",
@@ -122,7 +200,15 @@
       "source_image": "shato_pino_shardone_pino_gri_beloe_suhoe_125_2bbaea4aa5.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shardone_pino_gri_beloe_suhoe_125_2bbaea4aa5.webp",
       "input_sha256": "9b8621e0a94b9ddda9c9266378f5420142deca014faad2a788e519b1d5147747",
-      "asset_sha256": "48006eb37edfd82fa740a06412ea38e5f272e55f3b49b175f35ad982111d2389"
+      "asset_sha256": "48006eb37edfd82fa740a06412ea38e5f272e55f3b49b175f35ad982111d2389",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-exclusive"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-exclusive-vione-risling-beloe-suhoe-115",
@@ -133,7 +219,15 @@
       "source_image": "shato_pino_vione_risling_beloe_suhoe_115_00ae6e439c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_vione_risling_beloe_suhoe_115_00ae6e439c.webp",
       "input_sha256": "d5ab9049bc522016cfd669dc1f97358430147ea070d87c498a6e17e8b22c47a6",
-      "asset_sha256": "3a77e88eef5dc693684dca608e9218e4ddccf60fd25e2d4341985208213cddd9"
+      "asset_sha256": "3a77e88eef5dc693684dca608e9218e4ddccf60fd25e2d4341985208213cddd9",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-exclusive"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-grand-reserve-cabernet-franc-kaberne-fran-krasnoe-suhoe-135",
@@ -144,7 +238,15 @@
       "source_image": "shato_pino_kaberne_fran_krasnoe_suhoe_135_564b619998.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_fran_krasnoe_suhoe_135_564b619998.webp",
       "input_sha256": "b1e16b87f4baf72fcc970522899762d0b85858b98ed5ccee8c651c851983f511",
-      "asset_sha256": "c603ae731b0b521b83a4c4ebc1d68b97152a31474af82e7d2c18a672f9dc5f7a"
+      "asset_sha256": "c603ae731b0b521b83a4c4ebc1d68b97152a31474af82e7d2c18a672f9dc5f7a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-grand-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135",
@@ -155,7 +257,15 @@
       "source_image": "shato_pino_kaberne_sovinon_krasnoe_suhoe_135_25b56d23d4.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_sovinon_krasnoe_suhoe_135_25b56d23d4.webp",
       "input_sha256": "dac545cb01baaaafffb3e8d10517a914a7a7b30e05bcc443bf79a035bc1d5aa7",
-      "asset_sha256": "0f02660591ed24a4bdc4f61888d359f938861c3f9a5f232311f29ca6f8af41fa"
+      "asset_sha256": "0f02660591ed24a4bdc4f61888d359f938861c3f9a5f232311f29ca6f8af41fa",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-grand-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-grand-reserve-chardonnay-shardone-beloe-suhoe-125",
@@ -166,7 +276,15 @@
       "source_image": "shato_pino_grand_rezerv_shardone_beloe_suhoe_125_abadfb49a7.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_grand_rezerv_shardone_beloe_suhoe_125_abadfb49a7.webp",
       "input_sha256": "fe53735201b7b30eb3e3a499fb764e9dcb74e2682c5f17ece17b41016884dc47",
-      "asset_sha256": "b2fe1675f0f8040a20e5613633092f204faca18fb090796fcecf59d56b000cf5"
+      "asset_sha256": "b2fe1675f0f8040a20e5613633092f204faca18fb090796fcecf59d56b000cf5",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-grand-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-grand-reserve-pinot-noir-pino-nuar-krasnoe-suhoe-135",
@@ -177,7 +295,15 @@
       "source_image": "shato_pino_grand_rezerv_pino_nuar_krasnoe_suhoe_135_705f6fd901.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_grand_rezerv_pino_nuar_krasnoe_suhoe_135_705f6fd901.webp",
       "input_sha256": "af9bcaf5fa7501af3281c980db7be8d76a558321453ada00da2568557476a03b",
-      "asset_sha256": "002d6f92c9f9b2efedb1b8568a28e6983c1d0561c38133857475f7898d2001f4"
+      "asset_sha256": "002d6f92c9f9b2efedb1b8568a28e6983c1d0561c38133857475f7898d2001f4",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-grand-reserve"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-gravitatsiya-kaberne-sovinon-merlo-krasnoe-suhoe-135",
@@ -188,7 +314,15 @@
       "source_image": "shato_pino_kaberne_sovinon_merlo_krasnoe_suhoe_135_4464dcca39.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_sovinon_merlo_krasnoe_suhoe_135_4464dcca39.webp",
       "input_sha256": "8888604a5da5547d2286188d724f5a6fe996c0c8955764b779989d0516c1771c",
-      "asset_sha256": "aa97aad760ff3329dea2bba38d9cb62572deaba6536bfba500c99d4c515d4e5e"
+      "asset_sha256": "aa97aad760ff3329dea2bba38d9cb62572deaba6536bfba500c99d4c515d4e5e",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-gravity"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-ice-wine-risling-risling-reynskiy-beloe-sladkoe-11",
@@ -199,18 +333,33 @@
       "source_image": "shato_pino_ice_wine_risling_risling_reynskiy_beloe_sladkoe_11_003c1461e3.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_ice_wine_risling_risling_reynskiy_beloe_sladkoe_11_003c1461e3.webp",
       "input_sha256": "c634b639cb67a31b678f328dab1a7dc9213ee59792e518c4d67b57569dae47a5",
-      "asset_sha256": "46f25a72e801a369e2a6c082e040dc165353d505cf802c1e3a57ddf96256e10b"
+      "asset_sha256": "46f25a72e801a369e2a6c082e040dc165353d505cf802c1e3a57ddf96256e10b",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-ice-wine"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
       "product_id": "wine-shato-pino-kaberne-fran-kaberne-sovinon-krasnoe-suhoe-135",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "catalog_name": "Каберне Фран - Каберне Совиньон",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_kaberne_frankaberne_sovinon_krasnoe_suhoe_135_dbc6706292.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_frankaberne_sovinon_krasnoe_suhoe_135_dbc6706292.webp",
       "input_sha256": "3033eada334d0e081e7bb3a278e00c94acd40b92784f24edcd6410cc0e2580a4",
-      "asset_sha256": "2d89c583ebf4a9e6ec44230d02ddd291f733dd1167481ed898b7d309cf12bb74"
+      "asset_sha256": "2d89c583ebf4a9e6ec44230d02ddd291f733dd1167481ed898b7d309cf12bb74",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-kaberne-sovinon-krasnoe-suhoe-14",
@@ -221,18 +370,34 @@
       "source_image": "shato_pino_kaberne_sovinon_krasnoe_suhoe_14_9ad8f94ebc.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_sovinon_krasnoe_suhoe_14_9ad8f94ebc.webp",
       "input_sha256": "827c850290e12339d90bb601460368c508525f9f8b69e2188c2901cf2e3a0223",
-      "asset_sha256": "031886acf3e6a58fa871f31a6c6286471c4b5c4cae5e99cc9ffb2f8d56a01628"
+      "asset_sha256": "031886acf3e6a58fa871f31a6c6286471c4b5c4cae5e99cc9ffb2f8d56a01628",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
       "product_id": "wine-shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135",
-      "group_id": "classic",
+      "group_id": "gravity",
       "catalog_name": "Каберне Совиньон - Мерло",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_kaberne_sovinonmerlo_krasnoe_suhoe_135_463039b1ff.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kaberne_sovinonmerlo_krasnoe_suhoe_135_463039b1ff.webp",
       "input_sha256": "5de219e923543143e8ed34356d80665759b859237589a30b2783c905af17728e",
-      "asset_sha256": "a478fcf0236a781bb5a0b2b3c0fddeb6a7818d86c4a1538a423a7e845422b8c0"
+      "asset_sha256": "a478fcf0236a781bb5a0b2b3c0fddeb6a7818d86c4a1538a423a7e845422b8c0",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label explicitly reads ГРАВИТАЦИЯ.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-gravity"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-klassika-sauvignon-blanc",
@@ -243,7 +408,15 @@
       "source_image": "Shato_Pino_Klassika_Sauvignon_Blanc_ab7c633382.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Shato_Pino_Klassika_Sauvignon_Blanc_ab7c633382.webp",
       "input_sha256": "86388dfe26be036ba111951a7a1c015b1925fe2a179ee9577bdfe9cf61639db0",
-      "asset_sha256": "3e1bd1ebe830b40c083569e1a1d94b29328a39a8fdee6142ff133c527892ca3e"
+      "asset_sha256": "3e1bd1ebe830b40c083569e1a1d94b29328a39a8fdee6142ff133c527892ca3e",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-koldun-belyy-shardone-beloe-suhoe-12",
@@ -254,7 +427,15 @@
       "source_image": "shato_pino_belyy_shardone_beloe_suhoe_12_18f04d3075.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_belyy_shardone_beloe_suhoe_12_18f04d3075.webp",
       "input_sha256": "522a551546460458df1eb277b9e327630c9d01ba9d048e8ba84cc5b1c38d36ee",
-      "asset_sha256": "13746cf572d923e30d2418fc2bfb3b249399967ebe5868740a9fc85215fd9baa"
+      "asset_sha256": "13746cf572d923e30d2418fc2bfb3b249399967ebe5868740a9fc85215fd9baa",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-koldun"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-koldun-krasnyy-merlo-krasnoe-suhoe-14",
@@ -265,7 +446,15 @@
       "source_image": "shato_pino_krasnyy_merlo_krasnoe_suhoe_14_1ed5081328.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_krasnyy_merlo_krasnoe_suhoe_14_1ed5081328.webp",
       "input_sha256": "4a3b92cefb41f201d5dec32320a6fd4a8473d2c527f2e4cc7425f39139a486d6",
-      "asset_sha256": "6113961055b2b1cfe0904c9f3265dfcdf1bb674b18a34d4fc91f8ff8f0ab92fc"
+      "asset_sha256": "6113961055b2b1cfe0904c9f3265dfcdf1bb674b18a34d4fc91f8ff8f0ab92fc",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-koldun"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-koldun-rezerv-kaberne-sovinon-krasnoe-suhoe-14",
@@ -276,18 +465,33 @@
       "source_image": "shato_pino_krasnyy_rezerv_kaberne_sovinon_krasnoe_suhoe_14_7415f9a41b.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_krasnyy_rezerv_kaberne_sovinon_krasnoe_suhoe_14_7415f9a41b.webp",
       "input_sha256": "9fd53fa4307b23110f4d1ccc2f6aae08bd0e15d5164f6b8b88a4155f6d617061",
-      "asset_sha256": "12647eddc4723a3638fde3e6075939fe1415dfcdc8812aea709914ea3088f248"
+      "asset_sha256": "12647eddc4723a3638fde3e6075939fe1415dfcdc8812aea709914ea3088f248",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-koldun"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-marselan-merlo-krasnoe-suhoe-13",
       "product_id": "wine-shato-pino-marselan-merlo-krasnoe-suhoe-13",
-      "group_id": "classic",
+      "group_id": "unassigned",
       "catalog_name": "Марселан - Мерло",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_marselan_merlo_krasnoe_suhoe_13_d4ec35012c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_marselan_merlo_krasnoe_suhoe_13_d4ec35012c.webp",
       "input_sha256": "31e826230d0851c99ce4ee6214dc10701eac34316292ab79ed65e0eb741a124b",
-      "asset_sha256": "a6e4e3dade2c4a7880e3741cba9459f947407eeaac2523d49830d5e0debf61a0"
+      "asset_sha256": "a6e4e3dade2c4a7880e3741cba9459f947407eeaac2523d49830d5e0debf61a0",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-petnat-oranzh-vione-beloe-ekstra-bryut-11",
@@ -298,7 +502,15 @@
       "source_image": "shato_pino_oranzh_vione_igristoe_ekstra_bryut_beloe_11_9a8ccb87e7.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_oranzh_vione_igristoe_ekstra_bryut_beloe_11_9a8ccb87e7.webp",
       "input_sha256": "8f53ee565e75303fa7362eb0387bf00a399c8632aafabe9bb76252fcc1d95460",
-      "asset_sha256": "98bcaa612471d5db811b1eb09426af8f23de95b3194e1739462e9ce72665a53a"
+      "asset_sha256": "98bcaa612471d5db811b1eb09426af8f23de95b3194e1739462e9ce72665a53a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-petnat"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-petnat-pino-gri-beloe-ekstra-bryut-11",
@@ -309,7 +521,15 @@
       "source_image": "shato_pino_pino_gri_igristoe_ekstra_bryut_beloe_11_470a963704.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_gri_igristoe_ekstra_bryut_beloe_11_470a963704.webp",
       "input_sha256": "1b5916571b7988e5ca5076e082a6b8ca69607a35fd028a845c32cf857a19d449",
-      "asset_sha256": "dff5bd06e8ccf5fba726753003604b1cd2aae25fb3974c76379410d20f70f78d"
+      "asset_sha256": "dff5bd06e8ccf5fba726753003604b1cd2aae25fb3974c76379410d20f70f78d",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-petnat"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-petnat-pino-gri-rozovoe-ekstra-bryut-11",
@@ -320,7 +540,15 @@
       "source_image": "shato_pino_pino_gri_igristoe_ekstra_bryut_rozovoe_11_660c923c47.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_gri_igristoe_ekstra_bryut_rozovoe_11_660c923c47.webp",
       "input_sha256": "3069f2b0448115deef4ba06a81f2bdeb9ffc0b7ff65746815d4f46bf93fe39a2",
-      "asset_sha256": "ca4f6dc43bd2a688ee1e25fac9979d5b16c89e4c14592bb2a7a16862cbb5a352"
+      "asset_sha256": "ca4f6dc43bd2a688ee1e25fac9979d5b16c89e4c14592bb2a7a16862cbb5a352",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-petnat"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-petnat-pino-nuar-rozovoe-ekstra-bryut-11",
@@ -331,7 +559,15 @@
       "source_image": "shato_pino_pino_nuar_igristoe_ekstra_bryut_rozovoe_11_ebf10494b8.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuar_igristoe_ekstra_bryut_rozovoe_11_ebf10494b8.webp",
       "input_sha256": "2bf134abc283356001622cca3bde56d5952e85772c18e0b5d308871392a5cee8",
-      "asset_sha256": "541b8e019797973f9c9aae992d2e562780e71a7da00d2501329588d650bf0244"
+      "asset_sha256": "541b8e019797973f9c9aae992d2e562780e71a7da00d2501329588d650bf0244",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-petnat"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-petnat-sovinon-blan-beloe-ekstra-bryut-11",
@@ -342,7 +578,15 @@
       "source_image": "shato_pino_sovinon_blan_igristoe_ekstra_bryut_beloe_11_419d1bcf49.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_sovinon_blan_igristoe_ekstra_bryut_beloe_11_419d1bcf49.webp",
       "input_sha256": "8a6bbf61955d460df6a7bfd920be46085e59dfa3a6e48a26949ca0980c99a7dd",
-      "asset_sha256": "a963f1fd2ebd707b590f5085e0af2c5c1969a72b3e590a0ba21a96edb7457e9a"
+      "asset_sha256": "a963f1fd2ebd707b590f5085e0af2c5c1969a72b3e590a0ba21a96edb7457e9a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-petnat"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-gri-roze-rozovoe-ekstra-bryut-12",
@@ -353,7 +597,15 @@
       "source_image": "shato_pino_pino_gri_roze_igristoe_ekstra_bryut_rozovoe_12_dc98b15d48.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_gri_roze_igristoe_ekstra_bryut_rozovoe_12_dc98b15d48.webp",
       "input_sha256": "db88ad68499669402d3b8275f08c78bb8031b9b845c9d43a8cb52043a92394a6",
-      "asset_sha256": "82adfaa3ce97910954fb49a0459a54d4d051c875539b3add2c24ef924423914b"
+      "asset_sha256": "82adfaa3ce97910954fb49a0459a54d4d051c875539b3add2c24ef924423914b",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-gridzhio-beloe-suhoe-12",
@@ -364,7 +616,15 @@
       "source_image": "shato_pino_pino_gridzhio_beloe_suhoe_12_4b10c72d3d.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_gridzhio_beloe_suhoe_12_4b10c72d3d.webp",
       "input_sha256": "64f1f236906f1ddcd5733d5d2cbc45627982641998ea2dcdd8b3ccd0b4f27491",
-      "asset_sha256": "c4ff88f709dd07da5232b3e1f77b270535cc3c3757dab7516d22b6c7a2a45b62"
+      "asset_sha256": "c4ff88f709dd07da5232b3e1f77b270535cc3c3757dab7516d22b6c7a2a45b62",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-nuar-krasnoe-suhoe-135",
@@ -375,18 +635,33 @@
       "source_image": "shato_pino_pino_nuar_krasnoe_suhoe_135_d34aee0942.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuar_krasnoe_suhoe_135_d34aee0942.webp",
       "input_sha256": "a9ab58d6a062f104fa0765e38a406b530aca303be97bb36486df17c3b80bce95",
-      "asset_sha256": "3230841b822f62c5d71f1f5435638e1008b8381772f1b6f78f78931fddc822e9"
+      "asset_sha256": "3230841b822f62c5d71f1f5435638e1008b8381772f1b6f78f78931fddc822e9",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
       "product_id": "wine-shato-pino-pino-nuar-pino-gri-rozovoe-suhoe-115",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "catalog_name": "Пино Нуар - Пино Гри",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_pino_nuar_pino_gri_rozovoe_suhoe_115_3537e77fae.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuar_pino_gri_rozovoe_suhoe_115_3537e77fae.webp",
       "input_sha256": "93e0b12058a97747f0dead5b131c901511b9d2271513586b8578f76503b13518",
-      "asset_sha256": "a6abe44b2b7068ee928dcff8fc3bd1626637c39e7d2ccd661a6d27bcdd009a62"
+      "asset_sha256": "a6abe44b2b7068ee928dcff8fc3bd1626637c39e7d2ccd661a6d27bcdd009a62",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-nuar-roze-rozovoe-ekstra-bryut-115",
@@ -397,18 +672,34 @@
       "source_image": "shato_pino_pino_nuar_roze_igristoe_ekstra_bryut_rozovoe_115_6ab9eefe2b.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuar_roze_igristoe_ekstra_bryut_rozovoe_115_6ab9eefe2b.webp",
       "input_sha256": "4f493c49d6affc84895a0c6db597cf42f2b56827dab9c086472a8731d4a51f65",
-      "asset_sha256": "4e8121133d9d4a9e2a7492accf676c8ac9a357e14d8117b36ca4aea7b0c92ca1"
+      "asset_sha256": "4e8121133d9d4a9e2a7492accf676c8ac9a357e14d8117b36ca4aea7b0c92ca1",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sparkling"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
       "product_id": "wine-shato-pino-pino-nuar-saperavi-krasnoe-suhoe-13",
-      "group_id": "exclusive",
+      "group_id": "gravity",
       "catalog_name": "Пино Нуар - Саперави",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_pino_nuar_saperavi_krasnoe_suhoe_13_4166359dd7.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_pino_nuar_saperavi_krasnoe_suhoe_13_4166359dd7.webp",
       "input_sha256": "07b913ae283a935b1edb1c14ca636cf47120b54bf21762b025b7496b99e52ab5",
-      "asset_sha256": "9628071d7179d108a8d4ba06b78e8f9ebdb2ba8f135c8c6f1da4d353e12a3d16"
+      "asset_sha256": "9628071d7179d108a8d4ba06b78e8f9ebdb2ba8f135c8c6f1da4d353e12a3d16",
+      "group_basis": {
+        "kind": "source_image_label",
+        "evidence": "The original input label explicitly reads ГРАВИТАЦИЯ.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-gravity"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shantazh-sovinon-blan-shardone-beloe-suhoe-115",
@@ -419,7 +710,15 @@
       "source_image": "shato_pino_sovinon_blan_shardone_beloe_suhoe_115_6ed714d69b.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_sovinon_blan_shardone_beloe_suhoe_115_6ed714d69b.webp",
       "input_sha256": "f1ab8cc15b5c8ecaefeeb5301cc3935386f715157cabfe7fcdf0436ab57cb1ce",
-      "asset_sha256": "238b2be14fc37de1316ddd24fb1c29bc798fa07005570f0e60676b7bf2fcd147"
+      "asset_sha256": "238b2be14fc37de1316ddd24fb1c29bc798fa07005570f0e60676b7bf2fcd147",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-shantazh"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shardone-beloe-suhoe-125",
@@ -430,18 +729,33 @@
       "source_image": "shato_pino_shardone_beloe_suhoe_125_5bd8781d7c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shardone_beloe_suhoe_125_5bd8781d7c.webp",
       "input_sha256": "5d1fe9a2ba392fc1ca1a5609399e5f20b0a95d889d8aea6104a4c950751d5c77",
-      "asset_sha256": "bcde6a5852ffb8ba215fa2c3400e3435cce6671f5b1be316481e866ef4d7b2f6"
+      "asset_sha256": "bcde6a5852ffb8ba215fa2c3400e3435cce6671f5b1be316481e866ef4d7b2f6",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shardone-risling-beloe-suhoe-12",
       "product_id": "wine-shato-pino-shardone-risling-beloe-suhoe-12",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "catalog_name": "Шардоне - Рислинг",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_shardone_risling_beloe_suhoe_12_537466c828.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shardone_risling_beloe_suhoe_12_537466c828.webp",
       "input_sha256": "7a8cecb4c83dbad4ad82c68e26530d978b7aacc46f4708b04960e83f957d6930",
-      "asset_sha256": "4449025f91f9c884f64ea3a65d2642c18416e0e0b8ee3a921de955c6d306247b"
+      "asset_sha256": "4449025f91f9c884f64ea3a65d2642c18416e0e0b8ee3a921de955c6d306247b",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-kolduna-blash-pino-gri-rozovoe-suhoe-12",
@@ -452,7 +766,15 @@
       "source_image": "shato_pino_blash_pino_gri_rozovoe_suhoe_12_fda693e9ed.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_blash_pino_gri_rozovoe_suhoe_12_fda693e9ed.webp",
       "input_sha256": "66a189ea9fd3f1160b76c1524eac7fe6c80001169c9f052e2be59aea199c4957",
-      "asset_sha256": "210cbd2db18bcbcca1a2924bee4f706428f851002b3cf1c86e400b161f10b98a"
+      "asset_sha256": "210cbd2db18bcbcca1a2924bee4f706428f851002b3cf1c86e400b161f10b98a",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10",
@@ -463,7 +785,15 @@
       "source_image": "shato_pino_glyu_glyu_vione_krasnoe_suhoe_10_2f2adaea3e.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_glyu_glyu_vione_krasnoe_suhoe_10_2f2adaea3e.webp",
       "input_sha256": "34439640a58072416dbc6c5b6bde8843ca541ccfb418d8c4e9e6bf5f47ab09fa",
-      "asset_sha256": "5371fa931e6029540e706840f27b170c6c9a01af2f9043adace3e206d6c044bf"
+      "asset_sha256": "5371fa931e6029540e706840f27b170c6c9a01af2f9043adace3e206d6c044bf",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-kolduna-kirpichi-prileteli-pino-nuar-krasnoe-suhoe-135",
@@ -474,7 +804,15 @@
       "source_image": "shato_pino_kirpichi_prileteli_pino_nuar_krasnoe_suhoe_135_95b923907c.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_kirpichi_prileteli_pino_nuar_krasnoe_suhoe_135_95b923907c.webp",
       "input_sha256": "605fd7d0c7015966c39bc9c1d946349ab7eaf65a5d4f35fa5386de794c2e5f06",
-      "asset_sha256": "46baa3c180d805ba29169a6f989674712bf7dccdaa17c9d51473fadb823ec17f"
+      "asset_sha256": "46baa3c180d805ba29169a6f989674712bf7dccdaa17c9d51473fadb823ec17f",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-kolduna-ramato-pino-gri-rozovoe-suhoe-115",
@@ -485,7 +823,15 @@
       "source_image": "shato_pino_ramato_pino_gri_rozovoe_suhoe_115_f6866f40a1.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_ramato_pino_gri_rozovoe_suhoe_115_f6866f40a1.webp",
       "input_sha256": "b8c367cb0747c3e3820a26ea8afbcb3df9beebc4c9afd689531be43e1fad853b",
-      "asset_sha256": "d7ebb0b7d6946377cd38e945cee91033ec64e4a0c3db7015219f6b1f51018a26"
+      "asset_sha256": "d7ebb0b7d6946377cd38e945cee91033ec64e4a0c3db7015219f6b1f51018a26",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-kolduna-topolek-rkatsiteli-beloe-suhoe-125",
@@ -496,7 +842,15 @@
       "source_image": "shato_pino_topolek_rkatsiteli_beloe_suhoe_125_bb142e4f12.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_topolek_rkatsiteli_beloe_suhoe_125_bb142e4f12.webp",
       "input_sha256": "8962ca5483a224f7dc7a2b009e667b5dde880a96e085edbf849b109a0a9f93e5",
-      "asset_sha256": "7ce899b04145ca81542143867c531af024f36c947f4c636f6007abb523aa17c8"
+      "asset_sha256": "7ce899b04145ca81542143867c531af024f36c947f4c636f6007abb523aa17c8",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shary-koldunatroynichok-risling-beloe-suhoe-115",
@@ -507,7 +861,15 @@
       "source_image": "shato_pino_troynichok_risling_beloe_suhoe_115_3173ff4eb7.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_troynichok_risling_beloe_suhoe_115_3173ff4eb7.webp",
       "input_sha256": "f46b142abc20274360a7ea8a22c7eacd6daaf15ba902a97f27dc74daf46b6695",
-      "asset_sha256": "414faaa0da2ab7e124fe2d4d6fe90170761167aaa6ba0af189eb67097cbaa5a5"
+      "asset_sha256": "414faaa0da2ab7e124fe2d4d6fe90170761167aaa6ba0af189eb67097cbaa5a5",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-sorcerer-balls"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shato-pino-koldun-merlo-krasnoe-suhoe-137",
@@ -518,7 +880,15 @@
       "source_image": "shato_pino_shato_pino_koldun_merlo_krasnoe_suhoe_137_9784a279c6.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shato_pino_koldun_merlo_krasnoe_suhoe_137_9784a279c6.webp",
       "input_sha256": "abebdd4ff2acb458d086576163a603248eb8b10dec85119a25ca28f0063304d5",
-      "asset_sha256": "419eaf137ceabf45bb480eb5e6b62c06e7c4802351834a8f9a1496eac9491cb5"
+      "asset_sha256": "419eaf137ceabf45bb480eb5e6b62c06e7c4802351834a8f9a1496eac9491cb5",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-koldun"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shiraz-krasnoe-suhoe-135",
@@ -529,7 +899,15 @@
       "source_image": "shato_pino_shiraz_krasnoe_suhoe_135_3332c96e74.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shiraz_krasnoe_suhoe_135_3332c96e74.webp",
       "input_sha256": "dd66028a334201f2828103486944437d554215afdf60489bb634c517b1b39339",
-      "asset_sha256": "ae4e782c94958ce64a7dc4b8b568f0eb5949014eccf5b86c3b7a16ec686593f9"
+      "asset_sha256": "ae4e782c94958ce64a7dc4b8b568f0eb5949014eccf5b86c3b7a16ec686593f9",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-shiraz-krasnoe-suhoe-14",
@@ -540,18 +918,33 @@
       "source_image": "shato_pino_shiraz_krasnoe_suhoe_14_e2d3fa5636.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_shiraz_krasnoe_suhoe_14_e2d3fa5636.webp",
       "input_sha256": "613f53b137d297afb0793078b9a35f13701c7242602dacdf402ccab1d7dd4df3",
-      "asset_sha256": "7f888b4ff16796883ad1f83d52a0615cd6527908739cab3bd95c739546d61965"
+      "asset_sha256": "7f888b4ff16796883ad1f83d52a0615cd6527908739cab3bd95c739546d61965",
+      "group_basis": {
+        "kind": "catalog_name_and_style",
+        "evidence": "The exact snapshot name and style define this navigation group. This does not establish equivalence with a current release.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-classic"
+        ]
+      }
     },
     {
       "wine_slug": "shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
       "product_id": "wine-shato-pino-sovinon-blan-semilon-beloe-suhoe-115",
-      "group_id": "exclusive",
+      "group_id": "unassigned",
       "catalog_name": "Совиньон Блан - Семильон",
       "catalog_producer": "Шато Пино",
       "source_image": "shato_pino_sovinon_blan_semilon_beloe_suhoe_115_907eca8d40.webp",
       "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/shato_pino_sovinon_blan_semilon_beloe_suhoe_115_907eca8d40.webp",
       "input_sha256": "c291b56b63f42e1e3d100ffe6ca7a737d5e89886d5d123ca2477d0faf6a17c16",
-      "asset_sha256": "d559c5510b985bd472f396290182c4a322c29ee26f8a75864fcd2ced7b1d1479"
+      "asset_sha256": "d559c5510b985bd472f396290182c4a322c29ee26f8a75864fcd2ced7b1d1479",
+      "group_basis": {
+        "kind": "unconfirmed_collection",
+        "evidence": "The input photograph does not verify a collection name. A matching grape blend on the current site does not establish the historical series. No relative rank is assigned.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
     }
   ],
   "official_additions": [
@@ -568,6 +961,14 @@
         "producer": "Шато Пино",
         "matched_catalog_slugs": [],
         "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without release equivalence evidence."
+      },
+      "group_basis": {
+        "kind": "official_product",
+        "evidence": "The recorded official product page establishes this addition. No catalog equivalence is inferred.",
+        "source_ids": [
+          "official-product-grand-reserve-rose",
+          "official-grand-reserve"
+        ]
       }
     }
   ]

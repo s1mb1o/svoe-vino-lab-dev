@@ -1,3 +1,7 @@
+# 2026-10-17: chateau-pinot review correction
+
+Use original labels to confirm Gravity membership. Keep historical blends without a confirmed collection in a neutral group.
+
 # 2026-10-17: esse review correction
 
 Move four incorrectly ranked products to Unplugged. Record original-label evidence and the possible YELLOW GLOVES counterpart.

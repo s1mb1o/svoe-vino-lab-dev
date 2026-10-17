@@ -1,0 +1,128 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://chateau-pinot.ru/collections/poezdnik",
+      "retrieved_at": "2026-10-17T20:26:41.707907+00:00",
+      "sha256": "3635d2c18366ce8460db16c2a8237c75c47391cf5dd8cd7fc844d979729a8ea2",
+      "final_url": "https://chateau-pinot.ru/collections/poezdnik",
+      "source_id": "official-poezdnik",
+      "section": null,
+      "basis": "The official page identifies an ultra-premium limited collection."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/grand-reserve",
+      "retrieved_at": "2026-10-17T20:26:39.377546+00:00",
+      "sha256": "9a7886e97e154a570f9b19552050136ea5e752ba4099afde39f0413e3f2c12ff",
+      "final_url": "https://chateau-pinot.ru/collections/grand-reserve",
+      "source_id": "official-grand-reserve",
+      "section": null,
+      "basis": "The official page describes grape and barrel selection."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/ehksklyuziv",
+      "retrieved_at": "2026-10-17T20:26:39.290384+00:00",
+      "sha256": "6590965a093a7852bc5e3e26346de26f0b22059fafeccbd2bd551d8657f9b222",
+      "final_url": "https://chateau-pinot.ru/collections/ehksklyuziv",
+      "source_id": "official-exclusive",
+      "section": null,
+      "basis": "The official Exclusive page lists the four explicitly named Exclusive blends. Do not attribute other blends to Exclusive by grape composition alone."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/gravitaciya",
+      "retrieved_at": "2026-10-17T20:26:40.321625+00:00",
+      "sha256": "1ba597f39a4358db976deb9f841c1d46ad1c48b9b49b27319e29589552baf9a3",
+      "final_url": "https://chateau-pinot.ru/collections/gravitaciya",
+      "source_id": "official-gravity",
+      "section": null,
+      "basis": "The original photographs explicitly identify Гравитация on Cabernet Sauvignon/Merlot and Pinot Noir/Saperavi. Matching blends on the current page do not prove the series of other historical cards."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/kolduny",
+      "retrieved_at": "2026-10-17T20:26:41.477494+00:00",
+      "sha256": "0aa650400e7190323e5ee032bbd8bae4f4c1f2b0b532fac0d58797758019068e",
+      "final_url": "https://chateau-pinot.ru/collections/kolduny",
+      "source_id": "official-koldun",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/shantazh",
+      "retrieved_at": "2026-10-17T20:26:42.662406+00:00",
+      "sha256": "d81d573b2688da2fffca931bb7b9857eae9c57b93f2fce66c7815a9a3a4a17ce",
+      "final_url": "https://chateau-pinot.ru/collections/shantazh",
+      "source_id": "official-shantazh",
+      "section": null,
+      "basis": "The official page identifies an aged collection made for Красное&Белое. The relative rank is editorial, within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/klassika",
+      "retrieved_at": "2026-10-17T20:26:41.475690+00:00",
+      "sha256": "c28c20486ba4b7230a9cb6c3edd5d3b566093a2d8a0adbaf655803470a094f86",
+      "final_url": "https://chateau-pinot.ru/collections/klassika",
+      "source_id": "official-classic",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/dikari",
+      "retrieved_at": "2026-10-17T20:26:39.286951+00:00",
+      "sha256": "8c68c546690b8b6ba610ac618b748a8a55911e7242ff312ef4c3b6fe545be632",
+      "final_url": "https://chateau-pinot.ru/collections/dikari",
+      "source_id": "official-wild",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/shary-kolduna",
+      "retrieved_at": "2026-10-17T20:26:42.668579+00:00",
+      "sha256": "17734496aafb41908408952d7bd88c38eb9541f34be2800061ca428f8cc6e1e5",
+      "final_url": "https://chateau-pinot.ru/collections/shary-kolduna",
+      "source_id": "official-sorcerer-balls",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/ice-wine",
+      "retrieved_at": "2026-10-17T20:26:40.470218+00:00",
+      "sha256": "ff9f01e9da1a8372d4f9711e06974693a61fd28324c7df5ab7a1677309eb2c78",
+      "final_url": "https://chateau-pinot.ru/collections/ice-wine",
+      "source_id": "official-ice-wine",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/petnat",
+      "retrieved_at": "2026-10-17T20:26:41.486189+00:00",
+      "sha256": "17f024a40cb9b2a3f42bdc51f01b6915b6951d83906fd3daf09a1aff10bd4efb",
+      "final_url": "https://chateau-pinot.ru/collections/petnat",
+      "source_id": "official-petnat",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/igristoe",
+      "retrieved_at": "2026-10-17T20:26:40.516941+00:00",
+      "sha256": "9bba37490e3336e52724263dc3b7a2b59dc8d30367fcdaf81e2d3d9c2b617e0e",
+      "final_url": "https://chateau-pinot.ru/collections/igristoe",
+      "source_id": "official-sparkling",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://chateau-pinot.ru/collections/grand-reserve",
+      "retrieved_at": "2026-10-17T20:26:39.377546+00:00",
+      "sha256": "9a7886e97e154a570f9b19552050136ea5e752ba4099afde39f0413e3f2c12ff",
+      "final_url": "https://chateau-pinot.ru/collections/grand-reserve",
+      "source_id": "official-product-grand-reserve-rose",
+      "section": null,
+      "basis": "The official page describes grape and barrel selection."
+    }
+  ],
+  "snapshot_only_groups": [
+    "unassigned"
+  ],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

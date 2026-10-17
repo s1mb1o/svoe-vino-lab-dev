@@ -1,3 +1,7 @@
+# 2026-10-17: chateau-pinot review correction
+
+A current blend with the same grapes does not prove the historical collection. Two original labels explicitly identify Gravity.
+
 # 2026-10-17: esse review correction
 
 Original Pinot Noir, Chenin Blanc, Odessa Black, and Saperavi Heaven photos read ESSE UNPLUGGED. They do not support KACHA VALLEY membership.

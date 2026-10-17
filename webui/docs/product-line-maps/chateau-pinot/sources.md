@@ -10,33 +10,36 @@ Do not treat this map as the complete live assortment.
 
 ## Collections and positioning
 
-Ranks are editorial navigation. Numeric prices are not available.
-Rank 0 does not assert price equivalence with other collections.
-The official collection structure can differ from historical labels.
-Keep the historical package image when the snapshot supplies that image.
+Ranks compare groups within this producer. Numeric prices remain null.
+Rank 0 means that no relative price rank is confirmed.
+Read `source-evidence.json` for exact URLs, document sections, retrieval dates, source hashes, and snapshot-only groups.
+Read `group_basis` in the crosswalk for each product membership decision.
+Read collection labels from original input photographs. Do not use generated text.
 
-- `poezdnik`: [A. G. Поездник](https://chateau-pinot.ru/collections/poezdnik). Rank 4. Catalog row indices: 2, 3.
-- `grand-reserve`: [Grand Reserve](https://chateau-pinot.ru/collections/grand-reserve). Rank 3. Catalog row indices: 12, 13, 14, 15.
-- `exclusive`: [Exclusive](https://chateau-pinot.ru/collections/ehksklyuziv). Rank 2. Catalog row indices: 8, 9, 10, 11, 34, 36, 39, 49.
-- `gravity`: [Гравитация](https://chateau-pinot.ru/collections/gravitaciya). Rank 2. Catalog row indices: 16.
-- `koldun`: [Колдун](https://chateau-pinot.ru/collections/kolduny). Rank 2. Catalog row indices: 1, 22, 23, 24, 46.
-- `shantazh`: [Шантаж](https://chateau-pinot.ru/collections/shantazh). Rank 2. Catalog row indices: 37.
-- `classic`: [Классика и сортовые вина](https://chateau-pinot.ru/collections/klassika). Rank 1. Catalog row indices: 0, 4, 5, 18, 19, 20, 21, 25, 32, 33, 38, 47, 48.
-- `wild`: [Дикари / Дичь](https://chateau-pinot.ru/collections/dikari). Rank 0. Catalog row indices: 7.
-- `sorcerer-balls`: [Шары Колдуна](https://chateau-pinot.ru/collections/shary-kolduna). Rank 0. Catalog row indices: 40, 41, 42, 43, 44, 45.
-- `ice-wine`: [ICE Wine](https://chateau-pinot.ru/collections/ice-wine). Rank 0. Catalog row indices: 17.
-- `petnat`: [Петнат](https://chateau-pinot.ru/collections/petnat). Rank 0. Catalog row indices: 26, 27, 28, 29, 30.
-- `sparkling`: [Классическое игристое](https://chateau-pinot.ru/collections/igristoe). Rank 0. Catalog row indices: 6, 31, 35.
+- `poezdnik`: A. G. Поездник. Rank 4. Catalog row indices: 2, 3. Sources: official-poezdnik, svoe-vino-2026-09-17.
+- `grand-reserve`: Grand Reserve. Rank 3. Catalog row indices: 12, 13, 14, 15. Sources: official-grand-reserve, svoe-vino-2026-09-17.
+- `exclusive`: Exclusive. Rank 2. Catalog row indices: 8, 9, 10, 11. Sources: official-exclusive, svoe-vino-2026-09-17.
+- `gravity`: Гравитация. Rank 2. Catalog row indices: 16, 20, 36. Sources: official-gravity, svoe-vino-2026-09-17.
+- `koldun`: Колдун. Rank 2. Catalog row indices: 1, 22, 23, 24, 46. Sources: official-koldun, svoe-vino-2026-09-17.
+- `shantazh`: Шантаж. Rank 2. Catalog row indices: 37. Sources: official-shantazh, svoe-vino-2026-09-17.
+- `classic`: Классика и сортовые вина. Rank 1. Catalog row indices: 0, 19, 21, 32, 33, 38, 47, 48. Sources: official-classic, svoe-vino-2026-09-17.
+- `wild`: Дикари / Дичь. Rank 0. Catalog row indices: 7. Sources: official-wild, svoe-vino-2026-09-17.
+- `sorcerer-balls`: Шары Колдуна. Rank 0. Catalog row indices: 40, 41, 42, 43, 44, 45. Sources: official-sorcerer-balls, svoe-vino-2026-09-17.
+- `ice-wine`: ICE Wine. Rank 0. Catalog row indices: 17. Sources: official-ice-wine, svoe-vino-2026-09-17.
+- `petnat`: Петнат. Rank 0. Catalog row indices: 26, 27, 28, 29, 30. Sources: official-petnat, svoe-vino-2026-09-17.
+- `sparkling`: Классическое игристое. Rank 0. Catalog row indices: 6, 31, 35. Sources: official-sparkling, svoe-vino-2026-09-17.
+- `unassigned`: Без подтверждённой коллекции. Rank 0. Catalog row indices: 4, 5, 18, 25, 34, 39, 49. Sources: svoe-vino-2026-09-17.
 
 ## Images
 
-Read the crosswalk for every source URL, input hash, and output hash.
-Crop transparent margins. Downsize to at most 720 px. Add transparent padding.
-Compute image.frame from alpha values of at least 128 after WebP encoding.
-Inspect every image on light and dark surfaces.
-Do not use generated lettering as product evidence.
+The crosswalk records input and output SHA-256 values.
+Use `imagegen-cutouts.json` where present for exact prompts and generated hashes.
+Use `scripts/measure-product-image-frames.mjs` for actual image dimensions, alpha outlines, and frame containment.
+Inspect cutouts on light and dark surfaces. Generated fine print is not product evidence.
 
-## Additional products
+## Review correction, 2026-10-17
 
-Include 1 verified official additions with null wine_slug.
-Read official_additions in crosswalk.json for each absence check.
+The owner authorized the exact review packet. Claude Opus 5.5 Max reviewed that packet.
+Source records now distinguish official collection evidence from snapshot-only navigation.
+Separate catalog records retain separate nodes. Neutral card numbers do not assert a vintage or package difference.
+Official additions remain unlinked when a possible historical catalog counterpart cannot be verified.
