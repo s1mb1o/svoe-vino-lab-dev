@@ -3,10 +3,13 @@
 For each frame:
 1. Motion. Lucas-Kanade flow of corners on the bottles of the previous frame, then a
    homography of the current frame into the previous one. Cheap enough for a phone.
-2. Place on the shelf map. The chain of motions gives H (frame -> map); the map is the
-   plane of the first frame. The chain drifts, so from time to time the frame is
-   registered directly to an older keyframe that overlaps it, and H is reset from there.
-3. Association with the known bottles, whose map boxes are projected into the frame:
+2. Place on the shelf map: a pose graph of keyframes (posegraph.py). The frame holds its
+   homography P into its reference keyframe (the chain of motions since that keyframe),
+   so H = G_ref @ P. A registration to another keyframe adds a loop edge; when the edge
+   disagrees with the graph, the graph is optimised and the drift spreads over the path.
+   Each bottle lives in the coordinates of the keyframe that saw it first and moves with
+   it, so a place exists once in the map, not once per visit.
+3. Association with the known bottles, whose centres are projected into the frame:
    first the bottles seen a moment ago (tracking), then the bottles that left the view or
    were not seen for a while (re-identification); a detection left over starts a new
    bottle.
@@ -22,10 +25,11 @@ from time import perf_counter
 import cv2
 import numpy as np
 
-from .associate import AssociationConfig, bbox_of, box_corners, clip, distance_matrix, hungarian
+from .associate import AssociationConfig, box_corners, hungarian
 from .detect import boxes_mask
 from .features import FeatureConfig, FrameFeatures, extract, match
 from .homography import HomographyConfig, Registration, check, corners, coverage, estimate, project
+from .posegraph import Edge, PoseGraph
 from .types import Box, Detection
 
 
@@ -63,28 +67,33 @@ class StreamConfig:
     # of the frame cuts it: a sliver between two bottles (1.6% of the tall boxes).
     min_width: float = 0.6
     height_rate: float = 0.2         # the update rate of the running bottle size
-    edge_margin: float = 0.02        # of the frame width: a box this close to an edge is cut
+    # Of the frame width: a box this close to an edge is cut. A box cut by a side of the
+    # frame is dropped (the user's rule: no box without a small margin from the side); a
+    # box cut by the top or bottom only continues a track.
+    edge_margin: float = 0.02
     leave_margin: float = 0.5        # bottle widths outside the frame: the bottle left the view
     settle_hits: int = 5             # the map box follows the first N whole observations
     keyframe_overlap: float = 0.6    # a new keyframe when no keyframe shares this much
     reloc_every: int = 5             # steps between keyframe registrations
-    # Loop closure. The chain drifts about a frame width in half a minute, so the old
-    # keyframes of a place are searched around the predicted place, not only where the
-    # prediction overlaps them. Keyframes and bottles younger than `recent_steps` belong
-    # to this visit: they drift with the chain and are corrected with it.
+    # Registration to keyframes. The chain drifts about a frame width in half a minute, so
+    # the keyframes are searched around the predicted place; those that overlap the frame
+    # most are tried first. Keyframes and bottles younger than `recent_steps` belong to
+    # this visit (see `trust_steps`).
     recent_steps: int = 50
     search_radius: float = 1.5       # frame widths around the predicted place
     loop_candidates: int = 3
     min_loop_inliers: int = 40
     min_loop_coverage: float = 0.2
-    small_correction: float = 0.15   # frame widths: applied at once
-    max_jump: float = 2.0            # frame widths: a larger correction is refused
-    # A registration this strong makes a jump at once; a weaker one waits for a second
-    # registration that agrees.
+    small_correction: float = 0.15   # frame widths: a loop edge this close is taken at once
+    max_jump: float = 2.0            # frame widths: a loop edge farther off is refused
+    # A registration this strong is taken at once; a weaker one that disagrees with the
+    # graph waits for a second registration that agrees.
     strong_inliers: int = 80
     strong_coverage: float = 0.3
-    same_place: float = 0.3          # frame widths: keyframes this close show one place
-    likely_overlap: float = 0.15     # the predicted overlap of a keyframe worth a try first
+    loop_weight: float = 2.0         # a registration is surer than a chain of motions
+    chain_weight: float = 0.5        # an edge through the chain of motions
+    fresh_steps: int = 10            # a chain this short MAY make an edge
+    optimize_above: float = 30.0     # map pixels: a loop edge this far off optimises the graph
     merge_distance: float = 0.5      # bottle widths: a bottle of this visit is an old one
     # Two boxes in one column of one row are one bottle; the weaker box is dropped.
     duplicate_overlap: float = 0.6   # of the narrower width
@@ -97,20 +106,87 @@ class StreamConfig:
     # anyway: the ground is new after all.
     trust_steps: int = 30
     max_wait: int = 30
-    # A projected bottle and a detection MUST be alike in size: an inflated projection takes
-    # the detection of a neighbour. A turn of the camera stretches the map across the
-    # shelf alone (the width doubles, the height stays), so both sides are checked.
-    max_height_ratio: float = 1.35
-    max_width_ratio: float = 1.6
-    # But a projection of another size whose centre stands right on the detection (within
-    # `reid_tight` of the detection width) is the bottle: near the edge of the registered
-    # region the homography stretches the projection (0.7 of the height at 1:11), and the
-    # neighbour that an inflated projection takes stands about half a bottle off.
-    reid_tight: float = 0.2
+    # Bottles are compared by the projected centre alone, across the shelf, in widths of the
+    # detection, and in one row (each centre inside the other's vertical span). Not by the
+    # projected box: a bottle is a cylinder, not a part of the shelf plane, so a homography
+    # from an oblique keyframe to a frontal frame stretches its box (1.7-1.9 times the width
+    # at 1:10) while its centre stays right. Normalised by the detection, not by the
+    # projection, an inflated projection does not bring a neighbour close either.
     # Young duplicates. A bottle started in the last `young_steps` that turns out to stand
     # where an older bottle stands (column distance below `merge_distance`, one row) is a
     # duplicate: it is merged into the older bottle, which keeps its id.
     young_steps: int = 30
+    # Neighbour history. The bottles of a shelf keep their order, so the bottles seen side
+    # by side in one row (centres within `adjacent_gap` bottle widths, nothing between) are
+    # counted as neighbours over the frames. A bottle has a habitual neighbour on a side
+    # when that one stood there in at least `habit_count` frames and `habit_share` of them.
+    # A re-identification is vetoed when a neighbour of the box has a habitual neighbour on
+    # that side other than the bottle (bottle 11 of the first frame "found" next to 108,
+    # whose neighbours were 8 and 13). A box left without a bottle takes the habitual
+    # neighbour of its neighbour, when that bottle is free in the frame and projects within
+    # `habit_reach` bottle widths.
+    adjacent_gap: float = 1.6
+    habit_count: int = 3
+    habit_share: float = 0.6
+    habit_reach: float = 3.0
+    # Neighbour rescue. A tracked bottle that found no detection gets a second try at its
+    # prediction moved by the median offset of the matched bottles around it (within
+    # `rescue_radius` bottle widths, at least `rescue_support` of them): when the bottles
+    # around keep their ids, the bottle among them keeps its id too.
+    # Visual confirmation. An old bottle is re-identified only where the frame has seen
+    # its place: a registration to its anchor keyframe, or to a keyframe at most
+    # `anchor_window` keyframes from it (made right before or after it, so tied to it by
+    # direct registrations), in the last `trust_steps`. The map alone is not enough: at
+    # 37 s the chain had carried the first keyframe next to the current view, and bottle
+    # 11 of the first frame was "found" next to bottle 108.
+    anchor_window: int = 2
+    rescue_radius: float = 3.0
+    rescue_support: int = 2
+    rescue_distance: float = 0.5
+    # The map of ids keeps the label of each bottle: the SIFT descriptors inside its box
+    # from its first `label_views` whole views on its first pass (frames with keypoints,
+    # `label_gap` steps apart at least; at most `label_size` descriptors a view). On a
+    # frame with keypoints each descriptor of a box votes for the bottle of its nearest
+    # label descriptor among the bottles of the map within `label_reach` bottle widths of
+    # the box (half a bottle height up or down), when it passes the ratio test
+    # `label_ratio` against the nearest descriptor of another of them: two bottles of one
+    # wine side by side cancel each other, and the place decides between them. The label
+    # of a box names a bottle with `label_votes` votes for it and `label_margin` times
+    # more than for any other.
+    # The check of the rows (the ideas of the user: no cell of the frame may contradict
+    # the map; a row holds different wines, so its labelled cells at both ends anchor
+    # it). The ids are given as before (tracking, place, neighbours); then in each row of
+    # the frame the anchors are the boxes whose labels name a bottle. An anchor that
+    # names a bottle other than the one its box holds counts only when the held bottle
+    # has a label (a new bottle has none: its label votes for a bottle of its wine
+    # nearby), and is not a twin of it: two bottles whose labels share `label_twins` of
+    # their descriptors (Lowe matches, the smaller share of the two ways) are one wine,
+    # and the label does not tell them apart (random pairs of the video 0.022 at the
+    # median and 0.094 at p99; two halves of the views of one bottle 0.25 at p10; 39 and
+    # 46, which a check of single cells swapped back and forth at 15-16 s, 0.156; 28 and
+    # 30, 0.27). The shift of an anchor is its box against the place of its bottle in
+    # the map; the shift that most anchors of the row agree on (within
+    # `label_tolerance` widths; a tie goes to the anchors that agree with their boxes)
+    # wins. When an anchor of the winning group disagrees with its box and the group has
+    # `label_support` anchors, the row is off: the anchors take their bottles, and the
+    # other boxes of the row the bottles at their places moved by the shift (the bottles
+    # of the keyframes of the anchors, within `anchor_window`: the map MAY hold two rows
+    # of one frame two bottles apart, 67 s, while the bottles of this pass stand in
+    # place). A single cell would leave the twins: at 67 s it gave 32, 34, 36, 40 for 32,
+    # 34, 36, 38 (36 and 38 are both Fiore). The boxes that lose their bottles are left
+    # free, and the free boxes take the released bottles by place. With `label_fix` off
+    # the check only logs.
+    label_views: int = 3
+    label_gap: int = 5
+    label_size: int = 200
+    label_ratio: float = 0.8
+    label_votes: int = 8
+    label_margin: float = 2.0
+    label_reach: float = 3.0
+    label_support: int = 2
+    label_tolerance: float = 0.35
+    label_twins: float = 0.12
+    label_fix: bool = True
     association: AssociationConfig = field(default_factory=AssociationConfig)
     features: FeatureConfig = field(default_factory=lambda: FeatureConfig(max_side=1280))
     homography: HomographyConfig = field(default_factory=HomographyConfig)
@@ -118,28 +194,39 @@ class StreamConfig:
 
 @dataclass
 class Bottle:
-    """A bottle of the map. Its place is the quadrilateral of its box corners in the map,
-    not an axis-aligned box: far from the first frame the map plane is stretched and
-    sheared, and the axis-aligned box of a sheared quadrilateral projects back into a
-    frame 2-4 times too wide, so the bottle stops matching its own detections."""
+    """A bottle of the map. Its place is the quadrilateral of its box corners in the pixels
+    of its anchor keyframe: it moves with that keyframe when the graph is optimised. A
+    quadrilateral, not an axis-aligned box: the axis-aligned box of a sheared
+    quadrilateral projects back into a frame 2-4 times too wide."""
 
     id: int
-    quad: np.ndarray                 # (4, 2) map coordinates of the box corners
+    anchor: int                      # the keyframe of the coordinates of `quad`
+    quad: np.ndarray                 # (4, 2) box corners in the anchor keyframe
     first_frame: int                 # the source frame number of the first sight
     last_seen: int                   # the tracker step of the last sight
     first_step: int = 0              # the tracker step of the first sight
     appearance: int = 1
     left: bool = False
     hits: int = 1
+    # The last box of the bottle and the chain of camera motions at that frame: a tracked
+    # bottle is predicted from its last box moved by the motions of the camera since, not
+    # from the map, whose box MAY carry an early bad box (a neck of a bottle behind in
+    # it), and not through the graph: at 71.4 s the frame passed from keyframe 21 to
+    # keyframe 4, which the graph holds one bottle apart, every tracked bottle of the
+    # upper row moved one box to the right, and 30 left its box to a new 121.
+    last_box: Box | None = None
+    last_M: np.ndarray | None = None
+    label: list[np.ndarray] = field(default_factory=list)   # descriptors, one array a view
+    labelled: int = -10 ** 9         # the step of the last view of the label
 
 
 @dataclass
 class Keyframe:
+    """A keyframe; its pose is node `index` of the graph."""
+
     frame: int
     step: int                        # the tracker step of the keyframe
-    H: np.ndarray                    # keyframe -> map
     features: FrameFeatures
-    quad: np.ndarray                 # the frame outline in the map
 
 
 @dataclass
@@ -165,19 +252,34 @@ class ShelfTracker:
     def __init__(self, size: tuple[int, int], cfg: StreamConfig = StreamConfig()):
         self.size = size
         self.cfg = cfg
-        self.H = np.eye(3)
+        self.graph = PoseGraph(size)
+        self.keyframes: list[Keyframe] = []
+        self.ref: int | None = None      # the reference keyframe of the frame
+        self.P = np.eye(3)               # frame -> reference keyframe
+        self.M = np.eye(3)               # frame -> first frame by the motions alone
+        self.anchored = 0                # the step since which P chains
+        self.dropped_edges = 0
+        self.rescued = 0
+        self.verified: dict[int, int] = {}  # keyframe -> the step of its last registration
+        self.waited = 0                     # steps in a row with boxes waiting for a place
+        self.right: dict[int, dict[int, int]] = {}   # a -> {b: frames b stood right of a}
+        self.left: dict[int, dict[int, int]] = {}    # b -> {a: frames a stood left of b}
+        self.vetoed = 0
+        self.suggested = 0
+        self.wanted: set[int] = set()       # the keyframes of the waiting bottles
+        self.need_registration = False
         self.bottles: list[Bottle] = []
         self.next_id = 0
-        self.keyframes: list[Keyframe] = []
         self.previous: tuple[np.ndarray, list[Box]] | None = None
         self.count = 0
         self.corrections: list[tuple[int, float]] = []
-        self.loops: list[tuple[int, float, int]] = []   # (frame, shift, merged bottles)
-        self.pending: tuple[int, int, float] | None = None   # (step, keyframe, shift)
-        self.localized = -10 ** 9        # the step of the last registration to an old keyframe
+        # (frame, loop edge error in frame widths, largest edge error before and after the
+        # optimisation in map pixels, merged bottles)
+        self.loops: list[tuple[int, float, float, float, int]] = []
+        self.pending: tuple[int, int, float] | None = None   # (step, keyframe, error)
+        self.localized = -10 ** 9        # the step of the last registration to a keyframe
         self.untrusted = 0               # untrusted steps in a row
         self.merged_young = 0
-        self.distorted = False           # a box waits for a registration (see _associate)
         self.trusted = True
         self.poses: dict[int, np.ndarray] = {}   # source frame number -> H (frame -> map)
         self.bottle_height: float | None = None  # the running bottle height in pixels
@@ -185,17 +287,153 @@ class ShelfTracker:
         self.dropped = 0
         self.lost_motion = 0
         self.timings: dict[str, float] = {}
+        self.votes: dict[int, dict[int, int]] = {}   # box -> {bottle index: votes} of this frame
+        # The check of the frames: (frame, box, id held or None, id named, votes for the
+        # named, votes for the held, outcome: fixed | lone | outvoted | logged).
+        self.contradictions: list[tuple] = []
+        self.label_checks = 0               # boxes compared with the label of their bottle
+        self.label_confirmed = 0
+        self.conflicted = 0                 # steps in a row with boxes in conflict with the map
+        self.conflicts = 0
+        self.closed = 0
 
     # ------------------------------------------------------------------ geometry
 
-    def _to_map(self, box: Box) -> np.ndarray:
-        """The map quadrilateral of a frame box."""
-        return project(self.H, box_corners(box))
+    @property
+    def H(self) -> np.ndarray:
+        """The homography of the frame into the map."""
+        return self.P if self.ref is None else self.graph.poses[self.ref] @ self.P
 
-    @staticmethod
-    def _to_frame(quad: np.ndarray, inverse: np.ndarray) -> Box:
-        """The frame box of a map quadrilateral."""
-        return bbox_of(project(inverse, quad))
+    def _keyframe_quad(self, index: int) -> np.ndarray:
+        return project(self.graph.poses[index], corners(self.size))
+
+    def _points(self, bottles: list[Bottle]) -> tuple[np.ndarray, np.ndarray]:
+        """The centres of the bottles in the current frame, and their vertical spans."""
+        inverse = np.linalg.inv(self.H)
+        into: dict[int, np.ndarray] = {}
+        centres = np.zeros((len(bottles), 2))
+        spans = np.zeros((len(bottles), 2))
+        for k, bottle in enumerate(bottles):
+            if bottle.anchor not in into:
+                into[bottle.anchor] = inverse @ self.graph.poses[bottle.anchor]
+            quad = project(into[bottle.anchor], bottle.quad)
+            centres[k] = project(into[bottle.anchor], bottle.quad.mean(0, keepdims=True))[0]
+            spans[k] = quad[:, 1].min(), quad[:, 1].max()
+        return centres, spans
+
+    def _tracked_points(self, bottles: list[Bottle]) -> tuple[np.ndarray, np.ndarray]:
+        """The centres and vertical spans of the last boxes of the bottles, moved into the
+        current frame. A bottle with no last box gets its map projection."""
+        centres, spans = self._points(bottles)
+        inverse = np.linalg.inv(self.M)
+        for k, bottle in enumerate(bottles):
+            if bottle.last_box is None:
+                continue
+            quad = project(inverse @ bottle.last_M, box_corners(bottle.last_box))
+            centres[k] = quad.mean(0)
+            spans[k] = quad[:, 1].min(), quad[:, 1].max()
+        return centres, spans
+
+    def _rows_of(self, boxes: list[Box]) -> list[list[int]]:
+        """The rows of the boxes (box indices, by the bottom edge), each left to right."""
+        height = self.bottle_height or 0.25 * self.size[1]
+        order = sorted(range(len(boxes)), key=lambda i: boxes[i][3])
+        rows: list[list[int]] = []
+        for i in order:
+            if rows and boxes[i][3] - boxes[rows[-1][-1]][3] <= self.cfg.row_gap * height:
+                rows[-1].append(i)
+            else:
+                rows.append([i])
+        return [sorted(row, key=lambda i: boxes[i][0] + boxes[i][2]) for row in rows]
+
+    def _neighbours(self, boxes: list[Box]) -> dict[int, tuple[int | None, int | None]]:
+        """The left and right neighbour (box indices) of each box in its row."""
+        result: dict[int, tuple[int | None, int | None]] = {i: (None, None) for i in range(len(boxes))}
+        centre = lambda i: (boxes[i][0] + boxes[i][2]) / 2
+        for row in self._rows_of(boxes):
+            for a, b in zip(row, row[1:]):
+                width = max(boxes[a][2] - boxes[a][0], boxes[b][2] - boxes[b][0], 0.8 * self._width())
+                if centre(b) - centre(a) <= self.cfg.adjacent_gap * width:
+                    result[a] = (result[a][0], b)
+                    result[b] = (a, result[b][1])
+        return result
+
+    def _place_confirmed(self, bottle: Bottle) -> bool:
+        """Whether the frame has recently registered to the anchor keyframe of the bottle
+        or to one at most `anchor_window` keyframes from it."""
+        cfg = self.cfg
+        return any(abs(bottle.anchor - k) <= cfg.anchor_window
+                   and self.count - step <= cfg.trust_steps for k, step in self.verified.items())
+
+    def _contradicted(self, bottle_id: int, left: int | None, right: int | None) -> bool:
+        """Whether the habits of the neighbours (bottle ids) deny the bottle its place."""
+        return ((left is not None and self._habit(self.right, left) not in (None, bottle_id))
+                or (right is not None and self._habit(self.left, right) not in (None, bottle_id)))
+
+    def _habit(self, table: dict[int, dict[int, int]], bottle: int) -> int | None:
+        """The habitual neighbour of a bottle on one side, or None."""
+        counts = table.get(bottle)
+        if not counts:
+            return None
+        top, count = max(counts.items(), key=lambda item: item[1])
+        if count >= self.cfg.habit_count and count >= self.cfg.habit_share * sum(counts.values()):
+            return top
+        return None
+
+    def _rename(self, old: int, new: int) -> None:
+        """Move the neighbour history of a merged bottle to the bottle it merged into."""
+        for table in (self.right, self.left):
+            counts = table.pop(old, {})
+            mine = table.setdefault(new, {})
+            for other, count in counts.items():
+                if other != new:
+                    mine[other] = mine.get(other, 0) + count
+            for owner, counts in table.items():
+                if old in counts:
+                    count = counts.pop(old)
+                    if owner != new:
+                        counts[new] = counts.get(new, 0) + count
+
+    def _width(self) -> float:
+        return self.bottle_width or 0.1 * self.size[0]
+
+    def _point_distance(self, boxes: list[Box], centres: np.ndarray,
+                        spans: np.ndarray) -> np.ndarray:
+        """The distances of boxes to bottle centres across the shelf, in widths of the box
+        (at least 0.8 of the bottle width: a box cut or half hidden is narrow); inf where
+        the centre is not in the row of the box."""
+        distance = np.full((len(boxes), len(centres)), np.inf)
+        if not len(centres):
+            return distance
+        for i, (x1, y1, x2, y2) in enumerate(boxes):
+            middle = (y1 + y2) / 2
+            row = ((centres[:, 1] >= y1) & (centres[:, 1] <= y2)
+                   & (spans[:, 0] <= middle) & (spans[:, 1] >= middle))
+            width = max(x2 - x1, 0.8 * self._width())
+            distance[i, row] = np.abs(centres[row, 0] - (x1 + x2) / 2) / width
+        return distance
+
+    def _same_place(self, one: list[Bottle], two: list[Bottle]) -> np.ndarray:
+        """The distances between two lists of bottles, as `_point_distance`, in bottle
+        widths."""
+        c1, s1 = self._points(one)
+        c2, s2 = self._points(two)
+        distance = np.full((len(one), len(two)), np.inf)
+        for i in range(len(one)):
+            row = ((c2[:, 1] >= s1[i, 0]) & (c2[:, 1] <= s1[i, 1])
+                   & (s2[:, 0] <= c1[i, 1]) & (s2[:, 1] >= c1[i, 1]))
+            distance[i, row] = np.abs(c2[row, 0] - c1[i, 0]) / self._width()
+        return distance
+
+    def _in_view(self, centres: np.ndarray, margin: float = 0.0) -> np.ndarray:
+        w, h = self.size
+        return ((centres[:, 0] >= -margin) & (centres[:, 0] < w + margin)
+                & (centres[:, 1] >= -margin) & (centres[:, 1] < h + margin))
+
+    def _local_quad(self, box: Box, anchor: int) -> np.ndarray:
+        """The quadrilateral of a frame box in the pixels of keyframe `anchor`."""
+        to_anchor = np.linalg.inv(self.graph.poses[anchor]) @ self.H
+        return project(to_anchor, box_corners(box))
 
     def _quad(self) -> np.ndarray:
         return project(self.H, corners(self.size))
@@ -228,6 +466,9 @@ class ShelfTracker:
         `min_width`)."""
         cfg = self.cfg
         margin = cfg.edge_margin * self.size[0]
+        whole = [d for d in detections if margin <= d.box[0] and d.box[2] <= self.size[0] - margin]
+        self.dropped += len(detections) - len(whole)
+        detections = whole
         self.bottle_height = self._running(self.bottle_height, [
             d.box[3] - d.box[1] for d in detections
             if d.box[1] > margin and d.box[3] < self.size[1] - margin], q=75)
@@ -327,115 +568,131 @@ class ShelfTracker:
     def _features(self, frame, detections) -> FrameFeatures:
         return extract(frame, self.cfg.features, boxes_mask(self.size, detections))
 
+    def _registrations(self, features: FrameFeatures, candidates: list[int]):
+        """Register the frame to each candidate keyframe. Return [(keyframe, R frame ->
+        keyframe, strong)] of the good ones."""
+        cfg = self.cfg
+        good = []
+        for index in candidates:
+            points_k, points_f = match(self.keyframes[index].features, features, cfg.features)
+            registration = self._register(points_k, points_f)
+            if (registration.ok and registration.inliers >= cfg.min_loop_inliers
+                    and registration.coverage >= cfg.min_loop_coverage):
+                strong = (registration.inliers >= cfg.strong_inliers
+                          and registration.coverage >= cfg.strong_coverage)
+                good.append((index, registration.H, strong, registration.inliers))
+                self.verified[index] = self.count
+        return good
+
     def _relocalize(self, number: int, features: FrameFeatures) -> None:
-        """Register the frame to old keyframes near the predicted place. A small correction
-        is applied at once; a jump only when two registrations in a row agree."""
+        """Register the frame to the keyframes near its predicted place (the most
+        overlapping first), make the best one the reference, and add loop edges between
+        the keyframes that registered: an edge from two fresh registrations of one frame
+        has no chain in it. An edge through the chain P is added only while P is fresh."""
         cfg = self.cfg
         quad = self._quad()
         centre = quad.mean(0)
         width = float(np.linalg.norm(quad[1] - quad[0]))
-        # Every keyframe near the predicted place, of any age: on the first pass the recent
-        # keyframes keep the frame registered (small corrections, a trusted place).
-        nearby = [(float(np.linalg.norm(kf.quad.mean(0) - centre)), index)
-                  for index, kf in enumerate(self.keyframes)]
-        nearby = [c for c in nearby if c[0] <= cfg.search_radius * width]
-        # One keyframe per place, the oldest: the place of the old bottles is the place of
-        # its first keyframe. A later keyframe of the same place MAY carry the drift of the
-        # visit that made it.
-        layer: list[tuple[float, int]] = []
-        for distance, index in sorted(nearby, key=lambda c: self.keyframes[c[1]].step):
-            if all(np.linalg.norm(self.keyframes[index].quad.mean(0)
-                                  - self.keyframes[other].quad.mean(0)) > cfg.same_place * width
-                   for _, other in layer):
-                layer.append((distance, index))
-        grid = np.array([[x, y] for x in np.linspace(0.2, 0.8, 4) * self.size[0]
-                         for y in np.linspace(0.2, 0.8, 4) * self.size[1]])
-        # The oldest first among the keyframes that likely overlap the frame: drift MAY put
-        # a later keyframe of the place farther than `same_place` from its first keyframe,
-        # and a registration to the later one keeps the frame in the drifted layer, away
-        # from the old bottles of the place (their projections twice too wide at 1:10).
-        order = sorted(layer, key=lambda c: (_shared(quad, self.keyframes[c[1]].quad)
-                                              < cfg.likely_overlap,
-                                              self.keyframes[c[1]].step))
-        for _, index in order[:cfg.loop_candidates]:
-            keyframe = self.keyframes[index]
-            points_k, points_f = match(keyframe.features, features, cfg.features)
-            registration = self._register(points_k, points_f)
-            if (not registration.ok or registration.inliers < cfg.min_loop_inliers
-                    or registration.coverage < cfg.min_loop_coverage):
-                continue
-            H_new = keyframe.H @ registration.H
-            shift = np.linalg.norm(project(H_new, grid) - project(self.H, grid), axis=1).max()
-            shift = float(shift / self.size[0])
-            if shift <= cfg.small_correction:
-                self.H = H_new
-                self.corrections.append((number, shift))
-                self.pending = None
-                self.localized = self.count
-                return
-            if shift > cfg.max_jump:
-                continue
-            strong = (registration.inliers >= cfg.strong_inliers
-                      and registration.coverage >= cfg.strong_coverage)
-            if strong or (self.pending is not None and self.pending[1] == index
-                          and self.count - self.pending[0] <= 2 * cfg.reloc_every
-                          and abs(self.pending[2] - shift) <= 0.1):
-                self.localized = self.count
-                merged = self._close_loop(H_new)
-                self.loops.append((number, shift, merged))
-                self.corrections.append((number, shift))
-                self.pending = None
-            else:
-                self.pending = (self.count, index, shift)
+        candidates = []
+        for index in range(len(self.keyframes)):
+            other = self._keyframe_quad(index)
+            if np.linalg.norm(other.mean(0) - centre) <= cfg.search_radius * width:
+                candidates.append((_shared(quad, other), index))
+        order = [index for _, index in sorted(candidates, reverse=True)[:cfg.loop_candidates]]
+        order += [k for k in sorted(self.wanted) if k not in order][:cfg.loop_candidates]
+        self.wanted = set()
+        good = self._registrations(features, order)
+        if not good:
             return
+        best, R_best, strong_best, _ = max(good, key=lambda g: g[3])
+        edges = []
+        for index, R, strong, _ in good:
+            if index != best:
+                T = R @ np.linalg.inv(R_best)          # keyframe best -> keyframe index
+                edges.append((Edge(index, best, T / T[2, 2], cfg.loop_weight, "loop"),
+                              strong and strong_best))
+        if self.ref not in [g[0] for g in good] and self.count - self.anchored <= cfg.fresh_steps:
+            T = R_best @ np.linalg.inv(self.P)         # old reference -> keyframe best
+            edges.append((Edge(best, self.ref, T / T[2, 2], cfg.chain_weight, "chain"),
+                          strong_best))
+        worst = 0.0
+        for edge, strong in edges:
+            error = self.graph.error(edge) / self.size[0]
+            if error > cfg.max_jump or (error > cfg.small_correction and not strong):
+                continue
+            self.graph.replace(edge)
+            worst = max(worst, error)
+        self.ref, self.P = best, R_best
+        self.anchored = self.localized = self.count
+        self.corrections.append((number, worst))
+        if worst * self.size[0] > cfg.optimize_above:
+            before, after, dropped = self.graph.optimize_robust()
+            self.dropped_edges += dropped
+            merged = self._merge_duplicates()
+            self.loops.append((number, worst, before, after, merged))
 
-    def _close_loop(self, H_new: np.ndarray) -> int:
-        """Move the map of this visit by the correction, and merge the bottles of this
-        visit that land on old bottles. Return the number of merged bottles."""
+    def _merge_duplicates(self) -> int:
+        """After an optimisation, merge the bottles that now stand on one place: a later
+        bottle into the earlier one, which keeps its id. A duplicate starts after its
+        original was last seen; two bottles seen together are two bottles (neighbours MAY
+        land close after an optimisation)."""
         cfg = self.cfg
-        C = H_new @ np.linalg.inv(self.H)
-        self.H = H_new
-        for kf in self.keyframes:
-            if self.count - kf.step <= cfg.recent_steps:
-                kf.H = C @ kf.H
-                kf.quad = project(C, kf.quad)
-        recent = [b for b in self.bottles if self.count - b.first_step <= cfg.recent_steps]
-        old = [b for b in self.bottles if self.count - b.first_step > cfg.recent_steps]
-        for bottle in recent:
-            bottle.quad = project(C, bottle.quad)
-        # Compare in the current frame, where the map distortion does not matter.
-        inverse = np.linalg.inv(self.H)
-        frame: Box = (0.0, 0.0, float(self.size[0]), float(self.size[1]))
-        recent_boxes = [self._to_frame(b.quad, inverse) for b in recent]
-        old_boxes = [self._to_frame(b.quad, inverse) for b in old]
-        recent = [b for b, box in zip(recent, recent_boxes) if clip(box, frame) is not None]
-        recent_boxes = [box for box in recent_boxes if clip(box, frame) is not None]
-        old = [b for b, box in zip(old, old_boxes) if clip(box, frame) is not None]
-        old_boxes = [box for box in old_boxes if clip(box, frame) is not None]
-        if not recent or not old:
+        centres, _ = self._points(self.bottles)
+        seen = [b for b, inside in zip(self.bottles, self._in_view(centres)) if inside]
+        if len(seen) < 2:
             return 0
-        distance = distance_matrix([clip(box, frame) for box in recent_boxes],
-                                   [clip(box, frame) for box in old_boxes],
-                                   [box[2] - box[0] for box in recent_boxes],
-                                   [box[2] - box[0] for box in old_boxes], cfg.association)
-        merged = set()
-        for i, j in hungarian(distance, cfg.merge_distance).items():
-            young, earlier = recent[i], old[j]
-            if earlier.left or self.count - earlier.last_seen > cfg.track_gap:
+        distance = self._same_place(seen, seen)
+        pairs = []
+        for a, one in enumerate(seen):
+            for b, two in enumerate(seen):
+                if (one.id < two.id and distance[a, b] <= cfg.merge_distance
+                        and two.first_step > one.last_seen and self._place_confirmed(one)):
+                    pairs.append((distance[a, b], a, b))
+        gone: set[int] = set()
+        for _, a, b in sorted(pairs):
+            if seen[a].id in gone or seen[b].id in gone:
+                continue
+            self._absorb(seen[a], seen[b])
+            self._rename(seen[b].id, seen[a].id)
+            gone.add(seen[b].id)
+        self.bottles = [b for b in self.bottles if b.id not in gone]
+        return len(gone)
+
+    def _absorb(self, earlier: Bottle, later: Bottle) -> None:
+        """Make `earlier` take the place of its duplicate `later`."""
+        if later.last_seen > earlier.last_seen:
+            if earlier.left or self.count - earlier.last_seen > self.cfg.track_gap:
                 earlier.appearance += 1
-            earlier.left = False
-            earlier.last_seen = max(earlier.last_seen, young.last_seen)
-            merged.add(young.id)
-        self.bottles = [b for b in self.bottles if b.id not in merged]
-        return len(merged)
+            earlier.left = later.left
+            earlier.last_seen = later.last_seen
 
     def _needs_keyframe(self) -> bool:
         """A keyframe where no keyframe covers the frame enough, and only where the place
-        of the frame is trusted. Otherwise a revisit before its loop closure would store a
-        second, drifted keyframe of the place."""
+        of the frame is trusted."""
+        if not self.keyframes:
+            return True
         quad = self._quad()
-        return self.trusted and (not self.keyframes or max(
-            _shared(quad, kf.quad) for kf in self.keyframes) < self.cfg.keyframe_overlap)
+        return self.trusted and max(_shared(quad, self._keyframe_quad(k))
+                                    for k in range(len(self.keyframes))) < self.cfg.keyframe_overlap
+
+    def _add_keyframe(self, number: int, features: FrameFeatures) -> None:
+        """The frame becomes a keyframe and the reference. Its edge from the old reference
+        is a direct registration of the two keyframes when they register (no chain in
+        it); else the chain P since the old reference, with less weight."""
+        cfg = self.cfg
+        T, weight, kind = self.P.copy(), cfg.chain_weight, "chain"
+        if self.ref is not None:
+            good = self._registrations(features, [self.ref])
+            if good:
+                T, weight, kind = good[0][1], cfg.loop_weight, "odometry"
+        pose = T if self.ref is None else self.graph.poses[self.ref] @ T
+        index = self.graph.add(pose)
+        self.keyframes.append(Keyframe(number, self.count, features))
+        if self.ref is not None:
+            self.graph.connect(self.ref, index, T, weight, kind)
+        self.ref, self.P = index, np.eye(3)
+        self.anchored = self.count
+        self.verified[index] = self.count
 
     def _near_old_keyframe(self) -> bool:
         """Whether an old keyframe (not of this visit) lies near the predicted place."""
@@ -444,8 +701,9 @@ class ShelfTracker:
         centre = quad.mean(0)
         width = float(np.linalg.norm(quad[1] - quad[0]))
         return any(self.count - kf.step > cfg.recent_steps
-                   and np.linalg.norm(kf.quad.mean(0) - centre) <= cfg.search_radius * width
-                   for kf in self.keyframes)
+                   and np.linalg.norm(self._keyframe_quad(k).mean(0) - centre)
+                   <= cfg.search_radius * width
+                   for k, kf in enumerate(self.keyframes))
 
     def _trusted(self) -> bool:
         """Whether the place of the frame is trusted (see `trust_steps`)."""
@@ -461,62 +719,97 @@ class ShelfTracker:
     def _associate(self, number: int, detections: list[Detection],
                    trusted: bool = True) -> list[Shown]:
         cfg = self.cfg
-        frame: Box = (0.0, 0.0, float(self.size[0]), float(self.size[1]))
-        inverse = np.linalg.inv(self.H)
-        projected = [self._to_frame(b.quad, inverse) for b in self.bottles]
-        in_view = [clip(box, frame) is not None for box in projected]
-
+        centres, spans = self._points(self.bottles)
+        in_view = self._in_view(centres)
         tracked = [k for k, b in enumerate(self.bottles)
                    if in_view[k] and not b.left and self.count - b.last_seen <= cfg.track_gap]
-        others = [k for k, b in enumerate(self.bottles) if in_view[k] and k not in set(tracked)]
+        confirmed = {k for k, step in self.verified.items()
+                     if self.count - step <= cfg.trust_steps}
+        old = [k for k, b in enumerate(self.bottles) if in_view[k] and k not in set(tracked)]
+        near = [k for k in old
+                if any(abs(self.bottles[k].anchor - c) <= cfg.anchor_window for c in confirmed)]
+        unconfirmed = [k for k in old if k not in set(near)]
         boxes = [d.box for d in detections]
-        widths = [d.width for d in detections]
 
-        blocked: set[int] = set()
-
-        def assign(pool, free, limit, gate):
+        def assign(pool, free, limit, points=(centres, spans)):
             if not pool or not free:
                 return {}
-            cut = [clip(projected[k], frame) for k in pool]
-            distance = distance_matrix([boxes[i] for i in free], cut,
-                                       [widths[i] for i in free],
-                                       [projected[k][2] - projected[k][0] for k in pool],
-                                       cfg.association)
-            for a, i in enumerate(free if gate else []):
-                height = boxes[i][3] - boxes[i][1]
-                for b, box in enumerate(cut):
-                    if box is None or distance[a, b] > limit:
-                        continue
-                    ratio_h = (box[3] - box[1]) / max(height, 1e-6)
-                    full = projected[pool[b]]
-                    ratio_w = (full[2] - full[0]) / max(widths[i], 1e-6)
-                    if (not 1 / cfg.max_height_ratio <= ratio_h <= cfg.max_height_ratio
-                            or not 1 / cfg.max_width_ratio <= ratio_w <= cfg.max_width_ratio):
-                        offset = abs((boxes[i][0] + boxes[i][2]) - (full[0] + full[2])) / 2
-                        offset /= max(widths[i], 1e-6)
-                        if offset <= cfg.reid_tight:
-                            distance[a, b] = offset
-                        else:
-                            distance[a, b] = np.inf
-                            blocked.add(i)
+            distance = self._point_distance([boxes[i] for i in free], points[0][pool],
+                                            points[1][pool])
             return {free[i]: pool[j] for i, j in hungarian(distance, limit).items()}
 
         free = list(range(len(detections)))
-        # The size check only for re-identification: a tracked bottle projects well, and
-        # the box of a tracked bottle changes width when a neighbour hides a part of it.
-        first = assign(tracked, free, cfg.track_distance, gate=False)
-        # A box cut by the frame edge is not re-identified: its size says nothing, and an
-        # inflated projection at the edge would take it. It waits to be whole.
+        last = self._tracked_points(self.bottles)
+        first = assign(tracked, free, cfg.track_distance, last)
+        first.update(self._rescue(boxes, [i for i in free if i not in first],
+                                  [k for k in tracked if k not in first.values()], first, last))
+        # A box cut by the top or bottom of the frame is not re-identified: it waits to be
+        # whole.
         free = [i for i in free if i not in first and not self._cut(boxes[i])]
-        second = assign(others, free, cfg.reid_distance, gate=True) if trusted else {}
+        second = assign(near, free, cfg.reid_distance) if trusted else {}
         matched = {**first, **second}
-        # An old bottle at the place of a box, but of another size: the map is distorted
-        # here now. The box waits (no new bottle), and the next step registers the frame.
-        blocked -= set(second)
-        if blocked:
-            self.distorted = True
+        # A box at the place of an old bottle whose place the frame has not confirmed yet
+        # waits (no new bottle) and asks for a registration; after `max_wait` such steps in
+        # a row it starts a bottle: the place is new after all.
+        free = [i for i in free if i not in second]
+        maybe = assign(unconfirmed, free, cfg.reid_distance) if trusted else {}
+        waiting = set(maybe)
+        self.wanted |= {self.bottles[k].anchor for k in maybe.values()}
+        self.waited = self.waited + 1 if waiting else 0
+        if self.waited > cfg.max_wait:
+            waiting = set()
+        if waiting:
+            self.need_registration = True
+
+        neighbours = self._neighbours(boxes)
+        ids = {i: self.bottles[k].id for i, k in matched.items()}
+        # Veto the re-identifications that the history of the neighbours contradicts.
+        for i, k in second.items():
+            left, right = neighbours[i]
+            if self._contradicted(ids[i], ids.get(left), ids.get(right)):
+                del matched[i], ids[i]
+                self.vetoed += 1
+        # Suggest the habitual neighbours of the neighbours to the boxes left over.
+        index_of = {b.id: k for k, b in enumerate(self.bottles)}
+        for _ in range(3):
+            taken = set(matched.values())
+            changed = False
+            for i in range(len(detections)):
+                if i in matched or self._cut(boxes[i]):
+                    continue
+                left, right = neighbours[i]
+                from_left = self._habit(self.right, ids[left]) if left in ids else None
+                from_right = self._habit(self.left, ids[right]) if right in ids else None
+                if from_left is not None and from_right is not None and from_left != from_right:
+                    continue
+                suggestion = from_left if from_left is not None else from_right
+                k = index_of.get(suggestion)
+                x1, _, x2, _ = boxes[i]
+                if (k is None or k in taken or abs(centres[k][0] - (x1 + x2) / 2)
+                        > cfg.habit_reach * self._width()):
+                    continue
+                matched[i], ids[i] = k, suggestion
+                taken.add(k)
+                waiting.discard(i)
+                self.suggested += 1
+                changed = True
+            if not changed:
+                break
+        # Check every row against the labels of its boxes; the boxes left free take the
+        # released bottles by place.
+        released = self._check_rows(number, boxes, matched, centres, spans)
+        if released:
+            owned = set(matched.values())
+            free = [i for i in range(len(detections)) if i not in matched and not self._cut(boxes[i])]
+            pool = sorted(released | {k for k in near if k not in owned})
+            matched.update(assign([k for k in pool if k not in owned], free, cfg.reid_distance))
+            ids = {i: self.bottles[k].id for i, k in matched.items()}
+            waiting -= set(matched)
+        conflicts, closed = self._conflicts(boxes, matched, ids, neighbours, centres, spans,
+                                            in_view)
 
         shown = []
+        count_before = len(self.bottles)
         for i, det in enumerate(detections):
             cut = self._cut(det.box)
             if i in matched:
@@ -525,55 +818,309 @@ class ShelfTracker:
                     bottle.appearance += 1
                     bottle.left = False
                 bottle.last_seen = self.count
+                bottle.last_box, bottle.last_M = boxes[i], self.M.copy()
                 if not cut and bottle.hits < cfg.settle_hits:
                     self._observe(bottle, det.box)
                 status = "new" if bottle.appearance == 1 else "returning"
                 shown.append(Shown(det.box, status, bottle.id))
-            elif not cut and det.score >= cfg.new_score and (not trusted or i in blocked):
+            elif i in closed:
+                shown.append(Shown(det.box, "ignored"))
+            elif not cut and det.score >= cfg.new_score and (not trusted or i in waiting
+                                                             or i in conflicts):
                 shown.append(Shown(det.box, "pending"))
             elif not cut and det.score >= cfg.new_score:
-                bottle = Bottle(self.next_id, self._to_map(det.box), number, self.count,
-                                first_step=self.count)
+                bottle = Bottle(self.next_id, self.ref, project(self.P, box_corners(det.box)),
+                                number, self.count, first_step=self.count,
+                                last_box=det.box, last_M=self.M.copy())
                 self.next_id += 1
                 self.bottles.append(bottle)
                 shown.append(Shown(det.box, "new", bottle.id))
             else:
                 shown.append(Shown(det.box, "ignored"))
 
-        # A bottle that is now clearly outside the frame has left the view. The bottles
-        # that this frame started are in view.
-        for k, bottle in enumerate(self.bottles[:len(projected)]):
-            x1, y1, x2, y2 = projected[k]
-            margin = cfg.leave_margin * (x2 - x1)
-            if (x2 < -margin or x1 > self.size[0] + margin or y2 < -margin
-                    or y1 > self.size[1] + margin):
-                bottle.left = True
-        return self._merge_young(shown)
+        # A bottle whose centre is now clearly outside the frame has left the view. The
+        # bottles that this frame started are in view.
+        inside = self._in_view(centres, cfg.leave_margin * self._width())
+        for k in range(count_before):
+            if not inside[k]:
+                self.bottles[k].left = True
+        shown = self._merge_young(shown, neighbours)
+        for i, (_, right) in neighbours.items():
+            a, b = shown[i].bottle, shown[right].bottle if right is not None else None
+            if a is not None and b is not None and a != b:
+                self.right.setdefault(a, {})[b] = self.right.get(a, {}).get(b, 0) + 1
+                self.left.setdefault(b, {})[a] = self.left.get(b, {}).get(a, 0) + 1
+        return shown
 
-    def _merge_young(self, shown: list[Shown]) -> list[Shown]:
+    def _box_descriptors(self, features: FrameFeatures | None, boxes: list[Box]) -> list:
+        """The descriptors of the keypoints inside each box (None for a cut box)."""
+        out: list = [None] * len(boxes)
+        if features is None or features.descriptors is None or not len(features.points):
+            return out
+        x, y = features.points[:, 0], features.points[:, 1]
+        for i, (x1, y1, x2, y2) in enumerate(boxes):
+            if not self._cut(boxes[i]):
+                out[i] = features.descriptors[(x >= x1) & (x <= x2) & (y >= y1) & (y <= y2)]
+        return out
+
+    def _label_votes(self, descriptors: list, boxes: list[Box]) -> dict[int, dict[int, int]]:
+        """The votes of the descriptors of each box for the labels of the bottles of the
+        map near it (see `label_views`): box -> {bottle index: votes}."""
+        cfg = self.cfg
+        out: dict[int, dict[int, int]] = {}
+        labelled = [k for k, b in enumerate(self.bottles) if b.label]
+        if not labelled or not any(d is not None and len(d) for d in descriptors):
+            return out
+        centres, _ = self._points(self.bottles)
+        width = self._width()
+        height = self.bottle_height or 0.25 * self.size[1]
+        matcher = cv2.BFMatcher(cv2.NORM_L2)
+        for i, query in enumerate(descriptors):
+            if query is None or len(query) < cfg.label_votes:
+                continue
+            x1, y1, x2, y2 = boxes[i]
+            near = [k for k in labelled
+                    if abs(centres[k, 0] - (x1 + x2) / 2) <= cfg.label_reach * width
+                    and abs(centres[k, 1] - (y1 + y2) / 2) <= 0.5 * height]
+            if not near:
+                continue
+            train = np.concatenate([np.concatenate(self.bottles[k].label) for k in near])
+            owner = np.concatenate([np.full(sum(len(v) for v in self.bottles[k].label), k)
+                                    for k in near])
+            votes: dict[int, int] = {}
+            for candidates in matcher.knnMatch(query, train, k=min(8, len(train))):
+                if not candidates:
+                    continue
+                best = candidates[0]
+                other = next((m for m in candidates[1:]
+                              if owner[m.trainIdx] != owner[best.trainIdx]), None)
+                if other is None or best.distance < cfg.label_ratio * other.distance:
+                    k = int(owner[best.trainIdx])
+                    votes[k] = votes.get(k, 0) + 1
+            out[i] = votes
+        return out
+
+    def _says(self, votes: dict[int, int] | None) -> int | None:
+        """The bottle that the label of a box names, if any (see `label_votes`)."""
+        if not votes:
+            return None
+        ranked = sorted(votes.values(), reverse=True)
+        best = max(votes, key=votes.get)
+        if ranked[0] >= self.cfg.label_votes and (
+                len(ranked) == 1 or ranked[0] >= self.cfg.label_margin * ranked[1]):
+            return best
+        return None
+
+    def _twins(self, a: int, b: int) -> bool:
+        """Whether the labels of bottles a and b (indices) are of one wine (see
+        `label_twins`)."""
+        one, two = self.bottles[a].label, self.bottles[b].label
+        if not one or not two:
+            return False
+        one, two = np.concatenate(one), np.concatenate(two)
+        matcher = cv2.BFMatcher(cv2.NORM_L2)
+
+        def share(x, y):
+            pairs = matcher.knnMatch(x, y, k=2)
+            good = sum(len(c) == 2 and c[0].distance < self.cfg.label_ratio * c[1].distance
+                       for c in pairs)
+            return good / max(len(x), 1)
+
+        return min(share(one, two), share(two, one)) >= self.cfg.label_twins
+
+    def _check_rows(self, number: int, boxes: list[Box], matched: dict[int, int],
+                    centres: np.ndarray, spans: np.ndarray) -> set[int]:
+        """The check of the rows (see `label_fix`). Change `matched` in place; return the
+        bottles released by the boxes that took other bottles."""
+        cfg = self.cfg
+        votes = self.votes
+        width = self._width()
+        height = self.bottle_height or 0.25 * self.size[1]
+        says = {i: self._says(v) for i, v in votes.items() if not self._cut(boxes[i])}
+        for i, k in matched.items():
+            if i in votes and self.bottles[k].label:
+                self.label_checks += 1
+                self.label_confirmed += says.get(i) == k
+        middle = lambda i: np.array([(boxes[i][0] + boxes[i][2]) / 2, (boxes[i][1] + boxes[i][3]) / 2])
+        released: set[int] = set()
+
+        def log(i, k, outcome):
+            held = matched.get(i)
+            self.contradictions.append((
+                number, i, None if held is None else self.bottles[held].id, self.bottles[k].id,
+                votes.get(i, {}).get(k, 0), 0 if held is None else votes.get(i, {}).get(held, 0),
+                outcome))
+
+        for row in self._rows_of(boxes):
+            anchors = {}
+            for i in row:
+                k, held = says.get(i), matched.get(i)
+                if k is None or (held is not None and held != k and (
+                        not self.bottles[held].label or self._twins(held, k))):
+                    continue
+                anchors[i] = k
+            if all(matched.get(i) == k for i, k in anchors.items()):
+                continue                      # the labels of the row agree with its ids
+            shifts = {i: middle(i) - centres[k] for i, k in anchors.items()}
+
+            def agreeing(i):
+                return [j for j in shifts
+                        if abs(shifts[j][0] - shifts[i][0]) <= cfg.label_tolerance * width
+                        and abs(shifts[j][1] - shifts[i][1]) <= 0.3 * height]
+
+            best = max(shifts, key=lambda i: (len(agreeing(i)),
+                                              sum(matched.get(j) == anchors[j] for j in agreeing(i))))
+            group = agreeing(best)
+            wrong = [i for i in group if matched.get(i) != anchors[i]]
+            outvoted = [i for i in anchors if i not in group and matched.get(i) != anchors[i]]
+            for i in outvoted:
+                log(i, anchors[i], "outvoted")
+            if not wrong:
+                continue
+            if len(group) < cfg.label_support:
+                for i in wrong:
+                    log(i, anchors[i], "lone")
+                continue
+            shift = np.median([shifts[i] for i in group], axis=0)
+            target = {i: anchors[i] for i in group}
+            keyframes = {self.bottles[k].anchor for k in target.values()}
+            others = [i for i in row if i not in target and not self._cut(boxes[i])]
+            pool = [k for k, b in enumerate(self.bottles) if k not in set(target.values())
+                    and any(abs(b.anchor - a) <= cfg.anchor_window for a in keyframes)]
+            if others and pool:
+                distance = self._point_distance([boxes[i] for i in others], centres[pool] + shift,
+                                                spans[pool] + shift[1])
+                target.update({others[a]: pool[b]
+                               for a, b in hungarian(distance, cfg.reid_distance).items()})
+            changes = [i for i in row if i in target and matched.get(i) != target[i]]
+            for i in changes:
+                log(i, target[i], "fixed" if cfg.label_fix else "logged")
+            if not cfg.label_fix:
+                continue
+            owner = {k: j for j, k in matched.items()}
+            for i in changes:
+                k = target[i]
+                holder = owner.get(k)
+                if holder is not None and holder not in target:
+                    del matched[holder]       # the box loses its bottle
+                held = matched.get(i)
+                if held is not None and held not in target.values():
+                    released.add(held)
+                matched[i] = k
+                owner[k] = i
+                released.discard(k)
+        return released
+
+    def _learn_labels(self, shown: list[Shown], descriptors: list) -> None:
+        """Keep the label of each bottle from its first whole views (see `label_views`)."""
+        cfg = self.cfg
+        index_of = {b.id: k for k, b in enumerate(self.bottles)}
+        for item, query in zip(shown, descriptors):
+            k = index_of.get(item.bottle)
+            if k is None or query is None or not len(query):
+                continue
+            bottle = self.bottles[k]
+            if (bottle.appearance == 1 and len(bottle.label) < cfg.label_views
+                    and self.count - bottle.labelled >= cfg.label_gap):
+                bottle.label.append(query[:cfg.label_size])
+                bottle.labelled = self.count
+
+    def _conflicts(self, boxes: list[Box], matched: dict[int, int], ids: dict[int, int],
+                   neighbours: dict, centres: np.ndarray, spans: np.ndarray,
+                   in_view: np.ndarray) -> tuple[set[int], set[int]]:
+        """The boxes left without a bottle that a new bottle would put in conflict with the
+        map. A box between two bottles that are habitual neighbours of each other is
+        closed: the map has no place between them (90 s: a bottle deep in the gap between
+        69 and 68). A box that stands on the place of a bottle (within `reid_distance`), or
+        where the habitual neighbour of its neighbour stands, while another box of the
+        frame has taken that bottle, is in conflict: it waits, and after `max_wait` steps
+        in a row with conflicts it starts a bottle (the map MAY be wrong there)."""
+        cfg = self.cfg
+        owner = {k: i for i, k in matched.items()}
+        index_of = {b.id: k for k, b in enumerate(self.bottles)}
+        free = [i for i in range(len(boxes)) if i not in matched and not self._cut(boxes[i])]
+        conflicts, closed = set(), set()
+        for i in free:
+            left, right = neighbours[i]
+            if (left in ids and right in ids
+                    and (self._habit(self.right, ids[left]) == ids[right]
+                         or self._habit(self.left, ids[right]) == ids[left])):
+                closed.add(i)
+        free = [i for i in free if i not in closed]
+        if free and owner:
+            distance = self._point_distance([boxes[i] for i in free], centres, spans)
+            for a, i in enumerate(free):
+                on = [int(k) for k in np.flatnonzero(distance[a] <= cfg.reid_distance) if in_view[k]]
+                left, right = neighbours[i]
+                for table, side in ((self.right, left), (self.left, right)):
+                    habit = self._habit(table, ids[side]) if side in ids else None
+                    if habit in index_of:
+                        on.append(index_of[habit])
+                if any(k in owner and owner[k] != i for k in on):
+                    conflicts.add(i)
+        self.conflicted = self.conflicted + 1 if conflicts else 0
+        if self.conflicted > cfg.max_wait:
+            conflicts = set()
+        self.conflicts += len(conflicts)
+        self.closed += len(closed)
+        return conflicts, closed
+
+    def _rescue(self, boxes: list[Box], free: list[int], lost: list[int],
+                matched: dict[int, int], points: tuple[np.ndarray, np.ndarray]) -> dict[int, int]:
+        """The neighbour rescue (see `rescue_radius`): match the lost tracked bottles to
+        the free boxes at their predictions moved by the offsets of the matched bottles
+        around them. The row test is lenient: the box of a bottle MAY have grown or shrunk
+        (a neck behind it in or out)."""
+        cfg = self.cfg
+        if not free or not lost or len(matched) < cfg.rescue_support:
+            return {}
+        centres, _ = points
+        width = self._width()
+        pairs = [(k, np.array([(boxes[i][0] + boxes[i][2]) / 2, (boxes[i][1] + boxes[i][3]) / 2])
+                  - centres[k]) for i, k in matched.items()]
+        distance = np.full((len(free), len(lost)), np.inf)
+        for b, k in enumerate(lost):
+            near = [offset for m, offset in pairs
+                    if np.linalg.norm(centres[m] - centres[k]) <= cfg.rescue_radius * width]
+            if len(near) < cfg.rescue_support:
+                continue
+            x, y = centres[k] + np.median(near, axis=0)
+            for a, i in enumerate(free):
+                x1, y1, x2, y2 = boxes[i]
+                slack = 0.25 * (y2 - y1)
+                if y1 - slack <= y <= y2 + slack:
+                    distance[a, b] = abs((x1 + x2) / 2 - x) / max(x2 - x1, 0.8 * width)
+        found = {free[a]: lost[b] for a, b in hungarian(distance, cfg.rescue_distance).items()}
+        self.rescued += len(found)
+        return found
+
+    def _merge_young(self, shown: list[Shown], neighbours: dict) -> list[Shown]:
         """Merge the young bottles that stand where an older bottle stands (see
-        `young_steps`). Two bottles that both have a detection now are two bottles."""
+        `young_steps`). Two bottles both detected now, or seen together before, are two.
+        The older bottle passes the tests of a re-identification: its place is confirmed,
+        and the neighbours of the young one do not deny it (an unchecked merge gave the
+        first frame's bottle 18 to a box next to 108 at 36.7 s)."""
         cfg = self.cfg
         # Not the bottles of this step: the association has just refused them an old bottle.
         young = [b for b in self.bottles if 0 < self.count - b.first_step <= cfg.young_steps]
-        old = [b for b in self.bottles if self.count - b.first_step > cfg.young_steps]
+        old = [b for b in self.bottles if self.count - b.first_step > cfg.young_steps
+               and self._place_confirmed(b)]
+        at = {item.bottle: i for i, item in enumerate(shown) if item.bottle is not None}
+        def sides(bottle_id):
+            i = at.get(bottle_id)
+            if i is None:
+                return None, None
+            left, right = neighbours.get(i, (None, None))
+            return (shown[left].bottle if left is not None else None,
+                    shown[right].bottle if right is not None else None)
         if not young or not old:
             return shown
-        frame: Box = (0.0, 0.0, float(self.size[0]), float(self.size[1]))
-        inverse = np.linalg.inv(self.H)
-        box_y = [self._to_frame(b.quad, inverse) for b in young]
-        box_o = [self._to_frame(b.quad, inverse) for b in old]
-        distance = distance_matrix([clip(b, frame) for b in box_y], [clip(b, frame) for b in box_o],
-                                   [b[2] - b[0] for b in box_y], [b[2] - b[0] for b in box_o],
-                                   cfg.association)
+        distance = self._same_place(young, old)
         detected = {s.bottle for s in shown if s.bottle is not None}
         for i, a in enumerate(young):
             for j, b in enumerate(old):
-                ratio_w = (box_y[i][2] - box_y[i][0]) / max(box_o[j][2] - box_o[j][0], 1e-6)
-                ratio_h = (box_y[i][3] - box_y[i][1]) / max(box_o[j][3] - box_o[j][1], 1e-6)
-                if ((a.id in detected and b.id in detected)
-                        or not 1 / cfg.max_width_ratio <= ratio_w <= cfg.max_width_ratio
-                        or not 1 / cfg.max_height_ratio <= ratio_h <= cfg.max_height_ratio):
+                if ((a.id in detected and b.id in detected) or a.first_step <= b.last_seen
+                        or self._contradicted(b.id, *sides(a.id))):
                     distance[i, j] = np.inf
         into = {young[i].id: old[j] for i, j in hungarian(distance, cfg.merge_distance).items()}
         if not into:
@@ -589,12 +1136,14 @@ class ShelfTracker:
             item.bottle = target.id
             item.status = "new" if target.appearance == 1 else "returning"
         self.bottles = [b for b in self.bottles if b.id not in into]
+        for young_id, target in into.items():
+            self._rename(young_id, target.id)
         self.merged_young += len(into)
         return shown
 
     def _observe(self, bottle: Bottle, box: Box) -> None:
         weight = 1.0 / (bottle.hits + 1)
-        bottle.quad = (1 - weight) * bottle.quad + weight * self._to_map(box)
+        bottle.quad = (1 - weight) * bottle.quad + weight * self._local_quad(box, bottle.anchor)
         bottle.hits += 1
 
     # ------------------------------------------------------------------ the step
@@ -612,28 +1161,35 @@ class ShelfTracker:
             if H_step is None:
                 self.lost_motion += 1
             else:
-                self.H = self.H @ H_step
+                self.P = self.P @ H_step
+                self.M = self.M @ H_step
         times["motion"] = perf_counter() - started
 
         started = perf_counter()
         features = None
-        if self.keyframes and (self.count % cfg.reloc_every == 0 or not self.trusted
-                               or self.distorted):
-            self.distorted = False
+        if not self.keyframes:                # the first frame anchors the map
+            features = self._features(frame, detections)
+            self._add_keyframe(number, features)
+        elif self.count % cfg.reloc_every == 0 or not self.trusted or self.need_registration:
+            self.need_registration = False
             features = self._features(frame, detections)
             self._relocalize(number, features)
         times["relocalize"] = perf_counter() - started
 
         started = perf_counter()
+        descriptors = self._box_descriptors(features, [d.box for d in detections])
+        self.votes = self._label_votes(descriptors, [d.box for d in detections])
+        times["labels"] = perf_counter() - started
+
+        started = perf_counter()
         self.trusted = self._trusted()
         shown = self._associate(number, detections, self.trusted)
+        self._learn_labels(shown, descriptors)
         times["associate"] = perf_counter() - started
 
         started = perf_counter()
         if self._needs_keyframe():
-            self.keyframes.append(Keyframe(number, self.count, self.H.copy(),
-                                           features or self._features(frame, detections),
-                                           self._quad()))
+            self._add_keyframe(number, features or self._features(frame, detections))
         times["keyframe"] = perf_counter() - started
 
         self.previous = (gray, [d.box for d in detections])

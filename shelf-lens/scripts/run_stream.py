@@ -81,7 +81,7 @@ def main():
         "returns": int(sum(a - 1 for a in appearances)),
         "keyframes": len(tracker.keyframes),
         "corrections": len(tracker.corrections),
-        "loops": [(f, round(s, 2), m) for f, s, m in tracker.loops],
+        "loops": [tuple(round(v, 2) if isinstance(v, float) else v for v in loop) for loop in tracker.loops],
         "correction_median": float(np.median([c[1] for c in tracker.corrections])) if tracker.corrections else None,
         "lost_motion": tracker.lost_motion,
         "dropped_low_boxes": tracker.dropped,
