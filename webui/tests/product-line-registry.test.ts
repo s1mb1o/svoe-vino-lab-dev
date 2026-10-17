@@ -28,7 +28,7 @@ const expectedCatalog: Record<string, { producer: string; count: number }> = {
 interface CatalogRecord { slug: string; name: string; description: string; grapes: string }
 interface SnapshotRecord extends CatalogRecord { producer: string }
 interface CatalogBaseline { catalog_snapshot: string; source_sha256: string; producer: string; expected_count: number; records: CatalogRecord[] }
-interface AssetEntry { product_id: string; asset_sha256: string | null }
+interface AssetEntry { product_id: string; asset_sha256: string | null; absence_check?: string | { snapshot: string; producer: string; matched_catalog_slugs: string[]; reason: string } }
 interface CatalogEntry extends AssetEntry { wine_slug: string; group_id: string; catalog_producer: string }
 interface CatalogCrosswalk { producer_id: string; catalog_snapshot: string; catalog_producer: string; entries: CatalogEntry[]; official_additions: AssetEntry[] }
 
@@ -151,6 +151,12 @@ describe('producer map registry', () => {
       expect(linked.map(product => product.wine_slug).sort()).toEqual(crosswalk.entries.map(entry => entry.wine_slug).sort())
       expect(linked.map(product => product.id).sort()).toEqual(crosswalk.entries.map(entry => entry.product_id).sort())
       expect(gray.map(product => product.id).sort()).toEqual(crosswalk.official_additions.map(entry => entry.product_id).sort())
+      for (const entry of crosswalk.official_additions) {
+        if (!entry.absence_check || typeof entry.absence_check === 'string') continue
+        // A display-name alias can select zero snapshot rows and falsely prove absence.
+        expect(entry.absence_check.producer, entry.product_id).toBe(expectedCatalog[line.producer.id]!.producer)
+        expect(entry.absence_check.snapshot, entry.product_id).toBe(baseline.catalog_snapshot)
+      }
       for (const entry of crosswalk.entries) {
         expect(entry.catalog_producer).toBe(expectedCatalog[line.producer.id]!.producer)
         expect(linked.find(product => product.id === entry.product_id)).toMatchObject({ wine_slug: entry.wine_slug, group_id: entry.group_id })

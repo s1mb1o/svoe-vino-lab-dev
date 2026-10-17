@@ -499,7 +499,7 @@
       "asset_sha256": "a124218e8411937cd6bb1359866efaca10484a44721a2df88fde70a8f954e04d",
       "absence_check": {
         "snapshot": "official-2026-09-17",
-        "producer": "Новый Свет",
+        "producer": "Новый Свет. Дом шампанских вин",
         "matched_catalog_slugs": [],
         "reason": "No exact named product occurs in this producer snapshot. Do not alias a generic card without collection and release equivalence evidence."
       }

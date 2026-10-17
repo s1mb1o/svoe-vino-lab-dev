@@ -1,3 +1,7 @@
+# 2026-10-17: Structured absence validation
+
+Validate exact producer values in structured absence checks. Keep the existing text-based absence evidence compatible.
+
 # 2026-10-17: Sober Bash amphora source
 
 Correct the Sober Bash amphora subgroup source URL. Cite the official Грани collection.

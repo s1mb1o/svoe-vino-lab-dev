@@ -33,3 +33,9 @@ Do not use generated lettering as product evidence.
 
 Include 1 verified official additions with null wine_slug.
 Read official_additions in crosswalk.json for each absence check.
+
+## Review correction, 2026-10-17
+
+Use the exact snapshot producer value `Новый Свет. Дом шампанских вин` in the structured absence check.
+The display name `Новый Свет` is not an exact snapshot producer value.
+The independent baseline contains 44 catalog records. None names Коронационное.
