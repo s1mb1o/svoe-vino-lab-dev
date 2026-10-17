@@ -1,3 +1,7 @@
+# 2026-10-17: agora review correction
+
+The official range index supports CUVEE premium wording and the current 12–18 month Reserve Yachting range. Historical cards only establish 12 months or more.
+
 # 2026-10-17: novy-svet review correction
 
 The snapshot does not establish one premium rank for all special Novy Svet releases. Two short varietal identities lack a confirmed collection.

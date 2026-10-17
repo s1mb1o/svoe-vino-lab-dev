@@ -1,3 +1,7 @@
+# 2026-10-17: agora review correction
+
+Check BLUSH MIRAGE, historical Yachting ageing, CUVEE source wording, and VINTAGE without claims about other series.
+
 # 2026-10-17: novy-svet review correction
 
 Check the two aged entries, two unconfirmed varietal entries, rank-zero special cuvees, and the limited Коронационное card.

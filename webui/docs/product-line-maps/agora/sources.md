@@ -10,30 +10,32 @@ Do not treat this map as the complete live assortment.
 
 ## Collections and positioning
 
-Ranks are editorial navigation. Numeric prices are not available.
-Rank 0 does not assert price equivalence with other collections.
-The official collection structure can differ from historical labels.
-Keep the historical package image when the snapshot supplies that image.
+Ranks compare groups within this producer. Numeric prices remain null.
+Rank 0 means that no relative price rank is confirmed.
+Read `source-evidence.json` for exact URLs, document sections, retrieval dates, source hashes, and snapshot-only groups.
+Read `group_basis` in the crosswalk for each product membership decision.
+Read collection labels from original input photographs. Do not use generated text.
 
-- `yachting`: [Reserve Yachting](https://www.agora-group.ru/catalog/range/agora/). Rank 3. Catalog row indices: 23, 24, 25, 26, 27, 28.
-- `terroir`: [AGORA Терруарное](https://www.agora-group.ru/catalog/range/agora/). Rank 3. Catalog row indices: 17, 18.
-- `core`: [AGORA · классическая](https://www.agora-group.ru/catalog/range/agora/agora/). Rank 2. Catalog row indices: 0, 1, 2, 3, 4, 5, 6, 14, 15, 16.
-- `rosa-still`: [ROSA VIVA · тихие](https://www.agora-group.ru/catalog/range/rosa-viva/). Rank 1. Catalog row indices: 9, 10, 11, 12.
-- `rosa-sparkling`: [ROSA VIVA · игристые](https://www.agora-group.ru/catalog/range/rosa-viva/). Rank 0. Catalog row indices: 7, 8, 13.
-- `cuvee`: [AGORA CUVEE](https://www.agora-group.ru/catalog/range/agora/). Rank 0. Catalog row indices: 21, 22.
-- `vintage`: [VINTAGE](https://www.agora-group.ru/news/rossijskoe-shampanskoe-agora-winery-limitirovannaya-kollekcziya-vintage/). Rank 0. Catalog row indices: 19, 20.
-- `blush`: [BLUSH MIRAGE](https://www.agora-group.ru/catalog/range/blush-mirage/). Rank 0. Catalog row indices: 29, 30, 31.
-- `crispy`: [Crispy Wine](https://www.agora-group.ru/catalog/range/crispy-wine/). Rank 0. Catalog row indices: .
+- `yachting`: Reserve Yachting. Rank 3. Catalog row indices: 23, 24, 25, 26, 27, 28. Sources: official-yachting, svoe-vino-2026-09-17.
+- `terroir`: AGORA Терруарное. Rank 3. Catalog row indices: 17, 18. Sources: official-terroir, svoe-vino-2026-09-17.
+- `core`: AGORA · классическая. Rank 2. Catalog row indices: 0, 1, 2, 3, 4, 5, 6, 14, 15, 16. Sources: official-core, svoe-vino-2026-09-17.
+- `rosa-still`: ROSA VIVA · тихие. Rank 1. Catalog row indices: 9, 10, 11, 12. Sources: official-rosa-still, svoe-vino-2026-09-17.
+- `rosa-sparkling`: ROSA VIVA · игристые. Rank 0. Catalog row indices: 7, 8, 13. Sources: official-rosa-sparkling, svoe-vino-2026-09-17.
+- `cuvee`: AGORA CUVEE. Rank 0. Catalog row indices: 21, 22. Sources: official-cuvee, svoe-vino-2026-09-17.
+- `vintage`: VINTAGE. Rank 0. Catalog row indices: 19, 20. Sources: official-vintage, svoe-vino-2026-09-17.
+- `blush`: BLUSH MIRAGE. Rank 0. Catalog row indices: 29, 30, 31. Sources: official-blush, svoe-vino-2026-09-17.
+- `crispy`: Crispy Wine. Rank 0. Catalog row indices: none. Sources: official-crispy, svoe-vino-2026-09-17.
 
 ## Images
 
-Read the crosswalk for every source URL, input hash, and output hash.
-Crop transparent margins. Downsize to at most 720 px. Add transparent padding.
-Compute image.frame from alpha values of at least 128 after WebP encoding.
-Inspect every image on light and dark surfaces.
-Do not use generated lettering as product evidence.
+The crosswalk records input and output SHA-256 values.
+Use `imagegen-cutouts.json` where present for exact prompts and generated hashes.
+Use `scripts/measure-product-image-frames.mjs` for actual image dimensions, alpha outlines, and frame containment.
+Inspect cutouts on light and dark surfaces. Generated fine print is not product evidence.
 
-## Additional products
+## Review correction, 2026-10-17
 
-Include 1 verified official additions with null wine_slug.
-Read official_additions in crosswalk.json for each absence check.
+The owner authorized the exact review packet. Claude Opus 5.5 Max reviewed that packet.
+Source records now distinguish official collection evidence from snapshot-only navigation.
+Separate catalog records retain separate nodes. Neutral card numbers do not assert a vintage or package difference.
+Official additions remain unlinked when a possible historical catalog counterpart cannot be verified.

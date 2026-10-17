@@ -1,3 +1,7 @@
+# 2026-10-17: agora review correction
+
+Correct BLUSH MIRAGE effervescence. Scope oak ageing to historical card evidence. Cite exact official range pages.
+
 # 2026-10-17: novy-svet review correction
 
 Remove unsupported premium ranks from historical special cuvees. Separate explicit aged cards from varietal cards with no confirmed collection.

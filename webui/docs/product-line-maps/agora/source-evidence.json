@@ -1,0 +1,99 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora-yachting/",
+      "retrieved_at": "2026-10-17T20:26:48.653221+00:00",
+      "sha256": "7c3c9bc10a5a422235d491bc72be53ab89af1a307d137ff4a5c1d24a0c273a3e",
+      "final_url": "https://www.agora-group.ru/catalog/range/agora/agora-yachting/",
+      "source_id": "official-yachting",
+      "section": null,
+      "basis": "The range index states 12–18 months in oak. Historical snapshot cards state 12 months or more. The map uses the latter scope."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/agora/terruarnoe-vino/",
+      "retrieved_at": "2026-10-17T20:26:49.200460+00:00",
+      "sha256": "24a42b1bdafb6ddb7392de4a6bbe632f578218b201b28b67be2e6eb24f557a71",
+      "final_url": "https://www.agora-group.ru/catalog/range/agora/terruarnoe-vino/",
+      "source_id": "official-terroir",
+      "section": null,
+      "basis": "The official product page lists aged Cabernet Sauvignon and Bastardo. Snapshot descriptions state French oak from 12 months."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora/",
+      "retrieved_at": "2026-10-17T20:26:49.119119+00:00",
+      "sha256": "f1aa586c1927dd38492140dff952f71b1ef49db571ca3a25c6f48d0dfed3c773",
+      "final_url": "https://www.agora-group.ru/catalog/range/agora/agora/",
+      "source_id": "official-core",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/rosa-viva/",
+      "retrieved_at": "2026-10-17T20:26:49.793296+00:00",
+      "sha256": "b6fa2ac7b43370a2e65c11e9ae55bf9e60f8054ee91f51b85beee188bccfe97d",
+      "final_url": "https://www.agora-group.ru/catalog/range/rosa-viva/",
+      "source_id": "official-rosa-still",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/rosa-viva/",
+      "retrieved_at": "2026-10-17T20:26:49.793296+00:00",
+      "sha256": "b6fa2ac7b43370a2e65c11e9ae55bf9e60f8054ee91f51b85beee188bccfe97d",
+      "final_url": "https://www.agora-group.ru/catalog/range/rosa-viva/",
+      "source_id": "official-rosa-sparkling",
+      "section": null,
+      "basis": "The exact official collection page supports the collection identity. Historical product fields remain equal to the saved snapshot. Relative ranks are editorial within this producer."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora-cuvee/",
+      "retrieved_at": "2026-10-17T20:26:48.536295+00:00",
+      "sha256": "e1868139d93421654c88623aa5a52a4ce0f068f8963f177b24723514d29d96dc",
+      "final_url": "https://www.agora-group.ru/catalog/range/agora/agora-cuvee/",
+      "source_id": "official-cuvee",
+      "section": null,
+      "basis": "The official page identifies CUVEE as premium sparkling wine. It states tank fermentation. This claim does not compare methods with other ranges."
+    },
+    {
+      "url": "https://www.agora-group.ru/news/rossijskoe-shampanskoe-agora-winery-limitirovannaya-kollekcziya-vintage/",
+      "retrieved_at": "2026-10-17T20:26:49.806000+00:00",
+      "sha256": "867c93e7fcb89e8fdbd946d8813537dcc846cdd721e65362945515aeaff35e43",
+      "final_url": "https://www.agora-group.ru/news/rossijskoe-shampanskoe-agora-winery-limitirovannaya-kollekcziya-vintage/",
+      "source_id": "official-vintage",
+      "section": null,
+      "basis": "The official news article identifies the limited Vintage collection and bottle fermentation."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/blush-mirage/",
+      "retrieved_at": "2026-10-17T20:26:49.258313+00:00",
+      "sha256": "64fd477244b65aea24ab8273ddcdee31178f57675453ffe1603cedff4ca55da7",
+      "final_url": "https://www.agora-group.ru/catalog/range/blush-mirage/",
+      "source_id": "official-blush",
+      "section": null,
+      "basis": "The official page classifies the wines as still wines and describes slight effervescence."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/crispy-wine/",
+      "retrieved_at": "2026-10-17T20:26:49.338848+00:00",
+      "sha256": "0eec37d1dd70870815df0b6f8332983a94b8b00900b6d08ab27052f52caa9502",
+      "final_url": "https://www.agora-group.ru/catalog/range/crispy-wine/",
+      "source_id": "official-crispy",
+      "section": null,
+      "basis": "The official range page spells the white product Vinho Blanco."
+    },
+    {
+      "url": "https://www.agora-group.ru/catalog/range/crispy-wine/",
+      "retrieved_at": "2026-10-17T20:26:49.338848+00:00",
+      "sha256": "0eec37d1dd70870815df0b6f8332983a94b8b00900b6d08ab27052f52caa9502",
+      "final_url": "https://www.agora-group.ru/catalog/range/crispy-wine/",
+      "source_id": "official-product-crispy-vinho-blanco",
+      "section": null,
+      "basis": "The official range page spells the white product Vinho Blanco."
+    }
+  ],
+  "snapshot_only_groups": [],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

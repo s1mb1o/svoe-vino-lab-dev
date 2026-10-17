@@ -21,58 +21,53 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "AGORA WINERY: официальные коллекции",
-      "url": "https://www.agora-group.ru/catalog/range/agora/"
-    },
-    {
       "id": "official-yachting",
-      "label": "AGORA WINERY: Reserve Yachting",
-      "url": "https://www.agora-group.ru/catalog/range/agora/"
+      "label": "AGORA WINERY: официальный источник · Agora Yachting",
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora-yachting/"
     },
     {
       "id": "official-terroir",
-      "label": "AGORA WINERY: AGORA Терруарное",
-      "url": "https://www.agora-group.ru/catalog/range/agora/"
+      "label": "AGORA WINERY: официальный источник · Терруарное Вино",
+      "url": "https://www.agora-group.ru/catalog/range/agora/terruarnoe-vino/"
     },
     {
       "id": "official-core",
-      "label": "AGORA WINERY: AGORA · классическая",
+      "label": "AGORA WINERY: официальный источник · Agora",
       "url": "https://www.agora-group.ru/catalog/range/agora/agora/"
     },
     {
       "id": "official-rosa-still",
-      "label": "AGORA WINERY: ROSA VIVA · тихие",
+      "label": "AGORA WINERY: официальный источник · Rosa Viva",
       "url": "https://www.agora-group.ru/catalog/range/rosa-viva/"
     },
     {
       "id": "official-rosa-sparkling",
-      "label": "AGORA WINERY: ROSA VIVA · игристые",
+      "label": "AGORA WINERY: официальный источник · Rosa Viva",
       "url": "https://www.agora-group.ru/catalog/range/rosa-viva/"
     },
     {
       "id": "official-cuvee",
-      "label": "AGORA WINERY: AGORA CUVEE",
-      "url": "https://www.agora-group.ru/catalog/range/agora/"
+      "label": "AGORA WINERY: официальный источник · AGORA CUVEE",
+      "url": "https://www.agora-group.ru/catalog/range/agora/agora-cuvee/"
     },
     {
       "id": "official-vintage",
-      "label": "AGORA WINERY: VINTAGE",
+      "label": "AGORA WINERY: официальный источник · Российское шампанское AGORA WINERY — лимитированная коллекция VINTAGE",
       "url": "https://www.agora-group.ru/news/rossijskoe-shampanskoe-agora-winery-limitirovannaya-kollekcziya-vintage/"
     },
     {
       "id": "official-blush",
-      "label": "AGORA WINERY: BLUSH MIRAGE",
+      "label": "AGORA WINERY: официальный источник · Blush Mirage",
       "url": "https://www.agora-group.ru/catalog/range/blush-mirage/"
     },
     {
       "id": "official-crispy",
-      "label": "AGORA WINERY: Crispy Wine",
+      "label": "AGORA WINERY: официальный источник · Crispy Wine",
       "url": "https://www.agora-group.ru/catalog/range/crispy-wine/"
     },
     {
-      "id": "official-official-crispy-vinho-blanco",
-      "label": "Официальная карточка: Crispy Wine · Vinho Blanco",
+      "id": "official-product-crispy-vinho-blanco",
+      "label": "AGORA WINERY: официальный источник · Crispy Wine",
       "url": "https://www.agora-group.ru/catalog/range/crispy-wine/"
     }
   ],
@@ -90,6 +85,7 @@
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
         "official-yachting",
+        "svoe-vino-2026-09-17",
         "official-terroir"
       ]
     },
@@ -100,7 +96,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
-        "official-core"
+        "official-core",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -110,7 +107,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-rosa-still"
+        "official-rosa-still",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -121,6 +119,7 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-rosa-sparkling",
+        "svoe-vino-2026-09-17",
         "official-cuvee",
         "official-vintage",
         "official-blush",
@@ -133,7 +132,7 @@
       "id": "yachting",
       "name": "Reserve Yachting",
       "tier_id": "tier-3",
-      "method": "Выдержка в дубе 12–18 месяцев",
+      "method": "Выдержка в дубе от 12 месяцев по карточкам каталога",
       "description": "Резервная коллекция AGORA с сортовыми винами. Дубовая выдержка отличает серию от классической линейки.",
       "source_ids": [
         "official-yachting",
@@ -144,7 +143,7 @@
       "id": "terroir",
       "name": "AGORA Терруарное",
       "tier_id": "tier-3",
-      "method": "Лимитированные вина",
+      "method": "Выдержка во французском дубе от 12 месяцев по карточкам каталога",
       "description": "Отдельные терруарные выпуски Бастардо и Каберне Совиньон. Старшая ступень задана редакционно.",
       "source_ids": [
         "official-terroir",
@@ -189,7 +188,7 @@
       "name": "AGORA CUVEE",
       "tier_id": "tier-0",
       "method": "Игристые купажи",
-      "description": "Белый и розовый брют. Премиальная игристая серия показана отдельно от тихой ценовой шкалы.",
+      "description": "Белый и розовый брют. Производитель описывает CUVEE как премиальную серию. Она показана отдельно от ценовой шкалы тихих вин.",
       "source_ids": [
         "official-cuvee",
         "svoe-vino-2026-09-17"
@@ -200,7 +199,7 @@
       "name": "VINTAGE",
       "tier_id": "tier-0",
       "method": "Классический метод; лимитированная коллекция",
-      "description": "Blanc de Blancs и Blanc de Noirs. Вторичное брожение в бутылке отличает эту коллекцию от других игристых серий.",
+      "description": "Blanc de Blancs и Blanc de Noirs. Официальная публикация описывает вторичное брожение в бутылке. Метод других игристых серий из этого не следует.",
       "source_ids": [
         "official-vintage",
         "svoe-vino-2026-09-17"
@@ -210,7 +209,7 @@
       "id": "blush",
       "name": "BLUSH MIRAGE",
       "tier_id": "tier-0",
-      "method": "Тихие белые и розовые вина",
+      "method": "Вина с лёгкой шипучестью",
       "description": "Рислинг, Совиньон Зелёный и купаж Ркацители — Шираз. Самостоятельная коллекция без подтверждённого ценового ранга.",
       "source_ids": [
         "official-blush",
@@ -481,7 +480,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Рислинг",
         "Ркацители",
@@ -517,7 +516,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусладкое",
+      "style": "Белое игристое · полусладкое",
       "grapes": [
         "Рислинг",
         "Ркацители",
@@ -686,7 +685,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусладкое",
+      "style": "Розовое игристое · полусладкое",
       "grapes": [
         "Пино Нуар",
         "Совиньон Блан",
@@ -886,7 +885,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -919,7 +918,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -952,7 +951,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Пино Гриджио"
       ],
@@ -985,7 +984,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1305,7 +1304,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/agora/official-crispy-vinho-blanco.webp",
-        "source_id": "official-official-crispy-vinho-blanco",
+        "source_id": "official-product-crispy-vinho-blanco",
         "frame": {
           "x": 3,
           "y": 3,
@@ -1323,7 +1322,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-crispy-vinho-blanco",
+        "official-product-crispy-vinho-blanco",
         "official-crispy"
       ]
     }
