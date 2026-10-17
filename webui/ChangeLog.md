@@ -1,3 +1,7 @@
+# 2026-10-17: esse review correction
+
+Move four incorrectly ranked products to Unplugged. Record original-label evidence and the possible YELLOW GLOVES counterpart.
+
 # 2026-10-17: sober-bash review correction
 
 List all six Грани products. Record exact source captures and original-label membership evidence.

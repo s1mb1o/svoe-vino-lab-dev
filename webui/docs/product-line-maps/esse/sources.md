@@ -10,31 +10,31 @@ Do not treat this map as the complete live assortment.
 
 ## Collections and positioning
 
-Ranks are editorial navigation. Numeric prices are not available.
-Rank 0 does not assert price equivalence with other collections.
-The official collection structure can differ from historical labels.
-Keep the historical package image when the snapshot supplies that image.
+Ranks compare groups within this producer. Numeric prices remain null.
+Rank 0 means that no relative price rank is confirmed.
+Read `source-evidence.json` for exact URLs, document sections, retrieval dates, source hashes, and snapshot-only groups.
+Read `group_basis` in the crosswalk for each product membership decision.
+Read collection labels from original input photographs. Do not use generated text.
 
-- `kacha-valley`: [KACHA VALLEY](https://essewine.com/wines). Rank 3. Catalog row indices: 4, 6, 7, 26, 27, 32, 42, 45, 46, 49.
-- `classic`: [ESSE classic](https://essewine.com/wines). Rank 2. Catalog row indices: 11, 12, 13, 14, 16, 19, 36, 39, 43, 44, 47, 51, 52.
-- `stones`: [ESSE stones / Отборное](https://essewine.com/wines). Rank 1. Catalog row indices: 15, 20, 21, 23, 37, 48, 50.
-- `unplugged`: [Unplugged · авторские стили](https://essewine.com/wines). Rank 0. Catalog row indices: 17, 18, 24, 28, 29, 30, 31, 35, 38.
-- `natural-sweet`: [Природно полусладкие](https://essewine.com/wines). Rank 0. Catalog row indices: 33, 34.
-- `sparkling`: [ESSE sparkling](https://essewine.com/wines). Rank 0. Catalog row indices: 0, 1, 2, 3, 5, 8, 9, 10, 22, 25, 40, 41.
+- `kacha-valley`: KACHA VALLEY. Rank 3. Catalog row indices: 4, 6, 7, 27, 42, 45. Sources: official-kacha-valley, svoe-vino-2026-09-17.
+- `classic`: ESSE classic. Rank 2. Catalog row indices: 11, 12, 13, 14, 16, 19, 36, 39, 43, 44, 47, 51, 52. Sources: official-classic, svoe-vino-2026-09-17.
+- `stones`: ESSE stones / Отборное. Rank 1. Catalog row indices: 15, 20, 21, 23, 37, 48, 50. Sources: official-stones, svoe-vino-2026-09-17.
+- `unplugged`: Unplugged · авторские стили. Rank 0. Catalog row indices: 17, 18, 24, 26, 28, 29, 30, 31, 32, 35, 38, 46, 49. Sources: official-unplugged, svoe-vino-2026-09-17.
+- `natural-sweet`: Природно полусладкие. Rank 0. Catalog row indices: 33, 34. Sources: official-natural-sweet, svoe-vino-2026-09-17.
+- `sparkling`: ESSE sparkling. Rank 0. Catalog row indices: 0, 1, 2, 3, 5, 8, 9, 10, 22, 25, 40, 41. Sources: official-sparkling, svoe-vino-2026-09-17.
 
 ## Images
 
-Read the crosswalk for every source URL, input hash, and output hash.
-Crop transparent margins. Downsize to at most 720 px. Add transparent padding.
-Compute image.frame from alpha values of at least 128 after WebP encoding.
-Inspect every image on light and dark surfaces.
-Do not use generated lettering as product evidence.
+The crosswalk records input and output SHA-256 values.
+Use `imagegen-cutouts.json` where present for exact prompts and generated hashes.
+Use `scripts/measure-product-image-frames.mjs` for actual image dimensions, alpha outlines, and frame containment.
+Inspect cutouts on light and dark surfaces. Generated fine print is not product evidence.
 
-## Additional products
+## Review correction, 2026-10-17
 
-Include 1 verified official additions with null wine_slug.
-Read official_additions in crosswalk.json for each absence check.
-
-The snapshot has one separate Сатера producer card.
-This baseline contains the 53 ESSE producer cards.
-Do not use a broad Сатера alias to claim that the separate card is covered.
+The owner authorized the exact review packet. Claude Opus 5.5 Max reviewed that packet.
+Source records now distinguish official collection evidence from snapshot-only navigation.
+Separate catalog records retain separate nodes. Neutral card numbers do not assert a vintage or package difference.
+Official additions remain unlinked when a possible historical catalog counterpart cannot be verified.
+The separate Сатера producer card remains outside the 53-card baseline.
+Four original labels identify Unplugged instead of KACHA VALLEY. Membership now follows those labels.

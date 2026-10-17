@@ -1,3 +1,7 @@
+# 2026-10-17: esse review correction
+
+Open the four corrected exact slugs. Check Unplugged membership, neutral positioning, separate duplicate-card labels, and the gray YELLOW GLOVES entry.
+
 # 2026-10-17: sober-bash review correction
 
 Check all six Грани products and all four amphora products. Keep separate catalog records distinct.

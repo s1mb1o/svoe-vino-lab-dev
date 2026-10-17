@@ -1,3 +1,7 @@
+# 2026-10-17: esse review correction
+
+Original Pinot Noir, Chenin Blanc, Odessa Black, and Saperavi Heaven photos read ESSE UNPLUGGED. They do not support KACHA VALLEY membership.
+
 # 2026-10-17: sober-bash review correction
 
 The official Грани collection lists all six retained varietal and blend identities. Collection membership is not limited to the first three entries.

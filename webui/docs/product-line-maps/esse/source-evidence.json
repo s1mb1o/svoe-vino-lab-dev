@@ -1,0 +1,72 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-kacha-valley",
+      "section": "kacha_valley",
+      "basis": "The dedicated catalog section identifies KACHA VALLEY. Original black labels confirm the six retained historical cards."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-classic",
+      "section": "classic",
+      "basis": "The catalog has a separate ESSE classic section. Original photos show the historical signature ESSE labels."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-stones",
+      "section": "stones",
+      "basis": "The catalog has a separate Stones section. Original labels show the stone motif and varietal names."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-unplugged",
+      "section": "unplugged",
+      "basis": "The catalog has a separate Unplugged section. Original photos identify the collection on the labels, including Pinot Noir, Chenin Blanc, Odessa Black and Saperavi Heaven."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-natural-sweet",
+      "section": "semisweet",
+      "basis": "The catalog has a separate naturally semisweet section."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-sparkling",
+      "section": "sparkling",
+      "basis": "The catalog has a separate sparkling section. Methods and ageing require the exact release."
+    },
+    {
+      "url": "https://essewine.com/wines",
+      "retrieved_at": "2026-10-17T20:26:42.766490+00:00",
+      "sha256": "ecae6ff7edf3596759b0981e7d77d9ab68fa1cd1db432df0b67793a1c2837ccf",
+      "final_url": "https://essewine.com/wines",
+      "source_id": "official-product-yellow-gloves",
+      "section": "unplugged",
+      "basis": "The catalog has a separate Unplugged section. Original photos identify the collection on the labels, including Pinot Noir, Chenin Blanc, Odessa Black and Saperavi Heaven."
+    }
+  ],
+  "snapshot_only_groups": [],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

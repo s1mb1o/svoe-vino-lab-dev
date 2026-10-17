@@ -20,44 +20,39 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "ESSE: официальные коллекции",
-      "url": "https://essewine.com/wines"
-    },
-    {
       "id": "official-kacha-valley",
-      "label": "ESSE: KACHA VALLEY",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#kacha_valley"
     },
     {
       "id": "official-classic",
-      "label": "ESSE: ESSE classic",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#classic"
     },
     {
       "id": "official-stones",
-      "label": "ESSE: ESSE stones / Отборное",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#stones"
     },
     {
       "id": "official-unplugged",
-      "label": "ESSE: Unplugged · авторские стили",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#unplugged"
     },
     {
       "id": "official-natural-sweet",
-      "label": "ESSE: Природно полусладкие",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#semisweet"
     },
     {
       "id": "official-sparkling",
-      "label": "ESSE: ESSE sparkling",
-      "url": "https://essewine.com/wines"
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#sparkling"
     },
     {
-      "id": "official-official-yellow-gloves",
-      "label": "Официальная карточка: YELLOW GLOVES Unplugged",
-      "url": "https://essewine.com/wines"
+      "id": "official-product-yellow-gloves",
+      "label": "ESSE: официальный источник · Каталог крымских вин Esse",
+      "url": "https://essewine.com/wines#unplugged"
     }
   ],
   "price_positioning": {
@@ -73,7 +68,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
-        "official-kacha-valley"
+        "official-kacha-valley",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -83,7 +79,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
-        "official-classic"
+        "official-classic",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -93,7 +90,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-stones"
+        "official-stones",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -104,6 +102,7 @@
       "price_label": "Ценовая ступень не задана",
       "source_ids": [
         "official-unplugged",
+        "svoe-vino-2026-09-17",
         "official-natural-sweet",
         "official-sparkling"
       ]
@@ -114,8 +113,8 @@
       "id": "kacha-valley",
       "name": "KACHA VALLEY",
       "tier_id": "tier-3",
-      "method": "Терруарные вина; отбор участков и дубовая выдержка",
-      "description": "Вина долины реки Кача. Производитель выделяет лучшие участки и работу с французским дубом. Выпуски и купажи из снимка сохранены отдельно.",
+      "method": "Терруарные вина; технология зависит от выпуска",
+      "description": "Вина с этикеткой KACHA VALLEY. Отдельные участки и технологии выдержки описаны на сайте производителя. Сроки и дубовую выдержку не переносим на все исторические карточки.",
       "source_ids": [
         "official-kacha-valley",
         "svoe-vino-2026-09-17"
@@ -148,7 +147,7 @@
       "name": "Unplugged · авторские стили",
       "tier_id": "tier-0",
       "method": "Оранжевые, розовые и экспериментальные тихие вина",
-      "description": "Мацерация, необычные сорта и авторские купажи. Группа объединяет продукты по стилю официальной Unplugged. Прежние оформления KACHA VALLEY сохранены на фотографиях.",
+      "description": "Сортовые вина, оранжевые стили и авторские купажи с этикеткой ESSE Unplugged. Сохранены отдельные карточки и оформления из снимка каталога.",
       "source_ids": [
         "official-unplugged",
         "svoe-vino-2026-09-17"
@@ -169,8 +168,8 @@
       "id": "sparkling",
       "name": "ESSE sparkling",
       "tier_id": "tier-0",
-      "method": "Классический метод; вторичное брожение в бутылке",
-      "description": "Игристая коллекция с белыми и розовыми кюве. Дозаж и выдержка различаются между выпусками. Grand Cuvee и Millesime можно сравнить с основными кюве.",
+      "method": "Игристые вина; метод и выдержка зависят от выпуска",
+      "description": "Белые и розовые игристые вина, включая Brut Zero Dosage, Grand Cuvee и Millesime. Дозаж и выдержку проверяют для конкретного выпуска; отдельные карточки не объединены.",
       "source_ids": [
         "official-sparkling",
         "svoe-vino-2026-09-17"
@@ -198,7 +197,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -231,7 +230,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -264,7 +263,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -275,7 +274,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-sparkling"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135",
@@ -297,7 +297,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -308,7 +308,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-sparkling"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-esse-chenin-blanc-shenen-blan-beloe-suhoe-12",
@@ -363,7 +364,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Мускат Белый"
       ],
@@ -462,7 +463,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -495,7 +496,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -528,7 +529,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -770,7 +771,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-unplugged"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-esse-mama-marselan-krasnoe-suhoe-135",
@@ -803,7 +805,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-unplugged"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-esse-merlo-krasnoe-suhoe-135",
@@ -924,7 +927,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Мускат Белый"
       ],
@@ -1023,7 +1026,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Мускат Белый"
       ],
@@ -1038,7 +1041,7 @@
     },
     {
       "id": "wine-esse-odessa-black-odesskiy-chernyy-krasnoe-suhoe-12",
-      "group_id": "kacha-valley",
+      "group_id": "unplugged",
       "name": "Odessa black",
       "variant": "",
       "wine_slug": "esse-odessa-black-odesskiy-chernyy-krasnoe-suhoe-12",
@@ -1066,7 +1069,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-kacha-valley"
+        "official-unplugged"
       ]
     },
     {
@@ -1133,7 +1136,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-unplugged"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-esse-pino-gri-beloe-suhoe-135",
@@ -1166,7 +1170,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-unplugged"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-esse-pino-gri-blash-rozovoe-suhoe-125",
@@ -1236,7 +1241,7 @@
     },
     {
       "id": "wine-esse-pino-nuar-krasnoe-suhoe-115",
-      "group_id": "kacha-valley",
+      "group_id": "unplugged",
       "name": "Пино Нуар",
       "variant": "",
       "wine_slug": "esse-pino-nuar-krasnoe-suhoe-115",
@@ -1264,7 +1269,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-kacha-valley"
+        "official-unplugged"
       ]
     },
     {
@@ -1518,7 +1523,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1529,7 +1534,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-sparkling"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13",
@@ -1551,7 +1557,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1562,7 +1568,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-sparkling"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-esse-rose-sira-rozovoe-suhoe-12",
@@ -1698,7 +1705,7 @@
     },
     {
       "id": "wine-esse-saperavi-heaven-krasnoe-suhoe-13",
-      "group_id": "kacha-valley",
+      "group_id": "unplugged",
       "name": "Саперави Heaven",
       "variant": "",
       "wine_slug": "esse-saperavi-heaven-krasnoe-suhoe-13",
@@ -1726,7 +1733,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-kacha-valley"
+        "official-unplugged"
       ]
     },
     {
@@ -1797,7 +1804,7 @@
     },
     {
       "id": "wine-esse-shenen-blan-beloe-suhoe-13",
-      "group_id": "kacha-valley",
+      "group_id": "unplugged",
       "name": "Шенен Блан",
       "variant": "",
       "wine_slug": "esse-shenen-blan-beloe-suhoe-13",
@@ -1825,7 +1832,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-kacha-valley"
+        "official-unplugged"
       ]
     },
     {
@@ -1936,7 +1943,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/esse/official-yellow-gloves.webp",
-        "source_id": "official-official-yellow-gloves",
+        "source_id": "official-product-yellow-gloves",
         "frame": {
           "x": 6,
           "y": 6,
@@ -1956,7 +1963,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-yellow-gloves",
+        "official-product-yellow-gloves",
         "official-unplugged"
       ]
     }
