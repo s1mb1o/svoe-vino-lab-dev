@@ -1,0 +1,62 @@
+{
+  "reviewed_on": "2026-10-17",
+  "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
+  "sources": [
+    {
+      "url": "https://nsvet-crimea.ru/shampain/kyuve-de-prestizh/",
+      "retrieved_at": "2026-10-17T20:26:43.892082+00:00",
+      "sha256": "c45da1fa5b90d4eb89222873a08cc12beb2cb15179d5ab53276961f3f73dabb6",
+      "final_url": "http://nsvet-crimea.ru/shampain/kyuve-de-prestizh/",
+      "tls_note": "Public page only. Certificate validation disabled because the certificate is expired. No credentials were sent.",
+      "source_id": "official-prestige",
+      "section": null,
+      "basis": "The official Prestige section identifies Chardonnay, Riesling and Pinot Gris cuvees. Historical cards remain separate."
+    },
+    {
+      "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-kollektsionnoe/",
+      "retrieved_at": "2026-10-17T20:26:43.928202+00:00",
+      "sha256": "f5267d665ddfe59a71715352b8520c3a40e2157a9234bbe555867cece3663c17",
+      "final_url": "http://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-kollektsionnoe/",
+      "tls_note": "Public page only. Certificate validation disabled because the certificate is expired. No credentials were sent.",
+      "source_id": "official-collection",
+      "section": null,
+      "basis": "The collection page states bottle fermentation and at least 36 months on lees."
+    },
+    {
+      "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-vyderzhannoe/",
+      "retrieved_at": "2026-10-17T20:26:43.978890+00:00",
+      "sha256": "80993287fc34fbb8f57d70a1ccf255546e05f057bb90f836008885c7f3664155",
+      "final_url": "http://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-vyderzhannoe/",
+      "tls_note": "Public page only. Certificate validation disabled because the certificate is expired. No credentials were sent.",
+      "source_id": "official-aged",
+      "section": null,
+      "basis": "The aged collection page states bottle fermentation and at least one year on lees."
+    },
+    {
+      "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/",
+      "retrieved_at": "2026-10-17T20:26:43.834503+00:00",
+      "sha256": "c145cf5ec9493e6d30ef0553feb8e2d4be18d37581a58ea8a716ec24f06f11ce",
+      "final_url": "http://nsvet-crimea.ru/shampain/koronatsionnoe/",
+      "tls_note": "Public page only. Certificate validation disabled because the certificate is expired. No credentials were sent.",
+      "source_id": "official-crown",
+      "section": null,
+      "basis": "The official page identifies Коронационное as a limited flagship cuvee."
+    },
+    {
+      "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/",
+      "retrieved_at": "2026-10-17T20:26:43.834503+00:00",
+      "sha256": "c145cf5ec9493e6d30ef0553feb8e2d4be18d37581a58ea8a716ec24f06f11ce",
+      "final_url": "http://nsvet-crimea.ru/shampain/koronatsionnoe/",
+      "tls_note": "Public page only. Certificate validation disabled because the certificate is expired. No credentials were sent.",
+      "source_id": "official-product-koronatsionnoe",
+      "section": null,
+      "basis": "The official page identifies Коронационное as a limited flagship cuvee."
+    }
+  ],
+  "snapshot_only_groups": [
+    "limited",
+    "varietal-unconfirmed"
+  ],
+  "label_rule": "Read collection labels only from original input photos. Do not read generated fine print as product evidence.",
+  "price_rule": "Ranks compare groups within one producer. They are editorial guidance. They are not prices or quality scores."
+}

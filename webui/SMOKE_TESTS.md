@@ -1,3 +1,7 @@
+# 2026-10-17: novy-svet review correction
+
+Check the two aged entries, two unconfirmed varietal entries, rank-zero special cuvees, and the limited Коронационное card.
+
 # 2026-10-17: Sober Bash amphora source
 
 Verify the Грани · Амфора source against the official Грани collection. Retain the four amphora product identities and their selection behavior.

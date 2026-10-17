@@ -21,38 +21,28 @@
       "url": "https://vino-svoe.ru/"
     },
     {
-      "id": "official-collections",
-      "label": "Новый Свет: официальные коллекции",
-      "url": "https://nsvet-crimea.ru/shampain/"
-    },
-    {
       "id": "official-prestige",
-      "label": "Новый Свет: Кюве Де Престиж",
+      "label": "Новый Свет: официальный источник · Кюве Де Престиж",
       "url": "https://nsvet-crimea.ru/shampain/kyuve-de-prestizh/"
     },
     {
-      "id": "official-limited",
-      "label": "Новый Свет: Лимитированные и особые кюве",
-      "url": "https://nsvet-crimea.ru/shampain/"
-    },
-    {
       "id": "official-collection",
-      "label": "Новый Свет: Коллекционное",
+      "label": "Новый Свет: официальный источник · Российское шампанское коллекционное",
       "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-kollektsionnoe/"
     },
     {
       "id": "official-aged",
-      "label": "Новый Свет: Выдержанное",
+      "label": "Новый Свет: официальный источник · Российское шампанское выдержанное",
       "url": "https://nsvet-crimea.ru/shampain/rossiyskoe-shampanskoe-vyderzhannoe/"
     },
     {
       "id": "official-crown",
-      "label": "Новый Свет: Коронационное",
+      "label": "Новый Свет: официальный источник · Коронационное",
       "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/"
     },
     {
-      "id": "official-official-koronatsionnoe",
-      "label": "Официальная карточка: Новый Свет · Коронационное",
+      "id": "official-product-koronatsionnoe",
+      "label": "Новый Свет: официальный источник · Коронационное",
       "url": "https://nsvet-crimea.ru/shampain/koronatsionnoe/"
     }
   ],
@@ -69,7 +59,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Старший ориентир · ₽₽₽₽",
       "source_ids": [
-        "official-crown"
+        "official-crown",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -80,7 +71,7 @@
       "price_label": "Выше базового · ₽₽₽",
       "source_ids": [
         "official-prestige",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -90,7 +81,8 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Средний ориентир · ₽₽",
       "source_ids": [
-        "official-collection"
+        "official-collection",
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -100,7 +92,18 @@
       "description": "Относительная ступень задана редакционно по коллекциям и технологии. Это не актуальная цена и не рейтинг качества.",
       "price_label": "Базовый ориентир · ₽",
       "source_ids": [
-        "official-aged"
+        "official-aged",
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "tier-0",
+      "label": "Самостоятельные стили и неуточнённые серии",
+      "rank": 0,
+      "description": "Ценовое соотношение с остальными группами не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
       ]
     }
   ],
@@ -118,12 +121,11 @@
     },
     {
       "id": "limited",
-      "name": "Лимитированные и особые кюве",
-      "tier_id": "tier-3",
-      "method": "Классический метод; специальные выпуски",
-      "description": "Парадизио, Блан де Нуар, Золотой Рислинг, Юбилейное и Кюве. Редакционная группа исторических специальных выпусков. Не все названия совпадают с текущими разделами сайта.",
+      "name": "Особые кюве из снимка",
+      "tier_id": "tier-0",
+      "method": "Метод не указан",
+      "description": "Парадизио, Блан де Нуар, Золотой Рислинг, Юбилейное и Кюве. Это группа исторических карточек. Единый статус лимитированной серии и общая ценовая ступень не подтверждены.",
       "source_ids": [
-        "official-limited",
         "svoe-vino-2026-09-17"
       ]
     },
@@ -159,12 +161,22 @@
         "official-crown",
         "svoe-vino-2026-09-17"
       ]
+    },
+    {
+      "id": "varietal-unconfirmed",
+      "name": "Алиготе и Кокур · серия не уточнена",
+      "tier_id": "tier-0",
+      "method": "Метод не указан",
+      "description": "Самостоятельные карточки Алиготе и Кокура. Точная серия и её ценовая ступень не подтверждены. Их не относим к специальным или старшим кюве по одному названию сорта.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
     }
   ],
   "products": [
     {
       "id": "wine-novyj-svet-aligote",
-      "group_id": "limited",
+      "group_id": "varietal-unconfirmed",
       "name": "Новый Свет. Алиготе",
       "variant": "",
       "wine_slug": "novyj-svet-aligote",
@@ -182,7 +194,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Алиготе"
       ],
@@ -191,8 +203,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -215,7 +226,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -224,8 +235,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -248,7 +258,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -281,7 +291,7 @@
         }
       },
       "category": "Красное",
-      "style": "Красное",
+      "style": "Красное игристое",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -314,7 +324,7 @@
         }
       },
       "category": "Красное",
-      "style": "Красное · полусладкое",
+      "style": "Красное игристое · полусладкое",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -347,7 +357,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Шардоне"
       ],
@@ -380,7 +390,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -389,8 +399,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -413,7 +422,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Гри"
       ],
@@ -446,7 +455,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусладкое",
+      "style": "Белое игристое · полусладкое",
       "grapes": [
         "Шардоне"
       ],
@@ -479,7 +488,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусухое",
+      "style": "Белое игристое · полусухое",
       "grapes": [
         "Шардоне"
       ],
@@ -512,7 +521,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Рислинг"
       ],
@@ -545,7 +554,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -578,7 +587,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -589,7 +598,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-prestige"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-novyj-svet-shardone-kyuve-de-prestizh-1",
@@ -611,7 +621,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Шардоне"
       ],
@@ -622,7 +632,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-prestige"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-novyj-svet-vyderzhannoe-bryut",
@@ -644,7 +655,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Шардоне"
       ],
@@ -677,7 +688,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Рислинг"
       ],
@@ -686,8 +697,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -710,7 +720,7 @@
         }
       },
       "category": "Красное",
-      "style": "Красное · брют",
+      "style": "Красное игристое · брют",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -743,7 +753,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Пино фран"
       ],
@@ -776,7 +786,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Пино Нуар"
       ],
@@ -809,7 +819,7 @@
         }
       },
       "category": "Красное",
-      "style": "Красное · полусладкое",
+      "style": "Красное игристое · полусладкое",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -842,7 +852,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусладкое",
+      "style": "Розовое игристое · полусладкое",
       "grapes": [
         "Пино фран"
       ],
@@ -857,7 +867,7 @@
     },
     {
       "id": "wine-novyy-svet-dom-shampanskih-vin-novyy-svet-kokur-kokur-belyy-beloe-ekstra-bryut-12",
-      "group_id": "limited",
+      "group_id": "varietal-unconfirmed",
       "name": "Новый Свет. Кокур",
       "variant": "",
       "wine_slug": "novyy-svet-dom-shampanskih-vin-novyy-svet-kokur-kokur-belyy-beloe-ekstra-bryut-12",
@@ -875,7 +885,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое",
+      "style": "Белое игристое",
       "grapes": [
         "Кокур Белый"
       ],
@@ -884,8 +894,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -908,7 +917,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Шардоне"
       ],
@@ -917,8 +926,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -941,7 +949,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое",
+      "style": "Розовое игристое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -974,7 +982,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусладкое",
+      "style": "Розовое игристое · полусладкое",
       "grapes": [
         "Шардоне"
       ],
@@ -1007,7 +1015,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусухое",
+      "style": "Розовое игристое · полусухое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1040,13 +1048,15 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Пино Гри"
       ],
       "description": "Аромат тонкий, элегантный — с цветочными и фруктовыми оттенками, лёгкой нотой выпечки; вкус сбалансированный, с ненавязчивой сладостью груши, ананаса и минеральными нюансами. Долгое кремовое послевкусие. Идеальный аперитив и к блюдам из домашней птицы, ризотто, морепродуктам.",
       "release_status": "catalog",
-      "badges": [],
+      "badges": [
+        "Противоречие: название «белое», категория «розовое»"
+      ],
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
@@ -1073,7 +1083,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Шардоне"
       ],
@@ -1082,8 +1092,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1106,7 +1115,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Рислинг",
         "Шардоне"
@@ -1116,8 +1125,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1140,7 +1148,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Рислинг"
       ],
@@ -1149,8 +1157,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1173,7 +1180,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1206,7 +1213,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1215,8 +1222,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1239,7 +1245,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Шардоне"
       ],
@@ -1272,7 +1278,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Алиготе",
         "Пино Блан",
@@ -1285,8 +1291,7 @@
       "badges": [],
       "price": null,
       "source_ids": [
-        "svoe-vino-2026-09-17",
-        "official-limited"
+        "svoe-vino-2026-09-17"
       ]
     },
     {
@@ -1309,7 +1314,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Рислинг"
       ],
@@ -1342,7 +1347,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Алиготе",
         "Пино Нуар",
@@ -1378,7 +1383,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусухое",
+      "style": "Белое игристое · полусухое",
       "grapes": [
         "Алиготе",
         "Пино Нуар",
@@ -1392,7 +1397,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-collection"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 1 из 2"
     },
     {
       "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13",
@@ -1414,7 +1420,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · полусухое",
+      "style": "Белое игристое · полусухое",
       "grapes": [
         "Алиготе",
         "Пино фран",
@@ -1428,7 +1434,8 @@
       "source_ids": [
         "svoe-vino-2026-09-17",
         "official-collection"
-      ]
+      ],
+      "catalog_card_label": "Карточка каталога 2 из 2"
     },
     {
       "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-rozovoe-novyy-svet-pino-nuar-125",
@@ -1450,7 +1457,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусухое",
+      "style": "Розовое игристое · полусухое",
       "grapes": [
         "Пино Нуар"
       ],
@@ -1483,7 +1490,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · брют",
+      "style": "Белое игристое · брют",
       "grapes": [
         "Алиготе",
         "Кокур",
@@ -1522,7 +1529,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · брют",
+      "style": "Розовое игристое · брют",
       "grapes": [
         "Каберне Совиньон"
       ],
@@ -1537,7 +1544,7 @@
     },
     {
       "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13",
-      "group_id": "limited",
+      "group_id": "aged",
       "name": "Российское шампанское выдержанное экстра брют белое «Новый Свет. Алиготе»",
       "variant": "",
       "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13",
@@ -1555,7 +1562,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Алиготе"
       ],
@@ -1565,12 +1572,12 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-limited"
+        "official-aged"
       ]
     },
     {
       "id": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11",
-      "group_id": "limited",
+      "group_id": "aged",
       "name": "Российское шампанское выдержанное экстра брют белое «Новый Свет. Кокур»",
       "variant": "",
       "wine_slug": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11",
@@ -1588,7 +1595,7 @@
         }
       },
       "category": "Белое",
-      "style": "Белое · экстра брют",
+      "style": "Белое игристое · экстра брют",
       "grapes": [
         "Кокур"
       ],
@@ -1598,7 +1605,7 @@
       "price": null,
       "source_ids": [
         "svoe-vino-2026-09-17",
-        "official-limited"
+        "official-aged"
       ]
     },
     {
@@ -1621,7 +1628,7 @@
         }
       },
       "category": "Розовое",
-      "style": "Розовое · полусладкое",
+      "style": "Розовое игристое · полусладкое",
       "grapes": [
         "Алиготе",
         "Каберне Совиньон",
@@ -1650,7 +1657,7 @@
       "wine_slug_aliases": [],
       "image": {
         "src": "/product-line-maps/novy-svet/official-koronatsionnoe.webp",
-        "source_id": "official-official-koronatsionnoe",
+        "source_id": "official-product-koronatsionnoe",
         "frame": {
           "x": 3,
           "y": 5,
@@ -1669,11 +1676,11 @@
         "Алиготе"
       ],
       "description": "Флагман Дома шампанских вин. Коллекционное винтажное игристое ограниченного тиража. Воссоздано в 2005 году по рецептуре Льва Голицына. Точное название отсутствует в снимке каталога.",
-      "release_status": "catalog",
+      "release_status": "limited",
       "badges": [],
       "price": null,
       "source_ids": [
-        "official-official-koronatsionnoe",
+        "official-product-koronatsionnoe",
         "official-crown"
       ]
     }

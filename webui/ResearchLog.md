@@ -1,3 +1,7 @@
+# 2026-10-17: novy-svet review correction
+
+The snapshot does not establish one premium rank for all special Novy Svet releases. Two short varietal identities lack a confirmed collection.
+
 # 2026-10-17: Sober Bash amphora source
 
 The saved official Грани page lists all four amphora products in the map. The reserve collection URL did not establish this membership. Keep the existing products, groups, and relative tiers.

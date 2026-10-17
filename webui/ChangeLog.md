@@ -1,3 +1,7 @@
+# 2026-10-17: novy-svet review correction
+
+Remove unsupported premium ranks from historical special cuvees. Separate explicit aged cards from varietal cards with no confirmed collection.
+
 # 2026-10-17: Structured absence validation
 
 Validate exact producer values in structured absence checks. Keep the existing text-based absence evidence compatible.
