@@ -64,6 +64,8 @@ public:
     void apply(SlowResult& result);
 
     int latency;
+    int slow_every = 0;      // the least steps between two slow jobs (0: whenever asked)
+    int last_slow = kNever;
     std::optional<SlowResult> inflight;
     int lost_since = 0;
     std::set<int> provisional;

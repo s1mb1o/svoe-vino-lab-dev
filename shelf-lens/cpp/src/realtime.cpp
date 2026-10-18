@@ -49,7 +49,8 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
     for (const auto& d : detections) boxes.push_back(d.box);
     previous = std::make_pair(gray, boxes);
     fast_seconds.push_back(since(started));
-    if (!inflight && asks()) {
+    if (!inflight && asks() && count - last_slow >= slow_every) {
+        last_slow = count;
         Snapshot snap;
         snap.number = number;
         snap.count = count;
