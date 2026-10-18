@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-18 — Session Replay off
+
+- Turn off Metrika Session Replay: `webvisor: false` (owner decision in #41).
+  Also turn it off in the counter settings of Metrika.
+
 ## 2026-10-18 — Mode pages and HEIC uploads
 
 - Give each scan mode its own page: «Одна бутылка» at `/`, «Вся полка» at `/shelf`.

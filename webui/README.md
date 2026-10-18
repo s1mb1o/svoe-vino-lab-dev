@@ -34,8 +34,8 @@ Read [SMOKE_TESTS.md](SMOKE_TESTS.md) for acceptance checks.
 ## Analytics and age confirmation
 
 The Web UI uses the owner-supplied Yandex.Metrika counter `113460637` on every page.
-The counter enables Session Replay, click maps, link tracking, accurate bounce tracking,
-and the `dataLayer` ecommerce integration. It can use cookies.
+The counter enables click maps, link tracking, accurate bounce tracking,
+and the `dataLayer` ecommerce integration. Session Replay is off (`webvisor: false`, #41). It can use cookies.
 The shared HTML includes the initialization script and a no-JavaScript image fallback.
 Client navigation sends a page view with the previous page URL as the referrer.
 The page view is sent after Nuxt sets the title of the new page.
