@@ -97,9 +97,11 @@ The workspace rules are in `../../CLAUDE.md`.
 57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
 58. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
 59. Limit failed administration authentication attempts by socket client address.
-60. Deploy production with Docker Compose from `deploy/gx10/`. Keep the secrets only in
-    `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` on gx10 (mode `0600`), never in
-    the Compose file, its `.env` file, the image, or git.
+60. Deploy production with Docker Compose on gx10. The runbook, the Compose file, and the
+    environment template are in the deployment repository `<workspace>/deploy/gx10/`, not in
+    this repository. Keep the secrets in `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env`
+    on gx10 (mode `0600`). Never put a secret in this repository, the Compose file, its `.env`
+    file, or the image.
 
 ## MAX platform rules
 

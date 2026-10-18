@@ -2,6 +2,9 @@
 
 ## 2026-10-18
 
+- Moved `deploy/gx10/` (the production runbook, the Compose file, and the environment template)
+  to the deployment repository `<workspace>/deploy/gx10/` (owner decision). That repository is
+  on GitLab only and can hold secrets. `README.md` and service rule 60 point there.
 - Added «Удалить запрос» to the request page of the administration interface (issue #10, section
   2.4). After CSRF and an explicit confirmation, it deletes the request row with its candidate,
   timing, artifact, and sent-message rows, the source image of each attempt, and the artifact files.

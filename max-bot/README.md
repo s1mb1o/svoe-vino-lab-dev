@@ -221,7 +221,7 @@ curl читает заголовок из стандартного ввода (`
 Минцифры. Без него curl сообщает `SSL certificate problem`.
 
 Шаг 4. Запишите токен в `config/max-bot.env` на gx10. Сначала создайте этот файл из шаблона
-(раздел «First installation» в [deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md)).
+(раздел «First installation» в `<workspace>/deploy/gx10/max-bot-prod.md`).
 Команда читает токен из Связки ключей и передаёт его на gx10 через стандартный ввод SSH.
 Она заменяет строку `MAX_BOT_TOKEN=` и записывает токен в одинарных кавычках. Права файла
 остаются `0600`.
@@ -350,23 +350,22 @@ uv run chto-za-vino-max-bot
 4. Бот удаляет запись запроса с кандидатами, этапами и артефактами, исходный файл каждой попытки
    и файлы артефактов. Запрос в обработке удалить нельзя: дождитесь конца обработки.
 5. Сообщения в чате MAX остаются. Все данные одного пользователя удаляет команда
-   `chto-za-vino-max-delete-user` (см. `deploy/gx10/max-bot-prod.md`).
+   `chto-za-vino-max-delete-user` (см. `<workspace>/deploy/gx10/max-bot-prod.md`).
 
 ## Развёртывание
 
-Production работает в Docker Compose на `gx10`, так же как Telegram-бот. Процедура описана в
-[deploy/gx10/max-bot-prod.md](deploy/gx10/max-bot-prod.md).
+Production работает в Docker Compose на `gx10`, так же как Telegram-бот. Runbook, файл Compose
+и шаблон файла окружения находятся в репозитории развёртывания, не здесь:
+`<workspace>/deploy/gx10/max-bot-prod.md`, `max-bot-prod.compose.yaml` и `max-bot.env.example`.
 
 - Соберите образ из закоммиченной ревизии:
   `git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -`.
   Образу нужен общий пакет `im-core/` в контексте сборки.
-- Один образ запускает два контейнера: `max-bot` (обновления MAX и API распознавания на
-  `28004`) и `max-admin` (интерфейс администрирования на адресе loopback хоста
-  `127.0.0.1:28005`). Файл Compose:
-  [deploy/gx10/max-bot-prod.compose.yaml](deploy/gx10/max-bot-prod.compose.yaml).
+- Один образ запускает два контейнера: `svoe-vino-lab-max-bot-prod` (обновления MAX и API
+  распознавания на `28004`) и `svoe-vino-lab-max-bot-admin-prod` (интерфейс администрирования
+  на адресе loopback хоста `127.0.0.1:28005`).
 - Секреты хранятся в `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` (режим `0600`).
-  Compose передаёт этот файл обоим контейнерам. Шаблон:
-  [deploy/gx10/max-bot.env.example](deploy/gx10/max-bot.env.example).
+  Compose передаёт этот файл обоим контейнерам.
 - Каталог данных: `/srv/svoe-vino-lab/prod/max-bot/data`.
 - Бот использует long polling, пока у gx10 нет публичного HTTPS-имени для вебхука. В режиме
   вебхука публикуйте порт контейнера `8081` только через TLS-прокси на порту 443.
