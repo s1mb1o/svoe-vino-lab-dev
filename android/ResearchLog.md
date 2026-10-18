@@ -1,5 +1,59 @@
 # Research log
 
+## 2026-10-19
+
+### Pixel 8 full `my` validation
+
+- The source commit was `f8b15c210f82f9dd970493dad995c13690b421c8`.
+- The test used a Google Pixel 8 with serial `41231FDJH002WZ`.
+- The device ran Android 17 at API level 37.
+- The installed application had version 0.1.4 and version code 5.
+- The package ID was `chtozavino.alolalab.com`.
+- The APK size was 477,573,550 bytes.
+- The APK SHA-256 was
+  `41ea00bd1baa8d4235f276579dca8a86db16570f5bdd3635b9eeb54e25793154`.
+- The model pack version was `20261003-dis-yolo26n-seg`.
+- The model pack contained 2,093 wines, 2,093 images, and 2,093 vectors.
+- The model pack used one vector for each wine.
+- This APK did not contain the 72-angle reference index.
+- The model pack size was 432,436,177 bytes.
+- The model pack SHA-256 was
+  `c55203fdaa2b2f1abb034eb22793714465ae265298ce8b4a3ef9a6dfe8cd1616`.
+- The saved settings selected DIS GPU and SigLIP2 CPU.
+- `GET /healthz` reported the correct pack version, wine count, and DIS mode.
+- One three-photo check processed all three photographs.
+- Its technical text reported DIS GPU and SigLIP2 CPU.
+- A second three-photo check stopped after its first photograph.
+- Its technical text reported `Обработано фото: 1 из 3`.
+- Its technical text reported `Ранний выход: высокое сходство`.
+- The first photograph had Top-1 0.9425 and a Top-1 to Top-2 margin of 0.0919.
+- These values exceeded the configured score 0.93 and margin 0.08 thresholds.
+- The full run called `POST /v1/match?k=20` through an ADB port forward.
+- The run used one worker and one Android application process.
+- The run evaluated 3,409 queries in 5,986.9 seconds.
+- The query set had 2,970 positive queries, 430 negative queries, and 9 no-match
+  queries.
+- Positive R@1 was 0.3327.
+- Positive R@5 was 0.5646.
+- Positive R@10 was 0.6441.
+- Positive MRR was 0.4402.
+- Median latency was 1,699 ms.
+- P95 latency was 2,156 ms.
+- Maximum latency was 4,684 ms.
+- 99.85 percent of queries completed within 3,000 ms.
+- Five positive queries returned HTTP 502.
+- These five queries represented four unique image files.
+- Each repeated check reported `DIS не нашёл главный объект`.
+- The errors were segmentation refusals and not process failures.
+- The negative set had 42 target-slug false matches at rank 1.
+- The no-match set had zero correct rejections and nine rank-1 false matches.
+- The application PID stayed `30129` through the full run.
+- The Android crash buffer was empty after the run.
+- Logcat contained no `FATAL EXCEPTION`, `Fatal signal`, `SIGABRT`, or
+  `libLiteRtClGlAccelerator` error.
+- The debug HTTP server was off after the run.
+- The ADB port forward was absent after the run.
+
 ## 2026-10-03
 
 ### Five-degree Android reference rotation

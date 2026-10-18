@@ -473,3 +473,93 @@ The Workbench runs are:
 
 - `2026-10-16T213239Z-lab-android-device-eval-predict-my-realme-usb-smoke-20261017-rerun`.
 - `2026-10-16T213339Z-lab-android-device-match-k20-my-realme-usb-smoke-20261017`.
+
+## Pixel 8 current-patch and full `my` validation
+
+Date: 2026-10-18 through 2026-10-19
+
+The application source commit was
+`f8b15c210f82f9dd970493dad995c13690b421c8`.
+The build passed `testDebugUnitTest`, `lintDebug`, and `assembleDebug`.
+The test installed the version 0.1.4 debug APK on a Google Pixel 8.
+The Pixel 8 ran Android 17 at API level 37.
+The package ID was `chtozavino.alolalab.com`.
+
+The APK was 477,573,550 bytes.
+Its SHA-256 was
+`41ea00bd1baa8d4235f276579dca8a86db16570f5bdd3635b9eeb54e25793154`.
+The model pack was `20261003-dis-yolo26n-seg`.
+The pack contained 2,093 wines, 2,093 images, and 2,093 vectors.
+The pack used one vector for each wine.
+The test did not validate the 72-angle reference index because this APK did not contain
+that index.
+The model pack was 432,436,177 bytes.
+Its SHA-256 was
+`c55203fdaa2b2f1abb034eb22793714465ae265298ce8b4a3ef9a6dfe8cd1616`.
+
+The settings selected DIS GPU and SigLIP2 CPU.
+`GET /healthz` returned HTTP 200.
+It reported the correct model-pack version, wine count, and DIS mode.
+
+The first multi-shot device check selected three photographs.
+The application processed all three photographs.
+The technical text reported DIS GPU and SigLIP2 CPU.
+The second check selected a catalogue image as the first of three photographs.
+The first image had Top-1 0.9425 and a Top-1 to Top-2 margin of 0.0919.
+The application processed one of three photographs.
+The technical text reported `Ранний выход: высокое сходство`.
+
+The full run used `POST /v1/match?k=20` through ADB forwarding.
+The run used one worker.
+The run used all eligible queries from the current `my` test set.
+The current Workbench read catalogue schema version 36.
+The older Workbench copy in this repository supports catalogue schema version 32.
+The test used the current Workbench code and wrote its run files into this repository.
+The test did not change the shared catalogue database.
+
+| Measure | Value |
+|---|---:|
+| Total queries | 3,409 |
+| Positive queries | 2,970 |
+| Negative queries | 430 |
+| No-match queries | 9 |
+| Positive R@1 | 0.3327 |
+| Positive R@5 | 0.5646 |
+| Positive R@10 | 0.6441 |
+| Positive MRR | 0.4402 |
+| Median latency | 1,699 ms |
+| P95 latency | 2,156 ms |
+| Maximum latency | 4,684 ms |
+| Queries within 3,000 ms | 99.85% |
+| Wall time | 5,986.9 s |
+
+Five positive queries returned HTTP 502.
+These queries represented four unique images.
+The server reported `DIS не нашёл главный объект` for a repeated request.
+The errors were deterministic segmentation refusals.
+The errors were not process failures.
+
+The negative set had 42 target-slug false matches at rank 1.
+The no-match set had zero correct rejections.
+All nine no-match queries returned a rank-1 candidate.
+
+The application used PID `30129` through the full run.
+The Android crash buffer was empty after the run.
+Logcat contained no `FATAL EXCEPTION`, `Fatal signal`, `SIGABRT`, or
+`libLiteRtClGlAccelerator` error.
+The earlier request-57 native abort did not reproduce in 3,409 sequential requests.
+
+The local run directory is
+`../workbench/runs/2026-10-18T193540Z-lab-android-device-match-k20-my-pixel8-usb-current-patches-20261018`.
+The run directory is excluded from Git.
+The `metrics.json` SHA-256 is
+`1d8f5d61cb472e131e8d0bed87a0399729cdae6494c36f07f8eb800970d6a662`.
+The `predictions.jsonl` SHA-256 is
+`39e139c7e689beaf8e2c412280ec1acb08b82bc3540f3aff7aaf9cccfc01735e`.
+The `results.jsonl` SHA-256 is
+`08cf72237408dc3a735abefc60dfbce3b33ff0fb560edd87aa0740fd4e4e85f6`.
+
+The test disabled the debug HTTP server after the run.
+The test removed the ADB port forward after the run.
+The test restored the original device power setting.
+The test removed the four temporary image copies from the device.

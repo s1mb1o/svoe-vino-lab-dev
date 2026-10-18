@@ -1,5 +1,23 @@
 # Change log
 
+## 2026-10-19
+
+### Pixel 8 current-patch validation
+
+- Built the version 0.1.4 debug APK from commit `f8b15c2`.
+- Passed `testDebugUnitTest`, `lintDebug`, and `assembleDebug`.
+- Installed the APK on a Google Pixel 8 with Android 17.
+- Verified the model pack, settings, main screen, and debug HTTP server.
+- Verified selection and recognition of three photographs.
+- Verified the multi-shot early exit after one of three photographs.
+- Ran all 3,409 eligible queries of the Workbench `my` test set.
+- Completed the run in one application process without `SIGABRT` or another crash.
+- Measured positive R@1 0.3327, R@5 0.5646, R@10 0.6441, and MRR 0.4402.
+- Measured 1,699 ms median latency and 2,156 ms P95 latency.
+- Recorded five HTTP 502 results for four unique images where DIS found no main object.
+- Disabled the debug HTTP server after the run.
+- Removed the ADB port forward and the temporary device images after the run.
+
 ## 2026-10-18
 
 ### Multi-shot recognition

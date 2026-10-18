@@ -10,6 +10,31 @@
 5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
    index and the Android SigLIP2 LiteRT file.
 
+## Verification on 2026-10-19
+
+- `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed.
+- The version 0.1.4 debug APK installed on Pixel 8 serial `41231FDJH002WZ`.
+- The device ran Android 17 at API level 37.
+- The installed pack reported version `20261003-dis-yolo26n-seg` and 2,093 wines.
+- The settings page showed DIS GPU and SigLIP2 CPU.
+- The main screen accepted three gallery photographs.
+- One multi-shot run processed all three photographs.
+- One multi-shot run stopped after the first photograph at the configured thresholds.
+- The early-exit technical text reported `Обработано фото: 1 из 3`.
+- The early-exit technical text reported `Ранний выход: высокое сходство`.
+- The `/v1/match?k=20` run completed all 3,409 eligible `my` queries.
+- The run used one application process and one HTTP worker.
+- The run had five HTTP 502 results from four unique DIS failures.
+- The run had no native abort and no application process restart.
+- Positive R@1 was 0.3327.
+- Positive R@5 was 0.5646.
+- Positive R@10 was 0.6441.
+- Median latency was 1,699 ms.
+- P95 latency was 2,156 ms.
+- The debug HTTP server was off after the test.
+- The ADB port forward was absent after the test.
+- The temporary device images were removed after the test.
+
 ## Multi-shot checks
 
 1. Add one photograph from the camera.
@@ -41,7 +66,7 @@
 - All 31 release unit tests passed.
 - `lintDebug` and `lintRelease` passed.
 - `assembleDebug` and `assembleRelease` passed.
-- The multi-shot device checks are pending.
+- The multi-shot device checks completed on 2026-10-19.
 
 ## Verification on 2026-10-03
 
