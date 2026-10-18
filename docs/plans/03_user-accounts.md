@@ -1,4 +1,4 @@
-# User accounts: «Личный паспорт предпочтений»
+# User accounts: «Винный дневник»
 
 Date: 2026-10-19.
 Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/48.
@@ -7,13 +7,20 @@ Base: `0621952f` (`main`).
 Status: Owner decisions recorded on 2026-10-19 (see "Owner decisions"). No code exists.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the first draft on 2026-10-19. This version applies
 its findings. Finding 2 (serial bot calls) no longer applies: the MAX design below has no
-account calls in bot handlers.
+account calls in bot handlers. A second Codex review of commit `29e73880` found seven more
+problems (launch-data relay and replay, the public route list, the outbox enqueue, the link
+cache, the root rewrite, tokens without a route). This version applies them.
 
 ## Goal
 
 Let a person keep their wine searches, rate wines, and state taste preferences.
 The `/ideas` page shows this feature as a mockup (`webui/app/pages/ideas.vue:26`):
 «Собирать впечатления о винах, замечать любимые стили и получать персональные рекомендации.»
+
+The user-facing name is «Винный дневник» (owner decision, 2026-10-19). Do not use the word
+«паспорт» for this feature. MAX «Цифровой ID» is «цифровой аналог паспорта» with a QR code
+(`wiki/raw/dev.max.ru/docs/digital-id.md:21-26`). «Паспорт вкуса» already names the taste
+profile of one wine (F-21, `webui/app/components/WineExperiences.vue`).
 
 Keep the feature small. Every existing component MUST keep its current behavior when the
 account service is down, not deployed, or not configured.
@@ -110,8 +117,8 @@ This is a reading of the published texts, not legal advice. A short written ques
 
 ## MAX design
 
-Mini app: the Nuxt page `/max`, served at the root of a separate host
-`https://max.chtozavino.ru/` (see "Deployment"). Connect this URL in the bot settings
+Mini app: the Nuxt pages under `/max/*` on a separate host `https://max.chtozavino.ru/`
+(see "Deployment"). The host root redirects to `/max`. Connect the root URL in the bot settings
 («Чат-боты → ⋮ → Настройки»). Deep link: `https://max.ru/<bot>?startapp=account`.
 The payload `account` is a constant.
 
@@ -125,8 +132,8 @@ Registration with MAX:
 1. On the site, the tab «Через MAX» shows the QR code of the deep link. A phone shows
    «Открыть в MAX» with the same link.
 2. MAX opens the mini app. The page sends `window.WebApp.initData` to the Nuxt server.
-3. The account service checks the signature and `auth_date` (at most 1 hour old).
-4. A MAX user without an account sees «Создать паспорт»: username and the consent checkbox.
+3. The account service checks `initData` (see "Launch data checks").
+4. A MAX user without an account sees «Начать дневник»: username and the two checkboxes.
    The new account is linked to the MAX `user_id`.
 5. A linked MAX user gets a session at once. Each launch creates a new session.
 
@@ -134,6 +141,8 @@ Link MAX to an existing account:
 
 - In the mini app, «У меня уже есть аккаунт» asks for the username and the password.
   A correct password links the MAX `user_id` to that account.
+- Before the link, the page shows the MAX name from `initData`: «Привязать MAX-аккаунт
+  «Имя Фамилия» к дневнику ivan?». A person who sees a foreign name stops.
 - The site shows the same fixed QR code under «Настройки» → «Привязать MAX».
 
 Use the account on the site after a MAX registration:
@@ -143,22 +152,22 @@ Use the account on the site after a MAX registration:
 - A forgotten password: open the mini app, use «Сбросить пароль». The reset ends all other
   sessions.
 
-Mini-app screens (`max.chtozavino.ru`). The host holds the passport only. Photo recognition
+Mini-app screens (`max.chtozavino.ru`). The host holds the diary only. Photo recognition
 stays in the bot chat.
 
 1. Start: the 18+ gate, then the `initData` check. This shows a short loading state.
-2. Welcome, for a MAX user without an account: two sentences about the passport,
-   «Создать паспорт» (username, the terms checkbox, and the consent checkbox), and
+2. Welcome, for a MAX user without an account: two sentences about the diary,
+   «Начать дневник» (username, the terms checkbox, and the consent checkbox), and
    «У меня уже есть аккаунт» (username and password, to link).
 3. Onboarding: the four preference steps. Each step has «Пропустить».
-4. «Мой паспорт»: «История» (searches from the bot and the site, with photos), «Оценки»,
+4. «Винный дневник»: «История» (searches from the bot and the site, with photos), «Оценки»,
    «Предпочтения».
 5. «Настройки»: set, change, or reset the password; «Сохранять историю поисков с фото»;
    «Удалить все фото»; «Удалить аккаунт».
 6. Footer on every screen: links to `/privacy`, `/terms`, and `/contacts`, and the alcohol
    warning.
-7. Errors: «Паспорт временно недоступен» when the service is down.
-8. Outside MAX (an ordinary browser, no `initData`): «Откройте паспорт в MAX» with the deep
+7. Errors: «Дневник временно недоступен» when the service is down.
+8. Outside MAX (an ordinary browser, no `initData`): «Откройте дневник в MAX» with the deep
    link and its QR code. No account data and no forms.
 
 Release order for the mini app:
@@ -185,25 +194,49 @@ Before the review, the page at `https://max.chtozavino.ru/` MUST:
 - check `initData` on the server (requirement 4.2);
 - show a clear screen for errors and for an ordinary browser (requirement 4.4).
 
+Launch data checks:
+
+MAX puts `initData` in the URL fragment (`#WebAppData=…`,
+`wiki/raw/dev.max.ru/docs/webapps/validation.md:19`, `:36-44`). A person can copy their own
+launch URL and send it to another person. Without checks, the other person could register,
+log in, or link an account for the MAX identity of the sender. Each exchange of `initData`
+MUST pass all these checks:
+
+- a valid signature;
+- `auth_date` at most 5 minutes old;
+- a `query_id` that the service did not see before. The service keeps used IDs for 1 hour;
+- the signed `ip` equals the client address that Caddy reports.
+
+Each exchange makes at most one session. The Phase 0 test checks that `ip` is present and
+matches on mobile data and on Wi-Fi. If it does not, the owner decides between two choices:
+release with the residual risk (the single-use 5-minute window and the visible MAX name on
+every screen), or turn off MAX registration and linking.
+
 Rules:
 
 - Use a key derived from the bot token: `HMAC_SHA256(key="WebAppData", msg=bot_token)`.
   The operator computes it once. The account service gets only this key, never the bot token.
 - Never trust `initDataUnsafe`. Never write `initData` to a log.
 - A MAX `user_id` links to one account at most.
-- Load the MAX Bridge script only on `/max`.
+- Load the MAX Bridge script only on the `/max/*` pages.
 
 Bot changes (`max-bot/`):
 
-- The start message and a new `/account` command get an «Мой паспорт» button that opens the
+- The start message and a new `/diary` command get a «Винный дневник» button that opens the
   mini app. The bot makes no account call in any handler.
-- After a matched result, the bot adds a row to a new table `account_outbox`
-  (`CREATE TABLE IF NOT EXISTS`; no change to existing tables). The row holds the request ID,
-  the MAX `user_id`, the capture time, the slug, and the wine snapshot.
-- A background worker sends the outbox. It first asks whether the MAX user is linked
-  (`GET /v1/bot/links/{max_user_id}`). It keeps the answer in memory for 10 minutes.
-  For an unlinked user it drops the row and sends nothing more.
-- For a linked user it sends the search, then the moderated photo from the bot image store.
+- After `_send_result` returns, the bot calls an advisory enqueue with its own exception
+  handling. A failure is logged without user data. It does not change the request status and
+  sends no message. The general handler marks a request `internal_failed` and sends an error
+  (`max-bot/src/chto_za_vino_max_bot/app.py:290-300`), so the enqueue MUST NOT reach it.
+- The enqueue adds a row to a new table `account_outbox` (`CREATE TABLE IF NOT EXISTS`; no
+  change to existing tables). The row holds the request ID, the MAX `user_id`, the capture
+  time, the slug, and the wine snapshot. The request ID references `requests` with
+  `ON DELETE CASCADE`, so the bot retention and the user deletion remove outbox rows too.
+- A background worker sends each row once as an idempotent `POST /v1/bot/searches` without the
+  photo. The service resolves the MAX identity. It answers `saved` or `skipped` (not linked,
+  saving off, or captured before the link). It stores nothing for `skipped`.
+- After `saved`, the worker sends the moderated photo from the bot image store with
+  `PUT /v1/bot/searches/{id}/image`. The bot keeps no link state.
 - The worker catches every error. It never ends while the bot runs. Retries use backoff for at
   most 24 hours. Then the row is dropped.
 - The service rejects a bot save with a capture time before the link time of the identity.
@@ -238,7 +271,7 @@ flowchart LR
 | Web save after a match | The result stays on screen. A small note says the save failed. |
 | SSR | Never waits for the account service. Account state loads on the client. |
 | MAX bot | Works unchanged. Handlers make no account calls. Saves wait in the outbox. |
-| MAX mini app | Shows «Паспорт временно недоступен». |
+| MAX mini app | Shows «Дневник временно недоступен». |
 | MCP catalog tools | Work unchanged. Account tools return `unavailable`. |
 | Matcher | No dependency. |
 
@@ -293,8 +326,9 @@ SQL file in `account/src/chto_za_vino_account/schema/`.
 
 - Compare all secrets in constant time. Never write a credential to a log, URL, page title,
   link target, or error.
-- A "recent login" is a session whose `auth_at` is less than 15 minutes old. A mini-app
-  session is always recent: it starts at each launch.
+- A "recent login" is a session whose `auth_at` is less than 15 minutes old. A `max`
+  session takes `auth_at` from the signed `auth_date`. A replayed launch cannot make a new
+  recent session, because each `query_id` works once.
 - Password change, MAX link, token creation, and account deletion require the current
   password. An account without a password requires a recent `max` session.
 - Password reset: a recent `max` session can set a new password without the old one.
@@ -327,8 +361,7 @@ of routes. Nuxt adds the session token in `X-Session-Token` or the app token in 
 | `GET/POST /v1/me/app-tokens`, `DELETE /v1/me/app-tokens/{id}` | web | Application tokens |
 | `GET /v1/app/profile`, `GET /v1/app/wines` | web (app token) | Read-only data for MCP |
 | `DELETE /v1/me` | web | Delete the account |
-| `GET /v1/bot/links/{max_user_id}` | max-bot | Linked or not; no other data |
-| `POST /v1/bot/searches`, `PUT /v1/bot/searches/{id}/image` | max-bot | Save a bot search and its photo |
+| `POST /v1/bot/searches`, `PUT /v1/bot/searches/{id}/image` | max-bot | Save a bot search (`saved` or `skipped`) and its photo |
 
 ### Photos and moderation
 
@@ -366,8 +399,9 @@ Pages:
 - `/account` after login: «История», «Оценки», «Предпочтения», «Настройки».
 - «Настройки»: password, «Привязать MAX», «Сохранять историю поисков с фото», application
   tokens, «Удалить все фото», «Удалить аккаунт».
-- `/max`: the mini-app entry. It shows the same account pages after the MAX check.
-- The header gets «Войти» or «Паспорт» in `.header-actions` (`webui/app/app.vue:25-29`).
+- `/max/*`: the mini-app pages (`/max`, `/max/onboarding`, `/max/settings`, and others).
+  They reuse the account components. Their navigation stays under `/max/*`.
+- The header gets «Войти» or «Дневник» in `.header-actions` (`webui/app/app.vue:25-29`).
 
 Server routes under `/api/account/*` forward to the service. The Nuxt server:
 
@@ -393,21 +427,21 @@ Saving a search:
   decode the photo (HEIC in Chrome or Firefox), it sends the original file. The service
   converts it.
 - The predict route stays unchanged. This protects the evaluator contract.
-- The result shows «Сохранено в паспорте» with «Удалить», or «Не удалось сохранить».
+- The result shows «Сохранено в дневнике» with «Удалить», or «Не удалось сохранить».
 - The note «Фото не сохраняется» (`webui/app/components/PhotoScanner.vue:81`) changes to
-  «Фото сохранится в вашем паспорте» only for a logged-in person with `save_history` on.
+  «Фото сохранится в вашем дневнике» only for a logged-in person with `save_history` on.
 
 Other rules:
 
-- The global 18+ gate also covers account pages and `/max`.
+- The global 18+ gate also covers account pages and `/max/*`.
 - On the mini-app host, do not load Metrika and do not register the service worker.
   This keeps the cookie question of #41 off the mini app.
-- Exclude `/account` and `/max` from the Workbox navigation cache (`webui/nuxt.config.ts:129-140`).
+- Exclude `/account*` and `/max*` from the Workbox navigation cache (`webui/nuxt.config.ts:129-140`).
 - Account URLs carry no secrets. Metrika `webvisor` stays off. Mark password fields with
   `ym-disable-keys`.
 - Do not add account data to the WebMCP browser tools in this plan.
-- Move the «Личный паспорт предпочтений» card from «Макеты» to «Реализовано» only after
-  the production check.
+- Move the «Личный паспорт предпочтений» card from «Макеты» to «Реализовано» and rename it
+  «Винный дневник» only after the production check.
 
 ## Taste preferences
 
@@ -491,10 +525,13 @@ MCP (`mcp/`):
   `chtozavino.ru` keeps HTTP Basic. The Web UI account pages stay behind it.
 - A new Caddy site block `max.chtozavino.ru` has no HTTP Basic. It proxies to the same Nuxt
   server. It allows only these paths and returns 404 for all others:
-  - `/` (rewritten to `/max`);
+  - `/` (HTTP 302 to `/max`; browsers keep the URL fragment, so `initData` stays);
+  - `/max` and `/max/*` (the mini-app pages);
   - `/_nuxt/*` (built JS and CSS; no data);
   - `/reference/*` and `/icons/*` (logo, font, background, and icons of the layout);
-  - `/api/account/*`;
+  - `/api/account/max/*` and the account routes that a `max` session uses. The Nuxt server
+    keeps this list of methods and paths. On this host it rejects password registration and
+    password login, and accepts only sessions with `auth_method = max`;
   - the legal pages `/privacy`, `/terms`, and `/contacts` (#37);
   - `/robots.txt`, answered by Caddy with `Disallow: /`.
 - Test in a fresh browser without Basic credentials: the mini-app host loads and works, any
@@ -523,8 +560,11 @@ Phase 0 — checks and decisions:
 2. Done: only the mini-app host is public. The owner added the `A` record for
    `max.chtozavino.ru` on 2026-10-19, with the same address as `chtozavino.ru`.
    Check that the reg.ru name servers publish it before the Caddy change.
-3. Live test: open a test mini app. Check that `initData.user.id` equals the Bot API
-   `user_id` of the same person. The bot saves depend on it. No source confirms it.
+3. Live test on a test bot, on mobile data and on Wi-Fi:
+   - `initData.user.id` equals the Bot API `user_id` of the same person. The bot saves
+     depend on it. No source confirms it;
+   - the signed `ip` is present and equals the client address of the page request;
+   - the URL fragment survives the HTTP 302 from `/` to `/max`.
 4. Create the GitHub issue. Record the decisions there.
 
 Phase 1 — password accounts:
@@ -533,20 +573,24 @@ Phase 1 — password accounts:
 6. Users, sessions, password login, limits, recent-login rule.
 7. Searches with photos, moderation, limits, idempotency, deletion of searches and photos.
 8. Ratings, preferences, account deletion.
-9. Application tokens and the `/v1/app/*` routes.
-10. Nuxt server routes, cookie, origin check, cache rules.
-11. Nuxt pages: registration, login, onboarding, history, ratings, settings, deletion.
-12. `TasteMetric.basis`; result card: save state, «Подходит ли вам», rating control.
-13. MCP account tools, conditional server instructions, and their tests.
-14. Docs: component README, CLAUDE.md, ChangeLog, SMOKE_TESTS; webui docs and privacy text.
-15. Deploy to dev on gx10. Run the acceptance checks. Then production after owner approval.
+9. Nuxt server routes, cookie, origin check, cache rules.
+10. Nuxt pages: registration, login, onboarding, history, ratings, settings, deletion.
+11. `TasteMetric.basis`; result card: save state, «Подходит ли вам», rating control.
+12. Docs: component README, CLAUDE.md, ChangeLog, SMOKE_TESTS; webui docs and privacy text.
+13. Deploy to dev on gx10. Run the acceptance checks. Then production after owner approval.
 
 Phase 2 — MAX:
 
-16. Service: `initData` check, MAX registration, MAX link, password reset by a `max` session.
-17. Nuxt: `/max` page, the «Через MAX» tab with the fixed QR code, «Привязать MAX».
-18. Bot: «Мой паспорт» button, `/account`, `account_outbox`, the worker.
-19. Bot docs and privacy text. Live test in MAX. Enable after owner approval.
+14. Service: launch data checks, MAX registration, MAX link, password reset by a `max` session.
+15. Nuxt: `/max/*` pages, the host route list, the «Через MAX» tab with the fixed QR code,
+    «Привязать MAX».
+16. Bot: «Винный дневник» button, `/diary`, advisory enqueue, `account_outbox`, the worker.
+17. Bot docs and privacy text. Live test in MAX. Enable after owner approval.
+
+Phase 3 — application tokens and MCP (after open decision 5):
+
+18. Application tokens and the `/v1/app/*` routes; the token page in «Настройки».
+19. MCP account tools, conditional server instructions, and their tests.
 
 ## Acceptance checks
 
@@ -588,7 +632,7 @@ Preferences:
 - «Подходит ли вам» shows «нет данных» for an unknown field and for a `default` meter, and
   labels dataset estimates.
 
-Tokens and MCP:
+Tokens and MCP (Phase 3):
 
 - A token is shown once. The service keeps only its hash.
 - A revoked or expired token gets `unauthorized` at the next call.
@@ -602,7 +646,12 @@ MAX (Phase 2):
 - The mini-app host loads without HTTP Basic, loads no Metrika, and returns 404 for paths
   outside its list. `chtozavino.ru` still returns 401 without credentials.
 - Registration, link with a password, first password, and password reset work in the mini app.
-- Modified or older than 1 hour `initData` fails.
+- Modified `initData`, `initData` older than 5 minutes, a reused `query_id`, or a different
+  client address fails. A launch URL copied to another browser gets no session.
+- On the mini-app host, password login and password registration fail. A refresh on a
+  `/max/*` page works.
+- An outbox enqueue error leaves the request `recognized` and sends no error message.
+- A scan after a MAX registration is saved, even right after an earlier skipped scan.
 - A MAX `user_id` that is already linked cannot link a second account.
 
 ## Owner decisions
@@ -620,6 +669,7 @@ Open:
 5. MCP access. `/api/app/*` stays on `chtozavino.ru` behind HTTP Basic. HTTP Basic uses the
    `Authorization` header, so a `Bearer` application token cannot pass it. Until the site is
    public, MCP account tools work only if `/api/app/*` is also public, or after HTTP Basic ends.
+   Application tokens and the MCP account tools wait for this decision (Phase 3).
 
 ## Appendix: desktop QR login (not planned)
 
