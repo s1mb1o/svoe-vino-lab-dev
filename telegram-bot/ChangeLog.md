@@ -2,6 +2,15 @@
 
 ## 2026-10-18
 
+- Added «Удалить запрос» to the request page of the administration interface (MAX issue #10, section
+  2.4). After CSRF and an explicit confirmation, it deletes the request row with its candidate,
+  timing, and artifact rows, the source image of each attempt, and the artifact files. It refuses an
+  active request. Codex review found three races with work that continues after the final status. A
+  worker that still sends the result, and an artifact reconstruction, remove the artifact files they
+  wrote for a deleted request. An HTTP API call whose request was deleted before the response gets
+  HTTP 410 with the status `deleted` instead of HTTP 500. New: `Repository.delete_request_data()`,
+  `data_lifecycle.delete_request_data()`. FR 144.1–144.4, service rule 31.1, `SMOKE_TESTS.md`. 6 new
+  tests.
 - `BOT_DATA_ROOT=./data` of `.env.example` now stores the pipeline artifacts: the shared
   `ArtifactStore` accepts a relative data root. `.env.example` uses the gx10 LAN address for
   `MODERATION_ENDPOINT`, as for `SAM3_ENDPOINT`. `127.0.0.1` worked only on gx10.

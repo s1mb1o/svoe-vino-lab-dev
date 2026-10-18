@@ -56,6 +56,8 @@ The workspace rules are in `../../CLAUDE.md`.
 29. Run the administration web interface as a separate service.
 30. Do not serve accepted source files or quarantine images from the administration web interface.
 31. Send an administration retry through the shared bot work queue.
+31.1. Delete a request from the administration web interface only when it is not active.
+     The deletion removes the row, the source image of each attempt, and the artifacts.
 32. Run moderation again for an administration retry when moderation is enabled.
 33. Restrict the administration web interface to configured networks.
 34. Persist full-fidelity pipeline artifacts only after safe moderation or an explicit

@@ -28,6 +28,7 @@ from fastapi.responses import (
 )
 
 from .config import MINIMUM_SECRET_LENGTH, AdminWebSettings
+from .data_lifecycle import delete_request_data
 from .storage import (
     SQLITE_MAX_INTEGER,
     AdminRequestRecord,
@@ -537,6 +538,29 @@ def create_app(settings: AdminWebSettings) -> FastAPI:
             status_code=303,
         )
 
+    @app.post("/requests/{request_id}/delete", dependencies=[authentication])
+    async def delete_request(request_id: str, request: Request) -> RedirectResponse:
+        form = await _read_form(request, csrf_token)
+        detail_url = f"/requests/{quote(request_id)}"
+        if form.get("confirm") != "yes":
+            notice = "Отметьте подтверждение удаления."
+            return RedirectResponse(f"{detail_url}?{urlencode({'notice': notice})}", 303)
+        result, files = await asyncio.to_thread(
+            delete_request_data,
+            repository,
+            settings.data_root,
+            request_id=request_id,
+        )
+        if result == "active":
+            notice = "Запрос в обработке. Удалите его после завершения обработки."
+            return RedirectResponse(f"{detail_url}?{urlencode({'notice': notice})}", 303)
+        if result == "deleted":
+            LOG.info("Request deleted request_id=%s files=%d", request_id, files)
+            notice = f"Запрос {request_id[:8]} удалён: запись, исходный файл и артефакты."
+        else:
+            notice = "Запрос не найден."
+        return RedirectResponse(f"/requests?{urlencode({'notice': notice})}", 303)
+
     return app
 
 
@@ -574,6 +598,17 @@ def _request_detail(
             f'action="/requests/{quote(record.request_id)}/retry">'
             f'<input type="hidden" name="csrf" value="{escape(csrf_token, quote=True)}">'
             '<button class="danger" type="submit">Повторить обработку</button></form>'
+        )
+    delete = ""
+    if record.status not in ACTIVE_STATUSES:
+        # Removal after a complaint: the row, the source image, and the artifacts.
+        delete = (
+            '<form class="inline" method="post" '
+            f'action="/requests/{quote(record.request_id)}/delete">'
+            f'<input type="hidden" name="csrf" value="{escape(csrf_token, quote=True)}">'
+            '<label><input type="checkbox" name="confirm" value="yes" required> '
+            "Подтверждаю удаление</label>"
+            '<button class="danger" type="submit">Удалить запрос</button></form>'
         )
     identity = _detail_list(
         [
@@ -644,7 +679,7 @@ def _request_detail(
     ) or '<tr><td colspan="4">Нет данных.</td></tr>'
     artifact_gallery = _artifact_gallery(record.request_id, artifacts)
     return (
-        f'<div class="actions"><a class="button" href="/requests">← К запросам</a>{retry}</div>'
+        f'<div class="actions"><a class="button" href="/requests">← К запросам</a>{retry}{delete}</div>'
         f'<div class="detail-grid"><section class="card"><h2>Запрос</h2>{identity}</section>'
         f'<section class="card"><h2>Модерация</h2>{moderation}</section>'
         f'<section class="card"><h2>Метаданные изображения</h2>{image_metadata}</section>'

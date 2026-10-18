@@ -2,6 +2,17 @@
 
 ## 2026-10-18
 
+- Added «Удалить запрос» to the request page of the administration interface (issue #10, section
+  2.4). After CSRF and an explicit confirmation, it deletes the request row with its candidate,
+  timing, artifact, and sent-message rows, the source image of each attempt, and the artifact files.
+  It refuses an active request. Codex review found three races with work that continues after the
+  final status. A worker that still sends the result, and an artifact reconstruction, remove the
+  artifact files they wrote for a deleted request. An HTTP API call whose request was deleted before
+  the response gets HTTP 410 with the status `deleted` instead of HTTP 500. The change is in
+  `../telegram-bot` first (`admin_web.py`, `artifact_backfill.py`, and `data_lifecycle.py` are
+  copied); `storage.py` has the
+  same new `delete_request_data()`. FR 144.1–144.4, service rule 31.1, `README.md` («Удаление
+  запроса по жалобе»), `SMOKE_TESTS.md`. 6 new tests.
 - Corrected three steps of `deploy/gx10/max-bot-prod.md` (issue #10, comment of 2026-10-16).
   gx10 has no read access to the repository: the image is built from a notebook with
   `git archive ... | ssh gx10 docker build`, and the files are copied with `scp`. The deploy user

@@ -72,7 +72,14 @@ async def reconstruct(request_id: str, settings: Settings) -> int:
             received_at=received_at,
             artifacts=generated,
         )
-        repository.replace_artifacts(request_id, rows, int(time.time()))
+        try:
+            repository.replace_artifacts(request_id, rows, int(time.time()))
+        except Exception:
+            if repository.admin_request(request_id) is not None:
+                raise
+            # The administrator deleted the request during the reconstruction (FR 144.3).
+            artifact_store.delete_request(request_id)
+            raise RuntimeError("request was deleted during the reconstruction") from None
         return len(rows)
     finally:
         repository.close()

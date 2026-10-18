@@ -7,6 +7,8 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+
 from .storage import DataDeletionPlan, Repository
 
 LOG = logging.getLogger("chto_za_vino_max_bot.data_lifecycle")
@@ -70,6 +72,27 @@ def delete_user_data(
     files = _delete_files(data_root, plan)
     requests, users = repository.delete_user_data(user_id)
     return DeletionResult(requests=requests, users=users, files=files)
+
+
+def delete_request_data(
+    repository: Repository,
+    data_root: Path,
+    *,
+    request_id: str,
+) -> tuple[str, int]:
+    """Delete one finished request and its files, for example after a complaint.
+
+    Return `("deleted", files)`, `("active", 0)`, or `("missing", 0)`.
+    """
+
+    def delete_files(plan: DataDeletionPlan) -> int:
+        deleted = _delete_files(data_root, plan)
+        # An administration retry before the fix of issue #11 wrote copies under the retry date.
+        deleted += ImageStore(data_root).delete_accepted(request_id)
+        ArtifactStore(data_root).delete_request(request_id)
+        return deleted
+
+    return repository.delete_request_data(request_id, delete_files)
 
 
 def main() -> None:

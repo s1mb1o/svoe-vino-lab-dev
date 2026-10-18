@@ -727,10 +727,18 @@ class PhotoProcessor:
             artifacts=artifacts,
         )
         now = int(time.time())
-        if replace:
-            self._services.repository.replace_artifacts(job.request_id, rows, now)
-        else:
-            self._services.repository.upsert_artifacts(job.request_id, rows, now)
+        try:
+            if replace:
+                self._services.repository.replace_artifacts(job.request_id, rows, now)
+            else:
+                self._services.repository.upsert_artifacts(job.request_id, rows, now)
+        except Exception:
+            if self._services.repository.admin_request(job.request_id) is not None:
+                raise
+            # The administrator deleted the request during the work (FR 144.1). Remove the files
+            # of this write: no row points to them, so retention and deletion cannot find them.
+            self._services.artifact_store.delete_request(job.request_id)
+            LOG.info("Artifacts discarded for a deleted request request_id=%s", job.request_id)
 
     def _remember_message(
         self,
@@ -2031,6 +2039,19 @@ async def submit_http_image(
         raise HttpQueueUnavailable("The recognition queue is unavailable") from exc
 
     await asyncio.shield(completion)
+    try:
+        return _http_result(services, request_id)
+    except Exception:
+        if services.repository.admin_request(request_id) is not None:
+            raise
+        # The administrator deleted the request before the response (FR 144.4).
+        return HttpRecognitionResult(
+            status_code=410,
+            body={"request_id": request_id, "status": "deleted"},
+        )
+
+
+def _http_result(services: Services, request_id: str) -> HttpRecognitionResult:
     started_at_ms = time.time_ns() // 1_000_000
     started = time.monotonic()
     payload = _http_result_payload(services, request_id)

@@ -316,6 +316,14 @@ retention, restart-recovery, and queue tests.
 - Confirm that the command creates artifacts and does not send a MAX message.
 - Run the same command for a previously quarantined request.
 - Confirm that the command creates only one censored preview and sends no MAX message.
+- Open a finished request. Press «Удалить запрос» without «Подтверждаю удаление».
+- Confirm that the request remains.
+- Select «Подтверждаю удаление» and press «Удалить запрос».
+- Confirm that the request list shows the deletion notice and that the request page returns
+  HTTP 404.
+- Confirm that `data/` has no source file and no artifact directory of the request.
+- Open a queued or processing request.
+- Confirm that the interface does not offer «Удалить запрос».
 
 ## HTTP recognition API
 

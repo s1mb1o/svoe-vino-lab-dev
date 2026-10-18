@@ -526,3 +526,25 @@ def test_an_interrupted_api_request_is_never_restored_as_a_max_request(tmp_path)
         assert repository.request_retry(api_request, 1200) == "unavailable"
     finally:
         repository.close()
+
+
+async def test_http_result_of_a_request_deleted_before_the_response_is_gone(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    services = SimpleNamespace(repository=repository)
+
+    async def handler(job):
+        repository.update(job.request_id, status="abstained")
+        # The status is final, so the administrator can delete the request before the response.
+        assert repository.delete_request_data(job.request_id, lambda plan: 0) == ("deleted", 0)
+        job.completion.set_result(None)
+
+    queue = WorkQueue(handler, worker_count=1, capacity=2)
+    await queue.start()
+    try:
+        result = await submit_http_image(services, queue, b"image")
+    finally:
+        await queue.stop()
+        repository.close()
+
+    assert result.status_code == 410
+    assert result.body["status"] == "deleted"

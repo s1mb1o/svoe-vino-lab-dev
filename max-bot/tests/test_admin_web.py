@@ -398,3 +398,161 @@ def test_admin_shows_api_source_without_max_retry(tmp_path):
     assert "HTTP API" in detail.text
     assert "Повторить обработку" not in detail.text
     assert "HTTP API" in requests.text
+
+
+@pytest.mark.parametrize("safe", [True, False])
+def test_admin_deletes_a_finished_request_with_its_files(tmp_path, safe):
+    web_settings = settings(tmp_path)
+    request_id = seed_request(web_settings.database_file, safe=safe)
+    data_root = web_settings.data_root
+    source = data_root / ("accepted" if safe else "quarantine") / "private.jpg"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"photo")
+    # A copy that an administration retry before the fix of issue #11 wrote under its own date.
+    old_copy = data_root / "accepted" / "2026" / "10" / "04" / f"{request_id}.jpg"
+    old_copy.parent.mkdir(parents=True, exist_ok=True)
+    old_copy.write_bytes(b"photo")
+    artifact = ArtifactStore(data_root).save(request_id, 1000, "matcher_input", "image/jpeg", b"a")
+    repository = Repository(web_settings.database_file)
+    repository.replace_artifacts(
+        request_id,
+        [
+            ArtifactWrite(
+                artifact_key="matcher_input",
+                step="input",
+                title="Matcher input",
+                description="Input image.",
+                mime_type="image/jpeg",
+                relative_path=artifact,
+                width=10,
+                height=20,
+                ordinal=10,
+                metadata={},
+            )
+        ],
+        1100,
+    )
+    repository.close()
+    app = create_app(web_settings)
+    auth = ("admin", ADMIN_PASSWORD)
+    url = f"/requests/{request_id}/delete"
+    with TestClient(app, client=("127.0.0.1", 50000), follow_redirects=False) as client:
+        detail = client.get(f"/requests/{request_id}", auth=auth)
+        assert "Удалить запрос" in detail.text
+        token = csrf_from(detail.text)
+        assert client.post(url, auth=auth, data={"csrf": "wrong", "confirm": "yes"}).status_code == 403
+        unconfirmed = client.post(url, auth=auth, data={"csrf": token})
+        assert unconfirmed.status_code == 303
+        assert app.state.repository.admin_request(request_id) is not None
+        assert source.exists()
+
+        deleted = client.post(url, auth=auth, data={"csrf": token, "confirm": "yes"})
+
+        assert deleted.status_code == 303
+        assert deleted.headers["location"].startswith("/requests?notice=")
+        assert app.state.repository.admin_request(request_id) is None
+        assert app.state.repository.visible_artifacts(request_id) == []
+        assert not source.exists()
+        assert not old_copy.exists()
+        assert not (data_root / artifact).exists()
+        assert client.get(f"/requests/{request_id}", auth=auth).status_code == 404
+        again = client.post(url, auth=auth, data={"csrf": token, "confirm": "yes"})
+        assert again.status_code == 303
+
+
+def test_admin_does_not_delete_an_active_request(tmp_path):
+    web_settings = settings(tmp_path)
+    request_id = seed_request(web_settings.database_file)
+    repository = Repository(web_settings.database_file)
+    repository.update(request_id, status="processing")
+    repository.close()
+    app = create_app(web_settings)
+    auth = ("admin", ADMIN_PASSWORD)
+    with TestClient(app, client=("127.0.0.1", 50000), follow_redirects=False) as client:
+        detail = client.get(f"/requests/{request_id}", auth=auth)
+        assert "Удалить запрос" not in detail.text
+        token = csrf_from(client.get("/users", auth=auth).text)
+
+        response = client.post(
+            f"/requests/{request_id}/delete",
+            auth=auth,
+            data={"csrf": token, "confirm": "yes"},
+        )
+
+        assert response.status_code == 303
+        assert response.headers["location"].startswith(f"/requests/{request_id}?notice=")
+        assert app.state.repository.admin_request(request_id).status == "processing"
+
+
+def test_worker_discards_artifacts_of_a_deleted_request(tmp_path):
+    from types import SimpleNamespace
+
+    from chto_za_vino_core.pipeline_artifacts import GeneratedArtifact
+
+    from chto_za_vino_max_bot.app import PhotoJob, PhotoProcessor
+    from chto_za_vino_max_bot.data_lifecycle import delete_request_data
+
+    web_settings = settings(tmp_path)
+    request_id = seed_request(web_settings.database_file)
+    repository = Repository(web_settings.database_file)
+    store = ArtifactStore(web_settings.data_root)
+    # The status is final, but the worker still sends the result when the administrator deletes.
+    assert delete_request_data(repository, web_settings.data_root, request_id=request_id)[0] == (
+        "deleted"
+    )
+    processor = PhotoProcessor(SimpleNamespace(repository=repository, artifact_store=store), None)
+    job = PhotoJob(request_id, 100, "mid.1", 1000, PHOTO_URL, status_enabled=False)
+    result = GeneratedArtifact(
+        artifact_key="max_result",
+        step="result",
+        title="Result",
+        description="Result card.",
+        mime_type="image/jpeg",
+        body=b"card",
+        width=1,
+        height=1,
+        ordinal=90,
+        metadata={},
+    )
+
+    processor._save_artifacts(job, [result])
+
+    assert [path for path in (web_settings.data_root / "artifacts").rglob("*") if path.is_file()] == []
+    repository.close()
+
+
+async def test_reconstruction_discards_artifacts_of_a_deleted_request(tmp_path, monkeypatch):
+    from io import BytesIO
+    from types import SimpleNamespace
+
+    from PIL import Image
+
+    from chto_za_vino_max_bot import artifact_backfill
+    from chto_za_vino_max_bot.data_lifecycle import delete_request_data
+
+    web_settings = settings(tmp_path)
+    request_id = seed_request(web_settings.database_file, safe=False)
+    source = web_settings.data_root / "quarantine" / "private.jpg"
+    source.parent.mkdir(parents=True)
+    buffer = BytesIO()
+    Image.new("RGB", (64, 64), "red").save(buffer, "JPEG")
+    source.write_bytes(buffer.getvalue())
+    real_persist = artifact_backfill.persist_artifacts
+
+    def delete_then_persist(*args, **kwargs):
+        # The administrator deletes the request while the operator reconstructs its artifacts.
+        repository = Repository(web_settings.database_file)
+        delete_request_data(repository, web_settings.data_root, request_id=request_id)
+        repository.close()
+        return real_persist(*args, **kwargs)
+
+    monkeypatch.setattr(artifact_backfill, "persist_artifacts", delete_then_persist)
+    reconstruction_settings = SimpleNamespace(
+        database_file=web_settings.database_file,
+        data_root=web_settings.data_root,
+    )
+
+    with pytest.raises(RuntimeError, match="deleted"):
+        await artifact_backfill.reconstruct(request_id, reconstruction_settings)
+
+    assert [path for path in (web_settings.data_root / "artifacts").rglob("*") if path.is_file()] == []

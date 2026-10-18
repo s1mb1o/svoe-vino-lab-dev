@@ -434,3 +434,25 @@ async def test_http_result_of_an_old_request_uses_minimal_cards(tmp_path):
         "wine-1",
         "wine-2",
     ]
+
+
+async def test_http_result_of_a_request_deleted_before_the_response_is_gone(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    services = SimpleNamespace(repository=repository)
+
+    async def handler(job):
+        repository.update(job.request_id, status="abstained")
+        # The status is final, so the administrator can delete the request before the response.
+        assert repository.delete_request_data(job.request_id, lambda plan: 0) == ("deleted", 0)
+        job.completion.set_result(None)
+
+    queue = WorkQueue(handler, worker_count=1, capacity=2)
+    await queue.start()
+    try:
+        result = await submit_http_image(services, queue, b"image")
+    finally:
+        await queue.stop()
+        repository.close()
+
+    assert result.status_code == 410
+    assert result.body["status"] == "deleted"

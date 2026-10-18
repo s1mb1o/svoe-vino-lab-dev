@@ -216,6 +216,16 @@ moderation step.
 directory of the first receipt, so retention and user deletion find them.
 143. The administration web service MUST NOT serve accepted source files directly.
 144. The administration web service MUST NOT serve quarantine images.
+144.1. The administration web service MUST let the administrator delete one finished request,
+for example after a complaint. The deletion MUST remove the request row with its candidate,
+timing, and artifact rows, the source image of each attempt, and the artifact files.
+144.2. A request deletion MUST require the CSRF token and an explicit confirmation. It MUST
+refuse a request with the status `received`, `queued`, `processing`, or `retry_requested`.
+144.3. A request can have its final status while the worker still sends the result, and an
+operator can reconstruct the artifacts of a finished request. When this work cannot store an
+artifact row because the request was deleted, it MUST delete the artifact files that it wrote.
+144.4. When the request of an HTTP API call is deleted before the response, the API MUST
+answer HTTP 410 with the status `deleted`.
 145. Every state-changing web form MUST include CSRF protection.
 146. The production administration service MUST use TCP port `28003` on gx10.
 147. The bot MUST request SAM3 masks during quality inspection.

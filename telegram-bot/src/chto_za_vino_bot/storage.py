@@ -1696,6 +1696,48 @@ class Repository:
                 raise
         return plan, user_cursor.rowcount, deleted_files
 
+    def delete_request_data(
+        self,
+        request_id: str,
+        delete_files: Callable[[DataDeletionPlan], int],
+    ) -> tuple[str, int]:
+        """Delete one finished request, its rows, and its files.
+
+        Return `("deleted", files)`, `("active", 0)`, or `("missing", 0)`.
+        """
+        with self._lock:
+            try:
+                # Lock out a retry request while the row and its files are deleted.
+                self._connection.execute("BEGIN IMMEDIATE")
+                row = self._connection.execute(
+                    """
+                    SELECT request_id, received_at, status, storage_path
+                    FROM requests WHERE request_id = ?
+                    """,
+                    (request_id,),
+                ).fetchone()
+                if row is None or row["status"] in (
+                    "received",
+                    "queued",
+                    "processing",
+                    "retry_requested",
+                ):
+                    self._connection.rollback()
+                    return ("missing" if row is None else "active"), 0
+                plan = DataDeletionPlan(
+                    request_count=1,
+                    paths=() if row["storage_path"] is None else (str(row["storage_path"]),),
+                    artifact_directories=self._artifact_directories([row]),
+                )
+                deleted_files = delete_files(plan)
+                # The candidates, timings, and artifact rows go with the request (ON DELETE CASCADE).
+                self._connection.execute("DELETE FROM requests WHERE request_id = ?", (request_id,))
+                self._connection.commit()
+            except Exception:
+                self._connection.rollback()
+                raise
+        return "deleted", deleted_files
+
     @staticmethod
     def _artifact_directories(rows: list[sqlite3.Row]) -> tuple[str, ...]:
         return tuple(
