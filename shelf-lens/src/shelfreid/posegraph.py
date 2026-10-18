@@ -86,7 +86,10 @@ class PoseGraph:
             if not bad:
                 break
             worst = max(bad, key=self.error)
-            self.edges.remove(worst)
+            # By identity: `list.remove` compares edges field by field, and two edges of one
+            # pair of keyframes reach their homographies, which an array comparison cannot
+            # decide (a series of photos crashed so).
+            self.edges = [e for e in self.edges if e is not worst]
             dropped += 1
             _, after = self.optimize()
         return before, after, dropped

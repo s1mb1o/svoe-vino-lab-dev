@@ -45,3 +45,18 @@ def test_the_first_pose_stays_fixed():
     graph.optimize()
     assert np.allclose(graph.poses[0], np.eye(3))
     assert abs(graph.poses[1][0, 2] - 90.0) < 1.0
+
+
+def test_a_bad_loop_is_dropped_beside_another_edge_of_its_pair():
+    # Two edges of one pair (a chain and a loop) and a false loop far off: the robust
+    # optimisation drops the false one (a comparison of edges by their fields failed).
+    graph = PoseGraph(SIZE)
+    graph.add(np.eye(3))
+    node = graph.add(shift(100.0))
+    graph.connect(0, node, shift(100.0))
+    graph.connect(0, node, shift(101.0), weight=0.5, kind="chain")
+    graph.connect(0, node, shift(900.0), weight=2.0, kind="loop")
+    _, _, dropped = graph.optimize_robust()
+    assert dropped == 1
+    assert all(e.kind != "loop" for e in graph.edges)
+    assert abs(graph.poses[1][0, 2] - 100.0) < 2.0
