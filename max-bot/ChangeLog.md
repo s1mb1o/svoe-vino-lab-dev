@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-18
+
+- Added `scripts/smoke.py` and a public catalogue fixture for repeatable local and deployed
+  service checks. The checks use protected credentials. They do not poll MAX updates.
+- Reviewed issue #10 and the current shared-core migration. MAX passed 479 tests.
+  The shared core passed 157 tests. Telegram passed 222 regression tests.
+  The local service recognized the expected Massandra fixture after a fresh start.
+  See `docs/reviews/2026-10-18-issue-10.md` for scope and remaining requirements.
+
 ## 2026-10-17
 
 - The processing core is now the shared package `chto_za_vino_core` in `../im-core`, an editable

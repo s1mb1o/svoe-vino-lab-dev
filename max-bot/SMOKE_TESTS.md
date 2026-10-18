@@ -1,5 +1,31 @@
 # Smoke tests
 
+## Automated service smoke test
+
+Run `uv run python scripts/smoke.py --env-file <protected-env-file> --admin-url <admin-url>`
+from `max-bot/` against a running service.
+Use `--api-url` to select the recognition API.
+The default API URL is `http://127.0.0.1:18093`.
+The environment file supplies `BOT_HTTP_API_TOKEN` and the administration credentials.
+The script never prints a credential.
+
+The script checks liveness, dependency readiness, bearer authentication, invalid-image rejection,
+live moderation, the expected Top-1 wine, candidate links, confidence state, and step timings.
+The administration checks cover authentication, security headers, dark theme, request pages,
+and CSRF rejection.
+`--check-max` also checks the bot identity, command menu, TLS trust, and webhook subscriptions.
+This option requires `MAX_BOT_TOKEN` in the process environment or protected environment file.
+The script never calls `GET /updates` and never sends a MAX message.
+
+The fixture `tests/data/smoke-wine.webp` is the public catalogue image used by the matcher
+deployment check.
+Its expected slug is `massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16`.
+Each full run creates one invalid request and one recognition request.
+Use `--no-recognition` to omit the recognition request.
+The invalid request still consumes one API rate-limit slot.
+Run `./scripts/verify.sh` for deterministic messenger, moderation-failure, album, feedback,
+retention, restart-recovery, and queue tests.
+
 ## Profile
 
 - Open `@se14697933_bot` in MAX.

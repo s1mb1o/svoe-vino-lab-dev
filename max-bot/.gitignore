@@ -6,6 +6,8 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 data/
+!tests/data/
+!tests/data/smoke-wine.webp
 *.sqlite3
 # The root .gitignore ignores *.lock. The Docker build needs uv.lock from git archive.
 !uv.lock

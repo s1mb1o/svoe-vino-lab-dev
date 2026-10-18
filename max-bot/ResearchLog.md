@@ -1,5 +1,15 @@
 # Research log
 
+## 2026-10-18: Issue #10 deployment review
+
+The current source uses the shared `im-core` package.
+A Docker build needs `im-core/` and `max-bot/` at the repository root.
+The old `git archive <revision>:max-bot` build command cannot supply this dependency.
+The canonical runbook is `<workspace>/deploy/gx10/max-bot-prod.md`.
+The detailed requirements review is `docs/reviews/2026-10-18-issue-10.md`.
+The issue still contains unimplemented terms, contacts, and complaint-deletion requirements.
+The later actions-after-recognition plan remains unimplemented.
+
 ## 2026-10-17: MAX platform findings
 
 ### Command menu scope
