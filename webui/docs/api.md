@@ -31,7 +31,8 @@ The evaluator uses a 5-second connection timeout and a 10-second total timeout.
 The evaluator does not retry requests or follow redirects.
 
 The portal accepts JPEG, PNG, WebP, and HEIF (HEIC) signatures.
-A HEIF file needs a matcher with HEIF support (#24). Issue #44 has the deploy order.
+The production matcher decodes HEIF since 2026-10-18 (#24).
+A matcher without HEIF support answers HTTP 422 for a HEIF file. The portal passes that status.
 The portal limits the image file to 10 MiB.
 These validation limits are portal choices. The evaluator does not specify them.
 The portal returns HTTP 400 for missing or multiple files.

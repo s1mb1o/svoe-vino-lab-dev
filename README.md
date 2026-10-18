@@ -16,8 +16,10 @@
 
 ## Что умеет система
 
-- Принимает JPEG, PNG и WebP через Web UI, Telegram и HTTP API. HTTP API матчера
-  также принимает HEIF (HEIC).
+- Принимает JPEG, PNG, WebP и HEIF (HEIC) через Web UI и HTTP API матчера (HEIC в production
+  с 2026-10-18). MAX-бот и Telegram-бот этого репозитория переводят HEIC-файл в JPEG.
+  Telegram-бот в production принимает фото и альбомы, но не HEIC-файлы. Android-приложение
+  выбирает в галерее только JPEG, PNG и WebP.
 - The Web UI shows an 18+ warning and requires age confirmation before access.
 - Возвращает один slug через `POST /v1/eval/predict`.
 - Возвращает до 20 кандидатов через `POST /v1/match`.
