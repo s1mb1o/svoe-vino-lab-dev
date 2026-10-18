@@ -1,6 +1,6 @@
 # Android application specification
 
-Date: 2026-10-03
+Date: 2026-10-18
 
 ## Purpose
 
@@ -166,3 +166,9 @@ The release build MUST NOT contain the HTTP server or its NanoHTTPD dependency.
 
 The launcher icon MUST use `../assets/product-logo-640x640.png` as its artwork source.
 The application MUST provide an adaptive launcher icon.
+
+## Out of scope
+
+The current project does not download a model pack after application installation.
+The current project does not update or replace the built-in model pack through the user interface.
+Downloadable model packs are a possible future feature.

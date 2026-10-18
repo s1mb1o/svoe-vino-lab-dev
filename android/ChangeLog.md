@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-18
+
+- Listed downloadable model packs as a possible future feature.
+- Kept model-pack download and replacement outside the current project scope.
+
 ## 2026-10-17
 
 ### Realme USB smoke test
