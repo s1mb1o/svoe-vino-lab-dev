@@ -1,8 +1,10 @@
 // The tracker in two loops, as on a phone (realtime.py): a fast loop each frame and a slow
-// loop on one frame at a time, whose result lands `latency` steps later (deterministic for
-// tests; on the phone the slow loop runs on its own thread and lands when it is done).
+// loop on one frame at a time. Its result lands `latency` steps later (deterministic, for
+// tests), or, with a negative latency, the slow loop runs on a thread of its own and its
+// result lands on the first step after it is done (the phone).
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <vector>
@@ -52,6 +54,8 @@ struct SlowResult {
     double seconds = 0.0;
 };
 
+class SlowWorker;
+
 class RealtimeTracker : public Tracker {
 public:
     RealtimeTracker(Size2 size, StreamConfig cfg = {}, int latency = 3);
@@ -63,18 +67,26 @@ public:
     SlowResult slow(const Snapshot& snap);
     void apply(SlowResult& result);
 
-    int latency;
+    int latency;             // steps; negative: a thread of its own
     int slow_every = 0;      // the least steps between two slow jobs (0: whenever asked)
     int last_slow = kNever;
     std::optional<SlowResult> inflight;
     int lost_since = 0;
     std::set<int> provisional;
     std::vector<double> fast_seconds, slow_seconds;
+    std::vector<int> landed_after;   // the steps from the frame of a result to its landing
 
 private:
     bool asks() const;
     void land();
     void slow_labels(const Snapshot& snap, const FrameFeatures& features, SlowResult& result);
+    Snapshot snapshot(int number, const cv::Mat& frame, const std::vector<Detection>& detections,
+                      const std::vector<Shown>& shown);
+
+    // The thread of the slow loop. A job runs on a copy of the tracker taken when it starts
+    // (the graph, the keyframes, the bottles; the descriptors are shared and only read).
+    std::shared_ptr<SlowWorker> worker_;
+    int generation_ = 0;   // a jump drops the results of the frames before it
 };
 
 }  // namespace shelfreid

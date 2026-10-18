@@ -10,3 +10,10 @@ out/
 # C++ builds and third-party SDKs.
 cpp/build*/
 third_party/
+
+# Android builds and machine paths.
+android/.gradle/
+android/build/
+android/app/build/
+android/app/.cxx/
+android/local.properties

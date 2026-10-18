@@ -1,7 +1,10 @@
 // Run the tracker on a video with cached detections and dump each step as JSON lines, in
 // the format of the Python dumps: [frame, [[x1, y1, x2, y2, status, bottle], ...]].
 //
-//   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N OUT.jsonl [--every 3]
+//   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N|rt:async OUT.jsonl [--every 3] [--slow-every K] [--pace MS]
+//
+// rt:async runs the slow loop on a thread of its own; --pace makes each step last at least
+// MS milliseconds, as frames come from a camera.
 //
 // FRAMES_DIR holds the frames of the steps as NNNNNN.jpg (frame number): a phone MAY not
 // read the video (HEVC with a rotation in the metadata).
@@ -13,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <thread>
 
 #include <nlohmann/json.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -36,10 +40,11 @@ int main(int argc, char** argv) {
         return 2;
     }
     const std::string video_path = argv[1], dets_path = argv[2], mode = argv[3], out_path = argv[4];
-    int every = 3, slow_every = 0;
+    int every = 3, slow_every = 0, pace_ms = 0;
     for (int a = 5; a + 1 < argc; ++a) {
         if (std::string(argv[a]) == "--every") every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--slow-every") slow_every = std::stoi(argv[a + 1]);
+        if (std::string(argv[a]) == "--pace") pace_ms = std::stoi(argv[a + 1]);
     }
 
     StreamConfig cfg;
@@ -95,7 +100,8 @@ int main(int argc, char** argv) {
     if (mode == "sync") {
         tracker = std::make_unique<Tracker>(size, cfg);
     } else {
-        auto r = std::make_unique<RealtimeTracker>(size, cfg, std::stoi(mode.substr(3)));
+        const int latency = mode == "rt:async" ? -1 : std::stoi(mode.substr(3));
+        auto r = std::make_unique<RealtimeTracker>(size, cfg, latency);
         rt = r.get();
         rt->slow_every = slow_every;
         tracker = std::move(r);
@@ -111,6 +117,7 @@ int main(int argc, char** argv) {
             const auto t = std::chrono::steady_clock::now();
             const auto shown = tracker->step(number, frame, it->second);
             step_seconds.push_back(std::chrono::duration<double>(std::chrono::steady_clock::now() - t).count());
+            if (pace_ms > 0) std::this_thread::sleep_until(t + std::chrono::milliseconds(pace_ms));
             nlohmann::json boxes = nlohmann::json::array();
             bool pending = false;
             for (const auto& s : shown) {
@@ -135,7 +142,9 @@ int main(int argc, char** argv) {
     if (rt)
         std::cout << " | fast p50 " << pct(rt->fast_seconds, 50) * 1000 << " p95 " << pct(rt->fast_seconds, 95) * 1000
                   << " ms; slow jobs " << rt->slow_seconds.size() << " p50 " << pct(rt->slow_seconds, 50) * 1000 << " p95 "
-                  << pct(rt->slow_seconds, 95) * 1000 << " ms";
+                  << pct(rt->slow_seconds, 95) * 1000 << " ms; landed after p50 "
+                  << pct(std::vector<double>(rt->landed_after.begin(), rt->landed_after.end()), 50) << " p95 "
+                  << pct(std::vector<double>(rt->landed_after.begin(), rt->landed_after.end()), 95) << " steps";
     std::cout << std::endl;
     return 0;
 }

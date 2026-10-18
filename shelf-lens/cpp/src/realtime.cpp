@@ -2,7 +2,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <numeric>
+#include <thread>
 
 namespace shelfreid {
 
@@ -12,8 +15,97 @@ double since(std::chrono::steady_clock::time_point t) {
 }
 }  // namespace
 
+// The thread of the slow loop: one job at a time; the result waits until the fast loop
+// takes it.
+class SlowWorker {
+public:
+    SlowWorker() : thread_([this] { run(); }) {}
+    ~SlowWorker() {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            stop_ = true;
+        }
+        wake_.notify_all();
+        thread_.join();
+    }
+    bool busy() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return busy_;
+    }
+    void submit(std::unique_ptr<RealtimeTracker> shadow, Snapshot snap, int generation) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            shadow_ = std::move(shadow);
+            snap_ = std::move(snap);
+            generation_ = generation;
+            busy_ = true;
+        }
+        wake_.notify_all();
+    }
+    // The finished result and the generation of its job, if any.
+    std::optional<std::pair<SlowResult, int>> take() {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (!result_) return std::nullopt;
+        auto out = std::make_pair(std::move(*result_), generation_);
+        result_.reset();
+        busy_ = false;
+        return out;
+    }
+
+private:
+    void run() {
+        while (true) {
+            std::unique_ptr<RealtimeTracker> shadow;
+            Snapshot snap;
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                wake_.wait(lock, [this] { return stop_ || shadow_ != nullptr; });
+                if (stop_) return;
+                shadow = std::move(shadow_);
+                snap = std::move(snap_);
+            }
+            const auto t = std::chrono::steady_clock::now();
+            SlowResult result = shadow->slow(snap);
+            result.seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - t).count();
+            std::lock_guard<std::mutex> lock(mutex_);
+            result_ = std::move(result);
+        }
+    }
+
+    mutable std::mutex mutex_;
+    std::condition_variable wake_;
+    std::unique_ptr<RealtimeTracker> shadow_;
+    Snapshot snap_;
+    int generation_ = 0;
+    std::optional<SlowResult> result_;
+    bool busy_ = false, stop_ = false;
+    std::thread thread_;   // last: it starts after the members above
+};
+
 RealtimeTracker::RealtimeTracker(Size2 size_, StreamConfig cfg_, int latency_)
-    : Tracker(size_, cfg_), latency(latency_) {}
+    : Tracker(size_, cfg_), latency(latency_) {
+    if (latency < 0) worker_ = std::make_shared<SlowWorker>();
+}
+
+Snapshot RealtimeTracker::snapshot(int number, const cv::Mat& frame, const std::vector<Detection>& detections,
+                                   const std::vector<Shown>& shown) {
+    Snapshot snap;
+    snap.number = number;
+    snap.count = count;
+    snap.frame = frame;
+    snap.detections = detections;
+    snap.shown = shown;
+    snap.ref = ref;
+    snap.P = P;
+    snap.M = M;
+    snap.anchored = anchored;
+    snap.lost = lost;
+    snap.trusted = trusted;
+    snap.wanted = wanted;
+    wanted.clear();
+    need_registration = false;
+    return snap;
+}
 
 std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::vector<Detection> detections) {
     const auto started = std::chrono::steady_clock::now();
@@ -29,6 +121,7 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
             jump();
             lost_since = count;
             inflight.reset();   // its frame lies before the jump
+            ++generation_;
         } else {
             P = P * *step_H;
             M = M * *step_H;
@@ -49,23 +142,20 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
     for (const auto& d : detections) boxes.push_back(d.box);
     previous = std::make_pair(gray, boxes);
     fast_seconds.push_back(since(started));
-    if (!inflight && asks() && count - last_slow >= slow_every) {
+    if (worker_) {
+        if (!worker_->busy() && asks() && count - last_slow >= slow_every) {
+            last_slow = count;
+            auto shadow = std::make_unique<RealtimeTracker>(*this);
+            shadow->worker_.reset();
+            shadow->fast_seconds.clear();
+            shadow->slow_seconds.clear();
+            shadow->landed_after.clear();
+            shadow->contradictions.clear();
+            worker_->submit(std::move(shadow), snapshot(number, frame.clone(), detections, shown), generation_);
+        }
+    } else if (!inflight && asks() && count - last_slow >= slow_every) {
         last_slow = count;
-        Snapshot snap;
-        snap.number = number;
-        snap.count = count;
-        snap.frame = frame;
-        snap.detections = detections;
-        snap.shown = shown;
-        snap.ref = ref;
-        snap.P = P;
-        snap.M = M;
-        snap.anchored = anchored;
-        snap.lost = lost;
-        snap.trusted = trusted;
-        snap.wanted = wanted;
-        wanted.clear();
-        need_registration = false;
+        Snapshot snap = snapshot(number, frame, detections, shown);
         const auto t = std::chrono::steady_clock::now();
         inflight = slow(snap);
         inflight->seconds = since(t);
@@ -82,9 +172,18 @@ bool RealtimeTracker::asks() const {
 }
 
 void RealtimeTracker::land() {
+    if (worker_) {
+        auto taken = worker_->take();
+        if (!taken || taken->second != generation_) return;   // none, or from before a jump
+        slow_seconds.push_back(taken->first.seconds);
+        landed_after.push_back(count - taken->first.snap.count);
+        apply(taken->first);
+        return;
+    }
     if (!inflight || inflight->due > count) return;
     SlowResult result = std::move(*inflight);
     inflight.reset();
+    landed_after.push_back(count - result.snap.count);
     apply(result);
 }
 
