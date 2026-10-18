@@ -37,23 +37,25 @@ The files of this directory:
 
 ## First installation
 
-1. Make the directories. Give each one to uid 1000 explicitly: a directory that root owns
-   stops the containers from writing the database.
+1. Make the directories on gx10 as the deploy user (uid 1000). uid 1000 owns
+   `/srv/svoe-vino-lab`, so `sudo` is not necessary. A directory that root owns stops the
+   containers from writing the database.
 
    ```bash
-   sudo install -d -o 1000 -g 1000 -m 0750 /srv/svoe-vino-lab/prod/max-bot
-   sudo install -d -o 1000 -g 1000 -m 0750 /srv/svoe-vino-lab/prod/max-bot/data
-   sudo install -d -o 1000 -g 1000 -m 0700 /srv/svoe-vino-lab/prod/max-bot/config
+   ROOT=/srv/svoe-vino-lab/prod/max-bot
+   install -d -m 0750 "$ROOT" "$ROOT/data"
+   install -d -m 0700 "$ROOT/config"
    ```
 
-2. Copy the Compose file and the environment template from a checkout of the revision:
+2. gx10 has no checkout and no read access to the repository. Copy the Compose file and the
+   environment template from a notebook, in the root of the repository:
 
    ```bash
-   cd /path/to/svoe-vino-lab
-   sudo install -o 1000 -g 1000 -m 0640 max-bot/deploy/gx10/max-bot-prod.compose.yaml \
-       /srv/svoe-vino-lab/prod/max-bot/compose.yaml
-   sudo install -o 1000 -g 1000 -m 0600 max-bot/deploy/gx10/max-bot.env.example \
-       /srv/svoe-vino-lab/prod/max-bot/config/max-bot.env
+   GX10=ashmelev@192.168.86.14
+   ROOT=/srv/svoe-vino-lab/prod/max-bot
+   scp max-bot/deploy/gx10/max-bot-prod.compose.yaml "$GX10:$ROOT/compose.yaml"
+   ssh "$GX10" "chmod 0640 $ROOT/compose.yaml"
+   ssh "$GX10" "umask 077; cat > $ROOT/config/max-bot.env" < max-bot/deploy/gx10/max-bot.env.example
    ```
 
 3. Edit `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` with an editor. Set
@@ -71,21 +73,22 @@ The files of this directory:
 
 ## Build and start a revision
 
-Build the image from a committed revision, in the root of the repository:
+gx10 has no read access to the repository. Build the image on gx10 from a notebook, in the
+root of the repository. Use a committed revision:
 
 ```bash
-cd /path/to/svoe-vino-lab
-git fetch origin
-REV=$(git rev-parse origin/feature/im-bot)
+GX10=ashmelev@192.168.86.14
+REV=$(git rev-parse HEAD)   # or another committed revision
 # The image needs the shared core im-core/ in its build context.
-git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile \
-    --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -
+git archive "$REV" im-core max-bot | ssh "$GX10" "docker build -f max-bot/Dockerfile \
+    --build-arg REVISION=$REV -t svoe-vino-lab-max-bot:$REV -"
 ```
 
-Select the image and start both containers:
+Select the image and start both containers on gx10:
 
 ```bash
 cd /srv/svoe-vino-lab/prod/max-bot
+REV=<the revision of the build>
 echo "MAX_BOT_IMAGE=svoe-vino-lab-max-bot:$REV" > .env
 docker compose up -d
 docker compose ps

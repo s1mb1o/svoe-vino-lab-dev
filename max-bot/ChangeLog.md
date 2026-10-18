@@ -2,6 +2,10 @@
 
 ## 2026-10-18
 
+- Corrected three steps of `deploy/gx10/max-bot-prod.md` (issue #10, comment of 2026-10-16).
+  gx10 has no read access to the repository: the image is built from a notebook with
+  `git archive ... | ssh gx10 docker build`, and the files are copied with `scp`. The deploy user
+  is uid 1000 and owns `/srv/svoe-vino-lab`, so `install` runs without `sudo`.
 - `BOT_DATA_ROOT=./data` of `.env.example` now stores the pipeline artifacts: the shared
   `ArtifactStore` accepts a relative data root. `.env.example` uses the gx10 LAN address for
   `MODERATION_ENDPOINT`, as for `SAM3_ENDPOINT`. `127.0.0.1` worked only on gx10.
