@@ -1,17 +1,16 @@
 import io
 
 import pytest
-from PIL import Image, ImageDraw
-
-from chto_za_vino_max_bot.pipeline_artifacts import (
+from chto_za_vino_core.files import ArtifactStore
+from chto_za_vino_core.pipeline_artifacts import (
     base_artifacts,
     censored_artifact,
     persist_artifacts,
     quality_artifacts,
     result_artifact,
 )
-from chto_za_vino_max_bot.quality import QualityResult, Segment
-from chto_za_vino_max_bot.storage import ArtifactStore
+from chto_za_vino_core.quality import QualityResult, Segment
+from PIL import Image, ImageDraw
 
 
 def encoded_image(mode="RGB", size=(200, 300), color="white", format="JPEG") -> bytes:
@@ -148,7 +147,7 @@ def test_censored_artifact_is_irreversibly_reduced_and_blurred():
 def test_result_artifact_uses_the_max_result_key(tmp_path):
     body = encoded_image(size=(120, 90))
 
-    artifact = result_artifact(body)
+    artifact = result_artifact(body, platform="max", platform_title="MAX")
 
     assert artifact.artifact_key == "max_result"
     assert artifact.step == "result"

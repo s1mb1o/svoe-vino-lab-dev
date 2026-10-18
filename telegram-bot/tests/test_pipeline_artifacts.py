@@ -1,16 +1,15 @@
 import io
 
 import pytest
-from PIL import Image, ImageDraw
-
-from chto_za_vino_bot.pipeline_artifacts import (
+from chto_za_vino_core.files import ArtifactStore
+from chto_za_vino_core.pipeline_artifacts import (
     base_artifacts,
     censored_artifact,
     persist_artifacts,
     quality_artifacts,
 )
-from chto_za_vino_bot.quality import QualityResult, Segment
-from chto_za_vino_bot.storage import ArtifactStore
+from chto_za_vino_core.quality import QualityResult, Segment
+from PIL import Image, ImageDraw
 
 
 def encoded_image(mode="RGB", size=(200, 300), color="white", format="JPEG") -> bytes:

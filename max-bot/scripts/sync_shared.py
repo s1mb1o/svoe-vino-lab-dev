@@ -1,8 +1,9 @@
-"""Copy the shared modules and tests of telegram-bot into max-bot.
+"""Copy the remaining shared modules and tests of telegram-bot into max-bot.
 
-The MAX bot keeps the processing core of the Telegram bot unchanged. This script is the only
-place that defines which files are shared and which names change. The test
-`tests/test_shared_modules.py` uses the same table to detect a drift.
+The processing core is the package `chto_za_vino_core` in `../im-core`. Three modules stay copied,
+because they use the Repository and Settings of each bot. This script is the only place that
+defines which files are copied and which names change. The test `tests/test_shared_modules.py`
+uses the same table to detect a drift.
 
 Usage, from the max-bot directory:
 
@@ -28,33 +29,11 @@ SHARED_MODULES = (
     "admin_web.py",
     "artifact_backfill.py",
     "data_lifecycle.py",
-    "fingerprints.py",
-    "host_demo.py",
-    "http_api.py",
-    "image_types.py",
-    "matcher.py",
-    "moderation.py",
-    "pipeline_artifacts.py",
-    "probe.py",
-    "quality.py",
-    "result_card.py",
-    "wine.py",
-    "work_queue.py",
 )
 
 SHARED_TESTS = (
-    "test_artifact_png.py",
+    "heic_images.py",
     "test_assets.py",
-    "test_fingerprint_parity.py",
-    "test_fingerprints.py",
-    "test_host_demo.py",
-    "test_matcher.py",
-    "test_moderation.py",
-    "test_quality.py",
-    "test_quality_performance.py",
-    "test_result_card.py",
-    "test_wine.py",
-    "test_work_queue.py",
 )
 
 # The order is significant: the package name changes before the platform name.

@@ -1,4 +1,5 @@
 from aiogram.types import BotCommand
+from chto_za_vino_core.texts import LEGAL_NOTICE
 
 SHORT_DESCRIPTION = (
     "Распознаю российское вино по фотографии. Пришлите снимок — покажу название и страницу вина."
@@ -25,10 +26,6 @@ ADMIN_COMMANDS = [
     BotCommand(command="reset_limit", description="Сбросить лимит пользователя"),
 ]
 
-LEGAL_NOTICE = """Справочно · не предложение о продаже.
-18+ · Чрезмерное употребление алкоголя вредит вашему здоровью.
-
-Больше информации о российском виноделии — в каталоге vino-svoe.ru."""
 
 START_TEXT = """<b>Что за вино?</b> 🍷
 

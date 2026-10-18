@@ -123,8 +123,11 @@ The workspace rules are in `../../CLAUDE.md`.
 - Do not add a bot log handler without `SecretRedactingFormatter`. Keep the `httpx` and
   `httpcore` loggers at `WARNING`: `httpx` logs each request URL, and an attachment URL gives
   access to a user photo.
-- Do not change a shared module only here. Change `../telegram-bot` first, then run
-  `python scripts/sync_shared.py`. `tests/test_shared_modules.py` detects a drift.
+- Change the processing core in `../im-core` (package `chto_za_vino_core`), not here. Then run
+  the checks of `../im-core`, `../telegram-bot`, and this project.
+- Do not change a copied module (`admin_web.py`, `artifact_backfill.py`, `data_lifecycle.py`)
+  only here. Change `../telegram-bot` first, then run `python scripts/sync_shared.py`.
+  `tests/test_shared_modules.py` detects a drift.
 
 ## Verification
 

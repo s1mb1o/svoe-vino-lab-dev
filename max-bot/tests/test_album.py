@@ -9,6 +9,10 @@ import io
 from types import SimpleNamespace
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore
+from chto_za_vino_core.result_card import format_result_caption
+from chto_za_vino_core.wine import Wine
+from chto_za_vino_core.work_queue import QueueCapacityError
 from fakes import (
     DIALOG_CHAT_ID,
     USER_ID,
@@ -31,10 +35,7 @@ from chto_za_vino_max_bot.app import (
     result_feedback_keyboard,
 )
 from chto_za_vino_max_bot.profile import AGE_GATE_TEXT
-from chto_za_vino_max_bot.result_card import format_result_caption
-from chto_za_vino_max_bot.storage import ArtifactStore, Repository, SentMessage
-from chto_za_vino_max_bot.wine import Wine
-from chto_za_vino_max_bot.work_queue import QueueCapacityError
+from chto_za_vino_max_bot.storage import Repository, SentMessage
 
 ALBUM_RECEIPT = (
     "Фотографии приняты и поставлены в очередь.\nПозиция: 1; обработка начнётся сразу."

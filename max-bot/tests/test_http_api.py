@@ -4,19 +4,19 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
-from fakes import DIALOG_CHAT_ID, USER_ID, image
-from fastapi.testclient import TestClient
-
-from chto_za_vino_max_bot.app import restore_pending_jobs, service_readiness, submit_http_image
-from chto_za_vino_max_bot.http_api import (
+from chto_za_vino_core.http_api import (
     HttpQueueFull,
     HttpQueueUnavailable,
     HttpRecognitionResult,
     create_http_api_app,
 )
+from chto_za_vino_core.wine import Wine, unknown_wine, wine_card
+from chto_za_vino_core.work_queue import WorkQueue
+from fakes import DIALOG_CHAT_ID, USER_ID, image
+from fastapi.testclient import TestClient
+
+from chto_za_vino_max_bot.app import restore_pending_jobs, service_readiness, submit_http_image
 from chto_za_vino_max_bot.storage import CandidateRecord, Repository
-from chto_za_vino_max_bot.wine import Wine, unknown_wine, wine_card
-from chto_za_vino_max_bot.work_queue import WorkQueue
 
 API_TOKEN = "test-api-token-000000000000000000"
 AUTH_HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}

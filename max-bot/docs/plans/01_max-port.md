@@ -21,6 +21,10 @@ Each difference MUST be listed in `docs/specification.md`, section "Platform dif
 
 ## Package layout
 
+> Superseded on 2026-10-17: the shared modules are the package `chto_za_vino_core` in
+> `im-core/`, and the image builds from `im-core/` and `max-bot/`
+> (`../../docs/plans/01_im-core-package.md`).
+
 `max-bot/` is a separate Python project. It does not import `telegram-bot/`.
 The reason: the Docker image builds from one directory (`git archive "$REV:max-bot"`),
 and the MAX bot must not depend on `aiogram`.

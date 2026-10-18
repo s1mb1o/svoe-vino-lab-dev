@@ -76,9 +76,10 @@ Build the image from a committed revision, in the root of the repository:
 ```bash
 cd /path/to/svoe-vino-lab
 git fetch origin
-REV=$(git rev-parse origin/feature/max-bot)
-git archive "$REV:max-bot" | docker build --build-arg REVISION="$REV" \
-    -t "svoe-vino-lab-max-bot:$REV" -
+REV=$(git rev-parse origin/feature/im-bot)
+# The image needs the shared core im-core/ in its build context.
+git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile \
+    --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -
 ```
 
 Select the image and start both containers:

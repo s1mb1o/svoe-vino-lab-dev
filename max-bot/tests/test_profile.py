@@ -117,7 +117,8 @@ def _render(node: ast.expr, names: dict[str, str]) -> str:
 def _telegram_profile() -> tuple[dict[str, str], list[dict[str, str]]]:
     """Read the Telegram texts and commands without an import of aiogram."""
     tree = ast.parse(TELEGRAM_PROFILE.read_text(encoding="utf-8"))
-    texts: dict[str, str] = {}
+    # The Telegram profile imports the legal notice from the shared core.
+    texts: dict[str, str] = {"LEGAL_NOTICE": LEGAL_NOTICE}
     commands: list[dict[str, str]] = []
     for node in tree.body:
         if not (

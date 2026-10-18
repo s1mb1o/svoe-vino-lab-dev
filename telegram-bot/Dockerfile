@@ -1,10 +1,10 @@
 # Container image of the "Что за вино" Telegram bot and its administration interface.
 #
-# The build context is the telegram-bot/ directory. Build from a committed revision,
-# in the root of svoe-vino-lab:
+# The build context is the repository root with im-core/ (the shared core) and telegram-bot/.
+# Build from a committed revision, in the root of the repository:
 #   REV=$(git rev-parse HEAD)
-#   git archive "$REV:telegram-bot" | docker build --build-arg REVISION="$REV" \
-#     -t "svoe-vino-lab-telegram-bot:$REV" -
+#   git archive "$REV" im-core telegram-bot | docker build -f telegram-bot/Dockerfile \
+#     --build-arg REVISION="$REV" -t "svoe-vino-lab-telegram-bot:$REV" -
 #
 # One image runs two containers. Each container listens on its own port 8080:
 #   chto-za-vino-bot    Telegram long polling and the recognition HTTP API (the default)
@@ -49,11 +49,14 @@ WORKDIR /app
 COPY --from=uv /uv /uvx /bin/
 
 # uv.lock pins every package. --frozen fails the build when the lock is out of date.
-COPY pyproject.toml uv.lock README.md config.yaml ./
-COPY src ./src
+# The bot depends on ../im-core. --no-editable installs the core into /opt/venv, so the image
+# needs /im-core only during the build.
+COPY im-core /im-core
+COPY telegram-bot/pyproject.toml telegram-bot/uv.lock telegram-bot/README.md telegram-bot/config.yaml ./
+COPY telegram-bot/src ./src
 RUN uv sync --frozen --no-editable
 
-COPY assets/content-rejected-monkey-640x640.png ./assets/
+COPY telegram-bot/assets/content-rejected-monkey-640x640.png ./assets/
 
 # uid 1000 is the owner of /srv/svoe-vino-lab on gx10, so the bind mount is writable.
 RUN groupadd --gid 1000 bot \

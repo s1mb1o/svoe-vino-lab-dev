@@ -32,18 +32,21 @@ from aiogram.types import (
     PhotoSize,
     ReplyParameters,
 )
-
-from .config import Settings
-from .data_lifecycle import purge_expired_data
-from .fingerprints import image_hashes
-from .http_api import (
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.fingerprints import image_hashes
+from chto_za_vino_core.http_api import (
     HttpQueueFull,
     HttpQueueUnavailable,
     HttpRecognitionResult,
     create_http_api_app,
 )
-from .matcher import Matcher, RecognitionResult, RecognitionUnavailable, is_confident
-from .moderation import (
+from chto_za_vino_core.matcher import (
+    Matcher,
+    RecognitionResult,
+    RecognitionUnavailable,
+    is_confident,
+)
+from chto_za_vino_core.moderation import (
     DisabledModerator,
     InvalidImage,
     ModerationUnavailable,
@@ -52,7 +55,7 @@ from .moderation import (
     make_moderator,
     prepare_source_image,
 )
-from .pipeline_artifacts import (
+from chto_za_vino_core.pipeline_artifacts import (
     GeneratedArtifact,
     base_artifacts,
     censored_artifact,
@@ -60,6 +63,18 @@ from .pipeline_artifacts import (
     quality_artifacts,
     result_artifact,
 )
+from chto_za_vino_core.quality import QualityInspector, QualityThresholds, QualityUnavailable
+from chto_za_vino_core.result_card import (
+    CatalogImageLoader,
+    CatalogImageUnavailable,
+    format_result_caption,
+    normalize_result_photo,
+)
+from chto_za_vino_core.wine import Wine, unknown_wine, wine_card, wine_from_card
+from chto_za_vino_core.work_queue import QueueCapacityError, QueueClosedError, WorkQueue
+
+from .config import Settings
+from .data_lifecycle import purge_expired_data
 from .profile import (
     ADMIN_COMMANDS,
     AGE_GATE_TEXT,
@@ -71,26 +86,15 @@ from .profile import (
     SHORT_DESCRIPTION,
     START_CONFIRMED_TEXT,
 )
-from .quality import QualityInspector, QualityThresholds, QualityUnavailable
-from .result_card import (
-    CatalogImageLoader,
-    CatalogImageUnavailable,
-    format_result_caption,
-    normalize_result_photo,
-)
 from .storage import (
     SQLITE_MAX_INTEGER,
     AdminRequestRecord,
-    ArtifactStore,
     CandidateRecord,
     HeldPhoto,
-    ImageStore,
     Repository,
     UserIdentity,
     UserSummary,
 )
-from .wine import Wine, unknown_wine, wine_card, wine_from_card
-from .work_queue import QueueCapacityError, QueueClosedError, WorkQueue
 
 LOG = logging.getLogger("chto_za_vino_bot")
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -796,7 +800,11 @@ class PhotoProcessor:
                 await self._persist(
                     self._save_artifacts,
                     job,
-                    [await asyncio.to_thread(result_artifact, image)],
+                    [
+                        await asyncio.to_thread(
+                            result_artifact, image, platform="telegram", platform_title="Telegram"
+                        )
+                    ],
                 )
         except Exception:
             LOG.exception(
@@ -2000,7 +2008,7 @@ async def run() -> None:
             label_min_area_ratio=settings.quality_label_min_area_ratio,
         ),
     )
-    matcher = Matcher(settings.matcher_endpoint, client)
+    matcher = Matcher(settings.matcher_endpoint, client, upload_name="telegram-photo")
     image_loader = CatalogImageLoader(client)
     services = Services(
         settings,

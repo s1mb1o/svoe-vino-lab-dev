@@ -4,15 +4,16 @@ import sqlite3
 from types import SimpleNamespace
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.matcher import RecognitionCandidate, RecognitionResult
+from chto_za_vino_core.moderation import DisabledModerator, ModerationResult
+from chto_za_vino_core.quality import QualityResult, QualityUnavailable
+from chto_za_vino_core.wine import Wine
 from PIL import Image
 
 from chto_za_vino_bot.app import PhotoJob, PhotoProcessor, enqueue_admin_retries
 from chto_za_vino_bot.data_lifecycle import delete_user_data, purge_expired_data
-from chto_za_vino_bot.matcher import RecognitionCandidate, RecognitionResult
-from chto_za_vino_bot.moderation import DisabledModerator, ModerationResult
-from chto_za_vino_bot.quality import QualityResult, QualityUnavailable
-from chto_za_vino_bot.storage import ArtifactStore, ImageStore, Repository
-from chto_za_vino_bot.wine import Wine
+from chto_za_vino_bot.storage import Repository
 
 
 def jpeg() -> bytes:

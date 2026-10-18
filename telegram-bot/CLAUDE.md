@@ -96,11 +96,15 @@ The workspace rules are in `../../CLAUDE.md`.
 - Do not add a bot log handler without `SecretRedactingFormatter`. An aiogram download error
   contains the file URL, and that URL contains the bot token.
 
-## MAX bot
+## Shared core and MAX bot
 
-`../max-bot` is the MAX messenger port of this bot. It copies the core modules of this package
-with `../max-bot/scripts/sync_shared.py`. After a change to a module in its `SHARED_MODULES`
-list, run `python ../max-bot/scripts/sync_shared.py` and the MAX bot tests.
+The processing core is the package `chto_za_vino_core` in `../im-core`. Change it there, then run
+the checks of `../im-core`, this project, and `../max-bot`.
+
+`../max-bot` is the MAX messenger port of this bot. It copies `admin_web.py`,
+`artifact_backfill.py`, and `data_lifecycle.py` from this package with
+`../max-bot/scripts/sync_shared.py`. After a change to one of them, run
+`python ../max-bot/scripts/sync_shared.py` and the MAX bot tests.
 
 ## Verification
 
@@ -110,4 +114,5 @@ Run these commands before deployment:
 uv sync --extra dev
 uv run ruff check .
 uv run pytest -q
+(cd ../im-core && uv sync --extra dev && uv run ruff check . && uv run pytest -q)
 ```

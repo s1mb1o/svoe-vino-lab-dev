@@ -3,18 +3,19 @@
 from types import SimpleNamespace
 
 import httpx
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.host_demo import BASE_URL, _demo_image, _respond
+from chto_za_vino_core.matcher import Matcher
+from chto_za_vino_core.moderation import Moderator
+from chto_za_vino_core.quality import QualityInspector, QualityThresholds
+from chto_za_vino_core.result_card import CatalogImageLoader
+from chto_za_vino_core.work_queue import WorkQueue
 from fakes import FakeMaxApi, button_texts, keyboard_buttons
 
 from chto_za_vino_max_bot.app import BotHandlers, PhotoProcessor, Services
 from chto_za_vino_max_bot.delivery import UpdateDispatcher
-from chto_za_vino_max_bot.host_demo import BASE_URL, _demo_image, _respond
-from chto_za_vino_max_bot.matcher import Matcher
-from chto_za_vino_max_bot.moderation import Moderator
-from chto_za_vino_max_bot.quality import QualityInspector, QualityThresholds
-from chto_za_vino_max_bot.result_card import CatalogImageLoader
-from chto_za_vino_max_bot.storage import ArtifactStore, ImageStore, Repository
+from chto_za_vino_max_bot.storage import Repository
 from chto_za_vino_max_bot.updates import parse_update
-from chto_za_vino_max_bot.work_queue import WorkQueue
 
 PHOTO_URL = "https://i.oneme.example/i?r=photo"
 USER = {"user_id": 200, "first_name": "Test", "username": "tester", "is_bot": False}
@@ -191,7 +192,7 @@ async def test_image_sent_as_a_file_gives_a_result(tmp_path):
 
 
 async def test_heic_sent_as_a_file_gives_a_result_from_its_jpeg_copy(tmp_path):
-    from test_moderation import heic_bytes
+    from heic_images import heic_bytes
 
     repository, api, queue, dispatcher, client, _ = await make_bot(tmp_path)
     api.downloads[FILE_URL] = heic_bytes()

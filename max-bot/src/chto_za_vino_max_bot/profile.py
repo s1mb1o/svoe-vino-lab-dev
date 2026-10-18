@@ -1,5 +1,7 @@
 from html import escape
 
+from chto_za_vino_core.texts import LEGAL_NOTICE
+
 # MAX has no API for the bot description. The owner sets the description in the bot card on
 # business.max.ru, and the card passes the platform moderation. The card description has a
 # limit of 200 characters, so the card uses SHORT_DESCRIPTION.
@@ -30,10 +32,6 @@ ADMIN_COMMANDS = [
     {"name": "reset_limit", "description": "Сбросить лимит пользователя"},
 ]
 
-LEGAL_NOTICE = """Справочно · не предложение о продаже.
-18+ · Чрезмерное употребление алкоголя вредит вашему здоровью.
-
-Больше информации о российском виноделии — в каталоге vino-svoe.ru."""
 
 START_TEXT = """<b>Что за вино?</b> 🍷
 

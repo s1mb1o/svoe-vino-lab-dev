@@ -4,17 +4,18 @@ import sqlite3
 from types import SimpleNamespace
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.matcher import RecognitionCandidate, RecognitionResult
+from chto_za_vino_core.moderation import DisabledModerator, ModerationResult
+from chto_za_vino_core.quality import QualityResult, QualityUnavailable
+from chto_za_vino_core.wine import Wine
 from fakes import DIALOG_CHAT_ID, USER_ID, Call, FakeMaxApi, button_texts, image
 from PIL import Image
 
 from chto_za_vino_max_bot.app import PhotoJob, PhotoProcessor, enqueue_admin_retries
-from chto_za_vino_max_bot.matcher import RecognitionCandidate, RecognitionResult
 from chto_za_vino_max_bot.max_api import MediaTooLarge, MediaUnavailable
-from chto_za_vino_max_bot.moderation import DisabledModerator, ModerationResult
-from chto_za_vino_max_bot.quality import QualityResult, QualityUnavailable
-from chto_za_vino_max_bot.storage import ArtifactStore, ImageStore, Repository
+from chto_za_vino_max_bot.storage import Repository
 from chto_za_vino_max_bot.updates import ImageRef
-from chto_za_vino_max_bot.wine import Wine
 
 
 def jpeg() -> bytes:
@@ -692,9 +693,8 @@ async def test_an_empty_or_oversized_download_is_invalid(tmp_path, body):
 
 
 async def test_a_converted_heic_must_fit_the_size_limit(tmp_path):
-    from test_moderation import noisy_heic_bytes
-
-    from chto_za_vino_max_bot.moderation import prepare_source_image
+    from chto_za_vino_core.moderation import prepare_source_image
+    from heic_images import noisy_heic_bytes
 
     heic = noisy_heic_bytes()
     converted = len(prepare_source_image(heic))

@@ -2,14 +2,12 @@ import io
 import sqlite3
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ArtifactWrite, ImageStore
 from PIL import Image
 
 from chto_za_vino_max_bot.storage import (
     SQLITE_MAX_INTEGER,
-    ArtifactStore,
-    ArtifactWrite,
     CandidateRecord,
-    ImageStore,
     PendingRequest,
     Repository,
     SentMessage,

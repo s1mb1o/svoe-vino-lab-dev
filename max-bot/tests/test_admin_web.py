@@ -2,11 +2,12 @@ import re
 from dataclasses import replace
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ArtifactWrite
 from fastapi.testclient import TestClient
 
 from chto_za_vino_max_bot.admin_web import create_app
 from chto_za_vino_max_bot.config import AdminWebSettings
-from chto_za_vino_max_bot.storage import ArtifactStore, ArtifactWrite, Repository
+from chto_za_vino_max_bot.storage import Repository
 
 ADMIN_PASSWORD = "correct-horse-battery-staple-1234"
 PHOTO_URL = "https://i.oneme.example/photo-1.jpg?sig=private-download-signature"

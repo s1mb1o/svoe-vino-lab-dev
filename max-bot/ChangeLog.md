@@ -2,6 +2,17 @@
 
 ## 2026-10-17
 
+- The processing core is now the shared package `chto_za_vino_core` in `../im-core`, an editable
+  `uv` path dependency. The 12 copied modules, `ArtifactRecord`, `ArtifactWrite`, `ImageStore`,
+  `ArtifactStore`, and `LEGAL_NOTICE` came from there; their copies here are deleted.
+  `sync_shared.py` copies only `admin_web.py`, `artifact_backfill.py`, `data_lifecycle.py`,
+  `tests/heic_images.py`, and `tests/test_assets.py`. The artifact key `max_result` and the matcher
+  upload name `max-photo` are now parameters of the core. The Docker build context is the
+  repository root: `git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile -`.
+  `scripts/verify.sh` also checks `../im-core`. `chto-za-vino-max-probe` stays a bot command
+  (`probe.py`) and sends the upload name `max-photo`. `compose.host-demo.yaml` builds from the
+  repository root; `Dockerfile.dockerignore` keeps only `im-core/` and `max-bot/` in the context.
+  Plan: `../docs/plans/01_im-core-package.md`.
 - Added `ResearchLog.md` with the MAX platform findings: the command menu has no scope, the
   `file` attachment shape, HEIC, and update delivery.
 - Keep long polling in production (owner decision for the hackathon, issue #10 section 1).

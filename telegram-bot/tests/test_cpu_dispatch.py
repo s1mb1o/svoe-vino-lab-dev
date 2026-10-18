@@ -4,9 +4,10 @@ import threading
 
 import httpx
 import pytest
+from chto_za_vino_core import result_card
 from test_processor_quality import AdvisoryQualityInspector, jpeg, run_processor
 
-from chto_za_vino_bot import app, result_card
+from chto_za_vino_bot import app
 
 
 @pytest.mark.parametrize(
@@ -24,9 +25,9 @@ async def test_processor_dispatches_image_cpu_work(tmp_path, monkeypatch, name):
     original = getattr(app, name)
     worker_ids = []
 
-    def checked(*args):
+    def checked(*args, **kwargs):
         worker_ids.append(threading.get_ident())
-        return original(*args)
+        return original(*args, **kwargs)
 
     monkeypatch.setattr(app, name, checked)
     row, _, _, photos, _ = await run_processor(tmp_path, AdvisoryQualityInspector())

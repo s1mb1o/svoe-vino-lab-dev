@@ -17,6 +17,7 @@ from urllib.parse import parse_qs, quote, urlencode, urlparse
 from zoneinfo import ZoneInfo
 
 import uvicorn
+from chto_za_vino_core.files import ArtifactRecord, ArtifactStore
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import (
     FileResponse,
@@ -30,8 +31,6 @@ from .config import MINIMUM_SECRET_LENGTH, AdminWebSettings
 from .storage import (
     SQLITE_MAX_INTEGER,
     AdminRequestRecord,
-    ArtifactRecord,
-    ArtifactStore,
     CandidateRecord,
     Repository,
     StepTiming,

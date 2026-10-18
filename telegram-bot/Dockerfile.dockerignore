@@ -1,0 +1,11 @@
+# BuildKit reads this file for telegram-bot/Dockerfile. The build context is the repository root, and
+# the image needs only im-core/ and telegram-bot/.
+*
+!im-core
+!telegram-bot
+**/.venv
+**/.uv-cache
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+telegram-bot/data

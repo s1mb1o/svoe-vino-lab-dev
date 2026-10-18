@@ -2,17 +2,10 @@ import io
 import sqlite3
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ArtifactWrite, ImageStore
 from PIL import Image
 
-from chto_za_vino_bot.storage import (
-    SQLITE_MAX_INTEGER,
-    ArtifactStore,
-    ArtifactWrite,
-    CandidateRecord,
-    ImageStore,
-    Repository,
-    StepTiming,
-)
+from chto_za_vino_bot.storage import SQLITE_MAX_INTEGER, CandidateRecord, Repository, StepTiming
 
 
 @pytest.mark.parametrize(("image_format", "suffix"), [("JPEG", ".jpg"), ("PNG", ".png"), ("WEBP", ".webp")])

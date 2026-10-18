@@ -2,6 +2,8 @@ import io
 from types import SimpleNamespace
 
 import pytest
+from chto_za_vino_core.result_card import format_result_caption
+from chto_za_vino_core.wine import Wine
 from PIL import Image
 
 from chto_za_vino_bot.app import (
@@ -11,9 +13,7 @@ from chto_za_vino_bot.app import (
     _queue_receipt_text,
     enqueue_photo_message,
 )
-from chto_za_vino_bot.result_card import format_result_caption
 from chto_za_vino_bot.storage import Repository
-from chto_za_vino_bot.wine import Wine
 
 
 class FakeStatus:

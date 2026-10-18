@@ -1,0 +1,40 @@
+[project]
+name = "chto-za-vino-core"
+version = "0.1.0"
+description = "Shared core of the bots «Что за вино?» for Telegram and MAX."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "Pillow>=11,<13",
+  "pillow-heif==1.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx2>=2.0.0,<3",
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1.1,<2",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+chto-za-vino-core-probe = "chto_za_vino_core.probe:main"
+chto-za-vino-core-host-demo = "chto_za_vino_core.host_demo:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chto_za_vino_core"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".uv-cache", ".venv"]

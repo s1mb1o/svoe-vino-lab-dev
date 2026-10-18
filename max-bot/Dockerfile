@@ -1,10 +1,10 @@
 # Container image of the "Что за вино" MAX bot and its administration interface.
 #
-# The build context is the max-bot/ directory. Build from a committed revision,
-# in the root of svoe-vino-lab:
+# The build context is the repository root with im-core/ (the shared core) and max-bot/.
+# Build from a committed revision, in the root of the repository:
 #   REV=$(git rev-parse HEAD)
-#   git archive "$REV:max-bot" | docker build --build-arg REVISION="$REV" \
-#     -t "svoe-vino-lab-max-bot:$REV" -
+#   git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile \
+#     --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -
 #
 # One image runs two containers. Each container listens on its own port 8080:
 #   chto-za-vino-max-bot    MAX updates, the recognition HTTP API, and in webhook mode the
@@ -53,11 +53,14 @@ WORKDIR /app
 COPY --from=uv /uv /uvx /bin/
 
 # uv.lock pins every package. --frozen fails the build when the lock is out of date.
-COPY pyproject.toml uv.lock README.md config.yaml ./
-COPY src ./src
+# The bot depends on ../im-core. --no-editable installs the core into /opt/venv, so the image
+# needs /im-core only during the build.
+COPY im-core /im-core
+COPY max-bot/pyproject.toml max-bot/uv.lock max-bot/README.md max-bot/config.yaml ./
+COPY max-bot/src ./src
 RUN uv sync --frozen --no-editable
 
-COPY assets/content-rejected-monkey-640x640.png ./assets/
+COPY max-bot/assets/content-rejected-monkey-640x640.png ./assets/
 
 # uid 1000 is the owner of /srv/svoe-vino-lab on gx10, so the bind mount is writable.
 RUN groupadd --gid 1000 bot \

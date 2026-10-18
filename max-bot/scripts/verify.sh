@@ -10,3 +10,8 @@ if [ -d ../telegram-bot ]; then
 fi
 uv run pytest -q
 uv run chto-za-vino-max-host-demo
+# The shared core of both bots.
+if [ -d ../im-core ]; then
+    (cd ../im-core && uv lock --check && uv sync --frozen --extra dev \
+        && uv run ruff check . && uv run pytest -q)
+fi

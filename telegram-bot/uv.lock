@@ -205,6 +205,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiogram" },
+    { name = "chto-za-vino-core" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "pillow" },
@@ -224,6 +225,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.22,<4" },
+    { name = "chto-za-vino-core", editable = "../im-core" },
     { name = "fastapi", specifier = ">=0.116,<1" },
     { name = "httpx", specifier = ">=0.28,<1" },
     { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.0.0,<3" },
@@ -234,6 +236,30 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6,<7" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.12,<1" },
     { name = "uvicorn", specifier = ">=0.35,<1" },
+]
+provides-extras = ["dev"]
+
+[[package]]
+name = "chto-za-vino-core"
+version = "0.1.0"
+source = { editable = "../im-core" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "pillow" },
+    { name = "pillow-heif" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.116,<1" },
+    { name = "httpx", specifier = ">=0.28,<1" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.0.0,<3" },
+    { name = "pillow", specifier = ">=11,<13" },
+    { name = "pillow-heif", specifier = "==1.8.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4,<10" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.1,<2" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.12,<1" },
 ]
 provides-extras = ["dev"]
 

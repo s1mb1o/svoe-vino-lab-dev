@@ -2,6 +2,16 @@
 
 ## 2026-10-17
 
+- Moved the 12 modules that the MAX bot copied, and their 11 tests, to the shared package
+  `chto_za_vino_core` in `../im-core`, an editable `uv` path dependency. `ArtifactRecord`,
+  `ArtifactWrite`, `ImageStore`, `ArtifactStore`, and `LEGAL_NOTICE` moved there too. The artifact
+  key `telegram_result` and the matcher upload name `telegram-photo` are now parameters of the
+  core. The Docker build context is the repository root:
+  `git archive "$REV" im-core telegram-bot | docker build -f telegram-bot/Dockerfile -`.
+  `chto-za-vino-probe` stays a bot command (`probe.py`) and sends the upload name
+  `telegram-photo`. `compose.host-demo.yaml` builds from the repository root;
+  `Dockerfile.dockerignore` keeps only `im-core/` and `telegram-bot/` in the context.
+  Plan: `../docs/plans/01_im-core-package.md`.
 - Accept HEIC and HEIF documents (`image/heic`, `image/heif`). The worker converts them to JPEG
   with `pillow-heif` 1.8.0 before moderation: the HEIF rotation is applied and EXIF data (with the
   location) is removed. A raw HEIC image still fails the type check, so every path converts it

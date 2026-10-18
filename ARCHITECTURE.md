@@ -39,10 +39,12 @@ SAM3 проверяет бутылку и этикетку. Затем бот з
 ### MAX-бот
 
 MAX-бот повторяет функциональность Telegram-бота. Ядро обработки (очередь, moderation,
-quality, matcher client, артефакты, HTTP API, административный интерфейс) — проверяемая копия
-модулей Telegram-бота. Транспорт, хранилище и настройки написаны для MAX Bot API.
-В production бот получает события через webhook, в разработке — через long polling.
-Подробности: `max-bot/README.md`.
+quality, matcher client, артефакты, файловые хранилища, HTTP API) — общий пакет
+`chto_za_vino_core` в `im-core/`. Оба бота используют его. Административный интерфейс,
+жизненный цикл данных и дозаполнение артефактов — проверяемые копии модулей Telegram-бота.
+Транспорт, хранилище и настройки MAX-бота написаны для MAX Bot API. На время хакатона
+production получает события через long polling (`updates.mode` в `config.yaml`).
+Подробности: `max-bot/README.md`, `im-core/README.md`.
 
 ### Matcher
 

@@ -2,6 +2,12 @@ import io
 from types import SimpleNamespace
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.matcher import RecognitionCandidate, RecognitionResult
+from chto_za_vino_core.moderation import ModerationResult
+from chto_za_vino_core.quality import QualityResult, QualityUnavailable
+from chto_za_vino_core.wine import Wine
+from chto_za_vino_core.work_queue import QueueCapacityError
 from fakes import DIALOG_CHAT_ID, USER_ID, FakeMaxApi, image
 from PIL import Image
 
@@ -11,12 +17,7 @@ from chto_za_vino_max_bot.app import (
     enqueue_admin_retries,
     restore_pending_jobs,
 )
-from chto_za_vino_max_bot.matcher import RecognitionCandidate, RecognitionResult
-from chto_za_vino_max_bot.moderation import ModerationResult
-from chto_za_vino_max_bot.quality import QualityResult, QualityUnavailable
-from chto_za_vino_max_bot.storage import ArtifactStore, ImageStore, Repository
-from chto_za_vino_max_bot.wine import Wine
-from chto_za_vino_max_bot.work_queue import QueueCapacityError
+from chto_za_vino_max_bot.storage import Repository
 
 GROUP_CHAT_ID = 6000
 FRESH_URL = "https://i.oneme.example/photo-2-fresh.jpg"

@@ -3,7 +3,9 @@ name: svoe-vino-lab-max-bot-host-demo
 services:
   host-demo:
     build:
-      context: .
+      # The image needs the shared core: the context is the repository root.
+      context: ..
+      dockerfile: max-bot/Dockerfile
     command: ["chto-za-vino-max-host-demo"]
     network_mode: none
     read_only: true

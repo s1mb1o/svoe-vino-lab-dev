@@ -2,10 +2,11 @@ import io
 import sqlite3
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ArtifactWrite, ImageStore
 from PIL import Image
 
 from chto_za_vino_max_bot.data_lifecycle import delete_user_data, purge_expired_data
-from chto_za_vino_max_bot.storage import ArtifactStore, ArtifactWrite, ImageStore, Repository
+from chto_za_vino_max_bot.storage import Repository
 
 
 def jpeg() -> bytes:

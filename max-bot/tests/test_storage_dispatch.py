@@ -4,6 +4,7 @@ import asyncio
 import threading
 
 import pytest
+from chto_za_vino_core.files import ArtifactStore, ImageStore
 from fakes import image
 from test_processor_quality import (
     PHOTO,
@@ -18,7 +19,7 @@ from test_processor_quality import (
 
 from chto_za_vino_max_bot.app import PhotoProcessor
 from chto_za_vino_max_bot.max_api import MediaUnavailable
-from chto_za_vino_max_bot.storage import ArtifactStore, ImageStore, Repository
+from chto_za_vino_max_bot.storage import Repository
 from chto_za_vino_max_bot.updates import ImageRef
 
 
@@ -106,9 +107,10 @@ async def test_moderation_precedes_image_writes_and_unsafe_cleanup(tmp_path, mon
 
 
 async def test_slow_fsync_keeps_loop_responsive_and_final_file_atomic(tmp_path, monkeypatch):
-    from chto_za_vino_max_bot import storage
+    # The file stores of the core write and synchronize the photo files.
+    from chto_za_vino_core import files
 
-    original = storage.os.fsync
+    original = files.os.fsync
     started = asyncio.Event()
     release = threading.Event()
     loop = asyncio.get_running_loop()
@@ -123,7 +125,7 @@ async def test_slow_fsync_keeps_loop_responsive_and_final_file_atomic(tmp_path, 
                 raise TimeoutError("Test did not release fsync")
         return original(descriptor)
 
-    monkeypatch.setattr(storage.os, "fsync", blocked)
+    monkeypatch.setattr(files.os, "fsync", blocked)
     task = asyncio.create_task(run_processor(tmp_path, AdvisoryQualityInspector()))
     try:
         await asyncio.wait_for(started.wait(), 1)

@@ -43,11 +43,36 @@ wheels = [
 ]
 
 [[package]]
+name = "chto-za-vino-core"
+version = "0.1.0"
+source = { editable = "../im-core" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "pillow" },
+    { name = "pillow-heif" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.116,<1" },
+    { name = "httpx", specifier = ">=0.28,<1" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.0.0,<3" },
+    { name = "pillow", specifier = ">=11,<13" },
+    { name = "pillow-heif", specifier = "==1.8.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4,<10" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.1,<2" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.12,<1" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "chto-za-vino-max-bot"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "certifi" },
+    { name = "chto-za-vino-core" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "pillow" },
@@ -67,6 +92,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "certifi", specifier = ">=2024.2.2" },
+    { name = "chto-za-vino-core", editable = "../im-core" },
     { name = "fastapi", specifier = ">=0.116,<1" },
     { name = "httpx", specifier = ">=0.28,<1" },
     { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.0.0,<3" },

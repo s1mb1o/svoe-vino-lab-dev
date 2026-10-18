@@ -73,6 +73,7 @@ matcher и model endpoint. Полная инструкция находится 
 | `webui/` | Nuxt Web UI, evaluator route и рекомендации еды. |
 | `telegram-bot/` | Бот [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot), moderation и очередь. |
 | `max-bot/` | Бот MAX «Что за вино?» [@se14697933_bot](https://max.ru/se14697933_bot) с той же функциональностью. |
+| `im-core/` | Общее ядро обработки обоих ботов (пакет `chto_za_vino_core`). |
 | `matcher/` | FastAPI matcher с Top-1 и ranked API. |
 | `bootstrap/` | Локальные endpoints SigLIP2, SAM3, ShieldGemma 2 и QR scanner. |
 | `matcher-inspector/` | Read-only просмотр запросов и embedding bundles. |
@@ -88,6 +89,7 @@ matcher и model endpoint. Полная инструкция находится 
 - [Проверка организаторов: запуск matcher и `participant_test.sh`](eval/README.md)
 - [Telegram-бот](telegram-bot/README.md)
 - [MAX-бот](max-bot/README.md)
+- [Общее ядро ботов](im-core/README.md)
 - [Web UI](webui/README.md)
 - [Развертывание локальных моделей](docs/bootstrap/README.md)
 - [Эндпоинты моделей на Apple Silicon](docs/bootstrap/apple-silicon.md)

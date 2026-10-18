@@ -7,17 +7,18 @@ import time
 from dataclasses import replace
 
 import httpx
-
-from .config import Settings
-from .moderation import make_moderation_jpeg, make_moderator
-from .pipeline_artifacts import (
+from chto_za_vino_core.files import ArtifactStore, ImageStore
+from chto_za_vino_core.moderation import make_moderation_jpeg, make_moderator
+from chto_za_vino_core.pipeline_artifacts import (
     base_artifacts,
     censored_artifact,
     persist_artifacts,
     quality_artifacts,
 )
-from .quality import QualityInspector, QualityThresholds
-from .storage import ArtifactStore, ImageStore, Repository
+from chto_za_vino_core.quality import QualityInspector, QualityThresholds
+
+from .config import Settings
+from .storage import Repository
 
 LOG = logging.getLogger("chto_za_vino_max_bot.artifact_backfill")
 

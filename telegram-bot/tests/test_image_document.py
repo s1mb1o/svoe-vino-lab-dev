@@ -153,7 +153,7 @@ async def test_age_gate_holds_the_document_file_reference(tmp_path):
 
 
 async def test_heic_document_is_recognized_and_stored_as_jpeg(tmp_path):
-    from test_moderation import heic_bytes
+    from heic_images import heic_bytes
     from test_processor_quality import AdvisoryQualityInspector, FakeBot, run_processor
 
     row, *_ = await run_processor(tmp_path, AdvisoryQualityInspector(), bot=FakeBot(heic_bytes()))
@@ -166,10 +166,9 @@ async def test_heic_document_is_recognized_and_stored_as_jpeg(tmp_path):
 
 
 async def test_a_converted_heic_must_fit_the_size_limit(tmp_path):
-    from test_moderation import noisy_heic_bytes
+    from chto_za_vino_core.moderation import prepare_source_image
+    from heic_images import noisy_heic_bytes
     from test_processor_quality import AdvisoryQualityInspector, FakeBot, run_processor
-
-    from chto_za_vino_bot.moderation import prepare_source_image
 
     heic = noisy_heic_bytes()
     converted = len(prepare_source_image(heic))

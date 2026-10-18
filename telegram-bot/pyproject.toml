@@ -9,6 +9,7 @@ description = "Telegram bot that recognizes wine from a photo."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+  "chto-za-vino-core",
   "aiogram>=3.22,<4",
   "fastapi>=0.116,<1",
   "httpx>=0.28,<1",
@@ -33,10 +34,13 @@ chto-za-vino-profile = "chto_za_vino_bot.profile_sync:main"
 chto-za-vino-probe = "chto_za_vino_bot.probe:main"
 chto-za-vino-artifacts = "chto_za_vino_bot.artifact_backfill:main"
 chto-za-vino-delete-user = "chto_za_vino_bot.data_lifecycle:main"
-chto-za-vino-host-demo = "chto_za_vino_bot.host_demo:main"
+chto-za-vino-host-demo = "chto_za_vino_core.host_demo:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/chto_za_vino_bot"]
+
+[tool.uv.sources]
+chto-za-vino-core = { path = "../im-core", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
