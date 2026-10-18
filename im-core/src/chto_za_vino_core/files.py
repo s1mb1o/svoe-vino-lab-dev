@@ -123,7 +123,8 @@ class ArtifactStore:
 
     def __init__(self, root: Path) -> None:
         self._data_root = root.resolve()
-        self._root = root / "artifacts"
+        # save() returns a path relative to _data_root, so _root must be absolute too.
+        self._root = self._data_root / "artifacts"
         self._root.mkdir(parents=True, exist_ok=True, mode=0o750)
 
     def save(

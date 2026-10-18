@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-18
+
+- Fixed `ArtifactStore` for a relative data root, for example `BOT_DATA_ROOT=./data` of
+  `.env.example`. `save()` failed in `relative_to`, so no pipeline artifact was stored. The
+  artifact root is now absolute. New test: `tests/test_files.py` (issue #10, comment 6.2).
+
 ## 2026-10-17
 
 - Created the package from the 12 modules that `max-bot/scripts/sync_shared.py` copied from

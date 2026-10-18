@@ -2,6 +2,9 @@
 
 ## 2026-10-18
 
+- `BOT_DATA_ROOT=./data` of `.env.example` now stores the pipeline artifacts: the shared
+  `ArtifactStore` accepts a relative data root. `.env.example` uses the gx10 LAN address for
+  `MODERATION_ENDPOINT`, as for `SAM3_ENDPOINT`. `127.0.0.1` worked only on gx10.
 - Removed `.dockerignore`. Docker reads it only at the root of the build context, and the
   context is now the repository root. `Dockerfile.dockerignore` applies only to the Compose
   host-demo build. A `git archive` build from standard input uses no ignore file. See
