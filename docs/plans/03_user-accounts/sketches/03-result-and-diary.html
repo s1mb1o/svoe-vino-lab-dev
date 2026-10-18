@@ -1,0 +1,143 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Результат поиска и дневник</title><style>
+@font-face { font-family: 'Playfair Display'; src: url('../../../../webui/public/reference/playfair-display.woff2') format('woff2'); font-weight: 400 900; }
+:root { --ink:#2c2a28; --muted:#857e79; --paper:#fefdfa; --cream:#f8f2e8; --card:#fcf8ee; --accent:#7b3528;
+  --line:#e8e1d8; --tag:#f3e6cf; --danger:#9c312a; --success:#52694d; --max:#2b6cf6; }
+* { box-sizing: border-box; }
+body { margin:0; width:1346px; height:1024px; background:#efe8dc; color:var(--ink);
+  font: 14px/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif; overflow:hidden; }
+h1,h2,h3 { font-family:'Playfair Display', Georgia, serif; font-weight:500; margin:0; }
+p { margin:0; }
+.board { padding:34px 48px; }
+.board-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; }
+.board-head h1 { font-size:30px; }
+.board-head p { color:var(--muted); margin-top:6px; max-width:900px; }
+.sketch { border:1px dashed var(--accent); color:var(--accent); border-radius:20px; padding:6px 14px; font-size:12px; white-space:nowrap; }
+.row { display:flex; gap:40px; }
+.col { width:390px; }
+.cap { font-size:13px; color:var(--muted); margin:0 0 8px 6px; height:20px; }
+.phone { width:390px; height:820px; border-radius:42px; background:var(--paper); border:10px solid #2a2622;
+  overflow:hidden; position:relative; box-shadow:0 18px 40px #3a2a1a22; display:flex; flex-direction:column; }
+.status { height:30px; flex-shrink:0; display:flex; justify-content:space-between; padding:6px 22px 0; font-size:12px; font-weight:600; }
+.site-bar { margin:6px 12px 0; height:50px; border-radius:30px; background:var(--cream); display:flex; align-items:center; gap:8px; padding:0 14px; flex-shrink:0; }
+.site-bar img { width:30px; height:30px; border-radius:8px; }
+.brand { font:600 17px 'Playfair Display', Georgia, serif; }
+.pill { margin-left:auto; border:1px solid var(--line); background:var(--paper); color:var(--accent); border-radius:20px; padding:5px 12px; font-size:12px; }
+.max-bar { height:52px; flex-shrink:0; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #e6e9ef; background:#fff; }
+.max-bar .x { font-size:22px; color:#8b93a1; width:24px; }
+.max-bar .t { font-weight:600; }
+.max-bar .s { font-size:11px; color:#8b93a1; }
+.max-bar .dots { margin-left:auto; color:#8b93a1; font-size:20px; }
+.browser-bar { height:44px; flex-shrink:0; margin:4px 12px 0; border-radius:12px; background:#eef0f3; display:flex; align-items:center; padding:0 12px; font-size:13px; color:#555; gap:6px; }
+.body { flex:1; padding:18px 20px; overflow:hidden; display:flex; flex-direction:column; gap:12px; }
+.body h2 { font-size:25px; line-height:1.2; }
+.lead { color:var(--muted); }
+.tabs { display:flex; background:var(--cream); border-radius:24px; padding:4px; gap:4px; }
+.tabs span { flex:1; text-align:center; padding:8px 0; border-radius:20px; font-size:13px; color:var(--muted); }
+.tabs span.on { background:var(--paper); color:var(--accent); font-weight:600; box-shadow:0 1px 3px #0001; }
+label.f { display:block; font-size:12px; color:var(--muted); }
+.input { margin-top:4px; height:46px; border:1px solid var(--line); border-radius:12px; background:#fff; padding:0 14px; display:flex; align-items:center; color:#b9b0a7; }
+.input.filled { color:var(--ink); }
+.hint { font-size:11px; color:var(--muted); margin-top:4px; }
+.btn { height:48px; border-radius:28px; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:500; }
+.btn.primary { background:var(--accent); color:#fff; }
+.btn.ghost { border:1px solid var(--line); color:var(--accent); background:var(--paper); }
+.btn.danger { background:var(--danger); color:#fff; }
+.btn.max { background:var(--max); color:#fff; }
+.check { display:flex; gap:10px; align-items:flex-start; font-size:13px; }
+.box { width:20px; height:20px; border:1.5px solid var(--accent); border-radius:5px; flex-shrink:0; margin-top:1px; display:grid; place-items:center; color:#fff; font-size:13px; }
+.box.on { background:var(--accent); }
+.link { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+.note { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:12px; color:#5f5852; }
+.warn { background:#9c312a0b; border:1px solid #9c312a33; color:var(--danger); border-radius:12px; padding:10px 12px; font-size:12px; }
+.ok { background:#52694d12; border:1px solid #52694d44; color:var(--success); border-radius:20px; padding:7px 12px; font-size:12px; display:flex; justify-content:space-between; }
+.foot { margin-top:auto; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:8px; display:flex; gap:10px; flex-wrap:wrap; }
+.progress { display:flex; gap:6px; }
+.progress i { flex:1; height:4px; border-radius:2px; background:var(--line); }
+.progress i.on { background:var(--accent); }
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tile { height:96px; border-radius:16px; border:1px solid var(--line); background:var(--card); padding:12px; display:flex; flex-direction:column; justify-content:space-between; position:relative; }
+.tile.on { border:2px solid var(--accent); background:#f6ebe0; }
+.tile .sw { width:30px; height:30px; border-radius:50%; border:1px solid #0001; }
+.tile .mark { position:absolute; right:10px; top:10px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; display:grid; place-items:center; font-size:12px; }
+.seg { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.seg span { border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; background:var(--card); }
+.seg span.on { border:2px solid var(--accent); color:var(--accent); font-weight:600; background:#f6ebe0; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chips span { border:1px solid var(--line); border-radius:20px; padding:8px 12px; font-size:13px; background:var(--card); }
+.chips span.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+.duo { display:flex; gap:10px; margin-top:auto; }
+.duo .btn { flex:1; }
+.card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:12px; }
+.wine { display:flex; gap:12px; }
+.wine img { width:70px; height:110px; object-fit:contain; background:var(--cream); border-radius:10px; }
+.wine h3 { font-size:17px; line-height:1.25; }
+.meta { font-size:12px; color:var(--muted); }
+.tag { display:inline-block; background:var(--tag); border-radius:10px; padding:2px 8px; font-size:11px; margin-top:4px; }
+.fit-row { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-bottom:1px dashed var(--line); }
+.fit-row:last-child { border:0; }
+.fit-row b { font-weight:500; }
+.basis { font-size:10px; color:var(--muted); background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:1px 6px; margin-left:6px; }
+.yes { color:var(--success); } .no { color:var(--danger); } .unk { color:var(--muted); }
+.stars { color:var(--accent); font-size:22px; letter-spacing:3px; }
+.list .item { display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); align-items:center; }
+.thumb { width:48px; height:48px; border-radius:10px; background:var(--cream) center/cover; flex-shrink:0; }
+.item .n { font-size:13px; font-weight:500; line-height:1.25; }
+.item .d { font-size:11px; color:var(--muted); }
+.src { font-size:10px; border-radius:8px; padding:1px 6px; margin-left:4px; background:var(--tag); }
+.src.m { background:#e3ecff; color:var(--max); }
+.mini-stars { color:var(--accent); font-size:12px; margin-left:auto; white-space:nowrap; }
+.set { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:14px; }
+.set small { display:block; font-size:11px; color:var(--muted); }
+.toggle { width:44px; height:26px; border-radius:13px; background:var(--success); position:relative; flex-shrink:0; }
+.toggle:after { content:''; position:absolute; right:3px; top:3px; width:20px; height:20px; border-radius:50%; background:#fff; }
+.chev { color:var(--muted); }
+.redtext { color:var(--danger); }
+.qr { align-self:center; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+.maxchip { display:flex; gap:10px; align-items:center; background:#f2f5fb; border-radius:14px; padding:10px 12px; font-size:13px; }
+.ava { width:34px; height:34px; border-radius:50%; background:#c9d6f5; display:grid; place-items:center; color:var(--max); font-weight:700; }
+.chat { flex:1; background:#e9eef6; padding:12px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+.bubble { background:#fff; border-radius:16px; padding:10px 12px; max-width:88%; font-size:13px; box-shadow:0 1px 2px #0001; }
+.bubble.me { align-self:flex-end; background:#d8e6ff; }
+.kb { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.kb span { border-radius:10px; background:#eef3fb; color:var(--max); text-align:center; padding:8px; font-size:13px; }
+.photo { width:190px; height:150px; border-radius:12px; background:#cdb79e center/cover; }
+.composer { height:56px; flex-shrink:0; background:#fff; display:flex; align-items:center; gap:10px; padding:0 12px; border-top:1px solid #e6e9ef; }
+.composer .open { background:var(--max); color:#fff; border-radius:18px; padding:8px 14px; font-size:13px; font-weight:600; }
+.composer .in { flex:1; height:36px; border-radius:18px; background:#f1f3f6; color:#9aa1ad; display:flex; align-items:center; padding:0 12px; font-size:13px; }
+.overlay { position:absolute; inset:0; background:#2c2a28aa; display:flex; align-items:center; justify-content:center; padding:24px; }
+.dialog { background:var(--paper); border-radius:22px; padding:22px; display:flex; flex-direction:column; gap:12px; }
+</style><body><div class="board"><div class="board-head"><div><h1>Результат поиска и дневник</h1><p>После распознавания фото сохраняется в дневник. «Подходит ли вам» сравнивает только известные данные и показывает основание.</p></div><span class="sketch">Эскиз · не финальный дизайн</span></div><div class="row"><div class="col"><p class="cap">Результат на сайте</p><div class="phone"><div class="status"><span>9:41</span><span>●●● ▮</span></div><div class="site-bar"><img src="../../../../webui/public/icons/product-logo.svg" alt=""><span class="brand">Что за вино?</span><span class="pill">Дневник</span></div><div class="body">
+<div class="card wine"><img src="../../../../webui/public/wines/priboj-marchenko-beloe-polusuhoe.webp" alt=""><div><h3>Прибой Марченко белое полусухое</h3>
+<p class="meta">Винодельня Марченко · Кубань</p><span class="tag">Белое · Полусухое</span>
+<p class="link" style="font-size:12px;margin-top:6px">Подробнее на «Свое Вино»</p></div></div>
+<div class="ok"><span>✓ Сохранено в дневнике</span><span class="link">Удалить</span></div>
+<div class="card"><b>Подходит ли вам</b><p class="meta">Совпадает с 2 из 4 ваших предпочтений</p>
+<div class="fit-row"><b>Белое</b><span class="yes">✓ совпадает<span class="basis">карточка</span></span></div>
+<div class="fit-row"><b>Сухое</b><span class="no">✗ полусухое<span class="basis">карточка</span></span></div>
+<div class="fit-row"><b>Лёгкое</b><span class="yes">✓ лёгкое<span class="basis">оценка</span></span></div>
+<div class="fit-row"><b>Свежее</b><span class="unk">нет данных</span></div></div>
+<div class="card"><b>Ваша оценка</b><div class="stars">★★★★☆</div><div class="input" style="height:40px">Заметка: «к рыбе на даче»</div></div>
+</div></div></div><div class="col"><p class="cap">Дневник: история</p><div class="phone"><div class="status"><span>9:41</span><span>●●● ▮</span></div><div class="site-bar"><img src="../../../../webui/public/icons/product-logo.svg" alt=""><span class="brand">Что за вино?</span><span class="pill">Дневник</span></div><div class="body">
+<h2>Винный дневник</h2>
+<div class="tabs"><span class="on">История</span><span>Оценки</span><span>Предпочтения</span></div>
+<div class="list">
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/priboj-marchenko-beloe-polusuhoe.webp')"></span><div><div class="n">Прибой Марченко белое полусухое</div><div class="d">сегодня, 21:14<span class="src">сайт</span></div></div><span class="mini-stars">★★★★☆</span></div>
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/cantiani-cabernet-sauvignon.webp')"></span><div><div class="n">Кантиани Каберне Совиньон</div><div class="d">вчера<span class="src m">MAX</span></div></div><span class="mini-stars">оценить</span></div>
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/mont-blanc-blanc-de-blancs.webp')"></span><div><div class="n">Монблан Блан де Блан</div><div class="d">12 окт<span class="src m">MAX</span></div></div><span class="mini-stars">★★★★★</span></div>
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/fioletovyj-rannij-petnat.webp')"></span><div><div class="n">Фиолетовый ранний петнат</div><div class="d">3 окт<span class="src">сайт</span></div></div><span class="mini-stars">★★★☆☆</span></div>
+<div class="item"><span class="thumb"></span><div><div class="n">Фото без вина</div><div class="d">1 окт · фото не сохранено</div></div></div>
+</div>
+<p class="meta">Фото из MAX попадают сюда после привязки MAX.</p>
+</div></div></div><div class="col"><p class="cap">Дневник: оценки</p><div class="phone"><div class="status"><span>9:41</span><span>●●● ▮</span></div><div class="site-bar"><img src="../../../../webui/public/icons/product-logo.svg" alt=""><span class="brand">Что за вино?</span><span class="pill">Дневник</span></div><div class="body">
+<h2>Винный дневник</h2>
+<div class="tabs"><span>История</span><span class="on">Оценки</span><span>Предпочтения</span></div>
+<div class="card"><b>Любимые стили</b><p class="meta">По вашим оценкам 4–5 ★</p>
+<div class="fit-row"><b>Белое сухое</b><span>3 вина</span></div>
+<div class="fit-row"><b>Игристое брют</b><span>2 вина</span></div></div>
+<div class="list">
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/mont-blanc-blanc-de-blancs.webp')"></span><div><div class="n">Монблан Блан де Блан</div><div class="d">«на день рождения, очень свежее»</div></div><span class="mini-stars">★★★★★</span></div>
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/priboj-marchenko-beloe-polusuhoe.webp')"></span><div><div class="n">Прибой Марченко</div><div class="d">«к рыбе на даче»</div></div><span class="mini-stars">★★★★☆</span></div>
+<div class="item"><span class="thumb" style="background-image:url('../../../../webui/public/wines/fioletovyj-rannij-petnat.webp')"></span><div><div class="n">Фиолетовый ранний петнат</div><div class="d">без заметки</div></div><span class="mini-stars">★★★☆☆</span></div>
+</div>
+<p class="meta">Стили считаются только по вашим оценкам, не по числу сканирований.</p>
+</div></div></div></div></div></body></html>

@@ -5,6 +5,8 @@ Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/48.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
 Status: Owner decisions recorded on 2026-10-19 (see "Owner decisions"). No code exists.
+Sketches: six boards in [`03_user-accounts/sketches/`](03_user-accounts/sketches/). Rebuild them with
+`python3 docs/plans/03_user-accounts/sketches/build.py`. They are sketches, not a final design.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the first draft on 2026-10-19. This version applies
 its findings. Finding 2 (serial bot calls) no longer applies: the MAX design below has no
 account calls in bot handlers. A second Codex review of commit `29e73880` found seven more
