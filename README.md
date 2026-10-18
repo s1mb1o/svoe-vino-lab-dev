@@ -75,6 +75,7 @@ matcher и model endpoint. Полная инструкция находится 
 | Каталог | Назначение |
 | --- | --- |
 | `webui/` | Nuxt Web UI, evaluator route и рекомендации еды. |
+| `mcp/` | Read-only MCP tools for catalog cards, discovery, comparison, the product-line demo, and approved audio metadata. |
 | `telegram-bot/` | Бот [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot), moderation и очередь. |
 | `max-bot/` | Бот MAX «Что за вино?» [@se14697933_bot](https://max.ru/se14697933_bot) с той же функциональностью. |
 | `im-core/` | Общее ядро обработки обоих ботов (пакет `chto_za_vino_core`). |
@@ -95,6 +96,8 @@ matcher и model endpoint. Полная инструкция находится 
 - [MAX-бот](max-bot/README.md)
 - [Общее ядро ботов](im-core/README.md)
 - [Web UI](webui/README.md)
+- [Wine catalog MCP](mcp/README.md)
+- [MCP implementation plan](docs/plans/01_wine-catalog-mcp.md)
 - [Развертывание локальных моделей](docs/bootstrap/README.md)
 - [Эндпоинты моделей на Apple Silicon](docs/bootstrap/apple-silicon.md)
 - [Эндпоинты моделей на Selectel RTX 4090](docs/bootstrap/selectel-rtx4090.md)

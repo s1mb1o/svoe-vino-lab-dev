@@ -1,0 +1,65 @@
+name: Wine catalog MCP tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mcp/**'
+      - 'webui/shared/catalog.ts'
+      - 'webui/shared/experiences.ts'
+      - 'webui/docs/catalog-provenance.json'
+      - 'workbench/db-export/rows/wine_catalog.jsonl'
+      - 'matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json'
+      - 'matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/wines.jsonl'
+      - '.github/workflows/mcp-tests.yml'
+  pull_request:
+    paths:
+      - 'mcp/**'
+      - 'webui/shared/**'
+      - 'webui/docs/catalog-provenance.json'
+      - 'workbench/db-export/rows/wine_catalog.jsonl'
+      - 'matcher/data/**'
+      - '.github/workflows/mcp-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: [self-hosted, Linux, X64, docker]
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node: ['22.19.0', '26.4.0']
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /mcp/
+            /webui/shared/catalog.ts
+            /webui/shared/experiences.ts
+            /webui/docs/catalog-provenance.json
+            /workbench/db-export/rows/wine_catalog.jsonl
+            /matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json
+            /matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/wines.jsonl
+      - name: Run locked MCP checks in an isolated container
+        env:
+          NODE_VERSION: ${{ matrix.node }}
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/source:ro" \
+            "node:${NODE_VERSION}-bookworm-slim" sh -euc '
+              mkdir /workspace
+              for component in mcp webui workbench matcher; do
+                cp -R "/source/$component" /workspace/
+              done
+              cd /workspace/mcp
+              npm ci --ignore-scripts --no-audit --no-fund
+              npm run check
+              npm test
+              npm run demo
+            '
