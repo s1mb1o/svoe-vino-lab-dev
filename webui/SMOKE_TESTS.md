@@ -1,5 +1,23 @@
 # Smoke tests
 
+## Mode pages
+
+- Open `/`. Confirm «Одна бутылка», the title «Найти вино по фото — Что за вино?», and `aria-current="page"` on its link.
+- Follow «Вся полка». Confirm the URL `/shelf`, the title «Найти вино на полке по фото — Что за вино?», and the canonical URL `https://chtozavino.ru/shelf`.
+- Confirm that the switch discards the photo and the result of the previous mode. Use browser Back to return to `/`.
+- Confirm that `/sitemap.xml` lists `/shelf`.
+- With VoiceOver and TalkBack, confirm that the switch is a navigation named «Режим поиска вина» and that the current page is announced.
+
+## HEIC uploads
+
+Run these checks only with a matcher that has HEIC support (#24, #44).
+
+- In both modes, confirm the hint «JPEG, PNG, WebP, HEIC · до 10 МБ».
+- In Chrome, upload a `.heic` file. Confirm the text «Браузер не может показать это фото, но мы всё равно его проверим.» and a match.
+- In «Вся полка», confirm that the result preview replaces the text.
+- On an iPhone, upload from the photo library and from the camera. Confirm a match.
+- Upload an AVIF file. Confirm HTTP 415 and the message about the formats.
+
 ## Yandex.Metrika
 
 Release `10632011` passed these checks on staging and production on 2026-10-06.

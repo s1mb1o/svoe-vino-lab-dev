@@ -90,6 +90,14 @@ describe('automatic photo search', () => {
     expect(release).toHaveBeenCalledTimes(1)
   })
 
+  it.each(['image/heic', 'image/heif'])('submits a %s photo', async type => {
+    const request = vi.fn().mockResolvedValueOnce(response({ slug: MOCK_SLUG })).mockResolvedValueOnce(response(wines[0]))
+    const { scanner } = setup(request)
+    await scanner.select([new File(['example image content'], 'label.heic', { type })])
+    expect(request.mock.calls[0]![1].body.get('image').name).toBe('label.heic')
+    expect(scanner.phase.value).toBe('matched')
+  })
+
   it('rejects invalid selections before sending requests', async () => {
     const request = vi.fn()
     const { scanner } = setup(request)

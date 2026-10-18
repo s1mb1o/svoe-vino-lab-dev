@@ -10,6 +10,9 @@ const cameraInput = ref<HTMLInputElement>()
 const resultHeading = ref<HTMLElement>()
 const resultPanel = ref<HTMLElement>()
 const dragging = ref(false)
+// Chrome and Firefox cannot show a HEIC photo. The upload still works.
+const previewFailed = ref(false)
+watch(preview, () => { previewFailed.value = false })
 const hasResult = computed(() => phase.value === 'matched')
 const demoBottle = `/wines/${MOCK_SLUG}.webp`
 
@@ -40,8 +43,8 @@ useScannerTools(scanner)
     <div class="scanner-workspace" :class="{ 'with-result': hasResult }">
       <section class="upload-panel" :class="{ dragging }" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="dropped">
         <div class="panel-heading"><span class="step-label">01 / ВАША ФОТОГРАФИЯ</span><span v-if="file" class="file-size">{{ (file.size / 1024 / 1024).toFixed(2) }} МБ</span><span v-else-if="mode === 'mock'" class="demo-badge">ДЕМО</span></div>
-        <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="file-input" tabindex="-1" aria-label="Выбрать фотографию этикетки" :disabled="!mode" @change="selected">
-        <input ref="cameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="file-input" tabindex="-1" aria-label="Сфотографировать этикетку" :disabled="!mode" @change="selected">
+        <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" class="file-input" tabindex="-1" aria-label="Выбрать фотографию этикетки" :disabled="!mode" @change="selected">
+        <input ref="cameraInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" capture="environment" class="file-input" tabindex="-1" aria-label="Сфотографировать этикетку" :disabled="!mode" @change="selected">
 
         <template v-if="!file">
           <div class="upload-visual" aria-hidden="true"><div class="camera-symbol"><AppIcon name="camera" /></div><span class="frame-corner corner-tl" /><span class="frame-corner corner-tr" /><span class="frame-corner corner-bl" /><span class="frame-corner corner-br" /></div>
@@ -51,10 +54,10 @@ useScannerTools(scanner)
             <button class="button primary" :disabled="!mode || exampleLoading" @click="fileInput?.click()"><AppIcon name="upload" />Загрузить фото</button>
             <button class="button secondary camera-action" :disabled="!mode || exampleLoading" @click="cameraInput?.click()"><AppIcon name="camera" />Сделать фото</button>
           </div>
-          <p class="upload-hint"><span class="desktop-drop-hint">Или перетащите файл сюда<br></span>JPEG, PNG, WebP · до 10 МБ</p>
+          <p class="upload-hint"><span class="desktop-drop-hint">Или перетащите файл сюда<br></span>JPEG, PNG, WebP, HEIC · до 10 МБ</p>
         </template>
         <template v-else>
-          <div class="photo-preview"><img :src="preview" alt="Ваша фотография этикетки"><div v-if="busy" class="scan-overlay" aria-hidden="true"><span /></div></div>
+          <div class="photo-preview"><img v-if="!previewFailed" :src="preview" alt="Ваша фотография этикетки" @error="previewFailed = true"><p v-else class="preview-unavailable"><AppIcon name="image" />Браузер не может показать это фото, но мы всё равно его проверим.</p><div v-if="busy" class="scan-overlay" aria-hidden="true"><span /></div></div>
           <div class="photo-caption"><span>{{ file.name }}</span><button class="icon-button" aria-label="Убрать фото и начать заново" @click="scanner.reset()"><AppIcon name="close" /></button></div>
           <div v-if="busy" class="upload-progress" role="status"><span class="spinner" /><span>{{ phase === 'resolving' ? 'Открываем карточку вина…' : 'Ищем вино по этикетке…' }}</span><button class="text-button" @click="scanner.cancel()">Отменить</button></div>
           <div v-else class="upload-actions selected-actions"><button class="button secondary" @click="fileInput?.click()"><AppIcon name="upload" />Другое фото</button><button v-if="phase === 'error' || phase === 'selected'" class="button primary" @click="scanner.submit()">{{ phase === 'error' ? 'Повторить поиск' : 'Найти вино' }}</button><button v-else class="text-button" @click="cameraInput?.click()"><AppIcon name="camera" />Сделать фото</button></div>

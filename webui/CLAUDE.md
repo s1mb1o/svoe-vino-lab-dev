@@ -38,6 +38,7 @@ Do not render `FoodRecommendations` while the local demonstration is active.
 ## Shelf segmentation
 
 Keep «Одна бутылка» as the default. Use «Вся полка» for multi-bottle photos.
+«Одна бутылка» is at `/`. «Вся полка» is at `/shelf`.
 Read `docs/shelf-mode.md` for the contract and limits.
 The browser MUST call the same-origin `POST /v1/group/match` route.
 Derive the upstream group URL from `NUXT_PREDICTION_ENDPOINT`.

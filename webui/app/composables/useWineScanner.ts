@@ -79,7 +79,7 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
         const messages: Record<number, string> = {
           400: 'Не удалось прочитать фото. Попробуйте другой снимок.',
           413: 'Фото слишком большое. Выберите файл до 10 МБ.',
-          415: 'Нужен снимок в формате JPEG, PNG или WebP.',
+          415: 'Нужен снимок в формате JPEG, PNG, WebP или HEIC.',
           502: 'Сервис поиска не ответил. Попробуйте ещё раз.',
           503: 'Сервис поиска ещё не подключён. Попробуйте позже.',
           504: 'Поиск занял слишком много времени. Попробуйте ещё раз.',
@@ -126,7 +126,7 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
     if (files.length !== 1 || !selected) error.value = 'Выберите одну фотографию этикетки.'
     else if (!selected.size) error.value = 'Файл пуст. Выберите другой снимок.'
     else if (selected.size > MAX_IMAGE_BYTES) error.value = 'Выберите фотографию размером до 10 МБ.'
-    else if (selected.type && !['image/jpeg', 'image/png', 'image/webp'].includes(selected.type)) error.value = 'Выберите JPEG, PNG или WebP. Сохраните HEIC в формате JPEG.'
+    else if (selected.type && !['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(selected.type)) error.value = 'Выберите JPEG, PNG, WebP или HEIC.'
     if (error.value) { phase.value = 'error'; return }
     file.value = selected!
     preview.value = createPreview(selected!)

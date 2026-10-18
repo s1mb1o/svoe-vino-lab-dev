@@ -3,6 +3,8 @@ import { Buffer } from 'node:buffer'
 import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug } from '#shared/catalog'
 
 const MAX_BODY_BYTES = MAX_IMAGE_BYTES + 64 * 1024
+// A HEIF (HEIC) file starts with an ISO BMFF "ftyp" box. The matcher decodes the image (issue #24).
+const HEIF_BRANDS = new Set(['heic', 'heix', 'heim', 'heis', 'hevc', 'hevx', 'hevm', 'hevs', 'mif1', 'msf1'])
 export type PredictionMode = 'mock' | 'upstream'
 
 export function predictionMode(value: unknown): PredictionMode {
@@ -14,6 +16,7 @@ export function imageType(bytes: Uint8Array): string | null {
   if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg'
   if (bytes.length >= 8 && [137, 80, 78, 71, 13, 10, 26, 10].every((byte, i) => bytes[i] === byte)) return 'image/png'
   if (bytes.length >= 12 && Buffer.from(bytes.subarray(0, 4)).toString() === 'RIFF' && Buffer.from(bytes.subarray(8, 12)).toString() === 'WEBP') return 'image/webp'
+  if (bytes.length >= 12 && Buffer.from(bytes.subarray(4, 8)).toString() === 'ftyp' && HEIF_BRANDS.has(Buffer.from(bytes.subarray(8, 12)).toString())) return 'image/heif'
   return null
 }
 
@@ -75,7 +78,7 @@ export async function readImage(event: H3Event): Promise<File> {
   if (!file.size) throw createError({ statusCode: 400, statusMessage: 'Image is empty' })
   if (file.size > MAX_IMAGE_BYTES) throw createError({ statusCode: 413, statusMessage: 'Image must be at most 10 MiB' })
   const type = imageType(new Uint8Array(await file.slice(0, 12).arrayBuffer()))
-  if (!type) throw createError({ statusCode: 415, statusMessage: 'Use a JPEG, PNG, or WebP image' })
+  if (!type) throw createError({ statusCode: 415, statusMessage: 'Use a JPEG, PNG, WebP, or HEIC image' })
   return new File([file], `image.${type.split('/')[1]}`, { type })
 }
 

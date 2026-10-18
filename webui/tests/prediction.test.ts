@@ -3,7 +3,7 @@ import { createServer, type Server } from 'node:http'
 import { readFileSync } from 'node:fs'
 import { Buffer } from 'node:buffer'
 import { createApp, eventHandler, toNodeListener } from 'h3'
-import { predict, readImage, predictionMode } from '../server/utils/prediction'
+import { imageType, predict, readImage, predictionMode } from '../server/utils/prediction'
 import { predictionApiAvailable, predictionHealthUrl } from '../server/utils/upstream-health'
 import { MOCK_SLUG } from '../shared/catalog'
 
@@ -113,9 +113,27 @@ describe('prediction API health', () => {
   })
 })
 
+const heifHeader = (brand: string) => new Uint8Array([0, 0, 0, 24, ...Buffer.from('ftyp' + brand), 0, 0, 0, 0, ...Buffer.from('mif1heic')])
+
+describe('image signatures', () => {
+  it.each(['heic', 'heix', 'hevc', 'mif1', 'msf1'])('detects HEIF brand %s', brand => {
+    expect(imageType(heifHeader(brand))).toBe('image/heif')
+  })
+  it('rejects AVIF and a truncated ftyp box', () => {
+    expect(imageType(heifHeader('avif'))).toBeNull()
+    expect(imageType(heifHeader('heic').subarray(0, 11))).toBeNull()
+  })
+})
+
 describe('upload validation over HTTP', () => {
   it('accepts a real WebP with the official field name', async () => {
     const body = new FormData(); body.set('image', file())
+    const response = await fetch(origin + '/upload', { method: 'POST', body })
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ slug: MOCK_SLUG })
+  })
+  it('accepts a HEIC signature and names the file by its detected type', async () => {
+    const body = new FormData(); body.set('image', new File([heifHeader('heic')], 'IMG_0001.HEIC', { type: '' }))
     const response = await fetch(origin + '/upload', { method: 'POST', body })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ slug: MOCK_SLUG })

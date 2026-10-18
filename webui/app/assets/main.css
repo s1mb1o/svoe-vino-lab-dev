@@ -127,6 +127,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .file-size { font-size: 11px; color: var(--muted); }
 .photo-preview { position: relative; margin-top: 22px; height: 280px; border-radius: 12px; overflow: hidden; background: var(--cream); }
 .photo-preview>img { width: 100%; height: 100%; object-fit: contain; }
+.preview-unavailable { display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; height: 100%; margin: 0; padding: 24px; text-align: center; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.preview-unavailable .icon { width: 26px; height: 26px; }
 .photo-caption { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; margin: 6px 0 12px; }
 .photo-caption>span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .icon-button { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 50%; flex-shrink: 0; }
@@ -395,8 +397,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Whole-shelf capture and selected-bottle dialog. */
 .scan-mode-switch { display: flex; width: max-content; max-width: 100%; margin: 0 auto 26px; background: var(--cream); border: 1px solid var(--line); padding: 5px; border-radius: 32px; gap: 4px; }
-.scan-mode-switch button { display: inline-flex; gap: 9px; align-items: center; justify-content: center; padding: 12px 25px; min-height: 44px; border-radius: 28px; font-size: 13px; color: var(--muted); }
-.scan-mode-switch button[aria-pressed='true'] { color: var(--accent); background: var(--paper); box-shadow: 0 2px 8px #3b20110b; }
+.scan-mode-switch a { display: inline-flex; gap: 9px; align-items: center; justify-content: center; padding: 12px 25px; min-height: 44px; border-radius: 28px; font-size: 13px; color: var(--muted); }
+.scan-mode-switch a[aria-current='page'] { color: var(--accent); background: var(--paper); box-shadow: 0 2px 8px #3b20110b; }
 .scan-mode-switch .icon { width: 18px; height: 18px; }
 .shelf-unavailable { min-height: 445px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 52px 28px; text-align: center; box-shadow: 0 10px 36px #56382005; }
 .shelf-unavailable-symbol { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 50%; color: var(--accent); background: var(--cream); margin-bottom: 20px; }
@@ -433,6 +435,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .shelf-frame { position: relative; width: 100%; line-height: 0; min-height: 0; }
 .shelf-frame.is-zoomed { width: max(100%, 1600px); }
 .shelf-photo { display: block; width: 100%; height: auto; }
+.shelf-frame>.preview-unavailable { min-height: 280px; color: #efe6da; }
 .bottle-mask { position: absolute; opacity: .24; pointer-events: none; }
 .bottle-mask.selected { opacity: .6; }
 .bottle-hotspot { position: absolute; border: 1px solid #fff9; border-radius: 3px; background: transparent; padding: 0; cursor: pointer; touch-action: manipulation; }
@@ -484,7 +487,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 767px) {
   .scan-mode-switch { margin-bottom: 22px; width: 100%; }
-  .scan-mode-switch button { flex: 1; padding: 10px; font-size: 12px; }
+  .scan-mode-switch a { flex: 1; padding: 10px; font-size: 12px; }
   .shelf-unavailable { min-height: 390px; border-radius: 20px; padding: 42px 22px; }
   .shelf-unavailable h2 { font-size: 30px; }
   .shelf-unavailable .button { width: 100%; min-width: 0; max-width: 330px; }

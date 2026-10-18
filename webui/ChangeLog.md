@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-18 — Mode pages and HEIC uploads
+
+- Give each scan mode its own page: «Одна бутылка» at `/`, «Вся полка» at `/shelf`.
+  The mode switch is two links. `/shelf` has its own title, description, and canonical URL, and it is in the sitemap.
+- Accept HEIC (HEIF) photos in both modes: file pickers, client checks, and the server signature check.
+  The server sends them as `image.heif`. The upload hints say «JPEG, PNG, WebP, HEIC · до 10 МБ».
+- Show a text in place of the preview when the browser cannot show the photo (HEIC in Chrome and Firefox).
+- HEIC needs the matcher HEIC support (#24). Deploy the matcher first (#44).
+
 ## 2026-10-18 — Yandex.Metrika port
 
 - Port the Yandex.Metrika change from the lab repository `svoe-vino-lab`, branch `codex/metrika-release` (#40).

@@ -30,7 +30,8 @@ The portal returns the object form.
 The evaluator uses a 5-second connection timeout and a 10-second total timeout.
 The evaluator does not retry requests or follow redirects.
 
-The portal accepts JPEG, PNG, and WebP signatures.
+The portal accepts JPEG, PNG, WebP, and HEIF (HEIC) signatures.
+A HEIF file needs a matcher with HEIF support (#24). Issue #44 has the deploy order.
 The portal limits the image file to 10 MiB.
 These validation limits are portal choices. The evaluator does not specify them.
 The portal returns HTTP 400 for missing or multiple files.

@@ -165,13 +165,22 @@ describe('shelf UI state', () => {
     expect(scanner.result.value).toBeNull()
   })
 
+  it.each(['image/heic', 'image/heif'])('sends a %s photo to the group matcher', async type => {
+    const request = vi.fn().mockResolvedValueOnce(Response.json(shelf))
+    const { scanner } = setup(request)
+    await scanner.select([new File(['image'], 'shelf.heic', { type })])
+    expect(request).toHaveBeenCalledTimes(1)
+    expect(request.mock.calls[0]![1].body.get('image').name).toBe('shelf.heic')
+    expect(scanner.phase.value).not.toBe('error')
+  })
+
   it('rejects multiple, empty, unsupported, and oversized photos before requests', async () => {
     const request = vi.fn()
     const { scanner } = setup(request)
     const invalid = [
       [photo(), photo()],
       [new File([], 'empty.jpg')],
-      [new File(['x'], 'x.heic', { type: 'image/heic' })],
+      [new File(['x'], 'x.gif', { type: 'image/gif' })],
       [new File([new Uint8Array(MAX_IMAGE_BYTES + 1)], 'big.jpg', { type: 'image/jpeg' })],
     ]
     for (const files of invalid) {

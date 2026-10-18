@@ -55,7 +55,7 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
       const body = new FormData(); body.set('image', file.value)
       const response = await request('/v1/group/match', { method: 'POST', body, signal: active.signal })
       if (!response.ok) {
-        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 401: 'Сервис распознавания отклонил запрос.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG или WebP.', 502: 'Сервис не смог распознать полку. Попробуйте ещё раз.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Распознавание бутылок заняло слишком много времени. Попробуйте ещё раз.' }
+        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 401: 'Сервис распознавания отклонил запрос.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG, WebP или HEIC.', 502: 'Сервис не смог распознать полку. Попробуйте ещё раз.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Распознавание бутылок заняло слишком много времени. Попробуйте ещё раз.' }
         throw new Error(messages[response.status] || 'Сервис не смог распознать бутылки. Попробуйте ещё раз.')
       }
       const value = await response.json()
@@ -75,7 +75,7 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
     if (files.length !== 1 || !image) error.value = 'Выберите одну фотографию полки.'
     else if (!image.size) error.value = 'Файл пуст. Выберите другой снимок.'
     else if (image.size > MAX_IMAGE_BYTES) error.value = 'Выберите фотографию размером до 10 МБ.'
-    else if (image.type && !['image/jpeg', 'image/png', 'image/webp'].includes(image.type)) error.value = 'Выберите JPEG, PNG или WebP. Сохраните HEIC в формате JPEG.'
+    else if (image.type && !['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(image.type)) error.value = 'Выберите JPEG, PNG, WebP или HEIC.'
     if (error.value) { phase.value = 'error'; return }
     file.value = image!; preview.value = createPreview(image!)
     await submit()

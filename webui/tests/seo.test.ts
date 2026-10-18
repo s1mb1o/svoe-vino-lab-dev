@@ -34,6 +34,18 @@ describe('search discovery', () => {
     expect(robots).toContain('Sitemap: https://chtozavino.ru/sitemap.xml')
     expect(robots).toContain('Disallow: /api/')
     expect(sitemap).toContain('<loc>https://chtozavino.ru/</loc>')
+    expect(sitemap).toContain('<loc>https://chtozavino.ru/shelf</loc>')
+  })
+
+  it('gives each scan mode its own page', async () => {
+    const bottle = await source('app/pages/index.vue')
+    const shelf = await source('app/pages/shelf.vue')
+    const scanner = await source('app/components/ScannerPage.vue')
+    expect(bottle).toContain('<ScannerPage mode="bottle" />')
+    expect(shelf).toContain('<ScannerPage mode="shelf" />')
+    expect(shelf).toContain("{ rel: 'canonical', href: 'https://chtozavino.ru/shelf' }")
+    expect(scanner).toContain("const modePaths = { bottle: '/', shelf: '/shelf' } as const")
+    expect(scanner).toContain('<NuxtLink :to="modePaths.shelf">')
   })
 
   it('uses permanent compatibility redirects and bounded static caching', async () => {

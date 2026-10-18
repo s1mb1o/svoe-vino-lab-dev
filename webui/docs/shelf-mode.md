@@ -7,6 +7,7 @@ Authority: the user requested support for matcher `POST /v1/group/match` in the 
 
 Keep «Одна бутылка» as the default mode.
 Keep «Вся полка» selectable.
+«Одна бутылка» is at `/`. «Вся полка» is at `/shelf`. The mode switch has one link for each page.
 Enable `ShelfScanner` when `NUXT_PREDICTION_MODE=upstream` and `NUXT_PREDICTION_ENDPOINT` is a valid `/v1/eval/predict` URL.
 Derive the matcher group URL by replacing the final `/v1/eval/predict` path with `/v1/group/match`.
 Do not add a separate group endpoint variable.
@@ -17,7 +18,7 @@ Show `ShelfUnavailable` when the matcher configuration is absent or invalid.
 Preserve the existing visual identity, mobile layout, and single-bottle behavior.
 A mode change MUST discard the previous mode photo, result, and pending request.
 The shelf mode accepts a camera photo, one file, or one of the owner-supplied example photos.
-Use the existing JPEG, PNG, WebP, and 10 MiB upload limits.
+Use the existing JPEG, PNG, WebP, HEIC, and 10 MiB upload limits.
 Automatically submit a valid photo to `POST /v1/group/match` on the portal origin.
 Show progress, cancellation, retry, replacement, and an explicit empty result.
 Show the returned bottle masks and numbered hit areas on the returned preview.

@@ -87,11 +87,11 @@ The previous retailer integration and API routes remain in the repository but ar
 
 ## Shelf photos
 
-The page switches between `PhotoScanner`, `ShelfScanner`, and `ShelfUnavailable`.
+`ScannerPage` renders `PhotoScanner` on `/` and `ShelfScanner` or `ShelfUnavailable` on `/shelf`.
 `ShelfScanner` is available in upstream mode when `NUXT_PREDICTION_ENDPOINT` ends with `/v1/eval/predict`.
 The server derives the upstream `/v1/group/match` URL from that configuration.
 `ShelfUnavailable` does not accept a photo and does not make an API request.
-A mode change unmounts the previous scanner and cancels its requests.
+A mode change is a navigation between the two pages. It unmounts the previous scanner and cancels its requests.
 `useShelfScanner` owns the shelf photo, group result, selection, and popup state.
 The browser sends the photo to same-origin `POST /v1/group/match`.
 `server/utils/group.ts` proxies the image to the matcher and validates its response.

@@ -1,5 +1,21 @@
 # Research log
 
+## Mode pages and HEIC uploads, 2026-10-18
+
+The owner chose `/` for «Одна бутылка» and `/shelf` for «Вся полка».
+`/` stays the default, so existing links and the evaluator flow do not change.
+Other pages use English slugs (`/android`, `/ideas`, `/presentation`).
+Each mode page renders `ScannerPage`. A mode switch is a navigation, so Metrika records a page view with the page title.
+
+The owner chose to send HEIC to the matcher without conversion in the browser.
+The production matcher rejects HEIC until #24 is deployed. Issue #44 has the deploy order: matcher first, then the web UI.
+An iPhone file picker can convert HEIC to JPEG when the `accept` list has no HEIC type. This behavior was not verified on a device.
+With HEIC in the `accept` list, iPhone Safari can send the original HEIC. That is the reason for the deploy order.
+The server check reads the `ftyp` box. The major brands `heic`, `heix`, `heim`, `heis`, `hevc`, `hevx`, `hevm`, `hevs`, `mif1`, and `msf1` pass.
+AVIF (`avif`) gets HTTP 415. The matcher decodes the image with `pillow-heif` and makes the final decision.
+Chrome and Firefox cannot show HEIC in an `img` element. The preview then shows a text. The shelf result has a JPEG preview from the matcher.
+A Chrome probe with a fake matcher confirmed the preview text, the match in both modes, and `image.heif` on both matcher endpoints.
+
 ## Cookie consent under Russian law, 2026-10-18
 
 The owner asked whether Russian law requires cookie consent for `chtozavino.ru`. Issue #41 has the full analysis and sources.

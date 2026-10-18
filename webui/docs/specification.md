@@ -87,7 +87,7 @@ Static reference assets SHOULD use a bounded public cache policy.
 
 ## State and errors
 
-Accept JPEG, PNG, and WebP files up to 10 MiB.
+Accept JPEG, PNG, WebP, and HEIC (HEIF) files up to 10 MiB.
 Reject empty files and multiple files before prediction.
 A new selection MUST cancel and invalidate the previous request.
 A stale response MUST NOT change the current result.
