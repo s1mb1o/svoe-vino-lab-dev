@@ -14,6 +14,14 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import java.io.File
 
+internal val GALLERY_MIME_TYPES = listOf(
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+)
+
 class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels()
     private var pendingCameraUri: Uri? = null
@@ -60,7 +68,7 @@ class MainActivity : ComponentActivity() {
                     declineAge = ::finishAffinity,
                     takePhoto = ::takePhoto,
                     chooseImage = {
-                        galleryLauncher.launch(arrayOf("image/jpeg", "image/png", "image/webp"))
+                        galleryLauncher.launch(GALLERY_MIME_TYPES.toTypedArray())
                     },
                     scanCode = ::scanCode,
                     recognize = viewModel::recognize,

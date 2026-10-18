@@ -20,7 +20,8 @@ The application opens the matching page on `vino-svoe.ru`.
 
 1. The application MUST request an 18+ confirmation before it shows the main content.
 2. The user MAY take one or more photographs.
-3. The user MAY select one or more images from the gallery.
+3. The user MAY select one or more JPEG, PNG, WebP, HEIC, or HEIF images from the
+   gallery.
 4. The application MUST keep from one through three selected photographs.
 5. The user MAY remove one selected photograph or all selected photographs.
 6. The user MAY scan a barcode or QR code with Google Code Scanner.
@@ -44,7 +45,8 @@ The settings page MUST provide a `DIS / YOLO` segmentation setting.
 The default segmentation mode MUST be `DIS`.
 The application MUST use this image pipeline:
 
-1. Decode the image and limit its long side to 2,048 pixels.
+1. Decode the JPEG, PNG, WebP, HEIC, or HEIF image and limit its long side to 2,048
+   pixels.
 2. Run the selected segmentation model.
 3. Calculate the foreground box from mask values of 0.5 or more.
 4. Add a four-percent margin to the foreground box.

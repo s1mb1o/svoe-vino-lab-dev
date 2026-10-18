@@ -2,6 +2,19 @@
 
 ## 2026-10-19
 
+### HEIC and HEIF gallery input
+
+- Added `image/heic` and `image/heif` to the gallery picker allowlist.
+- Kept `ImageDecoder` as the Android 9 and later decode path.
+- Kept the history preview as a local JPEG after recognition.
+- Added a unit test for all supported gallery MIME types.
+- Updated the application and format documentation.
+- Passed debug and release unit tests, lint, and APK assembly.
+- Verified the HEIC picker, preview, recognition, and persistent history on a Pixel 8.
+- Verified that the Pixel 8 picker shows files with MIME types `image/heic` and
+  `image/heif`.
+- Verified the gallery and preview accessibility labels with TalkBack enabled.
+
 ### Pixel 8 current-patch validation
 
 - Built the version 0.1.4 debug APK from commit `f8b15c2`.

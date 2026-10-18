@@ -8,7 +8,7 @@ The application ID is `chtozavino.alolalab.com`.
 ## Functions
 
 - 18+ confirmation.
-- Camera capture and multiple gallery selection.
+- Camera capture and multiple gallery selection for JPEG, PNG, WebP, HEIC, and HEIF.
 - Multi-shot recognition with one to three photographs.
 - Maximum-score result fusion for each wine across the selected photographs.
 - Google Code Scanner with EAN-13, QR, and manual input.

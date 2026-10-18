@@ -10,8 +10,40 @@
 5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
    index and the Android SigLIP2 LiteRT file.
 
+## HEIC and HEIF checks
+
+1. Put one valid HEIC image and one valid HEIF image in the device gallery.
+2. Open the gallery from the application.
+3. Confirm that the picker shows both files.
+4. Select the HEIC image.
+5. Confirm that the application shows its preview.
+6. Start recognition.
+7. Confirm that the application shows a ranked result.
+8. Open the history page.
+9. Confirm that the new history row shows its preview.
+10. Restart the application.
+11. Confirm that the history preview remains visible.
+12. Repeat steps 4 through 11 with the HEIF image.
+
 ## Verification on 2026-10-19
 
+- The gallery MIME-type unit test passed in debug and release variants.
+- All 35 debug unit tests passed.
+- All 32 release unit tests passed.
+- `lintDebug`, `lintRelease`, `assembleDebug`, and `assembleRelease` passed.
+- The Pixel 8 MediaStore reported `image/heic` for the HEIC test file.
+- The Pixel 8 MediaStore reported `image/heif` for the HEIF test file.
+- The system picker showed both test files.
+- The application decoded and showed the HEIC preview.
+- The HEIC test image produced `Каберне Фран 1890` at 81 percent similarity.
+- The history row showed its preview.
+- The row and preview stayed visible after a cold application restart.
+- TalkBack opened the system picker without an application error.
+- The accessibility tree exposed the gallery action, both file names, the selected
+  preview, and the history preview.
+- TalkBack was restored to its original off state after the check.
+- Logcat contained no application warning, fatal exception, or native abort.
+- The two temporary gallery files were removed after the test.
 - `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed.
 - The version 0.1.4 debug APK installed on Pixel 8 serial `41231FDJH002WZ`.
 - The device ran Android 17 at API level 37.

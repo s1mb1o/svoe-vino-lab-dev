@@ -2,6 +2,32 @@
 
 ## 2026-10-19
 
+### HEIC and HEIF Android input validation
+
+- The code change added `image/heic` and `image/heif` to the gallery picker allowlist.
+- The recognition path already used `ImageDecoder` on Android 9 and later.
+- The history path saved the processed white-background bitmap as JPEG.
+- The test used a Google Pixel 8 with serial `41231FDJH002WZ`.
+- The device ran Android 17 at API level 37.
+- The test converted query `q-000004` to a real HEVC HEIF image.
+- MediaStore identified the `.heic` file as `image/heic`.
+- MediaStore identified the `.heif` file as `image/heif`.
+- The system picker showed both files.
+- The application decoded and showed the HEIC image.
+- Recognition returned `Каберне Фран 1890` at 81 percent similarity.
+- The history page showed the new row and its preview.
+- The row and preview stayed visible after a cold application restart.
+- TalkBack opened the system picker without an application error.
+- The accessibility tree exposed the gallery action, both file names, the selected
+  preview, and the history preview.
+- TalkBack was restored to its original off state after the check.
+- The application process log contained no application warning, fatal exception, or
+  native abort.
+- The two temporary gallery files were removed after the test.
+- All 35 debug unit tests and all 32 release unit tests passed.
+- Debug and release lint passed.
+- Debug and release APK assembly passed.
+
 ### Pixel 8 full `my` validation
 
 - The source commit was `f8b15c210f82f9dd970493dad995c13690b421c8`.
