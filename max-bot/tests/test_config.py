@@ -80,7 +80,6 @@ def test_default_rate_limit_is_50() -> None:
     assert settings.http_api_allowed_networks == (
         "127.0.0.1/32",
         "::1/128",
-        "192.168.86.0/24",
     )
     assert settings.http_api_token == HTTP_API_TOKEN
     assert settings.http_api_rate_limit == 10

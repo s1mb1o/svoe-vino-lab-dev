@@ -224,7 +224,7 @@ artifact row because the request was deleted, it MUST delete the artifact files 
 144.4. When the request of an HTTP API call is deleted before the response, the API MUST
 answer HTTP 410 with the status `deleted`.
 145. Every state-changing web form MUST include CSRF protection.
-146. The production administration service MUST use TCP port `28005` on gx10.
+146. The administration service MUST use TCP port `28005` by default.
 147. The bot MUST request SAM3 masks during quality inspection.
 148. The bot MUST validate a SAM3 mask against the moderation image dimensions.
 149. The bot MUST persist full-fidelity visual pipeline artifacts only after safe moderation
@@ -274,8 +274,9 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 187. The endpoint MUST NOT write an unmoderated image to a temporary upload file.
 188. The endpoint MUST require a bearer token from `BOT_HTTP_API_TOKEN`.
 189. The endpoint MUST restrict access to `BOT_HTTP_API_ALLOWED_NETWORKS`.
-190. The default API networks MUST include only localhost and `192.168.86.0/24`.
-191. The production HTTP recognition API MUST use TCP port `28004` on gx10.
+190. The default API networks MUST include only localhost. A deployment adds the networks of its
+clients.
+191. The HTTP recognition API MUST use TCP port `28004` by default.
 192. The HTTP recognition API MUST publish OpenAPI and Swagger UI.
 193. An API request MUST be exempt from the MAX per-user rate limit.
 194. The configured queue capacity MUST apply to an API request.

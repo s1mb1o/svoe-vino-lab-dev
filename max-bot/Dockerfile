@@ -17,8 +17,8 @@
 # The environment file holds MAX_BOT_TOKEN, BOT_ADMIN_USER_ID, BOT_HTTP_API_TOKEN,
 # BOT_ADMIN_WEB_PASSWORD, MAX_WEBHOOK_SECRET, and the service endpoints. The image holds no
 # secret. The Python package contains the public Russian Trusted Root CA certificate that
-# platform-api2.max.ru requires. In the container, 127.0.0.1 is the container itself. Use the
-# LAN address of gx10 in each model endpoint URL.
+# platform-api2.max.ru requires. In the container, 127.0.0.1 is the container itself. Use an
+# address that the container can reach in each model endpoint URL.
 
 FROM ghcr.io/astral-sh/uv:0.8.14@sha256:f3660c56d5b08d6c516360981bedc439f499b9bf37f46a216018da3777a74011 AS uv
 
@@ -62,7 +62,7 @@ RUN uv sync --frozen --no-editable
 
 COPY max-bot/assets/content-rejected-monkey-640x640.png ./assets/
 
-# uid 1000 is the owner of /srv/svoe-vino-lab on gx10, so the bind mount is writable.
+# The containers run as uid 1000. The bind-mounted data directory must be writable for uid 1000.
 RUN groupadd --gid 1000 bot \
     && useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin bot
 USER 1000:1000

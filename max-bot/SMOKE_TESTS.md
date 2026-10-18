@@ -5,7 +5,7 @@
 Run `uv run python scripts/smoke.py --env-file <protected-env-file> --admin-url <admin-url>`
 from `max-bot/` against a running service.
 Use `--api-url` to select the recognition API.
-The default API URL is `http://127.0.0.1:18093`.
+The default API URL is `http://127.0.0.1:28004`.
 The environment file supplies `BOT_HTTP_API_TOKEN` and the administration credentials.
 The script never prints a credential.
 
@@ -327,7 +327,7 @@ retention, restart-recovery, and queue tests.
 
 ## HTTP recognition API
 
-- Open `http://192.168.86.14:28004/docs` from the home LAN.
+- Open `http://<server>:<api-port>/docs` from a network of `BOT_HTTP_API_ALLOWED_NETWORKS`.
 - Confirm that Swagger UI shows `POST /api/v1/recognize`.
 - Open the API from an address outside `BOT_HTTP_API_ALLOWED_NETWORKS`.
 - Confirm that access is denied.
@@ -368,7 +368,8 @@ retention, restart-recovery, and queue tests.
 
 ## Matcher endpoint `/v1/match`
 
-- Start the bot with `MATCHER_ENDPOINT=http://127.0.0.1:28000/v1/not-match`.
+- Start the bot with a `MATCHER_ENDPOINT` path other than `/v1/match`, for example
+  `http://<matcher-host>:<port>/v1/not-match`.
 - Confirm that the bot stops at start with an error that names `endpoints.matcher`.
 - Remove one endpoint variable that `config.yaml` references.
 - Confirm that the bot stops at start and names the missing variable without printing its value.
@@ -388,18 +389,18 @@ retention, restart-recovery, and queue tests.
 
 ## Docker deployment
 
-- Run `docker compose ps` in `/srv/svoe-vino-lab/prod/max-bot`.
+- Run `docker compose ps` in the install directory.
 - Confirm that both containers are `healthy`.
 - Confirm that `config/max-bot.env` has mode `600` and that `.env` names the deployed revision.
 - Confirm that the production `config.yaml` sets `moderation.enabled` to `true`.
-- Confirm that `docker compose logs max-bot` contains `MAX bot connected` and no token.
-- Confirm that the administration interface answers only on `127.0.0.1:28005` of gx10.
-- Open it through `ssh -N -L 28005:127.0.0.1:28005 gx10` and confirm that it asks for the
+- Confirm that `docker compose logs bot` contains `MAX bot connected` and no token.
+- Confirm that the administration interface answers only on `127.0.0.1:28005` of the server.
+- Open it through `ssh -N -L 28005:127.0.0.1:28005 <user>@<server>` and confirm that it asks for the
   administration password.
-- Confirm that another LAN host cannot connect to port `28005`.
-- Confirm that `http://192.168.86.14:28004/healthz` answers `ok`.
-- Confirm that `http://192.168.86.14:28004/readyz` reports every dependency as ready.
-- Confirm that `docker compose exec max-bot touch /app/x` fails (read-only root file system).
+- Confirm that another host cannot connect to port `28005`.
+- Confirm that `http://<server>:28004/healthz` answers `ok`.
+- Confirm that `http://<server>:28004/readyz` reports every dependency as ready.
+- Confirm that `docker compose exec bot touch /app/x` fails (read-only root file system).
 - Restart the bot container while no photo job runs.
 - Confirm that the bot answers a new photo after the restart.
 - Run `docker compose stop` and confirm that it ends in a few seconds: the bot exits with code 0;

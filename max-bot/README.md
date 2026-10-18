@@ -164,8 +164,9 @@ MAX — не Telegram. Бот сохраняет поведение Telegram-б�
 | `MAX_WEBHOOK_HOST` / `MAX_WEBHOOK_PORT` | `127.0.0.1` / `28006` |
 | `MAX_WEBHOOK_PATH` | Путь из `MAX_WEBHOOK_URL` |
 | `MAX_WEBHOOK_SUBSCRIBE` | `true` |
-| `BOT_HTTP_API_PORT` | `28004` (Telegram-бот использует `28002`) |
-| `BOT_ADMIN_WEB_PORT` | `28005` (Telegram-бот использует `28003`) |
+| `BOT_HTTP_API_PORT` | `28004` |
+| `BOT_HTTP_API_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128`. Добавьте сети клиентов API |
+| `BOT_ADMIN_WEB_PORT` | `28005` |
 
 Все остальные переменные `BOT_*` имеют тот же смысл и те же значения по умолчанию, что у
 Telegram-бота. `MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN` и `MAX_WEBHOOK_SECRET` ДОЛЖНЫ (MUST)
@@ -177,7 +178,7 @@ Telegram-бота. `MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN` и `MAX_WEBHOOK_SECRET`
 
 | Значение | Секрет | Где хранить |
 |---|---|---|
-| `MAX_BOT_TOKEN` | да | Связка ключей macOS, сервис `chtozavino-max-bot-token`. На gx10 — `config/max-bot.env`, режим `0600` |
+| `MAX_BOT_TOKEN` | да | На машине администратора — менеджер секретов, например Связка ключей macOS (сервис `chtozavino-max-bot-token`). На сервере — `config/max-bot.env`, режим `0600` |
 | `BOT_ADMIN_USER_ID` | нет | `config/max-bot.env` |
 | `BOT_HTTP_API_TOKEN`, `BOT_ADMIN_WEB_PASSWORD` | да | `config/max-bot.env`. Создайте каждое значение отдельно, например `openssl rand -hex 32` |
 
@@ -220,29 +221,28 @@ curl читает заголовок из стандартного ввода (`
 команды. Параметр `--cacert` нужен, потому что `platform-api2.max.ru` использует сертификат
 Минцифры. Без него curl сообщает `SSL certificate problem`.
 
-Шаг 4. Запишите токен в `config/max-bot.env` на gx10. Сначала создайте этот файл из шаблона
-(раздел «First installation» в `<workspace>/deploy/gx10/max-bot-prod.md`).
-Команда читает токен из Связки ключей и передаёт его на gx10 через стандартный ввод SSH.
-Она заменяет строку `MAX_BOT_TOKEN=` и записывает токен в одинарных кавычках. Права файла
-остаются `0600`.
+Шаг 4. Запишите токен в `config/max-bot.env` на сервере. Сначала создайте этот файл из шаблона
+(раздел «Первая установка» в [deploy/README.md](deploy/README.md)). Команда читает токен из
+Связки ключей и передаёт его на сервер через стандартный ввод SSH. Она заменяет строку
+`MAX_BOT_TOKEN=`. Права файла остаются `0600`. Замените `user@server` и путь к файлу на свои.
 
 ```bash
 ( T="$(security find-generic-password -a "$USER" -s chtozavino-max-bot-token -w)"
-  printf '%s\n' "$T" | ssh ashmelev@192.168.86.14 'umask 077
-F=/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env
+  printf '%s\n' "$T" | ssh user@server 'umask 077
+F=/opt/max-bot/config/max-bot.env
 [ -f "$F" ] || { echo "missing: $F" >&2; exit 1; }
 IFS= read -r T
 grep -v "^MAX_BOT_TOKEN=" "$F" > "$F.new"
-printf "MAX_BOT_TOKEN=\047%s\047\n" "$T" >> "$F.new"
+printf "MAX_BOT_TOKEN=%s\n" "$T" >> "$F.new"
 cat "$F.new" > "$F" && rm -f "$F.new"
 unset T'
   unset T )
 ```
 
-Одинарные кавычки обязательны: Compose раскрывает `$NAME` в значении без кавычек. Другой
-способ: откройте файл на gx10 в редакторе (`nano`) и впишите `MAX_BOT_TOKEN='...'` вручную.
-Бот читает файл только при создании контейнера. После изменения выполните
-`docker compose up -d` в `/srv/svoe-vino-lab/prod/max-bot`.
+Пример Compose читает файл окружения в формате `raw`: значение берётся как есть, без кавычек и
+без раскрытия `$NAME`. Поэтому токен записывается без кавычек. Другой способ: откройте файл на
+сервере в редакторе и впишите `MAX_BOT_TOKEN=...` вручную, без кавычек. Бот читает файл только
+при создании контейнера. После изменения выполните `docker compose up -d` в каталоге установки.
 
 Замена токена: обновите токен на business.max.ru (значок обновления в «Настройки»).
 Затем повторите шаги 2–4 и выполните `docker compose up -d`. Старый токен перестаёт работать.
@@ -350,25 +350,24 @@ uv run chto-za-vino-max-bot
 4. Бот удаляет запись запроса с кандидатами, этапами и артефактами, исходный файл каждой попытки
    и файлы артефактов. Запрос в обработке удалить нельзя: дождитесь конца обработки.
 5. Сообщения в чате MAX остаются. Все данные одного пользователя удаляет команда
-   `chto-za-vino-max-delete-user` (см. `<workspace>/deploy/gx10/max-bot-prod.md`).
+   `chto-za-vino-max-delete-user` (см. [deploy/README.md](deploy/README.md)).
 
 ## Развёртывание
 
-Production работает в Docker Compose на `gx10`, так же как Telegram-бот. Runbook, файл Compose
-и шаблон файла окружения находятся в репозитории развёртывания, не здесь:
-`<workspace>/deploy/gx10/max-bot-prod.md`, `max-bot-prod.compose.yaml` и `max-bot.env.example`.
+Бот работает в Docker Compose: один образ и два контейнера (бот и административный интерфейс).
+Инструкция для любого сервера и примеры файлов находятся в [deploy/](deploy/):
 
-- Соберите образ из закоммиченной ревизии:
-  `git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -`.
-  Образу нужен общий пакет `im-core/` в контексте сборки.
-- Один образ запускает два контейнера: `svoe-vino-lab-max-bot-prod` (обновления MAX и API
-  распознавания на `28004`) и `svoe-vino-lab-max-bot-admin-prod` (интерфейс администрирования
-  на адресе loopback хоста `127.0.0.1:28005`).
-- Секреты хранятся в `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env` (режим `0600`).
-  Compose передаёт этот файл обоим контейнерам.
-- Каталог данных: `/srv/svoe-vino-lab/prod/max-bot/data`.
-- Бот использует long polling, пока у gx10 нет публичного HTTPS-имени для вебхука. В режиме
-  вебхука публикуйте порт контейнера `8081` только через TLS-прокси на порту 443.
+- [deploy/README.md](deploy/README.md) — сборка образа, первая установка, файл окружения, сеть,
+  проверка, обновление и откат, эксплуатация, переход на вебхук;
+- [deploy/compose.example.yaml](deploy/compose.example.yaml) — пример файла Compose;
+- [deploy/max-bot.env.example](deploy/max-bot.env.example) — шаблон файла окружения.
+
+Образ собирается из закоммиченной ревизии. Образу нужен общий пакет `im-core/`, поэтому
+контекст сборки — корень репозитория:
+`git archive "$REV" im-core max-bot | docker build -f max-bot/Dockerfile --build-arg REVISION="$REV" -t "svoe-vino-lab-max-bot:$REV" -`.
+
+Файлы конкретной установки (её файл Compose, файл окружения с секретами, журнал развёртывания)
+не хранятся в этом репозитории.
 
 ## Открытые вопросы для владельца
 

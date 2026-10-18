@@ -170,7 +170,7 @@ def run(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--env-file", type=Path)
-    parser.add_argument("--api-url", default="http://127.0.0.1:18093")
+    parser.add_argument("--api-url", default="http://127.0.0.1:28004")
     parser.add_argument("--admin-url")
     parser.add_argument("--no-recognition", action="store_true")
     parser.add_argument("--check-max", action="store_true")

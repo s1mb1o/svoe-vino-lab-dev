@@ -22,14 +22,15 @@ The workspace rules are in `../../CLAUDE.md`.
 
 1. Use long polling in production during the hackathon (owner decision, issue #10).
    `updates.mode` in `config.yaml` selects `polling` or `webhook`. The webhook switch is issue #23.
-2. Use `192.168.86.14:18081` for the `llama-swap` service on `gx10`. In a container,
-   `127.0.0.1` is the container itself.
-3. Use the prod matcher endpoint `http://192.168.86.14:28000/v1/match` on `gx10`.
+2. Read the model service endpoints only from configuration (`MODERATION_ENDPOINT`,
+   `SAM3_ENDPOINT`). In a container, `127.0.0.1` is the container itself.
+3. Read the matcher endpoint only from `MATCHER_ENDPOINT`.
 4. Keep the request limit in environment configuration.
 5. Keep the default limit at 50 image requests in 3600 seconds per MAX user ID.
 6. Keep user-visible bot text in Russian.
-7. Keep technical documentation in English and use STE-style text. Exception: `README.md` is
-   in Russian (owner decision of 2026-10-16). Write it in short active Russian sentences.
+7. Keep technical documentation in English and use STE-style text. Exceptions: `README.md`
+   (owner decision of 2026-10-16) and the deployment guide `deploy/README.md` (owner decision of
+   2026-10-18) are in Russian. Write them in short active Russian sentences.
 8. Send all photo processing through the shared work queue.
 9. Keep the default queue worker count at one until a GPU load test approves a higher value.
 10. Fetch catalogue result images only from `https://api.vino-svoe.ru`.
@@ -83,8 +84,8 @@ The workspace rules are in `../../CLAUDE.md`.
 45. Keep an unmoderated HTTP upload in memory.
 46. Do not use a temporary upload file before moderation or its explicit non-production bypass.
 47. Restrict the HTTP recognition API to configured LAN networks.
-48. Keep TCP port `28004` as the production recognition API port on `gx10`. The Telegram bot
-    uses `28002`.
+48. Keep `28004` as the default recognition API port and `28005` as the default administration
+    port. A deployment selects the published ports.
 49. Do not restore an interrupted API request as a MAX request.
 50. Require a bearer token for every recognition API request.
 51. Apply the API rate and in-flight limits before the service reads an upload body.
@@ -97,11 +98,12 @@ The workspace rules are in `../../CLAUDE.md`.
 57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
 58. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
 59. Limit failed administration authentication attempts by socket client address.
-60. Deploy production with Docker Compose on gx10. The runbook, the Compose file, and the
-    environment template are in the deployment repository `<workspace>/deploy/gx10/`, not in
-    this repository. Keep the secrets in `/srv/svoe-vino-lab/prod/max-bot/config/max-bot.env`
-    on gx10 (mode `0600`). Never put a secret in this repository, the Compose file, its `.env`
-    file, or the image.
+60. Deploy production with Docker Compose. `deploy/README.md` is the generic deployment guide.
+    `deploy/compose.example.yaml` and `deploy/max-bot.env.example` are its examples. Keep the
+    files of a real installation (its Compose file, its environment file, its deployment
+    record) outside this repository. Keep the secrets in the environment file of the server
+    (mode `0600`). Never put a secret in this repository, the Compose file, its `.env` file,
+    or the image. Do not name a specific host, address, or path in this project.
 
 ## MAX platform rules
 

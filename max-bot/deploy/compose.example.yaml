@@ -1,0 +1,66 @@
+# Example Docker Compose file of the «Что за вино?» MAX bot. Read README.md in this directory.
+#
+# Copy this file to the install directory on the server as compose.yaml. The install directory
+# holds:
+#   compose.yaml         this file
+#   .env                 MAX_BOT_IMAGE=<image name>:<revision>
+#   config/max-bot.env   the secrets and the service endpoints, mode 0600 (max-bot.env.example)
+#   data/                bot.sqlite3, accepted/, quarantine/, artifacts/; owner uid 1000
+# Change the published ports when they are not free on the server.
+name: max-bot
+
+x-common: &common
+  image: ${MAX_BOT_IMAGE:?set MAX_BOT_IMAGE in .env}
+  restart: unless-stopped
+  # Without an init process the bot is PID 1, and a stop during startup waits for the kill.
+  init: true
+  # Compose passes each line as it is: it removes no quotes and expands no $NAME.
+  env_file:
+    - path: config/max-bot.env
+      format: raw
+  volumes:
+    - ./data:/data
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+services:
+  bot:
+    <<: *common
+    command: ["chto-za-vino-max-bot"]
+    ports:
+      # The recognition HTTP API (container port 8080). The bearer token and
+      # BOT_HTTP_API_ALLOWED_NETWORKS restrict it. Clients use the LAN address of the server.
+      - "0.0.0.0:28004:8080"
+      # Webhook mode only: the TLS proxy forwards the webhook path to this port.
+      # - "127.0.0.1:28006:8081"
+    stop_grace_period: 60s
+
+  admin:
+    <<: *common
+    command: ["chto-za-vino-max-admin"]
+    # The administration interface listens only on the loopback interface of the server.
+    # Open it through an SSH tunnel: ssh -N -L 28005:127.0.0.1:28005 <user>@<server>
+    network_mode: host
+    environment:
+      BOT_ADMIN_WEB_HOST: "127.0.0.1"
+      BOT_ADMIN_WEB_PORT: "28005"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:28005/readyz', timeout=4)"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3

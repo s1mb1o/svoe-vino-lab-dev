@@ -338,7 +338,7 @@ class Settings:
             item.strip()
             for item in os.getenv(
                 "BOT_HTTP_API_ALLOWED_NETWORKS",
-                "127.0.0.1/32,::1/128,192.168.86.0/24",
+                "127.0.0.1/32,::1/128",
             ).split(",")
             if item.strip()
         )

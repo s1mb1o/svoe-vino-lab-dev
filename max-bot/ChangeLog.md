@@ -2,6 +2,16 @@
 
 ## 2026-10-18
 
+- Added a generic deployment guide in Russian, `deploy/README.md`, with the examples
+  `deploy/compose.example.yaml` and `deploy/max-bot.env.example` (owner decision). The guide fits
+  any Linux server with Docker: image build, first installation, environment file, network and
+  ports, checks with `scripts/smoke.py`, update and rollback, operations, user data deletion, and
+  the webhook switch. Removed the specifics of one host from `README.md`, `.env.example`,
+  `CLAUDE.md` (service rules 2, 3, 48, and 60), `Dockerfile` comments, `SMOKE_TESTS.md`, and
+  the specification (FR 146, 190, 191). The default `BOT_HTTP_API_ALLOWED_NETWORKS` is now
+  localhost only: a deployment adds the networks of its clients. The default `--api-url` of
+  `scripts/smoke.py` is `http://127.0.0.1:28004`. The token command of `README.md` writes the
+  token without quotes, as the `format: raw` of the Compose example requires.
 - Moved `deploy/gx10/` (the production runbook, the Compose file, and the environment template)
   to the deployment repository `<workspace>/deploy/gx10/` (owner decision). That repository is
   on GitLab only and can hold secrets. `README.md` and service rule 60 point there.
