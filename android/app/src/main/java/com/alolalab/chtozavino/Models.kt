@@ -70,7 +70,7 @@ data class UiState(
     val isAcceleratorCheckRunning: Boolean = false,
     val debugHttpServerAvailable: Boolean = false,
     val debugHttpServerEnabled: Boolean = false,
-    val selectedImage: Bitmap? = null,
+    val selectedImages: List<Bitmap> = emptyList(),
     val matches: List<WineMatch> = emptyList(),
     val debugImages: DebugImages? = null,
     val history: List<HistoryEntry> = emptyList(),

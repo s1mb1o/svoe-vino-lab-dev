@@ -19,9 +19,9 @@ class MainActivity : ComponentActivity() {
     private var pendingCameraUri: Uri? = null
 
     private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument(),
-    ) { uri ->
-        if (uri != null) viewModel.selectImage(uri)
+        ActivityResultContracts.OpenMultipleDocuments(),
+    ) { uris ->
+        if (uris.isNotEmpty()) viewModel.selectImages(uris)
     }
 
     private val cameraLauncher = registerForActivityResult(
@@ -59,9 +59,13 @@ class MainActivity : ComponentActivity() {
                     acceptAge = viewModel::acceptAge,
                     declineAge = ::finishAffinity,
                     takePhoto = ::takePhoto,
-                    chooseImage = { galleryLauncher.launch(arrayOf("image/jpeg", "image/png", "image/webp")) },
+                    chooseImage = {
+                        galleryLauncher.launch(arrayOf("image/jpeg", "image/png", "image/webp"))
+                    },
                     scanCode = ::scanCode,
                     recognize = viewModel::recognize,
+                    removeImage = viewModel::removeImage,
+                    clearImages = viewModel::clearImages,
                     openUrl = ::openUrl,
                     clearHistory = viewModel::clearHistory,
                     dismissError = viewModel::dismissError,

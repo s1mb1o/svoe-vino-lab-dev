@@ -10,6 +10,33 @@
 5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
    index and the Android SigLIP2 LiteRT file.
 
+## Multi-shot checks
+
+1. Add one photograph from the camera.
+2. Add two photographs from the gallery.
+3. Confirm that the screen shows three selected photographs.
+4. Confirm that the camera and gallery actions are disabled at three photographs.
+5. Remove one photograph.
+6. Confirm that the camera and gallery actions become available.
+7. Start recognition with two or three photographs.
+8. Confirm that the progress text shows each photograph in sequence.
+9. Confirm that the result list contains no duplicate `wine.slug` value.
+10. Confirm that each wine uses its maximum score across successful photographs.
+11. Confirm that one failed photograph does not stop the other photographs.
+12. Confirm that all failed photographs produce an error.
+13. Confirm that the debug images come from the photograph that supplies Top-1.
+14. Confirm that the action creates one history row.
+15. Confirm that the history preview comes from the photograph that supplies Top-1.
+
+## Verification on 2026-10-18
+
+- Four multi-shot result-fusion unit tests passed.
+- All 30 debug unit tests passed.
+- All 27 release unit tests passed.
+- `lintDebug` and `lintRelease` passed.
+- `assembleDebug` and `assembleRelease` passed.
+- The multi-shot device checks are pending.
+
 ## Verification on 2026-10-03
 
 - Four catalogue exporter tests passed for 72 reference rows per wine.

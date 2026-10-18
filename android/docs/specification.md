@@ -4,7 +4,7 @@ Date: 2026-10-18
 
 ## Purpose
 
-The application identifies one wine from a bottle photograph.
+The application identifies one wine from one to three bottle photographs.
 The application runs recognition on the Android device.
 The application opens the matching page on `vino-svoe.ru`.
 
@@ -19,22 +19,24 @@ The application opens the matching page on `vino-svoe.ru`.
 ## User flow
 
 1. The application MUST request an 18+ confirmation before it shows the main content.
-2. The user MAY take a photograph.
-3. The user MAY select an image from the gallery.
-4. The user MAY scan a barcode or QR code with Google Code Scanner.
-5. The user starts image recognition with the button `Начать распознавание`.
-6. The application shows ranked results and one catalogue image for each result.
-7. The application shows the selected segmentation mask, the crop, and the
+2. The user MAY take one or more photographs.
+3. The user MAY select one or more images from the gallery.
+4. The application MUST keep from one through three selected photographs.
+5. The user MAY remove one selected photograph or all selected photographs.
+6. The user MAY scan a barcode or QR code with Google Code Scanner.
+7. The user starts image recognition with the recognition button.
+8. The application shows ranked results and one catalogue image for each result.
+9. The application shows the selected segmentation mask, the crop, and the
    white-background image in the debug section.
-8. The user MAY open a result on `vino-svoe.ru`.
-9. The application MUST store local result history.
-10. The top application bar MUST contain a settings gear icon.
-11. The camera and gallery actions MUST use compact icons and short labels.
-12. The top application bar MUST show `Не требует интернета`.
-13. The bottom navigation MUST use clear recognition and history icons.
-14. The settings page MUST show the application version.
-15. The settings page MUST show a link to `https://vino-svoe.ru` below the version.
-16. The application theme MUST follow the system light or dark setting.
+10. The user MAY open a result on `vino-svoe.ru`.
+11. The application MUST store local result history.
+12. The top application bar MUST contain a settings gear icon.
+13. The camera and gallery actions MUST use compact icons and short labels.
+14. The top application bar MUST show `Не требует интернета`.
+15. The bottom navigation MUST use clear recognition and history icons.
+16. The settings page MUST show the application version.
+17. The settings page MUST show a link to `https://vino-svoe.ru` below the version.
+18. The application theme MUST follow the system light or dark setting.
 
 ## Image recognition
 
@@ -57,6 +59,18 @@ The application MUST use this image pipeline:
 13. Compare the 768-dimensional normalized vector with catalogue vectors.
 14. Use dot product as cosine similarity.
 15. Use the maximum score across all reference angles and images as the wine score.
+
+The application MUST process selected photographs in sequence.
+The application MUST NOT run multiple LiteRT image pipelines at the same time.
+The application MUST create a ranked result for each successfully processed photograph.
+The application MUST keep the maximum score for each `wine.slug` across these results.
+The application MUST sort the merged results by score in descending order.
+The application MUST use `wine.slug` in ascending order to resolve equal scores.
+The application MUST continue when one selected photograph fails.
+The application MUST report an error when all selected photographs fail.
+The application MUST use the photograph that supplies the final Top-1 score for debug images.
+The application MUST use this photograph for the history preview.
+The application MUST write one history row for one multi-shot recognition action.
 
 The user interface MUST show the image score as `Сходство: <whole percent>%`.
 The user interface MUST NOT describe the cosine score as confidence.

@@ -4,6 +4,7 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+internal const val MAX_SELECTED_IMAGES = 3
+
+private data class RecognizedShot(
+    val originalIndex: Int,
+    val output: RecognitionOutput,
+)
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val preferences = application.getSharedPreferences(SETTINGS_PREFERENCES, 0)
@@ -141,29 +149,92 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun selectImage(uri: Uri) {
+        selectImages(listOf(uri))
+    }
+
+    fun selectImages(uris: List<Uri>) {
+        val currentState = mutableState.value
+        if (currentState.isBusy || uris.isEmpty()) return
+        val availableSlots = MAX_SELECTED_IMAGES - currentState.selectedImages.size
+        if (availableSlots <= 0) {
+            mutableState.update {
+                it.copy(error = "Можно выбрать не более трёх фотографий.")
+            }
+            return
+        }
+        val acceptedUris = uris.take(availableSlots)
         viewModelScope.launch {
             mutableState.update {
                 it.copy(
                     isBusy = true,
-                    progressText = "Открываем изображение…",
+                    progressText = if (acceptedUris.size == 1) {
+                        "Открываем изображение…"
+                    } else {
+                        "Открываем изображения…"
+                    },
                     error = null,
                     matches = emptyList(),
                     debugImages = null,
                     scannedCode = null,
                 )
             }
-            runCatching { withContext(Dispatchers.IO) { BitmapLoader.decode(getApplication(), uri) } }
-                .onSuccess { bitmap ->
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    acceptedUris.mapNotNull { uri ->
+                        runCatching { BitmapLoader.decode(getApplication(), uri) }.getOrNull()
+                    }
+                }
+            }.onSuccess { bitmaps ->
+                if (bitmaps.isEmpty()) {
+                    showError("Не удалось открыть выбранные изображения.")
+                } else {
                     mutableState.update {
                         it.copy(
-                            selectedImage = bitmap,
+                            selectedImages = it.selectedImages + bitmaps,
                             isBusy = false,
                             progressText = null,
-                            technicalText = null,
+                            technicalText = when {
+                                uris.size > acceptedUris.size ->
+                                    "Можно выбрать не более трёх фотографий. Добавлены первые ${acceptedUris.size}."
+                                bitmaps.size < acceptedUris.size ->
+                                    "Некоторые изображения не удалось открыть."
+                                else -> null
+                            },
                         )
                     }
                 }
-                .onFailure { showError("Не удалось открыть изображение: ${friendlyMessage(it)}") }
+            }.onFailure { showError("Не удалось открыть изображение: ${friendlyMessage(it)}") }
+        }
+    }
+
+    fun removeImage(index: Int) {
+        if (mutableState.value.isBusy) return
+        mutableState.update { state ->
+            if (index !in state.selectedImages.indices) return@update state
+            state.copy(
+                selectedImages = state.selectedImages.filterIndexed { itemIndex, _ ->
+                    itemIndex != index
+                },
+                matches = emptyList(),
+                debugImages = null,
+                technicalText = null,
+                scannedCode = null,
+                error = null,
+            )
+        }
+    }
+
+    fun clearImages() {
+        if (mutableState.value.isBusy) return
+        mutableState.update {
+            it.copy(
+                selectedImages = emptyList(),
+                matches = emptyList(),
+                debugImages = null,
+                technicalText = null,
+                scannedCode = null,
+                error = null,
+            )
         }
     }
 
@@ -194,7 +265,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun recognize() {
-        val bitmap = mutableState.value.selectedImage ?: return
+        val bitmaps = mutableState.value.selectedImages.toList()
+        if (bitmaps.isEmpty()) return
         val pack = installedPack ?: run {
             showError("Сначала установите пакет моделей.")
             return
@@ -211,11 +283,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             mutableState.update {
                 it.copy(
                     isBusy = true,
-                    progressText = if (currentState.segmenterMode == SegmenterMode.YOLO) {
-                        "Ищем бутылку с помощью YOLO…"
-                    } else {
-                        "Выделяем главный объект с помощью DIS…"
-                    },
+                    progressText = "Готовим распознавание…",
                     error = null,
                     matches = emptyList(),
                     debugImages = null,
@@ -223,37 +291,69 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     scannedCode = null,
                 )
             }
-            runCatching {
-                withContext(Dispatchers.Default) {
-                    val activeEngine = engine ?: RecognitionEngine(pack).also { engine = it }
-                    activeEngine.recognize(bitmap, accelerators, currentState.segmenterMode)
+            val recognizedShots = mutableListOf<RecognizedShot>()
+            val failures = mutableListOf<String>()
+            try {
+                bitmaps.forEachIndexed { index, bitmap ->
+                    mutableState.update {
+                        it.copy(progressText = "Обрабатываем фото ${index + 1} из ${bitmaps.size}…")
+                    }
+                    try {
+                        val output = withContext(Dispatchers.Default) {
+                            val activeEngine = engine ?: RecognitionEngine(pack).also { engine = it }
+                            activeEngine.recognize(bitmap, accelerators, currentState.segmenterMode)
+                        }
+                        recognizedShots += RecognizedShot(index, output)
+                    } catch (error: Throwable) {
+                        if (error is CancellationException) throw error
+                        failures += "Фото ${index + 1}: ${friendlyMessage(error)}"
+                    }
                 }
-            }.onSuccess { output ->
-                saveAutomaticCpuFallbacks(output)
+
+                if (recognizedShots.isEmpty()) {
+                    val details = failures.firstOrNull()?.let { " $it" }.orEmpty()
+                    throw ImageRecognitionException("Ни одно фото не обработано.$details")
+                }
+
+                recognizedShots.forEach { saveAutomaticCpuFallbacks(it.output) }
+                val merged = mergeMultiShotMatches(recognizedShots.map { it.output.matches })
+                val bestShot = recognizedShots[merged.bestShotIndex]
                 val history = withContext(Dispatchers.IO) {
                     historyStore.add(
                         RecognitionSource.IMAGE,
-                        output.matches.first(),
-                        output.debugImages.whiteBackground,
+                        merged.matches.first(),
+                        bestShot.output.debugImages.whiteBackground,
                     )
+                }
+                recognizedShots.forEachIndexed { index, shot ->
+                    if (index != merged.bestShotIndex) recycleDebugImages(shot.output.debugImages)
                 }
                 mutableState.update {
                     it.copy(
-                        matches = output.matches,
-                        debugImages = output.debugImages,
+                        matches = merged.matches,
+                        debugImages = bestShot.output.debugImages,
                         history = history,
                         isBusy = false,
                         progressText = null,
                         technicalText = buildString {
-                            append("${output.segmenterName}: ${output.segmentationMs} мс ")
-                            append("(${output.segmentationAccelerator}). ")
-                            append("SigLIP2: ${output.embeddingMs} мс ")
-                            append("(${output.embeddingAccelerator}). ")
-                            append("Поиск: ${output.searchMs} мс.")
+                            append("Обработано фото: ${recognizedShots.size} из ${bitmaps.size}. ")
+                            append("Лучший результат: фото ${bestShot.originalIndex + 1}. ")
+                            append("${bestShot.output.segmenterName}: ")
+                            append("${recognizedShots.sumOf { shot -> shot.output.segmentationMs }} мс ")
+                            append("(${bestShot.output.segmentationAccelerator}). ")
+                            append("SigLIP2: ")
+                            append("${recognizedShots.sumOf { shot -> shot.output.embeddingMs }} мс ")
+                            append("(${bestShot.output.embeddingAccelerator}). ")
+                            append("Поиск: ${recognizedShots.sumOf { shot -> shot.output.searchMs }} мс.")
+                            if (failures.isNotEmpty()) append(" Не обработано: ${failures.size}.")
                         },
                     )
                 }
-            }.onFailure { showError("Распознавание не выполнено: ${friendlyMessage(it)}") }
+            } catch (error: Throwable) {
+                recognizedShots.forEach { recycleDebugImages(it.output.debugImages) }
+                if (error is CancellationException) throw error
+                showError("Распознавание не выполнено: ${friendlyMessage(error)}")
+            }
         }
     }
 
@@ -415,6 +515,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         mutableState.update {
             it.copy(isBusy = false, progressText = null, error = message)
         }
+    }
+
+    private fun recycleDebugImages(images: DebugImages) {
+        images.disMask.recycle()
+        images.crop.recycle()
+        images.whiteBackground.recycle()
     }
 
     private fun replaceEngine(replacement: RecognitionEngine?) {

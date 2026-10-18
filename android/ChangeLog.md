@@ -2,6 +2,17 @@
 
 ## 2026-10-18
 
+### Multi-shot recognition
+
+- Added selection of one through three photographs.
+- Added camera and gallery accumulation for selected photographs.
+- Added removal of one selected photograph or all selected photographs.
+- Processed the selected photographs in sequence.
+- Merged results with the maximum score for each wine.
+- Continued recognition when at least one photograph succeeded.
+- Used the Top-1 source photograph for debug images and the history preview.
+- Added deterministic unit tests for result fusion.
+
 - Listed downloadable model packs as a possible future feature.
 - Kept model-pack download and replacement outside the current project scope.
 

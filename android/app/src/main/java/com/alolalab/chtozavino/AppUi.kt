@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -67,6 +70,8 @@ data class AppActions(
     val chooseImage: () -> Unit,
     val scanCode: () -> Unit,
     val recognize: () -> Unit,
+    val removeImage: (Int) -> Unit,
+    val clearImages: () -> Unit,
     val openUrl: (String) -> Unit,
     val clearHistory: () -> Unit,
     val dismissError: () -> Unit,
@@ -227,9 +232,16 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
         }
         item {
             Text(
-                "Выберите один способ",
+                "Добавьте фото бутылки",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
+            )
+        }
+        item {
+            Text(
+                "Можно использовать от одного до трёх фото. " +
+                    "Для лучшего результата снимите бутылку и этикетку с разных ракурсов.",
+                style = MaterialTheme.typography.bodySmall,
             )
         }
         item {
@@ -240,7 +252,7 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
                 ) {
                     Button(
                         onClick = actions.takePhoto,
-                        enabled = !state.isBusy,
+                        enabled = !state.isBusy && state.selectedImages.size < MAX_SELECTED_IMAGES,
                         modifier = Modifier.weight(1f),
                     ) {
                         Icon(painterResource(R.drawable.ic_camera), contentDescription = null)
@@ -249,7 +261,7 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
                     }
                     OutlinedButton(
                         onClick = actions.chooseImage,
-                        enabled = !state.isBusy,
+                        enabled = !state.isBusy && state.selectedImages.size < MAX_SELECTED_IMAGES,
                         modifier = Modifier.weight(1f),
                     ) {
                         Icon(painterResource(R.drawable.ic_photo_library), contentDescription = null)
@@ -268,16 +280,53 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
                 }
             }
         }
-        if (state.selectedImage != null) {
+        if (state.selectedImages.isNotEmpty()) {
             item {
-                ImageCard("Исходное изображение", state.selectedImage)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "Выбрано: ${state.selectedImages.size} из $MAX_SELECTED_IMAGES",
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    if (state.selectedImages.size > 1) {
+                        TextButton(
+                            onClick = actions.clearImages,
+                            enabled = !state.isBusy,
+                        ) {
+                            Text("Удалить все")
+                        }
+                    }
+                }
+            }
+            item {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    itemsIndexed(state.selectedImages) { index, bitmap ->
+                        SelectedImageCard(
+                            index = index,
+                            bitmap = bitmap,
+                            enabled = !state.isBusy,
+                            remove = { actions.removeImage(index) },
+                        )
+                    }
+                }
             }
             item {
                 Button(
                     onClick = actions.recognize,
                     enabled = !state.isBusy && state.modelPack != null,
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("Начать распознавание") }
+                ) {
+                    Text(
+                        if (state.selectedImages.size == 1) {
+                            "Начать распознавание"
+                        } else {
+                            "Распознать ${state.selectedImages.size} фото"
+                        },
+                    )
+                }
             }
         }
         if (state.isBusy) {
@@ -317,6 +366,37 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
             item { DebugSection(state.debugImages) }
         }
         item { Spacer(Modifier.height(16.dp)) }
+    }
+}
+
+@Composable
+private fun SelectedImageCard(
+    index: Int,
+    bitmap: Bitmap,
+    enabled: Boolean,
+    remove: () -> Unit,
+) {
+    Card(modifier = Modifier.width(180.dp)) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text("Фото ${index + 1}", fontWeight = FontWeight.SemiBold)
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Выбранное фото ${index + 1}",
+                modifier = Modifier.fillMaxWidth().height(180.dp)
+                    .background(androidx.compose.ui.graphics.Color.White, RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Fit,
+            )
+            TextButton(
+                onClick = remove,
+                enabled = enabled,
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                Text("Удалить")
+            }
+        }
     }
 }
 

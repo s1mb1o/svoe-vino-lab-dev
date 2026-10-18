@@ -8,7 +8,9 @@ The application ID is `chtozavino.alolalab.com`.
 ## Functions
 
 - 18+ confirmation.
-- Camera capture and gallery selection.
+- Camera capture and multiple gallery selection.
+- Multi-shot recognition with one to three photographs.
+- Maximum-score result fusion for each wine across the selected photographs.
 - Google Code Scanner with EAN-13, QR, and manual input.
 - A settings page through the gear icon.
 - A product website link on the settings page.
@@ -32,6 +34,15 @@ The application ID is `chtozavino.alolalab.com`.
 DIS is the default segmentation mode.
 Use YOLO for photographs that show a complete bottle.
 Keep DIS for label close-ups and mixed photographs.
+
+The application processes multi-shot photographs in sequence.
+This behavior limits peak LiteRT memory use.
+The application keeps the maximum score for each wine across all successful
+photographs.
+The debug images and the history preview come from the photograph that supplies the
+final Top-1 result.
+The application continues when one photograph fails.
+The application reports an error when all photographs fail.
 
 ## Build
 
