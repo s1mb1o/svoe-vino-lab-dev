@@ -1,83 +1,3 @@
-# 2026-10-17: Eight producer review resolution
-
-Check repeated record labels, exact linked identities, neutral unconfirmed groups, the Novy Svet and Soyuz conflict badges, and gray bottle visibility in both themes. Verify the 767/768 px Soyuz transition and the longest Novy Svet title. Verify that a gray addition has no portal link. Run both producer and Abrau browser suites.
-
-# 2026-10-17: soyuz-vino review correction
-
-Check historical brands at rank zero, the red Lac d’Azur conflict badge, package silhouettes, the alcoholic Perle can, and the 767/768 px transition.
-
-# 2026-10-17: valery-zakharyin review correction
-
-Check all four reserve entries. Confirm that the group description identifies distinct collections.
-
-# 2026-10-17: chateau-pinot review correction
-
-Check the confirmed Gravity labels and the seven unconfirmed blends. Confirm that neutral positioning does not change their portal links.
-
-# 2026-10-17: esse review correction
-
-Open the four corrected exact slugs. Check Unplugged membership, neutral positioning, separate duplicate-card labels, and the gray YELLOW GLOVES entry.
-
-# 2026-10-17: sober-bash review correction
-
-Check all six Грани products and all four amphora products. Keep separate catalog records distinct.
-
-# 2026-10-17: belbek review correction
-
-Check the rose blend descriptions and the unresolved card. Keep the Reserve addition selectable with no portal link.
-
-# 2026-10-17: agora review correction
-
-Check BLUSH MIRAGE, historical Yachting ageing, CUVEE source wording, and VINTAGE without claims about other series.
-
-# 2026-10-17: novy-svet review correction
-
-Check the two aged entries, two unconfirmed varietal entries, rank-zero special cuvees, and the limited Коронационное card.
-
-# 2026-10-17: Sober Bash amphora source
-
-Verify the Грани · Амфора source against the official Грани collection. Retain the four amphora product identities and their selection behavior.
-
-# 2026-10-17: Novy Svet absence scope
-
-Verify the Коронационное addition against the 44 exact Новый Свет. Дом шампанских вин catalog records. A display-name alias MUST NOT prove absence.
-
-# 2026-10-16: Eight producer map verification
-
-Check all eight routes in docs/validation/eight-producer-maps.md. Verify the selected catalog identity, bottle image, group, price guidance, portal link, and mobile popup. Select each gray addition and verify that it has local details but no portal link. Check 320 px, 390 px, desktop, both themes, and return to the map.
-
-# 2026-10-16: Союз-Вино
-
-Open /lineup/soyuz-vino with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: AGORA WINERY
-
-Open /lineup/agora with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: Собер Баш
-
-Open /lineup/sober-bash with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: Бельбек
-
-Open /lineup/belbek with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: Новый Свет
-
-Open /lineup/novy-svet with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: Валерий Захарьин
-
-Open /lineup/valery-zakharyin with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: Шато Пино
-
-Open /lineup/chateau-pinot with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
-# 2026-10-16: ESSE
-
-Open /lineup/esse with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
-
 # Smoke tests
 
 ## Mode pages
@@ -118,6 +38,86 @@ The presentation files and video remain byte-identical to the previous release.
 - Confirm that app mounting does not send a second initial page view.
 - Block the external Metrika loader. Confirm that the page and navigation still work.
 - Confirm the existing age gate, service health, and presentation artifacts.
+
+## Eight producer review resolution, 2026-10-17
+
+Check repeated record labels, exact linked identities, neutral unconfirmed groups, the Novy Svet and Soyuz conflict badges, and gray bottle visibility in both themes. Verify the 767/768 px Soyuz transition and the longest Novy Svet title. Verify that a gray addition has no portal link. Run both producer and Abrau browser suites.
+
+## soyuz-vino review correction, 2026-10-17
+
+Check historical brands at rank zero, the red Lac d’Azur conflict badge, package silhouettes, the alcoholic Perle can, and the 767/768 px transition.
+
+## valery-zakharyin review correction, 2026-10-17
+
+Check all four reserve entries. Confirm that the group description identifies distinct collections.
+
+## chateau-pinot review correction, 2026-10-17
+
+Check the confirmed Gravity labels and the seven unconfirmed blends. Confirm that neutral positioning does not change their portal links.
+
+## esse review correction, 2026-10-17
+
+Open the four corrected exact slugs. Check Unplugged membership, neutral positioning, separate duplicate-card labels, and the gray YELLOW GLOVES entry.
+
+## sober-bash review correction, 2026-10-17
+
+Check all six Грани products and all four amphora products. Keep separate catalog records distinct.
+
+## belbek review correction, 2026-10-17
+
+Check the rose blend descriptions and the unresolved card. Keep the Reserve addition selectable with no portal link.
+
+## agora review correction, 2026-10-17
+
+Check BLUSH MIRAGE, historical Yachting ageing, CUVEE source wording, and VINTAGE without claims about other series.
+
+## novy-svet review correction, 2026-10-17
+
+Check the two aged entries, two unconfirmed varietal entries, rank-zero special cuvees, and the limited Коронационное card.
+
+## Sober Bash amphora source, 2026-10-17
+
+Verify the Грани · Амфора source against the official Грани collection. Retain the four amphora product identities and their selection behavior.
+
+## Novy Svet absence scope, 2026-10-17
+
+Verify the Коронационное addition against the 44 exact Новый Свет. Дом шампанских вин catalog records. A display-name alias MUST NOT prove absence.
+
+## Eight producer map verification, 2026-10-16
+
+Check all eight routes in docs/validation/eight-producer-maps.md. Verify the selected catalog identity, bottle image, group, price guidance, portal link, and mobile popup. Select each gray addition and verify that it has local details but no portal link. Check 320 px, 390 px, desktop, both themes, and return to the map.
+
+## Союз-Вино, 2026-10-16
+
+Open /lineup/soyuz-vino with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## AGORA WINERY, 2026-10-16
+
+Open /lineup/agora with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## Собер Баш, 2026-10-16
+
+Open /lineup/sober-bash with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## Бельбек, 2026-10-16
+
+Open /lineup/belbek with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## Новый Свет, 2026-10-16
+
+Open /lineup/novy-svet with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## Валерий Захарьин, 2026-10-16
+
+Open /lineup/valery-zakharyin with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## Шато Пино, 2026-10-16
+
+Open /lineup/chateau-pinot with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
+
+## ESSE, 2026-10-16
+
+Open /lineup/esse with a linked wine slug. Check exact selection, bottle scale, desktop details, mobile popup, portal action, and return to the map. Check any null-slug additions without a portal link.
 
 ## Abrau-Durso still-wine completion
 

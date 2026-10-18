@@ -1,88 +1,10 @@
-# 2026-10-17: Eight producer review resolution
-
-Complete the owner-authorized Claude Opus 5.5 Max review. Correct eight producer maps in separate commits. Fix image attribute forwarding and double gray filters. Add neutral record labels and default CI attribution. Pass 276 full-snapshot tests, type checks, the build, 81 producer cases per engine, and both Abrau suites.
-
-# 2026-10-17: soyuz-vino review correction
-
-Use snapshot-only evidence for historical brands. Remove unsupported relative ranks. Flag the red-wine and white-grape contradiction.
-
-# 2026-10-17: valery-zakharyin review correction
-
-Record the reserve label evidence for each reserve wine. Keep the group explicitly editorial.
-
-# 2026-10-17: chateau-pinot review correction
-
-Use original labels to confirm Gravity membership. Keep historical blends without a confirmed collection in a neutral group.
-
-# 2026-10-17: esse review correction
-
-Move four incorrectly ranked products to Unplugged. Record original-label evidence and the possible YELLOW GLOVES counterpart.
-
-# 2026-10-17: sober-bash review correction
-
-List all six Грани products. Record exact source captures and original-label membership evidence.
-
-# 2026-10-17: belbek review correction
-
-Describe the different rose blends. Record the possible Reserve counterpart without creating an unverified catalog link.
-
-# 2026-10-17: agora review correction
-
-Correct BLUSH MIRAGE effervescence. Scope oak ageing to historical card evidence. Cite exact official range pages.
-
-# 2026-10-17: novy-svet review correction
-
-Remove unsupported premium ranks from historical special cuvees. Separate explicit aged cards from varietal cards with no confirmed collection.
-
-# 2026-10-17: Structured absence validation
-
-Validate exact producer values in structured absence checks. Keep the existing text-based absence evidence compatible.
-
-# 2026-10-17: Sober Bash amphora source
-
-Correct the Sober Bash amphora subgroup source URL. Cite the official Грани collection.
-
-# 2026-10-17: Novy Svet absence scope
-
-Use the exact Novy Svet snapshot producer value in the official-addition absence check. Check structured absence scopes against independent producer baselines.
-
-# 2026-10-16: Eight producer map verification
-
-Add eight producer maps in eight separate implementation commits. Cover 370 exact catalog cards and eight official additions. Normalize bottle cutouts and image frames. Pass 275 unit tests, type checks, the production build, and 77 producer browser cases per engine. Pass the complete Abrau browser regressions in both engines.
-
-# 2026-10-16: Союз-Вино
-
-Add Союз-Вино: 69 catalog cards, 1 official additions, and 19 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: AGORA WINERY
-
-Add AGORA WINERY: 32 catalog cards, 1 official additions, and 9 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: Собер Баш
-
-Add Собер Баш: 37 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: Бельбек
-
-Add Бельбек: 39 catalog cards, 1 official additions, and 8 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: Новый Свет
-
-Add Новый Свет: 44 catalog cards, 1 official additions, and 5 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: Валерий Захарьин
-
-Add Валерий Захарьин: 46 catalog cards, 1 official additions, and 14 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: Шато Пино
-
-Add Шато Пино: 50 catalog cards, 1 official additions, and 12 groups. Ship normalized bottle assets and independent source evidence.
-
-# 2026-10-16: ESSE
-
-Add ESSE: 53 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
-
 # Change log
+
+## 2026-10-19 — Log layout
+
+- Move the 2026-10-16 and 2026-10-17 lineup entries from above the file title into the dated list.
+- Apply this change to `ChangeLog.md`, `ResearchLog.md`, and `SMOKE_TESTS.md`.
+- Use the heading format of each file. Keep the entry text unchanged.
 
 ## 2026-10-18 — Message for an unreadable HEIC photo
 
@@ -120,6 +42,90 @@ Add ESSE: 53 catalog cards, 1 official additions, and 6 groups. Ship normalized 
 - Send a client-navigation page view after Nuxt renders the head of the new page.
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
+
+## 2026-10-17 — Eight producer review resolution
+
+Complete the owner-authorized Claude Opus 5.5 Max review. Correct eight producer maps in separate commits. Fix image attribute forwarding and double gray filters. Add neutral record labels and default CI attribution. Pass 276 full-snapshot tests, type checks, the build, 81 producer cases per engine, and both Abrau suites.
+
+## 2026-10-17 — soyuz-vino review correction
+
+Use snapshot-only evidence for historical brands. Remove unsupported relative ranks. Flag the red-wine and white-grape contradiction.
+
+## 2026-10-17 — valery-zakharyin review correction
+
+Record the reserve label evidence for each reserve wine. Keep the group explicitly editorial.
+
+## 2026-10-17 — chateau-pinot review correction
+
+Use original labels to confirm Gravity membership. Keep historical blends without a confirmed collection in a neutral group.
+
+## 2026-10-17 — esse review correction
+
+Move four incorrectly ranked products to Unplugged. Record original-label evidence and the possible YELLOW GLOVES counterpart.
+
+## 2026-10-17 — sober-bash review correction
+
+List all six Грани products. Record exact source captures and original-label membership evidence.
+
+## 2026-10-17 — belbek review correction
+
+Describe the different rose blends. Record the possible Reserve counterpart without creating an unverified catalog link.
+
+## 2026-10-17 — agora review correction
+
+Correct BLUSH MIRAGE effervescence. Scope oak ageing to historical card evidence. Cite exact official range pages.
+
+## 2026-10-17 — novy-svet review correction
+
+Remove unsupported premium ranks from historical special cuvees. Separate explicit aged cards from varietal cards with no confirmed collection.
+
+## 2026-10-17 — Structured absence validation
+
+Validate exact producer values in structured absence checks. Keep the existing text-based absence evidence compatible.
+
+## 2026-10-17 — Sober Bash amphora source
+
+Correct the Sober Bash amphora subgroup source URL. Cite the official Грани collection.
+
+## 2026-10-17 — Novy Svet absence scope
+
+Use the exact Novy Svet snapshot producer value in the official-addition absence check. Check structured absence scopes against independent producer baselines.
+
+## 2026-10-16 — Eight producer map verification
+
+Add eight producer maps in eight separate implementation commits. Cover 370 exact catalog cards and eight official additions. Normalize bottle cutouts and image frames. Pass 275 unit tests, type checks, the production build, and 77 producer browser cases per engine. Pass the complete Abrau browser regressions in both engines.
+
+## 2026-10-16 — Союз-Вино
+
+Add Союз-Вино: 69 catalog cards, 1 official additions, and 19 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — AGORA WINERY
+
+Add AGORA WINERY: 32 catalog cards, 1 official additions, and 9 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — Собер Баш
+
+Add Собер Баш: 37 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — Бельбек
+
+Add Бельбек: 39 catalog cards, 1 official additions, and 8 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — Новый Свет
+
+Add Новый Свет: 44 catalog cards, 1 official additions, and 5 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — Валерий Захарьин
+
+Add Валерий Захарьин: 46 catalog cards, 1 official additions, and 14 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — Шато Пино
+
+Add Шато Пино: 50 catalog cards, 1 official additions, and 12 groups. Ship normalized bottle assets and independent source evidence.
+
+## 2026-10-16 — ESSE
+
+Add ESSE: 53 catalog cards, 1 official additions, and 6 groups. Ship normalized bottle assets and independent source evidence.
 
 ## 2026-10-16 — Abrau-Durso identified catalog completion
 

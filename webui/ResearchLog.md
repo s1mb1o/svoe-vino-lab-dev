@@ -1,83 +1,3 @@
-# 2026-10-17: Eight producer review resolution
-
-The external review identified evidence gaps and unsafe group-level generalizations. Original-label checks corrected four ESSE placements and separated uncertain historical Chateau Pinot blends. Some AGORA concerns were disproved by exact official pages. Read docs/reviews/2026-10-17-eight-producer-maps-resolution.md for every disposition and verification limit.
-
-# 2026-10-17: soyuz-vino review correction
-
-The current catalog does not establish the historical wine collections or their price ranks. Current Lavetti ciders do not identify older wine records.
-
-# 2026-10-17: valery-zakharyin review correction
-
-The original labels confirm Reserve status in different collections. The Rubedo page alone cannot establish the autochthon reserve identities.
-
-# 2026-10-17: chateau-pinot review correction
-
-A current blend with the same grapes does not prove the historical collection. Two original labels explicitly identify Gravity.
-
-# 2026-10-17: esse review correction
-
-Original Pinot Noir, Chenin Blanc, Odessa Black, and Saperavi Heaven photos read ESSE UNPLUGGED. They do not support KACHA VALLEY membership.
-
-# 2026-10-17: sober-bash review correction
-
-The official Грани collection lists all six retained varietal and blend identities. Collection membership is not limited to the first three entries.
-
-# 2026-10-17: belbek review correction
-
-The contradictory Белое сухое card can be a Reserve counterpart. Its conflicting fields do not establish exact equivalence.
-
-# 2026-10-17: agora review correction
-
-The official range index supports CUVEE premium wording and the current 12–18 month Reserve Yachting range. Historical cards only establish 12 months or more.
-
-# 2026-10-17: novy-svet review correction
-
-The snapshot does not establish one premium rank for all special Novy Svet releases. Two short varietal identities lack a confirmed collection.
-
-# 2026-10-17: Sober Bash amphora source
-
-The saved official Грани page lists all four amphora products in the map. The reserve collection URL did not establish this membership. Keep the existing products, groups, and relative tiers.
-
-# 2026-10-17: Novy Svet absence scope
-
-The Novy Svet display name differs from the exact snapshot producer value. A literal query with the display name can select zero rows. Scope the absence check to Новый Свет. Дом шампанских вин and retain the 44-card baseline.
-
-# 2026-10-16: Eight producer map verification
-
-The eight producer extracts contain 370 exact snapshot identities. The full catalog coverage is now 988 of 2103 cards. An exact producer-field check found a separate Сатера card outside the ESSE scope. Source checks distinguished alcoholic and alcohol-free La Petite Perle cans. Read docs/validation/eight-producer-maps.md for evidence and source limits. Automatic approval review rejected the external Claude packet transfer; explicit owner approval is pending.
-
-# 2026-10-16: Союз-Вино
-
-Check Союз-Вино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/soyuz-vino/sources.md.
-
-# 2026-10-16: AGORA WINERY
-
-Check AGORA WINERY against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/agora/sources.md.
-
-# 2026-10-16: Собер Баш
-
-Check Собер Баш against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/sober-bash/sources.md.
-
-# 2026-10-16: Бельбек
-
-Check Бельбек against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/belbek/sources.md.
-
-# 2026-10-16: Новый Свет
-
-Check Новый Свет against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/novy-svet/sources.md.
-
-# 2026-10-16: Валерий Захарьин
-
-Check Валерий Захарьин against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/valery-zakharyin/sources.md.
-
-# 2026-10-16: Шато Пино
-
-Check Шато Пино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/chateau-pinot/sources.md.
-
-# 2026-10-16: ESSE
-
-Check ESSE against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/esse/sources.md.
-
 # Research log
 
 ## Matcher answer for HEIC without HEIF support, 2026-10-18
@@ -134,6 +54,86 @@ Before the fix, `/ideas` → `/android` and browser Back sent the previous title
 After the fix, four navigations each sent one hit with the title of its own page:
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
+
+## Eight producer review resolution, 2026-10-17
+
+The external review identified evidence gaps and unsafe group-level generalizations. Original-label checks corrected four ESSE placements and separated uncertain historical Chateau Pinot blends. Some AGORA concerns were disproved by exact official pages. Read docs/reviews/2026-10-17-eight-producer-maps-resolution.md for every disposition and verification limit.
+
+## soyuz-vino review correction, 2026-10-17
+
+The current catalog does not establish the historical wine collections or their price ranks. Current Lavetti ciders do not identify older wine records.
+
+## valery-zakharyin review correction, 2026-10-17
+
+The original labels confirm Reserve status in different collections. The Rubedo page alone cannot establish the autochthon reserve identities.
+
+## chateau-pinot review correction, 2026-10-17
+
+A current blend with the same grapes does not prove the historical collection. Two original labels explicitly identify Gravity.
+
+## esse review correction, 2026-10-17
+
+Original Pinot Noir, Chenin Blanc, Odessa Black, and Saperavi Heaven photos read ESSE UNPLUGGED. They do not support KACHA VALLEY membership.
+
+## sober-bash review correction, 2026-10-17
+
+The official Грани collection lists all six retained varietal and blend identities. Collection membership is not limited to the first three entries.
+
+## belbek review correction, 2026-10-17
+
+The contradictory Белое сухое card can be a Reserve counterpart. Its conflicting fields do not establish exact equivalence.
+
+## agora review correction, 2026-10-17
+
+The official range index supports CUVEE premium wording and the current 12–18 month Reserve Yachting range. Historical cards only establish 12 months or more.
+
+## novy-svet review correction, 2026-10-17
+
+The snapshot does not establish one premium rank for all special Novy Svet releases. Two short varietal identities lack a confirmed collection.
+
+## Sober Bash amphora source, 2026-10-17
+
+The saved official Грани page lists all four amphora products in the map. The reserve collection URL did not establish this membership. Keep the existing products, groups, and relative tiers.
+
+## Novy Svet absence scope, 2026-10-17
+
+The Novy Svet display name differs from the exact snapshot producer value. A literal query with the display name can select zero rows. Scope the absence check to Новый Свет. Дом шампанских вин and retain the 44-card baseline.
+
+## Eight producer map verification, 2026-10-16
+
+The eight producer extracts contain 370 exact snapshot identities. The full catalog coverage is now 988 of 2103 cards. An exact producer-field check found a separate Сатера card outside the ESSE scope. Source checks distinguished alcoholic and alcohol-free La Petite Perle cans. Read docs/validation/eight-producer-maps.md for evidence and source limits. Automatic approval review rejected the external Claude packet transfer; explicit owner approval is pending.
+
+## Союз-Вино, 2026-10-16
+
+Check Союз-Вино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/soyuz-vino/sources.md.
+
+## AGORA WINERY, 2026-10-16
+
+Check AGORA WINERY against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/agora/sources.md.
+
+## Собер Баш, 2026-10-16
+
+Check Собер Баш against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/sober-bash/sources.md.
+
+## Бельбек, 2026-10-16
+
+Check Бельбек against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/belbek/sources.md.
+
+## Новый Свет, 2026-10-16
+
+Check Новый Свет against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/novy-svet/sources.md.
+
+## Валерий Захарьин, 2026-10-16
+
+Check Валерий Захарьин against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/valery-zakharyin/sources.md.
+
+## Шато Пино, 2026-10-16
+
+Check Шато Пино against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/chateau-pinot/sources.md.
+
+## ESSE, 2026-10-16
+
+Check ESSE against the exact catalog producer field and official collection sources. Preserve separate snapshot identities. Record editorial tiers and source limitations in docs/product-line-maps/esse/sources.md.
 
 ## Abrau-Durso catalog completion, 2026-10-16
 
