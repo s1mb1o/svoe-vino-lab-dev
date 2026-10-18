@@ -4,8 +4,8 @@
 |---|---|
 | Repository | `s1mb1o/svoe-vino-lab-dev` |
 | Branch | `main` |
-| Checked at commit | `8ec80239` |
-| Date of the last check | 2026-10-18 |
+| Checked at commit | `0621952` |
+| Date of the last check | 2026-10-19 |
 | Scope | This file describes `main` of this repository only. |
 | Task | Task #10 «Сканер российских вин с описанием на платформе Свое Вино» ([docs/task-10-specification.pdf](docs/task-10-specification.pdf)) |
 
@@ -42,6 +42,7 @@ Each feature refers to the test command of its component. Real inference needs m
 | `telegram-bot/` | `cd telegram-bot && uv sync --extra dev && uv run pytest -q` | [telegram-bot/README.md](telegram-bot/README.md) |
 | `max-bot/` | `cd max-bot && ./scripts/verify.sh` | [max-bot/README.md](max-bot/README.md) |
 | `im-core/` | `cd im-core && uv run pytest -q` | [im-core/README.md](im-core/README.md) |
+| `mcp/` | `cd mcp && npm ci --ignore-scripts && npm test` | [mcp/README.md](mcp/README.md) |
 | `android/` | `cd android && ./gradlew test assembleDebug` | [android/README.md](android/README.md) |
 | `bootstrap/` | `cd bootstrap && .venv/bin/python -m unittest discover -s tests -v` | [bootstrap/README.md](bootstrap/README.md) |
 | `proxies/` | `cd proxies && .venv/bin/python -m unittest discover -s tests -t .` | [proxies/README.md](proxies/README.md) |
@@ -58,7 +59,7 @@ Each feature refers to the test command of its component. Real inference needs m
 7. **A taste passport and regional dishes after the result.** Each value shows its source: the wine card or a labeled dataset estimate. See F-21 and F-22.
 8. **A verifiable matcher build.** The embedding bundle is in Git and the matcher checks its SHA-256 at load. Dependencies are hash-locked. CI fails when any test is skipped. See F-32 and F-33.
 9. **Committed benchmark artifacts.** Run directories with queries and predictions are in Git. A reviewer can recompute R@1 offline. See F-10 and F-11.
-10. **WebMCP tools in the portal.** An AI agent in a supported browser can drive the same scanner and shelf state that a user sees. See F-77.
+10. **Two MCP interfaces for AI agents.** WebMCP tools in the portal let an AI agent in a supported browser drive the same scanner and shelf state that a user sees. A local read-only MCP server gives an AI assistant the wine card, filter search, and comparison of the 2,093 Active catalogue wines. See F-77 and F-48.
 
 ## Results summary
 
@@ -174,6 +175,15 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 - **Proof:** `workbench/tests/test_run_internal_profile_queue.py::test_default_inspection_never_writes_or_calls_api`; [workbench/docs/reports/2026-09-27_all-profile-rerun/final-production-source-check.md](workbench/docs/reports/2026-09-27_all-profile-rerun/final-production-source-check.md).
 - **Verify:** Read the fingerprint table in `final-production-source-check.md`.
 
+### F-13 Shelf pipeline with label evidence
+
+- **Claim:** `matcher.group_pipeline` selects a separate pipeline for `POST /v1/group/match`. Single-image requests keep `matcher.pipeline`. The pipeline `siglip2-p512-rot5-seg` ranks each masked bottle against the `full` view, uses the best reference rotation at 5-degree steps, and rejects scores below 0.78. With `quality_model` and `quality_endpoint`, a VLM reads each bottle label. Deterministic catalogue identity checks then accept or reject the candidates, and the response has `label_evidence`.
+- **Status:** Implemented. [matcher/README.md](matcher/README.md) states that production uses the shelf pipeline `siglip2-p512-rot5-seg-vlm9b` with the VLM `qwen3.5-9b-nvfp4`. [matcher/config.yaml](matcher/config.yaml) defines only `siglip2-p512-rot5-seg` and keeps `group_pipeline` as a comment.
+- **Entry point:** [matcher/group_pipeline.py](matcher/group_pipeline.py), [matcher/group_quality.py](matcher/group_quality.py), [matcher/group_quality_runtime.py](matcher/group_quality_runtime.py)
+- **Proof:** `matcher/tests/test_group_pipeline.py::test_separate_group_selection_and_full_ranking_ignore_label_disagreement`; `matcher/tests/test_group_quality.py::test_only_printed_attributes_veto_visual_candidates`, `matcher/tests/test_group_quality.py::test_one_shared_brand_word_does_not_identify_another_producer`; [matcher/ChangeLog.md](matcher/ChangeLog.md) 2026-10-18 (port of the production matcher `8b096a16`).
+- **Verify:** Read the section «POST /v1/group/match» in [matcher/README.md](matcher/README.md).
+- **Limits:** The pipeline needs the rotated index `gx10-siglip2-so400m-patch16-naflex-p512-rot5` and a VLM service. The index is not in Git. The repository has no shelf accuracy benchmark (F-20).
+
 ## Criterion 2: post-search features (20/100)
 
 ### F-20 Shelf mode
@@ -253,6 +263,7 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 | [telegram-bot/](telegram-bot/) | Telegram bot |
 | [max-bot/](max-bot/) | MAX messenger bot |
 | [im-core/](im-core/) | Shared core of the two bots |
+| [mcp/](mcp/) | Read-only MCP server of the wine catalogue |
 | [android/](android/) | Offline Android application |
 | [bootstrap/](bootstrap/) | Local model services and their gateway |
 | [proxies/](proxies/) | Model proxy for several inference hosts (lab tool) |
@@ -398,6 +409,15 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 - **Entry point:** [eval/participant_test.sh](eval/participant_test.sh), [eval/README.md](eval/README.md)
 - **Proof:** [eval/checksums.sha256](eval/checksums.sha256).
 - **Verify:** `cd eval && shasum -a 256 -c checksums.sha256`
+
+### F-48 Read-only catalogue MCP server
+
+- **Claim:** `mcp/` is a local stdio MCP server with five read-only tools: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, and `get_audio`. Each tool has strict input and output schemas. The server reads the matcher bundle of F-32 and stops when the SHA-256 of `wines.jsonl` differs from the manifest. Discovery uses the 2,093 Active wines of the 2,094 bundle IDs. Each result has the catalogue version and the source hashes. The server has no write, command, SQL, or URL fetch tool. A GitHub workflow runs the tests on Node.js 22.19.0 and 26.4.0.
+- **Status:** Implemented.
+- **Entry point:** [mcp/src/server.mjs](mcp/src/server.mjs), [mcp/src/catalog.mjs](mcp/src/catalog.mjs), [mcp/README.md](mcp/README.md), [.github/workflows/mcp-tests.yml](.github/workflows/mcp-tests.yml)
+- **Proof:** `mcp/tests/protocol.test.mjs` ("real SDK client discovers and calls all tools repeatedly over one stdio connection"); `mcp/tests/catalog.test.mjs` ("uses all matcher IDs and excludes non-Active records from discovery", "existing Abrau mock is explicitly demo and exact selection is preserved"); [mcp/ChangeLog.md](mcp/ChangeLog.md).
+- **Verify:** `cd mcp && npm ci --ignore-scripts && npm test && npm run demo`
+- **Limits:** `get_producer_line` returns only the six-wine Abrau-Durso map of F-24, with `status: demo`. `get_audio` returns `unavailable`, because the repository has no approved audio files. The server uses local stdio only. No interactive AI assistant and no Qwen dialogue have been tested with it.
 
 ## Criterion 4: design (10/100)
 
@@ -625,13 +645,21 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 - **Proof:** [android/SMOKE_TESTS.md](android/SMOKE_TESTS.md) 2026-09-29 (APK SHA-256 values); [android/ChangeLog.md](android/ChangeLog.md).
 - **Verify:** `git tag --list 'android-*'`
 
+### F-86 HEIF (HEIC) photos
+
+- **Claim:** `POST /v1/eval/predict`, `POST /v1/match`, and `POST /v1/group/match` accept HEIF (HEIC) photos. iPhone cameras save HEIC by default. The matcher decodes the primary image of a HEIF file. A damaged HEIF file gives HTTP 422 on the single-image endpoints and HTTP 400 on the group endpoint, not HTTP 500. The Web UI accepts HEIC photos. For an unreadable HEIC photo, it shows «Не удалось прочитать HEIC. Сохраните фото как JPEG.»
+- **Status:** Implemented. [README.md](README.md) states that the production matcher decodes HEIF since 2026-10-18.
+- **Entry point:** [matcher/photo.py](matcher/photo.py), [matcher/group.py](matcher/group.py), [matcher/protection.py](matcher/protection.py), [webui/app/composables/useWineScanner.ts](webui/app/composables/useWineScanner.ts)
+- **Proof:** `matcher/tests/test_match.py::test_a_heif_photo_is_matched_on_both_single_image_endpoints`, `matcher/tests/test_match.py::test_a_damaged_heif_answers_422_on_both_single_image_endpoints`, `matcher/tests/test_group.py::test_a_damaged_heif_photo_is_400_before_the_sam3_request`, `matcher/tests/test_resilience.py::test_the_libheif_crash_file_does_not_stop_the_service`; `webui/tests/prediction.test.ts` ("accepts a HEIC signature and names the file by its detected type"), `webui/tests/scanner.test.ts` ("explains an unreadable %s photo").
+- **Verify:** Read [matcher/ResearchLog.md](matcher/ResearchLog.md) (crash test of two HEIF decoders on 2,106 damaged HEIC files).
+- **Limits:** The production Telegram bot accepts photos and albums, but not HEIC files (F-70). The Android app selects only JPEG, PNG, and WebP files in the gallery. A cut tiled HEIF file decodes without an error ([matcher/docs/KNOWN_ISSUES.md](matcher/docs/KNOWN_ISSUES.md), item 4).
+
 ## Known gaps and work outside `main`
 
 ### Work on other branches of this repository
 
 | Branch | Content | Issue |
 |---|---|---|
-| `feature/mcp` | A read-only MCP server of the wine catalogue: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, `get_audio`, with tests. | #25 |
 | `android/current` | YOLO bottle segmentation as a second option, model-pack format 3, a rotated reference index, and a smoke test on a second phone. | #21 |
 
 ### Demo features
