@@ -559,13 +559,13 @@ Phase 0 — checks and decisions:
    under rule 1.5.
 2. Done: only the mini-app host is public. The owner added the `A` record for
    `max.chtozavino.ru` on 2026-10-19, with the same address as `chtozavino.ru`.
-   Check that the reg.ru name servers publish it before the Caddy change.
+   The reg.ru name servers published it on 2026-10-19 at 00:46.
 3. Live test on a test bot, on mobile data and on Wi-Fi:
    - `initData.user.id` equals the Bot API `user_id` of the same person. The bot saves
      depend on it. No source confirms it;
    - the signed `ip` is present and equals the client address of the page request;
    - the URL fragment survives the HTTP 302 from `/` to `/max`.
-4. Create the GitHub issue. Record the decisions there.
+4. Done: issue #48 records the plan and the decisions.
 
 Phase 1 — password accounts:
 
@@ -587,7 +587,7 @@ Phase 2 — MAX:
 16. Bot: «Винный дневник» button, `/diary`, advisory enqueue, `account_outbox`, the worker.
 17. Bot docs and privacy text. Live test in MAX. Enable after owner approval.
 
-Phase 3 — application tokens and MCP (after open decision 5):
+Phase 3 — application tokens and MCP (after open decision 6):
 
 18. Application tokens and the `/v1/app/*` routes; the token page in «Настройки».
 19. MCP account tools, conditional server instructions, and their tests.
@@ -663,10 +663,11 @@ Recorded on 2026-10-19:
    `chtozavino.ru` keeps HTTP Basic.
 3. Photo retention in the account: until the person deletes them.
 4. Ports: 28007 (production) and 29007 (dev).
+5. Name: «Винный дневник». Do not use «паспорт» for the account.
 
 Open:
 
-5. MCP access. `/api/app/*` stays on `chtozavino.ru` behind HTTP Basic. HTTP Basic uses the
+6. MCP access. `/api/app/*` stays on `chtozavino.ru` behind HTTP Basic. HTTP Basic uses the
    `Authorization` header, so a `Bearer` application token cannot pass it. Until the site is
    public, MCP account tools work only if `/api/app/*` is also public, or after HTTP Basic ends.
    Application tokens and the MCP account tools wait for this decision (Phase 3).
