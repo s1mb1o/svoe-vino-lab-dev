@@ -1,5 +1,18 @@
 # Research log
 
+## Cookie consent under Russian law, 2026-10-18
+
+The owner asked whether Russian law requires cookie consent for `chtozavino.ru`. Issue #41 has the full analysis and sources.
+152-FZ article 9 part 1 requires specific, informed, conscious, and unambiguous consent.
+Since 01.09.2025 (156-FZ), the consent must be separate from other information and documents that the person confirms or signs.
+Article 9 part 3 puts the burden of proof on the operator.
+The Metrika terms of 07.08.2026 make the site owner the operator and Yandex the processor.
+The owner must inform visitors and obtain consent where the law requires it.
+KoAP 13.11 part 1 (edition of 04.08.2026) fines citizens 10,000–15,000 ₽ for processing without a lawful basis.
+The law has no cookie-specific rule. The regulator position that identifying cookies are personal data is reported, not found in an official document.
+Conclusion: load Metrika only after an explicit choice. Remove the `noscript` image.
+Keep the cookie choice separate from the 18+ confirmation. A lawyer should review the consent text.
+
 ## Metrika page title on client navigation, 2026-10-18
 
 A Codex review of the port found that a client-navigation `hit` used the title of the previous page.
