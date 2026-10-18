@@ -12,6 +12,8 @@
 - Continued recognition when at least one photograph succeeded.
 - Used the Top-1 source photograph for debug images and the history preview.
 - Added deterministic unit tests for result fusion.
+- Added a multi-shot early exit at Top-1 `0.93` and Top-1 to Top-2 margin `0.08`.
+- Added unit tests for the early-exit score, margin, and candidate-count rules.
 
 - Listed downloadable model packs as a possible future feature.
 - Kept model-pack download and replacement outside the current project scope.

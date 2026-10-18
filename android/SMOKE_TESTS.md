@@ -27,12 +27,18 @@
 13. Confirm that the debug images come from the photograph that supplies Top-1.
 14. Confirm that the action creates one history row.
 15. Confirm that the history preview comes from the photograph that supplies Top-1.
+16. Use a first photograph with Top-1 `0.93` or more and a Top-2 margin `0.08` or more.
+17. Confirm that the application does not process the remaining photographs.
+18. Confirm that the technical text reports `Ранний выход: высокое сходство`.
+19. Use a result below either early-exit threshold.
+20. Confirm that the application processes the next photograph.
 
 ## Verification on 2026-10-18
 
 - Four multi-shot result-fusion unit tests passed.
-- All 30 debug unit tests passed.
-- All 27 release unit tests passed.
+- Four multi-shot early-exit unit tests passed.
+- All 34 debug unit tests passed.
+- All 31 release unit tests passed.
 - `lintDebug` and `lintRelease` passed.
 - `assembleDebug` and `assembleRelease` passed.
 - The multi-shot device checks are pending.

@@ -71,6 +71,12 @@ The application MUST report an error when all selected photographs fail.
 The application MUST use the photograph that supplies the final Top-1 score for debug images.
 The application MUST use this photograph for the history preview.
 The application MUST write one history row for one multi-shot recognition action.
+After each successful photograph, the application MUST check the merged Top-1 result.
+The application MUST stop before the next photograph when Top-1 is `0.93` or more and
+the margin over Top-2 is `0.08` or more.
+The application MUST NOT stop early when fewer than two candidates exist.
+The technical result text MUST report an early exit.
+The technical result text MUST show the number of processed photographs.
 
 The user interface MUST show the image score as `Сходство: <whole percent>%`.
 The user interface MUST NOT describe the cosine score as confidence.

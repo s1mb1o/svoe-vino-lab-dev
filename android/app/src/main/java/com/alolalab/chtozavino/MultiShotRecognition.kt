@@ -1,5 +1,10 @@
 package com.alolalab.chtozavino
 
+internal const val MULTI_SHOT_EARLY_EXIT_SCORE = 0.93f
+internal const val MULTI_SHOT_EARLY_EXIT_MARGIN = 0.08f
+
+private const val SCORE_EPSILON = 0.000001f
+
 internal data class MultiShotMergeResult(
     val matches: List<WineMatch>,
     val bestShotIndex: Int,
@@ -36,4 +41,16 @@ internal fun mergeMultiShotMatches(
         matches = merged.map(ShotMatch::match),
         bestShotIndex = merged.first().shotIndex,
     )
+}
+
+internal fun shouldStopMultiShot(matches: List<WineMatch>): Boolean {
+    if (matches.size < 2) return false
+    val ranked = matches.sortedWith(
+        compareByDescending<WineMatch>(WineMatch::score)
+            .thenBy { it.wine.slug },
+    )
+    val topScore = ranked[0].score
+    val scoreMargin = topScore - ranked[1].score
+    return topScore + SCORE_EPSILON >= MULTI_SHOT_EARLY_EXIT_SCORE &&
+        scoreMargin + SCORE_EPSILON >= MULTI_SHOT_EARLY_EXIT_MARGIN
 }

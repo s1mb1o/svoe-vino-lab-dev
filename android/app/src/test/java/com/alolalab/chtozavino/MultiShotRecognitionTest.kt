@@ -1,7 +1,9 @@
 package com.alolalab.chtozavino
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MultiShotRecognitionTest {
@@ -52,6 +54,41 @@ class MultiShotRecognitionTest {
         assertThrows(IllegalArgumentException::class.java) {
             mergeMultiShotMatches(listOf(emptyList()))
         }
+    }
+
+    @Test
+    fun stopsForAHighTopScoreWithALargeMargin() {
+        assertTrue(
+            shouldStopMultiShot(
+                listOf(
+                    match("wine-a", MULTI_SHOT_EARLY_EXIT_SCORE),
+                    match("wine-b", MULTI_SHOT_EARLY_EXIT_SCORE - MULTI_SHOT_EARLY_EXIT_MARGIN),
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun continuesWhenTheTopScoreIsBelowTheThreshold() {
+        assertFalse(
+            shouldStopMultiShot(
+                listOf(match("wine-a", 0.92f), match("wine-b", 0.70f)),
+            ),
+        )
+    }
+
+    @Test
+    fun continuesWhenTheScoreMarginIsTooSmall() {
+        assertFalse(
+            shouldStopMultiShot(
+                listOf(match("wine-a", 0.96f), match("wine-b", 0.89f)),
+            ),
+        )
+    }
+
+    @Test
+    fun continuesWithoutASecondCandidate() {
+        assertFalse(shouldStopMultiShot(listOf(match("wine-a", 0.99f))))
     }
 
     private fun match(slug: String, score: Float): WineMatch = WineMatch(

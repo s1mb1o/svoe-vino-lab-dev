@@ -28,6 +28,10 @@ Improve recognition when one photograph has a weak bottle or label view.
 - The application MUST show at most five merged matches.
 - The application MUST keep processing when one photograph fails.
 - The application MUST report an error when all photographs fail.
+- After each successful photograph, the application MUST check the merged Top-1 result.
+- The application MUST stop early when Top-1 is at least `0.93` and the margin over
+  Top-2 is at least `0.08`.
+- The early-exit check MUST require at least two candidates.
 
 Sequential processing keeps one recognition pipeline active.
 This rule reduces LiteRT GPU memory pressure.
@@ -40,12 +44,15 @@ This rule reduces LiteRT GPU memory pressure.
 - The technical text MUST show the number of selected photographs.
 - The technical text MUST identify the photograph that produced the Top-1 score.
 - The technical text MUST report a skipped photograph count when a photograph fails.
+- The technical text MUST report when the application stops early.
 
 ## Verification
 
 - Add unit tests for maximum-score fusion.
 - Add unit tests for deterministic score ties.
 - Add unit tests for the five-result limit.
+- Add unit tests for both early-exit thresholds.
+- Add a unit test for a result without a second candidate.
 - Run the Android unit tests.
 - Run Android lint.
 - Build the debug APK.

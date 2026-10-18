@@ -293,8 +293,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
             val recognizedShots = mutableListOf<RecognizedShot>()
             val failures = mutableListOf<String>()
+            var processedCount = 0
+            var stoppedEarly = false
             try {
-                bitmaps.forEachIndexed { index, bitmap ->
+                for ((index, bitmap) in bitmaps.withIndex()) {
+                    processedCount = index + 1
                     mutableState.update {
                         it.copy(progressText = "Обрабатываем фото ${index + 1} из ${bitmaps.size}…")
                     }
@@ -304,6 +307,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                             activeEngine.recognize(bitmap, accelerators, currentState.segmenterMode)
                         }
                         recognizedShots += RecognizedShot(index, output)
+                        if (index < bitmaps.lastIndex) {
+                            val partialResult = mergeMultiShotMatches(
+                                recognizedShots.map { it.output.matches },
+                            )
+                            if (shouldStopMultiShot(partialResult.matches)) {
+                                stoppedEarly = true
+                                break
+                            }
+                        }
                     } catch (error: Throwable) {
                         if (error is CancellationException) throw error
                         failures += "Фото ${index + 1}: ${friendlyMessage(error)}"
@@ -336,7 +348,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         isBusy = false,
                         progressText = null,
                         technicalText = buildString {
-                            append("Обработано фото: ${recognizedShots.size} из ${bitmaps.size}. ")
+                            append("Обработано фото: $processedCount из ${bitmaps.size}. ")
+                            if (stoppedEarly) append("Ранний выход: высокое сходство. ")
+                            if (recognizedShots.size != processedCount) {
+                                append("Успешно: ${recognizedShots.size}. ")
+                            }
                             append("Лучший результат: фото ${bestShot.originalIndex + 1}. ")
                             append("${bestShot.output.segmenterName}: ")
                             append("${recognizedShots.sumOf { shot -> shot.output.segmentationMs }} мс ")

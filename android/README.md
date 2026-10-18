@@ -43,6 +43,10 @@ The debug images and the history preview come from the photograph that supplies 
 final Top-1 result.
 The application continues when one photograph fails.
 The application reports an error when all photographs fail.
+After each successful photograph, the application checks the merged Top-1 result.
+The application stops before the next photograph when Top-1 is at least `0.93` and the
+margin over Top-2 is at least `0.08`.
+The technical result text reports this early exit.
 
 ## Build
 
