@@ -1,5 +1,5 @@
 import { computed, onScopeDispose, ref, shallowRef, type Ref } from 'vue'
-import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, sourceWineUrl, type Wine } from '#shared/catalog'
+import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isHeicFile, sourceWineUrl, type Wine } from '#shared/catalog'
 
 type Mode = 'mock' | 'upstream' | undefined
 type Phase = 'idle' | 'selected' | 'loading' | 'resolving' | 'matched' | 'error'
@@ -80,6 +80,7 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
           400: 'Не удалось прочитать фото. Попробуйте другой снимок.',
           413: 'Фото слишком большое. Выберите файл до 10 МБ.',
           415: 'Нужен снимок в формате JPEG, PNG, WebP или HEIC.',
+          422: isHeicFile(file.value!) ? 'Не удалось прочитать HEIC. Сохраните фото как JPEG.' : 'Не удалось прочитать фото. Попробуйте другой снимок.',
           502: 'Сервис поиска не ответил. Попробуйте ещё раз.',
           503: 'Сервис поиска ещё не подключён. Попробуйте позже.',
           504: 'Поиск занял слишком много времени. Попробуйте ещё раз.',

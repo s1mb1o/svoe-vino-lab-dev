@@ -63,7 +63,7 @@ describe('shelf group-match proxy', () => {
     expect((options.body as FormData).get('image')).toBeInstanceOf(File)
   })
 
-  it.each([400, 401, 408, 413, 415, 502, 503, 504])('preserves actionable upstream status %i', async status => {
+  it.each([400, 401, 408, 413, 415, 422, 502, 503, 504])('preserves actionable upstream status %i', async status => {
     const request = vi.fn().mockResolvedValue(new Response('', { status }))
     await expect(matchGroup(photo(), endpoint, { fetch: request })).rejects.toMatchObject({ statusCode: status })
   })

@@ -37,6 +37,8 @@ These validation limits are portal choices. The evaluator does not specify them.
 The portal returns HTTP 400 for missing or multiple files.
 The portal returns HTTP 413 for an oversized body or image.
 The portal returns HTTP 415 for an unsupported image.
+The portal passes HTTP 422 from the matcher when the matcher cannot decode the image.
+A matcher without HEIF support (#24) answers HTTP 422 for a HEIC photo.
 The portal returns HTTP 502 for upstream failure or invalid prediction output.
 The portal returns HTTP 504 for upstream timeout.
 Error bodies contain a readable `statusMessage`.

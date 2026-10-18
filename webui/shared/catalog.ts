@@ -16,6 +16,8 @@ export interface Wine {
 }
 
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024
+// A matcher without HEIF support answers HTTP 422 for a HEIC photo (issue #44).
+export const isHeicFile = (file: { type: string; name: string }) => /^image\/hei[cf]$/.test(file.type) || /\.hei[cf]$/i.test(file.name)
 export const MOCK_SLUG = 'priboj-marchenko-beloe-polusuhoe'
 
 export function extractSlug(value: unknown): string | null {

@@ -98,6 +98,14 @@ describe('automatic photo search', () => {
     expect(scanner.phase.value).toBe('matched')
   })
 
+  it.each([['label.heic', 'image/heic', 'Не удалось прочитать HEIC. Сохраните фото как JPEG.'], ['label.webp', 'image/webp', 'Не удалось прочитать фото. Попробуйте другой снимок.']])('explains an unreadable %s photo', async (name, type, message) => {
+    const request = vi.fn().mockResolvedValueOnce(response({ statusCode: 422 }, 422))
+    const { scanner } = setup(request)
+    await scanner.select([new File(['example image content'], name, { type })])
+    expect(scanner.phase.value).toBe('error')
+    expect(scanner.error.value).toBe(message)
+  })
+
   it('rejects invalid selections before sending requests', async () => {
     const request = vi.fn()
     const { scanner } = setup(request)

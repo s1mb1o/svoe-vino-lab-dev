@@ -1,5 +1,5 @@
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
-import { MAX_IMAGE_BYTES } from '#shared/catalog'
+import { MAX_IMAGE_BYTES, isHeicFile } from '#shared/catalog'
 import { SHELF_EXAMPLES, SHELF_TIMEOUT_MS, groupCandidateWine, validShelfResult, type ShelfExample, type ShelfResult } from '#shared/shelf'
 
 interface Dependencies {
@@ -55,7 +55,7 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
       const body = new FormData(); body.set('image', file.value)
       const response = await request('/v1/group/match', { method: 'POST', body, signal: active.signal })
       if (!response.ok) {
-        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 401: 'Сервис распознавания отклонил запрос.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG, WebP или HEIC.', 502: 'Сервис не смог распознать полку. Попробуйте ещё раз.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Распознавание бутылок заняло слишком много времени. Попробуйте ещё раз.' }
+        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 401: 'Сервис распознавания отклонил запрос.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG, WebP или HEIC.', 422: isHeicFile(file.value!) ? 'Не удалось прочитать HEIC. Сохраните фото как JPEG.' : 'Не удалось прочитать фото. Попробуйте другой снимок.', 502: 'Сервис не смог распознать полку. Попробуйте ещё раз.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Распознавание бутылок заняло слишком много времени. Попробуйте ещё раз.' }
         throw new Error(messages[response.status] || 'Сервис не смог распознать бутылки. Попробуйте ещё раз.')
       }
       const value = await response.json()

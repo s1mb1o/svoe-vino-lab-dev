@@ -23,7 +23,7 @@ export function hasGroupMatchEndpoint(predictionEndpoint: unknown): boolean {
 }
 
 function upstreamError(status = 502) {
-  const allowed = [400, 401, 408, 413, 415, 502, 503, 504]
+  const allowed = [400, 401, 408, 413, 415, 422, 502, 503, 504]
   return createError({ statusCode: allowed.includes(status) ? status : 502, statusMessage: 'Group matching service failed' })
 }
 

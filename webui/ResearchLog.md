@@ -1,5 +1,12 @@
 # Research log
 
+## Matcher answer for HEIC without HEIF support, 2026-10-18
+
+The production matcher has no HEIF support (#24). A staging check on Princess sent a real HEIC photo.
+`/v1/eval/predict` and `/v1/group/match` of the matcher answered HTTP 422 `image file is invalid or damaged`.
+The portal changed 422 to 502, so the page asked the visitor to retry. A retry cannot help.
+The portal now passes 422. The page shows a HEIC-specific message for a HEIC photo.
+
 ## Mode pages and HEIC uploads, 2026-10-18
 
 The owner chose `/` for «Одна бутылка» and `/shelf` for «Вся полка».

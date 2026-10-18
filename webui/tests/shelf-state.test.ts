@@ -174,6 +174,14 @@ describe('shelf UI state', () => {
     expect(scanner.phase.value).not.toBe('error')
   })
 
+  it.each([['shelf.heic', 'image/heic', 'Не удалось прочитать HEIC. Сохраните фото как JPEG.'], ['shelf.jpg', 'image/jpeg', 'Не удалось прочитать фото. Попробуйте другой снимок.']])('explains an unreadable %s shelf photo', async (name, type, message) => {
+    const request = vi.fn().mockResolvedValueOnce(Response.json({ statusCode: 422 }, { status: 422 }))
+    const { scanner } = setup(request)
+    await scanner.select([new File(['image'], name, { type })])
+    expect(scanner.phase.value).toBe('error')
+    expect(scanner.error.value).toBe(message)
+  })
+
   it('rejects multiple, empty, unsupported, and oversized photos before requests', async () => {
     const request = vi.fn()
     const { scanner } = setup(request)

@@ -11,6 +11,7 @@
 ## HEIC uploads
 
 Run these checks only with a matcher that has HEIC support (#24, #44).
+With a matcher without HEIC support, a HEIC upload MUST show «Не удалось прочитать HEIC. Сохраните фото как JPEG.» in both modes.
 
 - In both modes, confirm the hint «JPEG, PNG, WebP, HEIC · до 10 МБ».
 - In Chrome, upload a `.heic` file. Confirm the text «Браузер не может показать это фото, но мы всё равно его проверим.» and a match.

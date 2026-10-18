@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-18 — Message for an unreadable HEIC photo
+
+- Pass HTTP 422 from the matcher in `/v1/eval/predict` and `/v1/group/match`. Before, the portal changed it to 502 («повторите»).
+- For HTTP 422, show «Не удалось прочитать HEIC. Сохраните фото как JPEG.» for a HEIC photo,
+  and «Не удалось прочитать фото. Попробуйте другой снимок.» for other photos.
+- The production matcher has no HEIF support yet (#24). It answers HTTP 422 for HEIC.
+
 ## 2026-10-18 — Presentation v14
 
 - Replace `public/presentations/chtozavino-presentation.pptx` and `.pdf` with presentation v14 from the website.

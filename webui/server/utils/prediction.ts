@@ -21,7 +21,7 @@ export function imageType(bytes: Uint8Array): string | null {
 }
 
 function upstreamError(status = 502) {
-  const allowed = [400, 401, 408, 413, 415, 502, 503, 504]
+  const allowed = [400, 401, 408, 413, 415, 422, 502, 503, 504]
   return createError({ statusCode: allowed.includes(status) ? status : 502, statusMessage: 'Recognition service failed. Please retry.' })
 }
 
