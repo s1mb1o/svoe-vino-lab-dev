@@ -55,6 +55,8 @@ Read `docs/plans/01_product-line-map.md` and `docs/product-line-map-sources.md`.
 Keep one JSON file per producer in `shared/data/product-line-maps/`.
 Register each JSON through an explicit import in `shared/data/product-line-maps/index.ts`.
 Do not use `import.meta.glob` in this shared module. Nitro does not transform it in the server build.
+The MCP server reads this registry. Keep each entry in the form `import producerN from './<producer-id>.json'`.
+Keep the pure types and functions in `shared/product-line-core.ts`. Do not add runtime imports to this module. The MCP server imports it in Node.js.
 Keep each producer's independent catalog extract, crosswalk, and source provenance in `docs/product-line-maps/`.
 Record exact source URLs, catalog sections, retrieval dates, and source hashes for reviewed maps.
 Record the membership basis for each crosswalk entry.

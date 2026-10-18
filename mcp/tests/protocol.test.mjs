@@ -29,8 +29,8 @@ test('real SDK client discovers and calls all tools repeatedly over one stdio co
     }
     const comparison = await client.callTool({ name: 'compare_wines', arguments: { slugs } });
     assert(!comparison.isError, JSON.stringify(comparison)); assert.equal(data(comparison).taste_match, false);
-    const mock = await client.callTool({ name: 'get_producer_line', arguments: { slug: 'abrau-dyurso-victor-dravigny-bryut' } });
-    assert(!mock.isError, JSON.stringify(mock)); assert.equal(data(mock).status, 'demo');
+    const producerLine = await client.callTool({ name: 'get_producer_line', arguments: { slug: 'abrau-dyurso-victor-dravigny-bryut' } });
+    assert(!producerLine.isError, JSON.stringify(producerLine)); assert.equal(data(producerLine).status, 'ok'); assert.equal(data(producerLine).resolution, 'alias');
     const audio = await client.callTool({ name: 'get_audio', arguments: { slug: slugs[0], kind: 'summary' } });
     assert(!audio.isError, JSON.stringify(audio)); assert.equal(data(audio).status, 'unavailable');
     for (const request of [

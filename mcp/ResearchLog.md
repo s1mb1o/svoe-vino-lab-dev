@@ -1,5 +1,28 @@
 # MCP research log
 
+## 2026-10-19
+
+### Product-line map integration
+
+Node.js cannot import `webui/shared/product-line-map.ts`.
+Its JSON imports have no import attribute. Node.js stops with `ERR_IMPORT_ATTRIBUTE_MISSING`.
+The module also has a directory import and an extensionless runtime import.
+The Nuxt build needs these imports. Do not change them for the MCP server.
+The pure functions now live in `webui/shared/product-line-core.ts` without runtime imports.
+Node.js loads this module through native type stripping, like `webui/shared/catalog.ts`.
+
+The 19 maps have 1,046 products. 61 products have no catalog slug.
+980 of 2,094 bundle IDs are map nodes: 977 exact slugs and 3 aliases. All aliases are Abrau-Durso IDs.
+No bundle ID has a mapped producer without a node.
+8 map slugs are absent from the bundle: Abrau-Durso 2, ESSE 1, Fanagoria 1, Zolotaya Balka 4.
+The former demo ID `abrau-dyurso-victor-dravigny-bryut` is a verified alias.
+The former "other producer" test ID `avtohtonnoe-vino-kryma-beloe-suhoe` is now a node of the Valery Zakharyin map.
+
+Full map files are up to 183 KB. A projection without product descriptions and images is at most about 46 KB.
+With the current node and the envelope, the largest response is 49 KiB. The server limit is 128 KiB.
+Tier price labels are relative, for example «Базовый ориентир · ₽». No product has a price.
+Source conflicts are product badges. One Abrau-Durso source has no URL.
+
 ## 2026-10-18
 
 ### SDK decision

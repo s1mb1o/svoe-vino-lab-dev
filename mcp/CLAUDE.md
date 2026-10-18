@@ -1,7 +1,7 @@
 # MCP component instructions
 
 Read the workspace instructions before work.
-Read `README.md` and `../docs/plans/02_wine-catalog-mcp.md`.
+Read `README.md`, `../docs/plans/02_wine-catalog-mcp.md`, and `../docs/plans/03_mcp-producer-line-maps.md`.
 Use short active sentences in technical documents.
 
 Keep this component read-only.
@@ -9,8 +9,8 @@ Use the official pinned MCP SDK and the lockfile.
 Keep catalog operations in `src/catalog.mjs` independent of the protocol adapter.
 Keep stdout exclusive to the MCP protocol.
 Never use a provider request for an optional-content fallback.
-Keep the existing product-line mock explicitly marked as demo.
-Replace the mock only after the owner accepts the merged product-line dependency.
+Serve product-line maps only from the Web registry through `webui/shared/product-line-core.ts`. Do not copy map data.
+Link only Active snapshot IDs from map nodes. A null slug has no source link.
 Keep inactive IDs out of discovery and public card claims.
 Do not expose raw matcher configuration or local paths.
 

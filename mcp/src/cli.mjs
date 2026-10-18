@@ -18,6 +18,6 @@ try {
   server.server.onerror = () => process.stderr.write('MCP protocol error.\n');
   await server.connect(transport);
 } catch {
-  process.stderr.write('Wine MCP startup failed. Check the catalog snapshot and optional audio configuration.\n');
+  process.stderr.write('Wine MCP startup failed. Check the catalog snapshot, the product-line maps, and the optional audio configuration.\n');
   process.exitCode = 1;
 }

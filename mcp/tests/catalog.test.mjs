@@ -1,10 +1,10 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, writeFile, mkdtemp, mkdir, copyFile, rm, symlink } from 'node:fs/promises';
+import { readFile, writeFile, mkdtemp, mkdir, copyFile, rm, symlink, readdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { CatalogService, BUNDLE_PATH, sha256 } from '../src/catalog.mjs';
+import { CatalogService, BUNDLE_PATH, PRODUCT_LINE_PATH, sha256 } from '../src/catalog.mjs';
 import { outputs, inputs } from '../src/server.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -17,8 +17,13 @@ async function fixture(t) {
   for (const name of [`${BUNDLE_PATH}/manifest.json`, `${BUNDLE_PATH}/wines.jsonl`, 'workbench/db-export/rows/wine_catalog.jsonl', 'webui/docs/catalog-provenance.json']) {
     const path = join(target, name); await mkdir(dirname(path), { recursive: true }); await copyFile(join(root, name), path);
   }
+  await mkdir(join(target, PRODUCT_LINE_PATH), { recursive: true });
+  for (const name of await readdir(join(root, PRODUCT_LINE_PATH))) await copyFile(join(root, PRODUCT_LINE_PATH, name), join(target, PRODUCT_LINE_PATH, name));
   return target;
 }
+
+const lineOf = id => service.lines.find(line => line.producer.id === id);
+const linkedSlug = line => line.products.find(product => product.wine_slug && service.wines.get(product.wine_slug)?.state === 'Active').wine_slug;
 
 test('uses all matcher IDs and excludes non-Active records from discovery', () => {
   assert.equal(service.metadata.catalog_count, 2094);
@@ -114,24 +119,120 @@ test('comparison excludes unknown traits and requires distinct known IDs', () =>
   assert.throws(() => service.compareWines([slugs[0], 'no-such-wine']), error => error.code === 'unknown_wine');
 });
 
-test('existing Abrau mock is explicitly demo and exact selection is preserved', () => {
-  const result = service.getProducerLine('abrau-dyurso-victor-dravigny-bryut');
-  outputs.get_producer_line.parse(result);
-  assert.equal(result.status, 'demo'); assert.equal(result.mock, true); assert.equal(result.items.length, 6);
-  assert.equal(result.items.filter(item => item.current).length, 1);
-  assert(result.replacement_issue.endsWith('/25'));
+test('serves exactly the registered Web producer maps', async () => {
+  const registry = await readFile(join(root, PRODUCT_LINE_PATH, 'index.ts'), 'utf8');
+  const registered = [...registry.matchAll(/'\.\/([a-z0-9-]+)\.json'/g)].map(match => match[1]).sort();
+  assert.equal(registered.length, 19);
+  assert.deepEqual(service.lines.map(line => line.producer.id).sort(), registered);
+  assert.match(service.metadata.product_line_maps_sha256, /^[a-f0-9]{64}$/);
 });
 
-test('Abrau missing-node and other-producer paths do not substitute a demo identity', () => {
-  const slug = service.active.find(wine => wine.producer === 'Абрау-Дюрсо' && !service.getProducerLine(wine.slug).exact_node_found).slug;
+test('every Active ID resolves to its exact map node or to unavailable', () => {
+  const counts = {};
+  for (const wine of service.active) {
+    const result = service.getProducerLine(wine.slug);
+    const key = result.status === 'ok' ? result.resolution : result.status;
+    counts[key] = (counts[key] ?? 0) + 1;
+    if (result.status === 'ok') assert.equal(result.products.filter(product => product.current).length, 1);
+  }
+  assert.deepEqual(counts, { placed: 977, alias: 3, unavailable: 1113 });
+});
+
+test('every map response satisfies the schema and the response bound', () => {
+  for (const line of service.lines) {
+    const result = service.getProducerLine(linkedSlug(line));
+    outputs.get_producer_line.parse(result);
+    assert.equal(result.producer.id, line.producer.id);
+    assert.equal(result.products.length, line.products.length);
+    assert(Buffer.byteLength(JSON.stringify(result)) < 128 * 1024);
+  }
+});
+
+test('an alias ID returns the canonical product as the only current node', () => {
+  const slug = 'abrau-dyurso-victor-dravigny-bryut';
   const result = service.getProducerLine(slug);
-  assert.equal(result.status, 'demo'); assert.equal(result.exact_node_found, false); assert(result.items.every(item => !item.current));
-  const other = service.getProducerLine('avtohtonnoe-vino-kryma-beloe-suhoe');
-  assert.equal(other.status, 'unavailable'); assert.equal(other.items, undefined);
+  outputs.get_producer_line.parse(result);
+  assert.equal(result.resolution, 'alias');
+  assert.deepEqual(result.products.filter(product => product.current).map(product => product.id), [result.current_product.id]);
+  assert(lineOf('abrau-durso').products.find(product => product.id === result.current_product.id).wine_slug_aliases.includes(slug));
+  assert.notEqual(result.current_product.slug, slug);
+});
+
+test('a placed node keeps its details and links only Active snapshot IDs', () => {
+  const slug = linkedSlug(lineOf('zolotaya-balka'));
+  const result = service.getProducerLine(slug);
+  assert.equal(result.resolution, 'placed'); assert.equal(result.current_product.slug, slug);
+  assert(result.current_product.description && result.current_product.sources.length);
+  const outside = result.products.filter(product => product.catalog_state === 'outside_snapshot');
+  assert.equal(outside.length, 4);
+  assert(outside.every(product => product.slug === null && product.source_url === null));
+  assert(result.products.filter(product => product.catalog_state === 'linked').every(product => service.wines.get(product.slug).state === 'Active' && product.source_url.endsWith(`/${product.slug}`)));
+  assert(result.products.every(product => !('description' in product) && !('image' in product)));
+});
+
+test('a producer map without the requested node returns unplaced', () => {
+  const records = structuredClone(service.wines);
+  const outside = service.active.find(wine => service.getProducerLine(wine.slug).status === 'unavailable');
+  records.get(outside.slug).producer = 'Абрау-Дюрсо';
+  const result = new CatalogService(records, service.metadata, null, service.lines).getProducerLine(outside.slug);
+  outputs.get_producer_line.parse(result);
+  assert.equal(result.resolution, 'unplaced'); assert.equal(result.producer.id, 'abrau-durso');
+  assert.equal(result.current_product, null); assert(result.products.every(product => !product.current));
+});
+
+test('producers without a map stay unavailable, including a null producer', () => {
+  const outside = service.active.find(wine => wine.producer && service.getProducerLine(wine.slug).status === 'unavailable');
+  const result = service.getProducerLine(outside.slug);
+  outputs.get_producer_line.parse(result);
+  assert.equal(result.status, 'unavailable'); assert.equal(result.products, undefined);
+  const records = structuredClone(service.wines);
+  records.get(outside.slug).producer = null;
+  assert.equal(new CatalogService(records, service.metadata, null, service.lines).getProducerLine(outside.slug).status, 'unavailable');
+});
+
+test('an exact map ID has priority over conflicting producer text', () => {
   const records = structuredClone(service.wines);
   records.get('abrau-dyurso-victor-dravigny-bryut').producer = 'A different known producer';
-  const conflicting = new CatalogService(records, service.metadata).getProducerLine('abrau-dyurso-victor-dravigny-bryut');
-  assert.equal(conflicting.status, 'unavailable');
+  const result = new CatalogService(records, service.metadata, null, service.lines).getProducerLine('abrau-dyurso-victor-dravigny-bryut');
+  assert.equal(result.status, 'ok'); assert.equal(result.producer.id, 'abrau-durso'); assert.equal(result.resolution, 'alias');
+});
+
+test('source conflict badges stay visible in map nodes', () => {
+  let flaggedCount = 0;
+  for (const line of service.lines) {
+    const flagged = line.products.filter(product => product.badges.some(badge => badge.startsWith('Противоречие')));
+    if (!flagged.length) continue;
+    const result = service.getProducerLine(linkedSlug(line));
+    for (const product of flagged) assert.deepEqual(result.products.find(node => node.id === product.id).badges, product.badges);
+    flaggedCount += flagged.length;
+  }
+  assert(flaggedCount > 0);
+});
+
+for (const damage of ['registry', 'missing', 'producer', 'membership']) {
+  test(`startup rejects a ${damage} defect in the product-line maps`, async t => {
+    const target = await fixture(t);
+    const registry = join(target, PRODUCT_LINE_PATH, 'index.ts');
+    const mapPath = join(target, PRODUCT_LINE_PATH, 'agora.json');
+    const map = JSON.parse(await readFile(mapPath));
+    if (damage === 'registry') await writeFile(registry, (await readFile(registry, 'utf8')).replace(/^export default \[/m, 'export default [producer99, '));
+    if (damage === 'missing') await rm(mapPath);
+    if (damage === 'producer') { map.producer.id = 'agora-renamed'; await writeFile(mapPath, JSON.stringify(map)); }
+    if (damage === 'membership') { map.products[0].group_id = 'no-such-group'; await writeFile(mapPath, JSON.stringify(map)); }
+    await assert.rejects(CatalogService.load(target), damage === 'missing' ? { code: 'ENOENT' } : /product-line map/);
+  });
+}
+
+test('a product-line map edit changes the catalog version', async t => {
+  const target = await fixture(t);
+  const mapPath = join(target, PRODUCT_LINE_PATH, 'agora.json');
+  const map = JSON.parse(await readFile(mapPath));
+  map.products[0].description = 'Changed product description.';
+  await writeFile(mapPath, JSON.stringify(map));
+  const changed = await CatalogService.load(target);
+  assert.notEqual(changed.metadata.version, service.metadata.version);
+  assert.notEqual(changed.metadata.product_line_maps_sha256, service.metadata.product_line_maps_sha256);
+  assert.equal(changed.metadata.matcher_catalog_sha256, service.metadata.matcher_catalog_sha256);
 });
 
 test('default audio path is unavailable and never generates', async () => {

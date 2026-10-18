@@ -6,6 +6,8 @@ on:
     paths:
       - 'mcp/**'
       - 'webui/shared/catalog.ts'
+      - 'webui/shared/product-line-core.ts'
+      - 'webui/shared/data/product-line-maps/**'
       - 'webui/docs/catalog-provenance.json'
       - 'workbench/db-export/rows/wine_catalog.jsonl'
       - 'matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json'
@@ -40,6 +42,8 @@ jobs:
           sparse-checkout: |
             /mcp/
             /webui/shared/catalog.ts
+            /webui/shared/product-line-core.ts
+            /webui/shared/data/product-line-maps/
             /webui/docs/catalog-provenance.json
             /workbench/db-export/rows/wine_catalog.jsonl
             /matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json

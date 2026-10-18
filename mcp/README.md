@@ -58,7 +58,7 @@ No interactive third-party assistant or Qwen conversation has been tested.
 | `get_wine` | `slug` | Exact card, facts, missing fields, source references, state, record hash |
 | `find_wines` | `filters`, `limit` | Deterministic known-field matches. Default limit 3. Maximum limit 10. |
 | `compare_wines` | `slugs` | Two or three distinct exact IDs. Compare catalog facts only. |
-| `get_producer_line` | `slug` | Existing six-node Abrau mock with `status: demo`. Other producers return unavailable. |
+| `get_producer_line` | `slug` | Verified product-line map of the producer: tiers, groups, all nodes, and the current node. Producers without a map return unavailable. |
 | `get_audio` | `slug`, `kind` | Approved durable recording metadata or unavailable. No generation. |
 
 Example arguments for discovery:
@@ -93,7 +93,7 @@ The remaining Removed ID returns its state without a public card claim.
 Only Active records enter discovery and comparison.
 Lab-only entries outside the bundle do not enter MCP.
 
-The loader checks the bundle checksum, count, unique IDs, and source joins.
+The loader checks the bundle checksum, count, unique IDs, source joins, and product-line maps.
 Every result contains snapshot versions and source hashes.
 The loader does not expose internal URLs from the matcher manifest.
 `production_pairing_verified: false` means that no live production index was checked.
@@ -109,20 +109,48 @@ Source text is untrusted data. An MCP host must preserve this boundary when it c
 The static tool registry contains no write, shell, arbitrary SQL, URL fetch, or generation tool.
 Inbound messages are limited to 64 KiB. Structured results are limited to 128 KiB before protocol text duplication.
 
-## Product-line mock and follow-up
+## Producer product-line maps
 
-The owner explicitly requested the existing mock until the product-line map merges.
-The adapter imports `ABRAU_LINE` from `mcp/src/abrau-demo.mjs`.
-This file keeps the unchanged demo data of the removed `webui/shared/experiences.ts`.
-It does not fabricate a new map.
-Only an exact matching node has `current: true`.
-An Abrau wine outside those six nodes has `exact_node_found: false`.
-An item outside the matcher catalog has a null catalog slug and no source link.
-Another producer does not receive the Abrau mock as its producer map.
+The adapter serves the verified product-line maps of the Web UI.
+The loader reads the map list from the explicit imports in `webui/shared/data/product-line-maps/index.ts`.
+It reads each JSON file with a size limit and validates all maps with `webui/shared/product-line-core.ts`.
+The Web UI uses the same module. The two resolvers cannot drift.
+Startup stops when the registry, a map file, a producer ID, or the map validation fails.
+`product_line_maps_sha256` covers the registry and all map files. The catalog `version` also covers them.
+Read `../docs/plans/03_mcp-producer-line-maps.md` for the decisions.
 
-Replace the adapter after the verified product-line registry merges.
-The [issue comment](https://github.com/s1mb1o/svoe-vino-lab-dev/issues/25#issuecomment-6244267604) records this requirement.
-Do not remove the demo label until the replacement passes exact membership and coverage tests.
+The current registry has 19 producers and 1,046 products.
+980 Active IDs are map nodes: 977 exact slugs and 3 verified aliases.
+The other 1,113 Active IDs return unavailable.
+
+Resolution follows the Web UI:
+
+1. An exact slug or a verified alias selects its product. It has priority over the producer text of the record.
+2. Otherwise a matching producer name or alias selects the map. The result is `unplaced`.
+3. Otherwise a matching producer slug prefix selects the map. The result is `unplaced`.
+4. Otherwise the result is unavailable.
+
+| `resolution` | Meaning |
+| --- | --- |
+| `placed` | The requested ID is the slug of one product. |
+| `alias` | The requested ID is a verified alias of one product. |
+| `unplaced` | The producer has a map, but the requested ID is not a node. |
+
+For `placed` and `alias`, exactly one product has `current: true`. `current_product` contains its details and sources.
+For `unplaced`, no product is current, and `current_product` is null.
+`group_id` is the only membership relation.
+
+| `catalog_state` | Meaning |
+| --- | --- |
+| `linked` | The snapshot has an Active card. `slug` and `source_url` are set. |
+| `outside_snapshot` | The map links a catalog card without an Active record in this snapshot. `slug` and `source_url` are null. |
+| `no_catalog_card` | The map has no catalog card for this product. `slug` and `source_url` are null. |
+
+Badges stay unchanged. Source conflicts appear as badges, for example «Противоречие в данных каталога».
+Tiers are relative positions inside one producer. They are not prices. The result has no prices.
+A source without a URL, for example prepared sheets, has `url: null`.
+Product descriptions appear only in `current_product`. Image paths and frames are not returned.
+The largest current response is 49 KiB. A test checks every map against the 128 KiB limit.
 
 ## Optional approved audio
 

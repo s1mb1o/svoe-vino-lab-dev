@@ -17,6 +17,6 @@ try {
   const comparison = payload(await client.callTool({ name: 'compare_wines', arguments: { slugs } }));
   const line = payload(await client.callTool({ name: 'get_producer_line', arguments: { slug: 'abrau-dyurso-victor-dravigny-bryut' } }));
   const audio = payload(await client.callTool({ name: 'get_audio', arguments: { slug: slugs[0], kind: 'summary' } }));
-  console.log(JSON.stringify({ tools: tools.tools.map(tool => tool.name), catalog_count: selection.catalog.catalog_count, active_count: selection.catalog.active_count, selected: slugs, first_wine: card.wine.name, comparison: comparison.comparison_kind, shared_fields: comparison.shared.map(item => item.field), producer_line: line.status, audio: audio.status }, null, 2));
+  console.log(JSON.stringify({ tools: tools.tools.map(tool => tool.name), catalog_count: selection.catalog.catalog_count, active_count: selection.catalog.active_count, selected: slugs, first_wine: card.wine.name, comparison: comparison.comparison_kind, shared_fields: comparison.shared.map(item => item.field), producer_line: line.status, producer_line_resolution: line.resolution, audio: audio.status }, null, 2));
   if (errors) throw new Error('The server wrote an error to stderr');
 } finally { await client.close(); }
