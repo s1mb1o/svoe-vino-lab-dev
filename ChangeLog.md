@@ -5,6 +5,9 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-18
 
+- Added `ASSESSMENT.md`: an index of the features on `main` for the hackathon organizers and the
+  jury. It is not development documentation. Each feature has its status, entry point, proofs,
+  and a verify step. `README.md` links to it (#42).
 - Ported the Yandex.Metrika counter `113460637` of the production web UI to `webui/` (#40).
   The source is the lab repository `svoe-vino-lab`, branch `codex/metrika-release`, commits
   `10632011` and `af36345e`. Read `webui/ChangeLog.md`.
