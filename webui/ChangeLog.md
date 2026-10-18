@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-18 — Presentation v14
+
+- Replace `public/presentations/chtozavino-presentation.pptx` and `.pdf` with presentation v14 from the website.
+  PPTX: 91456347 bytes, SHA-256 `1f399b2e0d91509633355b61e0856dd358e3fe54671e310ef486533ca6af99fd`.
+  PDF: 8946863 bytes, 27 pages, SHA-256 `7afff5050353b30be57d1c30000a905a2b0164b214bc86b27e6973e9fafe7b03`.
+
 ## 2026-10-18 — Session Replay off
 
 - Turn off Metrika Session Replay: `webvisor: false` (owner decision in #41).
