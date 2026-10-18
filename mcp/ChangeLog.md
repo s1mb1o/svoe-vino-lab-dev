@@ -2,6 +2,8 @@
 
 ## 2026-10-18
 
+- Pull the Node.js test image in a separate CI step with three attempts. Docker Hub pulls failed twice on the self-hosted runner.
+- Rename the plan to `docs/plans/02_wine-catalog-mcp.md`. The number `01` belongs to the earlier `main` plan `01_im-core-package.md`.
 - Fix the protocol test for Linux CI. The test started the server in the macOS-only `/private/tmp` directory. It now uses `os.tmpdir()`.
 - Implement the read-only wine catalog MCP server for issue 25.
 - Add five strict tools, a stdio entry point, and an independent catalog service.

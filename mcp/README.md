@@ -2,7 +2,7 @@
 
 This component provides five read-only catalog tools over local stdio.
 Issue: [svoe-vino-lab-dev#25](https://github.com/s1mb1o/svoe-vino-lab-dev/issues/25).
-Read [the implementation plan](../docs/plans/01_wine-catalog-mcp.md).
+Read [the implementation plan](../docs/plans/02_wine-catalog-mcp.md).
 
 ## Requirements and commands
 

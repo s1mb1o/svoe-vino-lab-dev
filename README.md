@@ -97,7 +97,7 @@ matcher и model endpoint. Полная инструкция находится 
 - [Общее ядро ботов](im-core/README.md)
 - [Web UI](webui/README.md)
 - [Wine catalog MCP](mcp/README.md)
-- [MCP implementation plan](docs/plans/01_wine-catalog-mcp.md)
+- [MCP implementation plan](docs/plans/02_wine-catalog-mcp.md)
 - [Развертывание локальных моделей](docs/bootstrap/README.md)
 - [Эндпоинты моделей на Apple Silicon](docs/bootstrap/apple-silicon.md)
 - [Эндпоинты моделей на Selectel RTX 4090](docs/bootstrap/selectel-rtx4090.md)

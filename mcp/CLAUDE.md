@@ -1,7 +1,7 @@
 # MCP component instructions
 
 Read the workspace instructions before work.
-Read `README.md` and `../docs/plans/01_wine-catalog-mcp.md`.
+Read `README.md` and `../docs/plans/02_wine-catalog-mcp.md`.
 Use short active sentences in technical documents.
 
 Keep this component read-only.
