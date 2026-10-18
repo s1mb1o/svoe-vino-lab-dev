@@ -2,6 +2,7 @@
 
 ## 2026-10-18
 
+- Fix the protocol test for Linux CI. The test started the server in the macOS-only `/private/tmp` directory. It now uses `os.tmpdir()`.
 - Implement the read-only wine catalog MCP server for issue 25.
 - Add five strict tools, a stdio entry point, and an independent catalog service.
 - Verify 2,094 matcher IDs and expose 2,093 Active records for discovery.

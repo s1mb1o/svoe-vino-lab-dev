@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
@@ -9,7 +10,7 @@ const cli = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
 const data = result => result.structuredContent?.result ?? result.structuredContent;
 
 test('real SDK client discovers and calls all tools repeatedly over one stdio connection', { timeout: 20000 }, async () => {
-  const transport = new StdioClientTransport({ command: process.execPath, args: [cli], cwd: '/private/tmp', stderr: 'pipe' });
+  const transport = new StdioClientTransport({ command: process.execPath, args: [cli], cwd: tmpdir(), stderr: 'pipe' });
   let stderr = ''; transport.stderr.on('data', chunk => { stderr += chunk; });
   const client = new Client({ name: 'catalog-integration-test', version: '1.0.0' });
   try {
