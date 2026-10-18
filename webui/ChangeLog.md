@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-18 — Yandex.Metrika port
+
+- Port the Yandex.Metrika change from the lab repository `svoe-vino-lab`, branch `codex/metrika-release` (#40).
+- The lab commits are `10632011` (counter) and `af36345e` (verification record).
+  The release IDs in the 2026-10-06 entry are lab revisions.
+- This port does not include the presentation update of 2026-09-30 from the lab base.
+
 ## 2026-10-06 — Yandex.Metrika
 
 - Add the owner-supplied counter `113460637` to all pages.
