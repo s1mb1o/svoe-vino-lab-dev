@@ -19,6 +19,7 @@ from unittest import mock
 
 import numpy as np
 from PIL import Image
+from pillow_heif import register_heif_opener
 import yaml
 
 from matcher.protection import ImageRejected, validate_image
@@ -26,10 +27,19 @@ from matcher.service import ConfigError, load_matcher
 from matcher.siglip2 import Siglip2Error, model_input
 
 
+# The matcher service registers the HEIF plugin in `app.py`. These tests write and decode
+# HEIF in the test process, so they register it too.
+register_heif_opener()
+
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = ROOT / "matcher" / "config.yaml"
 HARNESS = Path(__file__).resolve().parent / "participant_test.sh"
 DATA = Path(__file__).resolve().parent / "data"
+# Small HEIF files. `apple-rotated.heic` is from the macOS encoder (sips): a 64x32 photo,
+# red on the left and blue on the right, with EXIF orientation 6. The `damaged-*` files
+# are HEIF files of pillow-heif with one changed byte or a cut end. They open, and their
+# decoding fails with EOFError, ValueError, or RuntimeError.
+HEIF_DATA = DATA / "heif"
 MANIFEST = Path(__file__).resolve().parent / "queries.tsv"
 MODEL = "siglip2-so400m-patch16-naflex"
 TOOLS = ("bash", "curl", "jq", "awk")
@@ -162,6 +172,14 @@ def mpo_bytes(first, second):
     return buffer.getvalue()
 
 
+def heif_bytes(first, second, primary_index):
+    """Return a HEIF file of two images. `primary_index` selects the primary image."""
+    buffer = BytesIO()
+    first.save(buffer, format="HEIF", save_all=True, append_images=[second],
+               primary_index=primary_index)
+    return buffer.getvalue()
+
+
 def damaged_jpeg():
     """Return the first half of a noise JPEG: the header is intact, the scan is cut."""
     pixels = np.random.default_rng(0).integers(0, 256, (200, 300, 3), dtype=np.uint8)
@@ -256,6 +274,55 @@ class Siglip2Test(unittest.TestCase):
             matcher.predict(damaged_jpeg())
         self.assertEqual(caught.exception.status_code, 422)
         self.assertEqual(caught.exception.detail, "image file is invalid or damaged")
+        self.assertEqual(fake.requests, [])
+
+    def test_a_heif_photo_uses_its_primary_image(self):
+        # The primary image has index 1. The image of index 0 is red.
+        photo = heif_bytes(Image.new("RGB", (16, 12), "red"),
+                           Image.new("RGB", (16, 12), "blue"), primary_index=1)
+        with Image.open(BytesIO(model_input(photo))) as sent:
+            self.assertEqual(sent.format, "PNG")
+            self.assertEqual(sent.size, (16, 12))
+            red, green, blue = sent.getpixel((0, 0))
+            self.assertLess(red, 10)
+            self.assertLess(green, 10)
+            self.assertGreater(blue, 240)
+
+    def test_a_rotated_heif_photo_is_upright_like_the_jpeg(self):
+        # Orientation 6 turns the red left half to the top. A double turn puts it at the
+        # bottom or at a side.
+        exif = Image.Exif()
+        exif[0x0112] = 6
+        image = Image.new("RGB", (32, 16), "red")
+        image.paste((0, 0, 255), (16, 0, 32, 16))
+        photos = {
+            "jpeg": image_bytes(image, "JPEG", exif=exif.tobytes()),
+            "pillow-heif": image_bytes(image, "HEIF", exif=exif.tobytes()),
+            "macOS": (HEIF_DATA / "apple-rotated.heic").read_bytes(),
+        }
+        for name, photo in photos.items():
+            with self.subTest(photo=name), Image.open(BytesIO(model_input(photo))) as sent:
+                self.assertEqual(sent.height, 2 * sent.width)
+                top = sent.getpixel((sent.width // 2, 2))
+                bottom = sent.getpixel((sent.width // 2, sent.height - 3))
+                self.assertGreater(top[0], 200)
+                self.assertLess(top[2], 60)
+                self.assertLess(bottom[0], 60)
+                self.assertGreater(bottom[2], 200)
+
+    def test_a_damaged_heif_photo_is_rejected_before_the_embedding_request(self):
+        matcher, fake = self.matcher((1, 0, 0, 0))
+        for name in ("damaged-eof.heic", "damaged-extent.heic", "damaged-limit.heic"):
+            with self.subTest(photo=name):
+                photo = (HEIF_DATA / name).read_bytes()
+                # The admission check reads the header alone, so the damaged photo
+                # passes it.
+                self.assertEqual(validate_image(photo, 1_000_000).format, "HEIF")
+                with self.assertRaises(ImageRejected) as caught:
+                    matcher.predict(photo)
+                self.assertEqual(caught.exception.status_code, 422)
+                self.assertEqual(caught.exception.detail,
+                                 "image file is invalid or damaged")
         self.assertEqual(fake.requests, [])
 
     def test_multiple_images_use_one_embedding_request(self):

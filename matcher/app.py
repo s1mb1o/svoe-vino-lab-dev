@@ -14,6 +14,7 @@ import uuid
 
 from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from PIL import Image
+from pillow_heif import register_heif_opener
 from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
@@ -24,6 +25,11 @@ from .service import CascadeMatcher, load_matcher
 from .services import ServiceError
 from .siglip2 import Siglip2Error
 
+
+# Pillow opens HEIF (HEIC) uploads through the pillow-heif plugin. The service registers
+# it here and not in the shared modules: the workbench imports those modules without
+# pillow-heif.
+register_heif_opener()
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG = ROOT / "config.yaml"
@@ -367,7 +373,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         response_description="The Top-1 catalogue match.",
         summary="Predict one wine",
         description=(
-            "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
+            "Upload one JPEG, PNG, WEBP, or HEIC image in the multipart field `image`. "
             "The endpoint requires `Authorization: Bearer <token>` when "
             "`matcher.token` is configured."
         ),
@@ -413,7 +419,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         response_description="The ranked catalogue candidates.",
         summary="Match one wine",
         description=(
-            "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
+            "Upload one JPEG, PNG, WEBP, or HEIC image in the multipart field `image`. "
             "The answer holds up to `k` ranked candidates with their catalogue cards. "
             "The endpoint requires `Authorization: Bearer <token>` when "
             "`matcher.token` is configured."
@@ -480,7 +486,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         response_description="The segmented bottles and their best catalogue matches.",
         summary="Match all bottles in one shelf image",
         description=(
-            "Upload one JPEG, PNG, or WEBP shelf image in the multipart field `image`. "
+            "Upload one JPEG, PNG, WEBP, or HEIC shelf image in the multipart field "
+            "`image`. "
             "The service segments wine bottles with SAM3 and matches every returned "
             "bottle against the selected catalogue bundle. Each bottle holds up to `k` "
             "ranked candidates. The endpoint requires "

@@ -214,6 +214,30 @@ class GroupSegmentationTest(unittest.TestCase):
             self.assertLess(green, 10)
             self.assertLess(blue, 10)
 
+    def test_a_heif_photo_uses_its_primary_image(self):
+        # The primary image has index 1. The image of index 0 is red.
+        photo = test_siglip2.heif_bytes(Image.new("RGB", (16, 12), "red"),
+                                        Image.new("RGB", (16, 12), "blue"),
+                                        primary_index=1)
+        answer = {"width": 16, "height": 12, "count": 0, "instances": []}
+        result = segment_group(photo, "http://sam3.test", opener=self.opener(answer))
+        preview = base64.b64decode(result.preview.split(",", 1)[1])
+        with Image.open(BytesIO(preview)) as sent:
+            red, green, blue = sent.getpixel((0, 0))
+            self.assertLess(red, 10)
+            self.assertLess(green, 10)
+            self.assertGreater(blue, 240)
+
+    def test_a_damaged_heif_photo_is_400_before_the_sam3_request(self):
+        for name in ("damaged-eof.heic", "damaged-extent.heic", "damaged-limit.heic"):
+            with self.subTest(photo=name):
+                opener = self.opener()
+                with self.assertRaises(GroupMatchError) as caught:
+                    segment_group((test_siglip2.HEIF_DATA / name).read_bytes(),
+                                  "http://sam3.test", opener=opener)
+                self.assertEqual(caught.exception.status_code, 400)
+                self.assertEqual(opener.requests, [])
+
     def test_empty_response_is_retried_once(self):
         payload = json.dumps(sam3_answer()).encode("utf-8")
         opener = FakeOpener(b"", payload)

@@ -18,7 +18,12 @@ GROUP_MATCH_PATH = "/v1/group/match"
 PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH, GROUP_MATCH_PATH})
 # The key of `scope["state"]` that holds the `perf_counter` value of the request start.
 REQUEST_STARTED_AT = "started_at"
-SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "MPO", "PNG", "WEBP"})
+# Pillow opens HEIF (HEIC) only with the pillow-heif plugin. `app.py` registers it, so
+# the shared modules of this package do not need pillow-heif.
+SUPPORTED_IMAGE_FORMATS = frozenset({"HEIF", "JPEG", "MPO", "PNG", "WEBP"})
+# The errors of a damaged image when the pixels are decoded. pillow-heif also raises
+# EOFError and RuntimeError for damaged HEIF data.
+DECODE_ERRORS = (EOFError, OSError, RuntimeError, SyntaxError, ValueError)
 
 
 @dataclass(frozen=True)
@@ -232,6 +237,7 @@ def validate_image(body, max_pixels):
 
     The function runs in worker threads. It MUST NOT change the warnings filters: the
     filter list is global to the process. The explicit pixel check is the size limit.
+    For HEIF, `verify` checks nothing: the decoders find damaged HEIF data.
     """
     try:
         with Image.open(BytesIO(body)) as image:
@@ -240,7 +246,8 @@ def validate_image(body, max_pixels):
             if image_format not in SUPPORTED_IMAGE_FORMATS:
                 raise ImageRejected(
                     415,
-                    "image format MUST be JPEG (including MPO), PNG, or WEBP",
+                    "image format MUST be JPEG (including MPO), PNG, WEBP, or HEIF "
+                    "(including HEIC)",
                 )
             if width <= 0 or height <= 0:
                 raise ImageRejected(422, "image dimensions MUST be positive")

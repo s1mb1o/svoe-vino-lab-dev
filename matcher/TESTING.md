@@ -288,6 +288,8 @@ official harness из следующего раздела.
 Копия официального тестового клиента находится в `matcher/tests/participant_test.sh`.
 Манифест находится в `matcher/tests/queries.tsv`. Три изображения находятся в
 `matcher/tests/data/`. Соседний репозиторий `svoe-wino-hackaton` не требуется.
+Папка `matcher/tests/data/heif/` содержит маленькие HEIF-файлы для тестов HEIC. Harness
+их не использует.
 
 Запустите matcher по инструкции из [README.md](README.md). Затем выполните:
 

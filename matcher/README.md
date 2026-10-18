@@ -439,7 +439,8 @@ curl --header "Authorization: Bearer $SVOE_VINO_MATCHER_TOKEN" \
 {"slug":"massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16"}
 ~~~
 
-Сервис принимает только JPEG, PNG и WEBP. Он возвращает HTTP 400 для пустого файла.
+Сервис принимает только JPEG, PNG, WEBP и HEIF (включая HEIC). Он возвращает HTTP 400
+для пустого файла.
 Он возвращает HTTP 401 при неверном токене. Он возвращает HTTP 408 при таймауте
 загрузки. Он возвращает HTTP 413 при превышении размера body, размера изображения или
 числа пикселей. Он возвращает HTTP 415 для другого формата. Он возвращает HTTP 422 для
@@ -447,8 +448,15 @@ curl --header "Authorization: Bearer $SVOE_VINO_MATCHER_TOKEN" \
 очередь заполнена или запрос ждал в ней слишком долго.
 
 The admission check reads the image header and does not decode the pixels. A damaged
-JPEG, MPO, or WEBP can pass it. The decoding then fails, and the service returns HTTP 422.
-The request archive keeps such an image and its `request.json` record.
+JPEG, MPO, WEBP, or HEIF can pass it. The decoding then fails, and the service returns
+HTTP 422. The request archive keeps such an image and its `request.json` record.
+
+The `pillow-heif` plugin of Pillow reads HEIF (HEIC). The service decodes the primary
+image of a HEIF file and applies its rotation. A photo of 48 MP has more than 40,000,000
+pixels. With the default limit, it gets HTTP 413. To accept such photos, set
+`SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS` to a larger value, at most the Pillow limit. A tiled
+HEIF photo that is cut short can decode without an error; see
+[docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md), item 4.
 
 Лимит полного HTTP body равен `SVOE_VINO_MATCHER_MAX_IMAGE_BYTES` плюс 64 КиБ для
 multipart-обрамления. Этот лимит действует и для chunked upload без Content-Length.

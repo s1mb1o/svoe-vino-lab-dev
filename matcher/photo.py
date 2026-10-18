@@ -17,7 +17,7 @@ import math
 from PIL import Image, ImageFilter, ImageOps, UnidentifiedImageError
 
 from .group import GroupMatchError
-from .protection import ImageRejected
+from .protection import DECODE_ERRORS, ImageRejected
 
 
 # The SAM3 copy of `group._normalize_image`.
@@ -47,17 +47,19 @@ class Sam3Copy:
 def decode(body: bytes) -> Image.Image:
     """Return the RGB image of the first frame, upright, with transparency on white.
 
-    These are the first steps of `siglip2.model_input`. A damaged file raises
-    `ImageRejected` with HTTP status 422.
+    For HEIF, the frame is the primary image. These are the first steps of
+    `siglip2.model_input`. A damaged file raises `ImageRejected` with HTTP status 422.
     """
     try:
         with Image.open(BytesIO(body)) as opened:
-            opened.seek(0)
+            # A HEIF file opens at its primary image. That image can have any index.
+            if opened.format != "HEIF":
+                opened.seek(0)
             image = ImageOps.exif_transpose(opened)
             alpha = image.mode in ("RGBA", "LA", "PA") or (
                 image.mode == "P" and "transparency" in image.info)
             image = image.convert("RGBA" if alpha else "RGB")
-    except (OSError, SyntaxError, ValueError) as exc:
+    except DECODE_ERRORS as exc:
         raise ImageRejected(422, "image file is invalid or damaged") from exc
     if image.mode == "RGBA":
         white = Image.new("RGBA", image.size, (255, 255, 255, 255))

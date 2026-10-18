@@ -32,7 +32,7 @@ When a fix is merged, remove its entry and record the fix in [../ChangeLog.md](.
 
 - Found: 2026-09-29, during the fix of item 1 of the code review.
 - Status: open. The owner did not decide on it.
-- Effect: with `hand_selection: true`, a damaged JPEG, MPO, or WEBP can pass the
+- Effect: with `hand_selection: true`, a damaged JPEG, MPO, WEBP, or HEIF can pass the
   admission check. `POST /v1/eval/predict` and `POST /v1/match` then answer HTTP 400
   `image cannot be decoded`. Without hand selection, the same file gets HTTP 422
   `image file is invalid or damaged`. `README.md` documents HTTP 422 for a damaged image.
@@ -59,3 +59,22 @@ When a fix is merged, remove its entry and record the fix in [../ChangeLog.md](.
   - Use SAM3 for target selection when it is available.
   - Compare the DIS result with a full-image embedding and keep the safer result.
   - Reject a DIS crop that removes most of a label or contains too little text context.
+
+## 4. A cut tiled HEIF photo decodes without an error
+
+- Found: 2026-10-17, during the HEIF support work (GitHub issue #24).
+- Status: open. The owner did not decide on it.
+- Effect: a tiled HEIF photo that is cut short gets a normal answer, not HTTP 422. The
+  missing tiles decode as green areas, so the match is probably wrong or empty. iPhone
+  photos are tiled. A cut JPEG gets HTTP 422.
+- Cause: libheif 1.23.6 reports no error for a tile without data. The tile decodes as a
+  green area, and `load` raises no error. The options of pillow-heif 1.8.1 do not change
+  this. `validate_image` does not check HEIF data (`verify` does nothing).
+- Reproduction: convert `matcher/tests/data/02eef911.webp` to HEIC with
+  `sips -s format heic`. Keep the first half of the bytes. `photo.decode` returns an image
+  of 3024 x 4032 pixels with a green lower part.
+- Possible corrections. The owner did not select one.
+  - Walk the top-level ISO BMFF boxes in `validate_image`. Answer HTTP 422 when a box
+    goes past the end of the file.
+  - Keep the current behavior. The HTTP layer already rejects an incomplete upload; only
+    a file that is damaged on the client gets this result.

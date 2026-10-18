@@ -1,5 +1,60 @@
 # Research log
 
+## HEIF (HEIC) decoding with Pillow, 2026-10-17
+
+Context: GitHub issue #24. Pillow 12.3.0 cannot read HEIC without a plugin. Two plugins
+have the same code: `pillow-heif` and the decode-only `pi-heif`. The checks ran on macOS
+arm64 with Python 3.14 and Pillow 12.3.0.
+
+| Package | libheif | Wheel (cp311, manylinux x86_64) | Encoder | Released |
+|---|---|---:|---|---|
+| `pi-heif` 1.4.0 | 1.23.0 | 1.5 MB | none | 2026-06-10 |
+| `pillow-heif` 1.8.1 | 1.23.6 | 5.7 MB | x265 | 2026-10-11 |
+
+Crash test: each byte of five small HEIC files was changed, one at a time (2,106 files).
+Each file was opened and loaded in a separate process.
+
+- `pi-heif` 1.4.0: 4 files stopped the process with SIGSEGV in `Image.open`. The 4 files
+  come from the two rotated seeds (EXIF orientation 6, from pillow-heif and from macOS
+  `sips`). In the matcher, `validate_image` calls `Image.open` in the server process, so
+  one upload stops the service.
+- `pillow-heif` 1.8.1: no crash. It opens and decodes the same 4 files.
+- The Linux wheels were not tested. Docker did not run on this Mac.
+
+Decision (owner, 2026-10-17): use `pillow-heif` 1.8.1. The owner first selected the
+recommended `pi-heif` (smaller wheel, decoder only). The crash test came after that
+choice, and the owner then selected `pillow-heif`.
+
+- Consequence: the wheel also holds the x265 encoder. x265 has the GPL license; this is
+  the reason that `pi-heif` exists. Check the license terms before the Docker image goes
+  to a third party.
+- Consequence: `matcher/tests/data/heif/libheif-1.23.0-crash.heic` is one of the 4 crash
+  files. `test_the_libheif_crash_file_does_not_stop_the_service` sends it to the server.
+- Possible change: move to `pi-heif` when a release has libheif 1.23.6 or newer. Repeat
+  the crash test first.
+
+Behavior of pillow-heif 1.8.1 (pi-heif 1.4.0 has the same behavior):
+
+- `Image.format` is `HEIF` for HEIC files. AVIF files still open as `AVIF` through the
+  Pillow AVIF plugin, so the matcher answers HTTP 415 for them.
+- The plugin applies the HEIF rotation (`irot`, `imir`) and sets the EXIF orientation to
+  1. `ImageOps.exif_transpose` then does not turn the image a second time. The macOS
+  encoder and pillow-heif files with EXIF orientation 6 decode upright.
+- `Image.open` selects the primary image (`heif_file.primary_index`). `seek(0)` selects
+  image 0, which is a different image when the primary image has another index.
+- `verify` does nothing. An error of `Image.open` becomes `UnidentifiedImageError`.
+  `load` raises `EOFError`, `ValueError`, `RuntimeError`, or `SyntaxError` for damaged
+  data.
+- A header with a small `ispe` size and larger coded data does not pass the pixel limit:
+  libheif stops the decode with `RuntimeError` ("Security limit exceeded") or
+  `ValueError`. It does not allocate the large image.
+- A tiled photo of 3024 x 4032 from the macOS encoder, cut to half its length, opens and
+  decodes without an error. The missing tiles are green. See `docs/KNOWN_ISSUES.md`,
+  item 4.
+- A photo of 48 MP has more than 40,000,000 pixels. With the default limit, the matcher
+  answers HTTP 413. `SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS` can raise the limit to the
+  Pillow limit of 89,478,485.
+
 ## Organizers' eval script against the local matcher, 2026-09-29
 
 The matcher ran on this Mac on port 8158 with `matcher/config.yaml` (pipeline

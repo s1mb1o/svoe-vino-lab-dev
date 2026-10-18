@@ -12,14 +12,15 @@ import tempfile
 import unittest
 
 import numpy as np
+from PIL import Image
 import yaml
 
 from matcher.bundle import infer_sugar, load_bundle
 from matcher.service import load_matcher
 import test_siglip2
 from test_siglip2 import (
-    FakeSiglip2, ROWS, damaged_jpeg, file_record, free_port, unit, wait_for_server,
-    write_bundle, write_jsonl,
+    FakeSiglip2, HEIF_DATA, ROWS, damaged_jpeg, file_record, free_port, heif_bytes,
+    sent_png, unit, wait_for_server, write_bundle, write_jsonl,
 )
 
 
@@ -374,6 +375,52 @@ class MatchEndpointTest(unittest.TestCase):
         for record in records:
             self.assertEqual(record["response"],
                              {"status_code": 422, "error_type": "ImageRejected"})
+
+    def test_a_heif_photo_is_matched_on_both_single_image_endpoints(self):
+        fake = FakeSiglip2(unit((1, 0, 0, 0)))
+        self.addCleanup(fake.close)
+        port, root = self.start({"name": "match-siglip2", "backend": "siglip2",
+                                 "bundle": True, "endpoint": fake.url})
+        # The primary image has index 1. The image of index 0 is red.
+        photo = heif_bytes(Image.new("RGB", (16, 12), "red"),
+                           Image.new("RGB", (16, 12), "blue"), primary_index=1)
+        status, answer = self.post(port, body=photo, token=None, path="/v1/eval/predict")
+        self.assertEqual(status, 200, answer)
+        self.assertEqual(set(answer), {"slug"})
+        status, answer = self.post(port, body=photo, token=None, path="/v1/match")
+        self.assertEqual(status, 200, answer)
+        self.assertTrue(answer["candidates"])
+
+        self.assertEqual(len(fake.requests), 2)
+        for _, body in fake.requests:
+            with sent_png(body) as sent:
+                self.assertEqual(sent.size, (16, 12))
+                red, green, blue = sent.getpixel((0, 0))
+                self.assertLess(red, 10)
+                self.assertGreater(blue, 240)
+        records = [json.loads(path.read_text(encoding="utf-8"))
+                   for path in (root / "requests").rglob("request.json")]
+        self.assertEqual(len(records), 2)
+        for record in records:
+            self.assertEqual(
+                (record["image"]["format"], record["image"]["width"],
+                 record["image"]["height"]), ("HEIF", 16, 12))
+
+    def test_a_damaged_heif_answers_422_on_both_single_image_endpoints(self):
+        fake = FakeSiglip2(unit((1, 0, 0, 0)))
+        self.addCleanup(fake.close)
+        port, _ = self.start({"name": "match-siglip2", "backend": "siglip2",
+                              "bundle": True, "endpoint": fake.url})
+        for name in ("damaged-eof.heic", "damaged-extent.heic", "damaged-limit.heic"):
+            for endpoint in ("/v1/eval/predict", "/v1/match"):
+                with self.subTest(photo=name, endpoint=endpoint):
+                    status, answer = self.post(
+                        port, body=(HEIF_DATA / name).read_bytes(), token=None,
+                        path=endpoint)
+                    self.assertEqual(status, 422, answer)
+                    self.assertEqual(answer,
+                                     {"detail": "image file is invalid or damaged"})
+        self.assertEqual(fake.requests, [])
 
 
 if __name__ == "__main__":

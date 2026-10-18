@@ -16,7 +16,8 @@
 
 ## Что умеет система
 
-- Принимает JPEG, PNG и WebP через Web UI, Telegram и HTTP API.
+- Принимает JPEG, PNG и WebP через Web UI, Telegram и HTTP API. HTTP API матчера
+  также принимает HEIF (HEIC).
 - The Web UI shows an 18+ warning and requires age confirmation before access.
 - Возвращает один slug через `POST /v1/eval/predict`.
 - Возвращает до 20 кандидатов через `POST /v1/match`.

@@ -17,12 +17,20 @@ from unittest import mock
 import warnings
 
 from PIL import Image
+from pillow_heif import register_heif_opener
 
 from matcher.protection import ImageRejected, validate_image
 
 
+# The matcher service registers the HEIF plugin in `app.py`. These tests write and check
+# HEIF in the test process, so they register it too.
+register_heif_opener()
+
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = Path(__file__).resolve().parent / "config.yaml"
+# This damaged HEIF opens with pillow-heif 1.8.1 (libheif 1.23.6). It stopped the Python
+# process with SIGSEGV in Image.open with pi-heif 1.4.0 (libheif 1.23.0).
+LIBHEIF_CRASH = Path(__file__).resolve().parent / "data" / "heif" / "libheif-1.23.0-crash.heic"
 MAX_IMAGE_BYTES = 32 * 1024
 MAX_REQUEST_BYTES = MAX_IMAGE_BYTES + 64 * 1024
 UPLOAD_TIMEOUT_SECONDS = 0.4
@@ -68,6 +76,13 @@ def tiny_mpo():
     with Image.new("RGB", (4, 3), "red") as first:
         with Image.new("RGB", (4, 3), "blue") as second:
             first.save(output, format="MPO", save_all=True, append_images=[second])
+    return output.getvalue()
+
+
+def plain_image(format_name, size=(8, 6)):
+    output = BytesIO()
+    with Image.new("RGB", size, (12, 34, 56)) as image:
+        image.save(output, format=format_name)
     return output.getvalue()
 
 
@@ -218,8 +233,32 @@ class MatcherResilienceTest(unittest.TestCase):
     def test_unsupported_image_format_is_rejected(self):
         status, body = self.predict(tiny_gif())
         self.assertEqual(status, 415)
-        self.assertIn("JPEG (including MPO), PNG, or WEBP",
+        self.assertIn("JPEG (including MPO), PNG, WEBP, or HEIF (including HEIC)",
                       json.loads(body)["detail"])
+        self.assert_service_survives()
+
+    def test_heif_is_accepted(self):
+        status, body = self.predict(plain_image("HEIF"))
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), {"slug": ""})
+        records = list(Path(self.output_directory.name).rglob("request.json"))
+        self.assertEqual(len(records), 1)
+        record = json.loads(records[0].read_text(encoding="utf-8"))
+        self.assertEqual(record["image"]["format"], "HEIF")
+        self.assertEqual((record["image"]["width"], record["image"]["height"]), (8, 6))
+
+    def test_heif_above_the_pixel_limit_is_rejected(self):
+        # 1,200,000 pixels; the limit of this server is 1,000,000.
+        heif = plain_image("HEIF", (1200, 1000))
+        self.assertLess(len(heif), MAX_IMAGE_BYTES)
+        status, body = self.predict(heif)
+        self.assertEqual(status, 413)
+        self.assertIn("pixel count", json.loads(body)["detail"])
+        self.assert_service_survives()
+
+    def test_the_libheif_crash_file_does_not_stop_the_service(self):
+        status, _ = self.predict(LIBHEIF_CRASH.read_bytes())
+        self.assertIn(status, (200, 422))
         self.assert_service_survives()
 
     def test_mpo_is_accepted_as_a_jpeg_family_image(self):
@@ -340,6 +379,12 @@ class ImageValidationTest(unittest.TestCase):
                 check_b.join(5)
             after = list(warnings.filters)
         self.assertEqual(after, before)
+
+    def test_avif_stays_unsupported(self):
+        # The HEIF plugin MUST NOT take AVIF files: Pillow opens them as AVIF.
+        with self.assertRaises(ImageRejected) as caught:
+            validate_image(plain_image("AVIF"), 1000)
+        self.assertEqual(caught.exception.status_code, 415)
 
     def test_a_header_above_the_pillow_warning_limit_is_rejected(self):
         # 100,000,000 pixels: Pillow warns and does not raise. The pixel check rejects it.

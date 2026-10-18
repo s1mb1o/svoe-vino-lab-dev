@@ -1,5 +1,39 @@
 # Change log
 
+## 2026-10-17
+
+- Accepted HEIF (HEIC) uploads in `POST /v1/eval/predict`, `POST /v1/match`, and
+  `POST /v1/group/match` (GitHub issue #24). iPhone cameras save HEIC by default.
+  Before, the admission check answered HTTP 415.
+  - Added the direct dependency `pillow-heif==1.8.1` (libheif 1.23.6). `app.py`
+    registers its Pillow plugin. The request audit records the format `HEIF`.
+    `requirements.lock` adds only `pillow-heif`, with the hashes of all 70 files.
+  - The shared modules (`protection.py`, `photo.py`, `group.py`) do not import
+    `pillow-heif`. The workbench imports them, and its environment has no
+    `pillow-heif`: `workbench/tests/test_matcher_parity.py` passes without it (Codex
+    review finding). Code that decodes HEIF outside `app.py` MUST call
+    `pillow_heif.register_heif_opener()` first.
+  - Rejected `pi-heif` 1.4.0 (libheif 1.23.0): 4 of 2,106 damaged HEIC files stopped the
+    Python process with SIGSEGV in `Image.open`. See `ResearchLog.md`.
+  - `photo.decode` and `group._normalize_image` decode the primary image of a HEIF file.
+    A HEIF file opens at its primary image, and that image can have any index. Before,
+    `seek(0)` selected image 0 for each format.
+  - Both decoders map `EOFError` and `RuntimeError` of a damaged image to the client
+    error: HTTP 422 for the single-image endpoints, HTTP 400 for the group endpoint and
+    for hand selection. `group._normalize_image` also maps `SyntaxError` and
+    `ValueError`. Before, these errors gave HTTP 500. `protection.DECODE_ERRORS` holds the
+    shared list.
+  - The request archive keeps the suffix `.heif`.
+  - Updated the endpoint descriptions in `app.py` and `openapi.yaml`, `README.md`,
+    `SMOKE_TESTS.md`, `TESTING.md`, and `docs/KNOWN_ISSUES.md` (new item 4: a cut tiled
+    HEIF decodes without an error).
+  - Added 11 tests (213 to 224) and 5 small HEIF files in `tests/data/heif/`. Without the
+    decoder changes, the new primary-image and damaged-file tests fail. The full suite
+    passes 224 of 224 tests on Python 3.14 and on Python 3.11 with `requirements.lock`.
+    Under a load average of 15 to 54 on the test Mac, one deadline test of
+    `test_cascade.py` failed in some runs. `main` gave the same results in alternating
+    runs under the same load.
+
 ## 2026-09-29
 
 - The bundle `data/gx10-siglip2-so400m-patch16-naflex-p512/` is in git now (owner

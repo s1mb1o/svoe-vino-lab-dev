@@ -41,8 +41,8 @@ class Siglip2Error(RuntimeError):
 def model_input(image_bytes):
     """Return the PNG bytes of one photo after the steps of the lab pipeline.
 
-    `validate_image` does not decode the pixels. A damaged JPEG, MPO, or WEBP can pass it
-    and fail here. Such a photo raises ImageRejected with HTTP status 422.
+    `validate_image` does not decode the pixels. A damaged JPEG, MPO, WEBP, or HEIF can
+    pass it and fail here. Such a photo raises ImageRejected with HTTP status 422.
     """
     return model_png(decode(image_bytes))
 

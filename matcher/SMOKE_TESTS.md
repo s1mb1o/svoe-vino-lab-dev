@@ -31,6 +31,22 @@
 - Set `SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS=89478486`. Confirm that the matcher does not
   start and that the error names the Pillow limit.
 
+## HEIC photos
+
+- Select a SigLIP2 pipeline. Convert a known photo to HEIC, for example with
+  `sips -s format heic matcher/tests/data/02eef911.webp --out /tmp/known.heic` on macOS.
+- Send the HEIC photo to `POST /v1/eval/predict`, `POST /v1/match`, and
+  `POST /v1/group/match`. Confirm HTTP 200 from each endpoint.
+- Confirm that the single-image answers have the same top slug as the answers for the
+  original photo.
+- Confirm that each audit record has `"format": "HEIF"`.
+- Send a rotated iPhone photo in HEIC. Confirm that the `preview` of
+  `POST /v1/group/match` is upright.
+- Send `matcher/tests/data/heif/damaged-eof.heic` to `POST /v1/eval/predict`. Confirm
+  HTTP 422 with `image file is invalid or damaged`.
+- Send `matcher/tests/data/heif/libheif-1.23.0-crash.heic`. Confirm that the matcher
+  still answers `GET /healthz`.
+
 ## Liveness and readiness
 
 - Select a mock pipeline. Confirm HTTP 200 from `/healthz` and `/readyz` without a

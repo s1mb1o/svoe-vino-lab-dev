@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 IMAGE_SUFFIXES = frozenset({
-    ".avif", ".bmp", ".gif", ".heic", ".jpeg", ".jpg", ".png", ".tif", ".tiff",
+    ".avif", ".bmp", ".gif", ".heic", ".heif", ".jpeg", ".jpg", ".png", ".tif", ".tiff",
     ".webp",
 })
 SENSITIVE_HEADERS = frozenset({

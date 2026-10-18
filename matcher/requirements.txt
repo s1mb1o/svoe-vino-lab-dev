@@ -5,6 +5,9 @@ httpx==0.28.1
 numpy==2.4.6; python_version < "3.12"
 numpy==2.5.3; python_version >= "3.12"
 pillow==12.3.0
+# The HEIF (HEIC) plugin of Pillow. pi-heif 1.4.0 (libheif 1.23.0) crashed on damaged
+# HEIC files; pillow-heif 1.8.1 (libheif 1.23.6) did not. See ResearchLog.md, 2026-10-17.
+pillow-heif==1.8.1
 pydantic==2.13.5
 python-multipart==0.0.32
 PyYAML==6.0.3

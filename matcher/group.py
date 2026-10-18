@@ -15,6 +15,8 @@ import uuid
 
 from PIL import Image, ImageChops, ImageOps, UnidentifiedImageError
 
+from .protection import DECODE_ERRORS
+
 
 MAX_SIDE = 1600
 MAX_INSTANCES = 500
@@ -162,12 +164,14 @@ def segment_group(image_bytes: bytes, endpoint: str | None,
 def _normalize_image(image_bytes: bytes) -> tuple[Image.Image, bytes]:
     try:
         with Image.open(BytesIO(image_bytes)) as opened:
-            opened.seek(0)
+            # A HEIF file opens at its primary image. That image can have any index.
+            if opened.format != "HEIF":
+                opened.seek(0)
             image = ImageOps.exif_transpose(opened)
             alpha = image.mode in ("RGBA", "LA", "PA") or (
                 image.mode == "P" and "transparency" in image.info)
             image = image.convert("RGBA" if alpha else "RGB")
-    except (OSError, UnidentifiedImageError) as exc:
+    except DECODE_ERRORS as exc:
         raise GroupMatchError(400, "image cannot be decoded") from exc
     if image.mode == "RGBA":
         white = Image.new("RGBA", image.size, (255, 255, 255, 255))
