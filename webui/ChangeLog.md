@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — Shared product-line core
+
+- Move the pure product-line types, the resolver, and the validator to `shared/product-line-core.ts`. The module has no runtime imports.
+- Keep the public exports of `shared/product-line-map.ts`. It binds the registered maps.
+- Node.js can import the core module. The MCP server needs it to serve the same maps (#25).
+- Accept a null producer in the resolver. The MCP catalog has records without a producer.
+- Pass 274 unit tests (20 snapshot tests skipped), the type check, and the production build.
+
 ## 2026-10-19 — Log layout
 
 - Move the 2026-10-16 and 2026-10-17 lineup entries from above the file title into the dated list.
