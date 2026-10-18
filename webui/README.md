@@ -38,6 +38,7 @@ The counter enables Session Replay, click maps, link tracking, accurate bounce t
 and the `dataLayer` ecommerce integration. It can use cookies.
 The shared HTML includes the initialization script and a no-JavaScript image fallback.
 Client navigation sends a page view with the previous page URL as the referrer.
+The page view is sent after Nuxt sets the title of the new page.
 
 The portal shows an 18+ warning and requires age confirmation before access.
 The browser stores age confirmation and the selected theme in `localStorage`.

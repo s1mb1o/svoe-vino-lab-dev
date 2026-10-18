@@ -6,6 +6,9 @@
 - The lab commits are `10632011` (counter) and `af36345e` (verification record).
   The release IDs in the 2026-10-06 entry are lab revisions.
 - This port does not include the presentation update of 2026-09-30 from the lab base.
+- Send a client-navigation page view after Nuxt renders the head of the new page.
+  Metrika now records the title of the new page, not the title of the previous page (#40).
+  Production release `10632011` does not have this fix.
 
 ## 2026-10-06 — Yandex.Metrika
 

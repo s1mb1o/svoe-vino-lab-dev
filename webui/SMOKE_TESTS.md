@@ -13,6 +13,9 @@ The presentation files and video remain byte-identical to the previous release.
 - Confirm one body-start noscript image with `https://mc.yandex.ru/watch/113460637`.
 - Open a page in a new browser context. Confirm one asynchronous Metrika loader.
 - Navigate through internal links. Confirm one `hit` for each successful URL change.
+- For each `hit`, confirm that `document.title` at the call is the title of the new page.
+  Check a link from `/ideas` to `/android`, browser Back, and the in-page anchor `#implemented`.
+- Open `/IDEAS?utm_source=campaign` and follow the link to `/ideas`. Confirm one `hit` with the `/ideas` title.
 - Confirm that app mounting does not send a second initial page view.
 - Block the external Metrika loader. Confirm that the page and navigation still work.
 - Confirm the existing age gate, service health, and presentation artifacts.

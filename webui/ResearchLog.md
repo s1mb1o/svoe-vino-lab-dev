@@ -1,5 +1,24 @@
 # Research log
 
+## Metrika page title on client navigation, 2026-10-18
+
+A Codex review of the port found that a client-navigation `hit` used the title of the previous page.
+The `hit` method uses `document.title` when `options.title` is absent.
+Reference: https://yandex.ru/support/metrica/en/objects/hit
+`router.afterEach` runs before Nuxt renders the head of the new page.
+Nuxt pauses head rendering on `page:start`. Its `page:finish` hook queues the head render with `setTimeout(0)`.
+`NuxtPage` calls `page:loading:end` once for each navigation.
+For a new page, it calls the hook after `page:finish`. For a reused page, it calls the hook on the next tick.
+A reused page has the same route key, for example after a hash change or after `/IDEAS` → `/ideas`.
+The plugin queues each hit in `router.afterEach`. A `setTimeout(0)` from `page:loading:end` sends the queue.
+That timer runs after the head render timer, so `document.title` is the title of the new page.
+A first fix used `page:finish` and the path string. Codex found that `/IDEAS` → `/ideas` then lost the hit.
+A Chrome probe blocked all `mc.yandex.ru` requests and recorded `ym` calls.
+Before the fix, `/ideas` → `/android` and browser Back sent the previous title.
+After the fix, four navigations each sent one hit with the title of its own page:
+the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
+Production release `10632011` still has the defect.
+
 ## Yandex.Metrika, 2026-10-06
 
 The owner supplied counter `113460637` and requested installation on `chtozavino.ru`.
