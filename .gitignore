@@ -62,3 +62,11 @@ workbench/dataset/*/runs/
 !/workbench/data/testsets/
 /workbench/data/testsets/*
 !/workbench/data/testsets/images/
+
+# iPhone generated files
+/ios/.venv/
+/ios/build/
+/ios/DerivedData/
+/ios/ChtoZaVino/Resources/BuiltinPack/
+/ios/ChtoZaVino/Resources/Models/
+/ios/ChtoZaVino/Resources/CompiledModels/

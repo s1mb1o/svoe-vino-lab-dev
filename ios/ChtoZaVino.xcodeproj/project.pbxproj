@@ -1,0 +1,641 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		041C95BACBDFC80A09E0E008 /* YOLO26nSeg.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = 2788B62CAD7343C99A8F0AC6 /* YOLO26nSeg.mlmodelc */; };
+		1127F83E3AB02A3FB1DB81E4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E907661690ECA1BB1A6DFC /* SettingsView.swift */; };
+		229BFD71F2E9FBF966022D3B /* SigLIP2ImageEncoder.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = 483F67BD6A1A5D0ABC22A345 /* SigLIP2ImageEncoder.mlmodelc */; };
+		2B0BEAE72B42201189F01938 /* BuiltinPack in Resources */ = {isa = PBXBuildFile; fileRef = D3F7314C4DB5CC77848AF2F0 /* BuiltinPack */; };
+		31A12362449B5829BD902BB7 /* CodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B11BF2A3083548B5A1EA7D /* CodeScanner.swift */; };
+		3FE0FE3CAF7E24CED21E2714 /* ImagePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C54981F74C39935293BE13 /* ImagePipeline.swift */; };
+		42BAABC87BA7F8473B799E92 /* AccessibilitySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE39EE550629C752FB43F23 /* AccessibilitySupport.swift */; };
+		50C22B209B9FB3E950856A26 /* MobileCLIP2S2ImageEncoder.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = F3253340B12FC0383EC592E4 /* MobileCLIP2S2ImageEncoder.mlmodelc */; };
+		5B07263ADE889A8F00090F8C /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551C10493AF92DC2A42C6299 /* CameraPicker.swift */; };
+		5EFD9A4394FFF9FE404837A7 /* AccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D628E67BFC965C3F2899EDE2 /* AccessibilityUITests.swift */; };
+		76F4393A971D13D60DF465D3 /* ResourcePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E6D997ACBDF58A4F616BB9 /* ResourcePack.swift */; };
+		81B1F1787B5579BC8AEDE840 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B80BF3F6FE820740A87069 /* HistoryStore.swift */; };
+		891F68763C97B2F88D28748F /* YOLOSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3CBCEC4813180C7FF385D0 /* YOLOSegmenter.swift */; };
+		91985135D042F94DCCFF9408 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4516ED7224FBBF51F28D108D /* Preferences.swift */; };
+		A7AF2A9DA68C4399739D4B23 /* ChtoZaVinoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 549720D4964D14C3094184D5 /* ChtoZaVinoApp.swift */; };
+		AE0B6CCA3D6D5997FA8CDE94 /* RecognitionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2909E2230502390BDF3C909 /* RecognitionEngine.swift */; };
+		AE9C3A5E0A3E72A2CF21B394 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398C8DACE2714F34CDB603C3 /* Models.swift */; };
+		B13C8C26688891808A69E603 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C81B4382CD9EA51C65B87E /* HistoryView.swift */; };
+		BD29D42F1E034D6EBF098F2B /* DebugHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD96A53569F43AB1D0455D3 /* DebugHTTPServer.swift */; };
+		CAA563019914F41F9CDE35B5 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0AADB432AD41A2254A5DBB /* AppViewModel.swift */; };
+		CDA92BE8A2328B758B958D3F /* DIS.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = 8770A53052B94F0AC2C39BE4 /* DIS.mlmodelc */; };
+		CDD383138FC0EF382BFB5A39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4DD50790832EACC9AC6EA4A /* Assets.xcassets */; };
+		CE39099903ED2A2672844339 /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473C4826D1D38A1AC6AEFA72 /* CoreTests.swift */; };
+		DA28F6E18FEC4FD7787B2D16 /* SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = 0351920EC356867A4A6ED0BB /* SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc */; };
+		E66E3923EBE32144A92C5E64 /* CoreMLInference.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08816F309C22BB1996A91E0 /* CoreMLInference.swift */; };
+		E84A8639EFBB5D29090B0706 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BE6032E2BAFDD713CEDE65 /* ContentView.swift */; };
+		E95D0F0FDE90D9AD88677EA0 /* CatalogueIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DDAB834F2BD58D1AD07337 /* CatalogueIndex.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		02C048D41F81402C979313D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F1B20F70ED0462C74F56ECC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E124F1414FD1AF50B42EB1A;
+			remoteInfo = ChtoZaVino;
+		};
+		CD7A5EF42A69739725634A14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F1B20F70ED0462C74F56ECC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E124F1414FD1AF50B42EB1A;
+			remoteInfo = ChtoZaVino;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0351920EC356867A4A6ED0BB /* SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc; path = ChtoZaVino/Resources/CompiledModels/SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc; sourceTree = SOURCE_ROOT; };
+		0A3CBCEC4813180C7FF385D0 /* YOLOSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YOLOSegmenter.swift; sourceTree = "<group>"; };
+		10E907661690ECA1BB1A6DFC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2788B62CAD7343C99A8F0AC6 /* YOLO26nSeg.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = YOLO26nSeg.mlmodelc; path = ChtoZaVino/Resources/CompiledModels/YOLO26nSeg.mlmodelc; sourceTree = SOURCE_ROOT; };
+		2F7D7FB3A1CE165D1CEAF9C7 /* ChtoZaVino.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ChtoZaVino.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		398C8DACE2714F34CDB603C3 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		39B11BF2A3083548B5A1EA7D /* CodeScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeScanner.swift; sourceTree = "<group>"; };
+		4516ED7224FBBF51F28D108D /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		473C4826D1D38A1AC6AEFA72 /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
+		483F67BD6A1A5D0ABC22A345 /* SigLIP2ImageEncoder.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SigLIP2ImageEncoder.mlmodelc; path = ChtoZaVino/Resources/CompiledModels/SigLIP2ImageEncoder.mlmodelc; sourceTree = SOURCE_ROOT; };
+		51DDAB834F2BD58D1AD07337 /* CatalogueIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogueIndex.swift; sourceTree = "<group>"; };
+		52C54981F74C39935293BE13 /* ImagePipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePipeline.swift; sourceTree = "<group>"; };
+		549720D4964D14C3094184D5 /* ChtoZaVinoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChtoZaVinoApp.swift; sourceTree = "<group>"; };
+		551C10493AF92DC2A42C6299 /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		8770A53052B94F0AC2C39BE4 /* DIS.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DIS.mlmodelc; path = ChtoZaVino/Resources/CompiledModels/DIS.mlmodelc; sourceTree = SOURCE_ROOT; };
+		A2E6D997ACBDF58A4F616BB9 /* ResourcePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourcePack.swift; sourceTree = "<group>"; };
+		B9B80BF3F6FE820740A87069 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
+		C08816F309C22BB1996A91E0 /* CoreMLInference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLInference.swift; sourceTree = "<group>"; };
+		D2909E2230502390BDF3C909 /* RecognitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecognitionEngine.swift; sourceTree = "<group>"; };
+		D3F7314C4DB5CC77848AF2F0 /* BuiltinPack */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BuiltinPack; path = ChtoZaVino/Resources/BuiltinPack; sourceTree = SOURCE_ROOT; };
+		D628E67BFC965C3F2899EDE2 /* AccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityUITests.swift; sourceTree = "<group>"; };
+		ECC45E89DEF9592A10CBBF8F /* ChtoZaVinoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ChtoZaVinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED0AADB432AD41A2254A5DBB /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		F0C81B4382CD9EA51C65B87E /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		F1BE6032E2BAFDD713CEDE65 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F3253340B12FC0383EC592E4 /* MobileCLIP2S2ImageEncoder.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MobileCLIP2S2ImageEncoder.mlmodelc; path = ChtoZaVino/Resources/CompiledModels/MobileCLIP2S2ImageEncoder.mlmodelc; sourceTree = SOURCE_ROOT; };
+		F4DD50790832EACC9AC6EA4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F787C72D928799F31B8250EF /* ChtoZaVinoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ChtoZaVinoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCD96A53569F43AB1D0455D3 /* DebugHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugHTTPServer.swift; sourceTree = "<group>"; };
+		FCE39EE550629C752FB43F23 /* AccessibilitySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilitySupport.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		010E1DC8814E599CEB0FAF11 /* ChtoZaVino */ = {
+			isa = PBXGroup;
+			children = (
+				FCE39EE550629C752FB43F23 /* AccessibilitySupport.swift */,
+				ED0AADB432AD41A2254A5DBB /* AppViewModel.swift */,
+				551C10493AF92DC2A42C6299 /* CameraPicker.swift */,
+				51DDAB834F2BD58D1AD07337 /* CatalogueIndex.swift */,
+				549720D4964D14C3094184D5 /* ChtoZaVinoApp.swift */,
+				39B11BF2A3083548B5A1EA7D /* CodeScanner.swift */,
+				F1BE6032E2BAFDD713CEDE65 /* ContentView.swift */,
+				C08816F309C22BB1996A91E0 /* CoreMLInference.swift */,
+				FCD96A53569F43AB1D0455D3 /* DebugHTTPServer.swift */,
+				B9B80BF3F6FE820740A87069 /* HistoryStore.swift */,
+				F0C81B4382CD9EA51C65B87E /* HistoryView.swift */,
+				52C54981F74C39935293BE13 /* ImagePipeline.swift */,
+				398C8DACE2714F34CDB603C3 /* Models.swift */,
+				4516ED7224FBBF51F28D108D /* Preferences.swift */,
+				D2909E2230502390BDF3C909 /* RecognitionEngine.swift */,
+				A2E6D997ACBDF58A4F616BB9 /* ResourcePack.swift */,
+				10E907661690ECA1BB1A6DFC /* SettingsView.swift */,
+				0A3CBCEC4813180C7FF385D0 /* YOLOSegmenter.swift */,
+				1B45878F837EE91659CE7B42 /* Resources */,
+			);
+			path = ChtoZaVino;
+			sourceTree = "<group>";
+		};
+		1B45878F837EE91659CE7B42 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F4DD50790832EACC9AC6EA4A /* Assets.xcassets */,
+				D3F7314C4DB5CC77848AF2F0 /* BuiltinPack */,
+				AEF973063BD12E6B62AA53BC /* CompiledModels */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1E262D6B8690C910F4906B47 /* ChtoZaVinoTests */ = {
+			isa = PBXGroup;
+			children = (
+				473C4826D1D38A1AC6AEFA72 /* CoreTests.swift */,
+			);
+			path = ChtoZaVinoTests;
+			sourceTree = "<group>";
+		};
+		6391B7DF3FDB43D1CDF903B5 /* ChtoZaVinoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D628E67BFC965C3F2899EDE2 /* AccessibilityUITests.swift */,
+			);
+			path = ChtoZaVinoUITests;
+			sourceTree = "<group>";
+		};
+		AEF973063BD12E6B62AA53BC /* CompiledModels */ = {
+			isa = PBXGroup;
+			children = (
+				8770A53052B94F0AC2C39BE4 /* DIS.mlmodelc */,
+				F3253340B12FC0383EC592E4 /* MobileCLIP2S2ImageEncoder.mlmodelc */,
+				0351920EC356867A4A6ED0BB /* SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc */,
+				483F67BD6A1A5D0ABC22A345 /* SigLIP2ImageEncoder.mlmodelc */,
+				2788B62CAD7343C99A8F0AC6 /* YOLO26nSeg.mlmodelc */,
+			);
+			path = CompiledModels;
+			sourceTree = "<group>";
+		};
+		BC674DF8099E5DA58F95648F = {
+			isa = PBXGroup;
+			children = (
+				010E1DC8814E599CEB0FAF11 /* ChtoZaVino */,
+				1E262D6B8690C910F4906B47 /* ChtoZaVinoTests */,
+				6391B7DF3FDB43D1CDF903B5 /* ChtoZaVinoUITests */,
+				DCBF9B69AC80C050C8691C70 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DCBF9B69AC80C050C8691C70 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F7D7FB3A1CE165D1CEAF9C7 /* ChtoZaVino.app */,
+				ECC45E89DEF9592A10CBBF8F /* ChtoZaVinoTests.xctest */,
+				F787C72D928799F31B8250EF /* ChtoZaVinoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6E124F1414FD1AF50B42EB1A /* ChtoZaVino */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E30F10E21EAE77626DCE4ABC /* Build configuration list for PBXNativeTarget "ChtoZaVino" */;
+			buildPhases = (
+				176C079C2BE4CDD71E5E5E0B /* Sources */,
+				44F6344B3C273EB3DEF7AACC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ChtoZaVino;
+			packageProductDependencies = (
+			);
+			productName = ChtoZaVino;
+			productReference = 2F7D7FB3A1CE165D1CEAF9C7 /* ChtoZaVino.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B9B3AF45D2924E162EAA97F2 /* ChtoZaVinoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65ECA670A1B576540E6DBD10 /* Build configuration list for PBXNativeTarget "ChtoZaVinoUITests" */;
+			buildPhases = (
+				A47D90B8D9CAB43161609ADA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5B7FDF25011D936D3404CE06 /* PBXTargetDependency */,
+			);
+			name = ChtoZaVinoUITests;
+			packageProductDependencies = (
+			);
+			productName = ChtoZaVinoUITests;
+			productReference = F787C72D928799F31B8250EF /* ChtoZaVinoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F0788FABF9725078DAECABD0 /* ChtoZaVinoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57A425B4E44BFC7B440A3D6A /* Build configuration list for PBXNativeTarget "ChtoZaVinoTests" */;
+			buildPhases = (
+				7AD215A21B21BE7757AD4982 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1FB8438113E3CAB2C9753FD5 /* PBXTargetDependency */,
+			);
+			name = ChtoZaVinoTests;
+			packageProductDependencies = (
+			);
+			productName = ChtoZaVinoTests;
+			productReference = ECC45E89DEF9592A10CBBF8F /* ChtoZaVinoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1F1B20F70ED0462C74F56ECC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					6E124F1414FD1AF50B42EB1A = {
+						DevelopmentTeam = "";
+					};
+					B9B3AF45D2924E162EAA97F2 = {
+						DevelopmentTeam = "";
+						TestTargetID = 6E124F1414FD1AF50B42EB1A;
+					};
+					F0788FABF9725078DAECABD0 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = AB0AF484BD592E226FBB5E4E /* Build configuration list for PBXProject "ChtoZaVino" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BC674DF8099E5DA58F95648F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DCBF9B69AC80C050C8691C70 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6E124F1414FD1AF50B42EB1A /* ChtoZaVino */,
+				F0788FABF9725078DAECABD0 /* ChtoZaVinoTests */,
+				B9B3AF45D2924E162EAA97F2 /* ChtoZaVinoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		44F6344B3C273EB3DEF7AACC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDD383138FC0EF382BFB5A39 /* Assets.xcassets in Resources */,
+				2B0BEAE72B42201189F01938 /* BuiltinPack in Resources */,
+				CDA92BE8A2328B758B958D3F /* DIS.mlmodelc in Resources */,
+				50C22B209B9FB3E950856A26 /* MobileCLIP2S2ImageEncoder.mlmodelc in Resources */,
+				DA28F6E18FEC4FD7787B2D16 /* SigLIP2BaseNaFlexP512ImageEncoder.mlmodelc in Resources */,
+				229BFD71F2E9FBF966022D3B /* SigLIP2ImageEncoder.mlmodelc in Resources */,
+				041C95BACBDFC80A09E0E008 /* YOLO26nSeg.mlmodelc in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		176C079C2BE4CDD71E5E5E0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42BAABC87BA7F8473B799E92 /* AccessibilitySupport.swift in Sources */,
+				CAA563019914F41F9CDE35B5 /* AppViewModel.swift in Sources */,
+				5B07263ADE889A8F00090F8C /* CameraPicker.swift in Sources */,
+				E95D0F0FDE90D9AD88677EA0 /* CatalogueIndex.swift in Sources */,
+				A7AF2A9DA68C4399739D4B23 /* ChtoZaVinoApp.swift in Sources */,
+				31A12362449B5829BD902BB7 /* CodeScanner.swift in Sources */,
+				E84A8639EFBB5D29090B0706 /* ContentView.swift in Sources */,
+				E66E3923EBE32144A92C5E64 /* CoreMLInference.swift in Sources */,
+				BD29D42F1E034D6EBF098F2B /* DebugHTTPServer.swift in Sources */,
+				81B1F1787B5579BC8AEDE840 /* HistoryStore.swift in Sources */,
+				B13C8C26688891808A69E603 /* HistoryView.swift in Sources */,
+				3FE0FE3CAF7E24CED21E2714 /* ImagePipeline.swift in Sources */,
+				AE9C3A5E0A3E72A2CF21B394 /* Models.swift in Sources */,
+				91985135D042F94DCCFF9408 /* Preferences.swift in Sources */,
+				AE0B6CCA3D6D5997FA8CDE94 /* RecognitionEngine.swift in Sources */,
+				76F4393A971D13D60DF465D3 /* ResourcePack.swift in Sources */,
+				1127F83E3AB02A3FB1DB81E4 /* SettingsView.swift in Sources */,
+				891F68763C97B2F88D28748F /* YOLOSegmenter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7AD215A21B21BE7757AD4982 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE39099903ED2A2672844339 /* CoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A47D90B8D9CAB43161609ADA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EFD9A4394FFF9FE404837A7 /* AccessibilityUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1FB8438113E3CAB2C9753FD5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E124F1414FD1AF50B42EB1A /* ChtoZaVino */;
+			targetProxy = CD7A5EF42A69739725634A14 /* PBXContainerItemProxy */;
+		};
+		5B7FDF25011D936D3404CE06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E124F1414FD1AF50B42EB1A /* ChtoZaVino */;
+			targetProxy = 02C048D41F81402C979313D7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0C89D7C1221ABCA8EF785E5A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Что за вино?";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Камера нужна для фотографии бутылки и сканирования кода.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Локальная сеть нужна только для debug HTTP API.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Фототека нужна для выбора фотографии бутылки.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = chtozavino.alolalab.com;
+				PRODUCT_MODULE_NAME = ChtoZaVino;
+				PRODUCT_NAME = ChtoZaVino;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1B229C6F57F868B33066DE76 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "chtozavino.alolalab.com.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ChtoZaVino;
+			};
+			name = Debug;
+		};
+		7DDBC8261292290CC68969F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = chtozavino.alolalab.com.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChtoZaVino.app/ChtoZaVino";
+			};
+			name = Release;
+		};
+		B56E0D68B1E22D88631F3FFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Что за вино?";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Камера нужна для фотографии бутылки и сканирования кода.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Локальная сеть нужна только для debug HTTP API.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Фототека нужна для выбора фотографии бутылки.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = chtozavino.alolalab.com;
+				PRODUCT_MODULE_NAME = ChtoZaVino;
+				PRODUCT_NAME = ChtoZaVino;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C0CAFB00408A4BC4FD4F227A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F6E2227B8E504E3CA62DCD38 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = chtozavino.alolalab.com.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChtoZaVino.app/ChtoZaVino";
+			};
+			name = Debug;
+		};
+		FD65757152ADDE09B1ADC521 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "chtozavino.alolalab.com.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ChtoZaVino;
+			};
+			name = Release;
+		};
+		FE43ABCCC264AA788383A086 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		57A425B4E44BFC7B440A3D6A /* Build configuration list for PBXNativeTarget "ChtoZaVinoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6E2227B8E504E3CA62DCD38 /* Debug */,
+				7DDBC8261292290CC68969F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		65ECA670A1B576540E6DBD10 /* Build configuration list for PBXNativeTarget "ChtoZaVinoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B229C6F57F868B33066DE76 /* Debug */,
+				FD65757152ADDE09B1ADC521 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AB0AF484BD592E226FBB5E4E /* Build configuration list for PBXProject "ChtoZaVino" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0CAFB00408A4BC4FD4F227A /* Debug */,
+				FE43ABCCC264AA788383A086 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E30F10E21EAE77626DCE4ABC /* Build configuration list for PBXNativeTarget "ChtoZaVino" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B56E0D68B1E22D88631F3FFC /* Debug */,
+				0C89D7C1221ABCA8EF785E5A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1F1B20F70ED0462C74F56ECC /* Project object */;
+}
