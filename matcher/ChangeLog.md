@@ -1,5 +1,20 @@
 # Change log
 
+## 2026-10-18
+
+- Ported the production matcher into GitHub `main`. Production ran `8b096a16`, a revision
+  that existed only in the image `svoe-vino-lab-matcher:group-trace-20261005` on gx10.
+  The port is a three-way merge with base `f199e4de`: `abe3c978` (independent shelf
+  pipeline) plus the image files `app.py`, `group_pipeline.py`, `group_quality.py`, and
+  `group_quality_runtime.py` (VLM label evidence for shelf bottles).
+  - Added `tests/test_group_pipeline.py` (from `abe3c978`) and `tests/test_group_quality.py`
+    (28 tests, from the untracked work tree of `svoe-vino-lab-submission`).
+  - `POST /v1/group/match` checks `can_match_group` of the group pipeline, not of
+    `matcher.pipeline`. The merge kept the check of `4f88935c` on the main pipeline.
+  - The production configuration (`group_pipeline`, `quality_model`, `quality_endpoint`)
+    now works with this code. HEIF support (#24) applies to the shelf quality path too:
+    `group_quality_runtime.py` and `group._normalize_image` open the same primary image.
+
 ## 2026-10-17
 
 - Accepted HEIF (HEIC) uploads in `POST /v1/eval/predict`, `POST /v1/match`, and

@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
 from .group import GroupMatchError, segment_group
+from .group_pipeline import load_group_matcher
 from .protection import (REQUEST_STARTED_AT, ImageRejected, RequestProtectionMiddleware,
                          validate_image)
 from .service import CascadeMatcher, load_matcher
@@ -162,6 +163,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     """Create the API and load its selected pipeline."""
     path = config_path or os.environ.get("SVOE_VINO_MATCHER_CONFIG") or DEFAULT_CONFIG
     matcher = load_matcher(path)
+    group_matcher = load_group_matcher(path, matcher)
     if output_dir is not None:
         output = output_dir
     elif matcher.output_dir is not None:
@@ -273,6 +275,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 await matcher.check_ready_async()
             else:
                 await asyncio.to_thread(matcher.check_ready)
+            if group_matcher is not matcher:
+                await asyncio.to_thread(group_matcher.check_ready)
         except (GroupMatchError, Siglip2Error, ServiceError) as exc:
             LOGGER.warning(
                 "matcher readiness failed pipeline=%s error_type=%s",
@@ -340,10 +344,16 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 exc, (HTTPException, GroupMatchError, ImageRejected, Siglip2Error,
                       ServiceError))
             status_code = exc.status_code if expected else 500
+            error_response = {"status_code": status_code, "error_type": type(exc).__name__}
+            audit_metadata = getattr(exc, "audit_metadata", None)
+            if expected and isinstance(audit_metadata, dict):
+                for key in ("pipeline", "label_evidence", "detected_count", "truncated"):
+                    if key in audit_metadata:
+                        error_response[key] = audit_metadata[key]
             record = _record(
                 request_id, received_at, completed_at, duration_ms, client_ip,
                 request_data, image_data,
-                {"status_code": status_code, "error_type": type(exc).__name__},
+                error_response,
             )
             try:
                 await asyncio.to_thread(archive.save_record, saved, record)
@@ -520,14 +530,14 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         ),
     ) -> GroupMatchResult:
         """Segment and match all returned bottles in one multipart image."""
-        cards = matcher.cards
+        cards = group_matcher.cards
         if cards is None:
             detail = ("the selected pipeline has no wine cards; it needs a bundle of "
                       "format version 2 or a catalog")
             _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
                            503, detail, perf_counter())
             raise HTTPException(status_code=503, detail=detail)
-        if not matcher.can_match_group:
+        if not group_matcher.can_match_group:
             detail = ("the selected pipeline has no vectors of the view label; group "
                       "matching ranks the label crops in that view")
             _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
@@ -536,14 +546,20 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
 
         def operation(body):
             try:
-                segmented = segment_group(body, os.environ.get("SAM3_ENDPOINT"))
+                quality_match = getattr(group_matcher, "match_group_photo", None)
+                if quality_match is not None:
+                    segmented, ranked_groups, evidence = quality_match(
+                        body, os.environ.get("SAM3_ENDPOINT"), k)
+                else:
+                    segmented = segment_group(body, os.environ.get("SAM3_ENDPOINT"))
+                    ranked_groups = group_matcher.match_group_many(
+                        [bottle.crop for bottle in segmented.bottles],
+                        [bottle.label_crop for bottle in segmented.bottles], k)
+                    evidence = []
             except GroupMatchError as exc:
-                raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
-            ranked_groups = matcher.match_group_many(
-                [bottle.crop for bottle in segmented.bottles],
-                [bottle.label_crop for bottle in segmented.bottles],
-                k,
-            )
+                error = HTTPException(status_code=exc.status_code, detail=exc.detail)
+                error.audit_metadata = getattr(exc, "audit_metadata", {})
+                raise error from exc
             if len(ranked_groups) != len(segmented.bottles):
                 raise RuntimeError("matcher returned a wrong number of group results")
             audit_bottles = [
@@ -553,11 +569,13 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 for bottle, ranked in zip(segmented.bottles, ranked_groups)
             ]
             return (segmented, ranked_groups), {
+                "pipeline": group_matcher.pipeline,
                 "detected_count": segmented.detected_count,
                 "truncated": segmented.truncated,
                 "matched_count": sum(bool(ranked) for ranked in ranked_groups),
                 "unmatched_count": sum(not ranked for ranked in ranked_groups),
                 "bottles": audit_bottles,
+                "label_evidence": evidence,
             }
 
         (segmented, ranked_groups), duration_ms = await process_image(
@@ -577,7 +595,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 candidates=candidates,
             ))
         return GroupMatchResult(
-            pipeline=matcher.pipeline,
+            pipeline=group_matcher.pipeline,
             latency_ms=duration_ms,
             image=GroupImage(
                 width=segmented.width,

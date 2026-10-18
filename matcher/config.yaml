@@ -3,6 +3,8 @@
 matcher:
   # Select one entry of pipeline by name.
   pipeline: siglip2-p512-as-is
+  # Independent shelf ranking. Enable this key with the installed catalogue path.
+  # group_pipeline: siglip2-p512-rot5-seg
   output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
   # The time budget of POST /v1/eval/predict (docs/cascade.md). It is valid only with a
   # pipeline of the backend cascade. The times count from the arrival of the request
@@ -14,6 +16,12 @@ matcher:
 
 # This list uses the name and backend notation of ../workbench/config.yaml.
 pipeline:
+  - name: siglip2-p512-rot5-seg
+    backend: siglip2
+    catalog: workbench/data/catalog
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    endpoint: "{env:SIGLIP2_ENDPOINT}"
+
   # One SigLIP2 vector of the photo as it is: no segmentation. The photo steps are the
   # steps of the lab pipeline siglip2-p512-as-is. The vector ranks the view `full` of
   # the bundle. Read matcher/README.md.

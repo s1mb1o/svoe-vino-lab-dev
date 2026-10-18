@@ -513,6 +513,21 @@ HTTP 503.
 
 ### POST /v1/group/match
 
+Set `matcher.group_pipeline: siglip2-p512-rot5-seg` for the independent shelf pipeline.
+Its SigLIP2 entry requires the installed catalogue embedding
+`gx10-siglip2-so400m-patch16-naflex-p512-rot5`. It ranks the masked bottle against
+`full` alone, uses the best reference rotation at 5-degree steps, and rejects scores
+below 0.78. Labels still select usable segments but do not rank wine variants.
+The group response and audit name this pipeline. Single-image requests keep
+`matcher.pipeline`. An absent key keeps the previous two-view group ranking.
+Restart the matcher after a configuration change.
+
+The production shelf pipeline `siglip2-p512-rot5-seg-vlm9b` adds `quality_model` and
+`quality_endpoint` to its SigLIP2 entry (`group_quality_runtime.py`). The VLM
+(`qwen3.5-9b-nvfp4` in production) reads each bottle label, and deterministic catalogue
+identity checks accept or reject the candidates. The group response then carries
+`label_evidence`. Read chtozavino-deploy `gx10/group-vlm-prod-20261005.md`.
+
 Endpoint POST /v1/group/match принимает фотографию стеллажа в поле `image`. Сервис
 нормализует фотографию, вызывает `${SAM3_ENDPOINT}/segment_multi` для `wine bottle`
 и `wine label` и распознаёт только бутылки с видимой этикеткой полезного размера.
