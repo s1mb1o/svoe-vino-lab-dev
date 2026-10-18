@@ -5,6 +5,12 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Merged the producer product-line maps into `webui/` (branch `product-line-map`): 19 producers and 1,046 products.
+  Read `webui/ChangeLog.md`.
+- Replaced the six-node Abrau demo of the MCP tool `get_producer_line` with these maps (#25).
+  Read `mcp/ChangeLog.md` and `docs/plans/03_mcp-producer-line-maps.md`.
+- Updated F-24 and F-48 in `ASSESSMENT.md` for these changes. The other entries and the header still describe
+  the check at `0621952`.
 - Updated `ASSESSMENT.md` to `main` at `0621952`. Added F-13 shelf pipeline with label
   evidence (port of the production matcher), F-48 read-only catalogue MCP server (#25), and
   F-86 HEIF (HEIC) photos (#24). Highlight 10 now covers WebMCP (F-77) and the MCP server

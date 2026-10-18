@@ -222,11 +222,12 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 
 ### F-24 Producer product-line map
 
-- **Claim:** An interactive map of the Abrau-Durso product line supports zoom and links to vino-svoe.ru. It marks «ВАШЕ ВИНО» when the matched wine is a node of the map.
-- **Status:** Partial. The map covers one producer and six wines.
-- **Entry point:** [webui/shared/experiences.ts](webui/shared/experiences.ts), [webui/app/components/WineExperiences.vue](webui/app/components/WineExperiences.vue)
-- **Proof:** `webui/tests/experiences.test.ts` ("connects an Abrau-Durso result to its exact map node").
-- **Verify:** Read [webui/shared/experiences.ts](webui/shared/experiences.ts).
+- **Claim:** The result card has the action «Путеводитель по линейке». It opens an interactive product-line map of the producer. The maps cover 19 producers and 1,046 products with tiers, groups, and bottle images. The map selects the matched wine and marks it «ВАШЕ ВИНО». It has zoom, a group selector, and a control that returns to the matched wine. A product with a catalogue card links to vino-svoe.ru. A product without a card stays selectable without a link. The page `/lineup/<producer>` shows each map with `noindex`.
+- **Status:** Implemented.
+- **Entry point:** [webui/shared/product-line-map.ts](webui/shared/product-line-map.ts), [webui/shared/product-line-core.ts](webui/shared/product-line-core.ts), [webui/shared/data/product-line-maps/](webui/shared/data/product-line-maps/), [webui/app/components/ProductLineMap.vue](webui/app/components/ProductLineMap.vue), [webui/app/components/WineExperiences.vue](webui/app/components/WineExperiences.vue)
+- **Proof:** `webui/tests/product-line-map.test.ts` ("resolves the exact scanner result and verified legacy aliases to one product", "keeps gray products selectable as full records without a portal URL"); `webui/tests/product-line-registry.test.ts` ("registers every producer JSON and rejects cross-producer ambiguity", "has a bottle image and a measured frame for every current map product").
+- **Verify:** `cd webui && npx vitest run tests/product-line-map.test.ts tests/product-line-registry.test.ts`
+- **Limits:** Other producers have no map. The browser checks `npm run test:line-map` and `npm run test:producer-maps` need a portal origin and Playwright.
 
 ### F-25 Feedback with alternatives in the bots
 
@@ -412,12 +413,12 @@ The 95/100 value is an internal check of the team. It is not an official jury re
 
 ### F-48 Read-only catalogue MCP server
 
-- **Claim:** `mcp/` is a local stdio MCP server with five read-only tools: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, and `get_audio`. Each tool has strict input and output schemas. The server reads the matcher bundle of F-32 and stops when the SHA-256 of `wines.jsonl` differs from the manifest. Discovery uses the 2,093 Active wines of the 2,094 bundle IDs. Each result has the catalogue version and the source hashes. The server has no write, command, SQL, or URL fetch tool. A GitHub workflow runs the tests on Node.js 22.19.0 and 26.4.0.
+- **Claim:** `mcp/` is a local stdio MCP server with five read-only tools: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, and `get_audio`. Each tool has strict input and output schemas. `get_producer_line` reads the 19 producer maps of F-24 through the same module as the Web UI. The server reads the matcher bundle of F-32 and stops when the SHA-256 of `wines.jsonl` differs from the manifest. Discovery uses the 2,093 Active wines of the 2,094 bundle IDs. Each result has the catalogue version and the source hashes. The server has no write, command, SQL, or URL fetch tool. A GitHub workflow runs the tests on Node.js 22.19.0 and 26.4.0.
 - **Status:** Implemented.
 - **Entry point:** [mcp/src/server.mjs](mcp/src/server.mjs), [mcp/src/catalog.mjs](mcp/src/catalog.mjs), [mcp/README.md](mcp/README.md), [.github/workflows/mcp-tests.yml](.github/workflows/mcp-tests.yml)
-- **Proof:** `mcp/tests/protocol.test.mjs` ("real SDK client discovers and calls all tools repeatedly over one stdio connection"); `mcp/tests/catalog.test.mjs` ("uses all matcher IDs and excludes non-Active records from discovery", "existing Abrau mock is explicitly demo and exact selection is preserved"); [mcp/ChangeLog.md](mcp/ChangeLog.md).
+- **Proof:** `mcp/tests/protocol.test.mjs` ("real SDK client discovers and calls all tools repeatedly over one stdio connection"); `mcp/tests/catalog.test.mjs` ("uses all matcher IDs and excludes non-Active records from discovery", "every Active ID resolves to its exact map node or to unavailable"); [mcp/ChangeLog.md](mcp/ChangeLog.md).
 - **Verify:** `cd mcp && npm ci --ignore-scripts && npm test && npm run demo`
-- **Limits:** `get_producer_line` returns only the six-wine Abrau-Durso map of F-24, with `status: demo`. `get_audio` returns `unavailable`, because the repository has no approved audio files. The server uses local stdio only. No interactive AI assistant and no Qwen dialogue have been tested with it.
+- **Limits:** `get_producer_line` covers only the 19 producers of F-24. Other producers return `unavailable`. `get_audio` returns `unavailable`, because the repository has no approved audio files. The server uses local stdio only. No interactive AI assistant and no Qwen dialogue have been tested with it.
 
 ## Criterion 4: design (10/100)
 
