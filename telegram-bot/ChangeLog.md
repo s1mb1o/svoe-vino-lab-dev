@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-18
+
+- Removed `.dockerignore`. Docker reads it only at the root of the build context, and the
+  context is now the repository root. `Dockerfile.dockerignore` applies only to the Compose
+  host-demo build. A `git archive` build from standard input uses no ignore file. See
+  `../max-bot/ResearchLog.md` (2026-10-18).
+
 ## 2026-10-17
 
 - Moved the 12 modules that the MAX bot copied, and their 11 tests, to the shared package

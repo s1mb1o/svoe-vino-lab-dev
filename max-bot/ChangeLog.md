@@ -2,6 +2,10 @@
 
 ## 2026-10-18
 
+- Removed `.dockerignore`. Docker reads it only at the root of the build context, and the
+  context is now the repository root. `Dockerfile.dockerignore` applies only to the Compose
+  host-demo build. A `git archive` build from standard input uses no ignore file. See
+  `ResearchLog.md` (2026-10-18).
 - Added `scripts/smoke.py` and a public catalogue fixture for repeatable local and deployed
   service checks. The checks use protected credentials. They do not poll MAX updates.
 - Reviewed issue #10 and the current shared-core migration. MAX passed 479 tests.

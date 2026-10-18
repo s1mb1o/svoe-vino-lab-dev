@@ -1,5 +1,7 @@
-# BuildKit reads this file for max-bot/Dockerfile. The build context is the repository root, and
-# the image needs only im-core/ and max-bot/.
+# BuildKit reads this file for max-bot/Dockerfile only when the build context is a directory:
+# compose.host-demo.yaml builds from the repository root. The image needs only im-core/ and
+# max-bot/. A `git archive ... | docker build -` context does not use this file. That archive
+# contains only committed files.
 *
 !im-core
 !max-bot

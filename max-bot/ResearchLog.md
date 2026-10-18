@@ -1,5 +1,22 @@
 # Research log
 
+## 2026-10-18: Docker ignore files after the im-core migration
+
+Docker reads `.dockerignore` only at the root of the build context.
+The build context is now the repository root, so Docker does not read `max-bot/.dockerignore`.
+BuildKit also reads `<Dockerfile>.dockerignore` next to the Dockerfile.
+A test on Docker Desktop 29.2.0 (arm64) gave these results:
+
+| Build context | `<bot>/.dockerignore` | `<bot>/Dockerfile.dockerignore` |
+|---|---|---|
+| Directory: `compose.host-demo.yaml` with `context: ..` | Not read | Read |
+| Standard input: `git archive "$REV" im-core max-bot \| docker build -f max-bot/Dockerfile -` | Not read | Not read |
+
+The production build uses no ignore file.
+This is safe: `git archive` contains only committed files, and the Dockerfile copies only named
+paths. `COPY im-core /im-core` also copies `im-core/tests/` and the `im-core` documents into the
+image. The old `max-bot/.dockerignore` and `telegram-bot/.dockerignore` are removed.
+
 ## 2026-10-18: Issue #10 deployment review
 
 The current source uses the shared `im-core` package.
