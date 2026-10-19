@@ -1,5 +1,14 @@
 # Smoke tests
 
+## Age warning for a returning visitor
+
+1. Open `/` in a new browser profile. Confirm that the 18+ gate blocks interaction.
+2. Accept the age confirmation. Reload the page. Confirm that the 18+ gate does not show, not even for a moment.
+3. Open `/ideas` in a new tab. Confirm that the 18+ gate does not show.
+4. Block the `/_nuxt/*.js` requests and service workers, then reload. Confirm that `<html>` has
+   `data-age-confirmed="yes"` and that `.age-gate` has `display: none`.
+5. Clear site data and reload. Confirm that the 18+ gate shows again.
+
 ## Public site map
 
 - Open `/sitemap` in a new profile. Confirm the age gate. Confirm the page after age confirmation.

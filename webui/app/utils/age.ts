@@ -1,4 +1,6 @@
-export const AGE_CONFIRMATION_KEY = 'svoe-vino.age-confirmed.v1'
+import { AGE_CONFIRMATION_KEY } from '#shared/age'
+
+export { AGE_CONFIRMATION_KEY }
 
 type AgeStorage = Pick<Storage, 'getItem' | 'setItem'>
 

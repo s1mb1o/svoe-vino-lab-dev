@@ -52,6 +52,7 @@ The page view is sent after Nuxt sets the title of the new page.
 The portal shows an 18+ warning and requires age confirmation before access.
 The legal pages `/terms`, `/privacy`, and `/contacts` are the exception. They open without the age gate.
 The browser stores age confirmation and the selected theme in `localStorage`.
+A head script reads both values before the first paint. A returning visitor does not see the age warning again.
 The PWA uses a service worker cache for offline access.
 These storage mechanisms do not use cookies.
 

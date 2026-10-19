@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import { THEME_INIT_SCRIPT } from './shared/theme'
+import { AGE_INIT_SCRIPT } from './shared/age'
 import { ANDROID_RELEASE, DEFAULT_ANDROID_APK_URL } from './shared/android'
 import { METRIKA_INIT_SCRIPT, METRIKA_NOSCRIPT } from './shared/metrika'
 
@@ -64,7 +65,7 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       ],
       noscript: [{ key: 'yandex-metrika', innerHTML: METRIKA_NOSCRIPT, tagPosition: 'bodyOpen' }],
-      script: [{ key: 'theme-init', innerHTML: THEME_INIT_SCRIPT, tagPriority: 'critical' }, {
+      script: [{ key: 'theme-init', innerHTML: THEME_INIT_SCRIPT, tagPriority: 'critical' }, { key: 'age-init', innerHTML: AGE_INIT_SCRIPT, tagPriority: 'critical' }, {
         key: 'yandex-metrika',
         type: 'text/javascript',
         innerHTML: METRIKA_INIT_SCRIPT,

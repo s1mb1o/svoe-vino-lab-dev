@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — No age warning flash for a returning visitor
+
+- A confirmed visitor saw the 18+ warning for a moment on each page load. The server renders the
+  warning, and only the hydrated page read the saved confirmation.
+- The head script `age-init` now reads `svoe-vino.age-confirmed.v1` before the first paint and sets
+  `data-age-confirmed` on `<html>`. A CSS rule hides the server-rendered warning for that visitor.
+- New visitors, browsers without JavaScript, and crawlers still get the warning in the server HTML.
+
 ## 2026-10-19 — /privacy: no backup mentions
 
 - Removed the iOS sentence «Если на устройстве включено резервное копирование, iOS может включить историю в резервную копию.» `/privacy` no longer mentions backups. A test keeps it so.

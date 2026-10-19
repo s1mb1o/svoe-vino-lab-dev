@@ -18,6 +18,13 @@ describe('search discovery', () => {
     expect(gate).not.toContain('<main')
   })
 
+  it('hides the age overlay before paint for a saved confirmation', async () => {
+    const config = await source('nuxt.config.ts')
+    const css = await source('app/assets/main.css')
+    expect(config).toContain("{ key: 'age-init', innerHTML: AGE_INIT_SCRIPT, tagPriority: 'critical' }")
+    expect(css).toContain('html[data-age-confirmed] .age-gate { display: none; }')
+  })
+
   it('declares the canonical page and public metadata', async () => {
     const config = await source('nuxt.config.ts')
     expect(config).toContain("const siteUrl = 'https://chtozavino.ru/'")
