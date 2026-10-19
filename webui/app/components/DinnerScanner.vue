@@ -18,6 +18,10 @@ const tastePresets = [
   { key: 'sweetSauce', value: 'high', label: 'Сладкий соус', icon: 'honey' },
   { key: 'sweetSauce', value: 'none', label: 'Несладкий', icon: 'no-sugar' },
 ] as const
+const tasteGroups = [
+  { id: 'heat', label: 'Острота', presets: tastePresets.filter(preset => preset.key === 'heat') },
+  { id: 'sauce', label: 'Соус', presets: tastePresets.filter(preset => preset.key !== 'heat') },
+]
 function toggleTaste(preset: typeof tastePresets[number]) {
   settings[preset.key] = settings[preset.key] === preset.value ? '' : preset.value
   update()
@@ -117,7 +121,9 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
           <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint">
             <legend>Вкус и соус</legend>
             <div class="dinner-choices">
-              <button v-for="preset in tastePresets" :key="preset.label" class="dinner-choice" type="button" :aria-pressed="settings[preset.key] === preset.value" :disabled="!available" @click="toggleTaste(preset)"><AppIcon :name="preset.icon" /><span>{{ preset.label }}</span></button>
+              <div v-for="group in tasteGroups" :key="group.id" class="dinner-choice-group" :class="`dinner-choice-group--${group.id}`" role="group" :aria-label="group.label">
+                <button v-for="preset in group.presets" :key="preset.label" class="dinner-choice" type="button" :aria-pressed="settings[preset.key] === preset.value" :disabled="!available" @click="toggleTaste(preset)"><AppIcon :name="preset.icon" /><span>{{ preset.label }}</span></button>
+              </div>
             </div>
             <p id="dinner-taste-hint" class="dinner-field-hint">Можно сочетать. Без выбора — как в рецепте. Нажмите ещё раз, чтобы снять выбор.</p>
           </fieldset>
@@ -171,7 +177,9 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-preferences { margin-top: 28px; }
 .dinner-preference-row { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
 .dinner-preference-row legend { padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
-.dinner-choices { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
+.dinner-choices { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,5fr); gap: 12px; }
+.dinner-choice-group { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; min-width: 0; }
+.dinner-choice-group--sauce { grid-template-columns: repeat(5,minmax(0,1fr)); border-inline-start: 1px solid var(--line); padding-inline-start: 12px; }
 .dinner-choice { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 86px; padding: 12px 3px 9px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 11px; line-height: 1.35; text-align: center; }
 .dinner-choice span { max-width: 100%; hyphens: auto; overflow-wrap: break-word; }
 .dinner-choice .icon { width: 25px; height: 25px; color: var(--accent); }
@@ -200,7 +208,9 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-more { display: flex; margin: 28px auto; }
 .dinner-end { text-align: center; }
 @media(max-width: 1023px) { .dinner-entry { grid-template-columns: 1fr; } .dinner-photo-panel, .dinner-form { padding: 28px; } .dinner-wines { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media(max-width: 600px) { .dinner-choices { grid-template-columns: repeat(4,minmax(0,1fr)); } }
-@media(max-width: 360px) { .dinner-choices { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width: 600px) {
+  .dinner-choices { grid-template-columns: minmax(0,1fr); }
+  .dinner-choice-group--sauce { grid-template-columns: repeat(3,minmax(0,1fr)); border-inline-start: 0; border-block-start: 1px solid var(--line); padding-inline-start: 0; padding-block-start: 12px; }
+}
 @media(max-width: 767px) { .dinner-entry { grid-template-columns: 1fr; border-radius: 20px; } .dinner-photo-panel, .dinner-form { padding: 24px; } .dinner-photo-placeholder { min-height: 140px; } .dinner-plate { width: 116px; height: 116px; } .dinner-photo-copy h2 { font-size: 30px; } .dinner-photo-copy h2 br { display: none; } .dinner-form h2 { font-size: 26px; } .dinner-form input, .dinner-form select { font-size: 16px; } .dinner-wines { grid-template-columns: 1fr; } .dinner-results>h2 { font-size: 30px; } .dinner-progress { flex-wrap: wrap; } .dinner-progress p { flex: 1; min-width: 160px; } .dinner-progress>.button { width: 100%; } .dinner-submit { font-size: 12px; padding-inline: 8px; } }
 </style>

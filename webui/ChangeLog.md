@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Separate heat and sauce choices
+
+- Separate «Неострое» and «Острое» from the five sauce presets on `/dish`. Use a vertical divider on desktop and a horizontal divider on phones. Keep all selection behavior and request attributes.
+- Give the two groups accessible names: «Острота» and «Соус».
+
 ## 2026-10-19 — Keep only dish taste presets
 
 - Remove «Какое вино» and «Сладость вина» from `/dish` on desktop and mobile. Remove their state and request constraints. Keep all seven taste/sauce presets and wine facts on result cards.
