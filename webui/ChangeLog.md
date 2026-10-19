@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Shorter upload hint on «Вино к блюду»
+
+- The upload hint on `/dish` is «JPEG, HEIC, PNG, WebP». It does not show «JPG» (the same format as JPEG) or the 10 MB limit. The limit stays: a larger file still gets «Выберите фотографию размером до 10 МБ.»
+
 ## 2026-10-19 — Confirmations instead of a re-login; endless login
 
 - Owner decision: no 15-minute re-login. «Удалить аккаунт» deletes after «Удалить навсегда»; the re-login panel («Подтвердить кодом из письма», «Подтвердить через Яндекс ID») and «Войти заново» are removed, with the Yandex `intent=reauth` flow and its cookie.

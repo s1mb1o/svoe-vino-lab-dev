@@ -113,7 +113,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <div class="upload-actions dinner-upload-actions"><button ref="uploadButton" class="button primary" type="button" :disabled="!available" @click="upload?.click()"><AppIcon name="upload" />{{ preview ? 'Заменить фото' : 'Загрузить фото' }}</button><button class="button secondary camera-action" type="button" :disabled="!available" @click="camera?.click()"><AppIcon name="camera" />Снять блюдо</button></div>
         <input ref="upload" class="sr-only" tabindex="-1" type="file" :accept="DISH_IMAGE_ACCEPT" :disabled="!available" aria-label="Фото блюда" @change="selectPhoto">
         <input ref="camera" class="sr-only" tabindex="-1" type="file" :accept="DISH_CAMERA_ACCEPT" :disabled="!available" capture="environment" aria-label="Снять блюдо камерой" @change="selectPhoto">
-        <p class="upload-hint">JPG, JPEG, HEIC, PNG, WebP · до 10 МБ<span class="desktop-drop-hint"><br>Можно перетащить фото сюда</span></p>
+        <p class="upload-hint">JPEG, HEIC, PNG, WebP<span class="desktop-drop-hint"><br>Можно перетащить фото сюда</span></p>
         <button v-if="file && !busy && failedAction === 'recognizing'" class="example-button" type="button" :disabled="!available" @click="scanner.recognize()">Повторить распознавание<AppIcon name="arrow" /></button>
       </div>
       <form class="dinner-form" @submit.prevent="submit" @change="update">
