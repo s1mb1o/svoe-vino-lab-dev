@@ -6,7 +6,8 @@ import {
   deleteCookie, getCookie, getHeader, getQuery, getRequestURL, sendRedirect,
   setCookie, setHeader, setResponseStatus, type H3Event,
 } from 'h3'
-import { EMAIL_CODE_PATTERN, USERNAME_PATTERN, safeNextPath, type AccountErrorBody } from '#shared/account'
+import { renderSVG } from 'uqr'
+import { EMAIL_CODE_PATTERN, MAX_APP_LINK_PATTERN, USERNAME_PATTERN, safeNextPath, type AccountErrorBody } from '#shared/account'
 
 export const ACCOUNT_COOKIES = {
   session: '__Host-cv_session',
@@ -20,6 +21,8 @@ export const ACCOUNT_COOKIES = {
 export const YANDEX_CALLBACK_PATH = '/api/account/yandex/callback'
 const MAX_RESPONSE_BYTES = 64 * 1024
 const MAX_REQUEST_BYTES = 4 * 1024
+// MAX launch data is up to 8 KiB in the service; the JSON wrapper adds a few bytes.
+const MAX_LAUNCH_REQUEST_BYTES = 9 * 1024
 const SIGNUP_TTL_SECONDS = 30 * 60
 const MIN_TOKEN_LENGTH = 32
 // The service spends up to 5 s on the Yandex token exchange and 5 s on the user info call.
@@ -30,6 +33,8 @@ export interface AccountConfig {
   endpoint: URL
   token: string
   publicOrigin: string
+  // The fixed MAX mini-app deep link, or '' when the site does not offer the MAX link.
+  maxAppLink: string
   timeoutMs: number
   fetch: typeof fetch
 }
@@ -59,7 +64,7 @@ export type AccountConfigSource = () => AccountConfig | null
  * feature is off. A set but invalid endpoint or token makes the service unavailable.
  */
 export function accountConfig(
-  settings: { endpoint?: unknown; token?: unknown; publicOrigin?: unknown },
+  settings: { endpoint?: unknown; token?: unknown; publicOrigin?: unknown; maxAppLink?: unknown },
   options: { fetch?: typeof fetch; timeoutMs?: number } = {},
 ): AccountConfig | null {
   if (typeof settings.endpoint !== 'string' || !settings.endpoint.trim()) return null
@@ -81,7 +86,8 @@ export function accountConfig(
   } catch {
     throw unavailable()
   }
-  return { endpoint, token, publicOrigin, timeoutMs: options.timeoutMs ?? 2000, fetch: options.fetch ?? fetch }
+  const maxAppLink = typeof settings.maxAppLink === 'string' && MAX_APP_LINK_PATTERN.test(settings.maxAppLink.trim()) ? settings.maxAppLink.trim() : ''
+  return { endpoint, token, publicOrigin, maxAppLink, timeoutMs: options.timeoutMs ?? 2000, fetch: options.fetch ?? fetch }
 }
 
 /** Calls the account service. Throws AccountHttpError for a refused request or an outage. */
@@ -174,17 +180,17 @@ function secondsUntil(iso: unknown, fallback: number): number {
   return Number.isFinite(time) ? Math.max(0, (time - Date.now()) / 1000) : fallback
 }
 
-/** Reads at most MAX_REQUEST_BYTES. A longer or chunked body stops the read at the limit. */
-async function readLimitedBody(event: H3Event): Promise<string> {
+/** Reads at most `limit` bytes. A longer or chunked body stops the read at the limit. */
+async function readLimitedBody(event: H3Event, limit = MAX_REQUEST_BYTES): Promise<string> {
   const length = Number(getHeader(event, 'content-length') ?? 0)
-  if (length > MAX_REQUEST_BYTES) throw new AccountHttpError(413, 'request_too_large')
+  if (length > limit) throw new AccountHttpError(413, 'request_too_large')
   const request = event.node.req
   const chunks: Buffer[] = []
   let size = 0
   for await (const chunk of request) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
     size += buffer.byteLength
-    if (size > MAX_REQUEST_BYTES) {
+    if (size > limit) {
       request.destroy()
       throw new AccountHttpError(413, 'request_too_large')
     }
@@ -193,8 +199,8 @@ async function readLimitedBody(event: H3Event): Promise<string> {
   return Buffer.concat(chunks).toString('utf8')
 }
 
-async function readJson(event: H3Event): Promise<Record<string, unknown>> {
-  const raw = await readLimitedBody(event)
+async function readJson(event: H3Event, limit = MAX_REQUEST_BYTES): Promise<Record<string, unknown>> {
+  const raw = await readLimitedBody(event, limit)
   if (!raw) return {}
   try {
     const value = JSON.parse(raw) as unknown
@@ -262,7 +268,9 @@ export async function accountConfigRoute(event: H3Event, source: AccountConfigSo
         email: Boolean(data.providers?.email),
         yandex: Boolean(data.providers?.yandex),
         telegram: Boolean(data.providers?.telegram_link),
+        max: Boolean(data.providers?.max_link) && Boolean(config.maxAppLink),
       },
+      ...(data.providers?.max_link && config.maxAppLink ? { maxAppLink: config.maxAppLink } : {}),
       consentVersion: data.consent_version ?? '',
       termsVersion: data.terms_version ?? '',
     }
@@ -313,6 +321,59 @@ export function telegramLinkRoute(event: H3Event, source: AccountConfigSource) {
     if (typeof data.deep_link !== 'string' || !TELEGRAM_DEEP_LINK.test(data.deep_link)) throw unavailable()
     return { deepLink: data.deep_link, expiresIn: typeof data.expires_in === 'number' ? data.expires_in : 600 }
   })
+}
+
+/**
+ * Links MAX from the mini app (plan 05). The identity comes only from the signed launch data
+ * (`window.WebApp.initData`); the service checks the signature, age, single use, and client address.
+ * No code passes through MAX (MAX requirement 1.5).
+ */
+export function maxLinkRoute(event: H3Event, source: AccountConfigSource) {
+  return accountJson(event, source, async config => {
+    checkOrigin(event, config)
+    const session = getCookie(event, ACCOUNT_COOKIES.session)
+    if (!session) throw new AccountHttpError(401, 'session_required')
+    const body = await readJson(event, MAX_LAUNCH_REQUEST_BYTES)
+    const initData = typeof body.initData === 'string' ? body.initData : ''
+    if (!initData || initData.length > 8192) throw new AccountHttpError(400, 'invalid_launch')
+    await callAccount(config, 'POST', '/v1/me/identities/max', { body: { init_data: initData }, session, clientIp: clientIp(event) })
+    return { status: 'linked' }
+  })
+}
+
+/** The QR code of the fixed mini-app deep link, for «Привязать мессенджер» → «MAX» on a computer. */
+export function maxQrRoute(event: H3Event, source: AccountConfigSource) {
+  let config: AccountConfig | null = null
+  try {
+    config = source()
+  } catch { /* handled below */ }
+  if (!config?.maxAppLink) {
+    setResponseStatus(event, 404)
+    setHeader(event, 'Cache-Control', 'no-store')
+    return 'Not found'
+  }
+  setHeader(event, 'Content-Type', 'image/svg+xml')
+  setHeader(event, 'Cache-Control', 'public, max-age=3600')
+  return renderSVG(config.maxAppLink, { border: 2, whiteColor: '#ffffff', blackColor: '#211e1c' })
+}
+
+// The mini-app host (max.chtozavino.ru) serves only the diary. Caddy filters the paths too
+// (plan 05, "Deployment"); this list is the second barrier. No Yandex ID, no Telegram link, and no
+// service worker or manifest on that host.
+const MAX_HOST_ROUTES: Array<[RegExp, string[]]> = [
+  [/^\/max\/?$/, ['GET', 'HEAD']],
+  [/^\/(_nuxt|reference|icons)\/[^?#]*$/, ['GET', 'HEAD']],
+  [/^\/(privacy|terms|contacts|robots\.txt|__nuxt_error)$/, ['GET', 'HEAD']],
+  [/^\/api\/account\/(config|max\/qr\.svg)$/, ['GET']],
+  [/^\/api\/account\/me$/, ['GET', 'DELETE']],
+  [/^\/api\/account\/(logout|signup|email\/start|email\/verify|max\/link)$/, ['POST']],
+  [/^\/api\/account\/identities\/max$/, ['DELETE']],
+]
+
+/** What the mini-app host does with a request: serve it, redirect `/` to the mini app, or 404. */
+export function maxHostDecision(method: string, pathname: string): 'allow' | 'redirect' | 'reject' {
+  if (pathname === '/' && (method === 'GET' || method === 'HEAD')) return 'redirect'
+  return MAX_HOST_ROUTES.some(([pattern, methods]) => pattern.test(pathname) && methods.includes(method)) ? 'allow' : 'reject'
 }
 
 const MESSENGERS = new Set(['telegram', 'max'])

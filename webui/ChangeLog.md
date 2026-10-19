@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — MAX link and the mini app
+
+- `/max` is the diary mini app for MAX (plan 05, issue #50): the account page in MAX mode. It loads the MAX Bridge only there. In MAX the person logs in by email code and confirms «Привязать MAX-аккаунт «Имя Фамилия» к дневнику …?»; the signed `initData` goes to `POST /api/account/max/link`. Outside MAX it shows only «Откройте дневник в MAX» with the fixed link and QR code.
+- «Привязать мессенджер» on `/account` offers «MAX» with the fixed deep link (`NUXT_ACCOUNT_MAX_APP_LINK`) and its QR code (`/api/account/max/qr.svg`, rendered on the server with `uqr`, now a direct dependency). «Отвязать» works for MAX too.
+- Host guard for `NUXT_ACCOUNT_MAX_HOST`: only the mini-app page, its assets, the legal pages, and the email, sign-up, session, deletion, and MAX routes. Metrika and the Workbox page cache skip `/max`; it has its own header and footer.
+- Telegram link review fixes: starting a link needs a recent login («Войти заново» on `reauth_required`); a notice stays visible after the last messenger is unlinked.
+- 35 new tests (434 in total). Browser checks: the MAX link at 1280 and 390 px with simulated launch data (23 checks), the Telegram link again (26 checks), and the host guard with `curl`.
+
 ## 2026-10-19 — Telegram link
 
 - «Связанные мессенджеры» on `/account` now has «Привязать мессенджер» → «Telegram» (issue #51). The page gets the bot deep link from `POST /api/account/links/telegram`, shows «Открыть Telegram», and reads the account again when the tab becomes visible or after «Я привязал». An expired link offers «Новая ссылка».

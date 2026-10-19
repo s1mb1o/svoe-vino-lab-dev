@@ -59,7 +59,9 @@ The browser never gets the endpoint or the token.
 - Telegram link (issue #51): `POST /api/account/links/telegram` (session, `Origin`) returns only the
   bot deep link and its lifetime. The server refuses any link other than
   `https://t.me/<bot>?start=link_<code>`. The person confirms in the bot chat, where the bot shows the
-  diary name. The page warns not to forward the link: whoever opens it can link their Telegram.
+  diary name. The page warns not to forward the link: the first Telegram user who opens it owns
+  the code. Starting a link needs a login in the last 15 minutes; on `reauth_required` the chooser
+  offers «Войти заново».
   `DELETE /api/account/identities/telegram` unlinks it without a fresh login (service rule for
   messengers). Login methods have no unlink route on the site.
 - Account deletion needs a login in the last 15 minutes (service rule). On `reauth_required` the
@@ -72,6 +74,37 @@ The browser never gets the endpoint or the token.
   it keeps the current session, ends the new one, and returns `reauth_mismatch`. Without a valid
   current session it stops before the finish call. Follow-up: a service-side `reauth` purpose
   that checks the Yandex subject (reported by session svoe-vino-final-39).
+
+## MAX link
+
+Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) stays off.
+
+- MAX forbids a one-time code for login or linking in a bot message, a deep link, or a QR code
+  (requirement 1.5). The only MAX identity is the signed launch data of the mini app.
+- `/max` is the account page in MAX mode (`definePageMeta({ alias: ['/max'] })`). The page loads the
+  MAX Bridge `https://st.max.ru/js/max-web-app.js` only there, and reads `window.WebApp.initData`.
+- Outside MAX (no launch data) the page shows only «Откройте дневник в MAX», the fixed deep link,
+  and its QR code. It shows no account data and no form.
+- In MAX: login only by the email code (no Yandex ID on the mini-app host), then «Привязать
+  MAX-аккаунт «Имя Фамилия» к дневнику …?». The name comes from `initDataUnsafe` for display only,
+  so a person can stop a foreign launch. «Привязать» sends `initData` to
+  `POST /api/account/max/link`; the server adds the client address. The service checks the
+  signature, the age (5 min), the single use of `query_id`, the signed `ip`, and a login in the last
+  15 minutes. On `reauth_required` the page offers «Войти заново».
+- The site: «Привязать мессенджер» → «MAX» shows the fixed deep link
+  `NUXT_ACCOUNT_MAX_APP_LINK` (`https://max.ru/<bot>?startapp=account`, no code) and its QR code
+  from `GET /api/account/max/qr.svg`. The person scans it, logs in inside MAX, and links there.
+- The MAX choice appears only when the service reports `max_link` (`MAX_WEBAPP_KEY` is set) and the
+  site has a valid `NUXT_ACCOUNT_MAX_APP_LINK`.
+- `/max` has its own header and footer without links to other site pages. Metrika does not start
+  there, and the Workbox page cache skips it.
+- Host guard (`server/middleware/max-host.ts`): when the `Host` header equals
+  `NUXT_ACCOUNT_MAX_HOST`, Nuxt answers `/` with 302 to `/max` and serves only `/max`, the layout
+  assets, the legal pages, and the email, sign-up, session, deletion, and MAX routes. Other pages,
+  Yandex ID, and the Telegram routes get 404. Nitro serves `public/` files (`/sw.js`,
+  `/manifest.webmanifest`) before any middleware, so the Caddy block of the mini-app host MUST
+  filter the paths too (plan 05, "Deployment"). Without `/sw.js` the mini app registers no service
+  worker.
 
 ## Routes
 
@@ -88,6 +121,9 @@ The browser never gets the endpoint or the token.
 | `GET /api/account/yandex/callback` | `POST /v1/auth/yandex/finish` | 302 to `next`, `/account?step=signup`, or `/account?error=<code>` |
 | `POST /api/account/links/telegram` | `POST /v1/me/links/telegram` | `{deepLink, expiresIn}` |
 | `DELETE /api/account/identities/telegram` | `DELETE /v1/me/identities/telegram` | `{status: 'unlinked'}`, also when it was not linked |
+| `POST /api/account/max/link` | `POST /v1/me/identities/max` | `{status: 'linked'}`; body `{initData}` up to 9 KiB |
+| `DELETE /api/account/identities/max` | `DELETE /v1/me/identities/max` | `{status: 'unlinked'}`, also when it was not linked |
+| `GET /api/account/max/qr.svg` | — | QR code of `NUXT_ACCOUNT_MAX_APP_LINK`; 404 when it is not set |
 
 Errors have the form `{error, attemptsLeft?, retryAfter?}`. The page shows the Russian text of
 `accountErrorMessage` and never the input.

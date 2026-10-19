@@ -1,8 +1,10 @@
 export const METRIKA_COUNTER_ID = 113460637
 
-// The account pages of «Винный дневник» do not load Metrika (docs/plans/04_user-accounts.md).
+// The account pages of «Винный дневник» and its MAX mini app do not load Metrika
+// (docs/plans/04_user-accounts.md, docs/plans/05_max-authorization.md).
 export const METRIKA_INIT_SCRIPT = `
-    if (location.pathname !== '/account' && location.pathname.indexOf('/account/') !== 0) {
+    if (location.pathname !== '/account' && location.pathname.indexOf('/account/') !== 0
+      && location.pathname !== '/max' && location.pathname.indexOf('/max/') !== 0) {
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();

@@ -25,6 +25,10 @@ export default defineNuxtConfig({
     accountEndpoint: '',
     accountToken: '',
     accountPublicOrigin: 'https://chtozavino.ru',
+    // MAX mini app (plan 05). The fixed deep link https://max.ru/<bot>?startapp=account, and the
+    // host of the mini-app pages (max.chtozavino.ru). Empty values turn the MAX link off.
+    accountMaxAppLink: '',
+    accountMaxHost: '',
     public: {
       androidApkUrl: DEFAULT_ANDROID_APK_URL,
     },
@@ -139,7 +143,8 @@ export default defineNuxtConfig({
         urlPattern: ({ request, url }) => request.mode === 'navigate'
           && !url.pathname.startsWith('/api/')
           && !url.pathname.startsWith('/v1/')
-          && url.pathname !== '/account' && !url.pathname.startsWith('/account/'),
+          && url.pathname !== '/account' && !url.pathname.startsWith('/account/')
+          && url.pathname !== '/max' && !url.pathname.startsWith('/max/'),
         handler: 'NetworkFirst',
         options: {
           cacheName: 'svoe-vino-pages',
@@ -156,6 +161,8 @@ export default defineNuxtConfig({
     '/hackaton': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/account': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
     '/account/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
+    '/max': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
+    '/max/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
     '/hackaton/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/wines': { redirect: { to: '/', statusCode: 308 } },
     '/wines/': { redirect: { to: '/', statusCode: 308 } },

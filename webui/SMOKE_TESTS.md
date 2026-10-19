@@ -21,6 +21,8 @@
 8. Clear `NUXT_ACCOUNT_ENDPOINT`. The header has no link; `/api/account/config` returns `{"enabled":false,...}`.
 9. In the network panel confirm no `mc.yandex.ru` request when a visit starts on `/account`.
 10. With `TELEGRAM_BOT_USERNAME` set in the account service: «Привязать мессенджер» → «Telegram» shows «Открыть Telegram» with `https://t.me/<bot>?start=link_…`. Confirm in the bot. Back on the page, Telegram is under «Связанные мессенджеры» with «Отвязать», and «Способы входа» does not list it. «Отвязать» removes it.
+11. With `MAX_WEBAPP_KEY` in the account service and `NUXT_ACCOUNT_MAX_APP_LINK` on the site: «Привязать мессенджер» → «MAX» shows the QR code and «Открыть в MAX». Open the link on a phone. In MAX log in by email code and confirm that the page names your MAX account. «Привязать»: «MAX привязан к дневнику.» On the site MAX is under «Связанные мессенджеры».
+12. Open `https://max.chtozavino.ru/max` in an ordinary browser: only «Откройте дневник в MAX», no form. `https://max.chtozavino.ru/` redirects to `/max`; `/account`, `/shelf`, `/sw.js`, and `/api/account/yandex/start` return 404 on that host; `chtozavino.ru` still asks for HTTP Basic.
 
 ## Wine for a dish
 

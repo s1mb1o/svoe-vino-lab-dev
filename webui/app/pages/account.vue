@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, safeNextPath, splitIdentities } from '#shared/account'
+import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, isMaxAppPath, safeNextPath, splitIdentities } from '#shared/account'
 import { AccountRequestError, useAccountApi, type AccountSiteConfig, type AccountUser } from '~/composables/useAccountApi'
+import { readMaxLaunch } from '~/utils/max-bridge'
+
+// /max is this page in MAX mode: the diary mini app on max.chtozavino.ru (plan 05).
+definePageMeta({ alias: ['/max'] })
 
 const title = 'Винный дневник — Что за вино?'
 useSeoMeta({ title, robots: 'noindex, nofollow, noarchive' })
 
-type Phase = 'loading' | 'disabled' | 'unavailable' | 'email' | 'code' | 'signup' | 'account' | 'deleted'
+type Phase = 'loading' | 'disabled' | 'unavailable' | 'outside' | 'email' | 'code' | 'signup' | 'account' | 'deleted'
 
 const api = useAccountApi()
 const route = useRoute()
@@ -43,16 +47,31 @@ const hasYandex = computed(() => Boolean(user.value?.identities.some(item => ite
 const reauthYandexHref = computed(() => `/api/account/yandex/start?intent=reauth&next=${encodeURIComponent('/account?confirm=delete')}`)
 const resendIn = computed(() => Math.max(0, Math.ceil((resendAt.value - now.value) / 1000)))
 const identities = computed(() => splitIdentities(user.value?.identities ?? []))
-// «Привязать мессенджер» (issue #51). A messenger never opens a session: the bot only saves finds.
+// «Привязать мессенджер» (issues #51, #50). A messenger never opens a session: it only saves finds.
+type Messenger = 'telegram' | 'max'
+const MESSENGER_NAMES: Record<Messenger, string> = { telegram: 'Telegram', max: 'MAX' }
 const linkOpen = ref(false)
+const linkTarget = ref<Messenger | ''>('')
 const telegramLink = ref('')
 const telegramLinkExpiresAt = ref(0)
 const linkNotice = ref('')
 const telegramEnabled = computed(() => Boolean(config.value?.providers?.telegram))
 const telegramLinked = computed(() => identities.value.linked.some(item => item.key === 'telegram'))
-const canLinkMessenger = computed(() => telegramEnabled.value && !telegramLinked.value)
-const showMessengers = computed(() => identities.value.linked.length > 0 || canLinkMessenger.value)
+const maxEnabled = computed(() => Boolean(config.value?.providers?.max && config.value.maxAppLink))
+const maxLinked = computed(() => identities.value.linked.some(item => item.key === 'max'))
+const canLinkTelegram = computed(() => telegramEnabled.value && !telegramLinked.value)
+const canLinkMax = computed(() => maxEnabled.value && !maxLinked.value)
+// Inside MAX the page links only MAX itself, from the launch data.
+const canLinkMessenger = computed(() => !maxApp.value && (canLinkTelegram.value || canLinkMax.value))
+const showMessengers = computed(() => identities.value.linked.length > 0 || canLinkMessenger.value || Boolean(linkNotice.value))
 const telegramLinkExpired = computed(() => Boolean(telegramLink.value) && now.value >= telegramLinkExpiresAt.value)
+// MAX mode. The launch data is the only MAX identity; the name is shown so a person can spot a foreign launch.
+const maxApp = computed(() => isMaxAppPath(route.path))
+const maxLaunch = ref('')
+const maxName = ref('')
+const relogin = ref(false)
+// A server route renders the QR code of the fixed mini-app link (no code inside).
+const MAX_QR_URL = '/api/account/max/qr.svg'
 
 function show(nextPhase: Phase) {
   phase.value = nextPhase
@@ -85,6 +104,13 @@ async function load() {
   }
   if (!config.value.enabled) return show('disabled')
   if (!config.value.available) return show('unavailable')
+  if (maxApp.value) {
+    const launch = await readMaxLaunch()
+    maxLaunch.value = launch.initData
+    maxName.value = launch.name
+    // An ordinary browser: no account data and no forms, only the way into MAX.
+    if (!maxLaunch.value) return show('outside')
+  }
   const error = typeof route.query.error === 'string' ? route.query.error : ''
   const step = route.query.step
   const confirmAfterLogin = route.query.confirm === 'delete'
@@ -172,6 +198,9 @@ async function logout() {
   busy.value = false
   user.value = null
   cancelDelete()
+  closeLink()
+  relogin.value = false
+  linkNotice.value = ''
   notice.value = 'Вы вышли из дневника.'
   show('email')
 }
@@ -239,38 +268,52 @@ function cancelDelete() {
 
 function closeLink() {
   linkOpen.value = false
+  linkTarget.value = ''
   telegramLink.value = ''
   message.value = ''
+}
+
+function chooseMax() {
+  message.value = ''
+  linkNotice.value = ''
+  linkTarget.value = 'max'
 }
 
 async function startTelegramLink() {
   if (busy.value) return
   message.value = ''
   linkNotice.value = ''
+  relogin.value = false
   busy.value = true
   try {
     const result = await api.linkTelegram()
+    linkTarget.value = 'telegram'
     telegramLink.value = result.deepLink
     telegramLinkExpiresAt.value = Date.now() + result.expiresIn * 1000
   } catch (error) {
     if (error instanceof AccountRequestError && error.body.error === 'provider_disabled') message.value = 'Привязка Telegram сейчас выключена.'
     else fail(error)
+    // Adding a messenger needs a login in the last 15 minutes (service rule).
+    relogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
   } finally {
     busy.value = false
   }
 }
 
-/** Reads the account again after the person confirmed the link in the bot chat. */
+/** Reads the account again after the person confirmed the link in the bot chat or in MAX. */
 async function refreshLinks(quiet = false) {
-  if (busy.value) return
+  const target = linkTarget.value
+  if (busy.value || !target) return
   busy.value = true
   try {
     user.value = (await api.me()).user
-    if (telegramLinked.value) {
+    if (target === 'telegram' ? telegramLinked.value : maxLinked.value) {
       closeLink()
-      linkNotice.value = 'Telegram привязан к дневнику.'
+      linkNotice.value = `${MESSENGER_NAMES[target]} привязан к дневнику.`
     } else if (!quiet) {
-      message.value = 'Привязка ещё не подтверждена. Нажмите «Привязать» в чате с ботом.'
+      message.value = target === 'telegram'
+        ? 'Привязка ещё не подтверждена. Нажмите «Привязать» в чате с ботом.'
+        : 'MAX ещё не привязан. Откройте дневник в MAX, войдите и нажмите «Привязать».'
     }
   } catch (error) {
     if (!quiet) fail(error)
@@ -280,20 +323,41 @@ async function refreshLinks(quiet = false) {
 }
 
 function onVisible() {
-  if (document.visibilityState === 'visible' && telegramLink.value && phase.value === 'account') refreshLinks(true)
+  const waiting = (linkTarget.value === 'telegram' && telegramLink.value) || linkTarget.value === 'max'
+  if (document.visibilityState === 'visible' && waiting && phase.value === 'account') refreshLinks(true)
 }
 
-async function unlinkTelegram() {
+async function unlinkMessenger(provider: Messenger) {
   if (busy.value) return
   message.value = ''
   linkNotice.value = ''
   busy.value = true
   try {
-    await api.unlinkTelegram()
+    await api.unlinkMessenger(provider)
     user.value = (await api.me()).user
-    linkNotice.value = 'Telegram отвязан от дневника.'
+    linkNotice.value = `${MESSENGER_NAMES[provider]} отвязан от дневника.`
   } catch (error) {
     fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+/** Links MAX inside the mini app with the signed launch data of this launch. */
+async function linkMax() {
+  if (busy.value || !maxLaunch.value) return
+  message.value = ''
+  linkNotice.value = ''
+  relogin.value = false
+  busy.value = true
+  try {
+    await api.linkMax(maxLaunch.value)
+    user.value = (await api.me()).user
+    linkNotice.value = 'MAX привязан к дневнику.'
+  } catch (error) {
+    fail(error)
+    // The link needs a login in the last 15 minutes; inside MAX only the email code is offered.
+    relogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
   } finally {
     busy.value = false
   }
@@ -341,16 +405,26 @@ onBeforeUnmount(() => {
         </div>
       </template>
 
+      <template v-else-if="phase === 'outside'">
+        <h1 ref="heading" tabindex="-1">Откройте дневник в MAX</h1>
+        <p class="account-lead">Эта страница работает внутри мессенджера MAX.</p>
+        <template v-if="config?.maxAppLink">
+          <img class="account-qr" :src="MAX_QR_URL" width="200" height="200" alt="QR-код ссылки на дневник в MAX">
+          <a class="button primary" :href="config.maxAppLink">Открыть в MAX</a>
+        </template>
+      </template>
+
       <template v-else-if="phase === 'email'">
         <h1 ref="heading" tabindex="-1">Вход в дневник</h1>
-        <p class="account-lead">Личный дневник находок, оценок и предпочтений. Аккаунт создаётся при первом входе.</p>
+        <p v-if="maxApp" class="account-lead">Войдите по коду из письма, чтобы привязать MAX к своему дневнику. Аккаунт создаётся при первом входе.</p>
+        <p v-else class="account-lead">Личный дневник находок, оценок и предпочтений. Аккаунт создаётся при первом входе.</p>
         <p v-if="notice" class="account-notice">{{ notice }}</p>
         <form class="account-form" @submit.prevent="sendCode">
           <label for="account-email">Электронная почта</label>
           <input id="account-email" v-model="email" type="email" name="email" autocomplete="email" inputmode="email" required maxlength="254" :disabled="busy">
           <button class="button primary" type="submit" :disabled="busy || !email.trim()">Получить код</button>
         </form>
-        <template v-if="yandexEnabled">
+        <template v-if="yandexEnabled && !maxApp">
           <p class="account-divider"><span>или</span></p>
           <a class="button secondary account-yandex" :href="yandexHref"><span class="yandex-mark" aria-hidden="true">Я</span>Войти с Яндекс ID</a>
         </template>
@@ -386,6 +460,17 @@ onBeforeUnmount(() => {
       <template v-else-if="phase === 'account' && user">
         <h1 ref="heading" tabindex="-1">Винный дневник</h1>
         <p class="account-lead">Вы вошли как <strong>{{ user.username }}</strong>.</p>
+        <div v-if="maxApp && !maxLinked" class="account-panel" role="group" aria-labelledby="max-link-heading">
+          <template v-if="maxEnabled">
+            <h2 id="max-link-heading" class="account-subheading">Привязать MAX-аккаунт{{ maxName ? ` «${maxName}»` : '' }} к дневнику {{ user.username }}?</h2>
+            <p>Бот MAX сможет сохранять ваши находки в этот дневник. Если имя MAX не ваше, не привязывайте.</p>
+            <div class="account-actions">
+              <button class="button primary" type="button" :disabled="busy" @click="linkMax">Привязать</button>
+              <button v-if="relogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
+            </div>
+          </template>
+          <p v-else id="max-link-heading">Привязка MAX сейчас выключена.</p>
+        </div>
         <p class="account-notice">Скоро здесь появятся история поисков, оценки вин и ваши предпочтения.</p>
         <h2 class="account-subheading">Способы входа</h2>
         <ul class="account-identities">
@@ -397,7 +482,7 @@ onBeforeUnmount(() => {
           <ul v-if="identities.linked.length" class="account-identities">
             <li v-for="item in identities.linked" :key="item.key">
               <span>{{ item.label }}</span>
-              <span class="account-identity-state">{{ item.value }}<button v-if="item.key === 'telegram'" type="button" class="account-link" :disabled="busy" @click="unlinkTelegram">Отвязать</button></span>
+              <span class="account-identity-state">{{ item.value }}<button v-if="!maxApp || item.key === 'max'" type="button" class="account-link" :disabled="busy" @click="unlinkMessenger(item.key as Messenger)">Отвязать</button></span>
             </li>
           </ul>
           <p v-if="linkNotice" class="account-notice" role="status">{{ linkNotice }}</p>
@@ -407,10 +492,21 @@ onBeforeUnmount(() => {
             </div>
             <div v-else class="account-panel" role="group" aria-labelledby="link-heading">
               <h3 id="link-heading" class="account-subheading">Привязать мессенджер</h3>
-              <template v-if="!telegramLink">
+              <template v-if="linkTarget === 'max'">
+                <p>Отсканируйте QR-код телефоном или откройте ссылку в MAX. В дневнике внутри MAX войдите по коду из письма и нажмите «Привязать».</p>
+                <img class="account-qr" :src="MAX_QR_URL" width="200" height="200" alt="QR-код ссылки на дневник в MAX">
+                <div class="account-actions">
+                  <a class="button primary" :href="config?.maxAppLink" target="_blank" rel="noopener noreferrer">Открыть в MAX</a>
+                  <button class="button secondary" type="button" :disabled="busy" @click="refreshLinks()">Я привязал</button>
+                  <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
+                </div>
+              </template>
+              <template v-else-if="!telegramLink">
                 <p>Выберите мессенджер.</p>
                 <div class="account-actions">
-                  <button class="button primary" type="button" :disabled="busy" @click="startTelegramLink">Telegram</button>
+                  <button v-if="canLinkTelegram" class="button primary" type="button" :disabled="busy" @click="startTelegramLink">Telegram</button>
+                  <button v-if="canLinkMax" class="button primary" type="button" :disabled="busy" @click="chooseMax">MAX</button>
+                  <button v-if="relogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
                   <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
                 </div>
               </template>
@@ -453,7 +549,7 @@ onBeforeUnmount(() => {
             <div class="account-actions">
               <button v-if="accountEmail && !reauthSent" class="button primary" type="button" :disabled="busy" @click="sendReauthCode">Подтвердить кодом из письма</button>
               <button v-if="accountEmail && reauthSent" class="button secondary" type="button" :disabled="busy || resendIn > 0" @click="sendReauthCode">{{ resendIn > 0 ? `Отправить код ещё раз через ${resendIn} с` : 'Отправить код ещё раз' }}</button>
-              <a v-if="hasYandex" class="button secondary account-yandex" :href="reauthYandexHref"><span class="yandex-mark" aria-hidden="true">Я</span>Подтвердить через Яндекс ID</a>
+              <a v-if="hasYandex && !maxApp" class="button secondary account-yandex" :href="reauthYandexHref"><span class="yandex-mark" aria-hidden="true">Я</span>Подтвердить через Яндекс ID</a>
               <button class="button secondary" type="button" :disabled="busy" @click="cancelDelete">Отмена</button>
             </div>
           </template>

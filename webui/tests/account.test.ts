@@ -3,9 +3,10 @@ import { createServer, type IncomingMessage, type Server } from 'node:http'
 import { createApp, createRouter, eventHandler, toNodeListener } from 'h3'
 import {
   accountConfig, accountConfigRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
-  meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute, yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
+  maxHostDecision, maxLinkRoute, maxQrRoute, meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute,
+  yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
-import { accountErrorMessage, isAccountPath, safeNextPath, splitIdentities } from '../shared/account'
+import { accountErrorMessage, isAccountPath, isMaxAppPath, safeNextPath, splitIdentities } from '../shared/account'
 import { METRIKA_INIT_SCRIPT } from '../shared/metrika'
 
 const TOKEN = 'w'.repeat(64)
@@ -17,6 +18,8 @@ let site: Server
 let serviceUrl = ''
 let siteUrl = ''
 let source: AccountConfigSource
+let baseSource: AccountConfigSource
+const MAX_APP_LINK = 'https://max.ru/se14697933_bot?startapp=account'
 
 function listen(server: Server): Promise<string> {
   return new Promise(resolve => server.listen(0, '127.0.0.1', () => {
@@ -44,7 +47,8 @@ beforeAll(async () => {
     })
   })
   serviceUrl = await listen(service)
-  source = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru' }, { timeoutMs: 300 })
+  baseSource = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru' }, { timeoutMs: 300 })
+  source = baseSource
   const app = createApp()
   const routes: Record<string, (event: Parameters<typeof meRoute>[0], source: AccountConfigSource) => unknown> = {
     '/api/account/config': accountConfigRoute,
@@ -59,9 +63,13 @@ beforeAll(async () => {
     '/api/account/links/telegram': telegramLinkRoute,
     '/api/account/identities/telegram': (event, config) => unlinkMessengerRoute(event, config, 'telegram'),
     '/api/account/identities/email': (event, config) => unlinkMessengerRoute(event, config, 'email'),
+    '/api/account/identities/max': (event, config) => unlinkMessengerRoute(event, config, 'max'),
+    '/api/account/max/link': maxLinkRoute,
+    '/api/account/max/qr.svg': maxQrRoute,
   }
   const router = createRouter()
-  for (const [path, route] of Object.entries(routes)) router.use(path, eventHandler(event => route(event, source)))
+  // `source` is read at request time, so a test can switch the settings.
+  for (const [path, route] of Object.entries(routes)) router.use(path, eventHandler(event => route(event, () => source())))
   app.use(router)
   site = createServer(toNodeListener(app))
   siteUrl = await listen(site)
@@ -75,7 +83,11 @@ afterAll(async () => {
 beforeEach(() => {
   seen = []
   reply = () => ({ status: 200, body: {} })
+  source = baseSource
 })
+const withMaxLink = () => {
+  source = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru', maxAppLink: MAX_APP_LINK }, { timeoutMs: 300 })
+}
 
 function call(path: string, init: RequestInit & { cookie?: string } = {}) {
   const headers = new Headers(init.headers)
@@ -97,7 +109,11 @@ describe('shared account rules', () => {
   it('marks the account pages for Metrika and the page cache', () => {
     expect(isAccountPath('/account')).toBe(true)
     expect(isAccountPath('/account/onboarding')).toBe(true)
+    expect(isAccountPath('/max')).toBe(true)
     expect(isAccountPath('/accounting')).toBe(false)
+    expect(isAccountPath('/maxim')).toBe(false)
+    expect(isMaxAppPath('/max')).toBe(true)
+    expect(isMaxAppPath('/account')).toBe(false)
   })
   it('lists only email and Yandex ID as login methods', () => {
     const { login, linked } = splitIdentities([
@@ -139,7 +155,7 @@ describe('Metrika on account pages', () => {
     expect(ym?.a?.[0]?.[1]).toBe('init')
     expect(inserted).toHaveLength(1)
   })
-  it.each(['/account', '/account/onboarding'])('does not start Metrika on %s', pathname => {
+  it.each(['/account', '/account/onboarding', '/max'])('does not start Metrika on %s', pathname => {
     const { ym, inserted } = runInit(pathname)
     expect(ym).toBeUndefined()
     expect(inserted).toHaveLength(0)
@@ -164,7 +180,7 @@ describe('account configuration', () => {
     reply = () => ({ status: 200, body: { providers: { email: true, yandex: true, max_login: true, telegram_link: true }, consent_version: 'c1', terms_version: 't1' } })
     const response = await call('/api/account/config')
     expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true, telegram: true }, consentVersion: 'c1', termsVersion: 't1' })
+    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true, telegram: true, max: false }, consentVersion: 'c1', termsVersion: 't1' })
     expect(seen[0].headers.authorization).toBe(`Bearer ${TOKEN}`)
   })
   it('reports an unavailable service instead of failing the page', async () => {
@@ -358,6 +374,101 @@ describe('Telegram link', () => {
     const response = await call('/api/account/identities/email', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
     expect(response.status).toBe(404)
     expect(seen).toHaveLength(0)
+  })
+})
+
+describe('MAX link', () => {
+  const initData = `auth_date=1&query_id=q&user=${encodeURIComponent('{"id":7}')}&hash=${'a'.repeat(64)}`
+  it('reports MAX only with the service flag and the site link', async () => {
+    reply = () => ({ status: 200, body: { providers: { email: true, max_link: true } } })
+    expect((await (await call('/api/account/config')).json()).providers.max).toBe(false)
+    withMaxLink()
+    const body = await (await call('/api/account/config')).json()
+    expect(body.providers.max).toBe(true)
+    expect(body.maxAppLink).toBe(MAX_APP_LINK)
+    reply = () => ({ status: 200, body: { providers: { email: true, max_link: false } } })
+    const off = await (await call('/api/account/config')).json()
+    expect(off.providers.max).toBe(false)
+    expect(off.maxAppLink).toBeUndefined()
+  })
+  it.each(['https://evil.example/bot?startapp=account', 'https://max.ru/bot?startapp=link_abc', 'javascript:alert(1)'])('ignores an unsafe mini-app link: %s', link => {
+    expect(accountConfig({ endpoint: 'http://host/', token: TOKEN, maxAppLink: link })?.maxAppLink).toBe('')
+  })
+  it('sends the launch data with the session and the client address', async () => {
+    reply = () => ({ status: 200, body: { status: 'linked' } })
+    const response = await call('/api/account/max/link', { method: 'POST', ...json({ initData }), cookie: '__Host-cv_session=abc' })
+    expect(await response.json()).toEqual({ status: 'linked' })
+    expect(seen[0]).toMatchObject({ method: 'POST', url: '/v1/me/identities/max' })
+    expect(JSON.parse(seen[0].body)).toEqual({ init_data: initData })
+    expect(seen[0].headers['x-session-token']).toBe('abc')
+    expect(seen[0].headers['x-client-ip']).toBe('127.0.0.1')
+  })
+  it('needs a session, the site origin, and launch data', async () => {
+    expect((await call('/api/account/max/link', { method: 'POST', ...json({ initData }) })).status).toBe(401)
+    expect((await call('/api/account/max/link', { method: 'POST', ...json({ initData }), cookie: '__Host-cv_session=abc', headers: { origin: 'https://evil.example' } })).status).toBe(403)
+    const empty = await call('/api/account/max/link', { method: 'POST', ...json({}), cookie: '__Host-cv_session=abc' })
+    expect(await empty.json()).toEqual({ error: 'invalid_launch' })
+    expect(seen).toHaveLength(0)
+  })
+  it('accepts long launch data and stops a larger body', async () => {
+    reply = () => ({ status: 200, body: { status: 'linked' } })
+    const long = await call('/api/account/max/link', { method: 'POST', ...json({ initData: 'a'.repeat(8000) }), cookie: '__Host-cv_session=abc' })
+    expect(long.status).toBe(200)
+    const huge = await call('/api/account/max/link', { method: 'POST', ...json({ initData: 'a'.repeat(10_000) }), cookie: '__Host-cv_session=abc' })
+    expect(huge.status).toBe(413)
+  })
+  it.each([[400, 'launch_expired'], [403, 'reauth_required'], [409, 'identity_in_use']])('passes the refusal %s %s', async (status, error) => {
+    reply = () => ({ status, body: { error } })
+    const response = await call('/api/account/max/link', { method: 'POST', ...json({ initData }), cookie: '__Host-cv_session=abc' })
+    expect(response.status).toBe(status)
+    expect(await response.json()).toEqual({ error })
+  })
+  it('serves the QR code of the fixed link only when it is set', async () => {
+    expect((await call('/api/account/max/qr.svg')).status).toBe(404)
+    withMaxLink()
+    const response = await call('/api/account/max/qr.svg')
+    expect(response.headers.get('content-type')).toContain('image/svg+xml')
+    expect(await response.text()).toMatch(/^<svg/)
+    expect(seen).toHaveLength(0)
+  })
+  it('unlinks MAX', async () => {
+    reply = () => ({ status: 204 })
+    const response = await call('/api/account/identities/max', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(await response.json()).toEqual({ status: 'unlinked' })
+    expect(seen[0]).toMatchObject({ method: 'DELETE', url: '/v1/me/identities/max' })
+  })
+  it('explains a stale MAX launch', () => {
+    for (const error of ['launch_expired', 'launch_reused', 'launch_ip_mismatch', 'invalid_launch']) {
+      expect(accountErrorMessage({ error })).toContain('откройте его в MAX снова')
+    }
+  })
+})
+
+describe('MAX mini-app host', () => {
+  it.each([
+    ['GET', '/', 'redirect'],
+    ['GET', '/max', 'allow'],
+    ['GET', '/_nuxt/entry.js', 'allow'],
+    ['GET', '/reference/logo.svg', 'allow'],
+    ['GET', '/privacy', 'allow'],
+    ['GET', '/api/account/config', 'allow'],
+    ['GET', '/api/account/max/qr.svg', 'allow'],
+    ['POST', '/api/account/email/start', 'allow'],
+    ['POST', '/api/account/max/link', 'allow'],
+    ['DELETE', '/api/account/me', 'allow'],
+    ['DELETE', '/api/account/identities/max', 'allow'],
+    ['GET', '/api/account/yandex/start', 'reject'],
+    ['POST', '/api/account/links/telegram', 'reject'],
+    ['DELETE', '/api/account/identities/telegram', 'reject'],
+    ['GET', '/account', 'reject'],
+    ['GET', '/shelf', 'reject'],
+    ['GET', '/sw.js', 'reject'],
+    ['GET', '/manifest.webmanifest', 'reject'],
+    ['POST', '/v1/match', 'reject'],
+    ['POST', '/max', 'reject'],
+    ['GET', '/max/../account', 'reject'],
+  ])('%s %s: %s', (method, path, decision) => {
+    expect(maxHostDecision(method, path)).toBe(decision)
   })
 })
 

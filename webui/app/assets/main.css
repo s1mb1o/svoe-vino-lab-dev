@@ -777,6 +777,7 @@ body:has(.experience-dialog[open]) { overflow: hidden; }
 .account-identity-state .account-link { min-height: 32px; font-size: 13px; }
 .account-panel { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); font-size: 14px; line-height: 1.6; }
 .account-panel .account-subheading { margin-top: 0; font-size: 17px; }
+.account-qr { width: 200px; height: 200px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .account-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .account-danger { color: var(--danger); }
 .account-danger-fill { background: var(--danger); color: #fff; }

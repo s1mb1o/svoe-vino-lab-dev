@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isMaxAppPath } from '#shared/account'
 import { hasAgeConfirmation } from '~/utils/age'
 
 const ageChecked = ref(false)
@@ -8,6 +9,8 @@ const isAndroidPage = computed(() => route.path.startsWith('/android'))
 const isHackatonPage = computed(() => route.path === '/hackaton' || route.path === '/hackaton/')
 const isIdeasPage = computed(() => route.path === '/ideas' || route.path === '/ideas/')
 const isPresentationPage = computed(() => route.path === '/presentation' || route.path === '/presentation/')
+// The MAX mini app has its own small header and footer: its host serves no other site page (plan 05).
+const isMaxApp = computed(() => isMaxAppPath(route.path))
 const ageGateOpen = computed(() => !ageChecked.value || !ageConfirmed.value)
 // «Винный дневник»: the server decides from NUXT_ACCOUNT_ENDPOINT; the page makes no account call.
 const accountEnabled = useState('account-enabled', () => import.meta.server && Boolean(String(useRuntimeConfig().accountEndpoint || '').trim()))
@@ -21,7 +24,12 @@ onMounted(() => {
   <NuxtPwaManifest />
   <div class="site-shell" :class="{ 'presentation-shell': isPresentationPage }" :inert="ageGateOpen">
     <a class="skip-link" href="#main-content">К основному содержанию</a>
-    <header v-if="!isPresentationPage" class="site-header">
+    <header v-if="isMaxApp" class="site-header">
+      <span class="logo"><ProductBrand /></span>
+      <span class="header-section"><AppIcon name="book" />Винный дневник</span>
+      <div class="header-actions"><ThemeSwitcher /></div>
+    </header>
+    <header v-else-if="!isPresentationPage" class="site-header">
       <NuxtLink to="/" class="logo" aria-label="Что за вино? — поиск по фото"><ProductBrand /></NuxtLink>
       <span class="header-section"><AppIcon :name="isIdeasPage ? 'book' : isAndroidPage ? 'android' : 'scan'" />{{ isIdeasPage ? 'Больше, чем фото' : isHackatonPage ? 'Все приложения' : isAndroidPage ? 'Android-приложение' : 'Сканер вина' }}</span>
       <div class="header-actions">
@@ -32,7 +40,11 @@ onMounted(() => {
       </div>
     </header>
     <NuxtPage />
-    <footer v-if="!isPresentationPage" class="site-footer">
+    <footer v-if="isMaxApp" class="site-footer">
+      <div><span>Что за вино? · Винный дневник</span><a href="/privacy">Политика конфиденциальности</a><a href="/terms">Условия использования</a><span>18+</span></div>
+      <p>Чрезмерное употребление алкоголя вредит вашему здоровью</p>
+    </footer>
+    <footer v-else-if="!isPresentationPage" class="site-footer">
       <div><span>Что за вино? · {{ isIdeasPage ? 'Больше, чем распознавание' : isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : 'Поиск по фотографии' }}</span><NuxtLink :to="isIdeasPage ? '/' : '/ideas'">{{ isIdeasPage ? 'Веб-сканер' : 'Идеи за пределами распознавания' }}<AppIcon name="arrow-up-right" /></NuxtLink><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
       <p>Чрезмерное употребление алкоголя вредит вашему здоровью</p>
     </footer>

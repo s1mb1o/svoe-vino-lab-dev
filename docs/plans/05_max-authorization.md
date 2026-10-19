@@ -6,7 +6,9 @@ Branch: `feature/account`.
 Base: `0621952f` (`main`).
 Depends on: plan `04_user-accounts.md` (issue #48). This plan adds MAX to that account service.
 Status: The account service checks MAX launch data and links MAX (commit `64545eb5`). The
-mini-app pages, the bot changes, and the deployment do not exist yet. Plan 04 dropped
+mini app `/max`, «Привязать мессенджер» → «MAX» on the site, and the Nuxt host guard exist
+(2026-10-19, `webui/docs/account.md`, "MAX link"). The bot changes and the deployment do not exist
+yet. Plan 04 dropped
 passwords on 2026-10-19: the login methods are the email code and Yandex ID.
 Sketches: boards 5 and 6, and the third screen of board 1, in
 [`04_user-accounts/sketches/`](04_user-accounts/sketches/). They are sketches, not a final design.
@@ -335,7 +337,8 @@ Phase 1 — account service (after Phase 1 of plan 04):
 
 Phase 2 — Web UI:
 
-7. `/max/*` pages, the host route list, the «Через MAX» tab, «Привязать MAX».
+7. Done (2026-10-19): `/max`, the host route list, «Привязать мессенджер» → «MAX». The «Через MAX»
+   login tab waits for `MAX_LOGIN_ENABLED` (#50).
 8. Caddy block for `max.chtozavino.ru` (deploy files outside the repository).
 
 Phase 3 — bot:

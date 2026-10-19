@@ -1,6 +1,10 @@
 // Shared rules of the «Винный дневник» account pages and the /api/account/* server routes.
 
 export const ACCOUNT_PATH = '/account'
+// The MAX mini app of the diary (plan 05). It is the account page in MAX mode.
+export const MAX_APP_PATH = '/max'
+// The fixed deep link of the mini app: https://max.ru/<bot>?startapp=account. It holds no code.
+export const MAX_APP_LINK_PATTERN = /^https:\/\/max\.ru\/[A-Za-z0-9_]{1,64}\?startapp=account$/
 
 // The account service accepts 3 to 32 characters: lower-case Latin letters, digits, ".", "_", "-".
 // The first and the last character are a letter or a digit.
@@ -17,9 +21,13 @@ export function safeNextPath(value: unknown): string {
   return value
 }
 
-/** True for the account pages. Metrika and the Workbox page cache skip these paths. */
+/** True for the account pages and the MAX mini app. Metrika and the Workbox page cache skip these paths. */
 export function isAccountPath(pathname: string): boolean {
-  return pathname === ACCOUNT_PATH || pathname.startsWith(`${ACCOUNT_PATH}/`)
+  return [ACCOUNT_PATH, MAX_APP_PATH].some(base => pathname === base || pathname.startsWith(`${base}/`))
+}
+
+export function isMaxAppPath(pathname: string): boolean {
+  return pathname === MAX_APP_PATH || pathname.startsWith(`${MAX_APP_PATH}/`)
 }
 
 export interface AccountErrorBody {
@@ -68,6 +76,13 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
       return 'Сеанс завершён. Войдите ещё раз.'
     case 'provider_already_linked':
       return 'Этот мессенджер уже привязан. Обновите страницу.'
+    case 'identity_in_use':
+      return 'Этот аккаунт мессенджера уже привязан к другому дневнику.'
+    case 'invalid_launch':
+    case 'launch_expired':
+    case 'launch_reused':
+    case 'launch_ip_mismatch':
+      return 'Данные запуска MAX устарели. Закройте дневник и откройте его в MAX снова.'
     case 'account_unavailable':
       return 'Дневник временно недоступен. Поиск вина по фото работает.'
     default:
