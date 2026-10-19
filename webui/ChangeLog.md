@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — /privacy: no backup periods for «Винный дневник»
+
+- Removed «В резервных копиях эти данные хранятся не дольше 8 дней» and the table entry «в резервных копиях — не дольше 8 дней после удаления». The diary data is kept until the person deletes the diary. No backups during the hackathon (owner decision).
+
 ## 2026-10-19 — /privacy: 30 days without «включая резервные копии»
 
 - The recognition server keeps photos and request data 30 days. `/privacy` no longer says «включая резервные копии»: the project makes no backups during the hackathon (owner decision).
