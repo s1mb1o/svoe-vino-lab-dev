@@ -42,7 +42,26 @@ def sign(key: bytes, pairs: dict[str, str]) -> str:
     return hmac.new(key, launch_params.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
+def launch_string(init_data: str) -> str:
+    """Return the launch string `k=v&...&hash=...` from the forms that MAX clients give.
+
+    `window.WebApp.initData` is the launch string, but a client can give the whole URL fragment
+    (`WebAppData=<encoded>&WebAppPlatform=...&WebAppVersion=...`) or the launch string URL-encoded
+    once more (the first real link on 2026-10-20 sent no `hash` key). The signature check runs
+    on the unwrapped string, so this does not weaken it.
+    """
+    text = init_data.strip().removeprefix("#")
+    if "&" not in text and "%26" in text:
+        text = unquote(text)
+    for part in text.split("&"):
+        name, _, value = part.partition("=")
+        if name == "WebAppData":
+            return unquote(value)
+    return text
+
+
 def verify(init_data: str, key: bytes) -> Launch:
+    init_data = launch_string(init_data)
     pairs: dict[str, str] = {}
     for part in init_data.split("&"):
         name, separator, value = part.partition("=")
@@ -54,7 +73,9 @@ def verify(init_data: str, key: bytes) -> Launch:
             raise LaunchInvalid("malformed launch data encoding") from None
     supplied = pairs.pop("hash", "")
     if not supplied:
-        raise LaunchInvalid("launch data has no hash")
+        # Key names only, never values: they show the form that the client sent.
+        keys = ", ".join(sorted(pairs)[:10])
+        raise LaunchInvalid(f"launch data has no hash (keys: {keys})")
     if not hmac.compare_digest(sign(key, pairs).encode(), supplied.lower().encode()):
         raise LaunchInvalid("launch data signature mismatch")
     try:

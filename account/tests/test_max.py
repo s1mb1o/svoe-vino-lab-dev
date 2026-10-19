@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import re
 import sys
+from urllib.parse import quote
 
 import pytest
 from conftest import CLIENT_IP, MAX_TOKEN, START, Harness, init_data
@@ -66,6 +67,23 @@ def test_launch_date_in_milliseconds(harness, caplog):
     assert re.search(r"MAX launch refused: expired, age 40\d\d s", caplog.text)
     assert "query-1" not in caplog.text
     assert link(init_data(auth_date=int(START) * 1000))["status"] == "linked"
+
+
+def test_launch_forms_of_max_clients(harness):
+    token = harness.email_session("anna@example.ru")
+    key = max_launch.derive_key(MAX_TOKEN)
+    plain = init_data(query_id="query-fragment")
+    fragment = "WebAppData=" + quote(plain, safe="") + "&WebAppPlatform=web&WebAppVersion=26.2.8"
+    assert max_launch.verify(fragment, key).query_id == "query-fragment"
+    assert max_launch.verify("#" + fragment, key).query_id == "query-fragment"
+    encoded = quote(init_data(query_id="query-encoded"), safe="")
+    assert max_launch.verify(encoded, key).query_id == "query-encoded"
+    with pytest.raises(max_launch.LaunchInvalid, match=r"no hash \(keys: WebAppPlatform, a\)"):
+        max_launch.verify("a=1&WebAppPlatform=web", key)
+    linked = harness.web(
+        "POST", "/v1/me/identities/max", session=token, json={"init_data": fragment}
+    ).json()
+    assert linked["status"] == "linked"
 
 
 def test_ip_check_can_be_turned_off(env):

@@ -1,5 +1,12 @@
 # ChangeLog
 
+## 2026-10-20 — Forms of MAX launch data
+
+The refusal log of the first real link said «launch data has no hash»: the MAX client did not give the plain
+launch string. The service now unwraps the URL fragment form (`WebAppData=…&WebAppPlatform=…`) and the launch
+string that is URL-encoded once more, then runs the same signature check. A «no hash» refusal names the keys
+(never the values). 101 tests.
+
 ## 2026-10-20 — MAX launch date and refusal logs
 
 The first real MAX link failed with `launch_expired` twice, also with `MAX_INITDATA_MAX_AGE_SECONDS=3600`.
