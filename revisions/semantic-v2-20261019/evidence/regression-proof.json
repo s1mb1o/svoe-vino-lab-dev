@@ -1,0 +1,8 @@
+{
+  "tested_old_implementation": true,
+  "old_regression_methods": 2,
+  "old_failing_subtests": 24,
+  "errors": 0,
+  "new_regression_suite_tests": 8,
+  "new_regression_suite_passed": true
+}

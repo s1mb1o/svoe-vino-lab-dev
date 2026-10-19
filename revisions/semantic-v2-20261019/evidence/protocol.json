@@ -1,0 +1,4468 @@
+{
+  "schema_version": 1,
+  "source_root": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2",
+  "groups": [
+    {
+      "id": "hierarchy",
+      "title": "Whole labels, not logos",
+      "rules": [
+        1,
+        6
+      ],
+      "description": "Large red and black emblems, a perforated predicted label mask, and an incomplete predicted bottle mask. The complete visible paper and its text must survive."
+    },
+    {
+      "id": "closeup",
+      "title": "Label-only photographs",
+      "rules": [
+        2,
+        6,
+        8
+      ],
+      "description": "Front, back, edge-cropped and tilted label close-ups. No neck or cap is required. Without an enclosing bottle detection, preserve original-frame context."
+    },
+    {
+      "id": "intent",
+      "title": "Tap and capture reticle",
+      "rules": [
+        1,
+        3,
+        8
+      ],
+      "description": "Balanced multi-bottle scenes with an explicit tap or reticle. A tap on label artwork resolves to the owning bottle. These are additional interaction capabilities, not like-for-like passive ranking cases."
+    },
+    {
+      "id": "hands",
+      "title": "Hand association",
+      "rules": [
+        3,
+        4
+      ],
+      "description": "Off-center neck/body grips, a large hand bounding box crossing background bottles, and a hand moved clear of a bottle. Mask adjacency supports contact; box overlap alone must not establish a grip."
+    },
+    {
+      "id": "framing",
+      "title": "Scale, edges and orientation",
+      "rules": [
+        3,
+        5
+      ],
+      "description": "An off-center foreground bottle, top truncation, a bottle crossing a side edge, and a rotated camera. Edge contact must not outweigh clear foreground intent."
+    },
+    {
+      "id": "readability",
+      "title": "Intent despite poor readability",
+      "rules": [
+        3,
+        5,
+        6
+      ],
+      "description": "A rear label, glare, low light and a body grip. The intended bottle stays the subject even when another label is easier to read. Focus contributes only weakly."
+    },
+    {
+      "id": "ambiguity",
+      "title": "No clear main bottle",
+      "rules": [
+        7,
+        8
+      ],
+      "description": "Two or three equal bottles, two equally held bottles, and a wide shelf row. Intent remains ambiguous, but the selector must return a crop using the photo-center / nearest / left / upper / stable-ID fallback."
+    },
+    {
+      "id": "context",
+      "title": "Secondary labels and physical context",
+      "rules": [
+        1,
+        5,
+        6,
+        8
+      ],
+      "description": "Secondary paper, direct glass printing, a printed bottle depiction inside a carton, and a wine-glass-only negative. Nonexclusive masks preserve nested physical regions."
+    },
+    {
+      "id": "grip-ownership",
+      "title": "Grip ownership and occluding packages",
+      "description": "A carton behind a hand and a legitimate body grip. Enclosure alone must not establish or reject a grip.",
+      "rules": [
+        3,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "multiple-grips",
+      "title": "Two hands: one or two subjects",
+      "description": "Unequal grips on different bottles remain ambiguous; two hands on one bottle support the same subject.",
+      "rules": [
+        3,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "tools",
+      "title": "Horizontal bottle versus a wine tool",
+      "description": "A real pouring bottle and a slender sampling tool. Tool masks are independently annotated, never renamed to fit the selector.",
+      "rules": [
+        1,
+        3,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "touch-grip",
+      "title": "Pointing, reaching and gripping",
+      "description": "A pointing finger touches a label versus a wrapped grip. Visible adjacency alone cannot prove a grip.",
+      "rules": [
+        3,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "depth-contact",
+      "title": "Projected contact across depth",
+      "description": "A hand behind a bottle versus a physical grip. Native masks encode visible pixels, not ground-truth depth supplied to the selector.",
+      "rules": [
+        3,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "gift-box",
+      "title": "Real bottle inside packaging versus printed artwork",
+      "description": "Open gift box containing a physical bottle, and a closed carton carrying a flat bottle illustration.",
+      "rules": [
+        1,
+        5,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "clear-packaging",
+      "title": "Clear gift packaging",
+      "description": "A window gift bag and reflective wrapping strips. Opaque native passes annotate visible physical surfaces; transparent windows are open geometry.",
+      "rules": [
+        1,
+        5,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "depictions",
+      "title": "Poster and mirror duplicate",
+      "description": "A large flat bottle poster beside a real bottle; a reflected duplicate. Physical ownership and representation masks are annotated separately. The mirror duplicate is staged virtual geometry (a reflection proxy), not a real reflected-light photo.",
+      "rules": [
+        1,
+        3,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "open-label-gaps",
+      "title": "Label omissions connected to the silhouette",
+      "description": "A missing secondary label and a missing main-label side, each connected to the exterior of the supplied detector mask. Source RGB must survive.",
+      "rules": [
+        1,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "extended-labels",
+      "title": "Tags and paper outside the bottle body",
+      "description": "A hanging neck tag and a peeling paper flap. They belong to the bottle and must remain complete.",
+      "rules": [
+        1,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "label-ownership",
+      "title": "Overlapping bottles and label owners",
+      "description": "Touching labels and a rear label inside the front bottle's bounding rectangle. Native owner IDs are used only for evaluation.",
+      "rules": [
+        1,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "signage",
+      "title": "Small wine information beside large signage",
+      "description": "A small vintage label with a large price card, and a promotional strip between bottles. Shelf signage is not a wine label.",
+      "rules": [
+        1,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "center-occlusion",
+      "title": "Photo center through an occluder",
+      "description": "Balanced bottles with the center covered by a foreground glass or by the bottle itself. Targets follow visible GT mask geometry, separately from intent.",
+      "rules": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "tap-conflicts",
+      "title": "Explicit tap against hand and mask gaps",
+      "description": "Tap a background bottle while another is held; tap white paper missing from the predicted bottle mask. A unique tap precedes passive cues.",
+      "rules": [
+        1,
+        3,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "foreground-three",
+      "title": "Three bottles: foreground versus photo center",
+      "description": "Two background bottles close to center and one foreground bottle off-center. Includes overlap, edge framing, weak depth, a background magnum and an explicit background tap. Size is prominence evidence, not measured camera depth. A horizontally lying foreground bottle is a pose countercontrol.",
+      "rules": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "format-depth",
+      "title": "Bottle format versus camera distance",
+      "rules": [
+        3,
+        4,
+        5,
+        7
+      ],
+      "description": "Half bottles, magnums and a held small bottle. Conflicting apparent size and depth use fallback unless a grip establishes intent."
+    },
+    {
+      "id": "support-planes",
+      "title": "Separate shelves and support planes",
+      "rules": [
+        3,
+        5,
+        7
+      ],
+      "description": "Raised background shelves and a lying bottle on a lower level. A lower image base alone must not certify camera proximity; ambiguous scenes require the declared geometric fallback."
+    },
+    {
+      "id": "terminal-hands",
+      "title": "Hands projected at bottle ends",
+      "rules": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "description": "A hand behind the neck or base, contrasted with a genuine tilted pouring grip. Physical grip ownership is native evaluation metadata, never detector input."
+    },
+    {
+      "id": "nested-panels",
+      "title": "Real bottles crossing printed panels",
+      "rules": [
+        1,
+        3,
+        6,
+        8
+      ],
+      "description": "Physical foreground bottles overlap a rear printed panel. A separate controlled fault fills a panel mask across the foreground silhouette; RGB and visible GT masks remain unchanged."
+    },
+    {
+      "id": "occlusion-crowds",
+      "title": "Foreground intent among crowded and occluded bottles",
+      "rules": [
+        1,
+        3,
+        5,
+        6,
+        7
+      ],
+      "description": "Five to seven bottles, a foreground glass or a bucket and competing labels. Only visible label pixels are annotated; no hidden label content is generated."
+    }
+  ],
+  "cases": [
+    {
+      "id": "hc-001",
+      "group": "hierarchy",
+      "name": "large_red_logo",
+      "operation": "logo_red",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "logo_red",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5"
+    },
+    {
+      "id": "hc-002",
+      "group": "hierarchy",
+      "name": "large_black_logo",
+      "operation": "logo_black",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "logo_black",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80"
+    },
+    {
+      "id": "hc-003",
+      "group": "hierarchy",
+      "name": "label_mask_holes",
+      "operation": "holes",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "holes",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1"
+    },
+    {
+      "id": "hc-004",
+      "group": "hierarchy",
+      "name": "incomplete_bottle_mask",
+      "operation": "eroded_bottle",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "eroded_bottle",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8"
+    },
+    {
+      "id": "hc-005",
+      "group": "closeup",
+      "name": "front_label_closeup",
+      "operation": "close_front",
+      "source_series": "eval-held-008",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_front",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-008/scene.blend",
+      "source_scene_sha256": "816d22a6fdc456bbc3f5bd786f0f324ed8eabff7c93fa6a7285595494b4482e8"
+    },
+    {
+      "id": "hc-006",
+      "group": "closeup",
+      "name": "rear_label_closeup",
+      "operation": "close_back",
+      "source_series": "eval-held-009",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_back",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-009/scene.blend",
+      "source_scene_sha256": "ccab62b012499560f150b3a85a536d105f8405fcf32d702dd97e23698158a850"
+    },
+    {
+      "id": "hc-007",
+      "group": "closeup",
+      "name": "label_at_frame_edge",
+      "operation": "close_edge",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_edge",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-008",
+      "group": "closeup",
+      "name": "tilted_label_closeup",
+      "operation": "close_tilt",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_tilt",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a"
+    },
+    {
+      "id": "hc-009",
+      "group": "intent",
+      "name": "tap_right_bottle",
+      "operation": "tap_right",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-010",
+      "group": "intent",
+      "name": "tap_left_bottle",
+      "operation": "tap_left",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_left",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a"
+    },
+    {
+      "id": "hc-011",
+      "group": "intent",
+      "name": "reticle_right_bottle",
+      "operation": "aim_right",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "aim_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-012",
+      "group": "intent",
+      "name": "tap_label_artwork",
+      "operation": "tap_logo",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_logo",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a"
+    },
+    {
+      "id": "hc-013",
+      "group": "hands",
+      "name": "offcenter_neck_grip",
+      "operation": "held_left",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "held_left",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5"
+    },
+    {
+      "id": "hc-014",
+      "group": "hands",
+      "name": "offcenter_body_grip",
+      "operation": "held_right",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "held_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80"
+    },
+    {
+      "id": "hc-015",
+      "group": "hands",
+      "name": "hand_box_crosses_shelf",
+      "operation": "hand_box",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "hand_box",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1"
+    },
+    {
+      "id": "hc-016",
+      "group": "hands",
+      "name": "hand_without_contact",
+      "operation": "hand_away",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "hand_away",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8"
+    },
+    {
+      "id": "hc-017",
+      "group": "framing",
+      "name": "foreground_far_from_center",
+      "operation": "offcenter",
+      "source_series": "eval-held-005",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "offcenter",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-005/scene.blend",
+      "source_scene_sha256": "015527f2bed3182eddc3d60888ab08ebd66f8af0366efca84fb93128bb17ca2f"
+    },
+    {
+      "id": "hc-018",
+      "group": "framing",
+      "name": "top_truncated_bottle",
+      "operation": "truncate_top",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "truncate_top",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8"
+    },
+    {
+      "id": "hc-019",
+      "group": "framing",
+      "name": "side_truncated_bottle",
+      "operation": "truncate_side",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "truncate_side",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1"
+    },
+    {
+      "id": "hc-020",
+      "group": "framing",
+      "name": "camera_roll_32_degrees",
+      "operation": "roll",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "roll",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80"
+    },
+    {
+      "id": "hc-021",
+      "group": "readability",
+      "name": "back_label_subject",
+      "operation": "rear",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "rear",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5"
+    },
+    {
+      "id": "hc-022",
+      "group": "readability",
+      "name": "glare_on_subject",
+      "operation": "glare",
+      "source_series": "eval-held-005",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "glare",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-005/scene.blend",
+      "source_scene_sha256": "015527f2bed3182eddc3d60888ab08ebd66f8af0366efca84fb93128bb17ca2f"
+    },
+    {
+      "id": "hc-023",
+      "group": "readability",
+      "name": "dim_foreground_subject",
+      "operation": "dim",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "dim",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80"
+    },
+    {
+      "id": "hc-024",
+      "group": "readability",
+      "name": "body_grip_hides_label",
+      "operation": "body",
+      "source_series": "eval-held-006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "body",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-006/scene.blend",
+      "source_scene_sha256": "88de8f783b89715784872fdfd3a564b5c98d6a35966575c4534f3988774f19ff"
+    },
+    {
+      "id": "hc-025",
+      "group": "ambiguity",
+      "name": "equal_pair",
+      "operation": "pair",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "pair",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-026",
+      "group": "ambiguity",
+      "name": "equal_three",
+      "operation": "triple",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "triple",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a"
+    },
+    {
+      "id": "hc-027",
+      "group": "ambiguity",
+      "name": "two_equally_held_bottles",
+      "operation": "two_held",
+      "source_series": "eval-held-009",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "two_held",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-009/scene.blend",
+      "source_scene_sha256": "ccab62b012499560f150b3a85a536d105f8405fcf32d702dd97e23698158a850"
+    },
+    {
+      "id": "hc-028",
+      "group": "ambiguity",
+      "name": "equal_shelf_row",
+      "operation": "row",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "row",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-029",
+      "group": "context",
+      "name": "secondary_neck_paper",
+      "operation": "secondary",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "secondary",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5"
+    },
+    {
+      "id": "hc-030",
+      "group": "context",
+      "name": "printing_on_glass",
+      "operation": "glass_print",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "glass_print",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80"
+    },
+    {
+      "id": "hc-031",
+      "group": "context",
+      "name": "carton_bottle_depiction",
+      "operation": "depiction",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 200,
+      "acceptable_instance_ids": [
+        200
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "depiction",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e"
+    },
+    {
+      "id": "hc-032",
+      "group": "context",
+      "name": "wine_glasses_no_target",
+      "operation": "negative",
+      "source_series": "eval-nonbottle-001",
+      "source_split": "eval",
+      "expected_status": "no_target",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "negative",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-nonbottle-001/scene.blend",
+      "source_scene_sha256": "78626ef79144ab441c80f12689b1a811fa46346d4b4c31a9511ab560e622a7ef"
+    },
+    {
+      "id": "hc-033",
+      "group": "grip-ownership",
+      "name": "carton_behind_hand",
+      "operation": "ex_carton_behind_hand",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "carton_behind_hand",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-034",
+      "group": "grip-ownership",
+      "name": "body_grip_enclosed",
+      "operation": "ex_body_grip_enclosed",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "body_grip_enclosed",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-035",
+      "group": "multiple-grips",
+      "name": "two_bottles_unequal_grips",
+      "operation": "ex_two_bottles_unequal_grips",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_bottles_unequal_grips",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-036",
+      "group": "multiple-grips",
+      "name": "two_hands_one_bottle",
+      "operation": "ex_two_hands_one_bottle",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_hands_one_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-037",
+      "group": "tools",
+      "name": "horizontal_pouring_bottle",
+      "operation": "ex_horizontal_pouring_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "horizontal_pouring_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-038",
+      "group": "tools",
+      "name": "sampling_tool_beside_bottle",
+      "operation": "ex_sampling_tool_beside_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "sampling_tool_beside_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-039",
+      "group": "touch-grip",
+      "name": "pointing_at_label",
+      "operation": "ex_pointing_at_label",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "pointing_at_label",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-040",
+      "group": "touch-grip",
+      "name": "wrapped_body_grip",
+      "operation": "ex_wrapped_body_grip",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "wrapped_body_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-041",
+      "group": "depth-contact",
+      "name": "background_hand_projection",
+      "operation": "ex_background_hand_projection",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "background_hand_projection",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-042",
+      "group": "depth-contact",
+      "name": "physical_neck_grip",
+      "operation": "ex_physical_neck_grip",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "physical_neck_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-043",
+      "group": "gift-box",
+      "name": "real_bottle_open_gift_box",
+      "operation": "ex_real_bottle_open_gift_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_open_gift_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-044",
+      "group": "gift-box",
+      "name": "printed_bottle_closed_carton",
+      "operation": "ex_printed_bottle_closed_carton",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 200,
+      "acceptable_instance_ids": [
+        200
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "printed_bottle_closed_carton",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-045",
+      "group": "clear-packaging",
+      "name": "clear_window_gift_bag",
+      "operation": "ex_clear_window_gift_bag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "clear_window_gift_bag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-046",
+      "group": "clear-packaging",
+      "name": "reflective_wrapping",
+      "operation": "ex_reflective_wrapping",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "reflective_wrapping",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-047",
+      "group": "depictions",
+      "name": "large_bottle_poster",
+      "operation": "ex_large_bottle_poster",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "large_bottle_poster",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-048",
+      "group": "depictions",
+      "name": "mirror_duplicate",
+      "operation": "ex_mirror_duplicate",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "mirror_duplicate",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-049",
+      "group": "open-label-gaps",
+      "name": "missing_secondary_edge",
+      "operation": "ex_missing_secondary_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_secondary_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-050",
+      "group": "open-label-gaps",
+      "name": "missing_main_label_edge",
+      "operation": "ex_missing_main_label_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_main_label_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-051",
+      "group": "extended-labels",
+      "name": "hanging_neck_tag",
+      "operation": "ex_hanging_neck_tag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "hanging_neck_tag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-052",
+      "group": "extended-labels",
+      "name": "peeling_label_flap",
+      "operation": "ex_peeling_label_flap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "peeling_label_flap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-053",
+      "group": "label-ownership",
+      "name": "touching_labels",
+      "operation": "ex_touching_labels",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "touching_labels",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-054",
+      "group": "label-ownership",
+      "name": "rear_label_in_front_box",
+      "operation": "ex_rear_label_in_front_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_label_in_front_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-055",
+      "group": "signage",
+      "name": "vintage_label_price_card",
+      "operation": "ex_vintage_label_price_card",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "vintage_label_price_card",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-056",
+      "group": "signage",
+      "name": "promotional_bridge",
+      "operation": "ex_promotional_bridge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "promotional_bridge",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-057",
+      "group": "center-occlusion",
+      "name": "center_glass_occlusion",
+      "operation": "ex_center_glass_occlusion",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_glass_occlusion",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-058",
+      "group": "center-occlusion",
+      "name": "center_visible_bottle",
+      "operation": "ex_center_visible_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_visible_bottle",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-059",
+      "group": "tap-conflicts",
+      "name": "tap_background_while_foreground_held",
+      "operation": "ex_tap_background_while_foreground_held",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_background_while_foreground_held",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-060",
+      "group": "tap-conflicts",
+      "name": "tap_white_label_gap",
+      "operation": "ex_tap_white_label_gap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_white_label_gap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-061",
+      "group": "foreground-three",
+      "name": "three_foreground_offcenter",
+      "operation": "ex_three_foreground_offcenter",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_offcenter",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-062",
+      "group": "foreground-three",
+      "name": "three_foreground_overlap",
+      "operation": "ex_three_foreground_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-063",
+      "group": "foreground-three",
+      "name": "three_foreground_at_edge",
+      "operation": "ex_three_foreground_at_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_at_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-064",
+      "group": "foreground-three",
+      "name": "three_weak_depth",
+      "operation": "ex_three_weak_depth",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_weak_depth",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-065",
+      "group": "foreground-three",
+      "name": "three_background_magnum",
+      "operation": "ex_three_background_magnum",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_background_magnum",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-066",
+      "group": "foreground-three",
+      "name": "three_tap_background",
+      "operation": "ex_three_tap_background",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_tap_background",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-067",
+      "group": "label-ownership",
+      "name": "touching_labels_overlap",
+      "operation": "ex_touching_labels_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "touching_labels_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-068",
+      "group": "label-ownership",
+      "name": "rear_label_overlap",
+      "operation": "ex_rear_label_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_label_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-069",
+      "group": "foreground-three",
+      "name": "three_foreground_lying",
+      "operation": "ex_three_foreground_lying",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_lying",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-070",
+      "group": "hierarchy",
+      "name": "large_red_logo__new_view_and_light",
+      "operation": "logo_red",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "logo_red",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "parent_case_id": "hc-001",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-071",
+      "group": "hierarchy",
+      "name": "large_black_logo__new_view_and_light",
+      "operation": "logo_black",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "logo_black",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "parent_case_id": "hc-002",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-072",
+      "group": "hierarchy",
+      "name": "label_mask_holes__new_view_and_light",
+      "operation": "holes",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "holes",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1",
+      "parent_case_id": "hc-003",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-073",
+      "group": "hierarchy",
+      "name": "incomplete_bottle_mask__new_view_and_light",
+      "operation": "eroded_bottle",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "eroded_bottle",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8",
+      "parent_case_id": "hc-004",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-074",
+      "group": "closeup",
+      "name": "front_label_closeup__new_view_and_light",
+      "operation": "close_front",
+      "source_series": "eval-held-008",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_front",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-008/scene.blend",
+      "source_scene_sha256": "816d22a6fdc456bbc3f5bd786f0f324ed8eabff7c93fa6a7285595494b4482e8",
+      "parent_case_id": "hc-005",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-075",
+      "group": "closeup",
+      "name": "rear_label_closeup__new_view_and_light",
+      "operation": "close_back",
+      "source_series": "eval-held-009",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_back",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-009/scene.blend",
+      "source_scene_sha256": "ccab62b012499560f150b3a85a536d105f8405fcf32d702dd97e23698158a850",
+      "parent_case_id": "hc-006",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-076",
+      "group": "closeup",
+      "name": "label_at_frame_edge__new_view_and_light",
+      "operation": "close_edge",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_edge",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-007",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-077",
+      "group": "closeup",
+      "name": "tilted_label_closeup__new_view_and_light",
+      "operation": "close_tilt",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "close_tilt",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a",
+      "parent_case_id": "hc-008",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-078",
+      "group": "intent",
+      "name": "tap_right_bottle__new_view_and_light",
+      "operation": "tap_right",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-009",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-079",
+      "group": "intent",
+      "name": "tap_left_bottle__new_view_and_light",
+      "operation": "tap_left",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_left",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a",
+      "parent_case_id": "hc-010",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-080",
+      "group": "intent",
+      "name": "reticle_right_bottle__new_view_and_light",
+      "operation": "aim_right",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "aim_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-011",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-081",
+      "group": "intent",
+      "name": "tap_label_artwork__new_view_and_light",
+      "operation": "tap_logo",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "tap_logo",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a",
+      "parent_case_id": "hc-012",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-082",
+      "group": "hands",
+      "name": "offcenter_neck_grip__new_view_and_light",
+      "operation": "held_left",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "held_left",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "parent_case_id": "hc-013",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-083",
+      "group": "hands",
+      "name": "offcenter_body_grip__new_view_and_light",
+      "operation": "held_right",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "held_right",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "parent_case_id": "hc-014",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-084",
+      "group": "hands",
+      "name": "hand_box_crosses_shelf__new_view_and_light",
+      "operation": "hand_box",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "hand_box",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1",
+      "parent_case_id": "hc-015",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-085",
+      "group": "hands",
+      "name": "hand_without_contact__new_view_and_light",
+      "operation": "hand_away",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "hand_away",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8",
+      "parent_case_id": "hc-016",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-086",
+      "group": "framing",
+      "name": "foreground_far_from_center__new_view_and_light",
+      "operation": "offcenter",
+      "source_series": "eval-held-005",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "offcenter",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-005/scene.blend",
+      "source_scene_sha256": "015527f2bed3182eddc3d60888ab08ebd66f8af0366efca84fb93128bb17ca2f",
+      "parent_case_id": "hc-017",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-087",
+      "group": "framing",
+      "name": "top_truncated_bottle__new_view_and_light",
+      "operation": "truncate_top",
+      "source_series": "eval-held-007",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "truncate_top",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-007/scene.blend",
+      "source_scene_sha256": "1b82fe28a6559e3668cd9a09e3d89a654e9191ae649fae405ca69c72a59046d8",
+      "parent_case_id": "hc-018",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-088",
+      "group": "framing",
+      "name": "side_truncated_bottle__new_view_and_light",
+      "operation": "truncate_side",
+      "source_series": "eval-held-004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "truncate_side",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-004/scene.blend",
+      "source_scene_sha256": "487a0cba4f9b42478e72eb3e3848f91f8db895a09fe650d3ada1250c1f2a7ef1",
+      "parent_case_id": "hc-019",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-089",
+      "group": "framing",
+      "name": "camera_roll_32_degrees__new_view_and_light",
+      "operation": "roll",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "roll",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "parent_case_id": "hc-020",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-090",
+      "group": "readability",
+      "name": "back_label_subject__new_view_and_light",
+      "operation": "rear",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "rear",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "parent_case_id": "hc-021",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-091",
+      "group": "readability",
+      "name": "glare_on_subject__new_view_and_light",
+      "operation": "glare",
+      "source_series": "eval-held-005",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "glare",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-005/scene.blend",
+      "source_scene_sha256": "015527f2bed3182eddc3d60888ab08ebd66f8af0366efca84fb93128bb17ca2f",
+      "parent_case_id": "hc-022",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-092",
+      "group": "readability",
+      "name": "dim_foreground_subject__new_view_and_light",
+      "operation": "dim",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "dim",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "parent_case_id": "hc-023",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-093",
+      "group": "readability",
+      "name": "body_grip_hides_label__new_view_and_light",
+      "operation": "body",
+      "source_series": "eval-held-006",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "body",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-006/scene.blend",
+      "source_scene_sha256": "88de8f783b89715784872fdfd3a564b5c98d6a35966575c4534f3988774f19ff",
+      "parent_case_id": "hc-024",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-094",
+      "group": "ambiguity",
+      "name": "equal_pair__new_view_and_light",
+      "operation": "pair",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "pair",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-025",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-095",
+      "group": "ambiguity",
+      "name": "equal_three__new_view_and_light",
+      "operation": "triple",
+      "source_series": "eval-s006",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "triple",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s006/scene.blend",
+      "source_scene_sha256": "a64d71c7eb06db9e8403ceb421d0f13a21434091894986e508de1f249bd36f6a",
+      "parent_case_id": "hc-026",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-096",
+      "group": "ambiguity",
+      "name": "two_equally_held_bottles__new_view_and_light",
+      "operation": "two_held",
+      "source_series": "eval-held-009",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "two_held",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-009/scene.blend",
+      "source_scene_sha256": "ccab62b012499560f150b3a85a536d105f8405fcf32d702dd97e23698158a850",
+      "parent_case_id": "hc-027",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-097",
+      "group": "ambiguity",
+      "name": "equal_shelf_row__new_view_and_light",
+      "operation": "row",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "row",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-028",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-098",
+      "group": "context",
+      "name": "secondary_neck_paper__new_view_and_light",
+      "operation": "secondary",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "secondary",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "parent_case_id": "hc-029",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-099",
+      "group": "context",
+      "name": "printing_on_glass__new_view_and_light",
+      "operation": "glass_print",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "glass_print",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "parent_case_id": "hc-030",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-100",
+      "group": "context",
+      "name": "carton_bottle_depiction__new_view_and_light",
+      "operation": "depiction",
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "expected_status": "selected",
+      "target_instance_id": 200,
+      "acceptable_instance_ids": [
+        200
+      ],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "depiction",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "parent_case_id": "hc-031",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-101",
+      "group": "context",
+      "name": "wine_glasses_no_target__new_view_and_light",
+      "operation": "negative",
+      "source_series": "eval-nonbottle-001",
+      "source_split": "eval",
+      "expected_status": "no_target",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [],
+      "provenance": "new_native_render",
+      "interaction": null,
+      "controlled_detection_profile": "negative",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-nonbottle-001/scene.blend",
+      "source_scene_sha256": "78626ef79144ab441c80f12689b1a811fa46346d4b4c31a9511ab560e622a7ef",
+      "parent_case_id": "hc-032",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-102",
+      "group": "grip-ownership",
+      "name": "carton_behind_hand__new_view_and_light",
+      "operation": "ex_carton_behind_hand",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "carton_behind_hand",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-033",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-103",
+      "group": "grip-ownership",
+      "name": "body_grip_enclosed__new_view_and_light",
+      "operation": "ex_body_grip_enclosed",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "body_grip_enclosed",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-034",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-104",
+      "group": "multiple-grips",
+      "name": "two_bottles_unequal_grips__new_view_and_light",
+      "operation": "ex_two_bottles_unequal_grips",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_bottles_unequal_grips",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-035",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-105",
+      "group": "multiple-grips",
+      "name": "two_hands_one_bottle__new_view_and_light",
+      "operation": "ex_two_hands_one_bottle",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_hands_one_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-036",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-106",
+      "group": "tools",
+      "name": "horizontal_pouring_bottle__new_view_and_light",
+      "operation": "ex_horizontal_pouring_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "horizontal_pouring_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-037",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-107",
+      "group": "tools",
+      "name": "sampling_tool_beside_bottle__new_view_and_light",
+      "operation": "ex_sampling_tool_beside_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "sampling_tool_beside_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-038",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-108",
+      "group": "touch-grip",
+      "name": "pointing_at_label__new_view_and_light",
+      "operation": "ex_pointing_at_label",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "pointing_at_label",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-039",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-109",
+      "group": "touch-grip",
+      "name": "wrapped_body_grip__new_view_and_light",
+      "operation": "ex_wrapped_body_grip",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "wrapped_body_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-040",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-110",
+      "group": "depth-contact",
+      "name": "background_hand_projection__new_view_and_light",
+      "operation": "ex_background_hand_projection",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "background_hand_projection",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-041",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-111",
+      "group": "depth-contact",
+      "name": "physical_neck_grip__new_view_and_light",
+      "operation": "ex_physical_neck_grip",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "physical_neck_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-042",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-112",
+      "group": "gift-box",
+      "name": "real_bottle_open_gift_box__new_view_and_light",
+      "operation": "ex_real_bottle_open_gift_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_open_gift_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-043",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-113",
+      "group": "gift-box",
+      "name": "printed_bottle_closed_carton__new_view_and_light",
+      "operation": "ex_printed_bottle_closed_carton",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 200,
+      "acceptable_instance_ids": [
+        200
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "printed_bottle_closed_carton",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-044",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-114",
+      "group": "clear-packaging",
+      "name": "clear_window_gift_bag__new_view_and_light",
+      "operation": "ex_clear_window_gift_bag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "clear_window_gift_bag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-045",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-115",
+      "group": "clear-packaging",
+      "name": "reflective_wrapping__new_view_and_light",
+      "operation": "ex_reflective_wrapping",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "reflective_wrapping",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-046",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-116",
+      "group": "depictions",
+      "name": "large_bottle_poster__new_view_and_light",
+      "operation": "ex_large_bottle_poster",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "large_bottle_poster",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-047",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-117",
+      "group": "depictions",
+      "name": "mirror_duplicate__new_view_and_light",
+      "operation": "ex_mirror_duplicate",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "mirror_duplicate",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-048",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-118",
+      "group": "open-label-gaps",
+      "name": "missing_secondary_edge__new_view_and_light",
+      "operation": "ex_missing_secondary_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_secondary_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-049",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-119",
+      "group": "open-label-gaps",
+      "name": "missing_main_label_edge__new_view_and_light",
+      "operation": "ex_missing_main_label_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_main_label_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-050",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-120",
+      "group": "extended-labels",
+      "name": "hanging_neck_tag__new_view_and_light",
+      "operation": "ex_hanging_neck_tag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "hanging_neck_tag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-051",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-121",
+      "group": "extended-labels",
+      "name": "peeling_label_flap__new_view_and_light",
+      "operation": "ex_peeling_label_flap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "peeling_label_flap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-052",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-122",
+      "group": "label-ownership",
+      "name": "touching_labels__new_view_and_light",
+      "operation": "ex_touching_labels",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "touching_labels",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-053",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-123",
+      "group": "label-ownership",
+      "name": "rear_label_in_front_box__new_view_and_light",
+      "operation": "ex_rear_label_in_front_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_label_in_front_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-054",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-124",
+      "group": "signage",
+      "name": "vintage_label_price_card__new_view_and_light",
+      "operation": "ex_vintage_label_price_card",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "vintage_label_price_card",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-055",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-125",
+      "group": "signage",
+      "name": "promotional_bridge__new_view_and_light",
+      "operation": "ex_promotional_bridge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "promotional_bridge",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-056",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-126",
+      "group": "center-occlusion",
+      "name": "center_glass_occlusion__new_view_and_light",
+      "operation": "ex_center_glass_occlusion",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_glass_occlusion",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-057",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-127",
+      "group": "center-occlusion",
+      "name": "center_visible_bottle__new_view_and_light",
+      "operation": "ex_center_visible_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_visible_bottle",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-058",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-128",
+      "group": "tap-conflicts",
+      "name": "tap_background_while_foreground_held__new_view_and_light",
+      "operation": "ex_tap_background_while_foreground_held",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_background_while_foreground_held",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-059",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-129",
+      "group": "tap-conflicts",
+      "name": "tap_white_label_gap__new_view_and_light",
+      "operation": "ex_tap_white_label_gap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_white_label_gap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-060",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-130",
+      "group": "foreground-three",
+      "name": "three_foreground_offcenter__new_view_and_light",
+      "operation": "ex_three_foreground_offcenter",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_offcenter",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-061",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-131",
+      "group": "foreground-three",
+      "name": "three_foreground_overlap__new_view_and_light",
+      "operation": "ex_three_foreground_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-062",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-132",
+      "group": "foreground-three",
+      "name": "three_foreground_at_edge__new_view_and_light",
+      "operation": "ex_three_foreground_at_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_at_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-063",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-133",
+      "group": "foreground-three",
+      "name": "three_weak_depth__new_view_and_light",
+      "operation": "ex_three_weak_depth",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_weak_depth",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-064",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": 9,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-134",
+      "group": "foreground-three",
+      "name": "three_background_magnum__new_view_and_light",
+      "operation": "ex_three_background_magnum",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_background_magnum",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation.",
+      "parent_case_id": "hc-065",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-135",
+      "group": "foreground-three",
+      "name": "three_tap_background__new_view_and_light",
+      "operation": "ex_three_tap_background",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_tap_background",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-066",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-136",
+      "group": "label-ownership",
+      "name": "touching_labels_overlap__new_view_and_light",
+      "operation": "ex_touching_labels_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "touching_labels_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-067",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": 9,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-137",
+      "group": "label-ownership",
+      "name": "rear_label_overlap__new_view_and_light",
+      "operation": "ex_rear_label_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_label_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-068",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": -5,
+        "roll_degrees": -7,
+        "exposure_delta": -0.45,
+        "light_multiplier": 0.8,
+        "warm": false
+      }
+    },
+    {
+      "id": "hc-138",
+      "group": "foreground-three",
+      "name": "three_foreground_lying__new_view_and_light",
+      "operation": "ex_three_foreground_lying",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_lying",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions.",
+      "parent_case_id": "hc-069",
+      "dataset_revision": "v2",
+      "addition_kind": "existing_scenario_variant",
+      "appearance": {
+        "yaw_degrees": 6,
+        "roll_degrees": -7,
+        "exposure_delta": 0.4,
+        "light_multiplier": 1.2,
+        "warm": true
+      }
+    },
+    {
+      "id": "hc-139",
+      "name": "half_bottle_magnum",
+      "group": "format-depth",
+      "operation": "v2_half_bottle_magnum",
+      "v2_recipe": "half_bottle_magnum",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "half_bottle_magnum",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-140",
+      "name": "magnum_distant_shelf",
+      "group": "format-depth",
+      "operation": "v2_magnum_distant_shelf",
+      "v2_recipe": "magnum_distant_shelf",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "magnum_distant_shelf",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-141",
+      "name": "held_half_bottle",
+      "group": "format-depth",
+      "operation": "v2_held_half_bottle",
+      "v2_recipe": "held_half_bottle",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "held_half_bottle",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-142",
+      "name": "raised_rear_shelf",
+      "group": "support-planes",
+      "operation": "v2_raised_rear_shelf",
+      "v2_recipe": "raised_rear_shelf",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "raised_rear_shelf",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-143",
+      "name": "lying_lower_shelf",
+      "group": "support-planes",
+      "operation": "v2_lying_lower_shelf",
+      "v2_recipe": "lying_lower_shelf",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "lying_lower_shelf",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-144",
+      "name": "staggered_platforms",
+      "group": "support-planes",
+      "operation": "v2_staggered_platforms",
+      "v2_recipe": "staggered_platforms",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "staggered_platforms",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-145",
+      "name": "rear_neck_hand",
+      "group": "terminal-hands",
+      "operation": "v2_rear_neck_hand",
+      "v2_recipe": "rear_neck_hand",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_neck_hand",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-146",
+      "name": "rear_base_hand",
+      "group": "terminal-hands",
+      "operation": "v2_rear_base_hand",
+      "v2_recipe": "rear_base_hand",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_base_hand",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Conflicting passive cues do not establish a main bottle. Freeze the crop target from visible GT center geometry before any predictions."
+    },
+    {
+      "id": "hc-147",
+      "name": "real_tilted_pour",
+      "group": "terminal-hands",
+      "operation": "v2_real_tilted_pour",
+      "v2_recipe": "real_tilted_pour",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_tilted_pour",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-148",
+      "name": "real_bottle_before_poster",
+      "group": "nested-panels",
+      "operation": "v2_real_bottle_before_poster",
+      "v2_recipe": "real_bottle_before_poster",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_before_poster",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-149",
+      "name": "real_bottle_amodal_panel",
+      "group": "nested-panels",
+      "operation": "v2_real_bottle_amodal_panel",
+      "v2_recipe": "real_bottle_amodal_panel",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_amodal_panel",
+      "v2_fault": "amodal_panel",
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-150",
+      "name": "real_bottle_panel_roll",
+      "group": "nested-panels",
+      "operation": "v2_real_bottle_panel_roll",
+      "v2_recipe": "real_bottle_panel_roll",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_panel_roll",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 21,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-151",
+      "name": "five_bottles_glass",
+      "group": "occlusion-crowds",
+      "operation": "v2_five_bottles_glass",
+      "v2_recipe": "five_bottles_glass",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "five_bottles_glass",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-152",
+      "name": "seven_bottles_bucket",
+      "group": "occlusion-crowds",
+      "operation": "v2_seven_bottles_bucket",
+      "v2_recipe": "seven_bottles_bucket",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "seven_bottles_bucket",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    },
+    {
+      "id": "hc-153",
+      "name": "five_bottles_crossing_labels",
+      "group": "occlusion-crowds",
+      "operation": "v2_five_bottles_crossing_labels",
+      "v2_recipe": "five_bottles_crossing_labels",
+      "extension": true,
+      "dataset_revision": "v2",
+      "addition_kind": "new_scenario",
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "five_bottles_crossing_labels",
+      "v2_fault": null,
+      "appearance": {
+        "yaw_degrees": 0,
+        "roll_degrees": 0,
+        "exposure_delta": 0,
+        "light_multiplier": 1,
+        "warm": false
+      },
+      "target_explanation": "Physical foreground or held subject stipulated by the scene recipe before rendering and prediction; printed representations and other bottles are distractors."
+    }
+  ],
+  "purpose": "development regression; not an unseen accuracy benchmark",
+  "expected_annotations_frozen_before_predictions": true,
+  "masks": "Native opaque visible geometry. Separate bottle, label and hand masks can overlap.",
+  "threshold_policy": "semantic-v2 constants in the source commit; all changes are development tuning and must be disclosed",
+  "comparison_modes": [
+    "controlled_detection_replay",
+    "shared_live_sam3_detections"
+  ],
+  "primary_metrics": [
+    "passive_intent_decision_accuracy",
+    "interaction_capability",
+    "policy_target_match",
+    "no_target_decision",
+    "rule_conformance",
+    "crop_return_rate",
+    "actual_pixel_target_coverage",
+    "actual_pixel_label_retention",
+    "distractor_retention"
+  ],
+  "selection_policy_revision": "2026-10-19-positive-grip-and-panel",
+  "fallback_targets": {
+    "hc-025": 1,
+    "hc-026": 2,
+    "hc-027": 2,
+    "hc-028": 2,
+    "hc-035": 1,
+    "hc-039": 1,
+    "hc-041": 1,
+    "hc-048": 1,
+    "hc-056": 1,
+    "hc-057": 1,
+    "hc-058": 1,
+    "hc-064": 2,
+    "hc-065": 2,
+    "hc-094": 2,
+    "hc-095": 2,
+    "hc-096": 1,
+    "hc-097": 3,
+    "hc-104": 1,
+    "hc-108": 1,
+    "hc-110": 1,
+    "hc-117": 2,
+    "hc-125": 2,
+    "hc-126": 1,
+    "hc-127": 1,
+    "hc-133": 2,
+    "hc-134": 2,
+    "hc-139": 2,
+    "hc-140": 2,
+    "hc-142": 2,
+    "hc-143": 2,
+    "hc-144": 2,
+    "hc-145": 1,
+    "hc-146": 1,
+    "real-166426": 83858,
+    "real-116208": 94456,
+    "real-166918": 1865335,
+    "real-117719": 1492244,
+    "real-397354": 82049
+  },
+  "fallback_fixtures": [
+    {
+      "id": "fb-center-mask",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-nearest",
+      "reason": "fallback_nearest_center",
+      "winner": 1
+    },
+    {
+      "id": "fb-left",
+      "reason": "fallback_leftmost",
+      "winner": 1
+    },
+    {
+      "id": "fb-upper",
+      "reason": "fallback_uppermost",
+      "winner": 1
+    },
+    {
+      "id": "fb-overlap",
+      "reason": "fallback_nearest_center",
+      "winner": 1
+    },
+    {
+      "id": "fb-stable-id",
+      "reason": "fallback_stable_id",
+      "winner": 0
+    },
+    {
+      "id": "fb-pixel-distance",
+      "reason": "fallback_nearest_center",
+      "winner": 1
+    },
+    {
+      "id": "fb-no-candidates",
+      "reason": "fallback_original_frame",
+      "winner": null
+    },
+    {
+      "id": "fb-low-confidence",
+      "reason": "fallback_original_frame",
+      "winner": null
+    },
+    {
+      "id": "fb-tap-miss",
+      "reason": "fallback_leftmost",
+      "winner": 1
+    },
+    {
+      "id": "fb-reticle-unresolved",
+      "reason": "fallback_nearest_center",
+      "winner": 0
+    },
+    {
+      "id": "fb-missed-tap-hand",
+      "reason": "unique_visible_hand_contact",
+      "winner": 0
+    },
+    {
+      "id": "fb-missed-tap-single",
+      "reason": "only_credible_subject",
+      "winner": 0
+    },
+    {
+      "id": "fb-missed-tap-reticle",
+      "reason": "explicit_capture_reticle",
+      "winner": 1
+    },
+    {
+      "id": "fb-mask-tap-over-label-box",
+      "reason": "explicit_tap",
+      "winner": 2
+    },
+    {
+      "id": "fb-multi-hit-pool",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-tiny-hand-distractor",
+      "reason": "fallback_nearest_center",
+      "winner": 3
+    },
+    {
+      "id": "fb-secondary-label-hole",
+      "reason": "only_credible_subject",
+      "winner": 0
+    },
+    {
+      "id": "fb-label-context",
+      "reason": "dominant_foreground_subject",
+      "winner": 0
+    },
+    {
+      "id": "fb-unequal-two-grips",
+      "reason": "fallback_leftmost",
+      "winner": 0
+    },
+    {
+      "id": "fb-box-around-hand",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-body-grip-enclosure",
+      "reason": "unique_visible_hand_contact",
+      "winner": 0
+    },
+    {
+      "id": "fb-different-hands-unequal",
+      "reason": "fallback_leftmost",
+      "winner": 0
+    },
+    {
+      "id": "fb-two-hands-one-subject",
+      "reason": "fallback_leftmost",
+      "winner": 0
+    },
+    {
+      "id": "fb-unlabeled-strip-conflict",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-exterior-label-strip",
+      "reason": "only_credible_subject",
+      "winner": 0
+    },
+    {
+      "id": "fb-label-gap-tap",
+      "reason": "explicit_tap",
+      "winner": 0
+    },
+    {
+      "id": "fb-three-foreground",
+      "reason": "foreground_scale_and_lower_base",
+      "winner": 0
+    },
+    {
+      "id": "fb-three-weak-depth",
+      "reason": "fallback_center_contains",
+      "winner": 1
+    },
+    {
+      "id": "fb-background-magnum",
+      "reason": "fallback_center_contains",
+      "winner": 1
+    },
+    {
+      "id": "fb-three-tap-background",
+      "reason": "explicit_tap",
+      "winner": 1
+    },
+    {
+      "id": "fb-held-carton-only",
+      "reason": "unique_visible_hand_contact",
+      "winner": 0
+    },
+    {
+      "id": "fb-orphan-label-beside-bottle",
+      "reason": "fallback_nearest_center",
+      "winner": 0
+    },
+    {
+      "id": "fb-centered-label-closeup-with-bottle",
+      "reason": "dominant_foreground_subject",
+      "winner": 0
+    },
+    {
+      "id": "fb-tap-orphan-label",
+      "reason": "explicit_tap",
+      "winner": 1
+    },
+    {
+      "id": "fb-dominant-label-price-conflict",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-separate-shelf-levels",
+      "reason": "fallback_nearest_center",
+      "winner": 2
+    },
+    {
+      "id": "fb-truncated-background-peer",
+      "reason": "fallback_center_contains",
+      "winner": 1
+    },
+    {
+      "id": "fb-bystander-hand-three",
+      "reason": "foreground_scale_and_lower_base",
+      "winner": 0
+    },
+    {
+      "id": "fb-held-unlabelled-carton",
+      "reason": "unique_visible_hand_contact",
+      "winner": 2
+    },
+    {
+      "id": "fb-lying-foreground-three",
+      "reason": "foreground_scale_and_lower_base",
+      "winner": 0
+    },
+    {
+      "id": "fb-unowned-label-logo-mask",
+      "reason": "fallback_nearest_center",
+      "winner": 0
+    },
+    {
+      "id": "fb-weak-wrap-strong-grip",
+      "reason": "fallback_nearest_center",
+      "winner": 1
+    },
+    {
+      "id": "fb-multiple-grips-unheld-foreground",
+      "reason": "fallback_nearest_center",
+      "winner": 1
+    },
+    {
+      "id": "fb-owner-and-uncertain-background",
+      "reason": "fallback_center_contains",
+      "winner": 2
+    },
+    {
+      "id": "fb-held-neck-dominant-paper",
+      "reason": "fallback_center_contains",
+      "winner": 1
+    },
+    {
+      "id": "fb-held-neck-pending-logo",
+      "reason": "fallback_nearest_center",
+      "winner": 0
+    },
+    {
+      "id": "fb-point-contact-near-center-bottle",
+      "reason": "fallback_center_contains",
+      "winner": 1
+    },
+    {
+      "id": "fb-opposed-background-midbody",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    },
+    {
+      "id": "fb-enclosing-label-panel",
+      "reason": "fallback_center_contains",
+      "winner": 0
+    }
+  ],
+  "expansion": {
+    "revision": "2026-10-18-expanded-hardcases",
+    "new_native_renders": 37,
+    "declared_before_render_and_replay": true,
+    "limitations": [
+      "Paired development scenes share assets with the original native suite.",
+      "No independent real-photo accuracy claim.",
+      "Depth, physical roles and grip ownership are evaluation annotations, never selector inputs.",
+      "Mirror identity can be inherently ambiguous from a single view; use deterministic fallback.",
+      "Mirror case uses staged virtual reflection geometry, not refraction-aware reflected-ID masks.",
+      "The pointing pose is edited developmental geometry without anatomical fit validation."
+    ],
+    "additional_controls": "Two true-overlap scenes added before their detector collection; initial separated-label scenes retained as controls."
+  },
+  "additional_coverage": {
+    "revision": "2026-10-19-additional-hardcases-v2",
+    "inherited_suite": "main-selector-hardcases-v1",
+    "native_variants": 69,
+    "new_native_scenarios": 15,
+    "recipe_targets_declared_before_render_and_prediction": true,
+    "interpretation": "Correlated development coverage, not independent photo accuracy. Real additions are identified separately.",
+    "added_real_photos": 8
+  }
+}

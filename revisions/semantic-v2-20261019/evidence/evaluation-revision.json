@@ -1,0 +1,69 @@
+{
+  "title": "semantic-v2 selector fixes \u00b7 19 October 2026",
+  "revision": "2026-10-19-foreground-and-grip-regressions",
+  "selector_sha256": "5565761e9f6ae774f410a3c8e6439b90af0aacaf2111027eee02ee8319e247ed",
+  "explanation": "Same 216 cases, original masks, targets and 319 cached detector responses; unchanged scene-v1. This is a new evaluation revision, not a rewritten v2 release or an independent accuracy estimate.",
+  "crop_contract": "369/369 results return crops",
+  "label_contract": "298/298 selected-subject label checks retain 100% of pixels",
+  "metrics": [
+    {
+      "scope": "controlled / passive_intent",
+      "before": "100/104",
+      "after": "104/104",
+      "legacy": "88/104"
+    },
+    {
+      "scope": "controlled / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "5/14"
+    },
+    {
+      "scope": "controlled / policy_targets",
+      "before": "30/33",
+      "after": "33/33",
+      "legacy": "20/33"
+    },
+    {
+      "scope": "controlled / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "live / passive_intent",
+      "before": "107/112",
+      "after": "111/112",
+      "legacy": "97/112"
+    },
+    {
+      "scope": "live / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "6/14"
+    },
+    {
+      "scope": "live / policy_targets",
+      "before": "27/38",
+      "after": "28/38",
+      "legacy": "20/38"
+    },
+    {
+      "scope": "live / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "fallback / rule_conformance",
+      "before": "50/50",
+      "after": "50/50",
+      "legacy": "not scored"
+    }
+  ],
+  "residual_explanation": "12 case/mode joint failures fixed; no new joint-contract regressions. 11 live mismatches remain under the exact detector/GT contract. Rear-hand confidence fixes expose two previously hidden policy-ID mismatches; these are explicitly retained. No GT, tie tolerance or scorer was altered.",
+  "files_sha256": {
+    "revision-diff.json": "c2930b0d4439965b379f124008d8cebe2412aa098e3a4f728857146774c3164a",
+    "residual-failures.json": "e4fd7375c207e6761bedd003eddac6e63e28f0b855e3272f1c600cdaa4f223a5"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "checked": true,
+  "browser": "Chrome",
+  "revision_banner_and_before_after_table": true,
+  "foreground_group_filter": true,
+  "scene_v1_mismatch_and_label_loss_badges": true,
+  "semantic_crop_and_complete_label_views_present": true,
+  "scope": "Visual inspection of the summary and foreground group; all 4641 image assets and 480 filter scopes checked separately by verify_report."
+}

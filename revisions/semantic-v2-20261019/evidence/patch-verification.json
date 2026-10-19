@@ -1,0 +1,15 @@
+{
+  "base_commit": "05000460eac75994ae63c7cdeb881e8c4d489fab",
+  "patch_sha256": "a7d152221fe96113a5fea1daf08ef37404f06ff86c24d305ebcc268589d2b409",
+  "patch_applies_to_base": true,
+  "reconstructed_files_match_tested_source": true,
+  "files": {
+    "matcher/semantic_selector.py": "5565761e9f6ae774f410a3c8e6439b90af0aacaf2111027eee02ee8319e247ed",
+    "matcher/experiments/main_selector/report.py": "7ac41bc5f224027c5ed298285185e3fac62f8047a067881b09c37a4b93997a8b",
+    "matcher/experiments/main_selector/report_template.html": "d92776eae6de3d04cacdcce51dae32cddf4194d68a3720c3af22cc3642d5353e",
+    "matcher/experiments/main_selector/verify_report.py": "d12182bdab2c7f0f3a2942e39a94b3ca6ee4b2f1416b0f217459c5044fc5d32b",
+    "matcher/experiments/main_selector/audit_additional_coverage.py": "d7778070cbef543fdc2ee7fbcfa33facf49437a1f106dd3a891f544f68347e65",
+    "matcher/tests/test_selector_regressions.py": "d1f2e65d8672c9a02087324efbb8ca97bf1b0cdca50aade90b6c54fd0c0e9e5d",
+    "matcher/tests/data/semantic-v2-regressions-20261019.json": "2bc5496f61ebbe1a69b93c285f9f167353f28f730c58902886ec38975c6bc8fe"
+  }
+}

@@ -1,0 +1,767 @@
+{
+  "revision": "2026-10-19-foreground-and-grip-regressions",
+  "baseline_directory": "main-selector-hardcases-v2",
+  "current_directory": "main-selector-hardcases-v2-selector-fixes-20261019",
+  "inputs_unchanged": true,
+  "scene_v1_outputs_unchanged": true,
+  "scorer_unchanged": true,
+  "changed_rows": [
+    {
+      "case_id": "hc-016",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-016",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d5",
+        "matched_instance_id": 3,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 3,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d8",
+        "matched_instance_id": 4,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d6",
+        "matched_instance_id": 4,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d3",
+        "matched_instance_id": 450,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": false,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": false,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0
+      }
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d3",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d4",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "real-312192",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": null
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 80226,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null
+      }
+    }
+  ],
+  "joint_failures_fixed": [
+    {
+      "case_id": "hc-085",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d5",
+        "matched_instance_id": 3,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 3,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d8",
+        "matched_instance_id": 4,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d6",
+        "matched_instance_id": 4,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d3",
+        "matched_instance_id": 450,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": false,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": false,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d3",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": 0.0
+      },
+      "after": {
+        "selected_id": "d4",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0
+      }
+    },
+    {
+      "case_id": "real-312192",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": null,
+        "label_retention": null
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 80226,
+        "selection_mode": "confident",
+        "reason": "dominant_edge_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null
+      }
+    }
+  ],
+  "joint_regressions": [],
+  "identity_regressions_when_fixing_confidence": [
+    {
+      "case_id": "hc-145",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": false,
+        "label_retention": 1.0
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0
+      }
+    }
+  ],
+  "before_joint_failures": 23,
+  "after_joint_failures": 11
+}

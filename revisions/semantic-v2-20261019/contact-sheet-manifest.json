@@ -1,0 +1,472 @@
+{
+  "sheets": {
+    "hierarchy": {
+      "cases": [
+        "hc-001",
+        "hc-002",
+        "hc-003",
+        "hc-004",
+        "hc-070",
+        "hc-071",
+        "hc-072",
+        "hc-073"
+      ],
+      "sha256": "4c2251bc17ab6b9a5a6cf56f2909a894dffca1ba7c564bf9011ed5b42cb25be0",
+      "bytes": 450091,
+      "width": 1476,
+      "height": 1768
+    },
+    "closeup": {
+      "cases": [
+        "hc-005",
+        "hc-006",
+        "hc-007",
+        "hc-008",
+        "hc-074",
+        "hc-075",
+        "hc-076",
+        "hc-077"
+      ],
+      "sha256": "5ea0b4bef98f5b79d9fbdfe93314d9ea1d4a724edc92a29fcfe557d9b3b81d8d",
+      "bytes": 463574,
+      "width": 1476,
+      "height": 1768
+    },
+    "intent": {
+      "cases": [
+        "hc-009",
+        "hc-010",
+        "hc-011",
+        "hc-012",
+        "hc-078",
+        "hc-079",
+        "hc-080",
+        "hc-081"
+      ],
+      "sha256": "f7b38ac10b0f45c3d53623c95792fcb5378b80aa24a65df14b48c01edfb74fff",
+      "bytes": 330205,
+      "width": 1476,
+      "height": 1768
+    },
+    "hands": {
+      "cases": [
+        "hc-013",
+        "hc-014",
+        "hc-015",
+        "hc-016",
+        "hc-082",
+        "hc-083",
+        "hc-084",
+        "hc-085",
+        "real-25394",
+        "real-22705"
+      ],
+      "sha256": "4e045a15b8ebdc6191902e31219f1e9202d6d70b076d6a82e51c6bd96c9d6014",
+      "bytes": 530474,
+      "width": 1476,
+      "height": 2183
+    },
+    "framing": {
+      "cases": [
+        "hc-017",
+        "hc-018",
+        "hc-019",
+        "hc-020",
+        "hc-086",
+        "hc-087",
+        "hc-088",
+        "hc-089",
+        "real-312192",
+        "real-402720"
+      ],
+      "sha256": "39303ba3c853e97e6c34dad1f65d4424ca9b419d6bb451032f803ae0563c6492",
+      "bytes": 535596,
+      "width": 1476,
+      "height": 2183
+    },
+    "readability": {
+      "cases": [
+        "hc-021",
+        "hc-022",
+        "hc-023",
+        "hc-024",
+        "hc-090",
+        "hc-091",
+        "hc-092",
+        "hc-093",
+        "real-117719"
+      ],
+      "sha256": "a571ea2dcc16c1101ebe88117761c880bc02a0a7adc368cc07c36cff1a95565b",
+      "bytes": 490131,
+      "width": 1476,
+      "height": 2183
+    },
+    "ambiguity": {
+      "cases": [
+        "hc-025",
+        "hc-026",
+        "hc-027",
+        "hc-028",
+        "hc-094",
+        "hc-095",
+        "hc-096",
+        "hc-097",
+        "real-166918"
+      ],
+      "sha256": "5ef3c9e62ffb91f4905da7a0ec6216835a1d7a29fbbc8017e570f73adb7513a4",
+      "bytes": 383853,
+      "width": 1476,
+      "height": 2183
+    },
+    "context": {
+      "cases": [
+        "hc-029",
+        "hc-030",
+        "hc-031",
+        "hc-032",
+        "hc-098",
+        "hc-099",
+        "hc-100",
+        "hc-101",
+        "real-520871"
+      ],
+      "sha256": "433aef4c74bd88e0f965885b502f5b63a40f5ab71f4bbfcdb1f4881f386536ad",
+      "bytes": 452995,
+      "width": 1476,
+      "height": 2183
+    },
+    "grip-ownership": {
+      "cases": [
+        "hc-033",
+        "hc-034",
+        "hc-102",
+        "hc-103"
+      ],
+      "sha256": "d55126f673c69f5326617bf75a785e3bef273842409e4e0d047a2f06ebed4eed",
+      "bytes": 182419,
+      "width": 1476,
+      "height": 938
+    },
+    "multiple-grips": {
+      "cases": [
+        "hc-035",
+        "hc-036",
+        "hc-104",
+        "hc-105"
+      ],
+      "sha256": "b8de62e52b1c84da9dfb2ccd396c94b8f683283cb0b39e5d3d0d83470d635868",
+      "bytes": 182379,
+      "width": 1476,
+      "height": 938
+    },
+    "tools": {
+      "cases": [
+        "hc-037",
+        "hc-038",
+        "hc-106",
+        "hc-107"
+      ],
+      "sha256": "470f99af75be74eb9df0c9eda503036cbc777fb8a69e746cab43658b012636e7",
+      "bytes": 180172,
+      "width": 1476,
+      "height": 938
+    },
+    "touch-grip": {
+      "cases": [
+        "hc-039",
+        "hc-040",
+        "hc-108",
+        "hc-109"
+      ],
+      "sha256": "7221412b4905032fd8178eeab61bec982b3e839f4dd8b1b8f6a6ea915bc28310",
+      "bytes": 179064,
+      "width": 1476,
+      "height": 938
+    },
+    "depth-contact": {
+      "cases": [
+        "hc-041",
+        "hc-042",
+        "hc-110",
+        "hc-111"
+      ],
+      "sha256": "1e3031decbfcfd4e571cbc1c1326bb2dac8880b01b9c2b6a71c0eb13aafbf6e8",
+      "bytes": 179884,
+      "width": 1476,
+      "height": 938
+    },
+    "gift-box": {
+      "cases": [
+        "hc-043",
+        "hc-044",
+        "hc-112",
+        "hc-113"
+      ],
+      "sha256": "803eca3dae332cbb1a48675b25dc90201abc736175adb1ad70e238f6483397d3",
+      "bytes": 174208,
+      "width": 1476,
+      "height": 938
+    },
+    "clear-packaging": {
+      "cases": [
+        "hc-045",
+        "hc-046",
+        "hc-114",
+        "hc-115"
+      ],
+      "sha256": "02c93e0f72efe8c5246b15f1be8c7a52b135201bf1fd653aa960f31c0e763778",
+      "bytes": 179539,
+      "width": 1476,
+      "height": 938
+    },
+    "depictions": {
+      "cases": [
+        "hc-047",
+        "hc-048",
+        "hc-116",
+        "hc-117"
+      ],
+      "sha256": "781d89ba94f5055db22cf22e9df0c0ef9dfb37707a1a33d77bfda589ac889d05",
+      "bytes": 176823,
+      "width": 1476,
+      "height": 938
+    },
+    "open-label-gaps": {
+      "cases": [
+        "hc-049",
+        "hc-050",
+        "hc-118",
+        "hc-119"
+      ],
+      "sha256": "7598687cc0b789ba33fc16b6be5b896f1b77c10ef53d99e301eb28be8e0fb878",
+      "bytes": 174147,
+      "width": 1476,
+      "height": 938
+    },
+    "extended-labels": {
+      "cases": [
+        "hc-051",
+        "hc-052",
+        "hc-120",
+        "hc-121"
+      ],
+      "sha256": "7f804b4c24d532bd03df907adf6b8a08f04ac63044d040f5a7a6d98cb1075d28",
+      "bytes": 173163,
+      "width": 1476,
+      "height": 938
+    },
+    "label-ownership": {
+      "cases": [
+        "hc-053",
+        "hc-054",
+        "hc-067",
+        "hc-068",
+        "hc-122",
+        "hc-123",
+        "hc-136",
+        "hc-137"
+      ],
+      "sha256": "f2d1025fd1762b0e490e906ca5a042f2b549b8af445fb3379ab7cdf877a5b9f9",
+      "bytes": 341859,
+      "width": 1476,
+      "height": 1768
+    },
+    "signage": {
+      "cases": [
+        "hc-055",
+        "hc-056",
+        "hc-124",
+        "hc-125"
+      ],
+      "sha256": "79d9a4c7ec74cf9e9196beac3d9acd63f4025fc70e450f090c673311d9404902",
+      "bytes": 173107,
+      "width": 1476,
+      "height": 938
+    },
+    "center-occlusion": {
+      "cases": [
+        "hc-057",
+        "hc-058",
+        "hc-126",
+        "hc-127",
+        "real-397354"
+      ],
+      "sha256": "3039ae03013cf08c48d248e992bdb232290a65a4a20bda8b07491cd9b0e46ca3",
+      "bytes": 224949,
+      "width": 1476,
+      "height": 1353
+    },
+    "tap-conflicts": {
+      "cases": [
+        "hc-059",
+        "hc-060",
+        "hc-128",
+        "hc-129"
+      ],
+      "sha256": "39412f99e8bbb09b0456572339fce72f9a815cfcd53f22e5bbbf173779ed278e",
+      "bytes": 177034,
+      "width": 1476,
+      "height": 938
+    },
+    "foreground-three": {
+      "cases": [
+        "hc-061",
+        "hc-062",
+        "hc-063",
+        "hc-064",
+        "hc-065",
+        "hc-066",
+        "hc-069",
+        "hc-130",
+        "hc-131",
+        "hc-132",
+        "hc-133",
+        "hc-134",
+        "hc-135",
+        "hc-138"
+      ],
+      "sha256": "3e0a8747337564ec35937fa0b78ebb0d619aad221e22aec8d677e5d3420b456d",
+      "bytes": 594483,
+      "width": 1476,
+      "height": 3013
+    },
+    "format-depth": {
+      "cases": [
+        "hc-139",
+        "hc-140",
+        "hc-141"
+      ],
+      "sha256": "da0ae52b2e4c7604a4061fb5304ca67f1e183e171989eb91916f2a829365215e",
+      "bytes": 141211,
+      "width": 1476,
+      "height": 938
+    },
+    "support-planes": {
+      "cases": [
+        "hc-142",
+        "hc-143",
+        "hc-144"
+      ],
+      "sha256": "91b9504044ba6fdc80a9e5d9f9f1c27095206022d19b0aadc0e6582ea9ec7945",
+      "bytes": 136529,
+      "width": 1476,
+      "height": 938
+    },
+    "terminal-hands": {
+      "cases": [
+        "hc-145",
+        "hc-146",
+        "hc-147"
+      ],
+      "sha256": "3a1303271597b835c2c366641f3f7d12cab8cf9ac3451620ff10080fafb2286b",
+      "bytes": 138870,
+      "width": 1476,
+      "height": 938
+    },
+    "nested-panels": {
+      "cases": [
+        "hc-148",
+        "hc-149",
+        "hc-150"
+      ],
+      "sha256": "f585d779978596e5a57da94e780e676b52756f7a82248f40e998a8f15a3b15b6",
+      "bytes": 145167,
+      "width": 1476,
+      "height": 938
+    },
+    "occlusion-crowds": {
+      "cases": [
+        "hc-151",
+        "hc-152",
+        "hc-153"
+      ],
+      "sha256": "e9110ae0e8c3ef82d9c942dcb6fa67cd5afa9daf0845fdc4afe25eb7facb03a4",
+      "bytes": 145580,
+      "width": 1476,
+      "height": 938
+    },
+    "real": {
+      "cases": [
+        "real-180751",
+        "real-417632",
+        "real-541773",
+        "real-166426",
+        "real-116208"
+      ],
+      "sha256": "3653b5f4de4941039b2d771bdfab87ec29b6bfe58bf8a0e02ac6196bb587207b",
+      "bytes": 262561,
+      "width": 1476,
+      "height": 1353
+    },
+    "fallback": {
+      "cases": [
+        "fb-center-mask",
+        "fb-nearest",
+        "fb-left",
+        "fb-upper",
+        "fb-overlap",
+        "fb-stable-id",
+        "fb-pixel-distance",
+        "fb-no-candidates",
+        "fb-low-confidence",
+        "fb-tap-miss",
+        "fb-reticle-unresolved"
+      ],
+      "sha256": "98356cf2a48f4b5b4d55930873d4d4e0135a53b7a03b00975942d6002f7b525c",
+      "bytes": 377982,
+      "width": 1476,
+      "height": 2598
+    },
+    "review": {
+      "cases": [
+        "fb-missed-tap-hand",
+        "fb-missed-tap-single",
+        "fb-missed-tap-reticle",
+        "fb-mask-tap-over-label-box",
+        "fb-multi-hit-pool",
+        "fb-tiny-hand-distractor",
+        "fb-secondary-label-hole",
+        "fb-label-context",
+        "fb-unequal-two-grips",
+        "fb-box-around-hand",
+        "fb-body-grip-enclosure",
+        "fb-different-hands-unequal",
+        "fb-two-hands-one-subject",
+        "fb-unlabeled-strip-conflict",
+        "fb-exterior-label-strip",
+        "fb-label-gap-tap",
+        "fb-three-foreground",
+        "fb-three-weak-depth",
+        "fb-background-magnum",
+        "fb-three-tap-background",
+        "fb-held-carton-only",
+        "fb-orphan-label-beside-bottle",
+        "fb-centered-label-closeup-with-bottle",
+        "fb-tap-orphan-label",
+        "fb-dominant-label-price-conflict",
+        "fb-separate-shelf-levels",
+        "fb-truncated-background-peer",
+        "fb-bystander-hand-three",
+        "fb-held-unlabelled-carton",
+        "fb-lying-foreground-three",
+        "fb-unowned-label-logo-mask",
+        "fb-weak-wrap-strong-grip",
+        "fb-multiple-grips-unheld-foreground",
+        "fb-owner-and-uncertain-background",
+        "fb-held-neck-dominant-paper",
+        "fb-held-neck-pending-logo",
+        "fb-point-contact-near-center-bottle",
+        "fb-opposed-background-midbody",
+        "fb-enclosing-label-panel"
+      ],
+      "sha256": "31cad0fe1690f4a68dd637c4742bd01a6893dedd2ff6e0e6a3d65ad87a5b785f",
+      "bytes": 1382257,
+      "width": 2208,
+      "height": 5503
+    }
+  },
+  "purpose": "Compact issue previews avoid hundreds of simultaneous private-asset requests; original per-case evidence is unchanged.",
+  "evaluation_revision": "2026-10-19-foreground-and-grip-regressions",
+  "baseline_gallery_commit": "bec518e03dbf005b085448a98a1aa2933e48e409",
+  "selector_sha256": "5565761e9f6ae774f410a3c8e6439b90af0aacaf2111027eee02ee8319e247ed"
+}

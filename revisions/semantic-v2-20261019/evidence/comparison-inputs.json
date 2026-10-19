@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "revision": "2026-10-19-positive-grip-and-panel",
+  "files_sha256": {
+    "cases.json": "2551d4fa3a7cad5761f993289d748cc31910ee1099db550040be1c19b9d92d96",
+    "protocol.json": "053372c1083c5cd4ec7938b9c81707cd824ce690bc4422a95f50e9c6d2c8a37e",
+    "policy-targets.json": "7d4fba7220f4576b915b5e95000bea470f118bdd491cd62441dc73673199d39f",
+    "policy-geometry.json": "24f214fb7eb0ebb098b945e36f122c665a0f378887eebdcf41db5b879d6a3352",
+    "confidence-contract-declaration.json": "8fa0d06c0c5326e23e74ffc77778e50ee8e6b4b0b9d7b2cfdc4d75d5abe932c7",
+    "confidence-regression-declaration.json": "10a3dfec33eda24c4efbdaebbccc4d45a948d90c1ca4e7ce821a8ae2bf3045a7",
+    "v2-declaration.json": "a2f0db5aeb9fa71c261e796ff3c75ec357108b706f3ef3d7223ef5d9276ba160",
+    "real-v2-declaration.json": "cd1b447b0267d94117f66c5fed13ca8e9cede94c282b8e4afd0e9966797a49bb"
+  }
+}

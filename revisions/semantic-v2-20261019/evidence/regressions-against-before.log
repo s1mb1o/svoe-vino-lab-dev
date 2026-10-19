@@ -1,0 +1,295 @@
+test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) ... 
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-085', mode='controlled') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-085', mode='live') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-093', mode='controlled') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-093', mode='live') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-107', mode='controlled') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-152', mode='controlled') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-152', mode='live') ... FAIL
+  test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='real-312192', mode='live') ... FAIL
+test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) ... 
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=None) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_90: 2>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_180: 3>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_270: 4>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=None) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_90: 2>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_180: 3>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_270: 4>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=None) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_90: 2>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_180: 3>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_270: 4>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=None) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_90: 2>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_180: 3>) ... FAIL
+  test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_270: 4>) ... FAIL
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-085', mode='controlled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd5' not found in ['d0', 'd1']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-085', mode='live')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd1' not found in ['d0', 'd10']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-093', mode='controlled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd8' not found in ['d0', 'd1']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-093', mode='live')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd6' not found in ['d1', 'd9']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-107', mode='controlled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd3' not found in ['d0', 'd1']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-152', mode='controlled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd1' not found in ['d0', 'd7']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='hc-152', mode='live')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd3' not found in ['d4', 'd11']
+
+======================================================================
+FAIL: test_recorded_foreground_and_tool_failures_select_the_subject (test_selector_regressions.SelectorRegressionTest.test_recorded_foreground_and_tool_failures_select_the_subject) (case='real-312192', mode='live')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 66, in test_recorded_foreground_and_tool_failures_select_the_subject
+    self.assertIn(result.selected_id, row["target_detection_ids"])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'd2' not found in ['d0']
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_90: 2>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_180: 3>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='controlled', rotation=<Transpose.ROTATE_270: 4>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_90: 2>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_180: 3>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-145', mode='live', rotation=<Transpose.ROTATE_270: 4>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_90: 2>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_180: 3>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='controlled', rotation=<Transpose.ROTATE_270: 4>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_90: 2>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_180: 3>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+======================================================================
+FAIL: test_neck_and_base_projection_do_not_certify_a_grip (test_selector_regressions.SelectorRegressionTest.test_neck_and_base_projection_do_not_certify_a_grip) (case='hc-146', mode='live', rotation=<Transpose.ROTATE_270: 4>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/tests/test_selector_regressions.py", line 90, in test_neck_and_base_projection_do_not_certify_a_grip
+    self.assertEqual(result.selection_mode, "fallback")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'confident' != 'fallback'
+- confident
++ fallback
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.719s
+
+FAILED (failures=24)
