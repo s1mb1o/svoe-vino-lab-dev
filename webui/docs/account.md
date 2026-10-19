@@ -8,8 +8,9 @@ Service: [`../../account/README.md`](../../account/README.md).
 - The header link «Дневник» (phones: an icon with `aria-label="Винный дневник"`) goes to `/account`.
 - `/account` has login by email code, login with Yandex ID, the sign-up step, the logged-in view,
   logout, and account deletion.
-- The diary data (searches, photos, ratings, preferences) and onboarding come later. The service
-  does not store them yet. The logged-in view says that they are coming.
+- The logged-in view has three tabs: «История», «Сохранённые», «Настройки» (plan
+  [`07_diary-history-and-saved.md`](../../docs/plans/07_diary-history-and-saved.md), issues #71 and
+  #64). Photos of searches, ratings, preferences, and onboarding come later (#48).
 
 ## Configuration
 
@@ -26,8 +27,9 @@ The browser never gets the endpoint or the token.
 - An empty endpoint hides the header link and turns the routes off (`account_disabled`). The
   server decides it during SSR (`useState('account-enabled')`). The header makes no account call.
 - The account service is optional. Every call has a 2 s timeout and no retry. A failure gives
-  `account_unavailable`; the page shows «Дневник временно недоступен». The scanner, the shelf
-  mode, and SSR never call the service.
+  `account_unavailable`; the page shows «Дневник временно недоступен». SSR never calls the
+  service. The scanner and the shelf mode never wait for it: the history record and the pin state
+  load after the result is on screen, and a failure only hides the pin or the history note.
 - Cookies (all `HttpOnly`, `Secure`, `Path=/`, `__Host-` prefix):
 
   | Cookie | Content | SameSite | Lifetime |
@@ -122,6 +124,27 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
   filter the paths too (plan 05, "Deployment"). Without `/sw.js` the mini app registers no service
   worker.
 
+## History and saved wines (plan 07)
+
+- After a single-bottle match with `X-Prediction-Mode: upstream`, the browser sends
+  `POST /api/account/history` `{slug, source: 'photo'}` once. A shelf bottle that the person opens
+  on their own photo sends `source: 'shelf'` once per result. Examples and mock results send
+  nothing. A logged-out browser gets 401 without a service call and shows nothing.
+- The result card shows «Записано в историю дневника» and «Убрать» (deletes that day).
+- `PinButton.vue` is the pin in the top right corner of a wine card: the photo result, the shelf
+  bottle dialog, the product line map details, the Dinner Lens wine cards, and the history rows.
+  The first pin of a page loads `GET /api/account/saved/slugs`; all pins share the state
+  (`useDiary`). 401 gives the login offer; `account_disabled` or an outage hides the pins.
+- The server builds the wine snapshot from the slug (`server/data/wines.json`, then the
+  vino-svoe.ru API). It never takes a snapshot from the browser. An unknown wine gives 404
+  `unknown_wine`; a catalogue timeout stores the wine without a snapshot. A status change
+  (`change: true`) makes no catalogue request.
+- The list routes accept service answers of up to 2 MiB (2,000 history wines).
+- Wine slugs go only into API paths, never into page URLs. The tab is in `?tab=`. The vino-svoe.ru
+  links of the lists have `ym-disable-tracklink`.
+- The MAX mini-app host does not allow the list routes (its Caddy block and `MAX_HOST_ROUTES` are
+  unchanged). The mini app shows only the settings view.
+
 ## Routes
 
 | Route | Service call | Result |
@@ -143,6 +166,17 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
 | `GET /api/account/app-tokens` | `GET /v1/me/app-tokens` | `{tokens: [{id, name, createdAt, expiresAt, lastUsedAt}]}` |
 | `POST /api/account/app-tokens` | `POST /v1/me/app-tokens` | `{token, appToken}`; body `{name, lifetimeDays}` |
 | `DELETE /api/account/app-tokens/[id]` | `DELETE /v1/me/app-tokens/{id}` | `{status: 'revoked'}` |
+| `PATCH /api/account/me` | `PATCH /v1/me` | `{user}`; body `{saveHistory}` |
+| `GET /api/account/history` | `GET /v1/me/history` | `{items: [HistoryItem], saveHistory}` |
+| `GET /api/account/history/[slug]` | `GET /v1/me/history/{slug}` | `HistoryItem` with `days: [{metOn, source, firstAt}]` |
+| `POST /api/account/history` | `POST /v1/me/history` | `{status: 'recorded' \| 'already' \| 'off', metOn?}`; body `{slug, source}`; 409 `mock_mode`, 404 `unknown_wine` |
+| `DELETE /api/account/history` | `DELETE /v1/me/history` | `{status: 'cleared'}` |
+| `DELETE /api/account/history/[slug]` | `DELETE /v1/me/history/{slug}` | `{status: 'removed'}` |
+| `DELETE /api/account/history/[slug]/days/[day]` | `DELETE /v1/me/history/{slug}/days/{met_on}` | `{status: 'removed'}` |
+| `GET /api/account/saved` | `GET /v1/me/saved` | `{items: [SavedItem]}` |
+| `GET /api/account/saved/slugs` | `GET /v1/me/saved/slugs` | `{items: [{slug, status}]}` |
+| `PUT /api/account/saved/[slug]` | `PUT /v1/me/saved/{slug}` | `SavedItem`; body `{status, source, change?}`; 409 `saved_full` |
+| `DELETE /api/account/saved/[slug]` | `DELETE /v1/me/saved/{slug}` | `{status: 'removed'}` |
 | `GET /api/app/v1/profile` | `GET /v1/app/profile` | Bearer application token; profile |
 | `GET /api/app/v1/wines` | `GET /v1/app/wines` | Bearer application token; `{items, next_cursor}` |
 

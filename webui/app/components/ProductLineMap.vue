@@ -68,6 +68,8 @@ const selectedUrl = computed(() => {
   if (selectedProduct.value) return productPortalUrl(selectedProduct.value)
   return activeUnknown.value ? sourceWineUrl(activeUnknown.value.slug) : null
 })
+// The pin of «Винный дневник» (plan 07). A product without a vino-svoe.ru card has no slug and no pin.
+const selectedSlug = computed(() => selectedProduct.value ? selectedProduct.value.wine_slug : activeUnknown.value?.slug ?? null)
 const selectionIsInitial = computed(() => selectedProduct.value?.id === initialProduct.value?.id && Boolean(initialProduct.value))
 const sourceDate = computed(() => {
   const value = props.line.scope.as_of
@@ -490,7 +492,7 @@ defineExpose({ centerInitial })
         <template v-if="(popupDetails || showDetails) && (selectedProduct || activeUnknown)">
           <div v-if="popupDetails" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
           <div class="plm-detail-scroll">
-          <div class="plm-detail-summary"><div class="plm-detail-image"><ProductLineImage v-if="selectedImage" :src="selectedImage" :frame="selectedFrame" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
+          <div class="plm-detail-summary"><div class="plm-detail-image"><ProductLineImage v-if="selectedImage" :src="selectedImage" :frame="selectedFrame" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><div class="plm-kicker-row"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><PinButton v-if="selectedSlug" :key="selectedSlug" :slug="selectedSlug" source="lineup" :wine-name="selectedName" /></div><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
           <div class="plm-detail-content">
             <template v-if="selectedProduct">
               <div class="plm-detail-badges"><span v-if="selectedTier">{{ selectedTier.label }}</span><span v-if="releaseLabel(selectedProduct)">{{ releaseLabel(selectedProduct) }}</span><span v-for="badge in selectedProduct.badges" :key="badge">{{ badge }}</span></div>
@@ -601,6 +603,7 @@ defineExpose({ centerInitial })
 .plm-detail-image>.plm-image-frame { filter: drop-shadow(0 8px 7px #32231818); }
 .plm-detail-image > img { width: auto; height: 176px; max-width: 120px; object-fit: contain; filter: drop-shadow(0 8px 7px #32231818); }
 .plm-detail-image img.is-unavailable, .plm-detail-image>.plm-image-frame.is-unavailable { filter: grayscale(1) opacity(.7); }
+.plm-kicker-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
 .plm-detail-heading h3 { margin: 7px 0; font: 500 25px/1.2 'Playfair Display', Georgia, serif; overflow-wrap: anywhere; }
 .plm-detail-heading h3:focus { outline: none; }
 .plm-detail-style { color: var(--muted); font-size: 12px; line-height: 1.5; }

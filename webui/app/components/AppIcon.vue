@@ -1,5 +1,6 @@
 <script setup lang="ts">
-defineProps<{ name: string }>()
+// `filled` fills the closed shapes of the icon: the pin of a saved wine.
+defineProps<{ name: string; filled?: boolean }>()
 const paths: Record<string, string> = {
   game: 'M6 7h12a3 3 0 0 1 3 2l2 8a2 2 0 0 1-3 2l-4-3H8l-4 3a2 2 0 0 1-3-2l2-8a3 3 0 0 1 3-2Z M7 9v5 M4.5 11.5h5 M16 10h.01 M19 13h.01',
   sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M12 2v2 M12 20v2 M2 12h2 M20 12h2 M4.93 4.93l1.42 1.42 M17.65 17.65l1.42 1.42 M4.93 19.07l1.42-1.42 M17.65 6.35l1.42-1.42',
@@ -51,6 +52,8 @@ const paths: Record<string, string> = {
   plus: 'M12 5v14 M5 12h14',
   minus: 'M5 12h14',
   navigation: 'm12 3 7 18-7-4-7 4Z M12 17V9',
+  // A push pin: «Сохранить» in «Винный дневник» (plan 07). Drawn for this site.
+  pin: 'M10 3h4v5l3 4v2H7v-2l3-4Z M12 14v7 M8.5 3h7',
 }
 </script>
-<template><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="paths[name] || paths.info" /></svg></template>
+<template><svg class="icon" viewBox="0 0 24 24" :fill="filled ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="paths[name] || paths.info" /></svg></template>

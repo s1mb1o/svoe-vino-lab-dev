@@ -144,7 +144,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
       <p v-if="page?.status === 'no_results'" class="dinner-notice" role="status">Подтверждённых сочетаний с этими условиями пока нет. Попробуйте уточнить блюдо или изменить ограничения.</p>
       <p v-else-if="page?.needs_clarification && question" class="dinner-field-hint">{{ question }}</p>
       <div class="dinner-wines"><article v-for="wine in wines" :key="wine.wine_slug" class="dinner-wine">
-        <div class="dinner-wine-top"><AppIcon :name="wine.facts.wine_kind === 'sparkling' ? 'sparkling' : wine.facts.color === 'red' ? 'wine-red' : wine.facts.color === 'white' ? 'wine-white' : 'taste'" /><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span></div>
+        <div class="dinner-wine-top"><AppIcon :name="wine.facts.wine_kind === 'sparkling' ? 'sparkling' : wine.facts.color === 'red' ? 'wine-red' : wine.facts.color === 'white' ? 'wine-white' : 'taste'" /><span class="dinner-wine-top-end"><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span><PinButton :slug="wine.wine_slug" source="dinner_lens" :wine-name="wine.name" /></span></div>
         <div class="dinner-wine-image"><WineImage :src="wineImageUrl(wine.wine_slug, 400)" alt="" width="400" height="400" loading="lazy" /></div>
         <p class="dinner-producer">{{ wine.producer }}</p><h3 tabindex="-1">{{ wine.name }}</h3>
         <p class="dinner-wine-facts">{{ labels[wine.facts.color] }} · {{ labels[wine.facts.sweetness] }} · {{ labels[wine.facts.wine_kind] }}<template v-if="wine.facts.alcohol_percent !== null"> · {{ wine.facts.alcohol_percent }}%</template></p>
@@ -206,6 +206,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-wine { border: 1px solid var(--line); border-radius: 18px; background: var(--paper); padding: 26px; display: flex; flex-direction: column; min-width: 0; }
 .dinner-wine-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--accent); font-size: 10px; margin-bottom: 24px; }
 .dinner-wine-top .icon { width: 30px; height: 30px; }
+.dinner-wine-top-end { display: inline-flex; align-items: center; gap: 6px; }
 .dinner-wine-image { height: 200px; margin-bottom: 22px; padding: 12px; border-radius: 14px; background: var(--card); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 /* Many catalogue images have a white background. `multiply` keeps the tile colour around the bottle. */
 .dinner-wine-image>img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }

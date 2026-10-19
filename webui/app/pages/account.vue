@@ -2,6 +2,7 @@
 import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, isMaxAppPath, mcpClientConfig, safeNextPath, splitIdentities } from '#shared/account'
 import { AccountRequestError, useAccountApi, type AccountSiteConfig, type AccountUser, type AppToken } from '~/composables/useAccountApi'
 import { readMaxLaunch } from '~/utils/max-bridge'
+import { useDiary } from '~/composables/useDiary'
 
 // /max is this page in MAX mode: the diary mini app on max.chtozavino.ru (plan 05).
 definePageMeta({ alias: ['/max'] })
@@ -75,9 +76,61 @@ const newTokenConfig = computed(() => newToken.value ? mcpClientConfig(newToken.
 // A server route renders the QR code of the fixed mini-app link (no code inside).
 const MAX_QR_URL = '/api/account/max/qr.svg'
 
+// Tabs of the diary (plan 07). The tab is in the query; no wine slug goes into the page URL.
+// The MAX mini app keeps the settings view: its host has no list routes.
+type Tab = 'history' | 'saved' | 'settings'
+const TABS: Array<{ key: Tab; label: string }> = [
+  { key: 'history', label: 'История' },
+  { key: 'saved', label: 'Сохранённые' },
+  { key: 'settings', label: 'Настройки' },
+]
+const tab = computed<Tab>(() => {
+  if (maxApp.value) return 'settings'
+  const value = route.query.tab
+  return value === 'saved' || value === 'settings' ? value : 'history'
+})
+const diary = useDiary()
+const saveHistory = computed(() => user.value?.save_history !== false)
+
+function selectTab(key: Tab, focus = false) {
+  const query = { ...route.query }
+  if (key === 'history') delete query.tab
+  else query.tab = key
+  void router.replace({ query })
+  if (focus) nextTick(() => document.getElementById(`account-tab-${key}`)?.focus())
+}
+
+function tabKey(event: KeyboardEvent, index: number) {
+  const last = TABS.length - 1
+  const target = event.key === 'ArrowRight' ? (index === last ? 0 : index + 1)
+    : event.key === 'ArrowLeft' ? (index === 0 ? last : index - 1)
+      : event.key === 'Home' ? 0 : event.key === 'End' ? last : -1
+  if (target < 0) return
+  event.preventDefault()
+  selectTab(TABS[target]!.key, true)
+}
+
+async function setSaveHistory(event: Event) {
+  const input = event.target as HTMLInputElement
+  busy.value = true
+  message.value = ''
+  try {
+    user.value = (await api.setSaveHistory(input.checked)).user
+  } catch (error) {
+    input.checked = saveHistory.value
+    fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
 function show(nextPhase: Phase) {
   phase.value = nextPhase
-  if (nextPhase === 'account') loadAppTokens()
+  if (nextPhase === 'account') {
+    loadAppTokens()
+    // The pins share one state with the site; after a login or logout it must be loaded again.
+    if (!maxApp.value) void diary.load(true)
+  }
   nextTick(() => heading.value?.focus())
 }
 
@@ -418,8 +471,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main id="main-content" class="scanner-page account-page">
-    <section class="account-card" aria-live="polite">
+  <main id="main-content" class="scanner-page account-page" :class="{ 'account-page-wide': phase === 'account' && !maxApp }">
+    <section class="account-card" :aria-live="phase === 'account' ? undefined : 'polite'">
       <p class="step-label">ВИННЫЙ ДНЕВНИК</p>
 
       <template v-if="phase === 'loading'">
@@ -489,7 +542,7 @@ onBeforeUnmount(() => {
           <input id="account-username" v-model="username" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="32" required :disabled="busy" @input="username = username.toLowerCase()">
           <p class="account-hint">От 3 до 32 символов: строчные латинские буквы, цифры, точка, дефис, подчёркивание.</p>
           <label class="account-check"><input v-model="acceptTerms" type="checkbox" :disabled="busy"> <span>Принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a></span></label>
-          <label class="account-check"><input v-model="acceptConsent" type="checkbox" :disabled="busy"> <span>Даю <a href="/privacy" target="_blank" rel="noopener">согласие на обработку персональных данных</a>: имени пользователя и адреса почты или идентификатора Яндекс ID</span></label>
+          <label class="account-check"><input v-model="acceptConsent" type="checkbox" :disabled="busy"> <span>Даю <a href="/privacy" target="_blank" rel="noopener">согласие на обработку персональных данных</a>: имени пользователя, адреса почты или идентификатора Яндекс ID, истории найденных и сохранённых вин</span></label>
           <button class="button primary" type="submit" :disabled="!canSignup">Создать дневник</button>
         </form>
       </template>
@@ -507,7 +560,35 @@ onBeforeUnmount(() => {
           </template>
           <p v-else id="max-link-heading">Привязка MAX сейчас выключена.</p>
         </div>
-        <p class="account-notice">Скоро здесь появятся история поисков, оценки вин и ваши предпочтения.</p>
+        <div v-if="!maxApp" class="account-tabs" role="tablist" aria-label="Разделы дневника">
+          <button
+            v-for="(item, index) in TABS"
+            :id="`account-tab-${item.key}`"
+            :key="item.key"
+            type="button"
+            role="tab"
+            class="account-tab"
+            :aria-selected="tab === item.key"
+            :aria-controls="`account-panel-${item.key}`"
+            :tabindex="tab === item.key ? 0 : -1"
+            @click="selectTab(item.key)"
+            @keydown="tabKey($event, index)"
+          >{{ item.label }}</button>
+        </div>
+        <div v-if="tab === 'history'" id="account-panel-history" role="tabpanel" aria-labelledby="account-tab-history" class="account-tabpanel">
+          <p class="account-hint">Вина, которые вы нашли по фото на сайте и в привязанных Telegram и MAX. Одна запись на вино в день.</p>
+          <DiaryHistory @settings="selectTab('settings', true)" />
+        </div>
+        <div v-else-if="tab === 'saved'" id="account-panel-saved" role="tabpanel" aria-labelledby="account-tab-saved" class="account-tabpanel">
+          <p class="account-hint">Вина, отмеченные значком <AppIcon name="pin" class="diary-inline-icon" />. Удаление из истории их не затрагивает.</p>
+          <DiarySaved />
+        </div>
+        <div v-else :id="maxApp ? undefined : 'account-panel-settings'" :role="maxApp ? undefined : 'tabpanel'" :aria-labelledby="maxApp ? undefined : 'account-tab-settings'" class="account-tabpanel">
+        <template v-if="!maxApp">
+          <h2 class="account-subheading">История находок</h2>
+          <label class="account-check"><input type="checkbox" :checked="saveHistory" :disabled="busy" @change="setSaveHistory"> <span>Записывать найденные вина</span></label>
+          <p class="account-hint">Поиск по фото на сайте и в привязанных Telegram и MAX добавляет вино и дату в историю. Выключение не удаляет уже записанное: очистить историю можно на вкладке «История».</p>
+        </template>
         <h2 class="account-subheading">Способы входа</h2>
         <ul class="account-identities">
           <li v-for="item in identities.login" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
@@ -631,6 +712,7 @@ onBeforeUnmount(() => {
             <button class="button primary account-danger-fill" type="button" :disabled="busy" @click="deleteAccount">Удалить навсегда</button>
             <button class="button secondary" type="button" :disabled="busy" @click="cancelDelete">Отмена</button>
           </div>
+        </div>
         </div>
       </template>
 

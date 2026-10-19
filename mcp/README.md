@@ -69,7 +69,7 @@ Create the token on `https://chtozavino.ru/account` → «Токены прил�
 | Tool | Arguments | Behavior |
 | --- | --- | --- |
 | `get_my_profile` | none | Username, account creation date, and preferences (`null` until the diary has them). |
-| `list_my_wines` | `limit` 1–50 (default 20), `cursor` | Found and rated wines, newest first, with the rating and the person's note. Empty until the diary history of #48 exists. |
+| `list_my_wines` | `limit` 1–50 (default 20), `cursor` | The diary history, newest first: `slug`, `name`, `producer`, `color`, `sugar`, `first_met_at`, `last_met_at`, `days`, `sources` (`photo`, `shelf`, `telegram`, `max`), `saved_status` (`not_tasted`, `want`, `liked`, `disliked`, or `null`). Ratings and notes come later (#48). |
 
 - Read-only (`readOnlyHint`). A token cannot write, open a web session, or manage tokens.
 - HTTPS `GET /api/app/v1/profile` and `/api/app/v1/wines` with `Authorization: Bearer`, `redirect: 'error'`,

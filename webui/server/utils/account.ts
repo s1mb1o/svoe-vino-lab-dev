@@ -100,9 +100,9 @@ export function accountConfig(
 /** Calls the account service. Throws AccountHttpError for a refused request or an outage. */
 export async function callAccount<T = Record<string, unknown>>(
   config: AccountConfig,
-  method: 'GET' | 'POST' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
-  options: { body?: unknown; session?: string; clientIp?: string; appToken?: string; timeoutMs?: number } = {},
+  options: { body?: unknown; session?: string; clientIp?: string; appToken?: string; timeoutMs?: number; maxBytes?: number } = {},
 ): Promise<{ status: number; data: T }> {
   const headers: Record<string, string> = { Accept: 'application/json', Authorization: `Bearer ${config.token}` }
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'
@@ -125,7 +125,7 @@ export async function callAccount<T = Record<string, unknown>>(
   let text = ''
   try {
     const bytes = new Uint8Array(await response.arrayBuffer())
-    if (bytes.byteLength > MAX_RESPONSE_BYTES) throw new Error('Response is too large')
+    if (bytes.byteLength > (options.maxBytes ?? MAX_RESPONSE_BYTES)) throw new Error('Response is too large')
     text = new TextDecoder().decode(bytes)
   } catch {
     throw unavailable()
@@ -218,7 +218,7 @@ async function readLimitedBody(event: H3Event, limit = MAX_REQUEST_BYTES): Promi
   return Buffer.concat(chunks).toString('utf8')
 }
 
-async function readJson(event: H3Event, limit = MAX_REQUEST_BYTES): Promise<Record<string, unknown>> {
+export async function readJson(event: H3Event, limit = MAX_REQUEST_BYTES): Promise<Record<string, unknown>> {
   const raw = await readLimitedBody(event, limit)
   if (!raw) return {}
   try {
@@ -467,7 +467,7 @@ const appTokenView = (item: AppTokenView) => ({
   id: item.id, name: item.name, createdAt: item.created_at, expiresAt: item.expires_at, lastUsedAt: item.last_used_at ?? null,
 })
 
-function sessionOf(event: H3Event): string {
+export function sessionOf(event: H3Event): string {
   const session = getCookie(event, ACCOUNT_COOKIES.session)
   if (!session) throw new AccountHttpError(401, 'session_required')
   return session

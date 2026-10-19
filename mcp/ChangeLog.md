@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-20 — History fields in `list_my_wines`
+
+- The account service fills `GET /v1/app/wines` from the diary history (plan 07). The tool description and
+  the README name the item fields. The output schema already accepted extra fields.
+
 ## 2026-10-19 — Six more producer maps
 
 - Serve Burnier, Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры from the shared Web registry. The registry now has 25 maps and 1,203 products.

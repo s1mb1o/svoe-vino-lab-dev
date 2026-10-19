@@ -1,7 +1,7 @@
 // One set of legal pages serves the website, both bots, and the mobile apps (#37).
 // The bots store `legalRevision` as the version of the accepted terms.
-export const legalRevision = '2026-10-19'
-export const legalRevisionLabel = '19 октября 2026 года'
+export const legalRevision = '2026-10-20'
+export const legalRevisionLabel = '20 октября 2026 года'
 
 export const operator = {
   name: 'Шмелев Александр Сергеевич',

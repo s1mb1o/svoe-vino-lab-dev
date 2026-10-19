@@ -1,5 +1,24 @@
 # Change log
 
+## 2026-10-20 — «Винный дневник»: history and saved wines
+
+- Plan `docs/plans/07_diary-history-and-saved.md` (issues #71 and #64, owner request of 2026-10-20).
+- `/account` has the tabs «История», «Сохранённые», and «Настройки». The history lists every wine
+  that the person found on the site and in the linked Telegram and MAX chats: bottle, name,
+  producer, color, sugar, sources, dates. Filters: text, color, sugar, source. «Удалить из истории»
+  and «Очистить историю».
+- «Сохранённые» holds pinned wines with «Не пробовано», «Отведать желаю», «Понравилось», or
+  «Не понравилось». Removal from the history does not touch it.
+- `PinButton` (a push pin, top right corner) on the photo result, the shelf bottle dialog, the
+  product line map details, the Dinner Lens wine cards, and the history rows. Logged-out people
+  get a login offer.
+- A logged-in photo match records the wine in the background, with «Записано в историю дневника» and
+  «Убрать» on the result card. A shelf bottle that the person opens is recorded too.
+- New server routes `/api/account/history*`, `/api/account/saved*`, `PATCH /api/account/me`; the
+  server builds the wine snapshot. The switch «Записывать найденные вина» is in «Настройки».
+- `/privacy` names the history and the saved wines; revision 2026-10-20. The sign-up consent names
+  the history and the saved wines.
+
 ## 2026-10-20 — Android 0.2.0 release contract
 
 - Bind the Android page and download route to the same-key signed release APK.

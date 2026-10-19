@@ -1,5 +1,29 @@
 # Smoke tests
 
+## «Винный дневник»: history and saved wines
+
+1. Log in on `/account`. Confirm the tabs «История», «Сохранённые», «Настройки» and that «Настройки»
+   has the switch «Записывать найденные вина» (on).
+2. Find a wine by photo on `/`. Confirm «Записано в историю дневника» on the result card and a pin in
+   the card heading. Open «История»: the wine is the first row with the bottle, name, producer,
+   color, sugar, «Сайт», and «Встреч: 1».
+3. Find the same wine again. Confirm «Уже в истории дневника за сегодня» and still one date.
+4. Press «Убрать» on the result card. Confirm the wine is gone from «История».
+5. Press the pin on the result card. Confirm «Не пробовано» is selected. Select «Отведать желаю».
+   Confirm the filled pin and the row in «Сохранённые» with «Из поиска по фото».
+6. Pin a wine on the product line map, on a Dinner Lens card, and in a shelf bottle dialog.
+   Confirm the sources in «Сохранённые».
+7. Remove the pinned wine from «История». Confirm it stays in «Сохранённые».
+8. In «История», use each filter. Confirm the count line «Показано N из M».
+9. «Очистить историю» → «Очистить». Confirm the empty state and that «Сохранённые» did not change.
+10. Turn the switch off, find a wine: no note on the card, no row. Turn it on again.
+11. Log out. Confirm the pin opens «Сохранять вина можно в «Винном дневнике»» with «Войти».
+12. Telegram or MAX linked: send a bottle photo to the bot. Confirm the row with «Telegram» or «MAX».
+    Press «❌ Не совпало». Confirm the date is gone.
+13. Stop the account service. Confirm the scanner works, no pin, no note.
+14. Use Tab and the arrow keys on the tabs, and Escape in the pin panel. Check 320 and 1440 px in
+    both themes.
+
 ## Android 0.2.0 release
 
 1. Open `/android` and confirm version 0.2.0, 396 MB, and Android 9 or later.

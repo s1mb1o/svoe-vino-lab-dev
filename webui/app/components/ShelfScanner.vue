@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SHELF_EXAMPLES, type BottleBox } from '#shared/shelf'
+import { useDiary } from '~/composables/useDiary'
 const scanner = useShelfScanner()
 const { file, result, phase, error, selectedId, selectedBottle, selectedMatch, selectedWine: wine, portalUrl, busy, displayImage, exampleLoading } = scanner
 // Chrome and Firefox cannot show a HEIC photo. The matcher result has a JPEG preview.
@@ -16,9 +17,20 @@ const shelfExample = computed(() => SHELF_EXAMPLES[activeExample.value] || SHELF
 let returnFocus: HTMLElement | null = null
 let pendingOpener: HTMLElement | null = null
 
-function choose(event: Event) { const input = event.target as HTMLInputElement; if (input.files?.length) void scanner.select([...input.files]); input.value = '' }
-function drop(event: DragEvent) { dragging.value = false; if (event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files]) }
-function runExample() { void scanner.example(shelfExample.value) }
+function choose(event: Event) { const input = event.target as HTMLInputElement; if (input.files?.length) { ownPhoto.value = true; void scanner.select([...input.files]) } input.value = '' }
+function drop(event: DragEvent) { dragging.value = false; if (event.dataTransfer?.files.length) { ownPhoto.value = true; void scanner.select([...event.dataTransfer.files]) } }
+function runExample() { ownPhoto.value = false; void scanner.example(shelfExample.value) }
+// «Винный дневник» (plan 07): a bottle that the person opens on their own shelf photo goes to the
+// history once per result. An example shelf is not the person's wine.
+const diary = useDiary()
+const ownPhoto = ref(false)
+const recorded = new Set<string>()
+watch(result, () => recorded.clear())
+watch(selectedMatch, match => {
+  if (!match || !ownPhoto.value || recorded.has(match.slug)) return
+  recorded.add(match.slug)
+  void diary.recordHistory(match.slug, 'shelf')
+})
 function openBottle(id: string, event: MouseEvent) {
   scanner.selectBottle(id)
   pendingOpener = selectedId.value === id && event.currentTarget instanceof HTMLElement ? event.currentTarget : null
@@ -76,7 +88,7 @@ useShelfTools(scanner)
     <p class="shelf-attribution">Примеры предоставлены владельцем проекта.</p>
 
     <dialog ref="dialog" class="shelf-dialog" aria-labelledby="shelf-wine-heading" @cancel.prevent="scanner.closeBottle()" @click="backdrop" @close="dialogClosed">
-      <div class="shelf-dialog-top"><p class="step-label">ВЫБРАННАЯ БУТЫЛКА {{ selectedId.replace('b', '') }}</p><button class="icon-button" aria-label="Закрыть карточку вина" @click="scanner.closeBottle()"><AppIcon name="close" /></button></div>
+      <div class="shelf-dialog-top"><p class="step-label">ВЫБРАННАЯ БУТЫЛКА {{ selectedId.replace('b', '') }}</p><span class="shelf-dialog-actions"><PinButton v-if="selectedMatch" :key="selectedMatch.slug" :slug="selectedMatch.slug" source="shelf" :wine-name="wine?.name" /><button class="icon-button" aria-label="Закрыть карточку вина" @click="scanner.closeBottle()"><AppIcon name="close" /></button></span></div>
       <div v-if="selectedBottle" class="shelf-wine-card">
         <div class="shelf-wine-image"><WineImage :src="wine?.image || result?.image.preview" :alt="wine?.name || 'Выбранная бутылка с полки'" /></div>
         <div class="shelf-wine-copy"><p v-if="selectedMatch" class="result-kicker">Лучшее совпадение · оценка {{ selectedMatch.score.toFixed(3) }}</p><h2 id="shelf-wine-heading" ref="dialogHeading" tabindex="-1">{{ wine?.name || 'Совпадение не найдено' }}</h2><p v-if="wine && (wine.producer || wine.region)" class="match-producer">{{ [wine.producer, wine.region].filter(Boolean).join(' · ') }}</p><p v-if="wine && (wine.color || wine.category)" class="match-kind">{{ [wine.color, wine.category.toLocaleLowerCase('ru')].filter(Boolean).join(' ') }}</p><p v-if="wine?.grapes.length" class="match-kind">Сорта: {{ wine.grapes.join(', ') }}</p><p v-if="!selectedMatch" class="shelf-dialog-status">Не удалось уверенно определить это вино. Снимите бутылку ближе или попробуйте другое фото.</p><a v-if="portalUrl" :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Подробнее на «Свое Вино»<AppIcon name="arrow-up-right" /></a></div>

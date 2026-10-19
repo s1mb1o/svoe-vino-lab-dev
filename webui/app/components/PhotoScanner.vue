@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MOCK_SLUG } from '#shared/catalog'
+import { useDiary, type HistoryRecord } from '~/composables/useDiary'
 const { data: config, error: configError, refresh } = await useFetch('/api/config', { key: 'portal-config' })
 const apiUnavailable = computed(() => config.value?.apiAvailable === false)
 const mode = computed(() => config.value?.apiAvailable ? config.value.predictionMode : undefined)
@@ -25,8 +26,41 @@ function dropped(event: DragEvent) {
   dragging.value = false
   if (mode.value && event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files])
 }
+// «Винный дневник» (plan 07): a logged-in person's match goes to the history, in the background.
+// The result never waits for the diary. A demo result is not the person's wine.
+const diary = useDiary()
+const historyRecord = ref<HistoryRecord | null>(null)
+const historyBusy = ref(false)
+const historyNote = computed(() => {
+  const record = historyRecord.value
+  return record && record.slug === slug.value && (record.status === 'recorded' || record.status === 'already') ? record : null
+})
+async function recordMatch() {
+  historyRecord.value = null
+  if (mock.value || !slug.value) return
+  const found = slug.value
+  const record = await diary.recordHistory(found, 'photo')
+  if (record && slug.value === found && phase.value === 'matched') historyRecord.value = record
+}
+async function undoHistory() {
+  const record = historyNote.value
+  if (!record || historyBusy.value) return
+  historyBusy.value = true
+  try {
+    await diary.undoHistory(record)
+    historyRecord.value = { ...record, status: 'off' }
+  } catch {
+    // The note stays; the person can remove the wine on the diary page.
+  } finally {
+    historyBusy.value = false
+  }
+}
 watch(phase, async state => {
-  if (state !== 'matched') return
+  if (state !== 'matched') {
+    historyRecord.value = null
+    return
+  }
+  void recordMatch()
   await nextTick()
   resultHeading.value?.focus({ preventScroll: true })
   if (window.matchMedia('(max-width: 767px)').matches) resultPanel.value?.scrollIntoView({ block: 'start', behavior: 'auto' })
@@ -67,13 +101,13 @@ useScannerTools(scanner)
       </section>
 
       <section ref="resultPanel" class="match-panel" :class="{ 'is-empty': !file && !hasResult, 'is-loading': busy }" aria-label="Результат поиска" :aria-busy="busy">
-        <div class="panel-heading"><span class="step-label">02 / ВАШЕ ВИНО</span><span v-if="hasResult && !mock" class="match-badge"><AppIcon name="check" />Совпадение найдено</span><span v-else-if="hasResult && mock" class="demo-badge">ДЕМО</span></div>
+        <div class="panel-heading"><span class="step-label">02 / ВАШЕ ВИНО</span><span class="panel-heading-end"><span v-if="hasResult && !mock" class="match-badge"><AppIcon name="check" />Совпадение найдено</span><span v-else-if="hasResult && mock" class="demo-badge">ДЕМО</span><PinButton v-if="hasResult && !mock && slug" :key="slug" :slug="slug" source="photo" :wine-name="wine?.name" /></span></div>
         <div class="result-announcement" role="status" aria-live="polite" aria-atomic="true"><span class="sr-only">{{ hasResult ? `${mock ? 'Демонстрационный результат' : 'Лучшее совпадение'}: ${wine?.name || slug}` : busy ? 'Поиск вина выполняется' : '' }}</span></div>
         <template v-if="hasResult && wine">
           <div class="match-bottle"><WineImage :src="wine.image" :alt="wine.name" width="300" height="300" /></div>
-          <div class="match-copy"><p class="result-kicker">{{ mock ? 'Демонстрационный результат' : 'Лучшее совпадение' }}</p><h2 ref="resultHeading" tabindex="-1">{{ wine.name }}</h2><p class="match-producer">{{ wine.producer }}<span v-if="wine.region"> · {{ wine.region }}</span></p><p class="match-kind">{{ wine.color }} {{ wine.category.toLocaleLowerCase('ru') }}</p><a :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Подробнее на «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-if="mock" class="result-disclaimer">Пример карточки. Это не распознавание вашего фото.</p></div>
+          <div class="match-copy"><p class="result-kicker">{{ mock ? 'Демонстрационный результат' : 'Лучшее совпадение' }}</p><h2 ref="resultHeading" tabindex="-1">{{ wine.name }}</h2><p class="match-producer">{{ wine.producer }}<span v-if="wine.region"> · {{ wine.region }}</span></p><p class="match-kind">{{ wine.color }} {{ wine.category.toLocaleLowerCase('ru') }}</p><a :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Подробнее на «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-if="mock" class="result-disclaimer">Пример карточки. Это не распознавание вашего фото.</p><p v-if="historyNote" class="history-note" role="status"><AppIcon name="history" /><span>{{ historyNote.status === 'already' ? 'Уже в истории дневника за сегодня' : 'Записано в историю дневника' }}</span><button type="button" class="account-link" :disabled="historyBusy" @click="undoHistory">Убрать</button></p></div>
         </template>
-        <div v-else-if="hasResult" class="missing-result"><div class="result-symbol"><AppIcon name="check" /></div><p class="result-kicker">Результат поиска</p><h2 ref="resultHeading" tabindex="-1">Вино найдено.<br>Узнайте о нём больше.</h2><p>Фото бутылки и описание пока недоступны. Карточку можно открыть на основном портале.</p><code>{{ slug }}</code><a :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Открыть на «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-if="mock" class="result-disclaimer">Демонстрационный результат.</p></div>
+        <div v-else-if="hasResult" class="missing-result"><div class="result-symbol"><AppIcon name="check" /></div><p class="result-kicker">Результат поиска</p><h2 ref="resultHeading" tabindex="-1">Вино найдено.<br>Узнайте о нём больше.</h2><p>Фото бутылки и описание пока недоступны. Карточку можно открыть на основном портале.</p><code>{{ slug }}</code><a :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Открыть на «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-if="mock" class="result-disclaimer">Демонстрационный результат.</p><p v-if="historyNote" class="history-note" role="status"><AppIcon name="history" /><span>{{ historyNote.status === 'already' ? 'Уже в истории дневника за сегодня' : 'Записано в историю дневника' }}</span><button type="button" class="account-link" :disabled="historyBusy" @click="undoHistory">Убрать</button></p></div>
         <div v-else-if="busy" class="waiting-result"><div class="bottle-silhouette" aria-hidden="true"><img :src="demoBottle" alt="" width="230" height="300"></div><span class="spinner" /><h2>Знакомимся с вашим вином</h2><p>Проверяем этикетку и ищем<br>подходящую карточку.</p></div>
         <div v-else class="empty-result"><div class="bottle-stage" aria-hidden="true"><div class="bottle-orbit" /><img :src="demoBottle" alt="" width="230" height="300"><span class="bottle-caption">СВОЯ ИСТОРИЯ В КАЖДОЙ БУТЫЛКЕ</span></div><h2>Здесь появится ваше вино</h2><p>Название, фото бутылки и ссылка<br>на карточку «Свое Вино».</p></div>
       </section>
