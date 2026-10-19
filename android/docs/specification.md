@@ -13,8 +13,16 @@ The application opens the matching page on `vino-svoe.ru`.
 - The minimum Android version MUST be Android 9.
 - `minSdk` MUST be 28.
 - `targetSdk` MUST be 36.
-- The application ID MUST be `chtozavino.alolalab.com`.
+- The application ID MUST be `com.alolalab.chtozavino`.
 - The user interface MUST be in Russian.
+
+The Kotlin namespace MUST remain `com.alolalab.chtozavino`.
+The launcher name MUST remain `Что за вино?`.
+The FileProvider authority MUST be `${applicationId}.files`.
+Camera capture MUST use the authority from the running application package.
+The ID change MUST create a separate installation from `chtozavino.alolalab.com`.
+The new installation MUST NOT assume access to private data from the old ID.
+Historical reports and archived APKs MUST keep their original IDs.
 
 ## User flow
 

@@ -3,7 +3,17 @@
 This application recognizes a wine on the device.
 It supports Android 9 and later.
 The user interface is in Russian.
-The application ID is `chtozavino.alolalab.com`.
+The application ID is `com.alolalab.chtozavino`.
+The Kotlin namespace uses the same identifier.
+The launcher name remains `Что за вино?`.
+
+This ID replaces `chtozavino.alolalab.com` in new builds.
+Android treats the new ID as a separate application, not as an update.
+History, consent, settings, and extracted models from the old ID do not migrate
+automatically.
+The new application installs its built-in pack and checks accelerators on first start.
+Historical reports, archived APKs, and the isolated dual-GPU application keep their
+original IDs.
 
 ## Functions
 
@@ -214,7 +224,9 @@ Sign this APK with an owner-controlled release key before installation or public
 
 The local release archive is
 `/Volumes/Storage/svoe-vino-final/releases/android/`.
-The current release file is `chtozavino-0.2.0-release-unsigned.apk`.
+The archived release file is `chtozavino-0.2.0-release-unsigned.apk`.
+This frozen artifact uses the old ID `chtozavino.alolalab.com`.
+Do not replace this artifact with a new-ID build under the same archive filename.
 Its adjacent JSON file records the source commit, SHA-256, tests, and embedded pack.
 Historical local APKs are in `historical/`.
 Published 0.1.4 assets are in `github/android-v0.1.4/`.

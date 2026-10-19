@@ -6,7 +6,9 @@ Date: 2026-10-19
 
 The current wine application working copy is
 `/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-android/android`.
-Its application ID is `chtozavino.alolalab.com`.
+Its application ID is `com.alolalab.chtozavino`.
+Measurements and archived APKs made before the ID change keep
+`chtozavino.alolalab.com`.
 Its application version is `0.2.0`.
 Its built-in format 6 pack uses the verified complete Base NaFlex p512 graph.
 

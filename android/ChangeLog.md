@@ -2,6 +2,22 @@
 
 ## 2026-10-19
 
+### Main application ID
+
+- Changed the main debug and release application ID to `com.alolalab.chtozavino`.
+- Kept the existing Kotlin namespace and Russian launcher name.
+- Retained the application-derived FileProvider authority for camera capture.
+- Updated the Pixel 8 pilot runner to inspect the new package.
+- Added a shared unit test for the debug and release application ID.
+- Documented the separate installation and the absence of automatic data migration.
+- Preserved historical reports, archived APKs, and the isolated dual-GPU application.
+- Left installed applications unchanged.
+- Passed 65 debug tests and 62 release tests, including both application-ID checks.
+- Passed debug and release lint with no errors and 31 and 32 warnings respectively.
+- Built both APKs and verified the new package, launcher, and FileProvider authority.
+- Verified the unchanged embedded pack and the frozen old-ID release checksum.
+- Kept the new release unsigned and outside the frozen release archive.
+
 ### Local 0.2.0 release archive
 
 - Committed the complete Base NaFlex p512 implementation as `eaf8d688`.

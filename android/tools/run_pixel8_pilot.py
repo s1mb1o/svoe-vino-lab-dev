@@ -18,7 +18,7 @@ import urllib.request
 import uuid
 
 
-PACKAGE = "chtozavino.alolalab.com"
+PACKAGE = "com.alolalab.chtozavino"
 PORT = 18088
 
 

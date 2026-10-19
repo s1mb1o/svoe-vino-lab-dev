@@ -49,7 +49,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "chtozavino.alolalab.com"
+        applicationId = "com.alolalab.chtozavino"
         minSdk = 28
         targetSdk = 36
         versionCode = 6
