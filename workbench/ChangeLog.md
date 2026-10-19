@@ -1,5 +1,37 @@
 # ChangeLog
 
+## 2026-10-20
+
+- Ported the workbench work of the GitLab lab repository `drink-atlas/svoe-vino-lab` (owner
+  request and answers of 2026-10-19 and 2026-10-20). The lab and this repository share the
+  commit `e8787cf41` (2026-09-29). The port holds 46 lab commits of 2026-09-30 to 2026-10-18.
+  Each commit keeps its author, date, and message, and adds the line
+  `(cherry picked from commit <lab commit>)`.
+  - Not included: the images under `data/` (test sets 4.1 GB, catalogue 1.0 GB), `db-export/`,
+    and the changes outside `workbench/`. Six lab commits had no other change and are not
+    ported (a database export, two catalogue snapshots, and three owner message records).
+  - `docs/owner-messages.md` and `ACTIVE_WORK.md` are deleted, as in the lab commit
+    `7c01f7799` (2026-10-06). The lab keeps both files in its git-ignored `internal/`.
+  - The MLflow commit (`a2d1169f4`, #19) also adds its `matcher/` part, because
+    `pipeline/benchmark.py` imports `matcher/mlflow_tracking.py`. The hooks of
+    `matcher/scripts/evaluate_label_only.py` and `evaluate_label_parts.py` are not included:
+    this repository has no such scripts.
+  - Known gaps. The lab changes of `../matcher/rerank.py` are not ported, so the workbench
+    re-rank prompts differ from the matcher prompts: `test_cluster_rerank` has 1 failure and
+    `test_matcher_parity` has 2 failures. `config.selective-ocr.example.yaml` refers to
+    `matcher/config.selective-ocr.example.yaml`, which is not in this repository. The scripts
+    `zrotation_*.py` need `tools/bottle_rotation/`, which is not in this repository. A port of
+    these `matcher/` and `tools/` parts is a separate task.
+  - Tests: 2,567 tests, 14 fail. The 3 failures above come from the port. The other 11 fail
+    in the same way on a clean copy of the lab commit `7dfc19e8e`: they need files of the
+    lab `internal/` directory, the sibling repositories `svoe-vino-matcher` and
+    `svoe-vino-lab-experiments`, or they are lab defects (`test_page_requests`,
+    `test_candidate_delete`, `test_barcode`, `test_recognize_routes`). The Codex review
+    (gpt-6.1-sol, xhigh) found no defect in the merge with the static wine images, in the
+    MLflow part, or as secrets. Its other findings are the gaps above and two lab defects:
+    `scripts/benchmark_competitor_experiments.py` gives `CascadeMatcher` to `Run`, and
+    `tests/test_competitor_experiments.py` reads a file of the lab `internal/` directory.
+
 ## 2026-10-19
 
 - Static wine images, release format 2 (owner answers of 2026-10-19T21:46:00+0300, plan 06
