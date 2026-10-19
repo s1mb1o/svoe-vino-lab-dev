@@ -50,6 +50,7 @@ Client navigation sends a page view with the previous page URL as the referrer.
 The page view is sent after Nuxt sets the title of the new page.
 
 The portal shows an 18+ warning and requires age confirmation before access.
+The legal pages `/terms`, `/privacy`, and `/contacts` are the exception. They open without the age gate.
 The browser stores age confirmation and the selected theme in `localStorage`.
 The PWA uses a service worker cache for offline access.
 These storage mechanisms do not use cookies.
@@ -136,6 +137,16 @@ The Workbox routes do not store photo uploads or responses of the `/api/` and `/
 A cached page contains the server-rendered `/api/config` payload. An offline start shows the last known service state.
 A new version does not reload an open page. It becomes active after all app pages close.
 Development mode does not register the service worker.
+
+## Legal pages
+
+Open `/terms` for «Условия использования», `/privacy` for «Политика обработки персональных данных»,
+and `/contacts` for «Контакты».
+One set of pages covers the website, both bots, and both mobile apps.
+The bots use these addresses in `BOT_TERMS_URL`, `BOT_PRIVACY_URL`, and `BOT_CONTACT_URL`.
+`app/data/legal.ts` holds the operator details, the contact channels, and the revision date.
+The shared footer and `/sitemap` link to the pages.
+Read `docs/legal-pages.md` for the content rules. `ResearchLog.md` lists the evidence for each statement.
 
 ## Android application page
 

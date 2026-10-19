@@ -112,6 +112,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .scanner-footnote>p { display: flex; align-items: flex-start; gap: 7px; }
 .scanner-footnote .icon { width: 14px; height: 14px; margin-top: 2px; }
 .scanner-footnote>span { white-space: nowrap; }
+.scanner-footnote a { text-decoration: underline; text-underline-offset: 3px; }
+.scanner-footnote a:hover { color: var(--accent); }
 .photo-tips { display: grid; grid-template-columns: repeat(3,1fr); max-width: 940px; margin: 33px auto 0; gap: 26px; padding: 0 24px; }
 .photo-tips>div { display: flex; align-items: center; gap: 13px; }
 .tip-number { font: 26px 'Playfair Display',serif; color: #bda387; }
@@ -119,6 +121,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .photo-tips strong { font-size: 12px; font-weight: 500; }
 .photo-tips p>span { font-size: 11px; color: var(--muted); }
 .site-footer { max-width: 1320px; width: calc(100% - 80px); margin: 45px auto 0; padding: 20px 0 22px; border-top: 1px solid var(--line); color: var(--muted); }
+.site-footer .legal-navigation { display: flex; flex-wrap: wrap; gap: 0 24px; margin-bottom: 14px; }
+.site-footer .legal-navigation a { min-height: 44px; color: var(--ink); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.site-footer .legal-navigation a[aria-current] { color: var(--accent); }
 .site-footer>div { display: flex; align-items: center; gap: 20px; justify-content: space-between; font-size: 11px; }
 .site-footer a { display: inline-flex; gap: 6px; align-items: center; }
 .site-footer a .icon { width: 14px; height: 14px; }

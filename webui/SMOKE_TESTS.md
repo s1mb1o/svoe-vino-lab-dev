@@ -1,5 +1,21 @@
 # Smoke tests
 
+## Legal pages
+
+- Open `/terms`, `/privacy`, and `/contacts` in a new profile. Confirm that no age gate appears.
+- Open `/` in the same profile. Confirm that the age gate still appears.
+- Open `/contacts`, follow «Условия использования», then the logo. Confirm that the age gate appears on `/`.
+- Confirm one H1, the page title, one canonical URL, and «Редакция от …» on each page.
+- Confirm the operator name, the status, and the INN on `/contacts`, `/terms`, and `/privacy`.
+- Confirm the e-mail link (`mailto:`) and the Telegram link on `/contacts`.
+- Open `/privacy#max` and `/terms#android`. Confirm that the browser scrolls to the section.
+- Follow every entry in «Содержание». Confirm that each one scrolls to its section.
+- Confirm the footer links «Условия использования», «Политика обработки персональных данных», and «Контакты», and the current-page mark.
+- Confirm the section «Правовая информация» on `/sitemap` and the three paths in `/sitemap.xml`.
+- On `/`, confirm the link «Фото хранится 30 дней» opens `/privacy#site`.
+- Check 320, 390, 768, and 1440 pixel widths in both system themes. Confirm no horizontal overflow.
+- Use Tab from the page start. Confirm that the skip link gets the first focus and that focus stays visible.
+
 ## iPhone application landing page
 
 1. Open `/iphone` in a new browser profile. Confirm that the 18+ gate blocks interaction.

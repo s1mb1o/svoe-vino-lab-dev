@@ -1,5 +1,81 @@
 # Research log
 
+## Legal pages: data flow facts, 2026-10-19
+
+This entry is the evidence for `/terms`, `/privacy`, and `/contacts` (`docs/legal-pages.md`, #37).
+Sources: `feature/im-bot` at `a82c96c8`, `android/current` at `af19e83d` in `svoe-vino-lab-android`,
+`main` at `2e1d4033` in `svoe-vino-lab-iphone`, and the `chtozavino-deploy` records.
+Production runs other commits: Web UI `e678cf0c`, matcher `dce69cf4`, Telegram bot `874fbd6`, MAX bot `3e7c20d2`.
+The user-facing bot texts are the same in these commits and on `feature/im-bot`.
+
+### Website
+
+- The single-bottle page sends `POST /api/predict`. The shelf page sends `POST /v1/group/match`. Both send one multipart `image` (`app/composables/useWineScanner.ts:76-77`, `useShelfScanner.ts:55-56`).
+- The Web UI keeps the photo in memory and forwards only the image to the matcher (`server/utils/prediction.ts:60-98`, `server/utils/group.ts`). It writes no photo, mask, or response to disk or logs.
+- The website photos do not pass the bot moderation service.
+- `app/components/PhotoScanner.vue:81` says «Фото не сохраняется». This text is false, because the matcher archives the photo.
+- First-party browser storage: `localStorage` keys `svoe-vino.age-confirmed.v1` and `svoe-vino.theme.v1`. First-party code sets no cookie.
+- The service worker caches pages and static files. It does not cache photos or `/api/` and `/v1/` responses (`nuxt.config.ts:89-143`).
+- Yandex.Metrika counter `113460637` loads in the server-rendered head of every page, before the age gate. No consent banner exists (#41).
+  Options: `webvisor:false`, `clickmap:true`, `trackLinks:true`, `accurateTrackBounce:true`, `ecommerce:"dataLayer"` (`shared/metrika.ts:11`). The code sends no goals or parameters.
+- Wine images load from `api.vino-svoe.ru` with `referrerpolicy="no-referrer"`. The server requests wine cards from `api.vino-svoe.ru` with the slug only.
+- Caddy access logs on Princess keep the client IP, user agent, path, and status for 7 days (`princess/Caddyfile`, `roll_keep_for 168h`).
+- The website has no account, sign-in, or contact form.
+
+### Matcher archive
+
+- The matcher saves every accepted image and a `request.json` file for `/v1/eval/predict`, `/v1/match`, and `/v1/group/match` (`matcher/app.py:289-378`, `matcher/audit.py:42-80`).
+- `request.json` contains the time, the client IP, the request headers with credentials redacted, file metadata, and the result.
+- This applies to website, bot, and API requests. The bots send the full source image.
+- No retention job exists (`gx10/matcher-prod.md:313`). Snapshots go to the ds1825 NAS and the owner's T7 drive. No job removes old snapshots.
+- Matcher Inspector shows the archive on the LAN without authentication (`gx10/matcher-inspector.md`).
+
+### Telegram and MAX bots
+
+- The bots store the user ID, the chat ID, the available first name, last name, and username, the age choice and its date, the source photo, processing artifacts, moderation and quality results, recognition candidates, feedback, filter-error reports, and step timings (`telegram-bot/src/chto_za_vino_bot/storage.py:192-311`, `max-bot/src/chto_za_vino_max_bot/storage.py:207-358`).
+- The MAX bot also stores the raw update JSON in `update_inbox` for about 1 to 2 days, and the texts of its own messages with keyboards (`sent_messages`).
+- The bots store an image sent as a file without change, except HEIC and HEIF. EXIF metadata can stay in such a file (`im-core/src/chto_za_vino_core/image_types.py:58-78`).
+- The bots do not store a phone number, a language, or a terms-acceptance record.
+- The bots delete finished requests, files, and artifacts after 30 days (`config.py` refuses another value in production). A profile without requests is deleted at the same time. Photos sent before the age confirmation are held for 24 hours.
+- No self-service deletion exists. The operator deletes a user with `chto-za-vino-delete-user` or `chto-za-vino-max-delete-user`, or one request with «Удалить запрос» (not deployed yet).
+- Moderation (ShieldGemma 2), SAM3, and the matcher run on gx10. They receive the image without user identifiers.
+- Data leaves the operator's hosts only to Telegram, to MAX, and as catalogue image requests to `api.vino-svoe.ru`. The reply can contain the user's own photo when the catalogue image is not available.
+- Bot logs contain no user ID, name, or message text. Docker keeps 5 files of 10 MB for each container.
+- The bots state the purposes «для работы сервиса и улучшения качества распознавания» (`profile.py`). The specifications collect difficult images for recognition improvement.
+- Copies outside the 30-day retention: the matcher archive, the old Telegram data on the NAS, and the Telegram deployment backup of 2026-09-29.
+
+### Mobile apps
+
+- Android (`chtozavino.alolalab.com`, 0.1.4) and iOS (0.1.0) recognize wine and look up codes on the device. Their code has no upload or HTTP client.
+- The apps open `vino-svoe.ru` pages in the browser. The apps have no analytics, crash reporting, ads, or account.
+- Android uses Google Code Scanner from Google Play services. Its dependencies add the `INTERNET` permission and Google log transport. The code does not show what Google collects.
+- History: up to 50 rows and a bottle preview on the device. The «Очистить» action deletes them. Android keeps camera originals in the app cache.
+- The website offers a debug APK. Its test HTTP server is off by default.
+- No evidence shows that the iOS app is distributed.
+
+### Hosting
+
+- `chtozavino.ru` and `api.chtozavino.ru` run on Princess, a Selectel VDS. The region is not documented.
+- The bots, the matcher, and the models run on gx10 in the owner's home LAN. The country is not documented.
+- The documents do not state the location. The owner confirmed on 2026-10-19 that all these hosts are in Russia.
+
+### Owner decisions, 2026-10-19
+
+- Keep every photo for 30 days, including the matcher archive and its backups. A cleanup job is necessary before deployment.
+- Describe Yandex.Metrika as it works now. Do not claim consent until the #41 banner exists.
+- Replace «Фото не сохраняется» on `/`.
+- Show e-mail, Telegram, and MAX on `/contacts`. The MAX handle is not known yet, so the page shows e-mail and Telegram.
+
+### Verification
+
+- Chromium (Playwright) checked `/terms`, `/privacy`, and `/contacts` at 320, 390, 768, and 1440 CSS pixels in both themes.
+- No age gate, no horizontal overflow, one H1, the footer links, and `aria-current` passed on every page.
+- The age gate stays on `/` and `/sitemap`, also after client navigation from a legal page.
+- The fragments `/privacy#max` and `/terms#android` scroll to their sections. The skip link gets the first focus.
+- The light theme `--muted` color has a contrast ratio of 3.93:1 on `--paper`. This is below WCAG AA for small text.
+  The legal pages use `--ink` for the lead, the revision date, the term labels, and the footer legal links. All measured text is at least 4.5:1.
+- Other site elements that use `--muted`, for example the eyebrow labels and the footer text, keep the low contrast. Accessibility issue #35 tracks the site.
+
 ## iPhone landing status note, 2026-10-19
 
 The owner removed the TestFlight preparation note below the release facts.

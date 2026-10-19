@@ -1,5 +1,17 @@
 # Change log
 
+## 2026-10-19 — Legal pages
+
+- Add `/terms`, `/privacy`, and `/contacts` (#37). One set of pages covers the website, the Telegram and MAX bots, and the Android and iOS apps.
+- Add `app/data/legal.ts` with the operator details, the contact channels, and the revision date `2026-10-19`.
+- Add `LegalPage.vue` with the heading, the revision date, the table of contents, and the related documents.
+- Open the legal pages without the age gate. All other pages keep it.
+- Add the legal links to the shared footer and three entries to `/sitemap.xml`.
+- Replace the false footnote «Фото не сохраняется» on `/` with «Фото хранится 30 дней», a link to `/privacy#site`.
+- Record the data flow evidence in `ResearchLog.md` and the content rules in `docs/legal-pages.md`.
+- Verify type checks, all 483 tests, and the production build.
+- Verify 320, 390, 768, and 1440 pixel widths in both themes, the age gate rules, fragments, keyboard focus, and WCAG AA text contrast.
+
 ## 2026-10-19 — Account token name
 
 - The server reads the account service token from `ACCOUNT_WEB_TOKEN`, the same name as in the

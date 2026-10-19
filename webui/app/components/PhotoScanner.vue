@@ -78,7 +78,7 @@ useScannerTools(scanner)
         <div v-else class="empty-result"><div class="bottle-stage" aria-hidden="true"><div class="bottle-orbit" /><img :src="demoBottle" alt="" width="230" height="300"><span class="bottle-caption">СВОЯ ИСТОРИЯ В КАЖДОЙ БУТЫЛКЕ</span></div><h2>Здесь появится ваше вино</h2><p>Название, фото бутылки и ссылка<br>на карточку «Свое Вино».</p></div>
       </section>
     </div>
-    <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span>Фото не сохраняется</span></div>
+    <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span><NuxtLink to="/privacy#site">Фото хранится 30 дней</NuxtLink></span></div>
     <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" :recognized="!mock" />
   </section>
 </template>

@@ -9,7 +9,7 @@ describe('search discovery', () => {
   it('keeps the page server-rendered behind the age overlay', async () => {
     const app = await source('app/app.vue')
     const gate = await source('app/components/AgeGate.vue')
-    expect(app).toContain('computed(() => !ageChecked.value || !ageConfirmed.value)')
+    expect(app).toContain('computed(() => !isLegalPage.value && (!ageChecked.value || !ageConfirmed.value))')
     expect(app.indexOf('<NuxtPage />')).toBeLessThan(app.indexOf('<AgeGate'))
     expect(app).toContain(':inert="ageGateOpen"')
     expect(app).toContain('<AgeGate v-if="ageGateOpen"')
