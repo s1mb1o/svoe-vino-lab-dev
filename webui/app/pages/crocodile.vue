@@ -35,7 +35,7 @@ const questions = [
       <div class="wc-hero-copy">
         <p class="wc-kicker"><span class="wc-dot" />НАСТОЛЬНАЯ ИГРА ДЛЯ КОМПАНИИ</p>
         <h1 id="crocodile-title">Винный<br><em>крокодил</em></h1>
-        <p class="wc-hero-tagline">Хорошее вино — повод поговорить.<br>А иногда — обойтись без слов.</p>
+        <p class="wc-hero-tagline">Объясняйте. Угадывайте. Общайтесь</p>
         <p class="wc-lead">Объясните «купаж». Покажите штопор. Попробуйте не рассмеяться. Тридцать карточек о вине, жестах и неожиданных ассоциациях.</p>
         <div class="wc-actions"><a href="#rules" class="button primary" data-testid="crocodile-rules">Как играть<AppIcon name="arrow" /></a><a href="#download" class="wc-text-link">Распечатать игру<AppIcon name="download" /></a></div>
         <p class="wc-hero-note">Знания сомелье не нужны. Воображение пригодится.</p>
@@ -43,7 +43,7 @@ const questions = [
       <figure class="wc-hero-photo">
         <img src="/crocodile/hero.webp" width="1448" height="1088" alt="Настольная игра «Винный крокодил»: коробка, веер иллюстрированных карточек и бутылка вина на светлом столе" fetchpriority="high">
         <div class="wc-stamp" aria-hidden="true"><strong>30</strong><span>КАРТОЧЕК<br>ДЛЯ ВАШЕГО ВЕЧЕРА</span></div>
-        <figcaption>Слова, жесты и немного винного любопытства.</figcaption>
+        <figcaption>Слова, жесты и немного любопытства.<br>Для игры алкоголь не требуется</figcaption>
       </figure>
     </section>
 

@@ -1,5 +1,10 @@
 # Research log
 
+## Wine Crocodile hero wording, 2026-10-19
+
+The owner supplied exact replacement text for the hero tagline and photo caption.
+Keep the supplied wording. Use a line break before the alcohol-free participation statement.
+
 ## Live producer-map validation, 2026-10-19
 
 The committed Linux release `772a396e` is active at 18:20:46 UTC. All 25 map routes render the expected product counts.

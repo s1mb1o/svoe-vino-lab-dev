@@ -1,5 +1,11 @@
 # Smoke tests
 
+## Wine Crocodile hero wording
+
+1. Open `/crocodile`. Confirm the exact tagline «Объясняйте. Угадывайте. Общайтесь».
+2. Confirm the photo caption «Слова, жесты и немного любопытства.» and its second line «Для игры алкоголь не требуется».
+3. Check both themes at desktop and phone widths. Keep both lines visible without overflow.
+
 ## Live 25-map release, 2026-10-19
 
 Release `772a396e` is live with all 25 producer cards on `/lineup`.

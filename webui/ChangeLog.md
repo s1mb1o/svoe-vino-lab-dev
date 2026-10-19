@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Wine Crocodile hero copy
+
+- Replace the hero tagline with the owner's three-action text.
+- Remove the wine qualifier from the photo caption. State on a separate line that alcohol is not required.
+
 ## 2026-10-19 — Live producer-map expansion
 
 - Deploy GitHub main `772a396e` at 18:20:46 UTC. The live index has 25 maps, 1,203 products and 272 groups.
