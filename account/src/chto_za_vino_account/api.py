@@ -148,6 +148,8 @@ def create_app(
             except ValueError:
                 address = None
             if address is None or not any(address in network for network in networks):
+                # The caller is a service (the web server tunnel or a bot), not a person.
+                LOG.warning("Refused a request from a network that is not allowed: %s", host)
                 return _error(AccountError("forbidden", 403, "Client network is not allowed"))
             length = request.headers.get("content-length")
             if length is not None and (not length.isdigit() or int(length) > MAX_BODY_BYTES):

@@ -1,26 +1,40 @@
-# Example Docker Compose file of the account service. Copy it to the installation directory
-# and keep the real file, its .env, and config/account.env outside this repository.
+# Example Docker Compose file of the account service. It follows the other svoe-vino-lab
+# services: one project per environment, a published port, a read-only root, uid 1000.
+# Install it as <root>/<env>/account/compose.yaml. Keep the real file, its .env, and
+# config/*.env outside this repository.
 #
-#   .env                 ACCOUNT_IMAGE=svoe-vino-lab-account:<revision>
-#   config/account.env   the settings of ../.env.example with real secrets (mode 0600)
-#   data/                account.sqlite3, owned by uid 1000
+#   .env                     ACCOUNT_IMAGE=svoe-vino-lab-account:prod
+#   config/account.env       the settings of ../.env.example with real secrets (mode 0600)
+#   config/yandex-oauth.env  YANDEX_CLIENT_ID, YANDEX_CLIENT_SECRET, YANDEX_REDIRECT_URIS
+#                            (mode 0600; without it, Yandex ID is off)
+#   data/                    account.sqlite3 and backups/, owned by uid 1000, mode 0700
 #
-# The service publishes its port on loopback only. The reverse SSH tunnel to the web server
-# connects to that port. The bots reach the service on the shared network "svoe-vino".
+# Production: port 28008, project svoe-vino-lab-account-prod.
+# Dev: port 29008, project svoe-vino-lab-account-dev, its own data directory.
+#
+# Callers on the same host reach the container through the published port: the reverse SSH
+# tunnel of the web server, and the bots at <host LAN address>:28008. The service then sees a
+# Docker bridge address: the gateway of this project network or the address of a bot
+# container. Put the Docker bridge pools in ACCOUNT_ALLOWED_NETWORKS (172.16.0.0/12 on a
+# default Docker install). Other LAN hosts stay outside the list. Every caller also needs its
+# own bearer token.
 
-name: svoe-vino-account
+name: svoe-vino-lab-account-prod
 
 services:
   account:
     image: ${ACCOUNT_IMAGE:?set ACCOUNT_IMAGE in .env}
+    container_name: svoe-vino-lab-account-prod
     restart: unless-stopped
+    init: true
     env_file:
       - path: config/account.env
         format: raw
-    environment:
-      ACCOUNT_ENVIRONMENT: production
+      - path: config/yandex-oauth.env
+        format: raw
+        required: false
     ports:
-      - "127.0.0.1:28008:8080"
+      - "0.0.0.0:28008:8080"
     volumes:
       - ./data:/data
     read_only: true
@@ -30,15 +44,8 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
-    init: true
-    networks:
-      - svoe-vino
     logging:
       driver: json-file
       options:
-        max-size: 10m
+        max-size: "10m"
         max-file: "5"
-
-networks:
-  svoe-vino:
-    external: true

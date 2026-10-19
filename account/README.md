@@ -88,7 +88,33 @@ httpOnly cookies. The browser never sees the service.
 
 ## Deployment
 
-Docker Compose on gx10, like the MAX bot. See [`Dockerfile`](Dockerfile) and
-[`deploy/compose.example.yaml`](deploy/compose.example.yaml). Keep the real Compose file,
-the environment file, and the deployment record outside this repository. Back up
-`/data/account.sqlite3` with `sqlite3 account.sqlite3 ".backup ..."`.
+Docker Compose on the GPU host, in the same way as the matcher and the bots. See
+[`Dockerfile`](Dockerfile) and [`deploy/compose.example.yaml`](deploy/compose.example.yaml).
+Keep the real Compose file, the environment files, and the deployment record in the private
+deployment repository, not here.
+
+- Build: `git archive "$REV" account | ssh <host> "docker build -f account/Dockerfile --build-arg REVISION=$REV -t svoe-vino-lab-account:$REV -"`.
+  The pinned base images support `linux/amd64` and `linux/arm64`.
+- Tags: `svoe-vino-lab-account:<commit>`, then `:prod` and `:prod-prev` (or `:dev`, `:dev-prev`)
+  for a rollback, like the other services.
+- Ports: 28008 (production), 29008 (dev). The container listens on 8080.
+- Data: `<root>/<env>/account/data/`, mounted at `/data`, owned by uid 1000, mode 0700.
+  It holds `account.sqlite3` and its `-wal` and `-shm` files.
+- Secrets: `config/account.env` and `config/yandex-oauth.env`, mode 0600, `format: raw`.
+- Callers: the web server through its reverse SSH tunnel to the published port, and the bots
+  at `<host LAN address>:28008`. Both arrive from Docker bridge addresses. Set
+  `ACCOUNT_ALLOWED_NETWORKS` to the Docker bridge pools (172.16.0.0/12 on a default
+  install). The service logs the address of each refused caller, so a wrong list shows up
+  in `docker logs`.
+- Health: the image checks `GET /readyz`. Liveness is `GET /healthz`.
+
+Backup. The image has no `sqlite3` program; the service has a command:
+
+```sh
+docker exec svoe-vino-lab-account-prod \
+  chto-za-vino-account backup "/data/backups/account-$(date -u +%Y%m%dT%H%M%SZ).sqlite3"
+find <root>/prod/account/data/backups -name 'account-*.sqlite3' -mtime +7 -delete
+```
+
+The command uses the SQLite online backup API, writes mode 0600, and never overwrites a file.
+Keep backups 7 days (plan 03): deleted accounts then leave the backups within a week.

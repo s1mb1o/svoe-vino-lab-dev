@@ -1,5 +1,15 @@
 # ChangeLog
 
+## 2026-10-19 — Ready for the GPU host
+
+- The Compose example follows the matcher and the bots: project and container names
+  `svoe-vino-lab-account-<env>`, published port `0.0.0.0:28008`, `init`, two raw environment
+  files (the Yandex ID file is optional). No external Docker network.
+- The pinned base images support `linux/arm64` and `linux/amd64` (checked with
+  `docker buildx imagetools inspect`). The image builds for `linux/amd64`.
+- The service logs the address of a refused caller.
+- New command `chto-za-vino-account backup <file>` (SQLite online backup, mode 0600).
+
 ## 2026-10-19 — Port 28008
 
 - The default port is 28008 (production) and 29008 (dev). Slot 07 belongs to dinner-lens.
