@@ -2,6 +2,18 @@
 
 ## 2026-10-20
 
+### Rebase onto current GitHub main
+
+- Rebased seventeen Android topic commits onto main in an isolated Git worktree.
+- Preserved upstream private-log deletions and all current Workbench changelog entries.
+- Verified the full Android tree as unchanged from the pre-rebase backup.
+- Passed 181 main, exporter, host benchmark, and Workbench remote-run tests.
+- Passed release lint and rebuilt the same unsigned APK from the rebased source.
+- Added the signed 0.2.0 website contract and historical-screenshot clarification.
+- Passed 530 website tests with 26 skipped tests and passed website type checking.
+- Preserved the original checkout, installed APK, and active Pixel benchmark.
+- Recorded source and artifact checks in `docs/releases/2026-10-20-main.md`.
+
 ### Release signed with the previous APK key
 
 - Verified that the local signing certificate matches the published 0.1.4 release.

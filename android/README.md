@@ -248,6 +248,8 @@ The new-ID rebuild is in `rebuild-20261019-com-alolalab-chtozavino/` under this 
 It contains main debug, unsigned release, and isolated benchmark APKs with checksums.
 Read [the rebuild checkpoint](docs/releases/2026-10-19-rebuild.md) for artifact hashes,
 fresh tests, source commits, and the unchanged active-device boundary.
+Read [the main integration record](docs/releases/2026-10-20-main.md) for the rebased
+source, repeat tests, same-key release contract, and publication requirements.
 
 The APK installs the built-in pack on the first start.
 An update replaces an old format 1 through 5 pack with the built-in format 6 pack.

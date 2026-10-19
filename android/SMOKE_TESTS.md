@@ -1,5 +1,15 @@
 # Smoke tests
 
+## Rebased main release
+
+The main integration passed 65 debug, 62 release, 16 exporter, 20 host benchmark,
+and 18 Workbench remote-run tests.
+Release lint passed.
+The unsigned release hash equals the pre-rebase verified artifact hash.
+The website contract passed 530 tests with 26 skipped tests and passed type checking.
+The original device benchmark was not restarted or changed.
+Read `docs/releases/2026-10-20-main.md` for the exact source checkpoints.
+
 ## October 20 main release rebuild
 
 The fresh main release rebuild passed 65 debug tests, 62 release tests, and 16 Python

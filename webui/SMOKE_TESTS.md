@@ -1,5 +1,16 @@
 # Smoke tests
 
+## Android 0.2.0 release
+
+1. Open `/android` and confirm version 0.2.0, 396 MB, and Android 9 or later.
+2. Confirm application ID `com.alolalab.chtozavino` and the separate-install warning.
+3. Confirm that Base NaFlex p512 and optional segmentation match the application default.
+4. Confirm that the existing screenshots are labeled as version 0.1.4.
+5. Download the APK. Compare its complete SHA-256 with the shared release contract.
+6. Verify APK metadata, release flags, and equality with the previous signing certificate.
+7. Confirm that protected downloads still need the existing website login.
+8. Check both themes at phone and desktop widths for overflow.
+
 ## Age warning for a returning visitor
 
 1. Open `/` in a new browser profile. Confirm that the 18+ gate blocks interaction.

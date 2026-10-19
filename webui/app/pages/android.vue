@@ -43,7 +43,7 @@ const benefits = [
   { icon: 'offline', title: 'Работает без интернета', copy: 'Модели и каталог находятся на телефоне. Связь нужна только для открытия карточки на сайте.' },
   { icon: 'image', title: 'Поиск по изображению', copy: 'Сфотографируйте бутылку или выберите готовое изображение из галереи.' },
   { icon: 'barcode', title: 'QR и штрихкоды', copy: 'Сканер распознаёт QR и EAN-13. Найденный код проверяется в локальном каталоге.' },
-  { icon: 'shield', title: 'Обработка на устройстве', copy: 'Сегментация, вектор и сравнение фотографии выполняются непосредственно на телефоне.' },
+  { icon: 'shield', title: 'Обработка на устройстве', copy: 'Вектор и сравнение фотографии вычисляются на телефоне. Дополнительная сегментация также работает локально.' },
   { icon: 'book', title: '2 093 вина внутри', copy: 'Каталог, изображения и векторы устанавливаются вместе с приложением.' },
   { icon: 'cpu', title: 'Автоматический ускоритель', copy: 'Приложение проверяет совместимость и выбирает GPU или CPU отдельно для каждой модели.' },
   { icon: 'history', title: 'История результатов', copy: 'Успешные поиски сохраняются локально и остаются доступны после перезапуска.' },
@@ -52,8 +52,8 @@ const benefits = [
 
 const recognitionSteps = [
   { number: '01', title: 'Добавьте фотографию', copy: 'Используйте камеру или галерею. Лучше всего работает снимок одной бутылки спереди.', image: '/screenshots/android/03_bottle_selected_dark.webp', alt: 'Бутылка Пино Нуар выбрана в приложении Что за вино' },
-  { number: '02', title: 'Приложение выделит бутылку', copy: 'DIS отделяет объект, обрезает изображение и создаёт ровный белый фон.', image: '/screenshots/android/05_processing_pipeline_dark.webp', alt: 'Маска бутылки после локальной обработки DIS' },
-  { number: '03', title: 'Получите совпадения', copy: 'SigLIP2 создаёт вектор, а локальный поиск сравнивает его со встроенным каталогом.', image: '/screenshots/android/04_recognition_result_dark.webp', alt: 'Результат распознавания Пино Нуар со сходством 91 процент' },
+  { number: '02', title: 'Выберите обработку', copy: 'По умолчанию используется весь кадр без сегментации. DIS и YOLO можно включить в настройках; здесь показан пример DIS.', image: '/screenshots/android/05_processing_pipeline_dark.webp', alt: 'Пример дополнительной обработки DIS в версии 0.1.4' },
+  { number: '03', title: 'Получите совпадения', copy: 'SigLIP2 Base NaFlex p512 создаёт вектор, а локальный поиск сравнивает его со встроенным каталогом.', image: '/screenshots/android/04_recognition_result_dark.webp', alt: 'Результат распознавания Пино Нуар со сходством 91 процент в версии 0.1.4' },
 ]
 </script>
 
@@ -75,6 +75,7 @@ const recognitionSteps = [
           <li>Бесплатно</li>
         </ul>
         <p class="android-test-note"><AppIcon name="info" />Тестовая версия подписана ключом разработчика. Android может запросить разрешение на установку APK из браузера.</p>
+        <p class="android-test-note"><AppIcon name="info" />Идентификатор: {{ ANDROID_RELEASE.applicationId }}. Приложение устанавливается отдельно от версии 0.1.4; её история автоматически не переносится.</p>
       </div>
       <div class="android-phones" aria-label="Светлая и тёмная темы приложения">
         <figure class="phone phone-light">
@@ -94,7 +95,7 @@ const recognitionSteps = [
       <div class="android-section-heading">
         <p class="android-kicker"><span />ПОИСК ВСЕГДА ПОД РУКОЙ</p>
         <h2 id="benefits-title">Всё необходимое уже <span>в приложении</span></h2>
-        <p>После установки фотография проходит весь путь на телефоне: от выделения бутылки до сравнения с каталогом.</p>
+        <p>После установки фотография проходит весь путь на телефоне: от подготовки изображения до сравнения с каталогом.</p>
       </div>
       <div class="benefit-grid">
         <article v-for="benefit in benefits" :key="benefit.title" class="benefit-card">
@@ -109,7 +110,7 @@ const recognitionSteps = [
       <div class="android-section-heading left">
         <p class="android-kicker"><span />ПОИСК ПО ФОТОГРАФИИ</p>
         <h2 id="recognition-title">Три шага до <span>нужного вина</span></h2>
-        <p>Пример ниже выполнен на Google Pixel 8. Приложение нашло «Пино Нуар» со сходством 91%.</p>
+        <p>Скриншоты ниже сделаны в версии 0.1.4 на Google Pixel 8: «Пино Нуар» найден со сходством 91%. Версия 0.2.0 использует новую модель SigLIP2 Base NaFlex p512 и по умолчанию не применяет сегментацию.</p>
       </div>
       <div class="recognition-grid">
         <article v-for="step in recognitionSteps" :key="step.number" class="recognition-card">

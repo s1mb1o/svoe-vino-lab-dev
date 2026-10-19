@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-20 — Android 0.2.0 release contract
+
+- Bind the Android page and download route to the same-key signed release APK.
+- Record version 0.2.0, code 6, the new application ID, byte length, and SHA-256.
+- Describe complete Base NaFlex p512 and optional segmentation accurately.
+- Identify the existing screenshots as version 0.1.4 examples.
+- Explain that the new application ID does not import the old application's history.
+- Keep the test-signature notice and the existing protected download policy.
+- Passed 530 website tests with 26 skipped tests. Type checking passed.
+
 ## 2026-10-20 — Email login inside the MAX mini app
 
 - MAX runs the mini app in a frame of its own site, and the browser dropped the SameSite=Strict challenge cookie: the code always gave «Этот код больше не действует» (owner report; access log: no Cookie on `/api/account/email/verify`). On the mini-app host the account cookies are now `SameSite=None; Partitioned`. The main site keeps Lax and Strict. `checkOrigin` still refuses cross-site state changes. 140 account tests, typecheck.

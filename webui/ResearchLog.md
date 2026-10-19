@@ -1,5 +1,15 @@
 # Research log
 
+## 2026-10-20 — Android artifact identity
+
+- The release APK uses `com.alolalab.chtozavino`, not the old reverse-order ID.
+- The signed APK has 414,941,197 bytes and SHA-256
+  `6c9ba0c364f762023818cd6d6885e16359c146e23bc84d8316343a9836c34cb3`.
+- Its certificate matches the published 0.1.4 test-signed APK.
+- The default query path uses complete Base NaFlex p512 without segmentation.
+- Existing product screenshots document version 0.1.4, not the new encoder's results.
+- Keep the route filename, runtime file path, page metadata, and archive hash consistent.
+
 ## Public site map, 2026-10-19
 
 The Web UI had `public/sitemap.xml` and a sitemap reference in `public/robots.txt`, but no HTML site map.
