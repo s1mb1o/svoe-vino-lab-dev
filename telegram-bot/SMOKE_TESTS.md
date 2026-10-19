@@ -7,6 +7,7 @@
 - Confirm that About contains the service purpose.
 - Confirm that Description contains the photo guidance and the data notice.
 - Confirm that `/start`, `/help`, `/stats`, and `/privacy` appear in a regular user's command menu.
+  With `BOT_ACCOUNT_ENDPOINT` set, `/unlink` appears too, in both menus.
 - Confirm that `/users` and `/reset_limit` also appear in the administrator's private command menu.
 - Open `https://t.me/ChtoZaVinoBot?start=privacy`.
 - Confirm that the bot shows the privacy notice.

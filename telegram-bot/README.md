@@ -91,6 +91,7 @@ The bot restores requests with `received`, `queued`, or `processing` status afte
 | `/help` | Show photo tips. |
 | `/stats` | Show personal statistics. Show aggregate statistics to the administrator. |
 | `/privacy` | Show the short privacy notice. |
+| `/unlink` | Remove the «Винный дневник» link of this Telegram account. In the menu only when `BOT_ACCOUNT_ENDPOINT` is set. |
 | `/users [page]` | Show a paginated user list to the administrator. |
 | `/reset_limit [user_id or @username]` | Reset the current rate use for an administrator-selected user. |
 

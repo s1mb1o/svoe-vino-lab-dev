@@ -20,11 +20,21 @@ COMMANDS = [
     BotCommand(command="privacy", description="Как обрабатываются данные"),
 ]
 
-ADMIN_COMMANDS = [
-    *COMMANDS,
+ADMIN_ONLY_COMMANDS = [
     BotCommand(command="users", description="Список пользователей"),
     BotCommand(command="reset_limit", description="Сбросить лимит пользователя"),
 ]
+
+ADMIN_COMMANDS = [*COMMANDS, *ADMIN_ONLY_COMMANDS]
+
+# «Винный дневник» link (issue #51). The menu shows /unlink only when the link is on.
+UNLINK_COMMAND = BotCommand(command="unlink", description="Отвязать от «Винного дневника»")
+
+
+def menu_commands(account_link: bool) -> tuple[list[BotCommand], list[BotCommand]]:
+    """Return the command menu of every user and of the administrator."""
+    commands = [*COMMANDS, UNLINK_COMMAND] if account_link else list(COMMANDS)
+    return commands, [*commands, *ADMIN_ONLY_COMMANDS]
 
 
 START_TEXT = """<b>Что за вино?</b> 🍷

@@ -86,15 +86,14 @@ from .account import (
 from .config import Settings
 from .data_lifecycle import purge_expired_data
 from .profile import (
-    ADMIN_COMMANDS,
     AGE_GATE_TEXT,
-    COMMANDS,
     DESCRIPTION,
     HELP_TEXT,
     MINOR_TEXT,
     PRIVACY_TEXT,
     SHORT_DESCRIPTION,
     START_CONFIRMED_TEXT,
+    menu_commands,
 )
 from .storage import (
     SQLITE_MAX_INTEGER,
@@ -2003,12 +2002,13 @@ async def watch_admin_retries(
         await asyncio.sleep(interval_seconds)
 
 
-async def sync_profile(bot: Bot, admin_user_id: int) -> None:
+async def sync_profile(bot: Bot, admin_user_id: int, *, account_link: bool = False) -> None:
+    commands, admin_commands = menu_commands(account_link)
     await bot.set_my_short_description(short_description=SHORT_DESCRIPTION)
     await bot.set_my_description(description=DESCRIPTION)
-    await bot.set_my_commands(COMMANDS)
+    await bot.set_my_commands(commands)
     await bot.set_my_commands(
-        ADMIN_COMMANDS,
+        admin_commands,
         scope=BotCommandScopeChat(chat_id=admin_user_id),
     )
 
@@ -2110,7 +2110,9 @@ async def run() -> None:
     retention_task: asyncio.Task[None] | None = None
     try:
         if settings.sync_profile:
-            await sync_profile(bot, settings.admin_user_id)
+            await sync_profile(
+                bot, settings.admin_user_id, account_link=bool(settings.account_endpoint)
+            )
         await work_queue.start()
         interrupted_api_requests = repository.fail_interrupted_api_requests()
         restored_jobs = restore_pending_jobs(repository, work_queue)

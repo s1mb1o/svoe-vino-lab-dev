@@ -2,6 +2,10 @@
 
 ## 2026-10-19
 
+- The command menu shows `/unlink` («Отвязать от «Винного дневника»») when the diary link is on
+  (`BOT_ACCOUNT_ENDPOINT` set), for every user and for the administrator. Owner report: `/unlink`
+  was missing from the menu after a link.
+
 - `BOT_ACCOUNT_TOKEN` is now `ACCOUNT_TELEGRAM_TOKEN`: the same name and value as in the account
   service. It is not `TELEGRAM_BOT_TOKEN`.
 
