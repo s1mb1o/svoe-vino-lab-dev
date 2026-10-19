@@ -616,6 +616,58 @@ async function scannerAndShelf() {
   checks.push('Scanner fixture recognition, reopen/reset, Escape focus, unsupported producer, unmatched Abrau, mobile parent-map preservation, three nested shelf dialogs without repeat prediction')
 }
 
+async function mapLoadRetry() {
+  const context = await newContext()
+  const page = await context.newPage()
+  // The blocked chunk logs an expected console error. Uncaught page errors still fail the suite.
+  page.on('pageerror', error => errors.push(`map-load-retry: ${error.message}`))
+  const fixture = wineFixture()
+  await page.route('**/api/config', route => route.fulfill({ json: { apiAvailable: true, predictionMode: 'upstream', shelfAvailable: true } }))
+  await page.route('**/api/predict', route => route.fulfill({ headers: { 'X-Prediction-Mode': 'upstream' }, json: { slug: fixture.slug } }))
+  await page.route('**/api/wines/*', route => route.fulfill({ json: fixture }))
+  let blocked = true
+  let blockedRequests = 0
+  let release
+  const held = new Promise(resolve => { release = resolve })
+  // Only the map chunk of a producer holds the image paths of that producer.
+  await page.route('**/_nuxt/*.js', async route => {
+    const response = await route.fetch()
+    const body = await response.text()
+    if (body.includes(`/product-line-maps/${graph.producer.id}/`)) {
+      if (blocked) { blockedRequests++; return route.abort('internetdisconnected') }
+      await held
+    }
+    return route.fulfill({ response, body })
+  })
+  await page.goto(`${origin}/lineup/abrau-durso`, { waitUntil: 'networkidle' })
+  await page.getByRole('link', { name: 'К сканеру', exact: true }).click()
+  await page.waitForURL(`${origin}/`)
+  await page.getByLabel('Выбрать фотографию этикетки', { exact: true }).setInputFiles(uploadPath)
+  const opener = page.getByRole('button', { name: /Путеводитель по линейке/ })
+  await opener.waitFor()
+  await opener.click()
+  const dialog = page.locator('dialog.product-line-dialog[open]')
+  const alert = dialog.getByRole('alert')
+  await alert.waitFor()
+  assert.match(await alert.innerText(), /Не удалось загрузить карту/)
+  assert.equal(await dialog.locator('.product-line-map').count(), 0)
+  assert(blockedRequests >= 1, 'The map chunk request must be blocked')
+  blocked = false
+  await dialog.getByRole('button', { name: 'Повторить', exact: true }).click()
+  const status = dialog.getByRole('status')
+  await status.waitFor()
+  assert.match(await status.innerText(), /Загружаем карту линейки/)
+  assert.equal(await dialog.getAttribute('aria-busy'), 'true')
+  release()
+  const map = dialog.locator('.product-line-map')
+  await selection(map, initialId)
+  await assertCentered(map, initialId)
+  assert.equal(await dialog.getAttribute('aria-busy'), 'false')
+  assert(await dialog.evaluate(element => element.contains(document.activeElement)), 'Focus must stay inside the dialog after a retry')
+  await context.close()
+  checks.push('Blocked map chunk: failure alert, announced loading state on retry, retry loads and centers the map, focus stays in the dialog')
+}
+
 async function shortHeightAndBoundary() {
   for (const [width, height] of [[844, 390], [667, 375], [700, 740], [701, 740], [767, 740], [768, 740], [800, 650], [1440, 720]]) {
     const context = await newContext(width, height)
@@ -753,6 +805,7 @@ try {
   await screenshotsAndResponsiveStates()
   await overviewAndKeyboard()
   await scannerAndShelf()
+  await mapLoadRetry()
   await shortHeightAndBoundary()
   await popupBreakpointTransition()
   await popupReadingPosition()

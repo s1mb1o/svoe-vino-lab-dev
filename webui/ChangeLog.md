@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Map load retry
+
+- Keep keyboard focus inside the guide dialog after a successful «Повторить». The retry button disappears, so focus moves to the dialog heading.
+- Add a blocked-chunk scenario to `npm run test:line-map`: failure alert, announced loading state and `aria-busy` on retry, centered map after the retry, focus inside the dialog. It passes in Chromium and WebKit.
+
 ## 2026-10-19 — Producer maps on demand
 
 - Load a producer map only when the user opens «Путеводитель по линейке». Each of the 19 maps is a separate chunk of 4.7 to 21.6 KB gzip.

@@ -96,6 +96,7 @@ Cost: highest. It adds a copy step, HTTP cache rules, service worker rules for o
 - The index is `shared/data/product-line-index.json`, outside the map folder. Each JSON file in `shared/data/product-line-maps/` is then a map. The browser suites and the scripts read that folder.
 - TypeScript infers a literal type with every slug key for the index. The module casts the index through `unknown`. The index test checks the content.
 - The browser suite `test:line-map` failed on `main` at its shelf step before this change. The mode switch became a link with the mode pages. A separate commit fixes the step.
+- Codex review: one P2 finding claimed that Chromium caches a failed chunk import. A local check in Chromium and WebKit showed a new request and a successful retry. The browser suite now covers a blocked chunk and a retry. The retry also returns focus to the dialog heading.
 - Results: `/` dropped from 296 KB to 139 KB gzip of first-load JavaScript (same method). The 19 map chunks are 4.7 to 21.6 KB gzip. The index is 13 KB gzip.
 
 ## Risks

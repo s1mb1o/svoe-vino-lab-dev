@@ -13,6 +13,10 @@ TypeScript infers a literal type with all 985 slug keys for the index JSON. A di
 
 After the change, `/` loads 139 KB gzip by the same method (134 KB with `npm run test:bundle`). No page prefetches a map chunk.
 
+A review claimed that Chromium caches a failed dynamic `import()`, so that a retry cannot recover.
+A local check with Playwright 1.64.1 did not confirm this. In Chromium and WebKit, a second `import()` after a blocked request sent a new request and loaded the module.
+Firefox was not checked. The browser suite now tests a blocked map chunk followed by a successful retry.
+
 `npm run test:line-map` failed on `main` before this change. It clicked a «Вся полка» button. The mode pages changed the mode switch to links. The suite now clicks the link.
 
 ## Matcher answer for HEIC without HEIF support, 2026-10-18

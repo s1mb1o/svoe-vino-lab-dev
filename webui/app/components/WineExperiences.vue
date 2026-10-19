@@ -60,6 +60,8 @@ async function showLine() {
   if (active.value !== 'line') return
   await nextTick()
   await lineMap.value?.centerInitial()
+  // A successful retry removes the focused «Повторить» button. Keep focus inside the dialog.
+  if (!dialog.value?.contains(document.activeElement)) dialogHeading.value?.focus({ preventScroll: true })
 }
 
 function close() { dialog.value?.close() }
