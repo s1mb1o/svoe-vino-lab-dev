@@ -1,8 +1,9 @@
 // Server side of «Винный дневник»: the /api/account/* routes call the account service.
 // The browser never sees the service address or the service token. Plan: docs/plans/04_user-accounts.md.
+import { Buffer } from 'node:buffer'
 import { isIP } from 'node:net'
 import {
-  deleteCookie, getCookie, getHeader, getQuery, getRequestURL, readRawBody, sendRedirect,
+  deleteCookie, getCookie, getHeader, getQuery, getRequestURL, sendRedirect,
   setCookie, setHeader, setResponseStatus, type H3Event,
 } from 'h3'
 import { EMAIL_CODE_PATTERN, USERNAME_PATTERN, safeNextPath, type AccountErrorBody } from '#shared/account'
@@ -20,6 +21,9 @@ const MAX_RESPONSE_BYTES = 64 * 1024
 const MAX_REQUEST_BYTES = 4 * 1024
 const SIGNUP_TTL_SECONDS = 30 * 60
 const MIN_TOKEN_LENGTH = 32
+// The service spends up to 5 s on the Yandex token exchange and 5 s on the user info call.
+// The browser waits on this top-level navigation, so the finish call gets the whole budget.
+const YANDEX_FINISH_TIMEOUT_MS = 15_000
 
 export interface AccountConfig {
   endpoint: URL
@@ -84,7 +88,7 @@ export async function callAccount<T = Record<string, unknown>>(
   config: AccountConfig,
   method: 'GET' | 'POST' | 'DELETE',
   path: string,
-  options: { body?: unknown; session?: string; clientIp?: string } = {},
+  options: { body?: unknown; session?: string; clientIp?: string; timeoutMs?: number } = {},
 ): Promise<{ status: number; data: T }> {
   const headers: Record<string, string> = { Accept: 'application/json', Authorization: `Bearer ${config.token}` }
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'
@@ -96,7 +100,7 @@ export async function callAccount<T = Record<string, unknown>>(
       method,
       headers,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
-      signal: AbortSignal.timeout(config.timeoutMs),
+      signal: AbortSignal.timeout(options.timeoutMs ?? config.timeoutMs),
       redirect: 'error',
       cache: 'no-store',
     })
@@ -169,12 +173,28 @@ function secondsUntil(iso: unknown, fallback: number): number {
   return Number.isFinite(time) ? Math.max(0, (time - Date.now()) / 1000) : fallback
 }
 
-async function readJson(event: H3Event): Promise<Record<string, unknown>> {
+/** Reads at most MAX_REQUEST_BYTES. A longer or chunked body stops the read at the limit. */
+async function readLimitedBody(event: H3Event): Promise<string> {
   const length = Number(getHeader(event, 'content-length') ?? 0)
   if (length > MAX_REQUEST_BYTES) throw new AccountHttpError(413, 'request_too_large')
-  const raw = await readRawBody(event, 'utf8')
+  const request = event.node.req
+  const chunks: Buffer[] = []
+  let size = 0
+  for await (const chunk of request) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+    size += buffer.byteLength
+    if (size > MAX_REQUEST_BYTES) {
+      request.destroy()
+      throw new AccountHttpError(413, 'request_too_large')
+    }
+    chunks.push(buffer)
+  }
+  return Buffer.concat(chunks).toString('utf8')
+}
+
+async function readJson(event: H3Event): Promise<Record<string, unknown>> {
+  const raw = await readLimitedBody(event)
   if (!raw) return {}
-  if (raw.length > MAX_REQUEST_BYTES) throw new AccountHttpError(413, 'request_too_large')
   try {
     const value = JSON.parse(raw) as unknown
     if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, unknown>
@@ -397,7 +417,7 @@ export async function yandexCallbackRoute(event: H3Event, source: AccountConfigS
   if (query.error || !code || !state) return sendRedirect(event, accountPage('yandex_cancelled'), 302)
   if (!flowId) return sendRedirect(event, accountPage('invalid_flow'), 302)
   try {
-    const { data } = await callAccount<AuthAnswer>(config, 'POST', '/v1/auth/yandex/finish', { body: { flow_id: flowId, state, code } })
+    const { data } = await callAccount<AuthAnswer>(config, 'POST', '/v1/auth/yandex/finish', { body: { flow_id: flowId, state, code }, timeoutMs: YANDEX_FINISH_TIMEOUT_MS })
     const result = applyAuthAnswer(event, data)
     if (result.status === 'signup_required') return sendRedirect(event, accountPage(undefined, 'signup'), 302)
     return sendRedirect(event, next, 302)

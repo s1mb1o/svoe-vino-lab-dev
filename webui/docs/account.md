@@ -73,6 +73,26 @@ The browser never gets the endpoint or the token.
 Errors have the form `{error, attemptsLeft?, retryAfter?}`. The page shows the Russian text of
 `accountErrorMessage` and never the input.
 
+## Security review, 2026-10-19
+
+Codex (`gpt-6.1-sol`, xhigh) reviewed commit `cdeafd36` and the tunnel design. Fixed:
+
+- The Metrika init script had a regular expression inside a template string. The escapes were
+  lost, so the script did not parse on any page. The guard now compares strings. A unit test
+  parses and runs the script; the browser check confirms Metrika on `/`.
+- A chunked request body was read completely before the 4 KiB check. The routes now count
+  bytes while they read and stop at the limit.
+- The Yandex finish call had the general 2 s timeout, but the service can spend up to 10 s on
+  Yandex. The callback now waits up to 15 s, so a slow Yandex does not lose a completed login.
+
+Accepted, with the reason:
+
+- A local process on the edge host could bind `127.0.0.1:28008` while the tunnel is down and
+  receive the web token. Another local process could call Nuxt on `127.0.0.1:8153` directly and
+  choose `X-Forwarded-For`. On 2026-10-19 the edge host had no login account except `root`;
+  every other account is a system service. The matcher listener `127.0.0.1:28000` has the
+  same exposure. Revisit with a Unix socket or a proxy secret when the host gets other users.
+
 ## Open items
 
 - `/terms` and `/privacy` do not exist yet (#37). They MUST exist before people other than the

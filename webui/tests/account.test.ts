@@ -6,11 +6,12 @@ import {
   meRoute, signupRoute, yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
 import { accountErrorMessage, isAccountPath, safeNextPath } from '../shared/account'
+import { METRIKA_INIT_SCRIPT } from '../shared/metrika'
 
 const TOKEN = 'w'.repeat(64)
 type Seen = { method: string; url: string; headers: IncomingMessage['headers']; body: string }
 let seen: Seen[] = []
-let reply: (request: Seen) => { status: number; body?: unknown; headers?: Record<string, string>; hang?: boolean } = () => ({ status: 200, body: {} })
+let reply: (request: Seen) => { status: number; body?: unknown; headers?: Record<string, string>; hang?: boolean; delayMs?: number } = () => ({ status: 200, body: {} })
 let service: Server
 let site: Server
 let serviceUrl = ''
@@ -34,8 +35,12 @@ beforeAll(async () => {
       seen.push(request)
       const answer = reply(request)
       if (answer.hang) return
-      res.writeHead(answer.status, { 'Content-Type': 'application/json', ...(answer.headers ?? {}) })
-      res.end(answer.body === undefined ? '' : JSON.stringify(answer.body))
+      const send = () => {
+        res.writeHead(answer.status, { 'Content-Type': 'application/json', ...(answer.headers ?? {}) })
+        res.end(answer.body === undefined ? '' : JSON.stringify(answer.body))
+      }
+      if (answer.delayMs) setTimeout(send, answer.delayMs)
+      else send()
     })
   })
   serviceUrl = await listen(service)
@@ -95,6 +100,39 @@ describe('shared account rules', () => {
     expect(accountErrorMessage({ error: 'invalid_code', attemptsLeft: 2 })).toBe('Неверный код. Осталось попыток: 2.')
     expect(accountErrorMessage({ error: 'rate_limited', retryAfter: 61 })).toContain('2 мин')
     expect(accountErrorMessage({ error: 'unknown_thing' })).toBe('Что-то пошло не так. Попробуйте ещё раз.')
+  })
+})
+
+describe('Metrika on account pages', () => {
+  function runInit(pathname: string) {
+    const inserted: unknown[] = []
+    const scope: Record<string, unknown> = {
+      location: { pathname, href: `https://chtozavino.ru${pathname}` },
+      document: {
+        scripts: [],
+        referrer: '',
+        createElement: () => ({}),
+        getElementsByTagName: () => [{ parentNode: { insertBefore: (node: unknown) => inserted.push(node) } }],
+      },
+    }
+    scope.window = scope
+    // The init script runs as a classic script, where window properties are globals.
+    new Function('scope', `with (scope) {${METRIKA_INIT_SCRIPT}}`)(scope)
+    return { ym: scope.ym as { a?: unknown[][] } | undefined, inserted }
+  }
+  it('parses as JavaScript', () => {
+    expect(() => new Function(METRIKA_INIT_SCRIPT)).not.toThrow()
+  })
+  it.each(['/', '/shelf', '/accounting'])('starts Metrika on %s', pathname => {
+    const { ym, inserted } = runInit(pathname)
+    expect(typeof ym).toBe('function')
+    expect(ym?.a?.[0]?.[1]).toBe('init')
+    expect(inserted).toHaveLength(1)
+  })
+  it.each(['/account', '/account/onboarding'])('does not start Metrika on %s', pathname => {
+    const { ym, inserted } = runInit(pathname)
+    expect(ym).toBeUndefined()
+    expect(inserted).toHaveLength(0)
   })
 })
 
@@ -197,6 +235,24 @@ describe('email login', () => {
   })
 })
 
+describe('request bodies', () => {
+  it('stops a chunked body above 4 KiB before the service', async () => {
+    const chunk = new TextEncoder().encode('x'.repeat(1024))
+    let sent = 0
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (sent++ < 64) controller.enqueue(chunk)
+        else controller.close()
+      },
+    })
+    const outcome = await fetch(`${siteUrl}/api/account/email/start`, {
+      method: 'POST', body, duplex: 'half', headers: { 'content-type': 'application/json', origin: 'https://chtozavino.ru' },
+    } as RequestInit).then(response => response.status, () => 'connection closed')
+    expect([413, 'connection closed']).toContain(outcome)
+    expect(seen).toHaveLength(0)
+  })
+})
+
 describe('sign-up', () => {
   const valid = { username: 'anna_wine', acceptTerms: true, acceptConsent: true, consentVersion: 'c1', termsVersion: 't1' }
   it.each([
@@ -277,6 +333,11 @@ describe('Yandex ID', () => {
     const response = await call(`/api/account/yandex/callback${query}`, { cookie })
     expect(response.headers.get('location')).toBe(location)
     expect(seen).toHaveLength(0)
+  })
+  it('waits for a slow Yandex finish longer than the general timeout', async () => {
+    reply = () => ({ status: 200, delayMs: 600, body: { status: 'session', session: { token: 's'.repeat(43), expires_at: new Date(Date.now() + 86400e3).toISOString() }, user: { id: 'u' } } })
+    const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `__Host-cv_yandex=${'f'.repeat(32)}` })
+    expect(response.headers.get('location')).toBe('/account')
   })
   it('sends a new identity to the sign-up step', async () => {
     reply = () => ({ status: 200, body: { status: 'signup_required', signup_ticket: 't'.repeat(32), provider: 'yandex' } })

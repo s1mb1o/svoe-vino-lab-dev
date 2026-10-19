@@ -2,7 +2,7 @@ export const METRIKA_COUNTER_ID = 113460637
 
 // The account pages of «Винный дневник» do not load Metrika (docs/plans/04_user-accounts.md).
 export const METRIKA_INIT_SCRIPT = `
-    if (!/^\/account(\/|$)/.test(location.pathname)) {
+    if (location.pathname !== '/account' && location.pathname.indexOf('/account/') !== 0) {
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
