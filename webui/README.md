@@ -18,6 +18,7 @@ The current release uses a mock prediction service and local result metadata.
 - Explain label terms and show an expected taste passport with an international style analogue.
 - Explore an interactive Abrau-Durso product-line map that marks an exact matched wine from this producer.
 - Upload a shelf photo and inspect masks and ready wine matches for each detected bottle.
+- Open «Вино к блюду» at `/dish`. Confirm a photographed or named dish, set sauce and wine preferences, and browse real Dinner Lens recommendations. Read [docs/dinner-lens.md](docs/dinner-lens.md).
 - Install the portal as a Progressive Web App.
 - Open the Android application landing page at `/android`.
 - Download the versioned Android APK from a configurable URL.

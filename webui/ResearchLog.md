@@ -1,5 +1,15 @@
 # Research log
 
+## Dinner Lens mode, 2026-10-19
+
+The existing mode selector uses separate `/` and `/shelf` pages. A third route preserves navigation and unmount cancellation semantics. The 320-node label export is separate from wine rules and curation.
+The backend currently accepts inline JPEG/PNG. The browser therefore normalizes supported files to an oriented metadata-free JPEG before upload. Safari camera input is explicit; unrenderable HEIC needs a JPEG copy.
+The recognition endpoint also returns class-level wine suggestions. The UI intentionally withholds them until the user confirms or corrects the dish. Confirmation calls the deterministic selection endpoint and does not repeat vision.
+The Nuxt proxy uses a private endpoint and environment-injected token. It strips provider receipts and diagnostics, bounds JSON before parsing, rejects redirects and checks exact source links.
+The existing optional producer snapshot tests remain optional. New state and proxy tests cover stale replies, cursor preservation, duplicates, explicit negative attributes and fail-closed service errors.
+The actual service check returns 8 ribeye wines, 12 Olivier wines and 12 king crab wines. Each case reaches discovery choices after five curated choices and exhausts the cursor without duplicates. A real photo traverses browser normalization, the private proxy, recognition, user confirmation and deterministic selection with one vision request.
+Desktop Chromium and mobile Chromium/WebKit pass the mode, state, error and layout checks. Both themes pass the upload-action contrast check. The test caught a low-contrast secondary upload action in the existing mobile dark palette; the shared upload style now keeps its accent text readable.
+
 ## Producer map loading, 2026-10-19
 
 The scanner page chunk imported `shared/product-line-map.ts` statically. That module imported all 19 map JSON files.

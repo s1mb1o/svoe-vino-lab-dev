@@ -18,6 +18,8 @@ export default defineNuxtConfig({
     androidApkPath: defaultAndroidApkPath,
     predictionMode: 'mock',
     predictionEndpoint: '',
+    dinnerLensEndpoint: '',
+    dinnerLensApiToken: '',
     public: {
       androidApkUrl: DEFAULT_ANDROID_APK_URL,
     },

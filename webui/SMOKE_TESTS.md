@@ -1,5 +1,18 @@
 # Smoke tests
 
+## Wine for a dish
+
+Verified locally on 2026-10-19: 313 unit tests passed, 20 existing optional catalog snapshot tests skipped; type check, production build and bundle check passed. Five browser configurations passed in Chromium and WebKit with dark/light palettes and 320/390/1440-pixel viewports. Real gx10 checks exhausted all pages for ribeye (8 wines), Olivier (12) and king crab (12), and completed one photo recognition with confirmation. Physical camera capture remains a manual device check.
+
+1. At desktop widths and at 320/390-pixel mobile widths, confirm three visible mode links: «Одна бутылка», «Вся полка», «Вино к блюду». Confirm touch targets and no horizontal scrolling.
+2. Open `/dish`. Enter a dish or select the mobile camera/file input. Confirm that a photo proposes a label but shows no wine cards before confirmation.
+3. Correct the dish, change a sauce, or select a broad category. Confirm that explicit no-cream and still-wine choices reach the service correctly.
+4. Submit and follow «Показать ещё» to exhaustion. Confirm source links, explanations, unique wine IDs and later discovery choices. Repeat for the three original dishes in `docs/dinner-lens.md`.
+5. Change a sauce after a result. Confirm that old cards and the old cursor disappear. Switch modes during a request and confirm that a late response cannot restore them.
+6. Disconnect the service and retry. Confirm a useful error, no mock result, and preserved cards when only a continuation fails.
+7. Check the browser HTML, `/api/config`, and API responses for absence of the private endpoint, token, model receipts and diagnostics.
+8. Run `npm run test:dinner` with Playwright and the documented live-check options. Check an actual phone camera separately.
+
 ## Producer map loading
 
 1. After `npm run build`, run `npm run test:bundle`. Confirm that `/` and `/shelf` load no map data at first paint.

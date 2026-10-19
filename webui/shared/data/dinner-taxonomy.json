@@ -1,0 +1,1926 @@
+{
+  "source": "dinner-lens/data/pairing-dataset.v4.json",
+  "dataset_sha256": "efd694fe948c6bf1f0fe704dab8c482a600f14fa2d0fb499cc7fbeef61f1cf47",
+  "nodes": [
+    {
+      "id": "meat",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Мясо"
+    },
+    {
+      "id": "poultry",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Птица"
+    },
+    {
+      "id": "game",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Дичь"
+    },
+    {
+      "id": "fish_seafood",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Рыба и морепродукты"
+    },
+    {
+      "id": "cheese",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Сыры"
+    },
+    {
+      "id": "vegetables_mushrooms",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Овощи и грибы"
+    },
+    {
+      "id": "legumes",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Бобовые"
+    },
+    {
+      "id": "grains_pasta",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Крупы, паста и картофель"
+    },
+    {
+      "id": "salads",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Салаты"
+    },
+    {
+      "id": "soups",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Супы"
+    },
+    {
+      "id": "savory_pastry",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Несладкая выпечка и блюда из теста"
+    },
+    {
+      "id": "fruit",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Фрукты"
+    },
+    {
+      "id": "desserts",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Десерты"
+    },
+    {
+      "id": "eggs",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Блюда из яиц"
+    },
+    {
+      "id": "mixed_dishes",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Смешанные блюда"
+    },
+    {
+      "id": "offal",
+      "parent_id": null,
+      "kind": "fallback_class",
+      "label": "Субпродукты"
+    },
+    {
+      "id": "meat_steak",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Стейк из мяса"
+    },
+    {
+      "id": "grilled_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Мясо на гриле и мангале"
+    },
+    {
+      "id": "grilled_lamb",
+      "parent_id": "grilled_meat",
+      "kind": "class",
+      "label": "Баранина на гриле"
+    },
+    {
+      "id": "minced_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Рубленое мясо и котлеты"
+    },
+    {
+      "id": "meat_tomato",
+      "parent_id": "minced_meat",
+      "kind": "class",
+      "label": "Мясо в томатно-сметанном соусе"
+    },
+    {
+      "id": "beef_stew",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Тушёная говядина"
+    },
+    {
+      "id": "meat_with_dough",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Отварное мясо с тестом и бульоном"
+    },
+    {
+      "id": "cold_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Холодные мясные закуски"
+    },
+    {
+      "id": "poultry_breaded",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Котлеты из птицы в панировке"
+    },
+    {
+      "id": "poultry_creamy",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Птица в сливочном или сметанном соусе"
+    },
+    {
+      "id": "duck",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Утка"
+    },
+    {
+      "id": "venison",
+      "parent_id": "game",
+      "kind": "class",
+      "label": "Оленина"
+    },
+    {
+      "id": "fish",
+      "parent_id": "fish_seafood",
+      "kind": "class",
+      "label": "Рыба"
+    },
+    {
+      "id": "raw_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Сырая и слабомаринованная рыба"
+    },
+    {
+      "id": "baked_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Запечённая рыба"
+    },
+    {
+      "id": "fried_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Жареная рыба"
+    },
+    {
+      "id": "salted_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Солёная и слабосолёная рыба"
+    },
+    {
+      "id": "crustaceans",
+      "parent_id": "fish_seafood",
+      "kind": "class",
+      "label": "Ракообразные"
+    },
+    {
+      "id": "crab",
+      "parent_id": "crustaceans",
+      "kind": "class",
+      "label": "Краб"
+    },
+    {
+      "id": "shrimp",
+      "parent_id": "crustaceans",
+      "kind": "class",
+      "label": "Креветки"
+    },
+    {
+      "id": "molluscs",
+      "parent_id": "fish_seafood",
+      "kind": "class",
+      "label": "Моллюски"
+    },
+    {
+      "id": "raw_bivalves",
+      "parent_id": "molluscs",
+      "kind": "class",
+      "label": "Сырые двустворчатые моллюски"
+    },
+    {
+      "id": "cooked_molluscs",
+      "parent_id": "molluscs",
+      "kind": "class",
+      "label": "Приготовленные моллюски"
+    },
+    {
+      "id": "mayonnaise_salads",
+      "parent_id": "salads",
+      "kind": "class",
+      "label": "Салаты с майонезной заправкой"
+    },
+    {
+      "id": "vegetable_salads",
+      "parent_id": "salads",
+      "kind": "class",
+      "label": "Овощные салаты"
+    },
+    {
+      "id": "fish_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Рыбные супы и уха"
+    },
+    {
+      "id": "cabbage_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Кислые капустные супы"
+    },
+    {
+      "id": "meat_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Мясные супы с томатами"
+    },
+    {
+      "id": "spicy_seafood_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Кисло-острые супы с морепродуктами"
+    },
+    {
+      "id": "fresh_cheese",
+      "parent_id": "cheese",
+      "kind": "class",
+      "label": "Свежие и рассольные сыры"
+    },
+    {
+      "id": "hard_cheese",
+      "parent_id": "cheese",
+      "kind": "class",
+      "label": "Выдержанные твёрдые сыры"
+    },
+    {
+      "id": "blue_cheese",
+      "parent_id": "cheese",
+      "kind": "class",
+      "label": "Голубые сыры"
+    },
+    {
+      "id": "mushrooms",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "class",
+      "label": "Грибные блюда"
+    },
+    {
+      "id": "tomato_vegetables",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "class",
+      "label": "Овощи с томатами"
+    },
+    {
+      "id": "mushroom_grains",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Крупы с грибами"
+    },
+    {
+      "id": "pasta",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Паста"
+    },
+    {
+      "id": "rice_dishes",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Блюда из риса"
+    },
+    {
+      "id": "potato_dishes",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Картофельные блюда"
+    },
+    {
+      "id": "potato_pastry",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Выпечка с картофельной начинкой"
+    },
+    {
+      "id": "cheese_pastry",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Выпечка с сыром и творогом"
+    },
+    {
+      "id": "meat_pastry",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Выпечка с мясной начинкой"
+    },
+    {
+      "id": "mushroom_pastry",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Выпечка с грибами"
+    },
+    {
+      "id": "vegetable_pastry",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Выпечка с овощной начинкой"
+    },
+    {
+      "id": "dumplings",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Пельмени и паровое тесто с мясом"
+    },
+    {
+      "id": "pizza",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Пицца"
+    },
+    {
+      "id": "filled_pancakes",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Несладкие блины с начинкой"
+    },
+    {
+      "id": "sandwiches",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Бутерброды и бургеры"
+    },
+    {
+      "id": "curd_desserts",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Сладкие творожные блюда"
+    },
+    {
+      "id": "cakes",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Торты со сливочной или медовой основой"
+    },
+    {
+      "id": "fruit_pastry",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Сладкая фруктовая выпечка"
+    },
+    {
+      "id": "coffee_desserts",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Десерты с кофе и какао"
+    },
+    {
+      "id": "curries",
+      "parent_id": "mixed_dishes",
+      "kind": "class",
+      "label": "Карри"
+    },
+    {
+      "id": "king_crab_steamed_butter",
+      "parent_id": "crab",
+      "kind": "dish",
+      "label": "Камчатский краб на пару с топлёным маслом"
+    },
+    {
+      "id": "far_east_scallop_grilled",
+      "parent_id": "cooked_molluscs",
+      "kind": "dish",
+      "label": "Дальневосточный гребешок на гриле"
+    },
+    {
+      "id": "chir_stroganina",
+      "parent_id": "raw_fish",
+      "kind": "dish",
+      "label": "Строганина из чира"
+    },
+    {
+      "id": "whitefish_sugudai",
+      "parent_id": "raw_fish",
+      "kind": "dish",
+      "label": "Сугудай из сига с луком"
+    },
+    {
+      "id": "muksun_baked_potato",
+      "parent_id": "baked_fish",
+      "kind": "dish",
+      "label": "Муксун, запечённый с картофелем"
+    },
+    {
+      "id": "buuzy_beef",
+      "parent_id": "dumplings",
+      "kind": "dish",
+      "label": "Буузы с говядиной и луком"
+    },
+    {
+      "id": "astrakhan_fish_soup",
+      "parent_id": "fish_soups",
+      "kind": "dish",
+      "label": "Уха из судака и сазана"
+    },
+    {
+      "id": "smelt_fried",
+      "parent_id": "fried_fish",
+      "kind": "dish",
+      "label": "Жареная корюшка"
+    },
+    {
+      "id": "karelian_kalitki_potato",
+      "parent_id": "potato_pastry",
+      "kind": "dish",
+      "label": "Калитки с картофелем"
+    },
+    {
+      "id": "udmurt_perepechi_mushrooms",
+      "parent_id": "mushroom_pastry",
+      "kind": "dish",
+      "label": "Перепечи с грибами"
+    },
+    {
+      "id": "perm_posikunchiki_meat",
+      "parent_id": "meat_pastry",
+      "kind": "dish",
+      "label": "Посикунчики с мясом"
+    },
+    {
+      "id": "shangi_potato",
+      "parent_id": "potato_pastry",
+      "kind": "dish",
+      "label": "Шаньги с картофелем"
+    },
+    {
+      "id": "vologda_grey_shchi",
+      "parent_id": "cabbage_soups",
+      "kind": "dish",
+      "label": "Серые щи из крошева со свининой"
+    },
+    {
+      "id": "pozharsky_cutlet",
+      "parent_id": "poultry_breaded",
+      "kind": "dish",
+      "label": "Пожарская котлета"
+    },
+    {
+      "id": "echpochmak_beef_potato",
+      "parent_id": "meat_pastry",
+      "kind": "dish",
+      "label": "Эчпочмак с говядиной и картофелем"
+    },
+    {
+      "id": "bashkir_bishbarmak_horse",
+      "parent_id": "meat_with_dough",
+      "kind": "dish",
+      "label": "Башкирский бишбармак с кониной"
+    },
+    {
+      "id": "avar_khinkal_beef",
+      "parent_id": "meat_with_dough",
+      "kind": "dish",
+      "label": "Аварский хинкал с говядиной"
+    },
+    {
+      "id": "dagestan_chudu_pumpkin",
+      "parent_id": "vegetable_pastry",
+      "kind": "dish",
+      "label": "Чуду с тыквой"
+    },
+    {
+      "id": "ossetian_tsakharadzhin",
+      "parent_id": "cheese_pastry",
+      "kind": "dish",
+      "label": "Осетинский пирог с сыром и свекольной ботвой — цахараджин"
+    },
+    {
+      "id": "balkar_khychiny_potato_cheese",
+      "parent_id": "cheese_pastry",
+      "kind": "dish",
+      "label": "Балкарские хычины с картофелем и сыром"
+    },
+    {
+      "id": "chechen_chepalgash_curd",
+      "parent_id": "cheese_pastry",
+      "kind": "dish",
+      "label": "Чепалгаш с творогом и зелёным луком"
+    },
+    {
+      "id": "gedlibzhe_chicken_sour_cream",
+      "parent_id": "poultry_creamy",
+      "kind": "dish",
+      "label": "Гедлибже — курица в сметанном соусе"
+    },
+    {
+      "id": "adyghe_cheese_fried_tomato",
+      "parent_id": "fresh_cheese",
+      "kind": "dish",
+      "label": "Жареный адыгейский сыр с томатами"
+    },
+    {
+      "id": "venison_lingonberry",
+      "parent_id": "venison",
+      "kind": "dish",
+      "label": "Оленина с брусничным соусом"
+    },
+    {
+      "id": "don_carp_sour_cream",
+      "parent_id": "baked_fish",
+      "kind": "dish",
+      "label": "Донской сазан, запечённый в сметане"
+    },
+    {
+      "id": "homestyle_cutlet_mash",
+      "parent_id": "minced_meat",
+      "kind": "dish",
+      "label": "Домашняя котлета из говядины и свинины с картофельным пюре"
+    },
+    {
+      "id": "olivier_doctors",
+      "parent_id": "mayonnaise_salads",
+      "kind": "dish",
+      "label": "Оливье с докторской колбасой"
+    },
+    {
+      "id": "red_caviar_sandwich",
+      "parent_id": "sandwiches",
+      "kind": "dish",
+      "label": "Бутерброды с красной икрой и сливочным маслом"
+    },
+    {
+      "id": "pork_shashlik",
+      "parent_id": "grilled_meat",
+      "kind": "dish",
+      "label": "Свиной шашлык"
+    },
+    {
+      "id": "herring_under_fur_coat",
+      "parent_id": "mayonnaise_salads",
+      "kind": "dish",
+      "label": "Сельдь под шубой"
+    },
+    {
+      "id": "vinaigrette_salad",
+      "parent_id": "vegetable_salads",
+      "kind": "dish",
+      "label": "Винегрет"
+    },
+    {
+      "id": "herring_potato_onion",
+      "parent_id": "salted_fish",
+      "kind": "dish",
+      "label": "Сельдь с отварным картофелем и луком"
+    },
+    {
+      "id": "beef_aspic_horseradish",
+      "parent_id": "cold_meat",
+      "kind": "dish",
+      "label": "Холодец из говядины с хреном"
+    },
+    {
+      "id": "beef_tongue_mustard",
+      "parent_id": "offal",
+      "kind": "dish",
+      "label": "Отварной говяжий язык с горчицей"
+    },
+    {
+      "id": "blini_salted_salmon",
+      "parent_id": "filled_pancakes",
+      "kind": "dish",
+      "label": "Блины со слабосолёной сёмгой"
+    },
+    {
+      "id": "cabbage_pirozhki",
+      "parent_id": "vegetable_pastry",
+      "kind": "dish",
+      "label": "Пирожки с капустой"
+    },
+    {
+      "id": "pelmeni_beef_pork_sour_cream",
+      "parent_id": "dumplings",
+      "kind": "dish",
+      "label": "Пельмени из говядины и свинины со сметаной"
+    },
+    {
+      "id": "borsch_beef_sour_cream",
+      "parent_id": "meat_soups",
+      "kind": "dish",
+      "label": "Борщ с говядиной и сметаной"
+    },
+    {
+      "id": "mixed_meat_solyanka",
+      "parent_id": "meat_soups",
+      "kind": "dish",
+      "label": "Солянка мясная сборная"
+    },
+    {
+      "id": "mushroom_julienne",
+      "parent_id": "mushrooms",
+      "kind": "dish",
+      "label": "Грибной жюльен"
+    },
+    {
+      "id": "beef_stroganoff_mash",
+      "parent_id": "beef_stew",
+      "kind": "dish",
+      "label": "Бефстроганов с картофельным пюре"
+    },
+    {
+      "id": "stuffed_cabbage_meat_rice",
+      "parent_id": "meat_tomato",
+      "kind": "dish",
+      "label": "Голубцы с мясом и рисом в томатно-сметанном соусе"
+    },
+    {
+      "id": "stuffed_peppers_meat_rice",
+      "parent_id": "meat_tomato",
+      "kind": "dish",
+      "label": "Перец, фаршированный мясом и рисом"
+    },
+    {
+      "id": "buckwheat_porcini",
+      "parent_id": "mushroom_grains",
+      "kind": "dish",
+      "label": "Гречка с белыми грибами"
+    },
+    {
+      "id": "fried_potato_chanterelles",
+      "parent_id": "potato_dishes",
+      "kind": "dish",
+      "label": "Жареный картофель с лисичками"
+    },
+    {
+      "id": "zander_batter",
+      "parent_id": "fried_fish",
+      "kind": "dish",
+      "label": "Судак в кляре"
+    },
+    {
+      "id": "chicken_kyiv",
+      "parent_id": "poultry_breaded",
+      "kind": "dish",
+      "label": "Котлета по-киевски"
+    },
+    {
+      "id": "syrniki_sour_cream_jam",
+      "parent_id": "curd_desserts",
+      "kind": "dish",
+      "label": "Сырники со сметаной и ягодным вареньем"
+    },
+    {
+      "id": "medovik",
+      "parent_id": "cakes",
+      "kind": "dish",
+      "label": "Медовик"
+    },
+    {
+      "id": "apple_sharlotka",
+      "parent_id": "fruit_pastry",
+      "kind": "dish",
+      "label": "Яблочная шарлотка"
+    },
+    {
+      "id": "ribeye_grilled",
+      "parent_id": "meat_steak",
+      "kind": "dish",
+      "label": "Стейк рибай на гриле"
+    },
+    {
+      "id": "beef_cheddar_burger",
+      "parent_id": "sandwiches",
+      "kind": "dish",
+      "label": "Бургер с говяжьей котлетой и чеддером"
+    },
+    {
+      "id": "lamb_rack_rosemary",
+      "parent_id": "grilled_lamb",
+      "kind": "dish",
+      "label": "Каре ягнёнка с розмарином"
+    },
+    {
+      "id": "duck_breast_cherry",
+      "parent_id": "duck",
+      "kind": "dish",
+      "label": "Утиная грудка с вишнёвым соусом"
+    },
+    {
+      "id": "beef_bourguignon",
+      "parent_id": "beef_stew",
+      "kind": "dish",
+      "label": "Говядина по-бургундски"
+    },
+    {
+      "id": "oysters_lemon",
+      "parent_id": "raw_bivalves",
+      "kind": "dish",
+      "label": "Свежие устрицы с лимоном"
+    },
+    {
+      "id": "mussels_white_wine_garlic",
+      "parent_id": "cooked_molluscs",
+      "kind": "dish",
+      "label": "Мидии в белом вине с чесноком"
+    },
+    {
+      "id": "seabass_ceviche",
+      "parent_id": "raw_fish",
+      "kind": "dish",
+      "label": "Севиче из сибаса"
+    },
+    {
+      "id": "salmon_sashimi",
+      "parent_id": "raw_fish",
+      "kind": "dish",
+      "label": "Сашими из лосося"
+    },
+    {
+      "id": "shrimp_tempura",
+      "parent_id": "shrimp",
+      "kind": "dish",
+      "label": "Креветки темпура"
+    },
+    {
+      "id": "pasta_carbonara",
+      "parent_id": "pasta",
+      "kind": "dish",
+      "label": "Паста карбонара"
+    },
+    {
+      "id": "seafood_pasta_tomato",
+      "parent_id": "pasta",
+      "kind": "dish",
+      "label": "Паста с морепродуктами в томатном соусе"
+    },
+    {
+      "id": "porcini_risotto",
+      "parent_id": "mushroom_grains",
+      "kind": "dish",
+      "label": "Ризотто с белыми грибами"
+    },
+    {
+      "id": "pizza_margherita",
+      "parent_id": "pizza",
+      "kind": "dish",
+      "label": "Пицца «Маргарита»"
+    },
+    {
+      "id": "eggplant_parmigiana",
+      "parent_id": "tomato_vegetables",
+      "kind": "dish",
+      "label": "Баклажаны пармиджана"
+    },
+    {
+      "id": "seafood_paella",
+      "parent_id": "rice_dishes",
+      "kind": "dish",
+      "label": "Паэлья с морепродуктами"
+    },
+    {
+      "id": "greek_salad_feta",
+      "parent_id": "vegetable_salads",
+      "kind": "dish",
+      "label": "Греческий салат с фетой"
+    },
+    {
+      "id": "adjarian_khachapuri",
+      "parent_id": "cheese_pastry",
+      "kind": "dish",
+      "label": "Хачапури по-аджарски"
+    },
+    {
+      "id": "khinkali_beef_pork",
+      "parent_id": "dumplings",
+      "kind": "dish",
+      "label": "Хинкали с говядиной и свининой"
+    },
+    {
+      "id": "lamb_lula_kebab",
+      "parent_id": "grilled_lamb",
+      "kind": "dish",
+      "label": "Люля-кебаб из баранины"
+    },
+    {
+      "id": "uzbek_lamb_plov",
+      "parent_id": "rice_dishes",
+      "kind": "dish",
+      "label": "Узбекский плов с бараниной"
+    },
+    {
+      "id": "peking_duck_hoisin",
+      "parent_id": "duck",
+      "kind": "dish",
+      "label": "Утка по-пекински с соусом хойсин"
+    },
+    {
+      "id": "thai_green_chicken_curry",
+      "parent_id": "curries",
+      "kind": "dish",
+      "label": "Зелёное карри с курицей и кокосовым молоком"
+    },
+    {
+      "id": "tom_yam_shrimp",
+      "parent_id": "spicy_seafood_soups",
+      "kind": "dish",
+      "label": "Том ям с креветками"
+    },
+    {
+      "id": "tiramisu",
+      "parent_id": "coffee_desserts",
+      "kind": "dish",
+      "label": "Тирамису"
+    },
+    {
+      "id": "raw_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Сырая говядина: тартар и карпаччо"
+    },
+    {
+      "id": "roast_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Запечённое мясо"
+    },
+    {
+      "id": "braised_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Тушёное мясо"
+    },
+    {
+      "id": "breaded_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Мясо в панировке"
+    },
+    {
+      "id": "glazed_meat",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Мясо в сладкой глазури"
+    },
+    {
+      "id": "roasted_poultry",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Жареная и запечённая птица"
+    },
+    {
+      "id": "tomato_poultry",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Птица в томатном соусе"
+    },
+    {
+      "id": "glazed_poultry",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Птица в сладкой глазури"
+    },
+    {
+      "id": "fried_poultry",
+      "parent_id": "poultry",
+      "kind": "class",
+      "label": "Птица в хрустящей панировке"
+    },
+    {
+      "id": "rabbit",
+      "parent_id": "meat",
+      "kind": "class",
+      "label": "Кролик"
+    },
+    {
+      "id": "wild_boar",
+      "parent_id": "game",
+      "kind": "class",
+      "label": "Кабан"
+    },
+    {
+      "id": "cream_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Рыба в сливочном или молочном соусе"
+    },
+    {
+      "id": "smoked_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Копчёная рыба"
+    },
+    {
+      "id": "sushi_rolls",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Суши и роллы"
+    },
+    {
+      "id": "raw_fish_sushi",
+      "parent_id": "sushi_rolls",
+      "kind": "class",
+      "label": "Суши с сырой рыбой"
+    },
+    {
+      "id": "vegetable_rolls",
+      "parent_id": "sushi_rolls",
+      "kind": "class",
+      "label": "Овощные роллы"
+    },
+    {
+      "id": "cream_cheese_rolls",
+      "parent_id": "sushi_rolls",
+      "kind": "class",
+      "label": "Роллы со сливочным сыром"
+    },
+    {
+      "id": "fried_rolls",
+      "parent_id": "sushi_rolls",
+      "kind": "class",
+      "label": "Роллы с жареной начинкой"
+    },
+    {
+      "id": "glazed_rolls",
+      "parent_id": "sushi_rolls",
+      "kind": "class",
+      "label": "Роллы со сладким соусом унаги"
+    },
+    {
+      "id": "leafy_salads",
+      "parent_id": "salads",
+      "kind": "class",
+      "label": "Листовые и овощные салаты с кислой заправкой"
+    },
+    {
+      "id": "cheese_salads",
+      "parent_id": "salads",
+      "kind": "class",
+      "label": "Салаты с мягким сыром"
+    },
+    {
+      "id": "grilled_vegetables",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "class",
+      "label": "Овощи на гриле"
+    },
+    {
+      "id": "bean_dishes",
+      "parent_id": "legumes",
+      "kind": "class",
+      "label": "Блюда из фасоли"
+    },
+    {
+      "id": "chickpea_dishes",
+      "parent_id": "legumes",
+      "kind": "class",
+      "label": "Блюда из нута"
+    },
+    {
+      "id": "lentil_dishes",
+      "parent_id": "legumes",
+      "kind": "class",
+      "label": "Блюда из чечевицы"
+    },
+    {
+      "id": "egg_breakfast",
+      "parent_id": "eggs",
+      "kind": "class",
+      "label": "Омлеты и блюда из яиц"
+    },
+    {
+      "id": "tomato_eggs",
+      "parent_id": "eggs",
+      "kind": "class",
+      "label": "Яйца в томатном соусе"
+    },
+    {
+      "id": "cream_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Сливочные супы"
+    },
+    {
+      "id": "vegetable_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Овощные супы"
+    },
+    {
+      "id": "legume_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Супы из бобовых"
+    },
+    {
+      "id": "poultry_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Супы с птицей"
+    },
+    {
+      "id": "cold_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Холодные кислые супы"
+    },
+    {
+      "id": "meat_pasta",
+      "parent_id": "pasta",
+      "kind": "class",
+      "label": "Паста с мясным томатным соусом"
+    },
+    {
+      "id": "cream_pasta",
+      "parent_id": "pasta",
+      "kind": "class",
+      "label": "Паста со сливочным или масляным соусом"
+    },
+    {
+      "id": "herb_pasta",
+      "parent_id": "pasta",
+      "kind": "class",
+      "label": "Паста с зеленью и песто"
+    },
+    {
+      "id": "wok_noodles",
+      "parent_id": "grains_pasta",
+      "kind": "class",
+      "label": "Лапша вок"
+    },
+    {
+      "id": "vegetable_rice",
+      "parent_id": "rice_dishes",
+      "kind": "class",
+      "label": "Рис с овощами"
+    },
+    {
+      "id": "cheese_pizza",
+      "parent_id": "pizza",
+      "kind": "class",
+      "label": "Сырная пицца"
+    },
+    {
+      "id": "meat_pizza",
+      "parent_id": "pizza",
+      "kind": "class",
+      "label": "Пицца с мясом"
+    },
+    {
+      "id": "mushroom_pizza",
+      "parent_id": "pizza",
+      "kind": "class",
+      "label": "Пицца с грибами"
+    },
+    {
+      "id": "vegetable_dumplings",
+      "parent_id": "savory_pastry",
+      "kind": "class",
+      "label": "Вареники с несладкой овощной начинкой"
+    },
+    {
+      "id": "sweet_dumplings",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Сладкие вареники"
+    },
+    {
+      "id": "cream_desserts",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Сливочные десерты"
+    },
+    {
+      "id": "chocolate_desserts",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Шоколадные десерты"
+    },
+    {
+      "id": "ice_cream",
+      "parent_id": "desserts",
+      "kind": "class",
+      "label": "Мороженое"
+    },
+    {
+      "id": "fresh_fruit",
+      "parent_id": "fruit",
+      "kind": "class",
+      "label": "Свежие фрукты и ягоды"
+    },
+    {
+      "id": "pates",
+      "parent_id": "offal",
+      "kind": "class",
+      "label": "Паштеты из печени"
+    },
+    {
+      "id": "hot_offal",
+      "parent_id": "offal",
+      "kind": "class",
+      "label": "Горячие блюда из субпродуктов"
+    },
+    {
+      "id": "sweet_sour_dishes",
+      "parent_id": "mixed_dishes",
+      "kind": "class",
+      "label": "Блюда в кисло-сладком соусе"
+    },
+    {
+      "id": "grilled_fish",
+      "parent_id": "fish",
+      "kind": "class",
+      "label": "Рыба на гриле"
+    },
+    {
+      "id": "soft_ripened_cheese",
+      "parent_id": "cheese",
+      "kind": "class",
+      "label": "Мягкие сыры с белой плесенью"
+    },
+    {
+      "id": "sour_brine_soups",
+      "parent_id": "soups",
+      "kind": "class",
+      "label": "Супы на кислом рассоле"
+    },
+    {
+      "id": "striploin_grilled",
+      "parent_id": "meat_steak",
+      "kind": "dish",
+      "label": "Стейк стриплойн на гриле"
+    },
+    {
+      "id": "beef_tenderloin_pepper_cream",
+      "parent_id": "meat_steak",
+      "kind": "dish",
+      "label": "Медальоны из говядины со сливочно-перечным соусом"
+    },
+    {
+      "id": "beef_tartare_capers",
+      "parent_id": "raw_meat",
+      "kind": "dish",
+      "label": "Тартар из говядины с каперсами"
+    },
+    {
+      "id": "beef_carpaccio_parmesan",
+      "parent_id": "raw_meat",
+      "kind": "dish",
+      "label": "Карпаччо из говядины с пармезаном"
+    },
+    {
+      "id": "pork_ribs_bbq",
+      "parent_id": "glazed_meat",
+      "kind": "dish",
+      "label": "Свиные рёбра в сладком соусе барбекю"
+    },
+    {
+      "id": "pork_roast_herbs",
+      "parent_id": "roast_meat",
+      "kind": "dish",
+      "label": "Свинина запечённая с травами"
+    },
+    {
+      "id": "pork_schnitzel",
+      "parent_id": "breaded_meat",
+      "kind": "dish",
+      "label": "Шницель из свинины в сухарях"
+    },
+    {
+      "id": "beef_meatballs_tomato",
+      "parent_id": "minced_meat",
+      "kind": "dish",
+      "label": "Тефтели из говядины в томатном соусе"
+    },
+    {
+      "id": "veal_osso_buco",
+      "parent_id": "braised_meat",
+      "kind": "dish",
+      "label": "Оссобуко из телятины"
+    },
+    {
+      "id": "beef_brisket_slow_roast",
+      "parent_id": "roast_meat",
+      "kind": "dish",
+      "label": "Говяжий брискет медленного приготовления"
+    },
+    {
+      "id": "chicken_roast_herbs",
+      "parent_id": "roasted_poultry",
+      "kind": "dish",
+      "label": "Курица запечённая с травами"
+    },
+    {
+      "id": "turkey_cutlet",
+      "parent_id": "poultry",
+      "kind": "dish",
+      "label": "Котлета из индейки"
+    },
+    {
+      "id": "chicken_shashlik",
+      "parent_id": "roasted_poultry",
+      "kind": "dish",
+      "label": "Шашлык из курицы"
+    },
+    {
+      "id": "chicken_tabbaka",
+      "parent_id": "roasted_poultry",
+      "kind": "dish",
+      "label": "Цыплёнок табака"
+    },
+    {
+      "id": "chicken_chakhokhbili",
+      "parent_id": "tomato_poultry",
+      "kind": "dish",
+      "label": "Чахохбили из курицы с томатами"
+    },
+    {
+      "id": "chicken_katsu",
+      "parent_id": "fried_poultry",
+      "kind": "dish",
+      "label": "Курица кацу в панировке панко"
+    },
+    {
+      "id": "chicken_teriyaki",
+      "parent_id": "glazed_poultry",
+      "kind": "dish",
+      "label": "Курица в сладком соусе терияки"
+    },
+    {
+      "id": "rabbit_sour_cream",
+      "parent_id": "rabbit",
+      "kind": "dish",
+      "label": "Кролик тушёный в сметане"
+    },
+    {
+      "id": "wild_boar_stew",
+      "parent_id": "wild_boar",
+      "kind": "dish",
+      "label": "Рагу из кабана"
+    },
+    {
+      "id": "duck_confit_lingonberry",
+      "parent_id": "duck",
+      "kind": "dish",
+      "label": "Утиная ножка конфи с брусникой"
+    },
+    {
+      "id": "salmon_grilled_lemon",
+      "parent_id": "grilled_fish",
+      "kind": "dish",
+      "label": "Лосось на гриле с лимоном"
+    },
+    {
+      "id": "tuna_grilled",
+      "parent_id": "grilled_fish",
+      "kind": "dish",
+      "label": "Стейк из тунца на гриле"
+    },
+    {
+      "id": "trout_baked_herbs",
+      "parent_id": "baked_fish",
+      "kind": "dish",
+      "label": "Форель запечённая с травами"
+    },
+    {
+      "id": "cod_cream",
+      "parent_id": "cream_fish",
+      "kind": "dish",
+      "label": "Треска в сливочном соусе"
+    },
+    {
+      "id": "halibut_baked",
+      "parent_id": "baked_fish",
+      "kind": "dish",
+      "label": "Палтус запечённый"
+    },
+    {
+      "id": "eel_glazed_rice",
+      "parent_id": "rice_dishes",
+      "kind": "dish",
+      "label": "Угорь в соусе унаги с рисом"
+    },
+    {
+      "id": "octopus_grilled",
+      "parent_id": "cooked_molluscs",
+      "kind": "dish",
+      "label": "Осьминог на гриле"
+    },
+    {
+      "id": "calamari_fried",
+      "parent_id": "cooked_molluscs",
+      "kind": "dish",
+      "label": "Кольца кальмара во фритюре"
+    },
+    {
+      "id": "shrimp_garlic_butter",
+      "parent_id": "shrimp",
+      "kind": "dish",
+      "label": "Креветки в чесночном сливочном масле"
+    },
+    {
+      "id": "crayfish_boiled",
+      "parent_id": "crustaceans",
+      "kind": "dish",
+      "label": "Раки отварные с укропом"
+    },
+    {
+      "id": "mackerel_smoked",
+      "parent_id": "smoked_fish",
+      "kind": "dish",
+      "label": "Скумбрия горячего копчения"
+    },
+    {
+      "id": "squid_steamed_lemon",
+      "parent_id": "cooked_molluscs",
+      "kind": "dish",
+      "label": "Кальмар на пару с лимоном"
+    },
+    {
+      "id": "salmon_nigiri",
+      "parent_id": "raw_fish_sushi",
+      "kind": "dish",
+      "label": "Нигири с сырым лососем"
+    },
+    {
+      "id": "tuna_nigiri",
+      "parent_id": "raw_fish_sushi",
+      "kind": "dish",
+      "label": "Нигири с сырым тунцом"
+    },
+    {
+      "id": "cucumber_maki",
+      "parent_id": "vegetable_rolls",
+      "kind": "dish",
+      "label": "Маки с огурцом"
+    },
+    {
+      "id": "avocado_maki",
+      "parent_id": "vegetable_rolls",
+      "kind": "dish",
+      "label": "Маки с авокадо"
+    },
+    {
+      "id": "philadelphia_salmon_cream_cheese",
+      "parent_id": "cream_cheese_rolls",
+      "kind": "dish",
+      "label": "Ролл Филадельфия с лососем и сливочным сыром"
+    },
+    {
+      "id": "shrimp_tempura_roll",
+      "parent_id": "fried_rolls",
+      "kind": "dish",
+      "label": "Ролл с креветкой темпура без сладкого соуса"
+    },
+    {
+      "id": "eel_unagi_roll",
+      "parent_id": "glazed_rolls",
+      "kind": "dish",
+      "label": "Ролл с угрём и сладким соусом унаги"
+    },
+    {
+      "id": "caesar_chicken",
+      "parent_id": "mayonnaise_salads",
+      "kind": "dish",
+      "label": "Цезарь с курицей и сливочно-яичной заправкой"
+    },
+    {
+      "id": "caesar_shrimp",
+      "parent_id": "mayonnaise_salads",
+      "kind": "dish",
+      "label": "Цезарь с креветками и сливочно-яичной заправкой"
+    },
+    {
+      "id": "caprese",
+      "parent_id": "cheese_salads",
+      "kind": "dish",
+      "label": "Капрезе с томатами и моцареллой"
+    },
+    {
+      "id": "nicoise_tuna",
+      "parent_id": "leafy_salads",
+      "kind": "dish",
+      "label": "Нисуаз с тунцом и лимонной заправкой"
+    },
+    {
+      "id": "beet_goat_cheese_salad",
+      "parent_id": "cheese_salads",
+      "kind": "dish",
+      "label": "Салат с печёной свёклой и козьим сыром"
+    },
+    {
+      "id": "tabbouleh",
+      "parent_id": "leafy_salads",
+      "kind": "dish",
+      "label": "Табуле с булгуром и лимоном"
+    },
+    {
+      "id": "fresh_vegetable_salad",
+      "parent_id": "vegetable_salads",
+      "kind": "dish",
+      "label": "Салат из огурцов и помидоров с маслом"
+    },
+    {
+      "id": "grilled_vegetable_platter",
+      "parent_id": "grilled_vegetables",
+      "kind": "dish",
+      "label": "Овощи гриль с оливковым маслом"
+    },
+    {
+      "id": "ratatouille",
+      "parent_id": "tomato_vegetables",
+      "kind": "dish",
+      "label": "Рататуй с томатами"
+    },
+    {
+      "id": "hummus_tahini",
+      "parent_id": "chickpea_dishes",
+      "kind": "dish",
+      "label": "Хумус с тахини"
+    },
+    {
+      "id": "falafel_tahini",
+      "parent_id": "chickpea_dishes",
+      "kind": "dish",
+      "label": "Фалафель с соусом тахини"
+    },
+    {
+      "id": "lobio",
+      "parent_id": "bean_dishes",
+      "kind": "dish",
+      "label": "Лобио из красной фасоли с зеленью"
+    },
+    {
+      "id": "lentil_vegetable_stew",
+      "parent_id": "lentil_dishes",
+      "kind": "dish",
+      "label": "Чечевица тушёная с овощами"
+    },
+    {
+      "id": "eggplant_walnut_rolls",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Рулетики из баклажанов с грецким орехом"
+    },
+    {
+      "id": "grilled_corn_butter",
+      "parent_id": "grilled_vegetables",
+      "kind": "dish",
+      "label": "Кукуруза на гриле со сливочным маслом"
+    },
+    {
+      "id": "tofu_vegetable_wok",
+      "parent_id": "legumes",
+      "kind": "dish",
+      "label": "Тофу с овощами вок без сладкого соуса"
+    },
+    {
+      "id": "cheese_omelette",
+      "parent_id": "egg_breakfast",
+      "kind": "dish",
+      "label": "Омлет с сыром"
+    },
+    {
+      "id": "shakshuka_tomato",
+      "parent_id": "tomato_eggs",
+      "kind": "dish",
+      "label": "Шакшука с томатами без чили"
+    },
+    {
+      "id": "eggs_benedict_ham",
+      "parent_id": "egg_breakfast",
+      "kind": "dish",
+      "label": "Яйца Бенедикт с ветчиной и голландским соусом"
+    },
+    {
+      "id": "poached_egg_avocado",
+      "parent_id": "egg_breakfast",
+      "kind": "dish",
+      "label": "Яйцо пашот с авокадо на тосте"
+    },
+    {
+      "id": "chicken_noodle_soup",
+      "parent_id": "poultry_soups",
+      "kind": "dish",
+      "label": "Куриный суп с лапшой"
+    },
+    {
+      "id": "mushroom_cream_soup",
+      "parent_id": "cream_soups",
+      "kind": "dish",
+      "label": "Грибной крем-суп со сливками"
+    },
+    {
+      "id": "pumpkin_cream_soup",
+      "parent_id": "cream_soups",
+      "kind": "dish",
+      "label": "Тыквенный крем-суп со сливками"
+    },
+    {
+      "id": "lentil_soup",
+      "parent_id": "legume_soups",
+      "kind": "dish",
+      "label": "Чечевичный суп с овощами"
+    },
+    {
+      "id": "gazpacho",
+      "parent_id": "cold_soups",
+      "kind": "dish",
+      "label": "Гаспачо из томатов и огурцов"
+    },
+    {
+      "id": "okroshka_kefir",
+      "parent_id": "cold_soups",
+      "kind": "dish",
+      "label": "Окрошка на кефире с колбасой"
+    },
+    {
+      "id": "salmon_cream_soup",
+      "parent_id": "cream_soups",
+      "kind": "dish",
+      "label": "Сливочный суп с лососем"
+    },
+    {
+      "id": "pasta_bolognese",
+      "parent_id": "meat_pasta",
+      "kind": "dish",
+      "label": "Паста болоньезе с говядиной и томатами"
+    },
+    {
+      "id": "pasta_alfredo",
+      "parent_id": "cream_pasta",
+      "kind": "dish",
+      "label": "Паста Альфредо с маслом и пармезаном"
+    },
+    {
+      "id": "pasta_basil_pesto",
+      "parent_id": "herb_pasta",
+      "kind": "dish",
+      "label": "Паста с базиликовым песто"
+    },
+    {
+      "id": "lasagna_bolognese",
+      "parent_id": "meat_pasta",
+      "kind": "dish",
+      "label": "Лазанья с говядиной и томатами"
+    },
+    {
+      "id": "wok_chicken_vegetables",
+      "parent_id": "wok_noodles",
+      "kind": "dish",
+      "label": "Лапша вок с курицей и овощами без сладкого соуса"
+    },
+    {
+      "id": "wok_beef_black_pepper",
+      "parent_id": "wok_noodles",
+      "kind": "dish",
+      "label": "Лапша вок с говядиной и чёрным перцем"
+    },
+    {
+      "id": "saffron_risotto",
+      "parent_id": "rice_dishes",
+      "kind": "dish",
+      "label": "Ризотто с шафраном и пармезаном"
+    },
+    {
+      "id": "rice_vegetables",
+      "parent_id": "vegetable_rice",
+      "kind": "dish",
+      "label": "Рис с тушёными овощами"
+    },
+    {
+      "id": "pizza_four_cheese",
+      "parent_id": "cheese_pizza",
+      "kind": "dish",
+      "label": "Пицца четыре сыра"
+    },
+    {
+      "id": "pizza_pepperoni",
+      "parent_id": "meat_pizza",
+      "kind": "dish",
+      "label": "Пицца пепперони с томатным соусом"
+    },
+    {
+      "id": "pizza_ham_mushrooms",
+      "parent_id": "mushroom_pizza",
+      "kind": "dish",
+      "label": "Пицца с ветчиной и грибами"
+    },
+    {
+      "id": "vareniki_potato",
+      "parent_id": "vegetable_dumplings",
+      "kind": "dish",
+      "label": "Вареники с картофелем и сметаной"
+    },
+    {
+      "id": "vareniki_cherry",
+      "parent_id": "sweet_dumplings",
+      "kind": "dish",
+      "label": "Сладкие вареники с вишней"
+    },
+    {
+      "id": "khachapuri_imeretian",
+      "parent_id": "cheese_pastry",
+      "kind": "dish",
+      "label": "Хачапури по-имеретински с сыром"
+    },
+    {
+      "id": "quiche_lorraine",
+      "parent_id": "savory_pastry",
+      "kind": "dish",
+      "label": "Киш лорен с беконом и сливками"
+    },
+    {
+      "id": "blini_meat",
+      "parent_id": "filled_pancakes",
+      "kind": "dish",
+      "label": "Блины с мясной начинкой"
+    },
+    {
+      "id": "croissant_ham_cheese",
+      "parent_id": "sandwiches",
+      "kind": "dish",
+      "label": "Круассан с ветчиной и сыром"
+    },
+    {
+      "id": "baked_brie",
+      "parent_id": "soft_ripened_cheese",
+      "kind": "dish",
+      "label": "Бри запечённый без сладкого топпинга"
+    },
+    {
+      "id": "parmesan_plate",
+      "parent_id": "hard_cheese",
+      "kind": "dish",
+      "label": "Пармезан без сладких добавок"
+    },
+    {
+      "id": "aged_gouda_plate",
+      "parent_id": "hard_cheese",
+      "kind": "dish",
+      "label": "Выдержанная гауда без сладких добавок"
+    },
+    {
+      "id": "blue_cheese_pear",
+      "parent_id": "blue_cheese",
+      "kind": "dish",
+      "label": "Сыр с голубой плесенью и спелой грушей"
+    },
+    {
+      "id": "burrata_tomatoes",
+      "parent_id": "fresh_cheese",
+      "kind": "dish",
+      "label": "Буррата с томатами"
+    },
+    {
+      "id": "fresh_berry_plate",
+      "parent_id": "fresh_fruit",
+      "kind": "dish",
+      "label": "Ассорти свежих ягод без сиропа"
+    },
+    {
+      "id": "fresh_fruit_plate",
+      "parent_id": "fresh_fruit",
+      "kind": "dish",
+      "label": "Фруктовая тарелка без сиропа"
+    },
+    {
+      "id": "vanilla_cheesecake",
+      "parent_id": "curd_desserts",
+      "kind": "dish",
+      "label": "Ванильный чизкейк"
+    },
+    {
+      "id": "panna_cotta_berries",
+      "parent_id": "cream_desserts",
+      "kind": "dish",
+      "label": "Панна-котта с ягодным соусом"
+    },
+    {
+      "id": "chocolate_fondant",
+      "parent_id": "chocolate_desserts",
+      "kind": "dish",
+      "label": "Шоколадный фондан"
+    },
+    {
+      "id": "dark_chocolate_brownie",
+      "parent_id": "chocolate_desserts",
+      "kind": "dish",
+      "label": "Брауни с тёмным шоколадом"
+    },
+    {
+      "id": "vanilla_ice_cream",
+      "parent_id": "ice_cream",
+      "kind": "dish",
+      "label": "Ванильное сливочное мороженое"
+    },
+    {
+      "id": "creme_brulee",
+      "parent_id": "cream_desserts",
+      "kind": "dish",
+      "label": "Крем-брюле с карамельной корочкой"
+    },
+    {
+      "id": "pavlova_berries",
+      "parent_id": "desserts",
+      "kind": "dish",
+      "label": "Павлова со сливками и ягодами"
+    },
+    {
+      "id": "apple_strudel",
+      "parent_id": "fruit_pastry",
+      "kind": "dish",
+      "label": "Яблочный штрудель"
+    },
+    {
+      "id": "chicken_liver_pate",
+      "parent_id": "pates",
+      "kind": "dish",
+      "label": "Паштет из куриной печени без сладкого соуса"
+    },
+    {
+      "id": "beef_liver_onions",
+      "parent_id": "hot_offal",
+      "kind": "dish",
+      "label": "Говяжья печень с жареным луком"
+    },
+    {
+      "id": "chicken_hearts_grilled",
+      "parent_id": "hot_offal",
+      "kind": "dish",
+      "label": "Куриные сердечки на гриле"
+    },
+    {
+      "id": "spicy_butter_chicken",
+      "parent_id": "curries",
+      "kind": "dish",
+      "label": "Острая курица в томатно-сливочном соусе"
+    },
+    {
+      "id": "pork_sweet_sour",
+      "parent_id": "sweet_sour_dishes",
+      "kind": "dish",
+      "label": "Свинина в кисло-сладком соусе"
+    },
+    {
+      "id": "spicy_beef_noodles",
+      "parent_id": "wok_noodles",
+      "kind": "dish",
+      "label": "Острая лапша с говядиной и чили"
+    },
+    {
+      "id": "indigirka_whitefish",
+      "parent_id": "raw_fish",
+      "kind": "dish",
+      "label": "Индигирка из чира с луком"
+    },
+    {
+      "id": "omul_light_salt",
+      "parent_id": "salted_fish",
+      "kind": "dish",
+      "label": "Омуль слабосолёный"
+    },
+    {
+      "id": "kystyby_potato",
+      "parent_id": "potato_pastry",
+      "kind": "dish",
+      "label": "Кыстыбый с картофелем"
+    },
+    {
+      "id": "ossetian_fydzhin",
+      "parent_id": "meat_pastry",
+      "kind": "dish",
+      "label": "Осетинский фыдджын с говядиной"
+    },
+    {
+      "id": "crimean_cheburek_beef",
+      "parent_id": "meat_pastry",
+      "kind": "dish",
+      "label": "Крымский чебурек с говядиной"
+    },
+    {
+      "id": "kalakeitto_whitefish_milk",
+      "parent_id": "cream_soups",
+      "kind": "dish",
+      "label": "Калакейтто из белой рыбы с молоком"
+    },
+    {
+      "id": "steamed_broccoli",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Брокколи на пару с оливковым маслом"
+    },
+    {
+      "id": "grilled_mushrooms",
+      "parent_id": "mushrooms",
+      "kind": "dish",
+      "label": "Шампиньоны на гриле"
+    },
+    {
+      "id": "cauliflower_gratin",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Цветная капуста под сливками и сыром"
+    },
+    {
+      "id": "focaccia_olive_oil",
+      "parent_id": "savory_pastry",
+      "kind": "dish",
+      "label": "Фокачча с оливковым маслом и розмарином"
+    },
+    {
+      "id": "sauteed_zucchini",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Кабачки жареные с зеленью"
+    },
+    {
+      "id": "bruschetta_tomato",
+      "parent_id": "sandwiches",
+      "kind": "dish",
+      "label": "Брускетта с томатами и базиликом"
+    },
+    {
+      "id": "rassolnik_beef",
+      "parent_id": "sour_brine_soups",
+      "kind": "dish",
+      "label": "Рассольник с говядиной и перловкой"
+    },
+    {
+      "id": "pea_soup_smoked_pork",
+      "parent_id": "legume_soups",
+      "kind": "dish",
+      "label": "Гороховый суп с копчёностями"
+    },
+    {
+      "id": "pike_fish_cutlet",
+      "parent_id": "fish",
+      "kind": "dish",
+      "label": "Котлета из щуки"
+    },
+    {
+      "id": "chicken_aspic",
+      "parent_id": "poultry",
+      "kind": "dish",
+      "label": "Заливное из курицы"
+    },
+    {
+      "id": "surimi_mayonnaise_salad",
+      "parent_id": "mayonnaise_salads",
+      "kind": "dish",
+      "label": "Салат с крабовыми палочками и майонезом"
+    },
+    {
+      "id": "pork_potato_roast",
+      "parent_id": "roast_meat",
+      "kind": "dish",
+      "label": "Жаркое из свинины с картофелем"
+    },
+    {
+      "id": "vegetable_rice_cabbage_rolls",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Голубцы с рисом и овощами в томатном соусе"
+    },
+    {
+      "id": "baked_potato_sour_cream",
+      "parent_id": "potato_dishes",
+      "kind": "dish",
+      "label": "Картофель запечённый со сметаной"
+    },
+    {
+      "id": "cabbage_stew",
+      "parent_id": "vegetables_mushrooms",
+      "kind": "dish",
+      "label": "Капуста тушёная без мяса"
+    }
+  ]
+}

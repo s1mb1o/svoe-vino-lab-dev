@@ -1,18 +1,18 @@
 <script setup lang="ts">
-const props = defineProps<{ mode: 'bottle' | 'shelf' }>()
+const props = defineProps<{ mode: 'bottle' | 'shelf' | 'dish' }>()
 const { data: config } = await useFetch('/api/config', { key: 'portal-config' })
 // Each mode has its own page. Switching discards the photo, results, and pending requests of the previous mode.
-const modePaths = { bottle: '/', shelf: '/shelf' } as const
+const modePaths = { bottle: '/', shelf: '/shelf', dish: '/dish' } as const
 const chooseBottle = () => navigateTo(modePaths.bottle)
 let modeTools: AbortController | undefined
 onMounted(() => {
   const context = (document as Document & { modelContext?: { registerTool: (tool: object, options: { signal: AbortSignal }) => void | Promise<void> } }).modelContext
   if (!context?.registerTool) return
   modeTools = new AbortController()
-  const tool = { name: 'set_wine_scan_mode', description: 'Switch between single-bottle and whole-shelf photo search. Switching discards the previous mode photo, results, and pending requests.', inputSchema: { type: 'object', properties: { mode: { type: 'string', enum: ['bottle', 'shelf'] } }, required: ['mode'], additionalProperties: false }, annotations: { readOnlyHint: false }, async execute(input: unknown) {
+  const tool = { name: 'set_wine_scan_mode', description: 'Switch between single-bottle search, whole-shelf search, and wine pairing for a dish. Switching discards the previous mode photo, results, and pending requests.', inputSchema: { type: 'object', properties: { mode: { type: 'string', enum: ['bottle', 'shelf', 'dish'] } }, required: ['mode'], additionalProperties: false }, annotations: { readOnlyHint: false }, async execute(input: unknown) {
     const value = input as { mode?: string }
-    if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => k !== 'mode') || !['bottle', 'shelf'].includes(value.mode || '')) throw new Error('Choose bottle or shelf mode.')
-    const mode = value.mode as 'bottle' | 'shelf'
+    if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => k !== 'mode') || !['bottle', 'shelf', 'dish'].includes(value.mode || '')) throw new Error('Choose bottle, shelf, or dish mode.')
+    const mode = value.mode as 'bottle' | 'shelf' | 'dish'
     if (mode !== props.mode) await navigateTo(modePaths[mode])
     return { mode }
   } }
@@ -26,11 +26,13 @@ onBeforeUnmount(() => modeTools?.abort())
   <main id="main-content" class="scanner-page">
     <section class="hero">
       <p class="eyebrow"><span />ОТКРЫВАЙТЕ РОССИЙСКОЕ ВИНО</p>
-      <h1>Найти вино <span>по фото</span></h1>
-      <p class="hero-description">{{ mode === 'bottle' ? 'У каждой бутылки своя история. Начните с фотографии этикетки.' : config?.shelfAvailable ? 'Снимите полку целиком. Мы найдём бутылки и покажем совпадения.' : 'Режим обработки полки временно недоступен.' }}</p>
+      <h1 v-if="mode === 'dish'">Найти вино <span>к блюду</span></h1>
+      <h1 v-else>Найти вино <span>по фото</span></h1>
+      <p class="hero-description">{{ mode === 'dish' ? 'Сфотографируйте блюдо или назовите его. Подберём российское вино к вашему столу.' : mode === 'bottle' ? 'У каждой бутылки своя история. Начните с фотографии этикетки.' : config?.shelfAvailable ? 'Снимите полку целиком. Мы найдём бутылки и покажем совпадения.' : 'Режим обработки полки временно недоступен.' }}</p>
     </section>
-    <nav class="scan-mode-switch" aria-label="Режим поиска вина"><NuxtLink :to="modePaths.bottle"><AppIcon name="scan" />Одна бутылка</NuxtLink><NuxtLink :to="modePaths.shelf"><AppIcon name="shelf" />Вся полка</NuxtLink></nav>
+    <nav class="scan-mode-switch" aria-label="Режим поиска вина"><NuxtLink :to="modePaths.bottle"><AppIcon name="scan" />Одна бутылка</NuxtLink><NuxtLink :to="modePaths.shelf"><AppIcon name="shelf" />Вся полка</NuxtLink><NuxtLink :to="modePaths.dish"><AppIcon name="food" />Вино к блюду</NuxtLink></nav>
     <PhotoScanner v-if="mode === 'bottle'" />
+    <LazyDinnerScanner v-else-if="mode === 'dish'" :available="config?.dinnerAvailable === true" />
     <ShelfScanner v-else-if="config?.shelfAvailable" />
     <ShelfUnavailable v-else @choose-bottle="chooseBottle" />
     <section v-if="mode === 'bottle'" class="photo-tips" aria-label="Как сделать хороший снимок">

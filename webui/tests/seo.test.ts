@@ -44,8 +44,12 @@ describe('search discovery', () => {
     expect(bottle).toContain('<ScannerPage mode="bottle" />')
     expect(shelf).toContain('<ScannerPage mode="shelf" />')
     expect(shelf).toContain("{ rel: 'canonical', href: 'https://chtozavino.ru/shelf' }")
-    expect(scanner).toContain("const modePaths = { bottle: '/', shelf: '/shelf' } as const")
+    expect(scanner).toContain("const modePaths = { bottle: '/', shelf: '/shelf', dish: '/dish' } as const")
     expect(scanner).toContain('<NuxtLink :to="modePaths.shelf">')
+    const dish = await source('app/pages/dish.vue')
+    expect(dish).toContain('<ScannerPage mode="dish" />')
+    expect(dish).toContain("{ rel: 'canonical', href: 'https://chtozavino.ru/dish' }")
+    expect(scanner).toContain('<NuxtLink :to="modePaths.dish">')
   })
 
   it('uses permanent compatibility redirects and bounded static caching', async () => {

@@ -295,6 +295,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 767px) {
   :root[data-theme='dark'] .camera-action, :root[data-theme='dark'] .upload-actions.selected-actions>.primary { color: #261c16; }
+  :root[data-theme='dark'] .upload-actions:not(.selected-actions)>.primary { color: var(--accent); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *:before, *:after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
@@ -396,8 +397,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* Whole-shelf capture and selected-bottle dialog. */
-.scan-mode-switch { display: flex; width: max-content; max-width: 100%; margin: 0 auto 26px; background: var(--cream); border: 1px solid var(--line); padding: 5px; border-radius: 32px; gap: 4px; }
-.scan-mode-switch a { display: inline-flex; gap: 9px; align-items: center; justify-content: center; padding: 12px 25px; min-height: 44px; border-radius: 28px; font-size: 13px; color: var(--muted); }
+.scan-mode-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 630px); margin: 0 auto 26px; background: var(--cream); border: 1px solid var(--line); padding: 5px; border-radius: 32px; gap: 4px; }
+.scan-mode-switch a { display: inline-flex; gap: 9px; align-items: center; justify-content: center; padding: 12px 14px; min-width: 0; min-height: 44px; border-radius: 28px; font-size: 13px; color: var(--muted); }
 .scan-mode-switch a[aria-current='page'] { color: var(--accent); background: var(--paper); box-shadow: 0 2px 8px #3b20110b; }
 .scan-mode-switch .icon { width: 18px; height: 18px; }
 .shelf-unavailable { min-height: 445px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 52px 28px; text-align: center; box-shadow: 0 10px 36px #56382005; }
@@ -487,7 +488,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 767px) {
   .scan-mode-switch { margin-bottom: 22px; width: 100%; }
-  .scan-mode-switch a { flex: 1; padding: 10px; font-size: 12px; }
+  .scan-mode-switch a { flex-direction: column; gap: 5px; padding: 9px 3px; min-height: 62px; font-size: 11px; text-align: center; }
   .shelf-unavailable { min-height: 390px; border-radius: 20px; padding: 42px 22px; }
   .shelf-unavailable h2 { font-size: 30px; }
   .shelf-unavailable .button { width: 100%; min-width: 0; max-width: 330px; }

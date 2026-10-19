@@ -2,6 +2,7 @@ import { MAX_IMAGE_BYTES } from '#shared/catalog'
 import { predictionMode } from '../utils/prediction'
 import { hasGroupMatchEndpoint } from '../utils/group'
 import { predictionApiAvailable } from '../utils/upstream-health'
+import { dinnerConfigured } from '../utils/dinner'
 
 export default defineEventHandler(async event => {
   setHeader(event, 'Cache-Control', 'no-store')
@@ -14,5 +15,6 @@ export default defineEventHandler(async event => {
     catalogMode: 'source-fallback',
     maxImageBytes: MAX_IMAGE_BYTES,
     shelfAvailable: apiAvailable && mode === 'upstream' && hasGroupMatchEndpoint(config.predictionEndpoint),
+    dinnerAvailable: dinnerConfigured(config.dinnerLensEndpoint, config.dinnerLensApiToken),
   }
 })

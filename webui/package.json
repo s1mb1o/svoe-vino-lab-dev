@@ -14,6 +14,8 @@
     "test": "vitest run",
     "test:contract": "node scripts/check-contract.mjs",
     "test:pwa": "node scripts/check-pwa-browser.mjs",
+    "test:dinner": "node scripts/check-dinner-browser.mjs",
+    "dinner:taxonomy": "node scripts/generate-dinner-taxonomy.mjs",
     "test:presentation": "node scripts/check-presentation-browser.mjs",
     "postinstall": "nuxt prepare",
     "test:line-map": "node scripts/check-product-line-map-browser.mjs",
