@@ -139,7 +139,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
       <p v-if="page?.status === 'no_results'" class="dinner-notice" role="status">Подтверждённых сочетаний с этими условиями пока нет. Попробуйте уточнить блюдо или изменить ограничения.</p>
       <p v-else-if="page?.needs_clarification && question" class="dinner-field-hint">{{ question }}</p>
       <div class="dinner-wines"><article v-for="wine in wines" :key="wine.wine_slug" class="dinner-wine">
-        <div class="dinner-wine-top"><AppIcon name="taste" /><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span></div>
+        <div class="dinner-wine-top"><AppIcon :name="wine.facts.wine_kind === 'sparkling' ? 'sparkling' : wine.facts.color === 'red' ? 'wine-red' : wine.facts.color === 'white' ? 'wine-white' : 'taste'" /><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span></div>
         <p class="dinner-producer">{{ wine.producer }}</p><h3 tabindex="-1">{{ wine.name }}</h3>
         <p class="dinner-wine-facts">{{ labels[wine.facts.color] }} · {{ labels[wine.facts.sweetness] }} · {{ labels[wine.facts.wine_kind] }}<template v-if="wine.facts.alcohol_percent !== null"> · {{ wine.facts.alcohol_percent }}%</template></p>
         <p v-if="wine.facts.reported_grapes.length" class="dinner-grapes">{{ wine.facts.reported_grapes.join(', ') }}</p>

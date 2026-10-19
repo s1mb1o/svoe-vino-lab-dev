@@ -5,6 +5,10 @@
 - Let the result image set the height of `.match-bottle`. Prevent the image container from shrinking. The bottle stays above «Лучшее совпадение» on desktop and mobile.
 - Keep long wine titles inside the result card on narrow screens.
 
+## 2026-10-19 — Wine-specific glass outlines
+
+- Dinner Lens result cards use a narrow flute with three bubble dots for sparkling wine, a smaller tulip for still white wine, and a broad rounded bowl for still red wine. Choose the icon from the wine facts; sparkling takes priority over color.
+
 ## 2026-10-19 — Separate heat and sauce choices
 
 - Separate «Неострое» and «Острое» from the five sauce presets on `/dish`. Use a vertical divider on desktop and a horizontal divider on phones. Keep all selection behavior and request attributes.
