@@ -19,6 +19,18 @@ PACK_VERSION = 1
 PIPELINE = "dis-white-square-timm-crop090-v2"
 MODEL = "vit_base_patch16_siglip_224.v2_webli"
 DIMENSION = 768
+LEGACY_RUNTIME = "fixed-224"
+NAFLEX_RUNTIME = "naflex-exact-split"
+NAFLEX_PIPELINE = "foreground-white-native-naflex-v1"
+NAFLEX_MODEL = "google/siglip2-so400m-patch16-naflex"
+NAFLEX_DIMENSION = 1152
+BASE_NAFLEX_MODEL = "google/siglip2-base-patch16-naflex"
+BASE_NAFLEX_DIMENSION = 768
+NAFLEX_PATCH_SIZE = 16
+NAFLEX_POSITION_GRID = 16
+STANDARD_POOLING = "standard"
+FOREGROUND_POOLING = "foreground-1.0-background-0.1"
+REFERENCE_AGGREGATIONS = ("max", "top2-mean")
 DIS_MODEL_SHA256 = "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
 SIGLIP_MODEL_SHA256 = "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
 YOLO_MODEL_SHA256 = "3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf"
@@ -31,6 +43,11 @@ PAYLOADS = (
     "codes.jsonl",
 )
 YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
+NAFLEX_MODEL_FILES = (
+    "siglip2_naflex_backbone.tflite",
+    "siglip2_naflex_pooling.tflite",
+    "siglip2_naflex_position_embeddings.f32",
+)
 
 
 class PackError(ValueError):

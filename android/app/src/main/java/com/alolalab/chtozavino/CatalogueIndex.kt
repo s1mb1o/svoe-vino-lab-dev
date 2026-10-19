@@ -14,9 +14,44 @@ private data class CandidateRef(
     val slug: String,
 )
 
+enum class ReferenceAggregation(val id: String) {
+    MAX(MAX_REFERENCE_AGGREGATION),
+    TOP2_MEAN(TOP2_MEAN_REFERENCE_AGGREGATION),
+    ;
+
+    companion object {
+        fun fromId(value: String): ReferenceAggregation = entries.firstOrNull { it.id == value }
+            ?: throw IllegalArgumentException("unknown reference aggregation: $value")
+    }
+}
+
+private data class TopScores(
+    var first: Float = Float.NEGATIVE_INFINITY,
+    var second: Float = Float.NEGATIVE_INFINITY,
+) {
+    fun add(value: Float) {
+        if (value > first) {
+            second = first
+            first = value
+        } else if (value > second) {
+            second = value
+        }
+    }
+
+    fun aggregate(mode: ReferenceAggregation): Float = when (mode) {
+        ReferenceAggregation.MAX -> first
+        ReferenceAggregation.TOP2_MEAN -> if (second.isFinite()) {
+            (first + second) / 2f
+        } else {
+            first
+        }
+    }
+}
+
 class CatalogueIndex private constructor(
     private val vectors: FloatBuffer,
     private val vectorCount: Int,
+    private val vectorDimension: Int,
     private val candidates: List<CandidateRef>,
     private val wines: Map<String, WineCard>,
     private val codes: Map<String, Set<String>>,
@@ -97,6 +132,7 @@ class CatalogueIndex private constructor(
             return CatalogueIndex(
                 vectors = mapped,
                 vectorCount = pack.manifest.vectorCount,
+                vectorDimension = pack.manifest.vectorDimension,
                 candidates = candidates,
                 wines = wines,
                 codes = codeRows,
@@ -133,8 +169,12 @@ class CatalogueIndex private constructor(
             .map { WineMatch(it, 1f) }
     }
 
-    fun search(query: FloatArray, limit: Int = 5): List<WineMatch> {
-        require(query.size == VECTOR_DIMENSION)
+    fun search(
+        query: FloatArray,
+        limit: Int = 5,
+        aggregation: ReferenceAggregation = ReferenceAggregation.MAX,
+    ): List<WineMatch> {
+        require(query.size == vectorDimension)
         val normalized = query.copyOf()
         var normSquared = 0.0
         for (value in normalized) normSquared += value * value
@@ -142,20 +182,19 @@ class CatalogueIndex private constructor(
         require(norm.isFinite() && norm > 0f) { "SigLIP2 вернул пустой вектор." }
         for (index in normalized.indices) normalized[index] /= norm
 
-        val best = hashMapOf<String, Float>()
+        val best = hashMapOf<String, TopScores>()
         for (candidate in candidates) {
             if (candidate.row !in 0 until vectorCount) continue
-            val offset = candidate.row * VECTOR_DIMENSION
+            val offset = candidate.row * vectorDimension
             var score = 0f
-            for (dimension in 0 until VECTOR_DIMENSION) {
+            for (dimension in 0 until vectorDimension) {
                 score += normalized[dimension] * vectors.get(offset + dimension)
             }
-            if (score > (best[candidate.slug] ?: Float.NEGATIVE_INFINITY)) {
-                best[candidate.slug] = score
-            }
+            best.getOrPut(candidate.slug, ::TopScores).add(score)
         }
         return best.entries
-            .sortedWith(compareByDescending<Map.Entry<String, Float>> { it.value }.thenBy { it.key })
+            .map { it.key to it.value.aggregate(aggregation) }
+            .sortedWith(compareByDescending<Pair<String, Float>> { it.second }.thenBy { it.first })
             .take(limit)
             .mapNotNull { (slug, score) -> wines[slug]?.let { WineMatch(it, score) } }
     }

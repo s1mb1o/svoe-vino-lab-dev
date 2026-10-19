@@ -2,6 +2,7 @@ package com.alolalab.chtozavino
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -57,5 +58,34 @@ class AcceleratorSettingsTest {
         assertEquals(ModelAccelerator.GPU, settings.sigLip2)
         assertFalse(settings.allowDisCpuFallback)
         assertFalse(settings.allowSigLip2CpuFallback)
+    }
+
+    @Test
+    fun naFlexAutoUsesCpuInsteadOfIncompatibleGpu() {
+        assertEquals(
+            ModelAccelerator.CPU,
+            naFlexBackboneAccelerator(ModelAccelerator.GPU, allowCpuFallback = true),
+        )
+    }
+
+    @Test
+    fun naFlexExplicitGpuReportsCompatibilityError() {
+        val error = assertThrows(ImageRecognitionException::class.java) {
+            naFlexBackboneAccelerator(ModelAccelerator.GPU, allowCpuFallback = false)
+        }
+
+        assertEquals(NAFLEX_GPU_UNSUPPORTED_MESSAGE, error.message)
+    }
+
+    @Test
+    fun baseNaFlexPilotAllowsGpu() {
+        assertEquals(
+            ModelAccelerator.GPU,
+            naFlexBackboneAccelerator(
+                ModelAccelerator.GPU,
+                allowCpuFallback = false,
+                gpuSupported = true,
+            ),
+        )
     }
 }

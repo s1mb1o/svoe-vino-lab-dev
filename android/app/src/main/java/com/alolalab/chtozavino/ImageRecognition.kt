@@ -14,6 +14,8 @@ import com.google.ai.edge.litert.CompiledModel
 import com.google.ai.edge.litert.Environment
 import com.google.ai.edge.litert.TensorBuffer
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -28,6 +30,18 @@ private const val MAX_SOURCE_SIDE = 2048
 
 class ImageRecognitionException(message: String, cause: Throwable? = null) :
     IllegalStateException(message, cause)
+
+private sealed interface LiteRtInput {
+    fun write(target: TensorBuffer)
+}
+
+private class FloatLiteRtInput(private val values: FloatArray) : LiteRtInput {
+    override fun write(target: TensorBuffer) = target.writeFloat(values)
+}
+
+private class LongLiteRtInput(private val values: LongArray) : LiteRtInput {
+    override fun write(target: TensorBuffer) = target.writeLong(values)
+}
 
 private class LiteRtRunner private constructor(
     private val model: CompiledModel,
@@ -79,7 +93,14 @@ private class LiteRtRunner private constructor(
     }
 
     fun runAll(input: FloatArray): List<FloatArray> {
-        inputs[0].writeFloat(input)
+        return runAll(listOf(FloatLiteRtInput(input)))
+    }
+
+    fun runAll(values: List<LiteRtInput>): List<FloatArray> {
+        require(values.size == inputs.size) {
+            "LiteRT получил ${values.size} входов вместо ${inputs.size}."
+        }
+        values.zip(inputs).forEach { (value, target) -> value.write(target) }
         model.run(inputs, outputs)
         return outputs.map(TensorBuffer::readFloat)
     }
@@ -251,12 +272,17 @@ private class YoloBottleSegmenter(
     override fun close() = runner.close()
 }
 
-private class SigLip2Encoder(
+private interface SigLipImageEncoder : AutoCloseable {
+    val accelerator: String
+    fun encode(bitmap: Bitmap, foregroundMask: NaFlexForegroundMask? = null): FloatArray
+}
+
+private class FixedSigLip2Encoder(
     private val modelPath: String,
     accelerator: ModelAccelerator,
     private val allowCpuFallback: Boolean,
     private val environment: Environment? = null,
-) : AutoCloseable {
+) : SigLipImageEncoder {
     private var runner = openRunner(
         modelPath,
         accelerator,
@@ -264,9 +290,9 @@ private class SigLip2Encoder(
         "SigLIP2",
         environment,
     )
-    val accelerator: String get() = runner.accelerator
+    override val accelerator: String get() = runner.accelerator
 
-    fun encode(bitmap: Bitmap): FloatArray {
+    override fun encode(bitmap: Bitmap, foregroundMask: NaFlexForegroundMask?): FloatArray {
         // The GX10 timm image processor first receives the saved 224 px square.
         // It then applies crop_pct=0.9: resize to 248 px and center-crop to 224 px.
         // Keep both resize operations here so Android and the catalogue use the same input.
@@ -306,7 +332,7 @@ private class SigLip2Encoder(
 
     private fun runWithCpuFallback(input: FloatArray): FloatArray {
         try {
-            return normalizeSigLipVector(runner.run(input))
+            return normalizeSigLipVector(runner.run(input), LEGACY_VECTOR_DIMENSION)
         } catch (gpuError: Exception) {
             if (!allowCpuFallback || runner.accelerator != "GPU") throw gpuError
             Log.w(
@@ -322,13 +348,174 @@ private class SigLip2Encoder(
                 throw cpuOpenError
             }
             return try {
-                normalizeSigLipVector(runner.run(input))
+                normalizeSigLipVector(runner.run(input), LEGACY_VECTOR_DIMENSION)
             } catch (cpuError: Exception) {
                 cpuError.addSuppressed(gpuError)
                 throw cpuError
             }
         }
     }
+}
+
+private class NaFlexSplitEncoder(
+    private val backbonePath: String,
+    poolingPath: String,
+    positionEmbeddingsPath: String,
+    maxNumPatches: Int,
+    positionEmbeddingGrid: Int,
+    vectorDimension: Int,
+    private val poolingMode: String,
+    accelerator: ModelAccelerator,
+    private val allowCpuFallback: Boolean,
+    private val environment: Environment? = null,
+) : SigLipImageEncoder {
+    private val preprocessor = NaFlexPreprocessor(
+        maxNumPatches = maxNumPatches,
+        positionEmbeddingGrid = positionEmbeddingGrid,
+        hiddenSize = vectorDimension,
+        positionEmbeddings = readLittleEndianFloats(File(positionEmbeddingsPath)),
+    )
+    private val tokenCount = maxNumPatches
+    private val vectorDimension = vectorDimension
+    private var backbone = openRunner(
+        backbonePath,
+        accelerator,
+        allowCpuFallback,
+        "SigLIP2 NaFlex backbone",
+        environment,
+    )
+    private val pooling = LiteRtRunner.openCpu(poolingPath, environment)
+
+    override val accelerator: String get() = backbone.accelerator
+
+    override fun encode(bitmap: Bitmap, foregroundMask: NaFlexForegroundMask?): FloatArray {
+        val input = preprocessor.prepare(bitmap, foregroundMask)
+        val tokens = runBackboneWithCpuFallback(input)
+        val poolingMask = if (poolingMode == FOREGROUND_POOLING_MODE) {
+            FloatLiteRtInput(input.foregroundWeights)
+        } else {
+            LongLiteRtInput(input.attentionMask)
+        }
+        val output = pooling.runAll(
+            listOf(
+                FloatLiteRtInput(tokens),
+                poolingMask,
+            ),
+        ).singleOrNull() ?: throw ImageRecognitionException(
+            "SigLIP2 NaFlex pooling вернул неизвестное число выходов.",
+        )
+        return normalizeSigLipVector(output, vectorDimension)
+    }
+
+    override fun close() {
+        backbone.close()
+        pooling.close()
+    }
+
+    private fun runBackboneWithCpuFallback(input: NaFlexInput): FloatArray {
+        try {
+            return runBackbone(input)
+        } catch (gpuError: Exception) {
+            if (!allowCpuFallback || backbone.accelerator != "GPU") throw gpuError
+            Log.w(
+                "ChtoZaVino",
+                "SigLIP2 NaFlex GPU inference failed. Retrying the backbone on CPU.",
+                gpuError,
+            )
+            backbone.close()
+            backbone = try {
+                LiteRtRunner.openCpu(backbonePath, environment)
+            } catch (cpuOpenError: Exception) {
+                cpuOpenError.addSuppressed(gpuError)
+                throw cpuOpenError
+            }
+            return try {
+                runBackbone(input)
+            } catch (cpuError: Exception) {
+                cpuError.addSuppressed(gpuError)
+                throw cpuError
+            }
+        }
+    }
+
+    private fun runBackbone(input: NaFlexInput): FloatArray {
+        val output = backbone.runAll(
+            listOf(
+                FloatLiteRtInput(input.patches),
+                FloatLiteRtInput(input.positionalEmbeddings),
+                FloatLiteRtInput(input.backboneAttentionMask),
+            ),
+        ).singleOrNull() ?: throw ImageRecognitionException(
+            "SigLIP2 NaFlex backbone вернул неизвестное число выходов.",
+        )
+        val expectedSize = tokenCount * vectorDimension
+        if (output.size != expectedSize || output.any { !it.isFinite() }) {
+            throw ImageRecognitionException(
+                "SigLIP2 NaFlex backbone вернул некорректный tensor.",
+            )
+        }
+        return output
+    }
+}
+
+private fun readLittleEndianFloats(file: File): FloatArray {
+    val bytes = file.readBytes()
+    if (bytes.size % Float.SIZE_BYTES != 0) {
+        throw ImageRecognitionException("Файл позиционных векторов SigLIP2 повреждён.")
+    }
+    val source = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer()
+    return FloatArray(source.remaining()).also(source::get)
+}
+
+private fun createEncoder(
+    pack: InstalledModelPack,
+    accelerator: ModelAccelerator,
+    allowCpuFallback: Boolean,
+    environment: Environment?,
+): SigLipImageEncoder {
+    if (!pack.isNaFlex()) {
+        return FixedSigLip2Encoder(
+            modelPath = pack.file(LEGACY_SIGLIP_MODEL_FILE).absolutePath,
+            accelerator = accelerator,
+            allowCpuFallback = allowCpuFallback,
+            environment = environment,
+        )
+    }
+    val effectiveAccelerator = naFlexBackboneAccelerator(
+        requested = accelerator,
+        allowCpuFallback = allowCpuFallback,
+        gpuSupported = pack.allowsNaFlexGpuPilot(),
+    )
+    if (effectiveAccelerator != accelerator) {
+        Log.w("ChtoZaVino", "$NAFLEX_GPU_UNSUPPORTED_MESSAGE Используем CPU.")
+    }
+    return NaFlexSplitEncoder(
+        backbonePath = pack.file(NAFLEX_BACKBONE_FILE).absolutePath,
+        poolingPath = pack.file(NAFLEX_POOLING_FILE).absolutePath,
+        positionEmbeddingsPath = pack.file(NAFLEX_POSITIONS_FILE).absolutePath,
+        maxNumPatches = checkNotNull(pack.manifest.maxNumPatches),
+        positionEmbeddingGrid = checkNotNull(pack.manifest.positionEmbeddingGrid),
+        vectorDimension = pack.manifest.vectorDimension,
+        poolingMode = pack.manifest.poolingMode,
+        accelerator = effectiveAccelerator,
+        allowCpuFallback = allowCpuFallback && pack.allowsNaFlexGpuPilot(),
+        environment = environment,
+    )
+}
+
+internal const val NAFLEX_GPU_UNSUPPORTED_MESSAGE =
+    "GPU для SigLIP2 NaFlex выключен: проверка на Pixel 8 выявила несовместимый вектор. " +
+        "Выберите CPU или Auto."
+
+internal fun naFlexBackboneAccelerator(
+    requested: ModelAccelerator,
+    allowCpuFallback: Boolean,
+    gpuSupported: Boolean = false,
+): ModelAccelerator {
+    if (gpuSupported) return requested
+    if (requested != ModelAccelerator.GPU) return requested
+    if (allowCpuFallback) return ModelAccelerator.CPU
+    throw ImageRecognitionException(NAFLEX_GPU_UNSUPPORTED_MESSAGE)
 }
 
 private fun openRunner(
@@ -372,20 +559,21 @@ object AcceleratorDetector {
             ModelAccelerator.CPU
         }
 
-        val sigLip2Input = FloatArray(3 * SIGLIP_SIZE * SIGLIP_SIZE)
-        val sigLip2Path = pack.file("siglip2_base_224_fp16.tflite").absolutePath
         var sigLip2GpuFailure: String? = null
-        val sigLip2 = try {
-            LiteRtRunner.openGpu(sigLip2Path).use { runner ->
-                normalizeSigLipVector(runner.run(sigLip2Input))
-            }
-            ModelAccelerator.GPU
-        } catch (error: Exception) {
-            sigLip2GpuFailure = probeMessage(error)
-            LiteRtRunner.openCpu(sigLip2Path).use { runner ->
-                normalizeSigLipVector(runner.run(sigLip2Input))
-            }
+        val sigLip2 = if (pack.isNaFlex() && !pack.allowsNaFlexGpuPilot()) {
+            // The Pixel 8 LiteRT GPU delegate returns a finite but incompatible vector.
+            // The pack must declare a completed compatibility test before Auto can probe GPU.
+            sigLip2GpuFailure = NAFLEX_GPU_UNSUPPORTED_MESSAGE
             ModelAccelerator.CPU
+        } else {
+            try {
+                probeSigLip2(pack, ModelAccelerator.GPU)
+                ModelAccelerator.GPU
+            } catch (error: Exception) {
+                sigLip2GpuFailure = probeMessage(error)
+                probeSigLip2(pack, ModelAccelerator.CPU)
+                ModelAccelerator.CPU
+            }
         }
         return AcceleratorProbeResult(
             dis = dis,
@@ -393,6 +581,21 @@ object AcceleratorDetector {
             disGpuFailure = disGpuFailure,
             sigLip2GpuFailure = sigLip2GpuFailure,
         )
+    }
+
+    private fun probeSigLip2(pack: InstalledModelPack, accelerator: ModelAccelerator) {
+        val bitmap = Bitmap.createBitmap(64, 128, Bitmap.Config.ARGB_8888)
+        bitmap.eraseColor(Color.WHITE)
+        try {
+            createEncoder(
+                pack = pack,
+                accelerator = accelerator,
+                allowCpuFallback = false,
+                environment = null,
+            ).use { encoder -> encoder.encode(bitmap) }
+        } finally {
+            bitmap.recycle()
+        }
     }
 
     private fun createDisProbeInput(): FloatArray {
@@ -422,7 +625,9 @@ object AcceleratorDetector {
 
 private data class PreparedImage(
     val debug: DebugImages,
-    val modelInput: Bitmap,
+    val squareModelInput: Bitmap,
+    val nativeModelInput: Bitmap,
+    val nativeForegroundMask: NaFlexForegroundMask,
 )
 
 private object ForegroundImageProcessor {
@@ -484,6 +689,7 @@ private object ForegroundImageProcessor {
         val cropPixels = IntArray(width * height)
         crop.getPixels(cropPixels, 0, width, 0, 0, width, height)
         val compositePixels = IntArray(cropPixels.size)
+        val cropMask = FloatArray(cropPixels.size)
         for (y in 0 until height) {
             val sourceY = top + y
             val maskY = (sourceY * maskHeight / source.height).coerceIn(0, maskHeight - 1)
@@ -491,6 +697,7 @@ private object ForegroundImageProcessor {
                 val sourceX = left + x
                 val maskX = (sourceX * maskWidth / source.width).coerceIn(0, maskWidth - 1)
                 val alpha = mask[maskY * maskWidth + maskX].coerceIn(0f, 1f)
+                cropMask[y * width + x] = alpha
                 val pixel = cropPixels[y * width + x]
                 val red = (255f + (((pixel ushr 16) and 0xff) - 255f) * alpha).roundToInt()
                 val green = (255f + (((pixel ushr 8) and 0xff) - 255f) * alpha).roundToInt()
@@ -507,8 +714,6 @@ private object ForegroundImageProcessor {
             drawColor(Color.WHITE)
             drawBitmap(composite, ((squareSide - width) / 2f), ((squareSide - height) / 2f), null)
         }
-        composite.recycle()
-
         val previewWidth: Int
         val previewHeight: Int
         if (source.width >= source.height) {
@@ -533,7 +738,9 @@ private object ForegroundImageProcessor {
 
         return PreparedImage(
             debug = DebugImages(maskPreview, crop, square, segmenterName),
-            modelInput = square,
+            squareModelInput = square,
+            nativeModelInput = composite,
+            nativeForegroundMask = NaFlexForegroundMask(cropMask, width, height),
         )
     }
 }
@@ -545,7 +752,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
     private var disAccelerator: ModelAccelerator? = null
     private var disAllowsFallback: Boolean? = null
     private var yoloSegmenter: YoloBottleSegmenter? = null
-    private var encoder: SigLip2Encoder? = null
+    private var encoder: SigLipImageEncoder? = null
     private var encoderAccelerator: ModelAccelerator? = null
     private var encoderAllowsFallback: Boolean? = null
 
@@ -557,6 +764,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
         accelerators: RecognitionAccelerators,
         segmenterMode: SegmenterMode = SegmenterMode.DIS,
         limit: Int = 5,
+        referenceAggregation: ReferenceAggregation? = null,
     ): RecognitionOutput {
         require(limit in 1..20)
         val segmentationStart = System.nanoTime()
@@ -601,18 +809,34 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
             accelerator = effectiveEmbeddingAccelerator,
             allowCpuFallback = accelerators.allowSigLip2CpuFallback,
         )
-        val embedding = activeEncoder.encode(prepared.modelInput)
+        val modelInput = if (pack.isNaFlex()) {
+            prepared.nativeModelInput
+        } else {
+            prepared.squareModelInput
+        }
+        val embedding = try {
+            activeEncoder.encode(
+                modelInput,
+                if (pack.isNaFlex()) prepared.nativeForegroundMask else null,
+            )
+        } finally {
+            prepared.nativeModelInput.recycle()
+        }
         val embeddingAccelerator = activeEncoder.accelerator
         val embeddingMs = elapsedMs(embeddingStart)
 
         val searchStart = System.nanoTime()
-        val matches = index.search(embedding, limit)
+        val aggregation = referenceAggregation ?: ReferenceAggregation.fromId(
+            pack.manifest.referenceAggregation,
+        )
+        val matches = index.search(embedding, limit, aggregation)
         val searchMs = elapsedMs(searchStart)
         if (matches.isEmpty()) {
             throw ImageRecognitionException("В локальном каталоге нет результата.")
         }
         return RecognitionOutput(
             matches = matches,
+            embedding = embedding,
             debugImages = prepared.debug,
             segmentationMs = segmentationMs,
             embeddingMs = embeddingMs,
@@ -648,14 +872,14 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
     private fun getEncoder(
         accelerator: ModelAccelerator,
         allowCpuFallback: Boolean,
-    ): SigLip2Encoder {
+    ): SigLipImageEncoder {
         if (
             encoder == null || encoderAccelerator != accelerator ||
             encoderAllowsFallback != allowCpuFallback
         ) {
             closeEncoder()
-            encoder = SigLip2Encoder(
-                modelPath = pack.file("siglip2_base_224_fp16.tflite").absolutePath,
+            encoder = createEncoder(
+                pack = pack,
                 accelerator = accelerator,
                 allowCpuFallback = allowCpuFallback,
                 environment = environment,

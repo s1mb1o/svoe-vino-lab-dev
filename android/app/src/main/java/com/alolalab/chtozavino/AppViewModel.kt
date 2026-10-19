@@ -44,8 +44,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var automaticSigLip2Accelerator = ModelAccelerator.fromPreference(
         preferences.getString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, null),
     )
+    private val currentAcceleratorCheckKey = installedPack?.acceleratorCheckKey()
     private val needsInitialAcceleratorCheck =
         preferences.getInt(KEY_ACCELERATOR_CHECK_VERSION, 0) != ACCELERATOR_CHECK_VERSION ||
+            preferences.getString(KEY_ACCELERATOR_CHECK_PACK, null) != currentAcceleratorCheckKey ||
             automaticDisAccelerator == null || automaticSigLip2Accelerator == null
     private val needsBuiltInPack = installedPack?.hasYolo() != true
 
@@ -251,9 +253,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 .onSuccess { pack ->
                     installedPack = pack
                     replaceEngine(null)
+                    if (pack.isNaFlex()) {
+                        automaticSigLip2Accelerator = ModelAccelerator.CPU
+                        preferences.edit()
+                            .putString(
+                                KEY_AUTOMATIC_SIGLIP2_ACCELERATOR,
+                                ModelAccelerator.CPU.name,
+                            )
+                            .remove(KEY_ACCELERATOR_CHECK_PACK)
+                            .apply()
+                    }
                     mutableState.update {
                         it.copy(
                             modelPack = pack.info,
+                            automaticSigLip2Accelerator = automaticSigLip2Accelerator,
                             isBusy = false,
                             progressText = null,
                             technicalText = "Пакет моделей установлен.",
@@ -467,6 +480,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             automaticSigLip2Accelerator = result.sigLip2
             preferences.edit()
                 .putInt(KEY_ACCELERATOR_CHECK_VERSION, ACCELERATOR_CHECK_VERSION)
+                .putString(KEY_ACCELERATOR_CHECK_PACK, pack.acceleratorCheckKey())
                 .putString(KEY_AUTOMATIC_DIS_ACCELERATOR, result.dis.name)
                 .putString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, result.sigLip2.name)
                 .apply()
@@ -561,7 +575,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     companion object {
-        private const val ACCELERATOR_CHECK_VERSION = 1
+        private const val ACCELERATOR_CHECK_VERSION = 2
         private const val KEY_ACCELERATOR_CHECK_VERSION = "accelerator_check_version"
+        private const val KEY_ACCELERATOR_CHECK_PACK = "accelerator_check_pack"
     }
+}
+
+private fun InstalledModelPack.acceleratorCheckKey(): String {
+    val sigLipFile = if (isNaFlex()) NAFLEX_BACKBONE_FILE else LEGACY_SIGLIP_MODEL_FILE
+    return listOf(
+        manifest.sigLip2Runtime,
+        manifest.maxNumPatches ?: 0,
+        manifest.files.getValue("dis.tflite").sha256,
+        manifest.files.getValue(sigLipFile).sha256,
+    ).joinToString(":")
 }

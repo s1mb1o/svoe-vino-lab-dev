@@ -13,36 +13,157 @@ import java.util.zip.ZipInputStream
 private const val PACK_FORMAT = "svoe-vino-android-model-pack"
 private const val PACK_VERSION_WITH_IMAGES = 2
 private const val PACK_VERSION_WITH_YOLO = 3
-private val SUPPORTED_PACK_VERSIONS = setOf(1, PACK_VERSION_WITH_IMAGES, PACK_VERSION_WITH_YOLO)
-private const val PIPELINE_ID = "dis-white-square-timm-crop090-v2"
-private const val SIGLIP_MODEL = "vit_base_patch16_siglip_224.v2_webli"
+private const val PACK_VERSION_WITH_NAFLEX = 4
+private const val PACK_VERSION_WITH_BASE_NAFLEX = 5
+private val SUPPORTED_PACK_VERSIONS = 1..PACK_VERSION_WITH_BASE_NAFLEX
+internal const val LEGACY_SIGLIP_RUNTIME = "fixed-224"
+internal const val NAFLEX_SIGLIP_RUNTIME = "naflex-exact-split"
+internal const val LEGACY_PIPELINE_ID = "dis-white-square-timm-crop090-v2"
+internal const val NAFLEX_PIPELINE_ID = "foreground-white-native-naflex-v1"
+internal const val LEGACY_SIGLIP_MODEL = "vit_base_patch16_siglip_224.v2_webli"
+internal const val NAFLEX_SIGLIP_MODEL = "google/siglip2-so400m-patch16-naflex"
+internal const val BASE_NAFLEX_SIGLIP_MODEL = "google/siglip2-base-patch16-naflex"
+internal const val STANDARD_POOLING_MODE = "standard"
+internal const val FOREGROUND_POOLING_MODE = "foreground-1.0-background-0.1"
+internal const val MAX_REFERENCE_AGGREGATION = "max"
+internal const val TOP2_MEAN_REFERENCE_AGGREGATION = "top2-mean"
 private const val DIS_MODEL_SHA256 =
     "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
 private const val SIGLIP_MODEL_SHA256 =
     "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
 private const val YOLO_MODEL_SHA256 =
     "3a9d800e59071e32516511bd788bf73a229e8b62c09eed96d6789894bc238acf"
-const val VECTOR_DIMENSION = 768
+internal const val LEGACY_VECTOR_DIMENSION = 768
+internal const val NAFLEX_VECTOR_DIMENSION = 1152
+internal const val BASE_NAFLEX_VECTOR_DIMENSION = 768
 
-private val BASE_PAYLOADS = setOf(
+private val COMMON_PAYLOADS = setOf(
     "dis.tflite",
-    "siglip2_base_224_fp16.tflite",
     "vectors.f32",
     "candidates.jsonl",
     "wines.jsonl",
     "codes.jsonl",
 )
+internal const val LEGACY_SIGLIP_MODEL_FILE = "siglip2_base_224_fp16.tflite"
+internal const val NAFLEX_BACKBONE_FILE = "siglip2_naflex_backbone.tflite"
+internal const val NAFLEX_POOLING_FILE = "siglip2_naflex_pooling.tflite"
+internal const val NAFLEX_POSITIONS_FILE = "siglip2_naflex_position_embeddings.f32"
+private val LEGACY_SIGLIP_PAYLOADS = setOf(LEGACY_SIGLIP_MODEL_FILE)
+private val NAFLEX_SIGLIP_PAYLOADS = setOf(
+    NAFLEX_BACKBONE_FILE,
+    NAFLEX_POOLING_FILE,
+    NAFLEX_POSITIONS_FILE,
+)
 private const val YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
 private const val IMAGE_ARCHIVE = "images.zip"
 private const val BUILT_IN_PACK = "default_model_pack.zip"
-private val ALLOWED_ENTRIES = BASE_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
-private const val MAX_PACK_BYTES = 700L * 1024L * 1024L
+private val ALLOWED_ENTRIES = COMMON_PAYLOADS + LEGACY_SIGLIP_PAYLOADS +
+    NAFLEX_SIGLIP_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
+private const val MAX_PACK_BYTES = 2L * 1024L * 1024L * 1024L
 private const val MAX_IMAGE_BYTES = 512L * 1024L * 1024L
 private const val MAX_IMAGE_COUNT = 5_000
 
 class ModelPackException(message: String) : IllegalArgumentException(message)
 
 data class PackFile(val bytes: Long, val sha256: String)
+
+internal data class ModelPackContract(
+    val formatVersion: Int,
+    val isNaFlex: Boolean,
+    val sigLip2Runtime: String,
+    val vectorDimension: Int,
+    val patchSize: Int?,
+    val maxNumPatches: Int?,
+    val positionEmbeddingGrid: Int?,
+    val poolingMode: String,
+    val referenceAggregation: String,
+    val gpuCompatible: Boolean,
+)
+
+internal fun parseModelPackContract(json: JSONObject): ModelPackContract {
+    val formatVersion = json.optInt("format_version")
+    if (json.optString("format") != PACK_FORMAT || formatVersion !in SUPPORTED_PACK_VERSIONS) {
+        throw ModelPackException("Версия формата пакета не поддерживается.")
+    }
+    val isNaFlex = formatVersion >= PACK_VERSION_WITH_NAFLEX
+    val isBaseNaFlex = formatVersion >= PACK_VERSION_WITH_BASE_NAFLEX
+    val expectedPipeline = if (isNaFlex) NAFLEX_PIPELINE_ID else LEGACY_PIPELINE_ID
+    val expectedModel = when {
+        isBaseNaFlex -> BASE_NAFLEX_SIGLIP_MODEL
+        isNaFlex -> NAFLEX_SIGLIP_MODEL
+        else -> LEGACY_SIGLIP_MODEL
+    }
+    val expectedRuntime = if (isNaFlex) NAFLEX_SIGLIP_RUNTIME else LEGACY_SIGLIP_RUNTIME
+    val expectedDimension = when {
+        isBaseNaFlex -> BASE_NAFLEX_VECTOR_DIMENSION
+        isNaFlex -> NAFLEX_VECTOR_DIMENSION
+        else -> LEGACY_VECTOR_DIMENSION
+    }
+    if (json.optString("pipeline") != expectedPipeline) {
+        throw ModelPackException("Пакет использует другой конвейер обработки изображения.")
+    }
+    if (json.optString("model") != expectedModel) {
+        throw ModelPackException("Пакет использует другую модель SigLIP2.")
+    }
+    val sigLip2Runtime = json.optString("siglip2_runtime", LEGACY_SIGLIP_RUNTIME)
+    if (sigLip2Runtime != expectedRuntime) {
+        throw ModelPackException("Пакет использует несовместимый runtime SigLIP2.")
+    }
+    val vectorDimension = json.optInt("vector_dim")
+    if (vectorDimension != expectedDimension) {
+        throw ModelPackException("Размерность векторов должна быть $expectedDimension.")
+    }
+    val patchSize = if (isNaFlex) json.optInt("patch_size", -1) else null
+    val maxNumPatches = if (isNaFlex) json.optInt("max_num_patches", -1) else null
+    val positionEmbeddingGrid = if (isNaFlex) {
+        json.optInt("position_embedding_grid", -1)
+    } else {
+        null
+    }
+    if (isNaFlex && patchSize != NAFLEX_PATCH_SIZE) {
+        throw ModelPackException("Размер патча SigLIP2 NaFlex должен быть $NAFLEX_PATCH_SIZE.")
+    }
+    if (isNaFlex && maxNumPatches !in setOf(256, 512, 1024)) {
+        throw ModelPackException("Число патчей SigLIP2 NaFlex должно быть 256, 512 или 1024.")
+    }
+    if (isNaFlex && positionEmbeddingGrid != 16) {
+        throw ModelPackException("Сетка позиционных векторов SigLIP2 NaFlex должна быть 16.")
+    }
+    val poolingMode = json.optString("pooling_mode", STANDARD_POOLING_MODE)
+    if (poolingMode !in setOf(STANDARD_POOLING_MODE, FOREGROUND_POOLING_MODE)) {
+        throw ModelPackException("Пакет использует неизвестный pooling SigLIP2 NaFlex.")
+    }
+    if (!isBaseNaFlex && poolingMode != STANDARD_POOLING_MODE) {
+        throw ModelPackException("Foreground pooling доступен только в пакете Base NaFlex.")
+    }
+    val referenceAggregation = json.optString(
+        "reference_aggregation",
+        MAX_REFERENCE_AGGREGATION,
+    )
+    if (referenceAggregation !in setOf(
+            MAX_REFERENCE_AGGREGATION,
+            TOP2_MEAN_REFERENCE_AGGREGATION,
+        )
+    ) {
+        throw ModelPackException("Пакет использует неизвестное объединение эталонов.")
+    }
+    val gpuCompatible = json.optBoolean("gpu_compatible", false)
+    if (!isBaseNaFlex && gpuCompatible) {
+        throw ModelPackException("GPU совместимость доступна только в пакете Base NaFlex.")
+    }
+    return ModelPackContract(
+        formatVersion = formatVersion,
+        isNaFlex = isNaFlex,
+        sigLip2Runtime = sigLip2Runtime,
+        vectorDimension = vectorDimension,
+        patchSize = patchSize,
+        maxNumPatches = maxNumPatches,
+        positionEmbeddingGrid = positionEmbeddingGrid,
+        poolingMode = poolingMode,
+        referenceAggregation = referenceAggregation,
+        gpuCompatible = gpuCompatible,
+    )
+}
 
 data class ModelPackManifest(
     val formatVersion: Int,
@@ -52,6 +173,14 @@ data class ModelPackManifest(
     val imageCount: Int,
     val installedAt: Long,
     val files: Map<String, PackFile>,
+    val vectorDimension: Int = LEGACY_VECTOR_DIMENSION,
+    val sigLip2Runtime: String = LEGACY_SIGLIP_RUNTIME,
+    val patchSize: Int? = null,
+    val maxNumPatches: Int? = null,
+    val positionEmbeddingGrid: Int? = null,
+    val poolingMode: String = STANDARD_POOLING_MODE,
+    val referenceAggregation: String = MAX_REFERENCE_AGGREGATION,
+    val gpuCompatible: Boolean = false,
 )
 
 data class InstalledModelPack(
@@ -70,6 +199,10 @@ data class InstalledModelPack(
 
     fun hasYolo(): Boolean = manifest.formatVersion >= PACK_VERSION_WITH_YOLO &&
         file(YOLO_MODEL_FILE).isFile
+
+    fun isNaFlex(): Boolean = manifest.sigLip2Runtime == NAFLEX_SIGLIP_RUNTIME
+
+    fun allowsNaFlexGpuPilot(): Boolean = manifest.gpuCompatible
 }
 
 class ModelPackManager(private val context: Context) {
@@ -141,7 +274,7 @@ class ModelPackManager(private val context: Context) {
                         if (count < 0) break
                         total += count
                         if (total > MAX_PACK_BYTES) {
-                            throw ModelPackException("Пакет моделей превышает 700 МБ.")
+                            throw ModelPackException("Пакет моделей превышает 2 ГБ.")
                         }
                         output.write(buffer, 0, count)
                     }
@@ -149,7 +282,7 @@ class ModelPackManager(private val context: Context) {
                 zip.closeEntry()
             }
         }
-        val missing = BASE_PAYLOADS + "manifest.json" - found
+        val missing = COMMON_PAYLOADS + "manifest.json" - found
         if (missing.isNotEmpty()) {
             throw ModelPackException("В пакете нет файлов: ${missing.sorted().joinToString()}.")
         }
@@ -159,19 +292,14 @@ class ModelPackManager(private val context: Context) {
         val manifestFile = File(directory, "manifest.json")
         val json = runCatching { JSONObject(manifestFile.readText()) }
             .getOrElse { throw ModelPackException("Некорректный manifest.json: ${it.message}") }
-        val formatVersion = json.optInt("format_version")
-        if (json.optString("format") != PACK_FORMAT || formatVersion !in SUPPORTED_PACK_VERSIONS) {
-            throw ModelPackException("Версия формата пакета не поддерживается.")
-        }
-        if (json.optString("pipeline") != PIPELINE_ID) {
-            throw ModelPackException("Пакет использует другой конвейер обработки изображения.")
-        }
-        if (json.optString("model") != SIGLIP_MODEL) {
-            throw ModelPackException("Пакет использует другую модель SigLIP2.")
-        }
-        if (json.optInt("vector_dim") != VECTOR_DIMENSION) {
-            throw ModelPackException("Размерность векторов должна быть $VECTOR_DIMENSION.")
-        }
+        val contract = parseModelPackContract(json)
+        val formatVersion = contract.formatVersion
+        val isNaFlex = contract.isNaFlex
+        val sigLip2Runtime = contract.sigLip2Runtime
+        val vectorDimension = contract.vectorDimension
+        val patchSize = contract.patchSize
+        val maxNumPatches = contract.maxNumPatches
+        val positionEmbeddingGrid = contract.positionEmbeddingGrid
         val vectorCount = json.optInt("vector_count", -1)
         val wineCount = json.optInt("wine_count", -1)
         val imageCount = if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
@@ -188,13 +316,24 @@ class ModelPackManager(private val context: Context) {
 
         val fileJson = json.optJSONObject("files")
             ?: throw ModelPackException("В manifest.json нет объекта files.")
-        val requiredPayloads = BASE_PAYLOADS + if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
+        val requiredPayloads = COMMON_PAYLOADS + if (isNaFlex) {
+            NAFLEX_SIGLIP_PAYLOADS
+        } else {
+            LEGACY_SIGLIP_PAYLOADS
+        } + if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
             setOf(IMAGE_ARCHIVE)
         } else {
             emptySet()
         } + if (formatVersion >= PACK_VERSION_WITH_YOLO) setOf(YOLO_MODEL_FILE) else emptySet()
         if (fileJson.keys().asSequence().toSet() != requiredPayloads) {
             throw ModelPackException("Список файлов в manifest.json не совпадает с контрактом.")
+        }
+        val actualPayloads = directory.listFiles().orEmpty()
+            .filter(File::isFile)
+            .map(File::getName)
+            .toSet()
+        if (actualPayloads != requiredPayloads + "manifest.json") {
+            throw ModelPackException("Файлы пакета не совпадают с manifest.json.")
         }
         val files = requiredPayloads.associateWith { name ->
             val record = fileJson.optJSONObject(name)
@@ -213,15 +352,24 @@ class ModelPackManager(private val context: Context) {
             }
             PackFile(bytes, sha256)
         }
-        val expectedVectorBytes = vectorCount.toLong() * VECTOR_DIMENSION * Float.SIZE_BYTES
+        val expectedVectorBytes = vectorCount.toLong() * vectorDimension * Float.SIZE_BYTES
         if (files.getValue("vectors.f32").bytes != expectedVectorBytes) {
             throw ModelPackException("Размер vectors.f32 не совпадает с числом векторов.")
         }
         if (files.getValue("dis.tflite").sha256 != DIS_MODEL_SHA256) {
             throw ModelPackException("Пакет содержит другую модель DIS.")
         }
-        if (files.getValue("siglip2_base_224_fp16.tflite").sha256 != SIGLIP_MODEL_SHA256) {
+        if (!isNaFlex && files.getValue(LEGACY_SIGLIP_MODEL_FILE).sha256 != SIGLIP_MODEL_SHA256) {
             throw ModelPackException("Пакет содержит другую модель SigLIP2.")
+        }
+        if (isNaFlex) {
+            val positionBytes = positionEmbeddingGrid!!.toLong() * positionEmbeddingGrid *
+                vectorDimension * Float.SIZE_BYTES
+            if (files.getValue(NAFLEX_POSITIONS_FILE).bytes != positionBytes) {
+                throw ModelPackException(
+                    "Размер позиционных векторов SigLIP2 NaFlex не совпадает с manifest.json.",
+                )
+            }
         }
         if (
             formatVersion >= PACK_VERSION_WITH_YOLO &&
@@ -240,6 +388,14 @@ class ModelPackManager(private val context: Context) {
                 imageCount = imageCount,
                 installedAt = installedAt,
                 files = files,
+                vectorDimension = vectorDimension,
+                sigLip2Runtime = sigLip2Runtime,
+                patchSize = patchSize,
+                maxNumPatches = maxNumPatches,
+                positionEmbeddingGrid = positionEmbeddingGrid,
+                poolingMode = contract.poolingMode,
+                referenceAggregation = contract.referenceAggregation,
+                gpuCompatible = contract.gpuCompatible,
             ),
         )
     }

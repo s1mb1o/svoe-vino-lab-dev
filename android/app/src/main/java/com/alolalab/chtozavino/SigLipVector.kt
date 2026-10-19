@@ -4,7 +4,7 @@ import kotlin.math.sqrt
 
 internal fun normalizeSigLipVector(
     vector: FloatArray,
-    expectedSize: Int = VECTOR_DIMENSION,
+    expectedSize: Int,
 ): FloatArray {
     if (vector.size != expectedSize) {
         throw ImageRecognitionException(

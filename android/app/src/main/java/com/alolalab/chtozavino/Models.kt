@@ -33,6 +33,7 @@ data class DebugImages(
 
 data class RecognitionOutput(
     val matches: List<WineMatch>,
+    val embedding: FloatArray,
     val debugImages: DebugImages,
     val segmentationMs: Long,
     val embeddingMs: Long,

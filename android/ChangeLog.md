@@ -2,6 +2,30 @@
 
 ## 2026-10-19
 
+### SigLIP2 NaFlex split runtimes and model packs
+
+- Added model-pack format version 4 for `google/siglip2-so400m-patch16-naflex`.
+- Added model-pack format version 5 for `google/siglip2-base-patch16-naflex`.
+- Added 768-dimensional Base NaFlex p256 and p512 support.
+- Added a LiteRT backbone that returns NaFlex patch tokens.
+- Added a separate LiteRT pooling model with the original `post_layernorm`, attention
+  pooling, pooling LayerNorm, and MLP residual.
+- Added Android NaFlex preprocessing with native aspect ratio, 16 by 16 patches, exact
+  patch-limit selection, resized position vectors, and padding masks.
+- Added support for 256, 512, and 1,024 patch limits.
+- Added 1,152-dimensional catalogue vectors and dynamic catalogue validation.
+- Added foreground-aware 5a attention pooling.
+- Added `max` and `top2-mean` reference aggregation.
+- Added an export tool with PyTorch split parity and LiteRT parity checks.
+- Added format version 4 support to the catalogue pack builder.
+- Added focused Kotlin and Python tests for preprocessing, pack validation, and the
+  model split.
+- Added a `gpu_compatible` model-pack gate.
+- Made all pack builders disable NaFlex GPU by default.
+- Made `Auto` select LiteRT CPU/XNNPACK for an unverified split runtime.
+- Made explicit GPU selection report a clear error before it can return a false match.
+- Keyed the saved accelerator check to the installed model files and patch limit.
+
 ### HEIC and HEIF gallery input
 
 - Added `image/heic` and `image/heif` to the gallery picker allowlist.

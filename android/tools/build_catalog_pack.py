@@ -44,6 +44,8 @@ DEFAULT_SIGLIP_MODEL = (
 )
 DEFAULT_YOLO_MODEL = Path.home() / ".config" / "Ultralytics" / "yolo26n-seg_w8a32.tflite"
 PACK_VERSION = 3
+NAFLEX_PACK_VERSION = 4
+BASE_NAFLEX_PACK_VERSION = 5
 IMAGE_SELECTION = "package_cut_transparent_webp"
 IMAGE_ARCHIVE = "images.zip"
 DISPLAY_IMAGE_FORMAT = "webp"
@@ -111,18 +113,25 @@ def source_rows(database):
     return wines, codes
 
 
-def load_index(catalog, embedding_name):
+def load_index(
+        catalog,
+        embedding_name,
+        model=build_model_pack.MODEL,
+        dimension=build_model_pack.DIMENSION):
     root = catalog / "embeddings" / embedding_name
     index = json_file(root / "index.json")
     if index.get("name") != embedding_name:
         raise CatalogPackError("the embedding index name does not match the requested name")
-    if index.get("dim") != build_model_pack.DIMENSION:
+    if index.get("dim") != dimension:
         raise CatalogPackError(
-            f"the embedding dimension must be {build_model_pack.DIMENSION}"
+            f"the embedding dimension must be {dimension}"
         )
     config = index.get("config") or {}
-    if config.get("model") != build_model_pack.MODEL:
-        raise CatalogPackError(f"the embedding model must be {build_model_pack.MODEL}")
+    accepted_models = set(model) if isinstance(model, (tuple, list, set)) else {model}
+    if config.get("model") not in accepted_models:
+        raise CatalogPackError(
+            f"the embedding model must be one of {sorted(accepted_models)}"
+        )
     if config.get("rotation_step") != REFERENCE_ROTATION_STEP_DEGREES:
         raise CatalogPackError(
             f"the Android embedding rotation_step must be "
@@ -133,9 +142,9 @@ def load_index(catalog, embedding_name):
         raise CatalogPackError("the embedding index has an invalid vectors_file")
     vectors = np.load(root / vector_name, allow_pickle=False)
     if (vectors.dtype != np.float32 or vectors.ndim != 2 or
-            vectors.shape[1] != build_model_pack.DIMENSION):
+            vectors.shape[1] != dimension):
         raise CatalogPackError(
-            f"the embedding vectors must be float32 [N,{build_model_pack.DIMENSION}]"
+            f"the embedding vectors must be float32 [N,{dimension}]"
         )
     if not np.isfinite(vectors).all():
         raise CatalogPackError("the embedding vectors contain a non-finite value")
@@ -173,6 +182,40 @@ def verify_model(path, expected, label):
         raise CatalogPackError(f"{label} does not exist: {path}")
     if file_digest(path) != expected:
         raise CatalogPackError(f"{label} does not match the verified model")
+
+
+def load_naflex_models(directory):
+    """Validate one split export and return its metadata and model files."""
+    root = Path(directory).resolve()
+    metadata = json_file(root / "metadata.json")
+    model_dimensions = {
+        build_model_pack.NAFLEX_MODEL: build_model_pack.NAFLEX_DIMENSION,
+        build_model_pack.BASE_NAFLEX_MODEL: build_model_pack.BASE_NAFLEX_DIMENSION,
+    }
+    model = metadata.get("model")
+    if (metadata.get("format") != "svoe-vino-siglip2-naflex-split" or
+            metadata.get("format_version") != 1 or
+            model not in model_dimensions or
+            metadata.get("patch_size") != build_model_pack.NAFLEX_PATCH_SIZE or
+            metadata.get("max_num_patches") not in {256, 512, 1024} or
+            metadata.get("position_embedding_grid") !=
+            build_model_pack.NAFLEX_POSITION_GRID or
+            metadata.get("vector_dim") != model_dimensions.get(model) or
+            metadata.get("pooling_mode", build_model_pack.STANDARD_POOLING) not in {
+                build_model_pack.STANDARD_POOLING,
+                build_model_pack.FOREGROUND_POOLING,
+            }):
+        raise CatalogPackError("the NaFlex split metadata is incompatible")
+    records = metadata.get("files") or {}
+    files = {}
+    for name in build_model_pack.NAFLEX_MODEL_FILES:
+        path = root / name
+        record = records.get(name) or {}
+        if (not path.is_file() or record.get("bytes") != path.stat().st_size or
+                record.get("sha256") != file_digest(path)):
+            raise CatalogPackError(f"the NaFlex split file is invalid: {name}")
+        files[name] = path
+    return metadata, files
 
 
 def catalogue_image_path(catalog, folder, digest, extension):
@@ -226,23 +269,61 @@ def validate_pack(path):
     """Validate one completed built-in pack and return its summary."""
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
-        expected = {"manifest.json", *PAYLOADS}
+        manifest = json.loads(archive.read("manifest.json"))
+        is_naflex = manifest.get("format_version") in {
+            NAFLEX_PACK_VERSION, BASE_NAFLEX_PACK_VERSION,
+        }
+        payloads = (
+            tuple(name for name in build_model_pack.PAYLOADS
+                  if name != "siglip2_base_224_fp16.tflite")
+            + build_model_pack.NAFLEX_MODEL_FILES
+            + (build_model_pack.YOLO_MODEL_FILE, IMAGE_ARCHIVE)
+            if is_naflex else PAYLOADS
+        )
+        expected = {"manifest.json", *payloads}
         if len(names) != len(set(names)) or set(names) != expected:
             raise CatalogPackError("the pack root payload list is invalid")
-        manifest = json.loads(archive.read("manifest.json"))
         if (manifest.get("format") != build_model_pack.PACK_FORMAT or
-                manifest.get("format_version") != PACK_VERSION):
+                manifest.get("format_version") not in {
+                    PACK_VERSION, NAFLEX_PACK_VERSION, BASE_NAFLEX_PACK_VERSION,
+                }):
             raise CatalogPackError("the pack format is invalid")
-        if set(manifest.get("files") or {}) != set(PAYLOADS):
+        if is_naflex:
+            expected_model = (
+                build_model_pack.BASE_NAFLEX_MODEL
+                if manifest.get("format_version") == BASE_NAFLEX_PACK_VERSION
+                else build_model_pack.NAFLEX_MODEL
+            )
+            expected_dimension = (
+                build_model_pack.BASE_NAFLEX_DIMENSION
+                if manifest.get("format_version") == BASE_NAFLEX_PACK_VERSION
+                else build_model_pack.NAFLEX_DIMENSION
+            )
+            if (manifest.get("siglip2_runtime") != build_model_pack.NAFLEX_RUNTIME or
+                    manifest.get("pipeline") != build_model_pack.NAFLEX_PIPELINE or
+                    manifest.get("model") != expected_model or
+                    manifest.get("vector_dim") != expected_dimension or
+                    manifest.get("patch_size") != build_model_pack.NAFLEX_PATCH_SIZE or
+                    manifest.get("max_num_patches") not in {256, 512, 1024} or
+                    manifest.get("position_embedding_grid") !=
+                    build_model_pack.NAFLEX_POSITION_GRID or
+                    manifest.get("pooling_mode", build_model_pack.STANDARD_POOLING) not in {
+                        build_model_pack.STANDARD_POOLING,
+                        build_model_pack.FOREGROUND_POOLING,
+                    } or
+                    manifest.get("reference_aggregation", "max") not in
+                    build_model_pack.REFERENCE_AGGREGATIONS):
+                raise CatalogPackError("the NaFlex model contract is invalid")
+        if set(manifest.get("files") or {}) != set(payloads):
             raise CatalogPackError("manifest.files does not match the pack payloads")
-        for name in PAYLOADS:
+        for name in payloads:
             record = manifest["files"][name]
             info = archive.getinfo(name)
             if record.get("bytes") != info.file_size:
                 raise CatalogPackError(f"the byte length of {name} is invalid")
             if record.get("sha256") != archive_digest(archive, name):
                 raise CatalogPackError(f"the SHA-256 of {name} is invalid")
-        vector_bytes = manifest["vector_count"] * build_model_pack.DIMENSION * 4
+        vector_bytes = manifest["vector_count"] * manifest["vector_dim"] * 4
         if archive.getinfo("vectors.f32").file_size != vector_bytes:
             raise CatalogPackError("vectors.f32 has an invalid byte length")
         if manifest.get("reference_rotation_step_degrees") != (
@@ -318,14 +399,57 @@ def build(args):
     database = catalog / "catalog.sqlite3"
     output = Path(args.out).resolve()
     dis_model = Path(args.dis_model).resolve()
-    siglip_model = Path(args.siglip_model).resolve()
+    siglip_runtime = getattr(args, "siglip_runtime", build_model_pack.LEGACY_RUNTIME)
+    if siglip_runtime not in {
+            build_model_pack.LEGACY_RUNTIME, build_model_pack.NAFLEX_RUNTIME}:
+        raise CatalogPackError(f"unsupported SigLIP2 runtime: {siglip_runtime}")
+    is_naflex = siglip_runtime == build_model_pack.NAFLEX_RUNTIME
+    siglip_model = Path(args.siglip_model).resolve() if not is_naflex else None
     yolo_model = Path(args.yolo_model).resolve()
     if not database.is_file():
         raise CatalogPackError(f"catalog database does not exist: {database}")
     verify_model(dis_model, build_model_pack.DIS_MODEL_SHA256, "DIS model")
-    verify_model(siglip_model, build_model_pack.SIGLIP_MODEL_SHA256, "SigLIP2 model")
+    if not is_naflex:
+        verify_model(siglip_model, build_model_pack.SIGLIP_MODEL_SHA256, "SigLIP2 model")
     verify_model(yolo_model, build_model_pack.YOLO_MODEL_SHA256, "YOLO26n-seg model")
-    _, index, vectors, items = load_index(catalog, args.embedding)
+    naflex_metadata = None
+    naflex_files = None
+    if is_naflex:
+        naflex_directory = getattr(args, "naflex_model_dir", None)
+        if not naflex_directory:
+            raise CatalogPackError("--naflex-model-dir is required for the NaFlex runtime")
+        naflex_metadata, naflex_files = load_naflex_models(naflex_directory)
+    model = naflex_metadata["model"] if is_naflex else build_model_pack.MODEL
+    index_models = (
+        (
+            model,
+            "siglip2-so400m-patch16-naflex",
+            "siglip2-base-patch16-naflex",
+        )
+        if is_naflex else model
+    )
+    dimension = naflex_metadata["vector_dim"] if is_naflex else build_model_pack.DIMENSION
+    pipeline = (
+        build_model_pack.NAFLEX_PIPELINE if is_naflex else build_model_pack.PIPELINE
+    )
+    pack_version = (
+        BASE_NAFLEX_PACK_VERSION
+        if is_naflex and model == build_model_pack.BASE_NAFLEX_MODEL
+        else NAFLEX_PACK_VERSION if is_naflex else PACK_VERSION
+    )
+    payloads = (
+        tuple(name for name in build_model_pack.PAYLOADS
+              if name != "siglip2_base_224_fp16.tflite")
+        + build_model_pack.NAFLEX_MODEL_FILES
+        + (build_model_pack.YOLO_MODEL_FILE, IMAGE_ARCHIVE)
+        if is_naflex else PAYLOADS
+    )
+    _, index, vectors, items = load_index(
+        catalog,
+        args.embedding,
+        model=index_models,
+        dimension=dimension,
+    )
     wines, codes = source_rows(database)
 
     selected_vectors = []
@@ -406,7 +530,11 @@ def build(args):
     with tempfile.TemporaryDirectory(prefix="svoe-vino-android-catalog-") as temporary:
         root = Path(temporary)
         shutil.copyfile(dis_model, root / "dis.tflite")
-        shutil.copyfile(siglip_model, root / "siglip2_base_224_fp16.tflite")
+        if is_naflex:
+            for name, path in naflex_files.items():
+                shutil.copyfile(path, root / name)
+        else:
+            shutil.copyfile(siglip_model, root / "siglip2_base_224_fp16.tflite")
         shutil.copyfile(yolo_model, root / build_model_pack.YOLO_MODEL_FILE)
         (root / "vectors.f32").write_bytes(matrix.tobytes(order="C"))
         build_model_pack.write_jsonl(root / "candidates.jsonl", candidate_rows)
@@ -428,16 +556,16 @@ def build(args):
         build_model_pack.write_jsonl(root / "wines.jsonl", wine_rows)
         files = {
             name: {"bytes": (root / name).stat().st_size, "sha256": file_digest(root / name)}
-            for name in PAYLOADS
+            for name in payloads
         }
         manifest = {
             "format": build_model_pack.PACK_FORMAT,
-            "format_version": PACK_VERSION,
+            "format_version": pack_version,
             "version": args.version,
             "created_at_epoch_ms": int(time.time() * 1000),
-            "pipeline": build_model_pack.PIPELINE,
-            "model": build_model_pack.MODEL,
-            "vector_dim": build_model_pack.DIMENSION,
+            "pipeline": pipeline,
+            "model": model,
+            "vector_dim": dimension,
             "vector_count": len(matrix),
             "wine_count": len(wine_rows),
             "image_count": len(image_sources),
@@ -457,6 +585,19 @@ def build(args):
             },
             "files": files,
         }
+        if is_naflex:
+            manifest.update({
+                "siglip2_runtime": build_model_pack.NAFLEX_RUNTIME,
+                "patch_size": naflex_metadata["patch_size"],
+                "max_num_patches": naflex_metadata["max_num_patches"],
+                "position_embedding_grid": naflex_metadata["position_embedding_grid"],
+                "model_revision": naflex_metadata["revision"],
+                "pooling_mode": naflex_metadata.get(
+                    "pooling_mode", build_model_pack.STANDARD_POOLING,
+                ),
+                "reference_aggregation": getattr(args, "reference_aggregation", "max"),
+                "gpu_compatible": False,
+            })
         (root / "manifest.json").write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
@@ -465,7 +606,7 @@ def build(args):
         try:
             with zipfile.ZipFile(temporary_output, "w", compression=zipfile.ZIP_STORED) as pack:
                 pack.write(root / "manifest.json", "manifest.json")
-                for name in PAYLOADS:
+                for name in payloads:
                     pack.write(root / name, name)
             summary = validate_pack(temporary_output)
             if output.exists() and not args.replace:
@@ -492,6 +633,17 @@ def main(argv=None):
     parser.add_argument("--embedding", default=DEFAULT_EMBEDDING)
     parser.add_argument("--dis-model", default=str(DEFAULT_DIS_MODEL))
     parser.add_argument("--siglip-model", default=str(DEFAULT_SIGLIP_MODEL))
+    parser.add_argument(
+        "--siglip-runtime",
+        choices=(build_model_pack.LEGACY_RUNTIME, build_model_pack.NAFLEX_RUNTIME),
+        default=build_model_pack.LEGACY_RUNTIME,
+    )
+    parser.add_argument("--naflex-model-dir")
+    parser.add_argument(
+        "--reference-aggregation",
+        choices=build_model_pack.REFERENCE_AGGREGATIONS,
+        default="max",
+    )
     parser.add_argument("--yolo-model", default=str(DEFAULT_YOLO_MODEL))
     parser.add_argument("--out", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--version", default=time.strftime("%Y%m%d"))

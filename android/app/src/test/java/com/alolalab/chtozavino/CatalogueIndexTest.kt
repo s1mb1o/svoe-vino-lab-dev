@@ -12,13 +12,29 @@ class CatalogueIndexTest {
     @Test
     fun searchUsesMaximumImageCosinePerWine() {
         val index = makeIndex()
-        val query = FloatArray(VECTOR_DIMENSION).also { it[0] = 1f }
+        val query = FloatArray(LEGACY_VECTOR_DIMENSION).also { it[0] = 1f }
 
         val results = index.search(query, limit = 2)
 
         assertEquals(listOf("first", "second"), results.map { it.wine.slug })
         assertEquals(1f, results[0].score, 0.00001f)
         assertTrue(results[1].score in 0.70f..0.71f)
+    }
+
+    @Test
+    fun top2MeanUsesTwoBestReferenceScores() {
+        val index = makeIndex()
+        val query = FloatArray(LEGACY_VECTOR_DIMENSION).also { it[0] = 1f }
+
+        val results = index.search(
+            query,
+            limit = 2,
+            aggregation = ReferenceAggregation.TOP2_MEAN,
+        )
+
+        assertEquals(listOf("second", "first"), results.map { it.wine.slug })
+        assertTrue(results[0].score in 0.70f..0.71f)
+        assertEquals(0.5f, results[1].score, 0.00001f)
     }
 
     @Test
@@ -51,7 +67,7 @@ class CatalogueIndexTest {
             File(directory, "images").mkdirs()
             File(directory, "images/first.jpg").writeBytes(byteArrayOf(1, 2, 3))
         }
-        val vectors = Array(3) { FloatArray(VECTOR_DIMENSION) }
+        val vectors = Array(3) { FloatArray(LEGACY_VECTOR_DIMENSION) }
         vectors[0][0] = 1f
         vectors[1][1] = 1f
         val diagonal = (1.0 / kotlin.math.sqrt(2.0)).toFloat()
@@ -89,7 +105,9 @@ class CatalogueIndexTest {
     }
 
     private fun writeVectors(file: File, vectors: Array<FloatArray>) {
-        val buffer = ByteBuffer.allocate(vectors.size * VECTOR_DIMENSION * Float.SIZE_BYTES)
+        val buffer = ByteBuffer.allocate(
+            vectors.size * LEGACY_VECTOR_DIMENSION * Float.SIZE_BYTES,
+        )
             .order(ByteOrder.LITTLE_ENDIAN)
         vectors.forEach { vector -> vector.forEach(buffer::putFloat) }
         file.writeBytes(buffer.array())

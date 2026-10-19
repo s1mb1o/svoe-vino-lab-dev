@@ -1,17 +1,16 @@
 # Model-pack contract
 
 The application reads one ZIP file.
-The application supports format versions 1, 2, and 3.
+The application supports format versions 1, 2, 3, 4, and 5.
 The application uses the built-in format version 3 pack on the first start.
 The production user interface does not expose pack installation or replacement.
 
 ## Root payloads
 
-All supported format versions MUST contain these files at the ZIP root:
+All supported format versions MUST contain these common files at the ZIP root:
 
 - `manifest.json`
 - `dis.tflite`
-- `siglip2_base_224_fp16.tflite`
 - `vectors.f32`
 - `candidates.jsonl`
 - `wines.jsonl`
@@ -23,13 +22,43 @@ Format version 3 MUST also contain these files at the ZIP root:
 - `images.zip`
 - `yolo26n-seg_w8a32.tflite`
 
+Format versions 1 through 3 MUST contain `siglip2_base_224_fp16.tflite`.
+Format versions 4 and 5 MUST contain these files instead:
+
+- `siglip2_naflex_backbone.tflite`
+- `siglip2_naflex_pooling.tflite`
+- `siglip2_naflex_position_embeddings.f32`
+- `images.zip`
+- `yolo26n-seg_w8a32.tflite`
+
 The application rejects an unknown root payload.
 The application rejects a duplicate root payload.
 
 `manifest.json` MUST use format `svoe-vino-android-model-pack`.
-The manifest MUST declare pipeline `dis-white-square-timm-crop090-v2`.
-The manifest MUST declare model `vit_base_patch16_siglip_224.v2_webli`.
-The manifest MUST declare vector dimension 768.
+Formats 1 through 3 MUST declare pipeline `dis-white-square-timm-crop090-v2`.
+Formats 1 through 3 MUST declare model `vit_base_patch16_siglip_224.v2_webli`.
+Formats 1 through 3 MUST declare vector dimension 768.
+Format 4 MUST declare pipeline `foreground-white-native-naflex-v1`.
+Format 4 MUST declare model `google/siglip2-so400m-patch16-naflex`.
+Format 4 MUST declare runtime `naflex-exact-split`.
+Format 4 MUST declare vector dimension 1,152.
+Format 4 MUST declare patch size 16.
+Format 4 MUST declare a patch limit of 256, 512, or 1,024.
+Format 4 MUST declare a 16 by 16 source position grid.
+Format 5 MUST declare pipeline `foreground-white-native-naflex-v1`.
+Format 5 MUST declare model `google/siglip2-base-patch16-naflex`.
+Format 5 MUST declare runtime `naflex-exact-split`.
+Format 5 MUST declare vector dimension 768.
+Format 5 MUST declare patch size 16.
+Format 5 MUST declare a patch limit of 256, 512, or 1,024.
+Format 5 MUST declare a 16 by 16 source position grid.
+Format 5 MAY declare pooling mode `foreground-1.0-background-0.1`.
+The default pooling mode is `standard`.
+All formats MAY declare reference aggregation `max` or `top2-mean`.
+The default reference aggregation is `max`.
+Formats 4 and 5 MAY declare `gpu_compatible: true` only after a device parity test
+passes.
+The pack builders MUST write `gpu_compatible: false` by default.
 The SHA-256 of `dis.tflite` MUST be
 `0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087`.
 The SHA-256 of `siglip2_base_224_fp16.tflite` MUST be
@@ -40,6 +69,34 @@ The SHA-256 of `yolo26n-seg_w8a32.tflite` MUST be
 The manifest `files` object MUST record the byte length and SHA-256 of each root
 payload except `manifest.json`.
 The application verifies these values before it activates a pack.
+The application limits the extracted root payloads to 2 GiB.
+
+## NaFlex split
+
+The NaFlex backbone accepts normalized patches, resized position vectors, and one
+additive attention mask.
+It returns patch tokens before the final vision LayerNorm.
+The pooling model applies the original vision LayerNorm, attention pooling, pooling
+LayerNorm, and MLP residual.
+It returns one vector.
+Format 4 returns 1,152 dimensions.
+Format 5 returns 768 dimensions.
+The application L2-normalizes this vector.
+
+The foreground-aware pooling mode MUST reuse the DIS or YOLO mask.
+It MUST calculate each patch foreground mean.
+It MUST calculate each valid patch weight as `0.1 + 0.9 * foreground`.
+It MUST add `log(weight)` to the attention logit.
+It MUST keep padding logits masked.
+
+The current Android runtime runs the backbone on LiteRT CPU/XNNPACK.
+The pooling model always uses LiteRT CPU/XNNPACK.
+The Pixel 8 GPU delegate returned incompatible vectors for the tested SO400M p512,
+Base p256, and Base p512 backbones.
+The application disables NaFlex GPU unless the pack declares completed compatibility.
+The Android preprocessor preserves the segmented crop aspect ratio.
+It implements the SigLIP2 maximum-patch resize rule.
+It uses RGB values in patch-row, patch-column, pixel-row, pixel-column, channel order.
 
 ## Catalogue payloads
 
@@ -69,7 +126,7 @@ Supported kinds are `gtin`, `barcode`, and `qr_url`.
 
 ## Catalogue images
 
-Format version 2 or 3 uses one catalogue image for each included wine.
+Format version 2, 3, 4, or 5 uses one catalogue image for each included wine.
 `images.zip` MUST contain each image at
 `images/<wine_slug>.<extension>`.
 The `image_path` value in `wines.jsonl` MUST identify this path.
@@ -126,6 +183,39 @@ The default output is
 `app/src/main/assets/default_model_pack.zip`.
 Git ignores this generated file.
 The file MUST exist before an APK is built for distribution.
+
+## NaFlex pack
+
+Export the two verified LiteRT models outside the repository:
+
+```text
+python3 tools/export_siglip2_naflex_split.py \
+  --max-num-patches 512 \
+  --out-dir /path/out/android-siglip2-so400m-naflex-p512-split
+```
+
+The exporter reads `google/siglip2-so400m-patch16-naflex` from the local Hugging Face
+cache.
+The exporter compares the original PyTorch output, the split PyTorch output, and both
+LiteRT outputs.
+The exporter writes `metadata.json` with shapes, hashes, versions, and parity values.
+
+Build a format version 4 pack with the matching workbench index:
+
+```text
+python3 tools/build_catalog_pack.py \
+  --catalog /path/to/workbench/data/catalog \
+  --embedding gx10-siglip2-so400m-patch16-naflex-p512-rot5 \
+  --siglip-runtime naflex-exact-split \
+  --naflex-model-dir /path/out/android-siglip2-so400m-naflex-p512-split \
+  --out /path/out/android-naflex-p512-pack-v4.zip
+```
+
+Write generated models and packs outside Git.
+
+Use `--model-id google/siglip2-base-patch16-naflex` for format version 5.
+Use `--pooling foreground-1.0-background-0.1` to export the 5a pooling head.
+Use `--reference-aggregation top2-mean` to make that aggregation the pack default.
 
 ## Legacy pack tool
 

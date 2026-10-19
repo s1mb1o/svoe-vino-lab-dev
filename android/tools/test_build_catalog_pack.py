@@ -95,6 +95,81 @@ class BuildCatalogPackTest(unittest.TestCase):
             ):
                 build_catalog_pack.export_display_image(source, root / "output.webp")
 
+    def test_builds_naflex_split_pack(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog, dis, _, yolo = self.make_sources(root)
+            legacy = (
+                catalog / "embeddings" / "android-siglip2-base-224-dis-white-rot5"
+            )
+            embedding_name = "android-siglip2-so400m-naflex-p512-dis-white-rot5"
+            embedding = catalog / "embeddings" / embedding_name
+            embedding.mkdir()
+            index = json.loads((legacy / "index.json").read_text(encoding="utf-8"))
+            index["name"] = embedding_name
+            index["dim"] = 1152
+            index["config"]["model"] = "google/siglip2-so400m-patch16-naflex"
+            (embedding / "index.json").write_text(json.dumps(index), encoding="utf-8")
+            vectors = np.zeros((216, 1152), dtype=np.float32)
+            vectors[0:72, 0] = 1
+            vectors[72:144, 1] = 1
+            vectors[144:216, 2] = 1
+            np.save(embedding / "vectors.npy", vectors, allow_pickle=False)
+
+            model_dir = root / "naflex-model"
+            model_dir.mkdir()
+            records = {}
+            for name, data in zip(
+                    build_catalog_pack.build_model_pack.NAFLEX_MODEL_FILES,
+                    (b"backbone", b"pooling", bytes(16 * 16 * 1152 * 4))):
+                path = model_dir / name
+                path.write_bytes(data)
+                records[name] = {
+                    "bytes": len(data),
+                    "sha256": build_catalog_pack.file_digest(path),
+                }
+            (model_dir / "metadata.json").write_text(json.dumps({
+                "format": "svoe-vino-siglip2-naflex-split",
+                "format_version": 1,
+                "model": "google/siglip2-so400m-patch16-naflex",
+                "revision": "test",
+                "patch_size": 16,
+                "max_num_patches": 512,
+                "position_embedding_grid": 16,
+                "vector_dim": 1152,
+                "files": records,
+            }), encoding="utf-8")
+            output = root / "naflex-pack.zip"
+            args = argparse.Namespace(
+                catalog=str(catalog),
+                embedding=embedding_name,
+                dis_model=str(dis),
+                siglip_model="unused",
+                siglip_runtime="naflex-exact-split",
+                naflex_model_dir=str(model_dir),
+                yolo_model=str(yolo),
+                out=str(output),
+                version="test-naflex",
+                replace=False,
+            )
+            with mock.patch.multiple(
+                build_catalog_pack.build_model_pack,
+                DIS_MODEL_SHA256=build_catalog_pack.file_digest(dis),
+                YOLO_MODEL_SHA256=build_catalog_pack.file_digest(yolo),
+            ):
+                result = build_catalog_pack.build(args)
+
+            self.assertEqual(result["vectors"], 144)
+            self.assertEqual(build_catalog_pack.validate_pack(output)["wines"], 2)
+            with zipfile.ZipFile(output) as pack:
+                manifest = json.loads(pack.read("manifest.json"))
+                self.assertEqual(manifest["format_version"], 4)
+                self.assertEqual(manifest["vector_dim"], 1152)
+                self.assertEqual(manifest["max_num_patches"], 512)
+                self.assertNotIn("siglip2_base_224_fp16.tflite", pack.namelist())
+                for name in build_catalog_pack.build_model_pack.NAFLEX_MODEL_FILES:
+                    self.assertIn(name, pack.namelist())
+
     def test_refuses_an_incomplete_reference_rotation_sequence(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
