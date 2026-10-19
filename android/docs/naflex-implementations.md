@@ -7,15 +7,16 @@ Date: 2026-10-19
 The current wine application working copy is
 `/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-android/android`.
 Its application ID is `chtozavino.alolalab.com`.
-Its application version is `0.1.4`.
-Its built-in model pack uses fixed SigLIP2 Base/224.
+Its application version is `0.2.0`.
+Its built-in format 6 pack uses the verified complete Base NaFlex p512 graph.
 
 The separate model-port project is
 `/Volumes/T7_2TB/Projects-T7_2TB/siglip2-naflex-litert`.
 Its Android benchmark application ID is `dev.naflex.benchmark`.
 Its release version is `0.2.0`.
 The release provides an AAR, a benchmark APK, and a separate Base p512 model ZIP.
-The wine application does not use this library yet.
+The wine application now uses the pinned v0.2.0 AAR and matching p512 model package.
+Read [the integration report](reports/2026-10-19_base-p512-default.md).
 
 ## Experimental split runtime
 
@@ -63,8 +64,18 @@ The source reports are in the separate repository:
 - `docs/releases/v0.2.0.md`
 - `docs/android-integration.md`
 
-Use the verified library as the reference for a future application integration.
-Build matching catalogue vectors for the same checkpoint, preprocessing, and patch
-budget.
+The current integration uses this library and its matching frozen reference index.
+The current wine pack retains 2,093 wines and one reference for each wine.
+The main query path does not segment the image.
+The integrated wine application passed the thirty-image Pixel 8 runtime pilot.
+It passed CPU/GPU parity on one reference and desktop parity on fourteen images.
+It also passed UI recognition and history persistence after a cold restart.
+The warm server median was 514.8 ms. P95 was 748.8 ms.
+Read the integration report for timing scope and retrieval limits.
+The subsequent full `my` run completed all 3,409 requests without HTTP errors.
+Positive Top-1 was 69.09%, Top-5 was 87.10%, and Top-10 was 90.03%.
+Client median latency was 924 ms. P95 was 1,479 ms.
+The full run reached `SEVERE` and regressed on negative cases.
+Read [the full-run report](reports/2026-10-19_pixel8-base-p512-full-my.md).
 Do not use the fixed Base/224 vectors with Base NaFlex p512.
 Keep the split pilot and the complete-graph measurements separate.

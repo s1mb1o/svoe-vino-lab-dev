@@ -1,0 +1,381 @@
+{
+  "application_version": "0.2.0",
+  "artifact_sha256": {
+    "metrics.json": "52bd52b5000d0fbf796b247323c8c0cc4bd2152aacecdc72753209ed24021a0e",
+    "predictions.jsonl": "29b12ff6828e3e79bb6a4f918e224414273d926d7cb67a9e23e4825db2d14050",
+    "queries.jsonl": "9c2c4591e02f3e597dbbd75db2e8565d2dd90fc5cc282f7664eb9f6cf6eefd40",
+    "results.jsonl": "2216ac998c1c99bf2eda998f9611af8b44cd523b2a816e9b93a369bcf2378cc2",
+    "run.json": "176008df07fd17bc7cb027171df48deb7b9a0d78c09aefb4859bdd28a183d18a"
+  },
+  "baseline_metrics": {
+    "backend": "android-device-match-k20",
+    "has_scores": true,
+    "latency_ms": {
+      "comparable": true,
+      "max": 4684,
+      "median": 1699,
+      "p95": 2156,
+      "sla_ms": 3000,
+      "within_sla": 3404,
+      "within_sla_share": 0.9985
+    },
+    "negative": {
+      "errors": 0,
+      "false_match_at_1": 42,
+      "false_match_in_top_k": 189,
+      "false_match_scores": {
+        "max": 0.9508,
+        "median": 0.8428
+      },
+      "n": 430,
+      "no_answer": 0,
+      "other_slug_at_1": 388,
+      "slug_rank_histogram": {
+        "1": 42,
+        "2": 41,
+        "3": 22,
+        "4-10": 60,
+        ">10": 24,
+        "absent": 241
+      }
+    },
+    "negative_strict": false,
+    "no_match": {
+      "errors": 0,
+      "false_match_at_1": 9,
+      "false_match_scores": {
+        "max": 0.8649,
+        "median": 0.8302
+      },
+      "n": 9,
+      "rejected": 0,
+      "rejection_rate": 0.0
+    },
+    "positive": {
+      "answered": 2965,
+      "errors": 5,
+      "f1_at_1": {
+        "f1": 0.3329,
+        "precision": 0.3332,
+        "recall": 0.3327
+      },
+      "f1_at_5": {
+        "f1": 0.5651,
+        "precision": 0.5656,
+        "recall": 0.5646
+      },
+      "match_share": 0.3327,
+      "mrr": 0.4402,
+      "n": 2970,
+      "near_duplicate_confusion": 23,
+      "no_answer": 5,
+      "rank_histogram": {
+        "1": 988,
+        "2": 365,
+        "3": 159,
+        "4-10": 401,
+        ">10": 194,
+        "absent": 863
+      },
+      "recall_at_1": 0.3327,
+      "recall_at_10": 0.6441,
+      "recall_at_5": 0.5646,
+      "score_margin": {
+        "correct_median": 0.0204,
+        "wrong_median": 0.0056
+      },
+      "target_match_share": 0.9
+    },
+    "queries": {
+      "negative": 430,
+      "no_match": 9,
+      "positive": 2970,
+      "total": 3409,
+      "unlabelled": 0,
+      "variant": 0
+    },
+    "run_id": "2026-10-18T193540Z-lab-android-device-match-k20-my-pixel8-usb-current-patches-20261018",
+    "top_k": 20,
+    "unlabelled": null,
+    "wall_s": 5986.9
+  },
+  "baseline_positive_retrieval": {
+    "hits": {
+      "1": 988,
+      "10": 1913,
+      "20": 2107,
+      "5": 1677
+    },
+    "mrr": 0.4402437967390511,
+    "n": 2970,
+    "recall": {
+      "1": 0.33265993265993266,
+      "10": 0.6441077441077441,
+      "20": 0.7094276094276094,
+      "5": 0.5646464646464646
+    }
+  },
+  "baseline_run_id": "2026-10-18T193540Z-lab-android-device-match-k20-my-pixel8-usb-current-patches-20261018",
+  "catalogue_coverage": {
+    "positive_assignments_with_accepted_wine": 2800,
+    "positive_assignments_without_accepted_wine": 170,
+    "positive_recall_ceiling": 0.9427609427609428
+  },
+  "cleanup": {
+    "adb_forward_removed": true,
+    "app_pid_after_cleanup": 24675,
+    "health_connection_closed": true,
+    "http_disabled": true,
+    "original_power_setting_restored": true,
+    "power_setting": "15",
+    "temporary_ui_dump_removed": true
+  },
+  "covered_positive_retrieval": {
+    "hits": {
+      "1": 2052,
+      "10": 2674,
+      "20": 2714,
+      "5": 2587
+    },
+    "mrr": 0.8174634061727991,
+    "n": 2800,
+    "recall": {
+      "1": 0.7328571428571429,
+      "10": 0.955,
+      "20": 0.9692857142857143,
+      "5": 0.9239285714285714
+    }
+  },
+  "date": "2026-10-19",
+  "device": {
+    "android": "17",
+    "application_version": "0.2.0",
+    "fingerprint": "google/shiba/shiba:17/CP2A.260705.006/15641320:user/release-keys",
+    "model": "Pixel 8",
+    "sdk": "37",
+    "serial": "41231FDJH002WZ"
+  },
+  "harness_sha256": {
+    "benchmark.py": "e753c9efd7988212f216f21cfaba1e360360ef021ec6f2f78eab2d8f2a6eb0f2",
+    "match_backends.py": "5ebe3bf9010d97477bc50fb9347aff6a725359b9197a3f173b42870806cadbc9",
+    "match_scoring.py": "e6f8550616b7b7eb0b87a555086bb29eda72ddcd3a43d367c4ff125c5e7c9e01",
+    "remote_run.py": "b3c849a053bd51c7b4944aa0737841329ac9e2edd60d28f90041be94353aae36"
+  },
+  "identical_baseline_queries": true,
+  "input_sha256_verified": 3031,
+  "latency_speedup": {
+    "median": 1.8387445887445888,
+    "p95": 1.4577417173766059
+  },
+  "metrics": {
+    "backend": "android-device-match-k20",
+    "has_scores": true,
+    "latency_ms": {
+      "comparable": true,
+      "max": 5837,
+      "median": 924,
+      "p95": 1479,
+      "sla_ms": 3000,
+      "within_sla": 3406,
+      "within_sla_share": 0.9991
+    },
+    "negative": {
+      "errors": 0,
+      "false_match_at_1": 73,
+      "false_match_in_top_k": 331,
+      "false_match_scores": {
+        "max": 0.897,
+        "median": 0.7285
+      },
+      "n": 430,
+      "no_answer": 0,
+      "other_slug_at_1": 357,
+      "slug_rank_histogram": {
+        "1": 73,
+        "2": 63,
+        "3": 47,
+        "4-10": 108,
+        ">10": 40,
+        "absent": 99
+      }
+    },
+    "negative_strict": false,
+    "no_match": {
+      "errors": 0,
+      "false_match_at_1": 9,
+      "false_match_scores": {
+        "max": 0.7851,
+        "median": 0.6987
+      },
+      "n": 9,
+      "rejected": 0,
+      "rejection_rate": 0.0
+    },
+    "positive": {
+      "answered": 2970,
+      "errors": 0,
+      "f1_at_1": {
+        "f1": 0.6909,
+        "precision": 0.6909,
+        "recall": 0.6909
+      },
+      "f1_at_5": {
+        "f1": 0.871,
+        "precision": 0.871,
+        "recall": 0.871
+      },
+      "match_share": 0.6909,
+      "mrr": 0.7707,
+      "n": 2970,
+      "near_duplicate_confusion": 32,
+      "no_answer": 0,
+      "rank_histogram": {
+        "1": 2052,
+        "2": 322,
+        "3": 116,
+        "4-10": 184,
+        ">10": 40,
+        "absent": 256
+      },
+      "recall_at_1": 0.6909,
+      "recall_at_10": 0.9003,
+      "recall_at_5": 0.871,
+      "score_margin": {
+        "correct_median": 0.0359,
+        "wrong_median": 0.0066
+      },
+      "target_match_share": 0.9
+    },
+    "queries": {
+      "negative": 430,
+      "no_match": 9,
+      "positive": 2970,
+      "total": 3409,
+      "unlabelled": 0,
+      "variant": 0
+    },
+    "run_id": "2026-10-19T084128Z-lab-android-device-match-k20-my-pixel8-p512-complete-no-seg-20261019",
+    "top_k": 20,
+    "unlabelled": null,
+    "wall_s": 3300.0
+  },
+  "model_pack": {
+    "format_version": 6,
+    "model": "google/siglip2-base-patch16-naflex",
+    "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+    "model_sha256": "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005",
+    "profile_sha256": "1ac1a7a3a88074c04fc1559c9d0ae350820a8f681bc84f6176ef2aaed786683c",
+    "reference_frames_per_image": 1,
+    "vector_count": 2093,
+    "version": "20261019-base-naflex-p512-complete",
+    "wine_count": 2093
+  },
+  "multi_accepted_assignments": 152,
+  "paired_top1_changes": {
+    "gain": 1213,
+    "loss": 149
+  },
+  "pipeline": {
+    "field": "image",
+    "headers": {},
+    "id": "android-device-match-k20",
+    "kind": "remote",
+    "label": "lab pipeline android-device-match-k20",
+    "query": {
+      "k": 20,
+      "siglip2_accelerator": "gpu"
+    },
+    "response": "candidates",
+    "timeout_s": 120,
+    "top_k": 20,
+    "url": "http://127.0.0.1:18088/v1/match",
+    "workers": 1
+  },
+  "positive_retrieval": {
+    "hits": {
+      "1": 2052,
+      "10": 2674,
+      "20": 2714,
+      "5": 2587
+    },
+    "mrr": 0.7706725714760396,
+    "n": 2970,
+    "recall": {
+      "1": 0.6909090909090909,
+      "10": 0.9003367003367003,
+      "20": 0.9138047138047138,
+      "5": 0.8710437710437711
+    }
+  },
+  "query_file_sha256": "9c2c4591e02f3e597dbbd75db2e8565d2dd90fc5cc282f7664eb9f6cf6eefd40",
+  "query_set": {
+    "negative": 430,
+    "no_match": 9,
+    "positive": 2970,
+    "total": 3409,
+    "unlabelled": 0,
+    "variant": 0
+  },
+  "recall_delta_percentage_points": {
+    "1": 35.82491582491583,
+    "10": 25.622895622895626,
+    "20": 20.437710437710443,
+    "5": 30.639730639730644
+  },
+  "run_directory": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-android/workbench/runs/2026-10-19T084128Z-lab-android-device-match-k20-my-pixel8-p512-complete-no-seg-20261019",
+  "run_id": "2026-10-19T084128Z-lab-android-device-match-k20-my-pixel8-p512-complete-no-seg-20261019",
+  "runtime": {
+    "app_pids": [
+      24675
+    ],
+    "battery_celsius": {
+      "end": 43.6,
+      "maximum": 45.2,
+      "start": 35.5
+    },
+    "cpu_fallback_observed": false,
+    "critical_stop_triggered": false,
+    "fatal_app_error_observed": false,
+    "first_thermal_status_seconds": {
+      "0": 0.0,
+      "1": 98.7,
+      "2": 665.7,
+      "3": 1264.3,
+      "4": null,
+      "5": null,
+      "6": null
+    },
+    "http_status_counts": {
+      "200": 3409
+    },
+    "maximum_thermal_status": 3,
+    "peak_sampled_pss_kib": 978120,
+    "peak_sampled_pss_mib": 955.1953125,
+    "post_run_accelerator": "GPU",
+    "post_run_vector_norm": 0.9999999877900376,
+    "process_restarts": 0,
+    "telemetry_samples": 194,
+    "thermal_pilot_gate_pass": false
+  },
+  "unique_image_hashes": 3031,
+  "unique_positive_image_hashes": 2808,
+  "unique_positive_retrieval": {
+    "hits": {
+      "1": 1922,
+      "10": 2516,
+      "20": 2556,
+      "5": 2433
+    },
+    "mrr": 0.7653833143901877,
+    "n": 2808,
+    "recall": {
+      "1": 0.6844729344729344,
+      "10": 0.896011396011396,
+      "20": 0.9102564102564102,
+      "5": 0.8664529914529915
+    }
+  },
+  "use_barcode": false,
+  "use_cache": false,
+  "workers": 1
+}

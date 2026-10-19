@@ -16,28 +16,38 @@ The application ID is `chtozavino.alolalab.com`.
 - A product website link on the settings page.
 - Independent `Авто`, `GPU`, and `CPU` settings for DIS and SigLIP2.
 - A first-start GPU compatibility check with a saved safe selection.
-- A `DIS / YOLO` segmentation setting.
+- A `Без сегментации / DIS / YOLO` setting.
 - DIS foreground segmentation.
 - YOLO26n-seg bottle segmentation with COCO class `bottle` on CPU.
 - White-background crop.
-- SigLIP2 Base/16 224 embedding.
+- SigLIP2 Base NaFlex p512 embedding through the verified v0.2.0 complete graph.
+- Native aspect ratio, standard attention pooling, and 768-dimensional vectors.
+- FP16 model weights with FP32 GPU execution and automatic CPU fallback.
 - Optional exact split runtime for `google/siglip2-so400m-patch16-naflex`.
 - Desktop-compatible 1,152-dimensional NaFlex vectors.
 - Optional exact split runtime for `google/siglip2-base-patch16-naflex`.
 - Standard and foreground-aware pooling for 768-dimensional Base NaFlex vectors.
 - Local cosine search.
 - Debug images for each preprocessing stage.
-- Built-in DIS catalogue embeddings at 72 reference angles and one catalogue image for
-  each included wine.
+- A built-in compatible p512 index and one transparent catalogue image for each wine.
+- Legacy fixed Base/224 and split-model pack support for experiments.
 - Links to the matching page on `vino-svoe.ru`.
 - A whole-percent `Сходство` value for image results.
 - Local history.
 - A light or dark theme that follows the system setting.
 - The shared `svoe-vino-lab` product logo as the launcher icon.
 
-DIS is the default segmentation mode.
+`Без сегментации` is the default mode.
+The main pipeline encodes the full original image with Base NaFlex p512.
+It does not apply the legacy square crop or the 2,048-pixel decode limit.
+It uses the released Pillow-compatible preprocessing code.
+The application verifies GPU agreement against the same CPU graph on first start.
+It selects CPU when cosine is below `0.99999` or maximum error exceeds `0.001`.
+All encoder creation, inference, and cleanup run on one dedicated thread.
 Use YOLO for photographs that show a complete bottle.
-Keep DIS for label close-ups and mixed photographs.
+Use DIS only as an explicit alternative.
+The catalogue references remain the frozen p512 package-cut references in these modes.
+Their accuracy needs a separate device evaluation.
 
 The application processes multi-shot photographs in sequence.
 This behavior limits peak LiteRT memory use.
@@ -55,7 +65,33 @@ The technical result text reports this early exit.
 ## Build
 
 Use JDK 17 and Android SDK 36.
-Export the generated catalogue pack from the workbench before you build the APK:
+Export the format version 6 catalogue pack before you build the APK.
+Use the released model directory and its matching frozen index:
+
+```text
+python3 tools/build_verified_naflex_pack.py \
+  --catalogue-pack /path/to/previous-android-catalogue-pack.zip \
+  --model-dir /path/to/android-model-base-p512 \
+  --index-dir /path/to/android-index-base-p512 \
+  --out /path/out/base-p512-default-pack.zip
+cp /path/out/base-p512-default-pack.zip app/src/main/assets/default_model_pack.zip
+```
+
+The exporter retains wine cards, transparent display images, codes, DIS, and YOLO.
+It replaces the old encoder and every reference vector.
+It verifies the model, profile, table, source index, and payload hashes.
+It rejects a missing wine instead of silently reducing catalogue coverage.
+The current pack contains 2,093 wines and 2,093 p512 reference vectors.
+Each wine has one unrotated reference.
+The new pack does not contain a 72-angle p512 index.
+Do not reuse the fixed Base/224 rotation vectors with this encoder.
+Read [the integration validation report](docs/reports/2026-10-19_base-p512-default.md).
+Read [the full Pixel 8 my benchmark](docs/reports/2026-10-19_pixel8-base-p512-full-my.md)
+for retrieval quality, whole-pipeline latency, negative cases, and sustained heat.
+
+### Legacy catalogue exporter
+
+Use this tool only for fixed Base/224 or experimental split packs:
 
 ```text
 python3 tools/build_catalog_pack.py \
@@ -63,7 +99,7 @@ python3 tools/build_catalog_pack.py \
   --version 20260929-dis-main-alpha
 ```
 
-The default pack uses
+The legacy exporter default uses
 `../workbench/data/catalog/embeddings/android-siglip2-base-224-dis-white-rot5`.
 It writes `app/src/main/assets/default_model_pack.zip`.
 
@@ -100,7 +136,7 @@ It writes a temporary pack first.
 It replaces the target only after validation succeeds.
 It reports each omitted wine in its JSON result.
 
-### Optional SigLIP2 NaFlex pack
+### Optional SigLIP2 NaFlex split pack
 
 This section describes the experimental split exports in this repository.
 The separate `siglip2-naflex-litert` v0.2.0 library has verified GPU exports and its
@@ -119,7 +155,7 @@ Format 5 uses `google/siglip2-base-patch16-naflex` and 768 dimensions.
 Format 5 supports standard pooling and foreground-aware 5a pooling.
 The 5a pooling adds `log(0.1 + 0.9 * foreground)` to each patch attention logit.
 
-The current Android runtime runs an unverified NaFlex backbone on LiteRT CPU/XNNPACK.
+The split runtime runs an unverified NaFlex backbone on LiteRT CPU/XNNPACK.
 `Auto` selects CPU when the pack does not declare GPU compatibility.
 Explicit GPU selection reports a compatibility error in this case.
 The pack builders write `gpu_compatible: false` by default.
@@ -176,11 +212,24 @@ Gradle writes an unsigned APK to
 `app/build/outputs/apk/release/app-release-unsigned.apk`.
 Sign this APK with an owner-controlled release key before installation or publication.
 
+The local release archive is
+`/Volumes/Storage/svoe-vino-final/releases/android/`.
+The current release file is `chtozavino-0.2.0-release-unsigned.apk`.
+Its adjacent JSON file records the source commit, SHA-256, tests, and embedded pack.
+Historical local APKs are in `historical/`.
+Published 0.1.4 assets are in `github/android-v0.1.4/`.
+The archive preserves different builds with the same version name.
+Read [the 0.2.0 release record](docs/releases/0.2.0.md) before distribution.
+
 The APK installs the built-in pack on the first start.
+An update replaces an old format 1 through 5 pack with the built-in format 6 pack.
+The update preserves history, the 18+ choice, and accelerator preferences.
+It selects `Без сегментации` and repeats accelerator detection for the new model.
 The application uses this pack without a replacement action in the user interface.
 Model files, catalogue images, vectors, and generated packs stay outside Git.
-The 72 reference vectors add approximately 435 MiB for a catalogue of 2,093 wines.
-Reserve at least 2.5 GB of free device storage for the APK and the installed pack.
+The format 6 pack is approximately 384 MiB with one reference per wine.
+Keep sufficient free storage for the APK, the extracted pack, and the temporary upgrade.
+The old pack remains recoverable until the new pack passes validation.
 
 ## Debug device bulk evaluation
 
@@ -193,7 +242,12 @@ Open the application settings and enable `HTTP-сервер для тестов`
 test.
 Disable the setting after the test.
 The application saves the setting between starts.
-The server uses the installed model pack, the saved `DIS / YOLO` setting, and the saved
+It restores a saved enabled setting only after pack migration and accelerator checks.
+HTTP bulk testing and UI image recognition are mutually exclusive.
+The UI releases its encoder when the server starts.
+Disable the server before UI recognition or a manual accelerator check.
+This rule prevents two GPU models from remaining open in one process.
+The server uses the installed model pack, the saved segmentation setting, and the saved
 DIS and SigLIP2 accelerator settings.
 It serializes inference because one LiteRT model pipeline processes one image at a time.
 It reuses the LiteRT environment, compiled models, and tensor buffers across requests.

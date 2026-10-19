@@ -3,13 +3,101 @@
 ## Automated checks
 
 1. Run `python3 -m unittest tools.test_build_catalog_pack tools.test_build_model_pack
-   tools.test_export_siglip2_naflex_split`.
-2. Run `python3 tools/build_catalog_pack.py --replace --version <version>`.
-3. Run `./gradlew lintDebug test assembleDebug`.
+   tools.test_export_siglip2_naflex_split tools.test_build_verified_naflex_pack`.
+2. Build the format 6 pack with `tools/build_verified_naflex_pack.py`.
+3. Run `./gradlew testDebugUnitTest lintDebug assembleDebug testReleaseUnitTest
+   lintRelease assembleRelease`.
 4. Confirm that the APK contains the uncompressed asset
    `assets/default_model_pack.zip`.
-5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
-   index and the Android SigLIP2 LiteRT file.
+5. Compare every packaged reference row with the matching released p512 index row.
+
+## Release archive checks
+
+1. Rebuild release from the committed Android source.
+2. Run debug and release unit tests, model-pack Python tests, and release lint.
+3. Verify application ID `chtozavino.alolalab.com`, version `0.2.0`, and version code 6.
+4. Verify minimum API 28, target API 36, and only the `arm64-v8a` ABI.
+5. Confirm that the release is not debuggable.
+6. Confirm that NanoHTTPD and the debug HTTP endpoint implementation are absent.
+7. Verify the embedded format 6 pack SHA-256 and its 2,093 wine and vector counts.
+8. Confirm the unsigned state with `apksigner verify`.
+9. Copy the APK to the local archive and compare the source and destination SHA-256.
+10. Copy historical APKs without changing the originals.
+11. Preserve different APK hashes even when version names are equal.
+12. Save archive manifests with byte lengths, hashes, versions, and source paths.
+
+The October 19 local 0.2.0 release checks passed.
+The owner selected unsigned output.
+There were no unit-test failures or errors in 64 debug and 61 release tests.
+All 16 model-pack Python tests passed.
+The new APK contains the same verified pack as the measured p512 application.
+The new release was not installed on the phone in this archive task.
+Read [the release record](docs/releases/0.2.0.md).
+
+## Complete Base NaFlex p512 default
+
+1. Install the debug APK as an update over version 0.1.4.
+2. Confirm that the old pack upgrades to format 6.
+3. Confirm that history and the 18+ choice remain present.
+4. Confirm that `Без сегментации` is selected after this migration.
+5. Confirm that settings identify Base NaFlex p512 and 768 dimensions.
+6. Confirm that the first-start CPU/GPU check completes.
+7. Confirm that an invalid GPU vector causes automatic CPU selection.
+8. Confirm that the debug HTTP server remains off unless the owner enabled it.
+9. Enable the debug HTTP server and inspect `GET /healthz`.
+10. Confirm runtime `naflex-complete`, patch budget `512`, and segmenter `NONE`.
+11. Run the deterministic 30-image pilot through `/v1/debug/embedding`.
+12. Decode every returned vector and check its size, finite values, and L2 norm.
+13. Compare CPU and GPU on the same image.
+14. Compare device vectors with the desktop complete graph.
+15. Confirm that the process does not restart between HTTP requests.
+16. Confirm that UI image recognition requests server shutdown first.
+17. Disable HTTP and recognize one gallery image in the UI.
+18. Test a transparent PNG, an EXIF-oriented JPEG, and a HEIC image.
+19. Switch to DIS and YOLO and confirm that the p512 encoder remains active.
+20. Disable the server and remove ADB forwarding after the test.
+
+Read [the integration report](docs/reports/2026-10-19_base-p512-default.md) for the
+executed subset and the unperformed checks.
+
+The October 19 complete-graph device check passed pack migration and automatic GPU.
+All thirty pilot requests returned HTTP 200 without a process restart.
+CPU/GPU parity passed on one transparent reference.
+Desktop/device parity passed on fourteen pilot images.
+Median warm server latency was 514.8 ms. P95 was 748.8 ms.
+Peak sampled PSS was 925.3 MiB. Android thermal status remained `NONE`.
+The HTTP server was disabled after the API checks.
+The transparent PNG gallery preview and UI GPU recognition passed.
+The exact reference returned `Пино Нуар` at 100-percent similarity.
+The new history row remained visible after a deliberate cold restart.
+The HTTP server remained off after that restart.
+The test-created device files and ADB forwarding rule were removed.
+
+## Full my device matching benchmark
+
+1. Freeze `my` assignments with the current Workbench query builder.
+2. Verify the input hashes and compare the saved query file with the baseline.
+3. Select complete Base NaFlex p512, GPU, and no segmentation.
+4. Run one uncached worker through `/v1/match?k=20` without barcode recognition.
+5. Keep every positive, negative, no-match, and duplicate assignment.
+6. Save predictions, scored results, telemetry, application logs, and source hashes.
+7. Check Top-1, Top-5, and Top-10 against every accepted slug.
+8. Report unavailable catalogue wines separately without changing the main denominator.
+9. Check the application PID, HTTP status, accelerator, and thermal status.
+10. Disable HTTP, remove forwarding, and restore the power setting after the run.
+
+The October 19 run completed all 3,409 requests in PID `24675` with HTTP 200.
+Positive Top-1 was 69.09%. Top-5 was 87.10%. Top-10 was 90.03%.
+Client median latency was 924 ms. P95 was 1,479 ms.
+No process restart, fatal application error, or CPU fallback was observed.
+The post-run embedding probe confirmed GPU.
+Peak sampled PSS was 955.2 MiB.
+The thermal check failed the short-pilot gate: the long run reached `SEVERE` (`3`).
+Negative forbidden Top-1 matches increased from 42 to 73 of 430.
+All 9 no-match queries remained false accepts.
+HTTP shutdown, forwarding removal, temporary UI dump removal, and power restoration
+passed.
+Read [the full report](docs/reports/2026-10-19_pixel8-base-p512-full-my.md).
 
 ## SigLIP2 NaFlex exact split checks
 

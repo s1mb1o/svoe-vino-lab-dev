@@ -2,6 +2,77 @@
 
 ## 2026-10-19
 
+### Local 0.2.0 release archive
+
+- Committed the complete Base NaFlex p512 implementation as `eaf8d688`.
+- Rebuilt the unsigned release from that source with all Gradle tasks executed again.
+- Passed 64 debug unit tests, 61 release unit tests, 16 Python tests, and release lint.
+- Saved `chtozavino-0.2.0-release-unsigned.apk` in
+  `/Volumes/Storage/svoe-vino-final/releases/android/`.
+- Verified the application ID, version, API 28 minimum, arm64 ABI, and embedded pack.
+- Verified that the release is not debuggable and has no debug HTTP implementation.
+- Added a release sidecar with hashes, source revision, tests, and pack identity.
+- Copied eleven distinct historical local APKs from twenty-two source paths.
+- Restored both published GitHub 0.1.4 APKs and verified their published checksums.
+- Saved signing identities, a complete archive manifest, checksums, and the R8 mapping.
+- Preserved the original APK files and recorded each source path in the archive.
+- Added Kotlin build-session cache files to the Android ignore list.
+- Kept the release unsigned at the owner's explicit request.
+- Did not install, publish, or push the new release.
+
+### Complete Base p512 full my benchmark
+
+- Completed all 3,409 Pixel 8 `/v1/match` requests with GPU and no segmentation.
+- Disabled barcode recognition and response caching.
+- Verified a byte-identical query file against the previous Base/224 plus DIS run.
+- Measured positive Top-1 of 69.09%, Top-5 of 87.10%, and Top-10 of 90.03%.
+- Measured client median of 924 ms and P95 of 1,479 ms over the full 55-minute run.
+- Observed no HTTP error, process restart, native abort, or CPU fallback.
+- Recorded 955.2 MiB peak sampled PSS and maximum thermal status `SEVERE`.
+- Recorded the negative Top-1 regression from 42 to 73 forbidden matches out of 430.
+- Recorded the unchanged 9 of 9 no-match false accepts.
+- Saved raw predictions, scored results, telemetry, source hashes, and paired changes.
+- Added `docs/reports/2026-10-19_pixel8-base-p512-full-my.md` and its JSON report.
+- Disabled HTTP, removed forwarding and the UI dump, and restored the power setting.
+
+### Verified Base NaFlex p512 main pipeline
+
+- Changed the application version to `0.2.0` with version code `6`.
+- Integrated the pinned `siglip2-naflex-litert` v0.2.0 AAR and complete p512 graph.
+- Made full-image encoding without segmentation the default.
+- Kept DIS and YOLO as optional query modes.
+- Added the format 6 pack with 2,093 matching p512 vectors and 2,093 wine cards.
+- Preserved transparent display images and local barcode relations.
+- Added an atomic pack exporter with model, profile, index, and payload verification.
+- Added automatic migration from older installed packs without clearing user data.
+- Added GPU/CPU vector agreement to the first-start check.
+- Kept GPU lifecycle operations on one dedicated inference worker.
+- Made UI inference and debug HTTP inference mutually exclusive.
+- Deferred saved HTTP startup until pack migration and accelerator detection finish.
+- Scoped pilot logs to the application processes without clearing system logs.
+- Passed 64 debug unit tests, 61 release unit tests, and 16 Python tests.
+- Passed debug and release lint and APK assembly.
+- Verified byte-exact reference equality with the source index for all 2,093 wines.
+- Verified all 2,093 transparent WebP display images.
+- Installed the debug APK on Pixel 8 without clearing application data.
+- Confirmed automatic pack migration, no segmentation, and automatic GPU on Pixel 8.
+- Passed CPU/GPU vector agreement and fourteen desktop/device vector comparisons.
+- Completed all thirty pilot HTTP requests without a restart or thermal warning.
+- Measured 514.8 ms median and 748.8 ms P95 server latency with a warm GPU model.
+- Measured 925.3 MiB peak sampled process PSS.
+- Measured 17 of 24 positive Top-1 hits and 21 of 24 positive Top-5 hits on the
+  stratified pilot only.
+- Verified both `/v1/eval/predict` and `/v1/match` with a known transparent reference.
+- Saved raw responses and app-only logs outside Git and aggregate measurements in the
+  project report.
+- Verified transparent PNG gallery input and UI recognition on GPU at 100-percent
+  similarity to its exact reference.
+- Verified that the new history row persists after a deliberate cold restart.
+- Confirmed that HTTP remains off after restart.
+- Removed the test image, UI dump, and ADB forwarding rule.
+- Recorded scope and remaining device checks in
+  `docs/reports/2026-10-19_base-p512-default.md`.
+
 ### NaFlex measurement scope
 
 - Recorded the separate `siglip2-naflex-litert` v0.2.0 library and benchmark app.

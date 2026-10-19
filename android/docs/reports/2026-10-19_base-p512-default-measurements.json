@@ -1,0 +1,203 @@
+{
+  "accuracy_scope": "Stratified 30-image pilot from my. Not full my or Eval.zip. Includes 24 positives, 5 negatives, 1 no_match. Not a representative population accuracy estimate.",
+  "application_version": "0.2.0",
+  "artifact_sha256": {
+    "logcat.txt": "7ca74112e0fa7caa6104083d1fc7d62ed4567e3440cbc398113360a29ec8cf50",
+    "results.jsonl": "93ede9018147701a5f4b3571f8b1e5c67eae952c7fe684686d162ec8880b5aba",
+    "summary.json": "3d7b750dca816d8a157bb3cec6dcc3ba3f0488ebaf85590a671f3dac52ff88a3"
+  },
+  "artifacts_directory": "/Volumes/Storage/svoe-vino-final/artifacts/android-base-p512-20261019",
+  "battery_celsius": {
+    "after": 36.8,
+    "before": 36.5
+  },
+  "client_wall_ms": {
+    "maximum": 1439.4464169999992,
+    "median": 581.0300210005153,
+    "p95": 992.624169050486
+  },
+  "cpu_gpu_parity": {
+    "cosine": 0.9999999999384342,
+    "image": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab-submission/workbench/data/catalog/cuts/91fd91b66af7cd0ccf548d04773927fdcb35add1ecf519d9669e1ac85c620678.png",
+    "maximum_absolute_error": 3.904104232788086e-06,
+    "passes": true
+  },
+  "date": "2026-10-19",
+  "desktop_parity": {
+    "count": 14,
+    "maximum_absolute_error": 1.5003606677055359e-06,
+    "minimum_cosine": 0.9999999999289232,
+    "reference_identity": {
+      "compiled_model": true,
+      "execution_device": "desktop GPU",
+      "fully_accelerated": true,
+      "gpu_enforce_f32": true,
+      "host_platform": "macOS-26.5-arm64-arm-64bit",
+      "mode": "litert",
+      "model_sha256": "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005",
+      "position_table_sha256": "4b1314e4be71418bc7c50d1068310a5e9fd7e0fd95fed109a5b3e9b9b6e16d5a",
+      "profile_sha256": "1ac1a7a3a88074c04fc1559c9d0ae350820a8f681bc84f6176ef2aaed786683c",
+      "runtime": "2.2.0"
+    },
+    "rows": [
+      {
+        "cosine": 0.99999999999771,
+        "image_sha256": "35ac387c177eee05de9f5bcac4879eec3abc8dca72e91bfbfb58e4d9f881bb9c",
+        "maximum_absolute_error": 4.470348358154297e-07,
+        "query_id": "q-002358"
+      },
+      {
+        "cosine": 0.9999999999936885,
+        "image_sha256": "93f0efa70d5276a922c067016760e6f76063b8ccae5f153ff49eadf0acb1f64c",
+        "maximum_absolute_error": 4.814937710762024e-07,
+        "query_id": "q-003150"
+      },
+      {
+        "cosine": 0.9999999999942664,
+        "image_sha256": "87acb51ea8ab59c7292db353dc966de4818668876009f699b5dec9afa865caee",
+        "maximum_absolute_error": 5.066394805908203e-07,
+        "query_id": "q-001849"
+      },
+      {
+        "cosine": 0.9999999999790947,
+        "image_sha256": "68ab31bfedfb9c7f58008fefd6f2b6bf88f75100792d640aae21e17036eff907",
+        "maximum_absolute_error": 8.530914783477783e-07,
+        "query_id": "q-001667"
+      },
+      {
+        "cosine": 0.9999999999927929,
+        "image_sha256": "ba03d2e52bb425dfa22add7082634890e368a3f287d0142d602f075ece5bd13d",
+        "maximum_absolute_error": 5.513429641723633e-07,
+        "query_id": "q-000268"
+      },
+      {
+        "cosine": 0.9999999999971882,
+        "image_sha256": "c7bbc8a32490a2226c0b988ab60edc1e86cafebde91852768141fda00912dce0",
+        "maximum_absolute_error": 3.3527612686157227e-07,
+        "query_id": "q-001317"
+      },
+      {
+        "cosine": 0.9999999999962277,
+        "image_sha256": "64e390f653ba463b7732709ec223b9c42a5434ee395fb254949fd9a4660ee562",
+        "maximum_absolute_error": 3.1851232051849365e-07,
+        "query_id": "q-000294"
+      },
+      {
+        "cosine": 0.9999999999933535,
+        "image_sha256": "608d7249152bb6888d8c5228ab9a272f14a12d4c8879ec2e301ad73b66cd325a",
+        "maximum_absolute_error": 4.842877388000488e-07,
+        "query_id": "q-000971"
+      },
+      {
+        "cosine": 0.999999999994819,
+        "image_sha256": "6f4ebcc5468399114f4178fcba90c8ec5af10d12179ac997e0155fdf36ca5708",
+        "maximum_absolute_error": 4.0425220504403114e-07,
+        "query_id": "q-002247"
+      },
+      {
+        "cosine": 0.9999999999289232,
+        "image_sha256": "d877980e99af0e4c75ed8912bd6394fc234ceac3ed8202b5d86fc5ffbc6bc9f0",
+        "maximum_absolute_error": 1.5003606677055359e-06,
+        "query_id": "q-000602"
+      },
+      {
+        "cosine": 0.9999999999965501,
+        "image_sha256": "4a5b23ffbcbd786d2532fc4111873c9e0507e5240a33807a279dde981017f3ed",
+        "maximum_absolute_error": 3.7997961044311523e-07,
+        "query_id": "q-001485"
+      },
+      {
+        "cosine": 0.9999999999947521,
+        "image_sha256": "5be8ccdcfe612c4c4d99fcbed119127855b3556712d3984639e5d426032adfc7",
+        "maximum_absolute_error": 5.066394805908203e-07,
+        "query_id": "q-001725"
+      },
+      {
+        "cosine": 0.999999999991227,
+        "image_sha256": "6da1c107c557077270a224ba04b15f8dec95c5ed07ec5d49f5b1a909817a0504",
+        "maximum_absolute_error": 5.103647708892822e-07,
+        "query_id": "q-002875"
+      },
+      {
+        "cosine": 0.9999999999959643,
+        "image_sha256": "343d912051f79f946c21a4b51d952aae7da1255e1c86bbe62a702d07d9ea3352",
+        "maximum_absolute_error": 3.627501428127289e-07,
+        "query_id": "q-002947"
+      }
+    ]
+  },
+  "device": {
+    "android": "17",
+    "application_version": "0.2.0",
+    "fingerprint": "google/shiba/shiba:17/CP2A.260705.006/15641320:user/release-keys",
+    "model": "Pixel 8",
+    "sdk": "37",
+    "serial": "41231FDJH002WZ"
+  },
+  "embedding_ms": {
+    "maximum": 697.0,
+    "median": 437.5,
+    "p95": 676.9499999999999
+  },
+  "health": {
+    "max_num_patches": 512,
+    "pack_version": "20261019-base-naflex-p512-complete",
+    "pooling_mode": "standard",
+    "port": 18088,
+    "reference_aggregation": "max",
+    "segmenter": "NONE",
+    "siglip2_runtime": "naflex-complete",
+    "status": "ok",
+    "vector_dim": 768,
+    "wine_count": 2093
+  },
+  "peak_pss_mib": 925.2802734375,
+  "positive_retrieval": {
+    "correct_at_k": {
+      "1": 17,
+      "10": 22,
+      "20": 22,
+      "5": 21
+    },
+    "count": 24
+  },
+  "runtime": {
+    "http_200": 30,
+    "maximum_thermal_status": 0,
+    "peak_pss_kib": 947487,
+    "pilot_runtime_pass": true,
+    "process_restarts": 0,
+    "requests": 30,
+    "server_latency_ms": {
+      "maximum": 768.727254,
+      "median": 514.8208215,
+      "p95": 748.83905265
+    }
+  },
+  "selection_labels": {
+    "negative": 5,
+    "no_match": 1,
+    "positive": 24
+  },
+  "timing_scope": "HTTP server latency includes preprocessing, inference, search, and debug previews; excludes HTTP upload and image decode. Model is warm after CPU/GPU parity.",
+  "ui_checks": {
+    "accelerator": "GPU",
+    "embedding_ms_with_new_session": 3319,
+    "history_persisted_after_cold_restart": true,
+    "http_disabled_after_restart": true,
+    "intentional_cold_restarts_after_pilot": 1,
+    "recognition": true,
+    "screenshot": "pixel8-p512-ui-result.png",
+    "search_ms": 80,
+    "segmenter": "NONE",
+    "similarity_percent": 100,
+    "test_files_and_forward_removed": true,
+    "top1_name": "Пино Нуар",
+    "transparent_png_gallery_preview": true
+  },
+  "vector_validation": {
+    "finite_768": true,
+    "input_sha256_checks": 30,
+    "maximum_norm_error": 5.242277356654057e-08
+  }
+}

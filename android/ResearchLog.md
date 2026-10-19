@@ -2,6 +2,70 @@
 
 ## 2026-10-19
 
+### Complete Base p512 full my findings
+
+- The full run used the same 3,409 frozen assignments as the fixed Base/224 plus DIS
+  baseline. All 3,031 distinct input files passed SHA-256 verification.
+- The current scorer accepts alternative positive slugs for the same image hash.
+  The older local query builder omitted this expansion for 152 assignments.
+  The actual full runs used identical queries, not the older preflight query file.
+- Positive Top-1 improved from 33.27% to 69.09%.
+  Top-5 improved from 56.46% to 87.10%. Top-10 improved from 64.41% to 90.03%.
+- Paired Top-1 results had 1,213 gains and 149 losses.
+  The comparison changes the encoder and removes segmentation together.
+  It cannot isolate the encoder effect.
+- The pack covers accepted wines for 2,800 of 2,970 positive assignments.
+  Covered-only Top-1 is 73.29%. Covered-only Top-10 is 95.50%.
+- Negative forbidden Top-1 matches increased from 42 to 73 of 430.
+  Returning another slug does not prove correct recognition on a negative assignment.
+- All 9 no-match queries still return a nearest wine.
+  This run does not validate unknown-wine rejection.
+- Full client median latency was 924 ms. P95 was 1,479 ms.
+  The slowest request took 5,837 ms and included a new model session.
+- All 3,409 calls returned HTTP 200 in PID `24675` without an observed CPU fallback.
+  A post-run probe still used GPU.
+- Peak sampled PSS was 955.2 MiB. This value does not include every GPU allocation.
+- The 55-minute workload reached thermal status `SEVERE` after 1,264.3 seconds.
+  The maximum sampled battery temperature was 45.2 degrees Celsius.
+  The short pilot did not predict this sustained thermal behavior.
+  The full run fails the short-pilot thermal gate but never reached `CRITICAL`.
+- HTTP was disabled after the test. The original power setting was restored.
+- Read `docs/reports/2026-10-19_pixel8-base-p512-full-my.md` for the complete result.
+
+### Verified complete p512 integration
+
+- The complete v0.2.0 graph is distinct from the rejected split GPU exports.
+- The frozen complete-graph index contains 2,193 rows with 768 dimensions.
+- Every one of the current 2,093 catalogue wines occurs in this index.
+- The new exporter selects rows by slug without changing their float32 values.
+- The maximum packaged vector norm error is `1.7881393432617188e-7`.
+- The new built-in pack contains one unrotated reference for each wine.
+- The old generated built-in pack also contained one reference for each wine.
+- Older documentation described a 72-angle pack that was not actually bundled.
+- A p512 72-angle index needs a separate calculation with this exact encoder.
+- The current integration does not make that calculation or claim its coverage.
+- The new pack is 402,692,669 bytes.
+- Its SHA-256 is `4307a92be20fc53bec18f922ae80b60d92fc219c2a8e22f981f8c8778117a128`.
+- The Pixel 8 became visible after host validation.
+- The version 0.2.0 debug APK installed as an update over version 0.1.4.
+- The phone was locked before the device test could enable the HTTP setting.
+- No settings or history backup was exported from the phone.
+- The owner then unlocked the phone and confirmed no query segmentation.
+- The first-start check selected GPU for complete Base NaFlex p512.
+- CPU/GPU reference cosine was `0.9999999999384342` with maximum error `0.0000039041`.
+- Fourteen device vectors agreed with cached desktop vectors at cosine of at least
+  `0.9999999999289232` and maximum error of at most `0.0000015004`.
+- All thirty GPU pilot requests succeeded in one process.
+- Warm server latency was 514.8 ms median and 748.8 ms P95.
+- Peak sampled PSS was 925.3 MiB. Android thermal status remained `NONE`.
+- The stratified pilot returned 17 of 24 positive Top-1 hits and 21 of 24 Top-5 hits.
+- These pilot counts do not estimate full `my` accuracy.
+- UI recognition of the transparent reference returned `Пино Нуар` at 100 percent.
+- The first UI embedding stage took 3,319 ms with a new GPU session.
+- The new history row remained visible after a deliberate cold restart.
+- HTTP stayed off after the restart. Test device files and forwarding were removed.
+- Read `docs/reports/2026-10-19_base-p512-default.md` for measured integration results.
+
 ### Scope of NaFlex measurements
 
 - The October 19 measurements used the split exports in this repository.
@@ -12,7 +76,7 @@
 - Its Eval encode and search median was `533.7` ms.
 - These measurements use a different graph and test method from the split pilot.
 - The split pilot does not invalidate the separate library measurements.
-- The separate library is not integrated into this application.
+- Before the main-pipeline change, the separate library was not integrated into this application.
 - Read `docs/naflex-implementations.md` for source paths and measurement scope.
 
 ### Focused Pixel 8 SigLIP2 Base pilot
