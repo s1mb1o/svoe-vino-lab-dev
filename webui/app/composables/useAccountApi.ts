@@ -5,7 +5,7 @@ export interface AccountUser { id: string; username: string; created_at?: string
 export interface AccountSiteConfig {
   enabled: boolean
   available: boolean
-  providers?: { email: boolean; yandex: boolean }
+  providers?: { email: boolean; yandex: boolean; telegram?: boolean }
   consentVersion?: string
   termsVersion?: string
 }
@@ -49,5 +49,7 @@ export function useAccountApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
       request<AuthResult>('POST', '/api/account/signup', input),
     logout: () => request<{ status: string }>('POST', '/api/account/logout', {}),
     deleteAccount: () => request<{ status: string }>('DELETE', '/api/account/me'),
+    linkTelegram: () => request<{ deepLink: string; expiresIn: number }>('POST', '/api/account/links/telegram', {}),
+    unlinkTelegram: () => request<{ status: string }>('DELETE', '/api/account/identities/telegram'),
   }
 }

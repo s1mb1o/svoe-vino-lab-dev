@@ -258,7 +258,11 @@ export async function accountConfigRoute(event: H3Event, source: AccountConfigSo
     return {
       enabled: true,
       available: true,
-      providers: { email: Boolean(data.providers?.email), yandex: Boolean(data.providers?.yandex) },
+      providers: {
+        email: Boolean(data.providers?.email),
+        yandex: Boolean(data.providers?.yandex),
+        telegram: Boolean(data.providers?.telegram_link),
+      },
       consentVersion: data.consent_version ?? '',
       termsVersion: data.terms_version ?? '',
     }
@@ -290,6 +294,43 @@ export function deleteMeRoute(event: H3Event, source: AccountConfigSource) {
     await callAccount(config, 'DELETE', '/v1/me', { session })
     clearCookie(event, ACCOUNT_COOKIES.session)
     return { status: 'deleted' }
+  })
+}
+
+// The deep link of the bot: https://t.me/<bot>?start=link_<code>. Telegram allows 64 characters in `start`.
+const TELEGRAM_DEEP_LINK = /^https:\/\/t\.me\/[A-Za-z0-9_]{5,64}\?start=link_[A-Za-z0-9_-]{16,59}$/
+
+/**
+ * Starts a Telegram link (issue #51). Telegram is a linked messenger, never a login method.
+ * The browser gets only the bot deep link; the bot confirms the link in the chat.
+ */
+export function telegramLinkRoute(event: H3Event, source: AccountConfigSource) {
+  return accountJson(event, source, async config => {
+    checkOrigin(event, config)
+    const session = getCookie(event, ACCOUNT_COOKIES.session)
+    if (!session) throw new AccountHttpError(401, 'session_required')
+    const { data } = await callAccount<{ deep_link?: string; expires_in?: number }>(config, 'POST', '/v1/me/links/telegram', { session })
+    if (typeof data.deep_link !== 'string' || !TELEGRAM_DEEP_LINK.test(data.deep_link)) throw unavailable()
+    return { deepLink: data.deep_link, expiresIn: typeof data.expires_in === 'number' ? data.expires_in : 600 }
+  })
+}
+
+const MESSENGERS = new Set(['telegram', 'max'])
+
+/** Unlinks a messenger. Login methods (email, Yandex ID) have no unlink action on the site. */
+export function unlinkMessengerRoute(event: H3Event, source: AccountConfigSource, provider: string) {
+  return accountJson(event, source, async config => {
+    checkOrigin(event, config)
+    if (!MESSENGERS.has(provider)) throw new AccountHttpError(404, 'not_found')
+    const session = getCookie(event, ACCOUNT_COOKIES.session)
+    if (!session) throw new AccountHttpError(401, 'session_required')
+    try {
+      await callAccount(config, 'DELETE', `/v1/me/identities/${provider}`, { session })
+    } catch (error) {
+      // Already gone: the page shows the same state as after an unlink.
+      if (!(error instanceof AccountHttpError && error.code === 'not_linked')) throw error
+    }
+    return { status: 'unlinked' }
   })
 }
 

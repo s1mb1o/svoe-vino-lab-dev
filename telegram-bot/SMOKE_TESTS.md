@@ -28,6 +28,19 @@
 - Select `Мне есть 18 лет` from a new `/start` message.
 - Confirm that the bot accepts a subsequent photo.
 
+## «Винный дневник» link
+
+- Set `BOT_ACCOUNT_ENDPOINT` and `BOT_ACCOUNT_TOKEN`. Set `TELEGRAM_BOT_USERNAME` and
+  `ACCOUNT_TELEGRAM_BOT_TOKEN` in the account service.
+- On `/account` select «Привязать мессенджер» → «Telegram» → «Открыть Telegram».
+- Confirm that the bot names the diary and shows «Привязать» and «Отмена».
+- Select «Привязать». Confirm «Готово: Telegram привязан к дневнику …».
+- On `/account` confirm Telegram under «Связанные мессенджеры» and not under «Способы входа».
+- Open the same link again. Confirm «Ссылка устарела или уже использована…».
+- Send `/unlink`. Confirm «Telegram отвязан от дневника.» Send it again: «Этот Telegram не привязан к дневнику.»
+- Stop the account service and open a new link. Confirm «Дневник временно недоступен…» and that
+  a photo is still recognized.
+
 ## Photo before the age confirmation
 
 - Start a new chat. Do not confirm the age. Send one wine photo.

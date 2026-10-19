@@ -43,6 +43,16 @@ const hasYandex = computed(() => Boolean(user.value?.identities.some(item => ite
 const reauthYandexHref = computed(() => `/api/account/yandex/start?intent=reauth&next=${encodeURIComponent('/account?confirm=delete')}`)
 const resendIn = computed(() => Math.max(0, Math.ceil((resendAt.value - now.value) / 1000)))
 const identities = computed(() => splitIdentities(user.value?.identities ?? []))
+// «Привязать мессенджер» (issue #51). A messenger never opens a session: the bot only saves finds.
+const linkOpen = ref(false)
+const telegramLink = ref('')
+const telegramLinkExpiresAt = ref(0)
+const linkNotice = ref('')
+const telegramEnabled = computed(() => Boolean(config.value?.providers?.telegram))
+const telegramLinked = computed(() => identities.value.linked.some(item => item.key === 'telegram'))
+const canLinkMessenger = computed(() => telegramEnabled.value && !telegramLinked.value)
+const showMessengers = computed(() => identities.value.linked.length > 0 || canLinkMessenger.value)
+const telegramLinkExpired = computed(() => Boolean(telegramLink.value) && now.value >= telegramLinkExpiresAt.value)
 
 function show(nextPhase: Phase) {
   phase.value = nextPhase
@@ -227,6 +237,68 @@ function cancelDelete() {
   message.value = ''
 }
 
+function closeLink() {
+  linkOpen.value = false
+  telegramLink.value = ''
+  message.value = ''
+}
+
+async function startTelegramLink() {
+  if (busy.value) return
+  message.value = ''
+  linkNotice.value = ''
+  busy.value = true
+  try {
+    const result = await api.linkTelegram()
+    telegramLink.value = result.deepLink
+    telegramLinkExpiresAt.value = Date.now() + result.expiresIn * 1000
+  } catch (error) {
+    if (error instanceof AccountRequestError && error.body.error === 'provider_disabled') message.value = 'Привязка Telegram сейчас выключена.'
+    else fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+/** Reads the account again after the person confirmed the link in the bot chat. */
+async function refreshLinks(quiet = false) {
+  if (busy.value) return
+  busy.value = true
+  try {
+    user.value = (await api.me()).user
+    if (telegramLinked.value) {
+      closeLink()
+      linkNotice.value = 'Telegram привязан к дневнику.'
+    } else if (!quiet) {
+      message.value = 'Привязка ещё не подтверждена. Нажмите «Привязать» в чате с ботом.'
+    }
+  } catch (error) {
+    if (!quiet) fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+function onVisible() {
+  if (document.visibilityState === 'visible' && telegramLink.value && phase.value === 'account') refreshLinks(true)
+}
+
+async function unlinkTelegram() {
+  if (busy.value) return
+  message.value = ''
+  linkNotice.value = ''
+  busy.value = true
+  try {
+    await api.unlinkTelegram()
+    user.value = (await api.me()).user
+    linkNotice.value = 'Telegram отвязан от дневника.'
+  } catch (error) {
+    fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
 function changeEmail() {
   message.value = ''
   notice.value = ''
@@ -235,9 +307,13 @@ function changeEmail() {
 
 onMounted(() => {
   clock = setInterval(() => { now.value = Date.now() }, 1000)
+  document.addEventListener('visibilitychange', onVisible)
   load()
 })
-onBeforeUnmount(() => clock && clearInterval(clock))
+onBeforeUnmount(() => {
+  if (clock) clearInterval(clock)
+  document.removeEventListener('visibilitychange', onVisible)
+})
 </script>
 
 <template>
@@ -315,12 +391,46 @@ onBeforeUnmount(() => clock && clearInterval(clock))
         <ul class="account-identities">
           <li v-for="item in identities.login" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
         </ul>
-        <template v-if="identities.linked.length">
+        <template v-if="showMessengers">
           <h2 class="account-subheading">Связанные мессенджеры</h2>
           <p class="account-hint">Через них нельзя войти в дневник: они только сохраняют находки.</p>
-          <ul class="account-identities">
-            <li v-for="item in identities.linked" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
+          <ul v-if="identities.linked.length" class="account-identities">
+            <li v-for="item in identities.linked" :key="item.key">
+              <span>{{ item.label }}</span>
+              <span class="account-identity-state">{{ item.value }}<button v-if="item.key === 'telegram'" type="button" class="account-link" :disabled="busy" @click="unlinkTelegram">Отвязать</button></span>
+            </li>
           </ul>
+          <p v-if="linkNotice" class="account-notice" role="status">{{ linkNotice }}</p>
+          <template v-if="canLinkMessenger">
+            <div v-if="!linkOpen" class="account-actions">
+              <button class="button secondary" type="button" :disabled="busy" @click="linkOpen = true; linkNotice = ''">Привязать мессенджер</button>
+            </div>
+            <div v-else class="account-panel" role="group" aria-labelledby="link-heading">
+              <h3 id="link-heading" class="account-subheading">Привязать мессенджер</h3>
+              <template v-if="!telegramLink">
+                <p>Выберите мессенджер.</p>
+                <div class="account-actions">
+                  <button class="button primary" type="button" :disabled="busy" @click="startTelegramLink">Telegram</button>
+                  <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
+                </div>
+              </template>
+              <template v-else-if="telegramLinkExpired">
+                <p>Ссылка устарела. Создайте новую.</p>
+                <div class="account-actions">
+                  <button class="button primary" type="button" :disabled="busy" @click="startTelegramLink">Новая ссылка</button>
+                  <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
+                </div>
+              </template>
+              <template v-else>
+                <p>Откройте Telegram и нажмите «Привязать» в чате с ботом. Ссылка действует 10 минут и работает один раз. Не пересылайте её: по ней можно привязать чужой Telegram к вашему дневнику.</p>
+                <div class="account-actions">
+                  <a class="button primary" :href="telegramLink" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>
+                  <button class="button secondary" type="button" :disabled="busy" @click="refreshLinks()">Я привязал</button>
+                  <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
+                </div>
+              </template>
+            </div>
+          </template>
         </template>
         <div class="account-actions">
           <button class="button secondary" type="button" :disabled="busy" @click="logout">Выйти</button>

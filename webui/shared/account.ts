@@ -66,6 +66,8 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
     case 'session_required':
     case 'session_invalid':
       return 'Сеанс завершён. Войдите ещё раз.'
+    case 'provider_already_linked':
+      return 'Этот мессенджер уже привязан. Обновите страницу.'
     case 'account_unavailable':
       return 'Дневник временно недоступен. Поиск вина по фото работает.'
     default:

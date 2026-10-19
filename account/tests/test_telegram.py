@@ -71,3 +71,23 @@ def test_telegram_disabled(env):
         assert response.json()["error"] == "provider_disabled"
     finally:
         harness.close()
+
+
+def test_site_unlink_of_a_messenger_needs_no_recent_login(harness):
+    token = harness.email_session("anna@example.ru")
+    code = link_code(harness, token)
+    harness.bot("/v1/bot/telegram/links/confirm", {"code": code, "telegram_user_id": 501})
+    harness.clock.advance(15 * 60)
+    response = harness.web("DELETE", "/v1/me/identities/telegram", session=token)
+    assert response.status_code == 204
+    me = harness.web("GET", "/v1/me", session=token).json()
+    assert {i["provider"] for i in me["user"]["identities"]} == {"email"}
+
+
+def test_site_unlink_of_a_login_method_needs_a_recent_login(harness):
+    token = harness.email_session("anna@example.ru")
+    harness.yandex_login("777", session=token, purpose="link")
+    harness.clock.advance(15 * 60)
+    response = harness.web("DELETE", "/v1/me/identities/yandex", session=token)
+    assert response.status_code == 403
+    assert response.json()["error"] == "reauth_required"

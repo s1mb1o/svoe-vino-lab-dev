@@ -331,6 +331,14 @@ store, moderate, or recognize the other images.
      receipt of a held photo fails, the bot MUST ask the user to send the photo again.
 227. The bot MUST forget the held photos of a user after the minor choice, after the deletion
      of the user data, and 24 hours after the photo.
+228. `/start link_<code>` MUST link the Telegram account to «Винный дневник» only after the user
+     selects «Привязать» under a message that names the diary (issue #51).
+229. A Telegram link MUST NOT open a diary session. Telegram is never a login method.
+230. The bot MUST accept a diary link and `/unlink` only in a private chat.
+231. The bot MUST NOT store the link. The account service keeps the Telegram user ID.
+232. The bot MUST run account service calls outside the update dispatcher with a 2 s timeout.
+     An account service failure MUST NOT change photo recognition.
+233. An empty `BOT_ACCOUNT_ENDPOINT` MUST turn the diary link off.
 
 ## Non-functional requirements
 

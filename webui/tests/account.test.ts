@@ -3,7 +3,7 @@ import { createServer, type IncomingMessage, type Server } from 'node:http'
 import { createApp, createRouter, eventHandler, toNodeListener } from 'h3'
 import {
   accountConfig, accountConfigRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
-  meRoute, signupRoute, yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
+  meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute, yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
 import { accountErrorMessage, isAccountPath, safeNextPath, splitIdentities } from '../shared/account'
 import { METRIKA_INIT_SCRIPT } from '../shared/metrika'
@@ -56,6 +56,9 @@ beforeAll(async () => {
     '/api/account/signup': signupRoute,
     '/api/account/yandex/start': yandexStartRoute,
     '/api/account/yandex/callback': yandexCallbackRoute,
+    '/api/account/links/telegram': telegramLinkRoute,
+    '/api/account/identities/telegram': (event, config) => unlinkMessengerRoute(event, config, 'telegram'),
+    '/api/account/identities/email': (event, config) => unlinkMessengerRoute(event, config, 'email'),
   }
   const router = createRouter()
   for (const [path, route] of Object.entries(routes)) router.use(path, eventHandler(event => route(event, source)))
@@ -158,10 +161,10 @@ describe('account configuration', () => {
     expect(() => accountConfig(settings)).toThrow('account_unavailable')
   })
   it('reports the enabled providers and versions', async () => {
-    reply = () => ({ status: 200, body: { providers: { email: true, yandex: true, max_login: true }, consent_version: 'c1', terms_version: 't1' } })
+    reply = () => ({ status: 200, body: { providers: { email: true, yandex: true, max_login: true, telegram_link: true }, consent_version: 'c1', terms_version: 't1' } })
     const response = await call('/api/account/config')
     expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true }, consentVersion: 'c1', termsVersion: 't1' })
+    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true, telegram: true }, consentVersion: 'c1', termsVersion: 't1' })
     expect(seen[0].headers.authorization).toBe(`Bearer ${TOKEN}`)
   })
   it('reports an unavailable service instead of failing the page', async () => {
@@ -306,6 +309,55 @@ describe('session routes', () => {
     const response = await call('/api/account/delete', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
     expect(response.status).toBe(403)
     expect(await response.json()).toEqual({ error: 'reauth_required' })
+  })
+})
+
+describe('Telegram link', () => {
+  const deepLink = `https://t.me/ChtoZaVinoBot?start=link_${'a'.repeat(22)}`
+  it('returns only the bot deep link for a session', async () => {
+    reply = () => ({ status: 200, body: { code: 'a'.repeat(22), deep_link: deepLink, expires_in: 600 } })
+    const response = await call('/api/account/links/telegram', { method: 'POST', ...json({}), cookie: '__Host-cv_session=abc' })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(await response.json()).toEqual({ deepLink, expiresIn: 600 })
+    expect(seen[0]).toMatchObject({ method: 'POST', url: '/v1/me/links/telegram' })
+    expect(seen[0].headers['x-session-token']).toBe('abc')
+  })
+  it('needs a session and the site origin', async () => {
+    expect((await call('/api/account/links/telegram', { method: 'POST', ...json({}) })).status).toBe(401)
+    const foreign = await call('/api/account/links/telegram', { method: 'POST', ...json({}), cookie: '__Host-cv_session=abc', headers: { origin: 'https://evil.example' } })
+    expect(foreign.status).toBe(403)
+    expect(seen).toHaveLength(0)
+  })
+  it.each([
+    'https://evil.example/ChtoZaVinoBot?start=link_aaaaaaaaaaaaaaaaaaaaaa',
+    'http://t.me/ChtoZaVinoBot?start=link_aaaaaaaaaaaaaaaaaaaaaa',
+    'https://t.me/ChtoZaVinoBot?start=privacy',
+    'javascript:alert(1)',
+  ])('refuses an unexpected deep link: %s', async link => {
+    reply = () => ({ status: 200, body: { deep_link: link, expires_in: 600 } })
+    const response = await call('/api/account/links/telegram', { method: 'POST', ...json({}), cookie: '__Host-cv_session=abc' })
+    expect(response.status).toBe(503)
+  })
+  it('passes provider_already_linked', async () => {
+    reply = () => ({ status: 409, body: { error: 'provider_already_linked' } })
+    const response = await call('/api/account/links/telegram', { method: 'POST', ...json({}), cookie: '__Host-cv_session=abc' })
+    expect(response.status).toBe(409)
+    expect(await response.json()).toEqual({ error: 'provider_already_linked' })
+  })
+  it('unlinks Telegram and treats a missing link as done', async () => {
+    reply = () => ({ status: 204 })
+    const first = await call('/api/account/identities/telegram', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(await first.json()).toEqual({ status: 'unlinked' })
+    expect(seen[0]).toMatchObject({ method: 'DELETE', url: '/v1/me/identities/telegram' })
+    reply = () => ({ status: 404, body: { error: 'not_linked' } })
+    const second = await call('/api/account/identities/telegram', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(second.status).toBe(200)
+  })
+  it('does not unlink a login method', async () => {
+    const response = await call('/api/account/identities/email', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(response.status).toBe(404)
+    expect(seen).toHaveLength(0)
   })
 })
 

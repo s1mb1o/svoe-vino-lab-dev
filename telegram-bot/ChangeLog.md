@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-19
+
+- «Винный дневник» link (issue #51): `/start link_<code>` shows the diary name with «Привязать» and
+  «Отмена»; «Привязать» links the Telegram user ID in the account service; `/unlink` removes it.
+  Private chats only. Account calls run as background tasks with a 2 s timeout, so a slow service
+  does not hold the update dispatcher. New settings `BOT_ACCOUNT_ENDPOINT` and `BOT_ACCOUNT_TOKEN`
+  (empty endpoint: off). The log redaction also covers the account token. `PRIVACY.ru.md` names
+  the link. Module `account.py`, 18 new tests.
+
 ## 2026-10-18
 
 - Added «Удалить запрос» to the request page of the administration interface (MAX issue #10, section

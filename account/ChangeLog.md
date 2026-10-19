@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 2026-10-19 — Messenger unlink without a fresh login
+
+- `DELETE /v1/me/identities/{provider}` needs a login in the last 15 minutes only for a login
+  method (email, Yandex ID). Unlinking Telegram or MAX only removes access, so the site can offer
+  «Отвязать» without a new login. 2 new tests (75 in total).
+
 ## 2026-10-19 — Accounts with the same email join
 
 - A login of an unknown identity joins the one account with the same email instead of a new sign-up: Yandex ID by its `default_email`, an email code by the address of a Yandex identity (owner request; the owner had two accounts for one address).

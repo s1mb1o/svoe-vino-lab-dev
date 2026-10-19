@@ -78,7 +78,7 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `DELETE /v1/sessions/current` | web | Log out |
 | `GET /v1/me`, `DELETE /v1/me` | web | Account view; delete the account |
 | `POST /v1/me/identities/max` | web | `{init_data}` → link MAX |
-| `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram` |
+| `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram`. A login method needs a login in the last 15 minutes |
 | `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}` |
 | `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text |
 | `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user |

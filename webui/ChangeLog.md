@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-19 — Telegram link
+
+- «Связанные мессенджеры» on `/account` now has «Привязать мессенджер» → «Telegram» (issue #51). The page gets the bot deep link from `POST /api/account/links/telegram`, shows «Открыть Telegram», and reads the account again when the tab becomes visible or after «Я привязал». An expired link offers «Новая ссылка».
+- «Отвязать» next to a linked Telegram calls `DELETE /api/account/identities/telegram`. The site has no unlink for login methods.
+- `/api/account/config` reports `providers.telegram`. The server accepts only an `https://t.me/<bot>?start=link_<code>` link from the service. 9 new tests; a browser check of the link and unlink at 1280 and 390 px passed (26 checks).
+
 ## 2026-10-19 — Dish drag-and-drop and HEIC
 
 - Accept one dropped dish photo on the upload panel, with a visible drop target and photo replacement during a pending request. Keep the picker and mobile camera.

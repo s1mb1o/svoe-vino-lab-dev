@@ -56,6 +56,12 @@ The browser never gets the endpoint or the token.
   with «Через них нельзя войти в дневник: они только сохраняют находки» (owner rule, 2026-10-19).
   Never call Telegram a login method in the UI or in texts. The action is «Привязать мессенджер»
   (then Telegram, later MAX), shown in «Связанные мессенджеры» — never under «Способы входа».
+- Telegram link (issue #51): `POST /api/account/links/telegram` (session, `Origin`) returns only the
+  bot deep link and its lifetime. The server refuses any link other than
+  `https://t.me/<bot>?start=link_<code>`. The person confirms in the bot chat, where the bot shows the
+  diary name. The page warns not to forward the link: whoever opens it can link their Telegram.
+  `DELETE /api/account/identities/telegram` unlinks it without a fresh login (service rule for
+  messengers). Login methods have no unlink route on the site.
 - Account deletion needs a login in the last 15 minutes (service rule). On `reauth_required` the
   confirmation stays open and offers «Подтвердить кодом из письма» for the account's email
   (then «Подтвердить и удалить») or «Подтвердить через Яндекс ID» (`intent=reauth`,
@@ -80,6 +86,8 @@ The browser never gets the endpoint or the token.
 | `POST /api/account/signup` | `POST /v1/auth/signup` | `{status: 'session'}` |
 | `GET /api/account/yandex/start` | `POST /v1/auth/yandex/start` | 302 to `https://oauth.yandex.ru/authorize` |
 | `GET /api/account/yandex/callback` | `POST /v1/auth/yandex/finish` | 302 to `next`, `/account?step=signup`, or `/account?error=<code>` |
+| `POST /api/account/links/telegram` | `POST /v1/me/links/telegram` | `{deepLink, expiresIn}` |
+| `DELETE /api/account/identities/telegram` | `DELETE /v1/me/identities/telegram` | `{status: 'unlinked'}`, also when it was not linked |
 
 Errors have the form `{error, attemptsLeft?, retryAfter?}`. The page shows the Russian text of
 `accountErrorMessage` and never the input.

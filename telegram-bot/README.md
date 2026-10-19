@@ -266,6 +266,25 @@ The example environment uses these service endpoints for `gx10`:
 | `BOT_HTTP_API_RATE_LIMIT` | `10` |
 | `BOT_HTTP_API_RATE_WINDOW_SECONDS` | `3600` |
 | `BOT_HTTP_API_MAX_IN_FLIGHT` | `2` |
+| `BOT_ACCOUNT_ENDPOINT` | Empty: the diary link is off. Account service base URL, for example `http://192.168.86.14:28008`. |
+| `BOT_ACCOUNT_TOKEN` | Required with `BOT_ACCOUNT_ENDPOINT`: the `telegram-bot` consumer token of the account service, at least 32 characters. |
+
+### «Винный дневник» link
+
+Issue #51. Telegram is a linked messenger, never a login method (149-FZ art. 8 p. 10).
+
+1. On `/account` the person selects «Привязать мессенджер» → «Telegram». The site opens
+   `https://t.me/ChtoZaVinoBot?start=link_<code>`. The code works once for 10 minutes.
+2. `/start link_<code>` calls `POST /v1/bot/telegram/links/claim`. The bot shows the diary name
+   with «Привязать» and «Отмена». Nothing is linked yet.
+3. «Привязать» calls `POST /v1/bot/telegram/links/confirm` with the Telegram user ID of the button
+   sender. «Отмена» makes no call.
+4. `/unlink` calls `POST /v1/bot/telegram/unlink`.
+
+The bot keeps no link state. The account service keeps only the Telegram user ID. Linking works
+only in a private chat. The account calls run outside the update dispatcher with a 2 s timeout.
+When the service is down, the bot answers «Дневник временно недоступен…»; recognition is not
+affected. The link does not pass the age gate: it shows no wine content.
 
 `endpoints.matcher` MUST name the matcher path `/v1/match`.
 The bot refuses to start with another path, for example `/v1/not-match`.

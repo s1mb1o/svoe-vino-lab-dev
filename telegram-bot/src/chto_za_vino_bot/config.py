@@ -225,6 +225,9 @@ class Settings:
     data_retention_days: int
     sync_profile: bool
     log_level: str
+    # «Винный дневник» link (issue #51). An empty endpoint turns the link commands off.
+    account_endpoint: str = ""
+    account_token: str = ""
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -261,6 +264,7 @@ class Settings:
         retention_days = _positive_int("BOT_DATA_RETENTION_DAYS", 30)
         if environment == "production" and retention_days != 30:
             raise ValueError("production requires BOT_DATA_RETENTION_DAYS=30")
+        account_endpoint, account_token = _account_settings()
 
         return cls(
             telegram_token=token,
@@ -310,7 +314,25 @@ class Settings:
             data_retention_days=retention_days,
             sync_profile=_boolean("BOT_SYNC_PROFILE", True),
             log_level=os.getenv("BOT_LOG_LEVEL", "INFO").upper(),
+            account_endpoint=account_endpoint,
+            account_token=account_token,
         )
+
+
+def _account_settings() -> tuple[str, str]:
+    """Read the account service endpoint and the `telegram-bot` consumer token."""
+    endpoint = os.getenv("BOT_ACCOUNT_ENDPOINT", "").strip()
+    if not endpoint:
+        return "", ""
+    try:
+        parts = urlsplit(endpoint)
+    except ValueError as exc:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must be an HTTP URL") from exc
+    if parts.scheme not in {"http", "https"} or not parts.hostname:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must be an HTTP URL")
+    if parts.username or parts.password or parts.query or parts.fragment:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must not contain credentials, a query, or a fragment")
+    return endpoint.rstrip("/"), _required_secret("BOT_ACCOUNT_TOKEN")
 
 
 @dataclass(frozen=True, slots=True)

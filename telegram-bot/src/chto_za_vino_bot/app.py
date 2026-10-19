@@ -73,6 +73,16 @@ from chto_za_vino_core.result_card import (
 from chto_za_vino_core.wine import Wine, unknown_wine, wine_card, wine_from_card
 from chto_za_vino_core.work_queue import QueueCapacityError, QueueClosedError, WorkQueue
 
+from .account import (
+    CANCEL_DATA,
+    CONFIRM_PREFIX,
+    AccountClient,
+    BackgroundTasks,
+    handle_link_callback,
+    handle_link_start,
+    handle_unlink_command,
+    link_code,
+)
 from .config import Settings
 from .data_lifecycle import purge_expired_data
 from .profile import (
@@ -252,6 +262,7 @@ class Services:
     matcher: Matcher
     image_loader: CatalogImageLoader
     rejection_image: bytes
+    account: AccountClient | None = None
 
 
 @dataclass(slots=True)
@@ -1567,11 +1578,16 @@ async def handle_moderation_appeal(callback: CallbackQuery, services: Services) 
 def build_router(services: Services, work_queue: WorkQueue[PhotoJob]) -> Router:
     router = Router()
     album_receipts = AlbumReceiptTracker()
+    account_tasks = BackgroundTasks()
 
     @router.message(CommandStart())
     async def start(message: Message, command: CommandObject) -> None:
         if command.args == "privacy":
             await message.answer(PRIVACY_TEXT)
+            return
+        code = link_code(command.args)
+        if code is not None:
+            account_tasks.spawn(handle_link_start(message, code, services.account))
             return
         if message.from_user is None:
             return
@@ -1586,6 +1602,14 @@ def build_router(services: Services, work_queue: WorkQueue[PhotoJob]) -> Router:
             START_CONFIRMED_TEXT,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
         )
+
+    @router.callback_query(F.data.startswith(CONFIRM_PREFIX) | (F.data == CANCEL_DATA))
+    async def link_confirmation(callback: CallbackQuery) -> None:
+        account_tasks.spawn(handle_link_callback(callback, services.account))
+
+    @router.message(Command("unlink"))
+    async def unlink(message: Message) -> None:
+        account_tasks.spawn(handle_unlink_command(message, services.account))
 
     @router.callback_query(F.data.startswith("age:"))
     async def age_confirmation(callback: CallbackQuery) -> None:
@@ -1996,7 +2020,7 @@ async def run() -> None:
     log_handler.setFormatter(
         SecretRedactingFormatter(
             LOG_FORMAT,
-            (settings.telegram_token, settings.http_api_token),
+            (settings.telegram_token, settings.http_api_token, settings.account_token),
         )
     )
     logging.basicConfig(
@@ -2041,6 +2065,9 @@ async def run() -> None:
         matcher,
         image_loader,
         rejection_image,
+        AccountClient(settings.account_endpoint, settings.account_token, client)
+        if settings.account_endpoint
+        else None,
     )
     enforce_data_retention(settings, repository)
 

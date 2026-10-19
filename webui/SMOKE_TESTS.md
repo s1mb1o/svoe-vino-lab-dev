@@ -20,6 +20,7 @@
 7. Stop the account service. `/` and the scanner work; `/account` shows «Дневник временно недоступен».
 8. Clear `NUXT_ACCOUNT_ENDPOINT`. The header has no link; `/api/account/config` returns `{"enabled":false,...}`.
 9. In the network panel confirm no `mc.yandex.ru` request when a visit starts on `/account`.
+10. With `TELEGRAM_BOT_USERNAME` set in the account service: «Привязать мессенджер» → «Telegram» shows «Открыть Telegram» with `https://t.me/<bot>?start=link_…`. Confirm in the bot. Back on the page, Telegram is under «Связанные мессенджеры» with «Отвязать», and «Способы входа» does not list it. «Отвязать» removes it.
 
 ## Wine for a dish
 

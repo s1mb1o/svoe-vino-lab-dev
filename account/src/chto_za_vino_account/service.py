@@ -575,7 +575,9 @@ class AccountService:
     # ---------------------------------------------------------- account state
 
     def unlink(self, session: Session, provider: str) -> None:
-        self._require_recent(session)
+        # Unlinking a messenger only removes access, so it needs no fresh login.
+        if provider in LOGIN_METHODS:
+            self._require_recent(session)
         with self.db.transaction() as db:
             rows = db.execute(
                 "SELECT provider FROM identities WHERE user_id = ?", (session.user_id,)

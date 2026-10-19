@@ -90,6 +90,8 @@ The workspace rules are in `../../CLAUDE.md`.
 57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
 58. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
 59. Limit failed administration authentication attempts by socket client address.
+60. Telegram is a linked messenger of «Винный дневник», never a login method (149-FZ art. 8 p. 10).
+    Link only after «Привязать» in a private chat. Keep no link state in the bot.
 
 ## Common mistakes
 

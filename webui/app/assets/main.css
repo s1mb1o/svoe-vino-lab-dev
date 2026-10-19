@@ -772,6 +772,11 @@ body:has(.experience-dialog[open]) { overflow: hidden; }
 .account-identities { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .account-identities li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; overflow-wrap: anywhere; }
 .account-identities li span:first-child { color: var(--muted); }
+.account-identities li { align-items: center; }
+.account-identity-state { display: flex; align-items: center; gap: 16px; }
+.account-identity-state .account-link { min-height: 32px; font-size: 13px; }
+.account-panel { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); font-size: 14px; line-height: 1.6; }
+.account-panel .account-subheading { margin-top: 0; font-size: 17px; }
 .account-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .account-danger { color: var(--danger); }
 .account-danger-fill { background: var(--danger); color: #fff; }
