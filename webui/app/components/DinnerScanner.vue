@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { DINNER_CATEGORIES, DINNER_NODES, dinnerNode, type DinnerSelection } from '#shared/dinner'
+import { DINNER_NODES, dinnerNode, type DinnerSelection } from '#shared/dinner'
 import { DISH_CAMERA_ACCEPT, DISH_IMAGE_ACCEPT } from '#shared/dish-image'
 
 const props = defineProps<{ available: boolean }>()
 const scanner = useDinnerLens()
 const { dish, preview, phase, page, wines, error, question, busy, file, failedAction } = scanner
-const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<HTMLInputElement>()
-const uploadButton = ref<HTMLButtonElement>(); const categoryInput = ref<HTMLSelectElement>(); const resultRegion = ref<HTMLElement>()
+const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<{ focus: () => void; close: () => void; showCategories: () => void }>()
+const uploadButton = ref<HTMLButtonElement>(); const resultRegion = ref<HTMLElement>()
 const announcement = ref('')
 const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '' })
 const tastePresets = [
@@ -27,9 +27,9 @@ function toggleTaste(preset: typeof tastePresets[number]) {
   update()
 }
 const resultHeading = ref<HTMLElement>()
-const category = ref('')
+const selectedNodeId = ref('')
 const dragDepth = ref(0)
-function selectFiles(files: File[]) { category.value = ''; announcement.value = ''; void scanner.select(files) }
+function selectFiles(files: File[]) { selectedNodeId.value = ''; announcement.value = ''; void scanner.select(files) }
 function selectPhoto(event: Event) {
   const input = event.target as HTMLInputElement
   const files = Array.from(input.files || []); input.value = ''; if (files.length) selectFiles(files)
@@ -51,13 +51,9 @@ function dropPhoto(event: DragEvent) {
   const files = Array.from(event.dataTransfer?.files || [])
   if (props.available && files.length) selectFiles(files)
 }
-function chooseCategory(event: Event) {
-  const node = dinnerNode((event.target as HTMLSelectElement).value)
-  if (node) { dish.value = node.label; scanner.invalidate(); dishInput.value?.focus() }
-}
 function update() { announcement.value = ''; if (phase.value !== 'recognizing') scanner.invalidate() }
-function editDish() { category.value = ''; update() }
-async function removePhoto() { scanner.reset(); category.value = ''; announcement.value = ''; await nextTick(); uploadButton.value?.focus() }
+function editDish() { selectedNodeId.value = ''; update() }
+async function removePhoto() { scanner.reset(); selectedNodeId.value = ''; announcement.value = ''; await nextTick(); uploadButton.value?.focus() }
 async function cancel() { scanner.cancel(); await nextTick(); dishInput.value?.focus() }
 const progressMessage = computed(() => phase.value === 'recognizing' ? 'Рассматриваем блюдо. Название можно будет исправить.' : phase.value === 'more' ? 'Ищем следующие подходящие вина.' : 'Подбираем вино с учётом блюда и соуса.')
 const statusMessage = computed(() => busy.value ? progressMessage.value : announcement.value || (question.value ? (preview.value && dish.value ? `Похоже на: ${dish.value}. ` : '') + question.value : ''))
@@ -74,17 +70,18 @@ async function showMore() {
 async function submit() {
   if (!dish.value.trim()) { dishInput.value?.focus(); return }
   announcement.value = ''
+  dishInput.value?.close()
   const attributes: Record<string, string | boolean> = {}
   if (settings.heat) attributes.heat = settings.heat
   if (settings.acidity) attributes.acidity = settings.acidity
   if (settings.sweetSauce) attributes.sauce_sweetness = settings.sweetSauce
   if (settings.cream) attributes.fatty_cream_sauce = settings.cream === 'yes'
-  const categoryNode = dinnerNode(category.value)
-  const exact = categoryNode?.label === dish.value ? categoryNode : DINNER_NODES.find(node => node.label.toLocaleLowerCase('ru') === dish.value.trim().toLocaleLowerCase('ru'))
+  const selectedNode = dinnerNode(selectedNodeId.value)
+  const exact = selectedNode?.label === dish.value ? selectedNode : DINNER_NODES.find(node => node.label.toLocaleLowerCase('ru') === dish.value.trim().toLocaleLowerCase('ru'))
   const selection: DinnerSelection = { ...(exact ? { node_id: exact.id } : { confirmed_dish: dish.value.trim() }),
     confirmed_attributes: attributes }
   await scanner.recommend(selection)
-  if (page.value?.status === 'needs_category') { await nextTick(); categoryInput.value?.focus(); return }
+  if (page.value?.status === 'needs_category') { await nextTick(); dishInput.value?.showCategories(); return }
   if (phase.value === 'ready') { await nextTick(); resultHeading.value?.focus({ preventScroll: true }); resultHeading.value?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }) }
 }
 const labels: Record<string, string> = { red: 'Красное', white: 'Белое', rose: 'Розовое', orange: 'Оранжевое', dry: 'Сухое', semi_dry: 'Полусухое', semi_sweet: 'Полусладкое', sweet: 'Сладкое', brut: 'Брют', extra_brut: 'Экстра-брют', brut_nature: 'Брют натюр', still: 'Тихое', sparkling: 'Игристое' }
@@ -112,11 +109,8 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <h2>{{ preview ? 'Всё верно?' : 'Что сегодня на столе?' }}</h2>
         <p v-if="question" class="dinner-question">{{ question }}</p>
         <label for="dinner-dish">Название блюда</label>
-        <input id="dinner-dish" ref="dishInput" v-model="dish" list="dinner-dishes" type="search" maxlength="500" placeholder="Например, стейк рибай на гриле" :disabled="!available || phase === 'recognizing'" required autocomplete="off" @input="editDish">
-        <datalist id="dinner-dishes"><option v-for="node in DINNER_NODES" :key="node.id" :value="node.label" /></datalist>
-        <p class="dinner-field-hint">Фотография не раскрывает состав блюда. Уточните название, прежде чем выбирать вино.</p>
-        <label for="dinner-category">Можно выбрать общую категорию</label>
-        <select id="dinner-category" ref="categoryInput" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
+        <DinnerDishPicker ref="dishInput" v-model="dish" :disabled="!available || phase === 'recognizing'" @update:model-value="editDish" @select="selectedNodeId = $event" />
+        <p v-if="preview" class="dinner-field-hint">Фотография не раскрывает состава блюда. Уточните название, прежде чем выбирать вино.</p>
         <div class="dinner-preferences" lang="ru">
           <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint">
             <legend class="sr-only">Вкус и соус</legend>
@@ -154,8 +148,8 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 </template>
 
 <style scoped>
-.dinner-entry { display: grid; grid-template-columns: .9fr 1.1fr; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); overflow: hidden; }
-.dinner-photo-panel { position: relative; padding: 36px; text-align: center; background: var(--cream); display: flex; flex-direction: column; align-items: center; }
+.dinner-entry { display: grid; grid-template-columns: .9fr 1.1fr; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); }
+.dinner-photo-panel { position: relative; padding: 36px; border-radius: 23px 0 0 23px; text-align: center; background: var(--cream); display: flex; flex-direction: column; align-items: center; }
 .dinner-photo-panel.dragging { outline: 3px dashed var(--accent); outline-offset: -10px; }
 .dinner-drop-overlay { position: absolute; inset: 12px; z-index: 2; border-radius: 14px; background: var(--paper); color: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 20px; pointer-events: none; }
 .dinner-drop-overlay .icon { width: 42px; height: 42px; }
@@ -172,7 +166,6 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-form { padding: 40px; min-width: 0; }
 .dinner-form h2 { font-size: 28px; margin: 14px 0 24px; }
 .dinner-form label { display: block; font-size: 12px; font-weight: 600; margin: 18px 0 8px; }
-.dinner-form input, .dinner-form select { display: block; width: 100%; min-width: 0; min-height: 46px; padding: 12px; margin-top: 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; }
 .dinner-field-hint { color: var(--muted); font-size: 12px; line-height: 1.65; margin-top: 10px; }
 .dinner-question { color: var(--accent); line-height: 1.6; font-size: 14px; }
 .dinner-preferences { margin-top: 28px; }
@@ -209,10 +202,10 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-wine>.button { margin-top: auto; font-size: 12px; }
 .dinner-more { display: flex; margin: 28px auto; }
 .dinner-end { text-align: center; }
-@media(max-width: 1023px) { .dinner-entry { grid-template-columns: 1fr; } .dinner-photo-panel, .dinner-form { padding: 28px; } .dinner-wines { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width: 1023px) { .dinner-entry { grid-template-columns: 1fr; } .dinner-photo-panel, .dinner-form { padding: 28px; } .dinner-photo-panel { border-radius: 23px 23px 0 0; } .dinner-wines { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width: 600px) {
   .dinner-choices { grid-template-columns: minmax(0,1fr); }
   .dinner-choice-group--sauce { grid-template-columns: repeat(3,minmax(0,1fr)); border-inline-start: 0; border-block-start: 1px solid var(--line); padding-inline-start: 0; padding-block-start: 12px; }
 }
-@media(max-width: 767px) { .dinner-entry { grid-template-columns: 1fr; border-radius: 20px; } .dinner-photo-panel, .dinner-form { padding: 24px; } .dinner-photo-placeholder { min-height: 140px; } .dinner-plate { width: 116px; height: 116px; } .dinner-photo-copy h2 { font-size: 30px; } .dinner-photo-copy h2 br { display: none; } .dinner-form h2 { font-size: 26px; } .dinner-form input, .dinner-form select { font-size: 16px; } .dinner-wines { grid-template-columns: 1fr; } .dinner-results>h2 { font-size: 30px; } .dinner-progress { flex-wrap: wrap; } .dinner-progress p { flex: 1; min-width: 160px; } .dinner-progress>.button { width: 100%; } .dinner-submit { font-size: 12px; padding-inline: 8px; } }
+@media(max-width: 767px) { .dinner-entry { grid-template-columns: 1fr; border-radius: 20px; } .dinner-photo-panel, .dinner-form { padding: 24px; } .dinner-photo-panel { border-radius: 19px 19px 0 0; } .dinner-photo-placeholder { min-height: 140px; } .dinner-plate { width: 116px; height: 116px; } .dinner-photo-copy h2 { font-size: 30px; } .dinner-photo-copy h2 br { display: none; } .dinner-form h2 { font-size: 26px; } .dinner-wines { grid-template-columns: 1fr; } .dinner-results>h2 { font-size: 30px; } .dinner-progress { flex-wrap: wrap; } .dinner-progress p { flex: 1; min-width: 160px; } .dinner-progress>.button { width: 100%; } .dinner-submit { font-size: 12px; padding-inline: 8px; } }
 </style>

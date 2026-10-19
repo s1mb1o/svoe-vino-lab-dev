@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — One searchable dish picker
+
+- Combine dish name and broad category in one editable picker. Browse up to three visual levels, search by name and category, select a broad group, or enter a custom dish. Preserve all 320 source IDs; fold extra intermediate class names into the second level.
+- Support touch, keyboard navigation, photo corrections, and category clarification in the same field.
+
 ## 2026-10-19 — Visible sauce heading
 
 - Show «Вкус» above the heat choices and «Соус» above the sauce choices, starting with «Сливочный». Keep the shared accessible legend and existing selection behavior.
