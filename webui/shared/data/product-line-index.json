@@ -14,6 +14,22 @@
           "abrau-dyurso-"
         ]
       },
+      "summary": {
+        "products": 73,
+        "groups": 19,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+          "frame": {
+            "x": 2,
+            "y": 0,
+            "width": 156,
+            "height": 480,
+            "source_width": 158,
+            "source_height": 480
+          }
+        }
+      },
       "slugs": {
         "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12": "reserve-brut-rose",
         "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115": "reserve-brut",
@@ -85,6 +101,22 @@
         ],
         "slug_prefixes": []
       },
+      "summary": {
+        "products": 40,
+        "groups": 8,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/belbek/wine-belbek-aligote-beloe-suhoe-125.webp",
+          "frame": {
+            "x": 2,
+            "y": 3,
+            "width": 187,
+            "height": 727,
+            "source_width": 191,
+            "source_height": 732
+          }
+        }
+      },
       "slugs": {
         "belbek-aligote-beloe-suhoe-125": "wine-belbek-aligote-beloe-suhoe-125",
         "belbek-belbek-fiolent-muskat-beloe-polusladkoe-125": "wine-belbek-belbek-fiolent-muskat-beloe-polusladkoe-125",
@@ -138,6 +170,22 @@
           "Дом Захарьиных"
         ],
         "slug_prefixes": []
+      },
+      "summary": {
+        "products": 47,
+        "groups": 14,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/valery-zakharyin/wine-avtohtonnoe-vino-kryma-beloe-suhoe.webp",
+          "frame": {
+            "x": 7,
+            "y": 7,
+            "width": 194,
+            "height": 718,
+            "source_width": 208,
+            "source_height": 732
+          }
+        }
       },
       "slugs": {
         "avtohtonnoe-vino-kryma-beloe-suhoe": "wine-avtohtonnoe-vino-kryma-beloe-suhoe",
@@ -201,6 +249,22 @@
           "vinodelnya-vedernikov-"
         ]
       },
+      "summary": {
+        "products": 45,
+        "groups": 10,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/vedernikov/wine-rkacziteli-beloe-suhoe.webp",
+          "frame": {
+            "x": 73,
+            "y": 0,
+            "width": 334,
+            "height": 1200,
+            "source_width": 491,
+            "source_height": 1200
+          }
+        }
+      },
       "slugs": {
         "rkacziteli-beloe-suhoe": "wine-rkacziteli-beloe-suhoe",
         "vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12": "wine-vinodelnya-vedernikov-5050-tsimlyanskiy-sibirkovyy-ekstra-bryut-beloe-12",
@@ -259,6 +323,22 @@
         "slug_prefixes": [
           "derbent-vino-"
         ]
+      },
+      "summary": {
+        "products": 67,
+        "groups": 8,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/derbent-vino/wine-caucasian-dzharag.webp",
+          "frame": {
+            "x": 53,
+            "y": 31,
+            "width": 284,
+            "height": 1147,
+            "source_width": 381,
+            "source_height": 1200
+          }
+        }
       },
       "slugs": {
         "caucasian-dzharag": "wine-caucasian-dzharag",
@@ -341,6 +421,22 @@
           "koktebel-"
         ]
       },
+      "summary": {
+        "products": 28,
+        "groups": 10,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/koktebel/wine-koktebel-casa-belyj-kupazh.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 309,
+            "height": 1200,
+            "source_width": 309,
+            "source_height": 1200
+          }
+        }
+      },
       "slugs": {
         "koktebel-casa-belyj-kupazh": "wine-koktebel-casa-belyj-kupazh",
         "zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11": "wine-zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11",
@@ -381,6 +477,22 @@
         "slug_prefixes": [
           "zolotaya-balka-"
         ]
+      },
+      "summary": {
+        "products": 43,
+        "groups": 10,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+          "frame": {
+            "x": 959,
+            "y": 547,
+            "width": 1157,
+            "height": 3596,
+            "source_width": 3090,
+            "source_height": 4631
+          }
+        }
       },
       "slugs": {
         "balaklava-bryut-rezerv": "wine-balaklava-bryut-rezerv",
@@ -441,6 +553,22 @@
           "inkermanskiy-zmv-"
         ]
       },
+      "summary": {
+        "products": 17,
+        "groups": 6,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/inkerman/wine-inkerman-muskatnoe-beloe.webp",
+          "frame": {
+            "x": 18,
+            "y": 10,
+            "width": 148,
+            "height": 594,
+            "source_width": 176,
+            "source_height": 614
+          }
+        }
+      },
       "slugs": {
         "inkerman-muskatnoe-beloe": "wine-inkerman-muskatnoe-beloe",
         "inkerman-shato-blan": "wine-inkerman-shato-blan",
@@ -481,6 +609,22 @@
           "aristov-",
           "vysokiy-bereg-"
         ]
+      },
+      "summary": {
+        "products": 103,
+        "groups": 26,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/kuban-vino/wine-aristov-anima-millesimato.webp",
+          "frame": {
+            "x": 12,
+            "y": 19,
+            "width": 428,
+            "height": 1161,
+            "source_width": 452,
+            "source_height": 1200
+          }
+        }
       },
       "slugs": {
         "aristov-anima-millesimato": "wine-aristov-anima-millesimato",
@@ -594,6 +738,22 @@
           "massandra-"
         ]
       },
+      "summary": {
+        "products": 46,
+        "groups": 9,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/massandra/wine-aligote-avtorskoe.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 280,
+            "height": 1000,
+            "source_width": 280,
+            "source_height": 1000
+          }
+        }
+      },
       "slugs": {
         "aligote-avtorskoe": "wine-aligote-avtorskoe",
         "aligote-avtorskoe-vino": "wine-aligote-avtorskoe-vino",
@@ -657,6 +817,22 @@
           "myshako-",
           "quintessence-"
         ]
+      },
+      "summary": {
+        "products": 97,
+        "groups": 20,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/myskhako/wine-glera-manno.webp",
+          "frame": {
+            "x": 34,
+            "y": 0,
+            "width": 216,
+            "height": 597,
+            "source_width": 268,
+            "source_height": 598
+          }
+        }
       },
       "slugs": {
         "glera-manno": "wine-glera-manno",
@@ -764,6 +940,22 @@
         ],
         "slug_prefixes": []
       },
+      "summary": {
+        "products": 45,
+        "groups": 6,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/novy-svet/wine-novyj-svet-aligote.webp",
+          "frame": {
+            "x": 2,
+            "y": 2,
+            "width": 205,
+            "height": 728,
+            "source_width": 209,
+            "source_height": 732
+          }
+        }
+      },
       "slugs": {
         "novyj-svet-aligote": "wine-novyj-svet-aligote",
         "novyj-svet-blan-de-nuar": "wine-novyj-svet-blan-de-nuar",
@@ -821,6 +1013,22 @@
         ],
         "slug_prefixes": []
       },
+      "summary": {
+        "products": 38,
+        "groups": 6,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/sober-bash/wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125.webp",
+          "frame": {
+            "x": 8,
+            "y": 7,
+            "width": 198,
+            "height": 718,
+            "source_width": 214,
+            "source_height": 732
+          }
+        }
+      },
       "slugs": {
         "sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125": "wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125",
         "sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14": "wine-sober-bash-avrora-2024-krasnostop-zolotovskiy-rozovoe-suhoe-14",
@@ -870,6 +1078,22 @@
           "Soyuz-Vino"
         ],
         "slug_prefixes": []
+      },
+      "summary": {
+        "products": 70,
+        "groups": 19,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/soyuz-vino/wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11.webp",
+          "frame": {
+            "x": 6,
+            "y": 6,
+            "width": 261,
+            "height": 720,
+            "source_width": 273,
+            "source_height": 732
+          }
+        }
       },
       "slugs": {
         "soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11": "wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11",
@@ -957,6 +1181,22 @@
           "fanagoria-",
           "fanagoriya-"
         ]
+      },
+      "summary": {
+        "products": 108,
+        "groups": 25,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/fanagoria/wine-cru-lermont-risling.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 268,
+            "height": 1200,
+            "source_width": 268,
+            "source_height": 1200
+          }
+        }
       },
       "slugs": {
         "cru-lermont-risling": "wine-cru-lermont-risling",
@@ -1073,6 +1313,22 @@
         ],
         "slug_prefixes": []
       },
+      "summary": {
+        "products": 51,
+        "groups": 13,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/chateau-pinot/wine-aligote-shato-pino.webp",
+          "frame": {
+            "x": 6,
+            "y": 6,
+            "width": 223,
+            "height": 721,
+            "source_width": 235,
+            "source_height": 732
+          }
+        }
+      },
       "slugs": {
         "aligote-shato-pino": "wine-aligote-shato-pino",
         "koldun-beloe-suhoe": "wine-koldun-beloe-suhoe",
@@ -1137,6 +1393,22 @@
         ],
         "slug_prefixes": []
       },
+      "summary": {
+        "products": 33,
+        "groups": 9,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/agora/wine-agora-bastardo.webp",
+          "frame": {
+            "x": 7,
+            "y": 7,
+            "width": 197,
+            "height": 717,
+            "source_width": 212,
+            "source_height": 732
+          }
+        }
+      },
       "slugs": {
         "agora-bastardo": "wine-agora-bastardo",
         "agora-blek-stoun": "wine-agora-blek-stoun",
@@ -1184,6 +1456,22 @@
         "slug_prefixes": [
           "alma-valley-"
         ]
+      },
+      "summary": {
+        "products": 41,
+        "groups": 8,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+          "frame": {
+            "x": 859,
+            "y": 0,
+            "width": 644,
+            "height": 2362,
+            "source_width": 2362,
+            "source_height": 2362
+          }
+        }
       },
       "slugs": {
         "alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14": "wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
@@ -1236,6 +1524,22 @@
           "Esse Wine"
         ],
         "slug_prefixes": []
+      },
+      "summary": {
+        "products": 54,
+        "groups": 6,
+        "as_of": "2026-10-16",
+        "cover": {
+          "src": "/product-line-maps/esse/wine-esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115.webp",
+          "frame": {
+            "x": 2,
+            "y": 2,
+            "width": 220,
+            "height": 728,
+            "source_width": 224,
+            "source_height": 732
+          }
+        }
       },
       "slugs": {
         "esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115": "wine-esse-blanc-de-noirs-pino-nuar-beloe-ekstra-bryut-115",

@@ -30,6 +30,17 @@ Verified locally on 2026-10-19: 40 cases passed in Chromium and WebKit, with bot
 5. Drop an invalid renamed file, a truncated HEIC, multiple files or an oversized file. Confirm a useful error and no provider request. An empty drop or cancelled picker must preserve the current photo.
 6. Confirm the decoder does not load for JPEG/PNG/WebP or first paint. Run the bundle check after building.
 
+## Producer map index and page layout
+
+1. Open `/lineup`. Confirm 19 cards with a bottle, the counts, and the materials date. Check 1440, 390, and 320 px in both themes.
+2. Confirm that `/lineup` has no `x-robots-tag` header and is in `/sitemap.xml`. Confirm `noindex` on `/lineup/abrau-durso`.
+3. Select a card. Confirm the map page. Select «Все карты производителей». Confirm the index.
+4. On `/lineup/abrau-durso?wine=abrau-dyurso-victor-dravigny-bryut`, confirm that the page scrolls to the selected wine and that the map has no inner scroll bar.
+5. Select a product at 1440 px. Confirm that the details open in the popup.
+5a. Scroll down the map. Confirm that the group picker and the locate button stay at the window top and stop before the footer. Select a group in the picker. Confirm that its heading is below the toolbar.
+6. Open the guide from a scan result. Confirm the pan and zoom canvas and the side card at 1440 px.
+7. With VoiceOver and TalkBack, confirm the card names on `/lineup` and the popup heading on a map page.
+
 ## «Винный дневник»
 
 1. Set `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`. Confirm «Дневник» in the header on `/`, `/shelf`, `/ideas`, and `/android`. On a 360 px phone confirm the book icon and no horizontal scroll.

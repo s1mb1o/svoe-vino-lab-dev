@@ -114,6 +114,19 @@
 - 6 new tests (59 account tests; 398 in total, 20 existing skips).
 
 
+## 2026-10-19 — Producer map index and page layout
+
+- Add `/lineup`: an index of the 19 producer maps. Each card shows a bottle, the product and group counts, and the materials date, and links to `/lineup/<producer>`.
+- `/lineup` is public and in `sitemap.xml`. The route rule `noindex` now uses `/lineup/*`, so each producer map stays `noindex`.
+- The index reads a summary in the generated index (products, groups, materials date, cover image). The page loads no map data.
+- On `/lineup/<producer>`, the map uses the page space: full width, groups in 3, 2, or 1 columns, and page scrolling. It has no inner scroll box, no drag pan, and no zoom buttons.
+- On `/lineup/<producer>`, product details open in the popup at every width. The guide dialog keeps the pan and zoom canvas.
+- On `/lineup/<producer>`, the first toolbar row («Перейти к группе» and «Показать исходное вино», about 60 px) sticks to the window top inside the map. Group jumps and keyboard focus stay below it.
+- In a window up to 700 px high, the details popup uses the compact summary, so that its heading stays visible.
+- Link the index from each map page («Все карты производителей») and from the guide for a producer without a map.
+- Adapt the browser suites: the canvas scenarios run in the guide dialog, and new checks cover the page layout and the index.
+- Read `docs/plans/05_lineup-index-and-page-layout.md`.
+
 ## 2026-10-19 — «Винный дневник»: login and sign-up
 
 - Add the header link «Дневник» (phones: the book icon) and the `/account` page: login by email code, login with Yandex ID, sign-up with two separate consents, the logged-in view, logout, and account deletion. Spec: `docs/account.md`.

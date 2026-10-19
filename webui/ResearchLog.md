@@ -32,6 +32,16 @@ The dish uploader previously rejected HEIC by MIME before decoding and had no dr
 The dish path now checks signatures and normalizes locally. Pinned `heic-to` 1.6.6 uses libheif 1.23.6. Its CSP build runs inside a disposable outer worker so that cancellation releases its decoder work. HEIF metadata dimensions are checked before decoding. The client deadline allows the preparation budget before the existing upstream budget.
 An actual macOS-encoded synthetic HEIC with EXIF orientation 6 produces the expected 32×64 red-top/blue-bottom JPEG in Chromium and WebKit. WebKit can add technical EXIF to its canvas output; the test checks that source metadata is removed instead of rejecting all browser-generated EXIF. The decoder is loaded only for HEIC and is excluded from PWA precaching.
 
+## Producer map index and page layout, 2026-10-19
+
+The owner asked for the map pages to use the page space instead of a scroll box inside the page.
+The canvas content already reflows: tiers hold groups in a CSS grid, and groups hold products in a grid. Only the fixed 1120 px canvas width, the scale transform, and the fixed viewport height made it a scroll box.
+The page layout removes those three and uses `auto-fill` grids. At 1440 px the groups use 3 columns. At 390 px they use 1 column.
+The page map then scrolls the window. Centering, «Перейти к группе», and the expand-all anchor use window coordinates.
+After the change, the first-load JavaScript of `/` is 135 KB gzip. The index summary adds about 1 KB.
+The index holds the first image of each map as its cover. A chunk marker in the tests must therefore use another image of the map.
+`/lineup` returns no `x-robots-tag`. `/lineup/abrau-durso` returns `noindex, nofollow, noarchive` with the rule `/lineup/*`.
+
 ## «Винный дневник» web part, 2026-10-19
 
 The account service runs on gx10 in the LAN. Nuxt runs on the public edge host and reaches it only through a reverse SSH tunnel.

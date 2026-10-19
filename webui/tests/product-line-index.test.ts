@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { PRODUCT_LINE_LOADERS } from '../shared/data/product-line-maps'
 import { PRODUCT_LINE_INDEX, buildProductLineIndex, loadProductLine, resolveProductLine } from '../shared/product-line-map'
 import type { ProductLineIndexResolution, ProductLineResolution } from '../shared/product-line-map'
@@ -17,6 +17,18 @@ describe('product-line index', () => {
     expect(PRODUCT_LINE_INDEX).toEqual(buildProductLineIndex(PRODUCT_LINE_MAPS))
     const text = `${JSON.stringify(buildProductLineIndex(PRODUCT_LINE_MAPS), null, 2)}\n`
     expect(readFileSync(new URL('../shared/data/product-line-index.json', import.meta.url), 'utf8'), 'Run `npm run line-maps:index`').toBe(text)
+  })
+
+  it('summarizes each map for the index page', () => {
+    for (const line of PRODUCT_LINE_MAPS) {
+      const entry = PRODUCT_LINE_INDEX.producers.find(item => item.producer.id === line.producer.id)!
+      expect(entry.summary.products).toBe(line.products.length)
+      expect(entry.summary.groups).toBe(line.groups.length)
+      expect(entry.summary.as_of).toBe(line.scope.as_of)
+      const image = line.products.find(product => product.image)?.image
+      expect(entry.summary.cover?.src).toBe(image?.src)
+      if (entry.summary.cover) expect(existsSync(new URL(`../public${entry.summary.cover.src}`, import.meta.url)), entry.summary.cover.src).toBe(true)
+    }
   })
 
   it('lists exactly the registered loaders and map files', () => {

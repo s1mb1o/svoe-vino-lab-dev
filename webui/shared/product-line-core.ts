@@ -75,8 +75,15 @@ export function resolveProductLineIn(lines: ProductLineMapData[], wine?: Product
 }
 
 // The index holds only what resolution needs. Pages load a full map on demand.
+export interface ProductLineIndexSummary {
+  products: number
+  groups: number
+  as_of: string
+  cover: { src: string; frame?: LineImageFrame } | null
+}
 export interface ProductLineIndexEntry {
   producer: ProductLineMapData['producer']
+  summary: ProductLineIndexSummary
   slugs: Record<string, string>
   alias_slugs: Record<string, string>
 }
@@ -87,11 +94,19 @@ export type ProductLineIndexResolution =
   | { status: 'unplaced'; producer: ProductLineMapData['producer'] }
   | { status: 'placed' | 'alias'; producer: ProductLineMapData['producer']; product_id: string }
 
+function summaryOf(line: ProductLineMapData): ProductLineIndexSummary {
+  const image = line.products.find(product => product.image)?.image
+  const cover = image ? { src: image.src, ...(image.frame ? { frame: { ...image.frame } } : {}) } : null
+  return { products: line.products.length, groups: line.groups.length, as_of: line.scope.as_of, cover }
+}
+
 const sortedRecord = (entries: [string, string][]) => Object.fromEntries(entries.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))
 
 export function buildProductLineIndex(lines: ProductLineMapData[]): ProductLineIndex {
   const producers = [...lines].sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru')).map(line => ({
     producer: { id: line.producer.id, name: line.producer.name, aliases: [...line.producer.aliases], slug_prefixes: [...line.producer.slug_prefixes] },
+    // The index page shows these values. The first product image of the map is its cover.
+    summary: summaryOf(line),
     slugs: sortedRecord(line.products.flatMap(product => product.wine_slug ? [[product.wine_slug, product.id] as [string, string]] : [])),
     alias_slugs: sortedRecord(line.products.flatMap(product => product.wine_slug_aliases.map(slug => [slug, product.id] as [string, string]))),
   }))

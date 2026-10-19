@@ -17,8 +17,9 @@ let status = 'failed'
 let failure
 let activeCase
 
+// The page layout scrolls the window. The map has no scroll box of its own.
 async function viewportState(page) {
-  return page.locator('[data-map-viewport]').evaluate(element => ({ left: element.scrollLeft, top: element.scrollTop }))
+  return page.evaluate(() => ({ left: window.scrollX, top: window.scrollY }))
 }
 async function assertSelected(page, id) {
   await page.waitForFunction(id => document.querySelector('[data-product-detail]')?.getAttribute('data-selected-product') === id, id)
@@ -80,7 +81,8 @@ async function imageFailureBeforeHydration() {
     await page.goto(`${origin}/lineup/${line.producer.id}?wine=${encodeURIComponent(product.wine_slug)}`, { waitUntil: 'commit' })
     await page.waitForFunction(src => [...document.querySelectorAll('img[data-map-image]')].some(image => image.dataset.mapImage === src && image.complete && image.naturalWidth === 0), product.image.src)
     releaseScripts()
-    await page.locator('.plm-detail-image .plm-image-placeholder').waitFor({ state: 'visible' })
+    // The page layout keeps the details in the closed popup. The placeholder must replace the failed image there.
+    await page.locator('.plm-detail-image .plm-image-placeholder').waitFor({ state: 'attached' })
     await page.waitForFunction(src => ![...document.querySelectorAll('img[data-map-image]')].some(image => image.dataset.mapImage === src), product.image.src)
     assert.deepEqual(pageErrors, [])
     checks.push(activeCase)
@@ -114,23 +116,26 @@ try {
       await page.goto(`${origin}/lineup/${line.producer.id}?wine=${encodeURIComponent(initial.wine_slug)}`, { waitUntil: 'networkidle' })
       await assertSelected(page, initial.id)
       assert.equal(await page.locator(`[data-group-id="${initial.group_id}"]`).getAttribute('aria-expanded'), 'true')
+      assert.equal(await page.locator('.product-line-map').getAttribute('data-map-layout'), 'page')
+      assert(await page.locator('[data-map-viewport]').evaluate(element => getComputedStyle(element).overflowY === 'visible' && element.scrollHeight <= element.clientHeight + 1), `${label}: the map must not scroll inside the page`)
       const details = page.locator('[data-product-detail]')
-      if (mobile) {
+      // The page layout shows details in the popup at every width.
+      {
         await page.locator('[data-product-dialog]').waitFor({ state: 'attached' })
         assert.equal(await details.getAttribute('open'), null, `${label}: popup must stay closed on entry`)
+        // A user scrolls to the trigger first. Record the page position after that scroll.
+        const trigger = page.getByRole('button', { name: 'О выбранном вине', exact: true })
+        await trigger.scrollIntoViewIfNeeded()
         const before = await viewportState(page)
-        await page.getByRole('button', { name: 'О выбранном вине', exact: true }).click()
+        await trigger.click()
         assert.equal(await details.getAttribute('open'), '')
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${initial.wine_slug}`)
         await assertLayout(page, `${label}-initial-popup`)
         const bounds = await details.boundingBox()
-        assert(bounds && bounds.x >= 0 && bounds.y >= 0 && bounds.width <= width && bounds.y + bounds.height <= 845, `${label}: popup exceeds viewport`)
+        assert(bounds && bounds.x >= 0 && bounds.y >= 0 && bounds.width <= width && bounds.y + bounds.height <= (mobile ? 844 : 1000) + 1, `${label}: popup exceeds viewport`)
         await details.getByRole('button', { name: 'Вернуться к карте', exact: true }).click()
         assert.equal(await details.getAttribute('open'), null)
-        assert.deepEqual(await viewportState(page), before, `${label}: return changed map position`)
-      } else {
-        assert.equal(await details.evaluate(element => element.tagName), 'ASIDE')
-        assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${initial.wine_slug}`)
+        assert.deepEqual(await viewportState(page), before, `${label}: return changed the page position`)
       }
       await assertLayout(page, `${label}-initial`)
       await openProduct(page, gray)
@@ -152,16 +157,16 @@ try {
         assert(await frame.evaluate(element => element.getBoundingClientRect().height > 0), `${label}: empty frame`)
       }
       if (!gray.image) assert.equal(await details.locator('.plm-image-placeholder').innerText(), 'Нет изображения')
-      if (mobile) assert.equal(await details.getAttribute('open'), '')
+      assert.equal(await details.getAttribute('open'), '')
       await assertLayout(page, label)
       if (['derbent-vino', 'fanagoria', 'massandra', 'soyuz-vino', 'esse', 'chateau-pinot', 'valery-zakharyin', 'novy-svet', 'belbek', 'sober-bash', 'agora'].includes(line.producer.id)) await page.screenshot({ path: `${report}/${label}.png`, fullPage: !mobile })
-      if (mobile) await details.getByRole('button', { name: 'Закрыть информацию о вине', exact: true }).click()
+      await details.getByRole('button', { name: 'Закрыть информацию о вине', exact: true }).click()
       const missingImage = line.products.find(product => !product.image && product.wine_slug)
       if (missingImage) {
         await openProduct(page, missingImage)
         assert.equal(await details.locator('.plm-image-placeholder').innerText(), 'Нет изображения')
         assert.equal(await details.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${missingImage.wine_slug}`)
-        if (mobile) await page.keyboard.press('Escape')
+        await page.keyboard.press('Escape')
       }
       if (['fanagoria', 'kuban-vino', 'soyuz-vino'].includes(line.producer.id) && ((width === 1440 && theme === 'light') || (width === 320 && theme === 'dark'))) {
         await page.getByRole('button', { name: 'Открыть все', exact: true }).click()
@@ -184,7 +189,7 @@ try {
       await page.getByRole('button', { name: 'Открыть карту', exact: true }).click()
       await page.waitForURL(`**/lineup/${next.producer.id}`)
       await page.waitForFunction(id => document.querySelector('.product-line-map')?.dataset.producerId === id && document.querySelector('[data-product-detail]')?.getAttribute('data-selected-product') === '', next.producer.id)
-      if (mobile) await page.locator('[data-product-dialog]').waitFor({ state: 'attached' })
+      await page.locator('[data-product-dialog]').waitFor({ state: 'attached' })
       assert.equal(await page.locator('[data-product-dialog][open]').count(), 0)
       await assertLayout(page, `${label}-navigation`)
       checks.push(label)
