@@ -66,7 +66,8 @@ class WineCard(BaseModel):
     grapes: str | None = Field(description="Grape varieties.")
     sugar: str | None = Field(
         description="Sugar class that the slug or the name states, or null.")
-    image_url: str | None = Field(description="Official catalogue image, or null.")
+    image_url: str | None = Field(
+        description="Static wine image of chtozavino.ru (long side up to 1600 px), or null.")
     qr_urls: list[str] = Field(description="Normalized QR code URLs of the wine.")
 
 

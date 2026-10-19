@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { createError } from 'h3'
-import { sourceWineUrl, type Wine } from '#shared/catalog'
+import { sourceWineUrl, wineImageUrl, type Wine } from '#shared/catalog'
 
 const SOURCE_API_ORIGIN = 'https://api.vino-svoe.ru'
 const SOURCE_RESPONSE_LIMIT = 256 * 1024
@@ -12,18 +12,6 @@ function text(value: unknown): string {
 
 function nestedText(value: unknown, key: string): string {
   return value && typeof value === 'object' ? text((value as Record<string, unknown>)[key]) : ''
-}
-
-function sourceImageUrl(value: unknown): string | null {
-  const path = text(value)
-  if (!path) return null
-  try {
-    const url = new URL(path, SOURCE_API_ORIGIN)
-    if (url.origin !== SOURCE_API_ORIGIN || url.search || url.hash || !url.pathname.startsWith('/uploads/')) return null
-    return `${SOURCE_API_ORIGIN}/v1/img/str-api/640/640/resize${url.pathname}`
-  } catch {
-    return null
-  }
 }
 
 function wineStyle(value: unknown): { color: string; category: string } {
@@ -51,8 +39,8 @@ export function normalizeSourceWine(value: unknown, expectedSlug: string): Wine 
   const item = value as Record<string, unknown>
   if (item.slug !== expectedSlug) return null
   const name = text(item.title)
-  const image = sourceImageUrl(item.image && typeof item.image === 'object' ? (item.image as Record<string, unknown>).url : null)
-  if (!name || !image) return null
+  // The image is the static wine image of the slug, not the image of the source response.
+  if (!name) return null
   const style = wineStyle(item.category)
   const grapes = Array.isArray(item.grapes) ? item.grapes.map(grape => nestedText(grape, 'name')).filter(Boolean) : []
   const pairings = Array.isArray(item.dishes) ? item.dishes.map(dish => nestedText(dish, 'name')).filter(Boolean) : []
@@ -67,7 +55,7 @@ export function normalizeSourceWine(value: unknown, expectedSlug: string): Wine 
     color: style.color,
     category: style.category,
     rating,
-    image,
+    image: wineImageUrl(expectedSlug),
     alcohol: percent(item.alcohol),
     servingTemperature: temperature(item.temperature),
     pairings,

@@ -2,6 +2,11 @@
 
 ## 2026-10-19
 
+- Service rule 10: the catalogue result images come from `https://chtozavino.ru` (plan
+  `../docs/plans/06_wine-images.md`, owner decision of 2026-10-19), and from
+  `https://api.vino-svoe.ru` until each matcher gives the new addresses. The code is in
+  `../im-core` (`CATALOG_IMAGE_HOSTS`).
+
 - «Винный дневник» link (issue #51): `/start link_<code>` shows the diary name with «Привязать» and
   «Отмена»; «Привязать» links the Telegram user ID in the account service; `/unlink` removes it.
   Private chats only. Account calls run as background tasks with a 2 s timeout, so a slow service

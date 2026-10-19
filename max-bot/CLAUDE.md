@@ -33,7 +33,9 @@ The workspace rules are in `../../CLAUDE.md`.
    2026-10-18) are in Russian. Write them in short active Russian sentences.
 8. Send all photo processing through the shared work queue.
 9. Keep the default queue worker count at one until a GPU load test approves a higher value.
-10. Fetch catalogue result images only from `https://api.vino-svoe.ru`.
+10. Fetch catalogue result images only from `https://chtozavino.ru` (the static wine images of
+    plan `docs/plans/06_wine-images.md`) and, until each matcher gives those addresses, from
+    `https://api.vino-svoe.ru`. The owner moved the images to chtozavino.ru on 2026-10-19.
 11. Use the submitted accepted photo when a catalogue result image is unavailable.
 12. Authorize administrator commands only by `BOT_ADMIN_USER_ID` and the dialog chat type.
     In MAX, the dialog chat ID is not the user ID.

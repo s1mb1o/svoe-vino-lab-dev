@@ -33,10 +33,13 @@ WINE_COLUMNS = ("wine_slug", "name", "producer", "category", "region", "color", 
                 "main_source_name", "qr_values")
 IMAGE_VIEW = "matcher_wine_image"
 IMAGE_COLUMNS = ("wine_slug", "image_type", "sha256", "role")
-# The public catalogue pages and images. They are the forms of the bundle builder
-# (`workbench/pipeline/matcher_bundle.py`, plan 74).
+# The public catalogue pages, and the static wine images of chtozavino.ru (plan
+# `docs/plans/06_wine-images.md` of the repository). They are the forms of the bundle
+# builder (`workbench/pipeline/matcher_bundle.py`, plan 74).
 PAGE_URL_PREFIX = "https://vino-svoe.ru/wines/"
-IMAGE_URL_PREFIX = "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/"
+IMAGE_URL_PREFIX = "https://chtozavino.ru/img/wines/1600/"
+# A wine has a static image when the image view holds one of these types (plan 06).
+WINE_IMAGE_TYPES = ("main", "main_patched")
 
 
 class CatalogError(ValueError):
@@ -152,7 +155,7 @@ def _rows(conn, view, columns):
     return conn.execute("SELECT %s FROM %s" % (", ".join(columns), view)).fetchall()
 
 
-def _card(slug, name, producer, category, region, color, grapes, main, qr_values):
+def _card(slug, name, producer, category, region, color, grapes, qr_values, has_image):
     try:
         values = json.loads(qr_values) if qr_values is not None else []
     except ValueError as exc:
@@ -167,7 +170,7 @@ def _card(slug, name, producer, category, region, color, grapes, main, qr_values
         "region": region,
         "color": color,
         "grapes": grapes,
-        "image_url": None if main is None else IMAGE_URL_PREFIX + quote(main, safe=""),
+        "image_url": (IMAGE_URL_PREFIX + quote(slug, safe="") + ".webp") if has_image else None,
         "qr_urls": sorted({url for url in map(normalize_qr_url, values) if url}),
     }
     card = {key: card[key] for key in CARD_FIELDS}
@@ -184,9 +187,16 @@ def _read_views(path):
     except sqlite3.Error as exc:
         raise CatalogError("cannot open %s: %s" % (path, exc)) from exc
     try:
-        wines = {row[0]: _card(*row) for row in _rows(conn, WINE_VIEW, WINE_COLUMNS)}
+        images = _rows(conn, IMAGE_VIEW, IMAGE_COLUMNS)
+        with_image = {slug for slug, image_type, _, _ in images
+                      if image_type in WINE_IMAGE_TYPES}
+        # The view keeps the column `main_source_name` (schema 031); plan 06 does not read it.
+        wines = {slug: _card(slug, name, producer, category, region, color, grapes, qr_values,
+                             slug in with_image)
+                 for slug, name, producer, category, region, color, grapes, _, qr_values
+                 in _rows(conn, WINE_VIEW, WINE_COLUMNS)}
         owners = {}
-        for slug, _, digest, role in _rows(conn, IMAGE_VIEW, IMAGE_COLUMNS):
+        for slug, _, digest, role in images:
             if slug not in wines or role not in ("full", "label"):
                 raise CatalogError("%s has an invalid row for the wine %s" % (IMAGE_VIEW, slug))
             owners.setdefault(digest, []).append((slug, role))

@@ -18,6 +18,16 @@ Original rights remain with the source owners. This repository does not relicens
 Source application scripts, analytics, and CSS bundles are not included.
 The implementation uses its own CSS.
 
+## Static wine images
+
+Date: 2026-10-19
+
+The files under `/img/wines/` are not assets of this directory. Caddy serves them from a release
+of `workbench/scripts/build_wine_images.py` (plan `../../docs/plans/06_wine-images.md`). Each file
+is a reduced copy of the `main_patched` or the `main` image of the lab catalogue. The `main`
+images come from the vino-svoe.ru catalogue. The `main_patched` images are lab edits of them.
+`manifest.json` of each release records the SHA-256 of each original.
+
 ## Presentation files
 
 Date: 2026-09-29

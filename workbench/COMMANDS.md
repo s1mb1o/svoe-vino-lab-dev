@@ -463,6 +463,36 @@ python3 -m unittest discover -s tests -p 'test_catalog_copy.py'
 python3 -m unittest discover -s tests -p 'test_matcher_views.py'
 ```
 
+## Static wine images (plan 06 of the repository)
+
+Build one release from the lab database. The output path MUST not exist. This command writes
+a new directory. It reads the database and the image store, and calls no external service:
+```bash
+python3 scripts/build_wine_images.py --db data/catalog/catalog.sqlite3 \
+    --out work/wine-images/$(date -u +%Y%m%dT%H%M%SZ)
+```
+
+Check a release directory against a database. Read-only. Exit code 1 means a difference:
+```bash
+python3 scripts/check_wine_images.py --db data/catalog/catalog.sqlite3 \
+    --release work/wine-images/<release>
+```
+
+Check the published release. It calls `https://chtozavino.ru`. `--catalog-update` accepts a
+manifest wine that is not Active in the database; use it with the new matcher catalogue copy
+before a catalogue update:
+```bash
+python3 scripts/check_wine_images.py --db data/catalog/catalog.sqlite3 \
+    --url https://chtozavino.ru/img/wines/ --sample 50
+python3 scripts/check_wine_images.py --db work/catalog-copy/catalog.sqlite3 \
+    --url https://chtozavino.ru/img/wines/ --catalog-update
+```
+
+Run the local unit tests. They use temporary data and do not call an external service:
+```bash
+python3 -m unittest discover -s tests -p 'test_wine_images.py'
+```
+
 ## Matcher backend cascade (plan 85)
 
 The matcher pipeline `cascade-p512-rot5` needs a copy with both embeddings: the rotated

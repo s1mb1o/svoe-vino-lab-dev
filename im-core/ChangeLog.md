@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-19
+
+- `CatalogImageLoader` accepts the static wine images of `https://chtozavino.ru` (plan
+  `../docs/plans/06_wine-images.md`) and still accepts `https://api.vino-svoe.ru` until each
+  matcher gives the new addresses (`CATALOG_IMAGE_HOSTS`). The parameter `allowed_host` is now
+  `allowed_hosts`; no caller passed it. New test:
+  `test_catalog_image_loader_accepts_the_static_wine_images`. 160 tests pass; the Telegram bot
+  (251) and the MAX bot (486) pass with the change.
+
 ## 2026-10-18
 
 - Fixed `ArtifactStore` for a relative data root, for example `BOT_DATA_ROOT=./data` of

@@ -43,10 +43,11 @@ ITEM_KEYS_V3 = ITEM_KEYS | {"angle"}
 CANDIDATE_KEYS = {"vector_row", "wine_slug", "view", "image_type"}
 WINE_KEYS_V1 = {"wine_slug", "name", "producer", "category", "region"}
 WINE_KEYS = WINE_KEYS_V1 | {"color", "grapes", "page_url", "image_url", "qr_urls"}
-# The public catalogue pages and images. All 2,103 records of the hackathon catalogue use
-# these forms (check of 2026-09-28, plan 74).
+# The public catalogue pages. All 2,103 records of the hackathon catalogue use this form
+# (check of 2026-09-28, plan 74). The images are the static wine images of chtozavino.ru
+# (plan `docs/plans/06_wine-images.md` of the repository, `pipeline/wine_images.py`).
 PAGE_URL_PREFIX = "https://vino-svoe.ru/wines/"
-IMAGE_URL_PREFIX = "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/"
+IMAGE_URL_PREFIX = "https://chtozavino.ru/img/wines/1600/"
 OMISSION_KEYS = {
     "source_sha256", "view", "role", "embedding_hash", "state", "error",
 }
@@ -199,11 +200,11 @@ def _card_fields(conn):
         cards[slug] = {"color": color, "grapes": grapes,
                        "page_url": PAGE_URL_PREFIX + quote(slug, safe=""),
                        "image_url": None, "qr_urls": []}
-    # `main` is the official catalogue image. `main_patched` is a lab image.
-    for slug, name in conn.execute(
-            "SELECT wine_slug, source_name FROM wine_image WHERE image_type = 'main'"):
+    # A wine with a `main` or a `main_patched` image has a static image (plan 06).
+    for (slug,) in conn.execute("SELECT DISTINCT wine_slug FROM wine_image "
+                                "WHERE image_type IN ('main', 'main_patched')"):
         if slug in cards:
-            cards[slug]["image_url"] = IMAGE_URL_PREFIX + quote(name, safe="")
+            cards[slug]["image_url"] = IMAGE_URL_PREFIX + quote(slug, safe="") + ".webp"
     for slug, value in conn.execute(
             "SELECT wine_slug, value FROM wine_code WHERE kind = 'qr_url'"):
         url = normalize_qr_url(value)

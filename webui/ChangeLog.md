@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — Static wine images
+
+- Plan `../docs/plans/06_wine-images.md`. `wineImageUrl(slug, size)` in `shared/catalog.ts` gives `/img/wines/<1600|400>/<slug>.webp`. Caddy serves these files on the portal origin.
+- `/api/wines/[slug]` returns the static 1600 px image of the slug. It no longer uses the 640 px image of api.vino-svoe.ru, and a source response without an image no longer rejects the wine.
+- New `WineImage.vue`: a wine image that shows a bottle silhouette in theme colours when the file does not load (HTTP 404 for a wine with no image, a network error). An image with `alt` gives the placeholder `role="img"` and «<name>: нет изображения»; a decorative image hides it from screen readers. `PhotoScanner`, `ShelfScanner`, and `DinnerScanner` use it.
+- Dinner Lens cards show the 400 px image above the producer, with `alt=""` because the heading names the wine. The tile is light in both themes; `mix-blend-mode: multiply` removes the white box of a white-background photo.
+- `npm run test:dinner` checks the card image and the hidden placeholder in all 7 browser suites. Vitest: 482 passed, 20 skipped. Typecheck, build and bundle check pass.
+
 ## 2026-10-19: Wine Crocodile landing
 
 - Add `/crocodile` and its invitation on `/ideas`.

@@ -197,6 +197,7 @@ The server does not expose this URL in public configuration.
 The server does not replace upstream errors with mock results.
 The 12 local wine records provide the mock result and a fast metadata path.
 For another recognized slug, the server requests the exact card from `https://api.vino-svoe.ru/v1/wines/<slug>`.
+The card image is the static wine image `/img/wines/1600/<slug>.webp` of plan `../docs/plans/06_wine-images.md`, not the image of the source response.
 The server validates and normalizes the source response before it returns metadata to the browser.
 The result always links to the source portal.
 If metadata is missing or fails, the app preserves the predicted slug and its link.

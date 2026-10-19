@@ -29,7 +29,7 @@ describe('source wine metadata', () => {
       color: 'Розовое',
       category: 'сладкое',
       rating: 5,
-      image: 'https://api.vino-svoe.ru/v1/img/str-api/640/640/resize/uploads/massandra_bottle.webp',
+      image: `/img/wines/1600/${slug}.webp`,
       alcohol: '10%',
       servingTemperature: '8-10°C',
       pairings: ['Выпечка и десерты', 'Десерты'],
@@ -42,10 +42,16 @@ describe('source wine metadata', () => {
     null,
     { ...source, slug: 'other' },
     { ...source, title: '' },
-    { ...source, image: { url: 'https://evil.example/bottle.webp' } },
-    { ...source, image: { url: '/uploads/../private/bottle.webp' } },
   ])('rejects invalid or untrusted source metadata', value => {
     expect(normalizeSourceWine(value, slug)).toBeNull()
+  })
+
+  it.each([
+    { ...source, image: { url: 'https://evil.example/bottle.webp' } },
+    { ...source, image: { url: '/uploads/../private/bottle.webp' } },
+    { ...source, image: null },
+  ])('uses the static wine image whatever image the source response names', value => {
+    expect(normalizeSourceWine(value, slug)?.image).toBe(`/img/wines/1600/${slug}.webp`)
   })
 
   it('loads one exact slug from the official JSON API', async () => {
@@ -53,7 +59,7 @@ describe('source wine metadata', () => {
     const wine = await fetchSourceWine(slug, { fetch: request as typeof fetch })
 
     expect(wine?.slug).toBe(slug)
-    expect(wine?.image).toContain('/resize/uploads/massandra_bottle.webp')
+    expect(wine?.image).toBe(`/img/wines/1600/${slug}.webp`)
     expect(request).toHaveBeenCalledWith(`https://api.vino-svoe.ru/v1/wines/${slug}`, expect.objectContaining({
       headers: { accept: 'application/json' },
       redirect: 'error',

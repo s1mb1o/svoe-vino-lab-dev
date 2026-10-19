@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-19
+
+- The card field `image_url` is the static wine image of chtozavino.ru (plan
+  `../docs/plans/06_wine-images.md`): `https://chtozavino.ru/img/wines/1600/<slug>.webp` for a
+  wine that has a `main` or a `main_patched` row in `matcher_wine_image`, else `null`. Before,
+  the address used `main_source_name` on api.vino-svoe.ru and ignored `main_patched`. The view
+  contract does not change. `app.py`, `openapi.yaml`, and `README.md` describe the new address.
+  New test: `test_only_a_main_or_main_patched_image_gives_an_image_url`. 262 + 1 tests pass.
+
 ## 2026-10-18
 
 - Ported the production matcher into GitHub `main`. Production ran `8b096a16`, a revision

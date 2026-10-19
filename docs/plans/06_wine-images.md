@@ -3,7 +3,8 @@
 Date: 2026-10-19.
 Branch: `feature/wine-images`.
 Base: `4360ce40` (`main`).
-Status: Draft with no open questions. Implementation starts after the owner approves it.
+Status: Implemented on the branch on 2026-10-19 (owner message "implement"). Not deployed. Read
+"Implementation notes".
 
 ## Goal
 
@@ -65,7 +66,7 @@ The published files MUST agree with the catalogue database. A deploy MUST check 
   `matcher.catalog._read_views` on the lab database gives 2,198 cards, and exactly these 5 have
   `image_url` = `None`. The 5 wines have no rows in `matcher_wine_image`, so the matcher has
   no vectors for them and cannot return them. The clients already accept `null`: the bots send
-  the photo of the user, and the shelf shows the bottle crop
+  the photo of the user, and the shelf shows the preview of the shelf photo
   (`ShelfScanner.vue`: `wine?.image || result?.image.preview`).
 - The table `wine_image` has no time column and no trigger. A changed patch does not change
   a date in the database. A date is therefore not a reliable sync check.
@@ -100,17 +101,20 @@ The rule reads only the fixed views. No schema change is necessary.
 
 - Open the original with Pillow. Reject an original above 100,000,000 pixels
   (the limit of `patches.py`).
-- Apply the EXIF orientation. Remove all metadata.
+- Apply the EXIF orientation. Remove the EXIF and XMP data. Keep the ICC profile, so that the
+  colours stay correct.
 - Keep the alpha channel when the original has one.
 - Reduce the image so that the long side is at most the size. Do not enlarge a smaller image.
 - Write WebP with the Pillow default quality.
 
 ## Placeholder
 
-- The web UI has one placeholder component: an inline SVG bottle silhouette (D7).
+- The web UI has one component, `webui/app/components/WineImage.vue`: the image, and an inline
+  SVG bottle silhouette when the image does not load (D7).
 - It uses the theme colors through `currentColor`, so it works in the light and the dark theme.
-- It has the text «Нет изображения» for screen readers, as the line map placeholder
-  (`ProductLineMap.vue`, `plm-image-placeholder`).
+- An image with `alt` gives the placeholder `role="img"` and the name «<alt>: нет изображения»,
+  as the line map placeholder (`ProductLineMap.vue`, `plm-image-placeholder`). A decorative image
+  (`alt=""`) hides the placeholder from screen readers.
 - Each `<img>` of a wine image shows it on the `error` event. This covers HTTP 404, network
   errors, and the deploy window.
 
@@ -172,8 +176,25 @@ a list of the differences.
 - Release: `/srv/svoe-vino-lab/prod/wine-images/releases/<UTC time>/`.
 - Active release: `/srv/svoe-vino-lab/prod/wine-images/current`, a relative symlink.
 - Keep the last three releases. A rollback changes the symlink.
-- Caddy: a `handle /img/wines/*` block in the site `chtozavino.ru`, before the portal
-  `handle`. It strips the prefix, uses `root` = `current`, and runs `file_server`.
+- Caddy: a `handle_path /img/wines/*` block in the site `chtozavino.ru`, before the portal
+  `handle`. It strips the prefix, uses `root` = `current`, and runs `file_server`. A draft:
+
+  ```caddyfile
+  handle_path /img/wines/* {
+  	root * /srv/svoe-vino-lab/prod/wine-images/current
+  	@image path_regexp ^/(1600|400)/[a-z0-9_][a-z0-9_-]*\.webp$
+  	@manifest path /manifest.json
+  	header @image Cache-Control "public, max-age=3600"
+  	header @manifest Cache-Control "no-cache"
+  	@other not path_regexp ^/((1600|400)/[a-z0-9_][a-z0-9_-]*\.webp|manifest\.json)$
+  	respond @other 404
+  	file_server
+  }
+  ```
+
+  Run `caddy validate` before the reload. Check the headers and a 404 with `curl` after it.
+  This draft is not tested on a Caddy server yet.
+- One release uses about 104 MB (measured on 2026-10-19). Three releases use about 0.3 GB.
 
 Procedure:
 
@@ -188,9 +209,11 @@ A prod deploy MUST have the approval of the owner (rule 1 of `chtozavino-deploy`
 
 ## Deploy order
 
-- Images first, then the consumers. The order of the consumers: the web UI, then the bots
-  (the new allowed host), then the matcher (the new `image_url`). A bot with the old allowed
-  host rejects the new address and sends the photo of the user.
+- Images first, then the consumers: the web UI, the bots, and the matcher, in this order.
+- The bots accept both hosts (`CATALOG_IMAGE_HOSTS` in im-core): `chtozavino.ru` and
+  `api.vino-svoe.ru`. So a bot works with the old matcher and with the new matcher. A bot with
+  only the new host would reject the old addresses until the matcher deploy. Remove
+  `api.vino-svoe.ru` from the list after each deployed matcher gives the new addresses.
 - A catalogue update for the matcher on gx10: publish the image release from the same database
   first. Then run the public check with `--catalog-update` against the new catalogue copy.
   A failed check stops the catalogue deploy.
@@ -204,19 +227,22 @@ A prod deploy MUST have the approval of the owner (rule 1 of `chtozavino-deploy`
    for a wine with an image. For a wine with no image, `image_url` stays `null` (D9). Read the selection from
    `matcher_wine_image`, not from `main_source_name`.
 2. `workbench/pipeline/matcher_bundle.py`: the same rule for the bundle cards.
-3. `im-core/src/chto_za_vino_core/result_card.py`: the default `allowed_host` becomes
-   `chtozavino.ru`. The Telegram bot and the MAX bot use the default.
+3. `im-core/src/chto_za_vino_core/result_card.py`: the default `allowed_hosts` is
+   `("chtozavino.ru", "api.vino-svoe.ru")` (see "Deploy order"). The Telegram bot and the MAX
+   bot use the default. Service rule 10 of `telegram-bot/CLAUDE.md` and `max-bot/CLAUDE.md`
+   names both hosts.
 4. `webui/server/utils/wine-metadata.ts`: `image` = `/img/wines/1600/<slug>.webp`. The route
    keeps the other fields of the source site. A missing source image no longer rejects a wine.
 5. `webui/app/components/DinnerScanner.vue`: each result card shows
    `/img/wines/400/<slug>.webp`.
    - `alt=""`, because the wine name is in the card heading next to the image.
    - Fixed `width` and `height`, `loading="lazy"`, `decoding="async"`.
-   - A light image tile in both themes, because the originals have light backgrounds.
+   - A light image tile in both themes, because the originals have light backgrounds. The
+     image uses `mix-blend-mode: multiply`, so a white background takes the tile colour.
    - VoiceOver and TalkBack MUST read the card as before (issue #35).
 6. `PhotoScanner.vue`, `ShelfScanner.vue`, and `DinnerScanner.vue`: each `<img>` of a wine image
    shows the placeholder on the `error` event. `ShelfScanner.vue` keeps its fallback to the
-   bottle crop when `image_url` is `null`.
+   preview of the shelf photo when `image_url` is `null`.
 
 Out of scope: the 12 demo wines of `/ideas` (`webui/server/data/wines.json`, local files
 `/wines/<slug>.webp`) and the producer line maps (`/product-line-maps/...`).
@@ -227,17 +253,36 @@ Out of scope: the 12 demo wines of `/ideas` (`webui/server/data/wines.json`, loc
   size limits, no enlargement, alpha, EXIF orientation, missing original, wrong SHA-256.
 - `check_wine_images.py`: each difference type, `--catalog-update` warnings, extra files.
 - Matcher: card `image_url` for `main`, `main_patched`, and no image.
-- im-core: the loader accepts `chtozavino.ru` and rejects `api.vino-svoe.ru`.
+- im-core: the loader accepts `chtozavino.ru` and `api.vino-svoe.ru`, and rejects HTTP,
+  `www.chtozavino.ru`, and another host.
 - Web UI: `/api/wines/[slug]` image address; Dinner Lens card image in light and dark themes;
   the placeholder after an image error in the three components; an accessibility check of the
   card and of the placeholder.
-- `SMOKE_TESTS.md`: create it with the image smoke tests (the repository has no such file).
+- Smoke tests: `workbench/SMOKE_TESTS.md` (WI1–WI5) and `webui/SMOKE_TESTS.md` ("Static wine
+  images"). The repository root has no `SMOKE_TESTS.md`.
 
 ## Documentation
 
 `ChangeLog.md`, `ARCHITECTURE.md`, `chtozavino-deploy` (`claudette/wine-images.md`, Caddyfile,
 the catalogue update procedure), `infra/services/svoe-vino-webui` and
 `infra/services/svoe-vino-matcher`.
+
+## Implementation notes (2026-10-19)
+
+- Code: `workbench/pipeline/wine_images.py`, `workbench/scripts/build_wine_images.py`,
+  `workbench/scripts/check_wine_images.py`, `matcher/catalog.py`,
+  `workbench/pipeline/matcher_bundle.py`, `im-core/src/chto_za_vino_core/result_card.py`,
+  `webui/shared/catalog.ts` (`wineImageUrl`), `webui/server/utils/wine-metadata.ts`,
+  `webui/app/components/WineImage.vue`, `PhotoScanner.vue`, `ShelfScanner.vue`,
+  `DinnerScanner.vue`.
+- A real build from the lab database: 2,198 Active wines, 2,193 images (24 `main_patched`),
+  5 with no image, 4,386 files, 104 MB, `manifest.json` 0.9 MB. The build takes 4 minutes. The
+  full check takes 1 second and finds no difference.
+- 15 Active slugs start with `__`. The slug rule of the files is `^[a-z0-9_][a-z0-9_-]*$`.
+- The web UI uses relative addresses (`/img/wines/...`). `nuxt dev` does not serve them, so a
+  local portal shows the placeholder.
+- Not done: the Caddy change, the first release on Claudette, the deploys of the consumers,
+  and the record in `chtozavino-deploy`. Each needs the approval of the owner.
 
 ## Open questions
 

@@ -143,6 +143,31 @@ async def test_catalog_image_loader_rejects_untrusted_host():
             await loader.fetch("https://example.com/image.jpg")
 
 
+async def test_catalog_image_loader_accepts_the_static_wine_images():
+    source = Image.new("RGB", (300, 600), "white")
+    buffer = io.BytesIO()
+    source.save(buffer, format="WEBP")
+    hosts = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        hosts.append(request.url.host)
+        return httpx.Response(200, content=buffer.getvalue())
+
+    transport = httpx.MockTransport(respond)
+    async with httpx.AsyncClient(transport=transport) as client:
+        loader = CatalogImageLoader(client)
+        result = await loader.fetch("https://chtozavino.ru/img/wines/1600/wine-a.webp")
+        for url in ("http://chtozavino.ru/img/wines/1600/wine-a.webp",
+                    "https://www.chtozavino.ru/img/wines/1600/wine-a.webp",
+                    "https://chtozavino.ru.example.com/img/wines/1600/wine-a.webp"):
+            with pytest.raises(CatalogImageUnavailable):
+                await loader.fetch(url)
+
+    assert hosts == ["chtozavino.ru"]
+    with Image.open(io.BytesIO(result)) as image:
+        assert image.format == "JPEG"
+
+
 async def test_catalog_image_loader_downloads_and_prepares_preview_image():
     source = Image.new("RGB", (300, 600), "white")
     buffer = io.BytesIO()

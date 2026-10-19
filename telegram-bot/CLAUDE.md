@@ -28,7 +28,9 @@ The workspace rules are in `../../CLAUDE.md`.
 7. Keep technical documentation in English and use STE-style text.
 8. Send all photo processing through the shared work queue.
 9. Keep the default queue worker count at one until a GPU load test approves a higher value.
-10. Fetch catalogue result images only from `https://api.vino-svoe.ru`.
+10. Fetch catalogue result images only from `https://chtozavino.ru` (the static wine images of
+    plan `docs/plans/06_wine-images.md`) and, until each matcher gives those addresses, from
+    `https://api.vino-svoe.ru`. The owner moved the images to chtozavino.ru on 2026-10-19.
 11. Use the submitted accepted photo when a catalogue result image is unavailable.
 12. Authorize administrator commands only by `BOT_ADMIN_USER_ID` and the private chat ID.
 13. Require an explicit `BOT_ADMIN_USER_ID`. Do not keep a real account as a default.

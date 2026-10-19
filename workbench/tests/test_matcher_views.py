@@ -72,8 +72,8 @@ class MatcherViewsTest(unittest.TestCase):
         for slug, row in view.items():
             card = cards[slug]
             self.assertEqual((row["color"], row["grapes"]), (card["color"], card["grapes"]))
-            self.assertEqual(matcher_bundle.IMAGE_URL_PREFIX + row["main_source_name"],
-                             card["image_url"])
+            # Both wines have a `main` or a `main_patched` image (plan 06).
+            self.assertEqual(matcher_bundle.IMAGE_URL_PREFIX + slug + ".webp", card["image_url"])
             self.assertEqual(sorted({matcher_bundle.normalize_qr_url(value)
                                      for value in json.loads(row["qr_values"])}),
                              card["qr_urls"])

@@ -1,5 +1,28 @@
 # ChangeLog
 
+## 2026-10-19
+
+- Static wine images of chtozavino.ru (plan `../docs/plans/06_wine-images.md`, owner message of
+  2026-10-19T19:25:00+0300). New module `pipeline/wine_images.py` and the scripts
+  `scripts/build_wine_images.py` and `scripts/check_wine_images.py`. A release holds
+  `1600/<slug>.webp` and `400/<slug>.webp` (the `main_patched` image, else the `main` image,
+  long side at most the size, no enlargement, EXIF orientation applied, alpha and ICC profile
+  kept), `manifest.json` with the SHA-256 of each original and each file, and `SHA256SUMS`. The
+  check compares a release directory or a published release with the views of a catalogue
+  database, so a matcher copy with no image files is enough. A wine with no image has no file;
+  its address MUST answer HTTP 404. A real build from the lab database (schema 32) on
+  2026-10-19: 2,198 Active wines, 2,193 images (24 `main_patched`), 5 with no image, 4,386
+  files, 104 MB (80 MB of 1600, 22 MB of 400), `manifest.json` 0.9 MB; build 4 min, full check
+  1 s, no difference. A second build gave the same bytes for each file. 15 Active slugs start
+  with `__`; the slug rule allows them. The Codex review (gpt-6.1-sol, xhigh) found one defect:
+  an RGB or grey PNG with a tRNS colour key lost its transparency. Fixed, with a regression
+  test; no catalogue original uses a tRNS key, so the real release did not change.
+- The bundle builder (`pipeline/matcher_bundle.py`) writes `image_url` =
+  `https://chtozavino.ru/img/wines/1600/<slug>.webp` for a wine with a `main` or a
+  `main_patched` image, else `null`. Before: the `source_name` of `main` on api.vino-svoe.ru.
+  Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
+  `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
+
 ## 2026-09-29
 
 - Corrected the p512 re-rank rule of the Aratti cluster `2d33f12d0b3e` (owner messages of

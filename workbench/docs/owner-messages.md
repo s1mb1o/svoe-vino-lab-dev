@@ -10216,3 +10216,160 @@ C
 ```text
 git puh
 ```
+
+## 2026-10-19T17:40:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+когда матчинг распознает вино, то откуда берется картинка вина?
+```
+
+## 2026-10-19T17:45:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+то есть по wine_slug мы получаем адрес картинки по HTTPS с хоста api.vino-svoe.ru и файлы до 15 МБ. Правильно?
+```
+
+## 2026-10-19T17:50:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+лучше если изображения будут храниться у нас на сайте (берется main/patched) и хранится статически
+
+так будет в синхронизации с базой
+
+Нужно добавить проверку, что выложенные файлы соотвествуют тем что в базе (может хранить дату изменения базы на сайте?)
+```
+
+## 2026-10-19T17:55:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+у нас эти ихлображения будут использовать другие компоненты, тот же dinner lens
+```
+
+## 2026-10-19T18:00:00+0300
+
+Answer of the owner to a question of the agent. Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+Question: Which option: 1 (address by slug, `/img/wines/<slug>.webp` and a manifest), 2 (an immutable `<sha256>` address and a slug address), or 3 (a resolver route in the portal)?
+
+```text
+1
+```
+
+## 2026-10-19T18:05:00+0300
+
+Answer of the owner to a question of the agent. Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+Question: Which image copies on the site: one WebP up to 1600 px, or two versions 1600 + 400?
+
+```text
+Две версии: 1600 + 400
+```
+
+## 2026-10-19T18:05:00+0300
+
+Answer of the owner to a question of the agent. Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+Question: When does the check of the files against the database run: at each deploy, or at each deploy and periodically?
+
+```text
+При каждом деплое (Recommended)
+```
+
+## 2026-10-19T18:05:00+0300
+
+Answer of the owner to a question of the agent. Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+Question: A wine with no image (5 now): `null` and no file, or a placeholder image?
+
+```text
+Картинка-заглушка
+```
+
+## 2026-10-19T18:05:00+0300
+
+Answer of the owner to a question of the agent. Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+Question: Scope: images and the switch of the consumers, or also the images in Dinner Lens?
+
+```text
+Плюс картинки в Dinner Lens
+```
+
+## 2026-10-19T18:15:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+а что это за вина без картинки?
+```
+
+## 2026-10-19T18:20:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+Кто делает заглушку? Предлагаю, чтобы я нарисовал нейтральный серый силуэт бутылки на прозрачном фоне. Он годится и для светлой, и для тёмной темы, и вы его проверите.
+ok
+
+> Какой max-age поставить картинкам? Предлагаю 1 час: столько займёт, пока новая версия patch дойдёт до пользователей.
+ok
+
+А мы можем на frontend проверять отдается ли файл с картинкой, и если нет - показывать заглушку?
+```
+
+## 2026-10-19T18:30:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+создай задачу github найти картинки для этиъ 5 вин
+```
+
+## 2026-10-19T18:45:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+add your findings to issue
+```
+
+## 2026-10-19T19:00:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+git commit
+```
+
+## 2026-10-19T19:10:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+q4: только фронтенд
+Q1: что матчер отдаёт в image_url для вин без картинки?  - проверь
+```
+
+## 2026-10-19T19:20:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+git commit
+```
+
+## 2026-10-19T19:25:00+0300
+
+Session svoe-vino-final-7d. The time is about; the messages were recorded at 2026-10-19T19:33:00+0300.
+
+```text
+implement
+```

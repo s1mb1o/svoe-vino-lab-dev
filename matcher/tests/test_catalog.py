@@ -123,14 +123,26 @@ class CatalogTest(unittest.TestCase):
         rows = (("full", (1, 0, 0, 0), ((slug, "main", "full"),)),)
         card = load_catalog(self.catalog(rows=rows, wines=wines), EMBEDDING).cards[slug]
         self.assertEqual(card["page_url"], "https://vino-svoe.ru/wines/" + slug)
+        # The static image address uses the slug; it ignores `main_source_name` (plan 06).
         self.assertEqual(card["image_url"],
-                         "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/"
-                         "Screenshot%202023%20at%2017.55.png")
+                         "https://chtozavino.ru/img/wines/1600/a-wine-krasnoe-suhoe-13.webp")
         self.assertEqual(card["qr_urls"], ["http://b.example/", "https://example.com/a"])
         self.assertEqual((card["name"], card["producer"], card["grapes"], card["sugar"]),
                          ("Вино", "Винодельня", None, "Сухое"))
         self.assertEqual(list(card), ["name", "page_url", "producer", "category", "region",
                                       "color", "grapes", "image_url", "qr_urls", "sugar"])
+
+    def test_only_a_main_or_main_patched_image_gives_an_image_url(self):
+        rows = (("full", (1, 0, 0, 0), (("wine-a", "main", "full"),)),
+                ("full", (0, 1, 0, 0), (("wine-p", "main_patched", "full"),)),
+                ("full", (0, 0, 1, 0), (("wine-f", "full_front", "full"),)),
+                ("label", (0, 0, 0, 1), (("wine-l", "label_front", "label"),)))
+        cards = load_catalog(self.catalog(rows=rows), EMBEDDING).cards
+        self.assertEqual({slug: card["image_url"] for slug, card in cards.items()}, {
+            "wine-a": "https://chtozavino.ru/img/wines/1600/wine-a.webp",
+            "wine-p": "https://chtozavino.ru/img/wines/1600/wine-p.webp",
+            "wine-f": None,
+            "wine-l": None})
 
     def test_a_wine_without_an_item_gets_no_card(self):
         root = self.catalog()

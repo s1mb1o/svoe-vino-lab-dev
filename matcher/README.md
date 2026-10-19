@@ -483,7 +483,7 @@ curl --form 'image=@matcher/tests/data/02eef911.webp' \
         "color": "...",
         "grapes": "...",
         "sugar": "Сладкое",
-        "image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/...",
+        "image_url": "https://chtozavino.ru/img/wines/1600/<slug>.webp",
         "qr_urls": []
       }
     }

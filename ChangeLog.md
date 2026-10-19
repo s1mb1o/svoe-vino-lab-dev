@@ -5,6 +5,19 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Implemented plan `docs/plans/06_wine-images.md` on `feature/wine-images` (not deployed).
+  `workbench/scripts/build_wine_images.py` builds a release of static wine images
+  (`/img/wines/{1600,400}/<slug>.webp` and a SHA-256 manifest), and
+  `check_wine_images.py` checks a release or the published files against a catalogue database.
+  The matcher and the bundle builder give `image_url` = the 1600 px address, or `null` for a
+  wine with no image. im-core accepts both `chtozavino.ru` and `api.vino-svoe.ru` during the
+  transition (bot service rule 10 updated). The web UI uses the static image in
+  `/api/wines/[slug]`, shows a 400 px image in each Dinner Lens card, and shows a bottle
+  silhouette when an image does not load (`WineImage.vue`). A real build: 2,193 images of
+  2,198 Active wines, 104 MB, no check difference. Tests: matcher 263, workbench image and
+  bundle suites, im-core 160, Telegram bot 251, MAX bot 486, web UI Vitest 482 and the 7
+  Dinner Lens browser suites pass. See the component change logs.
+
 - Added plan `docs/plans/06_wine-images.md`: static wine images on chtozavino.ru at
   `/img/wines/{1600,400}/<slug>.webp` (`main_patched`, else `main`) with a SHA-256
   manifest and a blocking check at each image and matcher catalogue deploy. The plan

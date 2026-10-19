@@ -517,7 +517,7 @@ components:
             - type: string
             - type: 'null'
           title: Image Url
-          description: Official catalogue image, or null.
+          description: Static wine image of chtozavino.ru (long side up to 1600 px), or null.
         qr_urls:
           items:
             type: string

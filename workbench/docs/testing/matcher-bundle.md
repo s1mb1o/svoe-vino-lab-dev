@@ -41,11 +41,12 @@ A version 2 wine record also has the wine card fields of the matcher endpoint
 | `color` | `wine_catalog.color` | string or `null` |
 | `grapes` | `wine_catalog.grapes` | string or `null` |
 | `page_url` | the slug | `https://vino-svoe.ru/wines/<slug>` |
-| `image_url` | `wine_image.source_name` of the image type `main` | `https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/<name>`, or `null` without a `main` image |
+| `image_url` | the slug, when the wine has a `main` or a `main_patched` image | `https://chtozavino.ru/img/wines/1600/<slug>.webp`, or `null` with no such image |
 | `qr_urls` | `wine_code.value` with `kind = 'qr_url'` | a sorted list of unique normalized URLs |
 
-`image_url` uses `main` because `main` is the official catalogue image.
-`main_patched` is a lab image that the catalogue site does not serve.
+`image_url` is the static wine image of chtozavino.ru (plan `../../docs/plans/06_wine-images.md`
+of the repository). The file shows the `main_patched` image, else the `main` image.
+`scripts/build_wine_images.py` writes the files.
 The QR URL normalization uses the rules of `telegram-bot`: a lowercase scheme and host,
 no default port, no fragment, and no user information.
 

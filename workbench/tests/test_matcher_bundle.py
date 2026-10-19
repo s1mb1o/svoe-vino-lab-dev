@@ -80,12 +80,12 @@ class MatcherBundleTest(unittest.TestCase):
         self.assertEqual(grey["color"], "красное")
         self.assertIsNone(grey["grapes"])
         self.assertEqual(grey["page_url"], "https://vino-svoe.ru/wines/grey")
-        self.assertEqual(grey["image_url"],
-                         matcher_bundle.IMAGE_URL_PREFIX + self.lab.grey[:8] + ".png")
+        self.assertEqual(grey["image_url"], "https://chtozavino.ru/img/wines/1600/grey.webp")
         self.assertEqual(grey["qr_urls"], ["http://example.com/", "https://example.com/a"])
-        # The official image of `patched` is its `main`, not the lab `main_patched`.
+        # The static image of `patched` is its `main_patched` image; the address is the same
+        # form (plan 06).
         self.assertEqual(wines["patched"]["image_url"],
-                         matcher_bundle.IMAGE_URL_PREFIX + self.lab.patched_main[:8] + ".png")
+                         "https://chtozavino.ru/img/wines/1600/patched.webp")
         self.assertEqual(wines["transparent"]["qr_urls"], [])
 
     def test_validator_accepts_a_version_1_bundle(self):

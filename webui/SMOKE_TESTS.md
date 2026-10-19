@@ -1,5 +1,13 @@
 # Smoke tests
 
+## Static wine images
+
+1. Open `/dish`, find wines, and confirm one image above each producer. Check light and dark themes, 320/390-pixel phones and desktop: the bottle is whole, centred, and has no white box.
+2. Block `/img/wines/*` in the browser tools and repeat. Each card shows the grey bottle silhouette and no broken-image icon.
+3. With VoiceOver (macOS or iOS) and TalkBack (Android), move through a Dinner Lens card. The reader announces the heading, facts, reason and link as before, and nothing for the image or the silhouette.
+4. On `/`, block `/wines/*.webp` and `/img/wines/*` and recognize a bottle. The result shows the silhouette. VoiceOver and TalkBack announce «<название>: нет изображения».
+5. On `/shelf`, open a bottle with a matched wine. The card shows `https://chtozavino.ru/img/wines/1600/<slug>.webp`, or the preview of the shelf photo when the matcher gives `image_url` = `null`.
+
 ## Wine Crocodile landing
 
 1. Run the type check and production build. Run the existing bundle check after the build.

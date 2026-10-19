@@ -2416,3 +2416,13 @@ in `data/catalog/catalog.sqlite3`; CN6 gives the card its catalogue name again.
 | CN5 | Open `/clusters` or `/testset` with a cluster or a card of the edited wine | The card shows the new name. |
 | CN6 | Press `reset` and confirm | The card shows the catalogue name. The tag `name patched` and the button `reset` go away. `name_patched` is NULL. |
 | CN7 | Press `edit`, then Esc | The field closes. The name does not change. |
+
+## Static wine images (plan 06 of the repository)
+
+| ID | Step | Expected result |
+|---|---|---|
+| WI1 | Run `scripts/build_wine_images.py` with the lab database and a new `--out` directory | The JSON line gives `wines` = the Active wines, `images` + `no_image` = `wines`, and `files` = 2 × `images`. The directory has mode 0755 and holds `1600/`, `400/`, `manifest.json`, and `SHA256SUMS`. |
+| WI2 | Run `scripts/check_wine_images.py --release` on the new directory | `{"differences": 0, "ok": true, "warnings": 0}`, exit code 0. |
+| WI3 | Open `400/<slug>.webp` of a wine with `main_patched` and of a wine with `main` | The patch is shown for the first wine. The long side is at most 400 px. A transparent original stays transparent. |
+| WI4 | Delete one file of the release, then run WI2 again | `difference: 400/<slug>.webp: missing` and `SHA256SUMS does not agree with the files of the release`, exit code 1. |
+| WI5 | After a publication, run `check_wine_images.py --url https://chtozavino.ru/img/wines/` | No difference. Each wine with no image answers HTTP 404 for both sizes. |

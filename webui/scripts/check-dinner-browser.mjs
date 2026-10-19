@@ -13,6 +13,9 @@ const wine = n => ({ wine_slug: `dinner-fixture-${n}`, name: `Fixture wine ${n}`
 const pageValue = (more = false) => ({ status: 'ok', resolved_node_id: 'ribeye_grilled', results: (more ? [4, 5, 6] : [1, 2, 3]).map(wine),
   next_cursor: more ? null : 'fixture-cursor', shown_count: more ? 6 : 3, total_eligible: 6, needs_clarification: false, clarification_question: null })
 const receipts = []
+// A 1 x 1 WebP file: the static image of the first fixture wine (plan 06). The other
+// fixture wines have no file, so their cards show the placeholder.
+const FIXTURE_WEBP = Buffer.from('UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=', 'base64')
 
 async function contextFor(browser, options = {}) {
   const httpCredentials = process.env.PORTAL_BASIC_USER && process.env.PORTAL_BASIC_PASSWORD
@@ -68,6 +71,8 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     const body = route.request().postDataJSON(); calls.push({ action, body })
     return route.fulfill({ json: pageValue(action === 'more') })
   })
+  await context.route('**/img/wines/**', route => new URL(route.request().url()).pathname === '/img/wines/400/dinner-fixture-1.webp'
+    ? route.fulfill({ contentType: 'image/webp', body: FIXTURE_WEBP }) : route.fulfill({ status: 404, body: '' }))
   try {
     await page.goto(origin + '/', { waitUntil: 'networkidle' }); await modeLayout(page, viewport.width)
     await page.screenshot({ path: resolve(output, name + '-home.png'), fullPage: true })
@@ -79,6 +84,14 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.locator('.dinner-wine').first().waitFor()
     assert.equal(await page.locator('#dinner-dish').evaluate(element => document.activeElement === element), true, 'Automatic results keep editing focus')
     assert.equal(await page.locator('.dinner-wine').count(), 3)
+    for (const [index, box] of (await page.locator('.dinner-wine-image').all()).entries()) {
+      await box.scrollIntoViewIfNeeded()
+      await box.locator(index === 0 ? 'img' : '.wine-image-placeholder[aria-hidden="true"]').waitFor()
+    }
+    await page.waitForFunction(() => { const image = document.querySelector('.dinner-wine-image img'); return image?.complete && image.naturalWidth > 0 })
+    assert.deepEqual(await page.locator('.dinner-wine-image img').evaluate(image => [image.getAttribute('src'), image.getAttribute('alt')]),
+      ['/img/wines/400/dinner-fixture-1.webp', ''], 'The card image is decorative: the heading names the wine')
+    assert.equal(await page.locator('.dinner-wine-image .wine-image-placeholder').count(), 2)
     await page.getByRole('button', { name: 'Показать ещё', exact: true }).click()
     await page.waitForFunction(() => document.querySelectorAll('.dinner-wine').length === 6)
     await page.waitForFunction(() => document.activeElement === document.querySelectorAll('.dinner-wine h3')[3])

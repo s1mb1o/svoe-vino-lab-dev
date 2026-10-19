@@ -70,6 +70,15 @@ Workbench хранит SQLite catalogue, test sets, image derivatives, experimen
 и run artifacts. Он строит embedding indexes и экспортирует production bundle для
 matcher. Production matcher не импортирует workbench и не читает `lab.sqlite3`.
 
+### Картинки вин
+
+Картинка вина — статический файл `https://chtozavino.ru/img/wines/<1600|400>/<slug>.webp`
+(план `docs/plans/06_wine-images.md`). Файл — уменьшенная копия `main_patched`, а без неё —
+`main`. `workbench/scripts/build_wine_images.py` строит релиз с `manifest.json`, Caddy
+отдаёт его. `check_wine_images.py` сверяет файлы с базой каталога по SHA-256 при каждом
+деплое картинок и каталога matcher. Matcher отдаёт этот адрес в `image_url`, а для вина без
+картинки — `null`. Web UI строит адрес из slug и при ошибке загрузки показывает силуэт бутылки.
+
 ## Данные и безопасность
 
 - Web UI держит загруженную фотографию в памяти.

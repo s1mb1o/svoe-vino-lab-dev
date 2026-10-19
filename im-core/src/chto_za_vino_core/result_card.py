@@ -142,21 +142,27 @@ def prepare_catalog_result_photo(body: bytes) -> bytes:
         raise CatalogImageUnavailable("result image is invalid") from exc
 
 
+# The static wine images of chtozavino.ru (plan `docs/plans/06_wine-images.md`). Before
+# plan 06 the matcher gave images of api.vino-svoe.ru. Remove that host when each deployed
+# matcher gives the new addresses.
+CATALOG_IMAGE_HOSTS = ("chtozavino.ru", "api.vino-svoe.ru")
+
+
 class CatalogImageLoader:
     def __init__(
         self,
         client: httpx.AsyncClient,
         *,
-        allowed_host: str = "api.vino-svoe.ru",
+        allowed_hosts: tuple[str, ...] = CATALOG_IMAGE_HOSTS,
         max_bytes: int = 15 * 1024 * 1024,
     ) -> None:
         self._client = client
-        self._allowed_host = allowed_host
+        self._allowed_hosts = allowed_hosts
         self._max_bytes = max_bytes
 
     async def fetch(self, url: str) -> bytes:
         parsed = urlparse(url)
-        if parsed.scheme != "https" or parsed.hostname != self._allowed_host:
+        if parsed.scheme != "https" or parsed.hostname not in self._allowed_hosts:
             raise CatalogImageUnavailable("catalogue image URL is not allowed")
         try:
             async with self._client.stream("GET", url, timeout=30) as response:

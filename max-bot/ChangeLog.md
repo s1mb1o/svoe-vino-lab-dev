@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19
+
+- Service rule 10: the catalogue result images come from `https://chtozavino.ru` (plan
+  `../docs/plans/06_wine-images.md`, owner decision of 2026-10-19), and from
+  `https://api.vino-svoe.ru` until each matcher gives the new addresses. The code is in
+  `../im-core` (`CATALOG_IMAGE_HOSTS`).
+
 ## 2026-10-18
 
 - Added a generic deployment guide in Russian, `deploy/README.md`, with the examples
