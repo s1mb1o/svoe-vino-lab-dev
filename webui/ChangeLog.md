@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Keep only dish taste presets
+
+- Remove «Какое вино» and «Сладость вина» from `/dish` on desktop and mobile. Remove their state and request constraints. Keep all seven taste/sauce presets and wine facts on result cards.
+- Update browser checks to verify that the removed filter groups are absent and that recommendation requests contain no `user_constraints`.
+
 ## 2026-10-19 — Shorter upload hint on «Вино к блюду»
 
 - The upload hint on `/dish` is «JPEG, HEIC, PNG, WebP». It does not show «JPG» (the same format as JPEG) or the 10 MB limit. The limit stays: a larger file still gets «Выберите фотографию размером до 10 МБ.»

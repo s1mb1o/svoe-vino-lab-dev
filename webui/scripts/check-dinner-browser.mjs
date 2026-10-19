@@ -46,12 +46,7 @@ async function modeLayout(page, width) {
     assert(box && box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width + 1, 'Each preference must fit and have a 44px touch target')
     assert(await button.locator('span').evaluate(span => span.scrollWidth <= span.clientWidth + 1), 'Preference labels must fit inside their button')
   }
-  if (await page.locator('.dinner-preferences').count()) {
-    assert(await page.locator('.dinner-preferences').evaluate(element => {
-      const dark = document.documentElement.dataset.theme === 'dark'
-      return getComputedStyle(element).getPropertyValue('--wine-red').trim() === (dark ? '#e48393' : '#ae4253')
-    }), 'Wine swatches must use the current theme')
-  }
+
 }
 
 for (const [name, engine, viewport, mobile, colorScheme] of [
@@ -88,18 +83,19 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.waitForFunction(() => document.activeElement === document.querySelectorAll('.dinner-wine h3')[3])
     assert.deepEqual(calls.at(-1), { action: 'more', body: { cursor: 'fixture-cursor' } })
     assert.equal(await page.getByRole('button', { name: 'Показать ещё', exact: true }).count(), 0)
-    assert.equal(await page.locator('.dinner-preference-row').count(), 3)
+    assert.equal(await page.locator('.dinner-preference-row').count(), 1)
+    for (const name of ['Какое вино', 'Цвет вина', 'Тихое или игристое', 'Сладость вина']) assert.equal(await page.getByRole('group', { name, exact: true }).count(), 0)
     const taste = page.getByRole('group', { name: 'Вкус и соус', exact: true })
     assert.equal(await taste.getByRole('button').count(), 7)
     assert.equal(await page.locator('.dinner-choice[aria-pressed="true"]').count(), 0)
     assert.deepEqual(calls.find(call => call.action === 'recommendations').body.confirmed_attributes, {})
-    assert.deepEqual(calls.find(call => call.action === 'recommendations').body.user_constraints, {})
+    assert.equal(calls.find(call => call.action === 'recommendations').body.user_constraints, undefined)
     const choose = (group, label) => group.getByRole('button', { name: label, exact: true })
-    const recommend = async (attributes, constraints = {}) => {
+    const recommend = async attributes => {
       await page.getByRole('button', { name: 'Подобрать вино', exact: true }).click()
       await page.locator('.dinner-wine').first().waitFor()
       assert.deepEqual(calls.at(-1).body.confirmed_attributes, attributes)
-      assert.deepEqual(calls.at(-1).body.user_constraints, constraints)
+      assert.equal(calls.at(-1).body.user_constraints, undefined)
     }
     for (const [label, attributes] of [
       ['Неострое', { heat: 'none' }], ['Острое', { heat: 'high' }],
@@ -121,25 +117,6 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     assert.equal(await choose(taste, 'Острое').getAttribute('aria-pressed'), 'false')
     await choose(taste, 'Острое').click(); await choose(taste, 'С кислинкой').click(); await choose(taste, 'Сладкий соус').click()
     const combined = { heat: 'high', acidity: 'high', sauce_sweetness: 'high', fatty_cream_sauce: true }
-    await recommend(combined)
-    const colors = page.getByRole('group', { name: 'Цвет вина', exact: true })
-    const kinds = page.getByRole('group', { name: 'Тихое или игристое', exact: true })
-    const sugar = page.getByRole('group', { name: 'Сладость вина', exact: true })
-    await choose(colors, 'Красное').click(); await choose(colors, 'Белое').click()
-    assert.equal(await choose(colors, 'Красное').getAttribute('aria-pressed'), 'false')
-    await choose(kinds, 'Тихое').click(); await choose(sugar, 'Полусухое').click()
-    await recommend(combined, { color: 'white', wine_kind: 'still', sweetness: 'semi_dry' })
-    await choose(sugar, 'Брют').click()
-    assert.equal(await choose(kinds, 'Игристое').getAttribute('aria-pressed'), 'true')
-    await recommend(combined, { color: 'white', wine_kind: 'sparkling', sweetness: 'brut' })
-    await choose(kinds, 'Игристое').click()
-    assert.equal(await choose(sugar, 'Брют').getAttribute('aria-pressed'), 'false')
-    await recommend(combined, { color: 'white' })
-    await choose(sugar, 'Брют').click()
-    await choose(kinds, 'Тихое').click()
-    assert.equal(await choose(sugar, 'Брют').getAttribute('aria-pressed'), 'false')
-    await recommend(combined, { color: 'white', wine_kind: 'still' })
-    await choose(colors, 'Белое').click(); await choose(kinds, 'Тихое').click()
     await recommend(combined)
     if (name === 'desktop-chromium') {
       await page.emulateMedia({ forcedColors: 'active' })
@@ -187,7 +164,7 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.getByRole('button', { name: 'Убрать фото', exact: true }).click()
     await page.waitForFunction(() => document.activeElement?.textContent?.includes('Загрузить фото'))
     assert.deepEqual(errors, [])
-    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['three preference rows', 'seven taste presets and explicit negatives', 'composable sauce modifiers', 'exclusive and toggleable preferences', 'compatible brut and wine kind', 'keyboard activation', '44px preference targets', 'theme swatch variables', 'labels fit buttons', ...(name === 'desktop-chromium' ? ['forced-colors keyboard focus'] : []), 'three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
+    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['taste presets only', 'seven taste presets and explicit negatives', 'composable sauce modifiers', 'exclusive and toggleable presets', 'no wine filters or constraints', 'keyboard activation', '44px preference targets', 'labels fit buttons', ...(name === 'desktop-chromium' ? ['forced-colors keyboard focus'] : []), 'three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
   } finally { await context.close(); await browser.close() }
 }
 

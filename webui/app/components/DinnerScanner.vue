@@ -8,7 +8,7 @@ const { dish, preview, phase, page, wines, error, question, busy, file, failedAc
 const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<HTMLInputElement>()
 const uploadButton = ref<HTMLButtonElement>(); const categoryInput = ref<HTMLSelectElement>(); const resultRegion = ref<HTMLElement>()
 const announcement = ref('')
-const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '', color: '', sweetness: '', kind: '' })
+const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '' })
 const tastePresets = [
   { key: 'heat', value: 'none', label: 'Неострое', icon: 'mild' },
   { key: 'heat', value: 'high', label: 'Острое', icon: 'chilli' },
@@ -18,17 +18,8 @@ const tastePresets = [
   { key: 'sweetSauce', value: 'high', label: 'Сладкий соус', icon: 'honey' },
   { key: 'sweetSauce', value: 'none', label: 'Несладкий', icon: 'no-sugar' },
 ] as const
-const wineColors = ['red', 'white', 'rose', 'orange'] as const
-const wineSweetness = ['dry', 'semi_dry', 'semi_sweet', 'sweet', 'brut', 'extra_brut', 'brut_nature'] as const
 function toggleTaste(preset: typeof tastePresets[number]) {
   settings[preset.key] = settings[preset.key] === preset.value ? '' : preset.value
-  update()
-}
-function toggleWine(key: 'color' | 'kind' | 'sweetness', value: string) {
-  settings[key] = settings[key] === value ? '' : value
-  // Brut categories describe sparkling wine. Keep explicit preferences compatible.
-  if (key === 'sweetness' && ['brut', 'extra_brut', 'brut_nature'].includes(settings.sweetness)) settings.kind = 'sparkling'
-  if (key === 'kind' && settings.kind !== 'sparkling' && ['brut', 'extra_brut', 'brut_nature'].includes(settings.sweetness)) settings.sweetness = ''
   update()
 }
 const resultHeading = ref<HTMLElement>()
@@ -84,14 +75,10 @@ async function submit() {
   if (settings.acidity) attributes.acidity = settings.acidity
   if (settings.sweetSauce) attributes.sauce_sweetness = settings.sweetSauce
   if (settings.cream) attributes.fatty_cream_sauce = settings.cream === 'yes'
-  const constraints: Record<string, string> = {}
-  if (settings.color) constraints.color = settings.color
-  if (settings.sweetness) constraints.sweetness = settings.sweetness
-  if (settings.kind) constraints.wine_kind = settings.kind
   const categoryNode = dinnerNode(category.value)
   const exact = categoryNode?.label === dish.value ? categoryNode : DINNER_NODES.find(node => node.label.toLocaleLowerCase('ru') === dish.value.trim().toLocaleLowerCase('ru'))
   const selection: DinnerSelection = { ...(exact ? { node_id: exact.id } : { confirmed_dish: dish.value.trim() }),
-    confirmed_attributes: attributes, user_constraints: constraints }
+    confirmed_attributes: attributes }
   await scanner.recommend(selection)
   if (page.value?.status === 'needs_category') { await nextTick(); categoryInput.value?.focus(); return }
   if (phase.value === 'ready') { await nextTick(); resultHeading.value?.focus({ preventScroll: true }); resultHeading.value?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }) }
@@ -127,31 +114,13 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <label for="dinner-category">Можно выбрать общую категорию</label>
         <select id="dinner-category" ref="categoryInput" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
         <div class="dinner-preferences" lang="ru">
-          <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint dinner-wine-hint">
+          <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint">
             <legend>Вкус и соус</legend>
             <div class="dinner-choices">
               <button v-for="preset in tastePresets" :key="preset.label" class="dinner-choice" type="button" :aria-pressed="settings[preset.key] === preset.value" :disabled="!available" @click="toggleTaste(preset)"><AppIcon :name="preset.icon" /><span>{{ preset.label }}</span></button>
             </div>
-            <p id="dinner-taste-hint" class="dinner-field-hint">Можно сочетать. Без выбора — как в рецепте.</p>
+            <p id="dinner-taste-hint" class="dinner-field-hint">Можно сочетать. Без выбора — как в рецепте. Нажмите ещё раз, чтобы снять выбор.</p>
           </fieldset>
-          <fieldset class="dinner-preference-row" aria-describedby="dinner-wine-hint">
-            <legend>Какое вино</legend>
-            <div class="dinner-wine-choices">
-              <div class="dinner-color-choices" role="group" aria-label="Цвет вина">
-                <button v-for="color in wineColors" :key="color" class="dinner-choice" type="button" :aria-pressed="settings.color === color" :disabled="!available" @click="toggleWine('color', color)"><AppIcon name="taste" :class="'wine-color-' + color" /><span>{{ labels[color] }}</span></button>
-              </div>
-              <div class="dinner-kind-choices" role="group" aria-label="Тихое или игристое">
-                <button v-for="kind in ['still', 'sparkling']" :key="kind" class="dinner-choice" type="button" :aria-pressed="settings.kind === kind" :disabled="!available" @click="toggleWine('kind', kind)"><AppIcon :name="kind === 'sparkling' ? 'sparkling' : 'taste'" /><span>{{ labels[kind] }}</span></button>
-              </div>
-            </div>
-          </fieldset>
-          <fieldset class="dinner-preference-row" aria-describedby="dinner-wine-hint">
-            <legend>Сладость вина</legend>
-            <div class="dinner-choices dinner-sweetness-choices">
-              <button v-for="sweetness in wineSweetness" :key="sweetness" class="dinner-choice" type="button" :aria-label="labels[sweetness]" :aria-pressed="settings.sweetness === sweetness" :disabled="!available" @click="toggleWine('sweetness', sweetness)"><AppIcon :name="['dry', 'brut', 'extra_brut', 'brut_nature'].includes(sweetness) ? 'no-sugar' : 'sugar'" /><span>{{ labels[sweetness]?.replace('Полу', 'Полу\u00ad') }}</span></button>
-            </div>
-          </fieldset>
-          <p id="dinner-wine-hint" class="dinner-field-hint">Без выбора — любое подходящее вино. Нажмите ещё раз, чтобы снять выбор.</p>
         </div>
         <button class="button primary dinner-submit" type="submit" :disabled="!available || busy || !dish.trim()"><AppIcon name="taste" />{{ preview ? 'Подтвердить и подобрать вино' : 'Подобрать вино' }}</button>
         <p class="dinner-field-hint">Рецепт, соус и острота влияют на сочетание. Выбор можно изменить.</p>
@@ -199,8 +168,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-form input, .dinner-form select { display: block; width: 100%; min-width: 0; min-height: 46px; padding: 12px; margin-top: 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; }
 .dinner-field-hint { color: var(--muted); font-size: 12px; line-height: 1.65; margin-top: 10px; }
 .dinner-question { color: var(--accent); line-height: 1.6; font-size: 14px; }
-.dinner-preferences { margin-top: 28px; --wine-red: #ae4253; --wine-white: #a4801f; --wine-rose: #c4687f; --wine-orange: #bd672b; }
-:global([data-theme='dark'] .dinner-preferences) { --wine-red: #e48393; --wine-white: #dfc16f; --wine-rose: #e9a0b2; --wine-orange: #eba968; }
+.dinner-preferences { margin-top: 28px; }
 .dinner-preference-row { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
 .dinner-preference-row legend { padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
 .dinner-choices { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
@@ -211,13 +179,6 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-choice[aria-pressed="true"]::after { content: ''; position: absolute; top: 5px; right: 6px; width: 4px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg); }
 @media (forced-colors: active) { .dinner-choice[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; } .dinner-choice[aria-pressed="true"]:focus-visible { outline: 2px solid CanvasText; outline-offset: 4px; } .dinner-choice[aria-pressed="true"]::after { border-color: Highlight; } }
 @media (hover: hover) { .dinner-choice:hover:not(:disabled) { border-color: var(--accent); background: var(--cream); } }
-.dinner-wine-choices { display: grid; grid-template-columns: 4fr 2fr; gap: 18px; }
-.dinner-color-choices, .dinner-kind-choices { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
-.dinner-kind-choices { grid-template-columns: repeat(2,minmax(0,1fr)); padding-left: 12px; border-left: 1px solid var(--line); }
-.dinner-choice .wine-color-red { color: var(--wine-red); }
-.dinner-choice .wine-color-white { color: var(--wine-white); }
-.dinner-choice .wine-color-rose { color: var(--wine-rose); }
-.dinner-choice .wine-color-orange { color: var(--wine-orange); }
 .dinner-submit { width: 100%; margin-top: 22px; }
 .dinner-progress { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 24px; padding: 20px; border: 1px solid var(--line); border-radius: 14px; }
 .dinner-progress p { color: var(--muted); font-size: 14px; line-height: 1.5; }
@@ -240,7 +201,6 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-end { text-align: center; }
 @media(max-width: 1023px) { .dinner-entry { grid-template-columns: 1fr; } .dinner-photo-panel, .dinner-form { padding: 28px; } .dinner-wines { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width: 600px) { .dinner-choices { grid-template-columns: repeat(4,minmax(0,1fr)); } }
-@media(max-width: 360px) { .dinner-choices { grid-template-columns: repeat(3,minmax(0,1fr)); } .dinner-color-choices .dinner-choice { font-size: 10px; } }
-@media(max-width: 480px) { .dinner-wine-choices { grid-template-columns: 1fr; gap: 10px; } .dinner-kind-choices { padding: 10px 0 0; border-left: 0; border-top: 1px solid var(--line); } .dinner-kind-choices .dinner-choice { flex-direction: row; justify-content: center; min-height: 48px; padding: 10px 6px; } }
+@media(max-width: 360px) { .dinner-choices { grid-template-columns: repeat(3,minmax(0,1fr)); } }
 @media(max-width: 767px) { .dinner-entry { grid-template-columns: 1fr; border-radius: 20px; } .dinner-photo-panel, .dinner-form { padding: 24px; } .dinner-photo-placeholder { min-height: 140px; } .dinner-plate { width: 116px; height: 116px; } .dinner-photo-copy h2 { font-size: 30px; } .dinner-photo-copy h2 br { display: none; } .dinner-form h2 { font-size: 26px; } .dinner-form input, .dinner-form select { font-size: 16px; } .dinner-wines { grid-template-columns: 1fr; } .dinner-results>h2 { font-size: 30px; } .dinner-progress { flex-wrap: wrap; } .dinner-progress p { flex: 1; min-width: 160px; } .dinner-progress>.button { width: 100%; } .dinner-submit { font-size: 12px; padding-inline: 8px; } }
 </style>
