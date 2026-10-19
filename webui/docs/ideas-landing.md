@@ -5,7 +5,7 @@
 The Game invitation after the interactive demos opens `/game`.
 The game is a working educational prototype on a separate origin.
 It is not the blind-style quiz mock.
-The four existing result demos and six mockups retain their existing meanings and counts.
+The Game invitation is separate from the implemented features, four result demos, and remaining mockups.
 Read [the game landing contract](game-landing.md).
 
 The `/ideas` page describes product ideas beyond photo recognition.

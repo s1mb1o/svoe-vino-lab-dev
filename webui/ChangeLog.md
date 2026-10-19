@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Account-enabled phone header
+
+- Keep all header actions inside 320- and 360-pixel viewports when the Diary link is enabled. Use the existing brand icon without its wordmark below 380 pixels.
+- Preserve the full accessible home-link name and 44-pixel navigation controls.
+
 ## 2026-10-19 — Dinner Lens on the ideas page
 
 - Replace the grocery mock with a Dinner Lens card in the implemented section. Describe photo or name entry, sauce and heat choices, and explanations for wine pairings. Link directly to `/dish`.

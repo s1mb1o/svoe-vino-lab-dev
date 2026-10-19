@@ -276,6 +276,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .inline-error { font-size: 12px; }
   .service-error { font-size: 12px; }
 }
+@media (max-width: 379px) {
+  .site-header:has(.account-navigation) .logo .product-brand-name { display: none; }
+}
 @media (max-width: 359px) {
   .header-section { padding-left: 10px; }
   .header-section .icon { display: none; }

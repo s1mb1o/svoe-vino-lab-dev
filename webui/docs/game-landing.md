@@ -12,6 +12,8 @@ The pouring link opens `https://game.chtozavino.ru/?mode=pour`.
 The game origin and game entry URLs do not change.
 
 The page uses the portal header, age gate, theme, and footer.
+At widths below 380 pixels, the account-enabled header uses the brand icon without its wordmark.
+All navigation actions and their accessible names remain available.
 It has one heading, canonical metadata, and a sitemap entry.
 It introduces ingredient merging, wine selection, and pouring.
 It shows three selectable regional scenes and their current menu examples.
