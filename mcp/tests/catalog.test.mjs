@@ -4,7 +4,8 @@ import { readFile, writeFile, mkdtemp, mkdir, copyFile, rm, symlink, readdir } f
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { CatalogService, BUNDLE_PATH, PRODUCT_LINE_PATH, sha256 } from '../src/catalog.mjs';
+import { CatalogService, BUNDLE_PATH, PRODUCT_LINE_INDEX_PATH, PRODUCT_LINE_PATH, sha256 } from '../src/catalog.mjs';
+import { resolveProductLineIn, resolveProductLineIndex } from '../../webui/shared/product-line-core.ts';
 import { outputs, inputs } from '../src/server.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -14,7 +15,7 @@ before(async () => { service = await CatalogService.load(root); });
 async function fixture(t) {
   const target = await mkdtemp(join(tmpdir(), 'wine-mcp-test-'));
   t.after(() => rm(target, { recursive: true, force: true }));
-  for (const name of [`${BUNDLE_PATH}/manifest.json`, `${BUNDLE_PATH}/wines.jsonl`, 'workbench/db-export/rows/wine_catalog.jsonl', 'webui/docs/catalog-provenance.json']) {
+  for (const name of [`${BUNDLE_PATH}/manifest.json`, `${BUNDLE_PATH}/wines.jsonl`, 'workbench/db-export/rows/wine_catalog.jsonl', 'webui/docs/catalog-provenance.json', PRODUCT_LINE_INDEX_PATH]) {
     const path = join(target, name); await mkdir(dirname(path), { recursive: true }); await copyFile(join(root, name), path);
   }
   await mkdir(join(target, PRODUCT_LINE_PATH), { recursive: true });
@@ -120,8 +121,8 @@ test('comparison excludes unknown traits and requires distinct known IDs', () =>
 });
 
 test('serves exactly the registered Web producer maps', async () => {
-  const registry = await readFile(join(root, PRODUCT_LINE_PATH, 'index.ts'), 'utf8');
-  const registered = [...registry.matchAll(/'\.\/([a-z0-9-]+)\.json'/g)].map(match => match[1]).sort();
+  const index = JSON.parse(await readFile(join(root, PRODUCT_LINE_INDEX_PATH), 'utf8'));
+  const registered = index.producers.map(entry => entry.producer.id).sort();
   assert.equal(registered.length, 19);
   assert.deepEqual(service.lines.map(line => line.producer.id).sort(), registered);
   assert.match(service.metadata.product_line_maps_sha256, /^[a-f0-9]{64}$/);
@@ -136,6 +137,15 @@ test('every Active ID resolves to its exact map node or to unavailable', () => {
     if (result.status === 'ok') assert.equal(result.products.filter(product => product.current).length, 1);
   }
   assert.deepEqual(counts, { placed: 977, alias: 3, unavailable: 1113 });
+});
+
+test('the Web index resolves every Active ID like the full maps', async () => {
+  const index = JSON.parse(await readFile(join(root, PRODUCT_LINE_INDEX_PATH), 'utf8'));
+  for (const wine of service.active) {
+    const full = resolveProductLineIn(service.lines, wine);
+    const expected = !full.line ? full : !full.product ? { status: 'unplaced', producer: full.line.producer } : { status: full.status, producer: full.line.producer, product_id: full.product.id };
+    assert.deepEqual(resolveProductLineIndex(index, wine), expected, wine.slug);
+  }
 });
 
 test('every map response satisfies the schema and the response bound', () => {
@@ -209,17 +219,20 @@ test('source conflict badges stay visible in map nodes', () => {
   assert(flaggedCount > 0);
 });
 
-for (const damage of ['registry', 'missing', 'producer', 'membership']) {
+for (const damage of ['registry', 'missing', 'producer', 'membership', 'stale']) {
   test(`startup rejects a ${damage} defect in the product-line maps`, async t => {
     const target = await fixture(t);
-    const registry = join(target, PRODUCT_LINE_PATH, 'index.ts');
+    const indexPath = join(target, PRODUCT_LINE_INDEX_PATH);
+    const index = JSON.parse(await readFile(indexPath));
     const mapPath = join(target, PRODUCT_LINE_PATH, 'agora.json');
     const map = JSON.parse(await readFile(mapPath));
-    if (damage === 'registry') await writeFile(registry, (await readFile(registry, 'utf8')).replace(/^export default \[/m, 'export default [producer99, '));
+    if (damage === 'registry') { index.producers.pop(); await writeFile(indexPath, JSON.stringify(index)); }
     if (damage === 'missing') await rm(mapPath);
     if (damage === 'producer') { map.producer.id = 'agora-renamed'; await writeFile(mapPath, JSON.stringify(map)); }
     if (damage === 'membership') { map.products[0].group_id = 'no-such-group'; await writeFile(mapPath, JSON.stringify(map)); }
-    await assert.rejects(CatalogService.load(target), damage === 'missing' ? { code: 'ENOENT' } : /product-line map/);
+    // A slug change without `npm run line-maps:index` leaves the Web index stale.
+    if (damage === 'stale') { map.products.find(product => product.wine_slug).wine_slug = 'agora-renamed-wine'; await writeFile(mapPath, JSON.stringify(map)); }
+    await assert.rejects(CatalogService.load(target), /product-line map/);
   });
 }
 

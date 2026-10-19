@@ -74,6 +74,43 @@ export function resolveProductLineIn(lines: ProductLineMapData[], wine?: Product
   return line ? { status: 'unplaced', line } : { status: 'unsupported' }
 }
 
+// The index holds only what resolution needs. Pages load a full map on demand.
+export interface ProductLineIndexEntry {
+  producer: ProductLineMapData['producer']
+  slugs: Record<string, string>
+  alias_slugs: Record<string, string>
+}
+export interface ProductLineIndex { schema_version: 1; producers: ProductLineIndexEntry[] }
+
+export type ProductLineIndexResolution =
+  | { status: 'none' | 'unsupported' }
+  | { status: 'unplaced'; producer: ProductLineMapData['producer'] }
+  | { status: 'placed' | 'alias'; producer: ProductLineMapData['producer']; product_id: string }
+
+const sortedRecord = (entries: [string, string][]) => Object.fromEntries(entries.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))
+
+export function buildProductLineIndex(lines: ProductLineMapData[]): ProductLineIndex {
+  const producers = [...lines].sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru')).map(line => ({
+    producer: { id: line.producer.id, name: line.producer.name, aliases: [...line.producer.aliases], slug_prefixes: [...line.producer.slug_prefixes] },
+    slugs: sortedRecord(line.products.flatMap(product => product.wine_slug ? [[product.wine_slug, product.id] as [string, string]] : [])),
+    alias_slugs: sortedRecord(line.products.flatMap(product => product.wine_slug_aliases.map(slug => [slug, product.id] as [string, string]))),
+  }))
+  return { schema_version: 1, producers }
+}
+
+// Same order as resolveProductLineIn: exact slug, verified alias, producer name, slug prefix.
+export function resolveProductLineIndex(index: ProductLineIndex, wine?: ProductLineWineRef): ProductLineIndexResolution {
+  if (!wine) return { status: 'none' }
+  for (const entry of index.producers) {
+    if (Object.hasOwn(entry.slugs, wine.slug)) return { status: 'placed', producer: entry.producer, product_id: entry.slugs[wine.slug]! }
+    if (Object.hasOwn(entry.alias_slugs, wine.slug)) return { status: 'alias', producer: entry.producer, product_id: entry.alias_slugs[wine.slug]! }
+  }
+  const producer = normalizedProducer(wine.producer ?? '')
+  const entry = index.producers.find(item => [item.producer.name, ...item.producer.aliases].some(name => normalizedProducer(name) === producer))
+    || index.producers.find(item => item.producer.slug_prefixes.some(prefix => wine.slug.startsWith(prefix)))
+  return entry ? { status: 'unplaced', producer: entry.producer } : { status: 'unsupported' }
+}
+
 export function productsInGroup(line: ProductLineMapData, groupId: string): LineProduct[] {
   return line.products.filter(product => product.group_id === groupId)
 }

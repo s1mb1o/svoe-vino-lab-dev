@@ -9,7 +9,7 @@ Use the official pinned MCP SDK and the lockfile.
 Keep catalog operations in `src/catalog.mjs` independent of the protocol adapter.
 Keep stdout exclusive to the MCP protocol.
 Never use a provider request for an optional-content fallback.
-Serve product-line maps only from the Web registry through `webui/shared/product-line-core.ts`. Do not copy map data.
+Serve product-line maps only from the Web index `webui/shared/data/product-line-index.json` through `webui/shared/product-line-core.ts`. Do not copy map data.
 Link only Active snapshot IDs from map nodes. A null slug has no source link.
 Keep inactive IDs out of discovery and public card claims.
 Do not expose raw matcher configuration or local paths.

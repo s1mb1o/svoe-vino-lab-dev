@@ -112,11 +112,13 @@ Inbound messages are limited to 64 KiB. Structured results are limited to 128 Ki
 ## Producer product-line maps
 
 The adapter serves the verified product-line maps of the Web UI.
-The loader reads the map list from the explicit imports in `webui/shared/data/product-line-maps/index.ts`.
+The loader reads the map list from `webui/shared/data/product-line-index.json`. The Web UI uses the same index.
+The index MUST list every map file in `webui/shared/data/product-line-maps/` and MUST match the maps.
 It reads each JSON file with a size limit and validates all maps with `webui/shared/product-line-core.ts`.
 The Web UI uses the same module. The two resolvers cannot drift.
-Startup stops when the registry, a map file, a producer ID, or the map validation fails.
-`product_line_maps_sha256` covers the registry and all map files. The catalog `version` also covers them.
+Startup stops when the index, a map file, a producer ID, or the map validation fails. A stale index also stops startup.
+After a map change, run `npm run line-maps:index` in `webui/` and commit the index.
+`product_line_maps_sha256` covers the index and all map files. The catalog `version` also covers them.
 Read `../docs/plans/03_mcp-producer-line-maps.md` for the decisions.
 
 The current registry has 19 producers and 1,046 products.

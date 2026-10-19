@@ -1,5 +1,20 @@
 # Research log
 
+## Producer map loading, 2026-10-19
+
+The scanner page chunk imported `shared/product-line-map.ts` statically. That module imported all 19 map JSON files.
+The first-load JavaScript of `/` was 296 KB gzip in 12 files. The map data chunk was 181 KB gzip (1.3 MB raw), 61% of it.
+One map is 4.7 to 21.6 KB gzip. An index with producer names, aliases, slug prefixes, and slugs is 13 KB gzip.
+
+Vite makes one chunk for each explicit `import('./<id>.json')` in the registry. Nitro also accepts these dynamic imports in the shared module.
+`/lineup/<producer>` keeps server rendering through `useAsyncData`.
+The service worker precaches `_nuxt/**/*.js`, so the map chunks download in the background after the first visit. Product images are not precached.
+TypeScript infers a literal type with all 985 slug keys for the index JSON. A direct cast to `ProductLineIndex` fails, so the module casts through `unknown`. The index test checks the content.
+
+After the change, `/` loads 139 KB gzip by the same method (134 KB with `npm run test:bundle`). No page prefetches a map chunk.
+
+`npm run test:line-map` failed on `main` before this change. It clicked a «Вся полка» button. The mode pages changed the mode switch to links. The suite now clicks the link.
+
 ## Matcher answer for HEIC without HEIF support, 2026-10-18
 
 The production matcher has no HEIF support (#24). A staging check on Princess sent a real HEIC photo.

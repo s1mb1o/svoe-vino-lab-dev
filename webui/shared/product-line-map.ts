@@ -1,27 +1,35 @@
-import abrauData from './data/product-line-maps/abrau-durso.json'
-import registeredProducerMaps from './data/product-line-maps'
-import type { Wine } from './catalog'
+import productLineIndex from './data/product-line-index.json'
+import { PRODUCT_LINE_LOADERS } from './data/product-line-maps'
 import { sourceWineUrl } from './catalog'
-import { findProducerLineIn, resolveProductLineIn, validateProductLineMaps } from './product-line-core'
-import type { LineProduct, ProductLineMapData, ProductLineResolution } from './product-line-core'
+import { resolveProductLineIndex } from './product-line-core'
+import type { LineProduct, ProductLineIndex, ProductLineIndexResolution, ProductLineMapData, ProductLineWineRef } from './product-line-core'
 
 export * from './product-line-core'
 
-export const ABRAU_PRODUCT_LINE = abrauData as ProductLineMapData
-export const PRODUCT_LINE_MAPS: ProductLineMapData[] = ([...registeredProducerMaps] as ProductLineMapData[])
-  .sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru'))
+// Pages import only this index. A full map loads on demand through loadProductLine.
+// The tests and the build validate the maps and check that this index matches them.
+// The JSON type that TypeScript infers lists each slug key. The index test checks the real shape.
+export const PRODUCT_LINE_INDEX = productLineIndex as unknown as ProductLineIndex
 
-export function findProducerLine(wine: Pick<Wine, 'producer' | 'slug'>): ProductLineMapData | undefined {
-  return findProducerLineIn(PRODUCT_LINE_MAPS, wine)
+export function resolveProductLine(wine?: ProductLineWineRef): ProductLineIndexResolution {
+  return resolveProductLineIndex(PRODUCT_LINE_INDEX, wine)
 }
 
-export function resolveProductLine(wine?: Pick<Wine, 'producer' | 'slug'>): ProductLineResolution {
-  return resolveProductLineIn(PRODUCT_LINE_MAPS, wine)
+const loading = new Map<string, Promise<ProductLineMapData | undefined>>()
+
+export function loadProductLine(producerId: string): Promise<ProductLineMapData | undefined> {
+  const load = Object.hasOwn(PRODUCT_LINE_LOADERS, producerId) ? PRODUCT_LINE_LOADERS[producerId] : undefined
+  if (!load) return Promise.resolve(undefined)
+  let pending = loading.get(producerId)
+  if (!pending) {
+    pending = load().then(module => module.default as ProductLineMapData)
+    // A failed chunk request must not stay cached. The next attempt loads it again.
+    pending.catch(() => loading.delete(producerId))
+    loading.set(producerId, pending)
+  }
+  return pending
 }
 
 export function productPortalUrl(product: LineProduct): string | null {
   return product.wine_slug ? sourceWineUrl(product.wine_slug) : null
 }
-
-const mapErrors = validateProductLineMaps(PRODUCT_LINE_MAPS)
-if (mapErrors.length) throw new Error(`Invalid product-line maps: ${mapErrors.join('; ')}`)

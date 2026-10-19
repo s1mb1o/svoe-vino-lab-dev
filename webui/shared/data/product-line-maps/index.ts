@@ -1,30 +1,24 @@
 // Keep this registry explicit. Nitro does not transform import.meta.glob in shared modules.
-import producer0 from './abrau-durso.json'
-import producer1 from './alma-valley.json'
-import producer2 from './derbent-vino.json'
-import producer3 from './fanagoria.json'
-import producer4 from './inkerman.json'
-import producer5 from './koktebel.json'
-import producer6 from './kuban-vino.json'
-import producer7 from './massandra.json'
-import producer8 from './myskhako.json'
-import producer9 from './vedernikov.json'
-import producer10 from './zolotaya-balka.json'
-
-import producer11 from './esse.json'
-
-import producer12 from './chateau-pinot.json'
-
-import producer13 from './valery-zakharyin.json'
-
-import producer14 from './novy-svet.json'
-
-import producer15 from './belbek.json'
-
-import producer16 from './sober-bash.json'
-
-import producer17 from './agora.json'
-
-import producer18 from './soyuz-vino.json'
-
-export default [producer18, producer17, producer16, producer15, producer14, producer13, producer12, producer11, producer0, producer1, producer2, producer3, producer4, producer5, producer6, producer7, producer8, producer9, producer10]
+// Each map is a separate chunk. A page loads one map when the user opens it.
+// After a map change, run `npm run line-maps:index` and commit `../product-line-index.json`.
+export const PRODUCT_LINE_LOADERS: Readonly<Record<string, () => Promise<{ default: unknown }>>> = {
+  'abrau-durso': () => import('./abrau-durso.json'),
+  'agora': () => import('./agora.json'),
+  'alma-valley': () => import('./alma-valley.json'),
+  'belbek': () => import('./belbek.json'),
+  'chateau-pinot': () => import('./chateau-pinot.json'),
+  'derbent-vino': () => import('./derbent-vino.json'),
+  'esse': () => import('./esse.json'),
+  'fanagoria': () => import('./fanagoria.json'),
+  'inkerman': () => import('./inkerman.json'),
+  'koktebel': () => import('./koktebel.json'),
+  'kuban-vino': () => import('./kuban-vino.json'),
+  'massandra': () => import('./massandra.json'),
+  'myskhako': () => import('./myskhako.json'),
+  'novy-svet': () => import('./novy-svet.json'),
+  'sober-bash': () => import('./sober-bash.json'),
+  'soyuz-vino': () => import('./soyuz-vino.json'),
+  'valery-zakharyin': () => import('./valery-zakharyin.json'),
+  'vedernikov': () => import('./vedernikov.json'),
+  'zolotaya-balka': () => import('./zolotaya-balka.json'),
+}

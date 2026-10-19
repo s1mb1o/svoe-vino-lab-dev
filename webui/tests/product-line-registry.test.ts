@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync } from 'node:fs'
-import { PRODUCT_LINE_MAPS, resolveProductLine, findProducerLine, productPortalUrl, validateProductLineMaps } from '../shared/product-line-map'
+import { productPortalUrl, validateProductLineMaps } from '../shared/product-line-map'
+import { PRODUCT_LINE_LOADERS } from '../shared/data/product-line-maps'
+import { PRODUCT_LINE_MAPS, resolveProductLine, findProducerLine } from './support/product-line-maps'
 
 const snapshotSha256 = 'e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961'
 // Pin the agreed snapshot coverage independently of the generated baselines.
@@ -57,6 +59,7 @@ describe('producer map registry', () => {
     expect(sha256(projectionBytes)).toBe('8df686238a9f7d24a5e8bc7f1f4adc93ac6db6d0ba57ef0fa59d002db2c5bae8')
     expect(producerProjection.source_sha256).toBe(snapshotSha256)
     expect(producerProjection.records).toHaveLength(2103)
+    expect(Object.keys(PRODUCT_LINE_LOADERS).map(id => `${id}.json`).sort()).toEqual(files.sort())
     expect(PRODUCT_LINE_MAPS.map(line => `${line.producer.id}.json`).sort()).toEqual(files.sort())
     expect(validateProductLineMaps(PRODUCT_LINE_MAPS)).toEqual([])
     const duplicate = structuredClone(PRODUCT_LINE_MAPS[0]!)

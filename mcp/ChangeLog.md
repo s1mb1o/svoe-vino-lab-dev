@@ -2,6 +2,11 @@
 
 ## 2026-10-19
 
+- Read the producer list from `webui/shared/data/product-line-index.json`. The Web UI now loads each map on demand, and `index.ts` holds lazy loaders.
+  Read `webui/docs/plans/04_lazy-product-line-maps.md`.
+- Stop startup when the index does not list exactly the map files or does not match the maps.
+- Check that the index resolves every Active ID like the full maps.
+- Pass 42 tests, the syntax checks, and the SDK client demonstration.
 - Replace the six-node Abrau demo of `get_producer_line` with the verified product-line maps of 19 producers (#25).
   Read `docs/plans/03_mcp-producer-line-maps.md`.
 - Read the map list from `webui/shared/data/product-line-maps/index.ts`.

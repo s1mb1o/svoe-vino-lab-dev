@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PRODUCT_LINE_MAPS, findLineProduct } from '#shared/product-line-map'
+import { PRODUCT_LINE_INDEX, findLineProduct, loadProductLine } from '#shared/product-line-map'
 
 const route = useRoute()
 const router = useRouter()
@@ -8,7 +8,9 @@ watch(() => route.params.producer, id => { selectedProducer.value = String(id) }
 function changeProducer() {
   router.push(`/lineup/${selectedProducer.value}`)
 }
-const line = computed(() => PRODUCT_LINE_MAPS.find(item => item.producer.id === route.params.producer))
+const producerId = computed(() => String(route.params.producer))
+// The server renders the map. Only this producer's map data is loaded.
+const { data: line } = await useAsyncData(() => `product-line:${producerId.value}`, async () => await loadProductLine(producerId.value) ?? null)
 const title = computed(() => line.value ? `Карта линейки ${line.value.producer.name} — Что за вино?` : 'Карта производителя не найдена — Что за вино?')
 const initialSlug = computed(() => typeof route.query.wine === 'string' ? route.query.wine : undefined)
 const unknownSlug = computed(() => initialSlug.value && line.value && !findLineProduct(line.value, initialSlug.value))
@@ -23,11 +25,11 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
       <div><p class="step-label">ПУТЕВОДИТЕЛЬ ПО ПРОИЗВОДИТЕЛЮ</p><h1>Карта линейки {{ line.producer.name }}</h1><p>{{ line.scope.label }}. Выберите линейку, затем познакомьтесь с конкретным продуктом.</p></div>
       <NuxtLink to="/" class="button secondary">К сканеру<AppIcon name="arrow" /></NuxtLink>
     </header>
-    <form class="lineup-producer-picker" @submit.prevent="changeProducer"><label><span>Производитель</span><select v-model="selectedProducer"><option v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label><button type="submit" class="button secondary">Открыть карту<AppIcon name="arrow" /></button></form>
+    <form class="lineup-producer-picker" @submit.prevent="changeProducer"><label><span>Производитель</span><select v-model="selectedProducer"><option v-for="item in PRODUCT_LINE_INDEX.producers" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label><button type="submit" class="button secondary">Открыть карту<AppIcon name="arrow" /></button></form>
     <p v-if="initialSlug" class="lineup-context">{{ unknownSlug ? 'Вино по этой ссылке не найдено в карте. Вы можете изучить линейки производителя.' : 'Вино выбрано по ссылке, без распознавания.' }}</p>
     <ProductLineMap :key="`${line.producer.id}:${initialSlug || 'overview'}`" :line="line" :initial-slug="initialSlug" :recognized="false" />
     </template>
-    <section v-else class="lineup-heading"><div><h1>Карта производителя пока не подготовлена</h1><p>Выберите доступную карту.</p><NuxtLink v-for="item in PRODUCT_LINE_MAPS" :key="item.producer.id" :to="`/lineup/${item.producer.id}`" class="button secondary">{{ item.producer.name }}</NuxtLink></div></section>
+    <section v-else class="lineup-heading"><div><h1>Карта производителя пока не подготовлена</h1><p>Выберите доступную карту.</p><NuxtLink v-for="item in PRODUCT_LINE_INDEX.producers" :key="item.producer.id" :to="`/lineup/${item.producer.id}`" class="button secondary">{{ item.producer.name }}</NuxtLink></div></section>
   </main>
 </template>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Wine } from '#shared/catalog'
-import { resolveProductLine } from '#shared/product-line-map'
+import { loadProductLine, resolveProductLine } from '#shared/product-line-map'
+import type { ProductLineMapData } from '#shared/product-line-map'
 import { deriveWineTasteExperience } from '#shared/taste'
 
 type Experience = 'food' | 'label' | 'taste' | 'line'
@@ -10,21 +11,26 @@ const dialog = ref<HTMLDialogElement>()
 const dialogHeading = ref<HTMLElement>()
 const lineMap = ref<{ centerInitial: () => Promise<void> }>()
 const active = ref<Experience | null>(null)
+// The index gives the producer and the match state. The map data loads only for the guide.
 const lineResolution = computed(() => resolveProductLine(props.wine))
-const producerLine = computed(() => 'line' in lineResolution.value ? lineResolution.value.line : undefined)
-const matchedLineWine = computed(() => 'product' in lineResolution.value ? lineResolution.value.product : undefined)
+const lineProducer = computed(() => 'producer' in lineResolution.value ? lineResolution.value.producer : undefined)
+const lineMatched = computed(() => 'product_id' in lineResolution.value)
+const loadedLine = shallowRef<ProductLineMapData>()
+const lineFailed = ref(false)
+const producerLine = computed(() => loadedLine.value && loadedLine.value.producer.id === lineProducer.value?.id ? loadedLine.value : undefined)
+const lineLoading = computed(() => active.value === 'line' && Boolean(lineProducer.value) && !producerLine.value && !lineFailed.value)
 let opener: HTMLElement | null = null
 
 const title = computed(() => ({
   food: 'Блюда к вашему вину',
   label: 'Что расскажет этикетка',
   taste: 'Паспорт вкуса',
-  line: producerLine.value ? `Карта линейки ${producerLine.value.producer.name}` : 'Карта линейки производителя',
+  line: lineProducer.value ? `Карта линейки ${lineProducer.value.name}` : 'Карта линейки производителя',
 }[active.value || 'food']))
 const varieties = computed(() => props.wine.grapes.length ? props.wine.grapes.join(', ') : 'Сорт не указан в карточке')
 const taste = computed(() => deriveWineTasteExperience(props.wine))
 const dialogEyebrow = computed(() => active.value === 'line' ? 'ПУТЕВОДИТЕЛЬ ПО ЛИНЕЙКЕ' : 'ДЕМОНСТРАЦИЯ ВОЗМОЖНОСТИ')
-const lineActionSubtitle = computed(() => matchedLineWine.value ? (props.recognized ? 'Ваше вино отмечено на карте' : 'Выбранное вино отмечено на карте') : producerLine.value ? 'Линейка вашего производителя' : 'Карта производителя пока не подготовлена')
+const lineActionSubtitle = computed(() => lineMatched.value ? (props.recognized ? 'Ваше вино отмечено на карте' : 'Выбранное вино отмечено на карте') : lineProducer.value ? 'Линейка вашего производителя' : 'Карта производителя пока не подготовлена')
 
 async function open(kind: Experience, event: MouseEvent) {
   opener = event.currentTarget as HTMLElement
@@ -32,7 +38,28 @@ async function open(kind: Experience, event: MouseEvent) {
   await nextTick()
   dialog.value?.showModal()
   dialogHeading.value?.focus({ preventScroll: true })
-  if (kind === 'line') { await nextTick(); await lineMap.value?.centerInitial() }
+  if (kind === 'line') await showLine()
+}
+
+async function prepareLine() {
+  const producer = lineProducer.value
+  if (!producer || producerLine.value) return
+  lineFailed.value = false
+  try {
+    const line = await loadProductLine(producer.id)
+    if (lineProducer.value?.id !== producer.id) return
+    if (line) loadedLine.value = line
+    else lineFailed.value = true
+  } catch {
+    if (lineProducer.value?.id === producer.id) lineFailed.value = true
+  }
+}
+
+async function showLine() {
+  await prepareLine()
+  if (active.value !== 'line') return
+  await nextTick()
+  await lineMap.value?.centerInitial()
 }
 
 function close() { dialog.value?.close() }
@@ -60,10 +87,10 @@ onBeforeUnmount(() => dialog.value?.close())
       <button class="experience-action" @click="open('food', $event)"><span class="experience-icon"><AppIcon name="food" /></span><span><strong>Подобрать блюда</strong><small>Кухни России и соседних регионов</small></span><AppIcon name="arrow" /></button>
       <button class="experience-action" @click="open('label', $event)"><span class="experience-icon"><AppIcon name="book" /></span><span><strong>Рассказать об этикетке</strong><small>Сорта, термины и почему это важно</small></span><AppIcon name="arrow" /></button>
       <button class="experience-action" @click="open('taste', $event)"><span class="experience-icon"><AppIcon name="taste" /></span><span><strong>Паспорт вкуса</strong><small>Профиль и международный ориентир</small></span><AppIcon name="arrow" /></button>
-      <button class="experience-action" @click="open('line', $event)"><span class="experience-icon"><AppIcon name="map" /></span><span><strong>Путеводитель по линейке</strong><small>{{ lineActionSubtitle }}</small></span><AppIcon name="arrow" /></button>
+      <button class="experience-action" @pointerenter="prepareLine" @focus="prepareLine" @click="open('line', $event)"><span class="experience-icon"><AppIcon name="map" /></span><span><strong>Путеводитель по линейке</strong><small>{{ lineActionSubtitle }}</small></span><AppIcon name="arrow" /></button>
     </div>
 
-    <dialog ref="dialog" class="experience-dialog" :class="{ 'product-line-dialog': active === 'line' }" :aria-labelledby="active ? 'experience-dialog-heading' : undefined" @cancel.prevent="close" @click="backdrop" @close="closed">
+    <dialog ref="dialog" class="experience-dialog" :class="{ 'product-line-dialog': active === 'line' }" :aria-labelledby="active ? 'experience-dialog-heading' : undefined" :aria-busy="lineLoading" @cancel.prevent="close" @click="backdrop" @close="closed">
       <header class="experience-dialog-header"><div><p class="step-label">{{ dialogEyebrow }}</p><h2 id="experience-dialog-heading" ref="dialogHeading" tabindex="-1">{{ title }}</h2></div><button class="icon-button" aria-label="Закрыть окно" @click="close"><AppIcon name="close" /></button></header>
 
       <template v-if="active === 'food'">
@@ -87,7 +114,14 @@ onBeforeUnmount(() => dialog.value?.close())
       </template>
 
       <template v-else-if="active === 'line'">
-        <ProductLineMap v-if="producerLine" ref="lineMap" :key="wine.slug" :line="producerLine" :initial-slug="wine.slug" :recognized="recognized" :unmatched-wine="matchedLineWine ? undefined : wine" />
+        <ProductLineMap v-if="producerLine" ref="lineMap" :key="wine.slug" :line="producerLine" :initial-slug="wine.slug" :recognized="recognized" :unmatched-wine="lineMatched ? undefined : wine" />
+        <p v-else-if="lineLoading" class="line-loading" role="status"><span class="spinner" aria-hidden="true" />Загружаем карту линейки…</p>
+        <div v-else-if="lineProducer" class="line-unavailable" role="alert">
+          <AppIcon name="map" />
+          <h3>Не удалось загрузить карту</h3>
+          <p>Проверьте подключение к интернету и попробуйте ещё раз.</p>
+          <button type="button" class="button secondary" @click="showLine">Повторить</button>
+        </div>
         <div v-else class="line-unavailable" role="status">
           <AppIcon name="map" />
           <h3>Карта этого производителя пока не подготовлена</h3>
@@ -105,6 +139,7 @@ onBeforeUnmount(() => dialog.value?.close())
 .product-line-dialog .experience-dialog-header h2 { font-size: clamp(25px, 3vw, 36px); }
 .line-unavailable { padding: 36px 8px; display: grid; gap: 18px; justify-items: start; }
 .line-unavailable p { color: var(--muted); line-height: 1.6; }
+.line-loading { display: flex; align-items: center; gap: 12px; padding: 36px 8px; color: var(--muted); }
 @media (max-width: 700px) {
   .product-line-dialog { width: 100%; max-width: 100%; max-height: 100dvh; height: 100dvh; margin: 0; padding: 16px 12px max(16px, env(safe-area-inset-bottom)); border-radius: 0; }
   .product-line-dialog .experience-dialog-header { gap: 10px; }

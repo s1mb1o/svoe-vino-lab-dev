@@ -24,6 +24,8 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
   Updated HTTP tests and configuration documentation. HTTP factory overrides now
   require numeric YAML-compatible types; numeric strings are rejected.
 
+- Producer maps in `webui/` now load on demand. The first-load JavaScript of `/` dropped from 296 KB to 139 KB gzip.
+  The MCP server reads the map list from `webui/shared/data/product-line-index.json`. Read `webui/docs/plans/04_lazy-product-line-maps.md`.
 - Merged the producer product-line maps into `webui/` (branch `product-line-map`): 19 producers and 1,046 products.
   Read `webui/ChangeLog.md`.
 - Replaced the six-node Abrau demo of the MCP tool `get_producer_line` with these maps (#25).

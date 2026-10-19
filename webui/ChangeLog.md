@@ -1,5 +1,18 @@
 # Change log
 
+## 2026-10-19 — Producer maps on demand
+
+- Load a producer map only when the user opens «Путеводитель по линейке». Each of the 19 maps is a separate chunk of 4.7 to 21.6 KB gzip.
+- The scanner pages import only the generated index `shared/data/product-line-index.json` (13 KB gzip). It gives the producer and the match state before the map loads.
+- The first-load JavaScript of `/` drops from 296 KB to 139 KB gzip (12 files, gzip level 9). `npm run test:bundle` reports 134 KB gzip and fails when `/` or `/shelf` loads map data.
+- Start the load when the pointer enters or the keyboard focuses the guide action. The dialog shows an announced loading state, and a retry after a failed load.
+- `/lineup/<producer>` loads its map with `useAsyncData`. The server still renders the map.
+- Validate the maps in the tests and in `prebuild`, not at module load. Add `npm run line-maps:index` and a test that fails on a stale index.
+- The service worker still precaches all chunks. Offline behavior does not change.
+- The MCP server reads the map list from the index (#25).
+- Pass 278 unit tests (20 snapshot tests skipped), the type check, the build, and the bundle check. Pass `test:line-map` and `test:producer-maps` (81 checks) in Chromium and WebKit.
+- Read `docs/plans/04_lazy-product-line-maps.md`.
+
 ## 2026-10-19 — Line-map browser suite
 
 - Open shelf mode through the «Вся полка» link in `npm run test:line-map`. The mode switch is a pair of links since the mode pages, and the suite failed at this step on `main`.

@@ -5,7 +5,8 @@ import extension from '../docs/product-line-maps/abrau-durso/catalog-extension.j
 import catalogCrosswalk from '../docs/product-line-maps/abrau-durso/catalog-crosswalk.json'
 import { describe, expect, it } from 'vitest'
 import crosswalk from '../docs/product-line-map-crosswalk.json'
-import { ABRAU_PRODUCT_LINE as line, findLineProduct, findProducerLine, productLineEdges, productPortalUrl, productsInGroup, resolveProductLine, validateProductLineMap } from '../shared/product-line-map'
+import { findLineProduct, productLineEdges, productPortalUrl, productsInGroup, validateProductLineMap } from '../shared/product-line-map'
+import { ABRAU_PRODUCT_LINE as line, findProducerLine, resolveProductLine } from './support/product-line-maps'
 
 describe('producer product-line graph', () => {
   it('retains the six source sheets and adds the identified still-wine catalog cards', () => {

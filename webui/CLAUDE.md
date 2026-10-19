@@ -53,9 +53,11 @@ Preserve the evaluator contract for single-bottle prediction.
 
 Read `docs/plans/01_product-line-map.md` and `docs/product-line-map-sources.md`.
 Keep one JSON file per producer in `shared/data/product-line-maps/`.
-Register each JSON through an explicit import in `shared/data/product-line-maps/index.ts`.
+Register each JSON through an explicit lazy loader in `shared/data/product-line-maps/index.ts`: `'<producer-id>': () => import('./<producer-id>.json')`.
 Do not use `import.meta.glob` in this shared module. Nitro does not transform it in the server build.
-The MCP server reads this registry. Keep each entry in the form `import producerN from './<producer-id>.json'`.
+After a map change, run `npm run line-maps:index` and commit `shared/data/product-line-index.json`. The build and the MCP server stop on a stale index.
+Pages MUST import only the index through `shared/product-line-map.ts`. Load a full map with `loadProductLine`. Do not import a map JSON statically in app code.
+After a build, run `npm run test:bundle`. It fails when `/` or `/shelf` loads map data at first paint.
 Keep the pure types and functions in `shared/product-line-core.ts`. Do not add runtime imports to this module. The MCP server imports it in Node.js.
 Keep each producer's independent catalog extract, crosswalk, and source provenance in `docs/product-line-maps/`.
 Record exact source URLs, catalog sections, retrieval dates, and source hashes for reviewed maps.

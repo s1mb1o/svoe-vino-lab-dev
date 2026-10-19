@@ -7,6 +7,7 @@ on:
       - 'mcp/**'
       - 'webui/shared/catalog.ts'
       - 'webui/shared/product-line-core.ts'
+      - 'webui/shared/data/product-line-index.json'
       - 'webui/shared/data/product-line-maps/**'
       - 'webui/docs/catalog-provenance.json'
       - 'workbench/db-export/rows/wine_catalog.jsonl'
@@ -43,6 +44,7 @@ jobs:
             /mcp/
             /webui/shared/catalog.ts
             /webui/shared/product-line-core.ts
+            /webui/shared/data/product-line-index.json
             /webui/shared/data/product-line-maps/
             /webui/docs/catalog-provenance.json
             /workbench/db-export/rows/wine_catalog.jsonl

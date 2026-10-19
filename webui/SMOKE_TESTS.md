@@ -1,5 +1,15 @@
 # Smoke tests
 
+## Producer map loading
+
+1. After `npm run build`, run `npm run test:bundle`. Confirm that `/` and `/shelf` load no map data at first paint.
+2. Open `/` with the browser network panel. Confirm that no producer map chunk loads.
+3. Recognize an Abrau-Durso wine. Move the pointer over «Путеводитель по линейке», or focus it with Tab. Confirm that one map chunk loads.
+4. Open the guide. Confirm that the recognized wine is selected and centered. Repeat from a shelf result.
+5. Block the map chunk request and open the guide for another producer. Confirm «Не удалось загрузить карту». Unblock the request, select «Повторить», and confirm the map.
+6. With VoiceOver and TalkBack, confirm that «Загружаем карту линейки…» and the failure message are announced.
+7. Open `/lineup/abrau-durso` with JavaScript disabled. Confirm that the server renders the map.
+
 ## Mode pages
 
 - Open `/`. Confirm «Одна бутылка», the title «Найти вино по фото — Что за вино?», and `aria-current="page"` on its link.
