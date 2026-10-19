@@ -93,6 +93,7 @@ class UserSummary:
 class PendingRequest:
     request_id: str
     chat_id: int
+    user_id: int
     message_id: int
     received_at: int
     file_id: str
@@ -1084,6 +1085,7 @@ class Repository:
                 SELECT
                     request_id,
                     chat_id,
+                    user_id,
                     message_id,
                     received_at,
                     received_at AS stored_at,
@@ -1099,6 +1101,7 @@ class Repository:
             PendingRequest(
                 request_id=row["request_id"],
                 chat_id=int(row["chat_id"]),
+                user_id=int(row["user_id"]),
                 message_id=int(row["message_id"]),
                 received_at=int(row["received_at"]),
                 file_id=row["telegram_file_id"],
@@ -1501,7 +1504,7 @@ class Repository:
             rows = self._connection.execute(
                 """
                 SELECT
-                    request_id, chat_id, message_id,
+                    request_id, chat_id, user_id, message_id,
                     COALESCE(retry_requested_at, received_at) AS received_at,
                     received_at AS stored_at, telegram_file_id, feedback_enabled
                 FROM requests
@@ -1518,6 +1521,7 @@ class Repository:
             PendingRequest(
                 request_id=row["request_id"],
                 chat_id=int(row["chat_id"]),
+                user_id=int(row["user_id"]),
                 message_id=int(row["message_id"]),
                 received_at=int(row["received_at"]),
                 file_id=row["telegram_file_id"],

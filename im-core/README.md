@@ -19,6 +19,7 @@ Python package: `chto_za_vino_core`.
 | `texts.py` | User texts that both bots show. |
 | `work_queue.py` | Shared FIFO work queue. |
 | `http_api.py` | Internal synchronous recognition API. |
+| `diary.py` | Background history records of «Винный дневник» (`DiaryHistory`) and the wine snapshot. |
 | `probe.py`, `host_demo.py` | Diagnostic commands. |
 
 A platform value is a parameter. Examples: `result_artifact(platform=...)` and

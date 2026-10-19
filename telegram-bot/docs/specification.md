@@ -339,6 +339,15 @@ store, moderate, or recognize the other images.
 232. The bot MUST run account service calls outside the update dispatcher with a 2 s timeout.
      An account service failure MUST NOT change photo recognition.
 233. An empty `BOT_ACCOUNT_ENDPOINT` MUST turn the diary link off.
+234. After the bot delivers a result card to a person, it MUST send `POST /v1/bot/history` with
+     the user ID of the sender, the shown wine slug, and the card snapshot (plan
+     `../../docs/plans/07_diary-history-and-saved.md`). An HTTP API request MUST NOT record.
+235. The first «❌ Не совпало» of the source user MUST send `POST /v1/bot/history/undo` for the
+     shown wine. A selected alternative MUST send `POST /v1/bot/history` with that wine and
+     `replaces` = the shown wine. «Ничего из этого» MUST NOT send a history call.
+236. A history call MUST run in the background with one attempt and a 2 s timeout. Its failure
+     MUST NOT change the chat. Its log MUST NOT contain the user ID or the wine slug.
+237. An empty `BOT_ACCOUNT_ENDPOINT` MUST turn the history records off.
 
 ## Non-functional requirements
 

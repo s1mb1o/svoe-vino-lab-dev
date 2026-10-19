@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import uvicorn
+from chto_za_vino_core.diary import DiaryHistory
 from chto_za_vino_core.files import ArtifactStore, ImageStore
 from chto_za_vino_core.fingerprints import image_hashes
 from chto_za_vino_core.http_api import (
@@ -208,6 +209,8 @@ class Services:
     matcher: Matcher
     image_loader: CatalogImageLoader
     rejection_image: bytes
+    # «Винный дневник» history records (plan 07). None when the account service is off.
+    history: DiaryHistory | None = None
 
 
 @dataclass(slots=True)
@@ -584,9 +587,17 @@ class PhotoProcessor:
         elif result.margin < self._services.settings.match_min_margin:
             introduction = "У меня есть пара вариантов, скорей всего это:"
         async with self._timed_step(job, "result_delivery"):
-            await self._send_result(
+            delivered = await self._send_result(
                 job, wine, body, introduction=introduction, admin_note=admin_note,
             )
+        if delivered:
+            self._record_history(job, wine)
+
+    def _record_history(self, job: PhotoJob, wine: Wine) -> None:
+        """Record the shown wine in «Винный дневник» of the sender, in the background."""
+        history = _diary_history(self._services)
+        if history is not None and job.delivery_enabled and job.user_id > 0:
+            history.record(job.user_id, wine)
 
     async def _read_source(self, job: PhotoJob) -> bytes:
         """Return the image bytes of the job. The job keeps no bytes while it waits."""
@@ -816,7 +827,8 @@ class PhotoProcessor:
         *,
         introduction: str = "Похоже, это:",
         admin_note: str | None = None,
-    ) -> None:
+    ) -> bool:
+        """Send the result card. Return True when the card reached the chat."""
         caption = format_result_caption(wine, introduction=introduction)
         if admin_note:
             caption = f"{caption}\n\n{admin_note}"
@@ -839,13 +851,12 @@ class PhotoProcessor:
 
         if image is None:
             # A job without a status message replies to the source message instead.
-            await self._set_terminal_status(
+            return await self._set_terminal_status(
                 job,
                 caption,
                 disable_link_preview=True,
                 reply_markup=feedback_markup,
             )
-            return
 
         try:
             async with self._timed_step(job, "artifact_result"):
@@ -865,7 +876,7 @@ class PhotoProcessor:
             )
 
         if not job.delivery_enabled:
-            return
+            return False
 
         try:
             payload, token = await self._api.upload_image(
@@ -880,13 +891,12 @@ class PhotoProcessor:
             )
         except Exception:
             LOG.exception("MAX result photo failed", extra={"request_id": job.request_id})
-            await self._set_terminal_status(
+            return await self._set_terminal_status(
                 job,
                 caption,
                 disable_link_preview=True,
                 reply_markup=feedback_markup,
             )
-            return
 
         await self._persist(
             self._remember_message,
@@ -897,6 +907,7 @@ class PhotoProcessor:
             photo_token=token,
         )
         await self._finish_status(job, preserve_album=True)
+        return True
 
     async def _finish_status(self, job: PhotoJob, *, preserve_album: bool = False) -> None:
         if not job.delivery_enabled:
@@ -920,17 +931,17 @@ class PhotoProcessor:
         *,
         disable_link_preview: bool = False,
         reply_markup: dict[str, object] | None = None,
-    ) -> None:
+    ) -> bool:
+        """Show a final text. Return True when the text reached the chat."""
         if not job.delivery_enabled:
-            return
+            return False
         if job.status_enabled:
-            await self._set_status(
+            return await self._set_status(
                 job,
                 text,
                 disable_link_preview=disable_link_preview,
                 reply_markup=reply_markup,
             )
-            return
         try:
             message = await self._api.send_message(
                 job.chat_id,
@@ -945,7 +956,7 @@ class PhotoProcessor:
                 "MAX terminal status failed",
                 extra={"request_id": job.request_id},
             )
-            return
+            return False
         if reply_markup:
             await self._persist(
                 self._remember_message,
@@ -955,6 +966,7 @@ class PhotoProcessor:
                 text_format=HTML,
                 photo_token=None,
             )
+        return True
 
     async def _set_status(
         self,
@@ -963,11 +975,12 @@ class PhotoProcessor:
         *,
         disable_link_preview: bool = False,
         reply_markup: dict[str, object] | None = None,
-    ) -> None:
+    ) -> bool:
+        """Show a status text. Return True when the text reached the chat."""
         if not job.delivery_enabled:
-            return
+            return False
         if not job.status_enabled:
-            return
+            return False
         try:
             if job.status_message_id is None:
                 message = await self._api.send_message(
@@ -990,7 +1003,7 @@ class PhotoProcessor:
                 message = {"body": {"mid": job.status_message_id}}
         except Exception:
             LOG.exception("MAX status update failed", extra={"request_id": job.request_id})
-            return
+            return False
         if reply_markup:
             await self._persist(
                 self._remember_message,
@@ -1000,6 +1013,7 @@ class PhotoProcessor:
                 text_format=HTML,
                 photo_token=None,
             )
+        return True
 
 
 def _storage_time(job: PhotoJob) -> int:
@@ -1671,6 +1685,48 @@ async def handle_age_confirmation(
             await enqueue_held_photos(user, services, api, work_queue)
 
 
+def _diary_history(services: Services) -> DiaryHistory | None:
+    # A handler can get a partial service object without the field.
+    return getattr(services, "history", None)
+
+
+def _undo_history(services: Services, request_id: str, user_id: int) -> None:
+    """Remove the shown wine of a request from «Винный дневник» of its sender."""
+    history = _diary_history(services)
+    if history is None:
+        return
+    try:
+        record = services.repository.admin_request(request_id)
+    except Exception:
+        LOG.exception("Diary history undo skipped")
+        return
+    if record is not None and record.user_id == user_id and record.recognition_slug:
+        history.undo(user_id, record.recognition_slug)
+
+
+def _record_alternative_history(
+    services: Services, request_id: str, user_id: int, rank: int
+) -> None:
+    """Record the selected alternative instead of the shown wine of a request."""
+    history = _diary_history(services)
+    if history is None:
+        return
+    try:
+        record = services.repository.admin_request(request_id)
+        candidates = services.repository.candidates(request_id)
+    except Exception:
+        LOG.exception("Diary history record skipped")
+        return
+    if record is None or record.user_id != user_id:
+        return
+    for candidate in candidates:
+        if candidate.rank == rank:
+            history.record(
+                user_id, candidate_wine(candidate), replaces=record.recognition_slug
+            )
+            return
+
+
 async def handle_result_feedback(
     callback: CallbackEvent,
     services: Services,
@@ -1691,6 +1747,8 @@ async def handle_result_feedback(
     if result == "unavailable":
         await replies.answer("Эта оценка недоступна.")
         return
+    if result == "saved" and parts[1] == "no":
+        _undo_history(services, request_id, callback.user.user_id)
     already_saved = result == "already_saved"
     negative = parts[1] == "no"
     if already_saved:
@@ -1766,6 +1824,8 @@ async def handle_alternative_feedback(
     if result == "unavailable":
         await replies.answer("Этот вариант недоступен.")
         return
+    if result == "saved" and rank > 0:
+        _record_alternative_history(services, request_id, callback.user.user_id, rank)
     await replies.answer(
         "Ответ уже сохранён." if result == "already_saved" else "Спасибо! Ответ сохранён."
     )
@@ -2240,6 +2300,7 @@ def configure_logging(settings: Settings) -> None:
                 settings.max_token,
                 settings.http_api_token,
                 settings.webhook.secret if settings.webhook else "",
+                settings.account_token,
             ),
         )
     )
@@ -2303,6 +2364,9 @@ async def run() -> None:
         matcher,
         image_loader,
         rejection_image,
+        DiaryHistory(settings.account_endpoint, settings.account_token, client)
+        if settings.account_endpoint
+        else None,
     )
     enforce_data_retention(settings, repository)
 

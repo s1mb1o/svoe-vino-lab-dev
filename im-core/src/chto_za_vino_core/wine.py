@@ -19,6 +19,8 @@ class Wine:
     sugar: str | None
     image_url: str | None
     qr_urls: tuple[str, ...] = ()
+    # The diary snapshot keeps the region. A stored card of an old version has no region.
+    region: str | None = None
 
 
 def unknown_wine(slug: str) -> Wine:
@@ -87,11 +89,14 @@ def wine_from_card(slug: str, card: object) -> Wine:
     ):
         raise ValueError("wine card qr_urls must be a list of HTTP or HTTPS URLs")
     values = {field: _optional_text(card, field) for field in OPTIONAL_TEXT_FIELDS}
+    # The region is advisory: a card with an invalid region still gives the wine.
+    region = card.get("region")
     return Wine(
         slug=slug,
         name=name.strip(),
         page_url=page_url,
         qr_urls=tuple(dict.fromkeys(raw_qr_urls)),
+        region=(region.strip() or None) if isinstance(region, str) else None,
         **values,
     )
 
@@ -108,4 +113,5 @@ def wine_card(wine: Wine) -> dict[str, object]:
         "sugar": wine.sugar,
         "image_url": wine.image_url,
         "qr_urls": list(wine.qr_urls),
+        "region": wine.region,
     }

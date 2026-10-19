@@ -1,5 +1,24 @@
 # Change log
 
+## 2026-10-20
+
+- «Винный дневник» history from the chat (plan `../docs/plans/07_diary-history-and-saved.md`,
+  issue #71). New settings `BOT_ACCOUNT_ENDPOINT` (empty: off) and `ACCOUNT_MAX_TOKEN` (required
+  with the endpoint, at least 32 characters, not in `repr`, in the log redaction, different from
+  the other secrets). The bot sends `POST /v1/bot/history` after it delivers a result card (also
+  a tentative one) to a person, `POST /v1/bot/history/undo` after the first «❌ Не совпало» of the
+  sender, and `POST /v1/bot/history` with `replaces` after a selected alternative. «Ничего из
+  этого», an HTTP API request, and an undelivered card send nothing.
+- The calls use `chto_za_vino_core.diary.DiaryHistory` (new in `../im-core`, the same code as the
+  Telegram bot): background tasks, one attempt, a 2 s timeout, at most 8 at the same time. A
+  failure gets one warning without the user ID and the slug and does not change the chat. The
+  update dispatcher never waits for the account service.
+- `_send_result`, `_set_terminal_status`, and `_set_status` return True when the text or the card
+  reached the chat. The chat behavior does not change.
+- README, `deploy/README.md`, `.env.example`, `deploy/max-bot.env.example`, `PRIVACY.ru.md`, the
+  specification (M23–M26), and `SMOKE_TESTS.md` name the history. New tests:
+  `tests/test_diary_history.py` (15) and 8 settings tests in `tests/test_config.py`.
+
 ## 2026-10-19
 
 - Service rule 10: the catalogue result images come from `https://chtozavino.ru` (plan

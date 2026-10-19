@@ -119,9 +119,12 @@ Compose читает `config/max-bot.env` в формате `raw`: значен�
 | `MODERATION_ENDPOINT`, `SAM3_ENDPOINT` | Адреса ShieldGemma 2 и SAM3 в шлюзе моделей |
 | `MATCHER_ENDPOINT` | Адрес `/v1/match` сервиса matcher |
 | `BOT_HTTP_API_ALLOWED_NETWORKS` | Сети клиентов API: CIDR через запятую |
+| `BOT_ACCOUNT_ENDPOINT` | Адрес сервиса «Винного дневника», доступный из контейнера. Пусто: история дневника выключена |
+| `ACCOUNT_MAX_TOKEN` | Нужна, если задан `BOT_ACCOUNT_ENDPOINT`. Случайное значение не короче 32 символов, то же имя и значение в сервисе дневника. Секрет |
 
 - Создавайте каждое случайное значение отдельно, например командой `openssl rand -hex 32`.
-- `MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN` и `MAX_WEBHOOK_SECRET` ДОЛЖНЫ (MUST) различаться.
+- `MAX_BOT_TOKEN`, `BOT_HTTP_API_TOKEN`, `MAX_WEBHOOK_SECRET` и `ACCOUNT_MAX_TOKEN` ДОЛЖНЫ (MUST)
+  различаться.
 - Не передавайте секрет в аргументах команды: история оболочки сохраняет его.
 - В контейнере `127.0.0.1` — это сам контейнер. В адресах сервисов указывайте адрес, доступный
   из контейнера, например адрес сервера с моделями в локальной сети.

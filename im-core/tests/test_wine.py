@@ -34,6 +34,7 @@ def test_matcher_card_gives_the_wine():
         sugar="Сухое",
         image_url="https://api.vino-svoe.ru/v1/img/test.webp",
         qr_urls=("https://producer.example/a",),
+        region="Кубань",
     )
 
 
@@ -67,6 +68,17 @@ def test_missing_optional_card_fields_are_empty():
 def test_invalid_card_is_rejected(value):
     with pytest.raises((TypeError, ValueError)):
         wine_from_card("test-wine", value)
+
+
+@pytest.mark.parametrize("region", [None, 7, ["Крым"], "  "])
+def test_an_invalid_or_absent_region_keeps_the_wine(region):
+    value = card()
+    if region is None:
+        del value["region"]
+    else:
+        value["region"] = region
+
+    assert wine_from_card("test-wine", value).region is None
 
 
 def test_stored_card_reads_back_to_the_same_wine():

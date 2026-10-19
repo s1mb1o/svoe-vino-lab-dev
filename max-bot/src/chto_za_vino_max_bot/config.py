@@ -4,7 +4,7 @@ import ipaddress
 import os
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -235,6 +235,25 @@ def _host_suffixes(value: str | None) -> tuple[str, ...]:
     return tuple(host for host in hosts if host)
 
 
+def _account_settings() -> tuple[str, str]:
+    """Read the account service endpoint and the `max-bot` consumer token.
+
+    An empty endpoint turns the «Винный дневник» history records off.
+    """
+    endpoint = os.getenv("BOT_ACCOUNT_ENDPOINT", "").strip()
+    if not endpoint:
+        return "", ""
+    try:
+        parts = urlsplit(endpoint)
+    except ValueError as exc:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must be an HTTP URL") from exc
+    if parts.scheme not in {"http", "https"} or not parts.hostname:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must be an HTTP URL")
+    if parts.username or parts.password or parts.query or parts.fragment:
+        raise ValueError("BOT_ACCOUNT_ENDPOINT must not contain credentials, a query, or a fragment")
+    return endpoint.rstrip("/"), _required_secret("ACCOUNT_MAX_TOKEN")
+
+
 @dataclass(frozen=True, slots=True)
 class WebhookSettings:
     url: str
@@ -311,6 +330,9 @@ class Settings:
     poll_timeout_seconds: int = 30
     webhook: WebhookSettings | None = None
     media_allowed_hosts: tuple[str, ...] = ()
+    # «Винный дневник» history records (plan 07). An empty endpoint turns them off.
+    account_endpoint: str = ""
+    account_token: str = field(default="", repr=False)
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -367,10 +389,16 @@ class Settings:
             raise ValueError("MAX_POLL_TIMEOUT_SECONDS must be from 0 to 90")
         webhook = _webhook_settings() if update_mode == "webhook" else None
         http_api_token = _required_secret("BOT_HTTP_API_TOKEN")
-        secrets_in_use = [token, http_api_token] + ([webhook.secret] if webhook else [])
+        account_endpoint, account_token = _account_settings()
+        secrets_in_use = (
+            [token, http_api_token]
+            + ([webhook.secret] if webhook else [])
+            + ([account_token] if account_token else [])
+        )
         if len(set(secrets_in_use)) != len(secrets_in_use):
             raise ValueError(
-                "MAX_BOT_TOKEN, BOT_HTTP_API_TOKEN, and MAX_WEBHOOK_SECRET must differ"
+                "MAX_BOT_TOKEN, BOT_HTTP_API_TOKEN, MAX_WEBHOOK_SECRET, and ACCOUNT_MAX_TOKEN "
+                "must differ"
             )
 
         return cls(
@@ -427,6 +455,8 @@ class Settings:
             poll_timeout_seconds=poll_timeout,
             webhook=webhook,
             media_allowed_hosts=_host_suffixes(os.getenv("MAX_MEDIA_ALLOWED_HOSTS")),
+            account_endpoint=account_endpoint,
+            account_token=account_token,
         )
 
 

@@ -1,5 +1,23 @@
 # Change log
 
+## 2026-10-20
+
+- «Винный дневник» history from the chat (plan `../docs/plans/07_diary-history-and-saved.md`,
+  issue #71). With `BOT_ACCOUNT_ENDPOINT` set, the bot sends `POST /v1/bot/history` after it
+  delivers a result card (also a tentative one) to a person, `POST /v1/bot/history/undo` after the
+  first «❌ Не совпало» of the sender, and `POST /v1/bot/history` with `replaces` after a selected
+  alternative. «Ничего из этого», an HTTP API request, and an undelivered card send nothing. The
+  account service records only for a linked Telegram user with «Записывать найденные вина» on.
+- The calls use `chto_za_vino_core.diary.DiaryHistory` (new in `../im-core`): background tasks,
+  one attempt, a 2 s timeout, at most 8 at the same time. A failure gets one warning without the
+  user ID and the slug and does not change the chat.
+- `PhotoJob` has the sender `user_id` (0 for an HTTP API job). The pending and retry requests read
+  it from the database, so a restored job and an administration retry record for the sender.
+- `_send_result`, `_set_terminal_status`, and `_set_status` return True when the text or the card
+  reached the chat. The chat behavior does not change.
+- `PRIVACY.ru.md`, README, the specification (FR 234–237), and `SMOKE_TESTS.md` name the history.
+  New tests: `tests/test_diary_history.py` (16).
+
 ## 2026-10-19
 
 - The command menu shows `/unlink` («Отвязать от «Винного дневника»») when the diary link is on

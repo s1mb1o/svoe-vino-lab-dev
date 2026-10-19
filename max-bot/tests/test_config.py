@@ -677,3 +677,66 @@ def test_media_allowed_hosts_are_normalized_host_suffixes(monkeypatch) -> None:
     monkeypatch.setenv("MAX_MEDIA_ALLOWED_HOSTS", " .OneMe.RU, ,cdn.Example.com ,")
 
     assert Settings.from_env().media_allowed_hosts == ("oneme.ru", "cdn.example.com")
+
+
+ACCOUNT_TOKEN = "m" * 40
+
+
+@pytest.fixture
+def account_environment(monkeypatch) -> None:
+    monkeypatch.delenv("ACCOUNT_MAX_TOKEN", raising=False)
+    monkeypatch.setenv("BOT_ENVIRONMENT", "development")
+
+
+@pytest.mark.usefixtures("account_environment")
+def test_diary_history_is_off_without_an_account_endpoint() -> None:
+    settings = Settings.from_env()
+
+    assert (settings.account_endpoint, settings.account_token) == ("", "")
+
+
+@pytest.mark.usefixtures("account_environment")
+def test_an_account_endpoint_requires_the_max_consumer_token(monkeypatch) -> None:
+    monkeypatch.setenv("BOT_ACCOUNT_ENDPOINT", "http://account.test:28008/")
+    with pytest.raises(ValueError, match="ACCOUNT_MAX_TOKEN is required"):
+        Settings.from_env()
+    monkeypatch.setenv("ACCOUNT_MAX_TOKEN", "short")
+    with pytest.raises(ValueError, match="ACCOUNT_MAX_TOKEN must contain at least 32"):
+        Settings.from_env()
+    monkeypatch.setenv("ACCOUNT_MAX_TOKEN", f" {ACCOUNT_TOKEN} ")
+
+    settings = Settings.from_env()
+
+    assert (settings.account_endpoint, settings.account_token) == (
+        "http://account.test:28008",
+        ACCOUNT_TOKEN,
+    )
+    assert ACCOUNT_TOKEN not in repr(settings)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "account.test",
+        "ftp://account.test",
+        "http://user:password@account.test",
+        "http://account.test/?debug=1",
+        "http://account.test/#history",
+    ],
+)
+@pytest.mark.usefixtures("account_environment")
+def test_an_account_endpoint_must_be_a_plain_http_url(monkeypatch, value) -> None:
+    monkeypatch.setenv("BOT_ACCOUNT_ENDPOINT", value)
+    monkeypatch.setenv("ACCOUNT_MAX_TOKEN", ACCOUNT_TOKEN)
+
+    with pytest.raises(ValueError, match="BOT_ACCOUNT_ENDPOINT"):
+        Settings.from_env()
+
+
+@pytest.mark.usefixtures("account_environment")
+def test_the_account_token_must_differ_from_the_other_secrets(monkeypatch) -> None:
+    monkeypatch.setenv("BOT_ACCOUNT_ENDPOINT", "http://account.test:28008")
+    monkeypatch.setenv("ACCOUNT_MAX_TOKEN", HTTP_API_TOKEN)
+
+    with pytest.raises(ValueError, match="must differ"):
+        Settings.from_env()

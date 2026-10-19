@@ -32,6 +32,7 @@ from chto_za_vino_max_bot.storage import Repository
 MAX_TOKEN = "max-token-for-redaction-check_0123456789"
 API_TOKEN = "api-token-for-redaction-check-0123456789"
 WEBHOOK_SECRET = "webhook-secret-for-redaction-check_0123456789"
+ACCOUNT_TOKEN = "account-token-for-redaction-check-0123456789"
 SECRETS = (MAX_TOKEN, API_TOKEN, WEBHOOK_SECRET)
 PHOTO_URL = "https://i.oneme.example/photo-1.jpg"
 HTTP_CLIENT_LOGGERS = ("httpx", "httpcore")
@@ -71,6 +72,7 @@ def logging_settings(*, webhook: bool, log_level: str = "DEBUG") -> SimpleNamesp
         http_api_token=API_TOKEN,
         webhook=SimpleNamespace(secret=WEBHOOK_SECRET) if webhook else None,
         log_level=log_level,
+        account_token=ACCOUNT_TOKEN,
     )
 
 
@@ -171,13 +173,16 @@ def test_configure_logging_redacts_the_configured_secrets(webhook):
             raise SecretEchoError(f"token={MAX_TOKEN} webhook={WEBHOOK_SECRET}")
         except SecretEchoError:
             log.exception("api=%s", API_TOKEN)
+        log.warning("account=%s", ACCOUNT_TOKEN)
         log.info("plain message")
 
     output = configured_output(logging_settings(webhook=webhook), emit)
 
     assert MAX_TOKEN not in output
     assert API_TOKEN not in output
+    assert ACCOUNT_TOKEN not in output
     assert "api=[REDACTED]" in output
+    assert "account=[REDACTED]" in output
     if webhook:
         assert WEBHOOK_SECRET not in output
         assert "SecretEchoError: token=[REDACTED] webhook=[REDACTED]" in output

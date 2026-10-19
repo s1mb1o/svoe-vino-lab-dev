@@ -442,6 +442,20 @@ retention, restart-recovery, and queue tests.
 - Send five photos as five separate messages without waiting.
 - Confirm that the bot keeps two or fewer message operations per second in the dialog.
 
+## «Винный дневник» history
+
+- Set `BOT_ACCOUNT_ENDPOINT` and `ACCOUNT_MAX_TOKEN` in the bot. Set the same `ACCOUNT_MAX_TOKEN`
+  in the account service.
+- Link MAX in the diary mini app. On `/account` → «Настройки», keep «Записывать найденные вина» on.
+- Send a wine photo. On `/account` → «История», confirm the wine with today's date and the
+  source «MAX». If the bot log shows `Diary history record answered status=not_linked` for a
+  linked account, the mini-app user ID differs from the Bot API user ID (plan 07, "Bots").
+- Send the photo again and select «❌ Не совпало». Confirm that today's date of the wine is gone.
+- Select an alternative. Confirm the alternative wine in «История» for today.
+- Turn «Записывать найденные вина» off and send a photo. Confirm that «История» does not change.
+- Stop the account service and send a photo. Confirm the usual result card and one warning
+  `Diary history record failed` in the bot log without the user ID and the slug.
+
 ## Album rejections
 
 - Send an album of three photos when only one request remains in the rate limit.

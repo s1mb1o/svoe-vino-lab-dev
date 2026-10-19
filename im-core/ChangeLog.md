@@ -1,5 +1,21 @@
 # Change log
 
+## 2026-10-20
+
+- New module `diary.py` for the «Винный дневник» history of both bots (plan
+  `../docs/plans/07_diary-history-and-saved.md`, issue #71). `DiaryHistory.record()` sends
+  `POST /v1/bot/history` (with `replaces` for a selected alternative) and `DiaryHistory.undo()`
+  sends `POST /v1/bot/history/undo`. Both return at once and never raise: a background task, one
+  attempt, a 2 s timeout, at most 8 calls at the same time. A failure gets one warning with the
+  HTTP status or the exception type only, never the user ID, the slug, or the token.
+  `wine_snapshot()` builds the snapshot within the service limits (strings of 1 to 200
+  characters, at most 12 grapes of 1 to 80 characters, at most 2,048 bytes). The diary color is
+  the matcher `category` («Красное»); the tint `color` is the fallback. A card without data
+  (`unknown_wine`) gives no snapshot.
+- `Wine` has the optional `region` of the matcher card. `wine_card()` stores it. An absent or
+  invalid region gives None and does not refuse the card.
+- New tests: `tests/test_diary.py` (26) and one region test in `tests/test_wine.py` (4 cases).
+
 ## 2026-10-19
 
 - `CatalogImageLoader` accepts the static wine images of `https://chtozavino.ru` (plan

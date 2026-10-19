@@ -267,7 +267,7 @@ The example environment uses these service endpoints for `gx10`:
 | `BOT_HTTP_API_RATE_LIMIT` | `10` |
 | `BOT_HTTP_API_RATE_WINDOW_SECONDS` | `3600` |
 | `BOT_HTTP_API_MAX_IN_FLIGHT` | `2` |
-| `BOT_ACCOUNT_ENDPOINT` | Empty: the diary link is off. Account service base URL, for example `http://192.168.86.14:28008`. |
+| `BOT_ACCOUNT_ENDPOINT` | Empty: the diary link and the diary history records are off. Account service base URL, for example `http://192.168.86.14:28008`. |
 | `ACCOUNT_TELEGRAM_TOKEN` | Required with `BOT_ACCOUNT_ENDPOINT`: a random secret of at least 32 characters, the same name and value as in the account service. It is not `TELEGRAM_BOT_TOKEN`. |
 
 ### «Винный дневник» link
@@ -286,6 +286,24 @@ The bot keeps no link state. The account service keeps only the Telegram user ID
 only in a private chat. The account calls run outside the update dispatcher with a 2 s timeout.
 When the service is down, the bot answers «Дневник временно недоступен…»; recognition is not
 affected. The link does not pass the age gate: it shows no wine content.
+
+### «Винный дневник» history
+
+Plan `../docs/plans/07_diary-history-and-saved.md`. The same settings turn it on.
+
+- After the bot shows a result card in the chat, it sends `POST /v1/bot/history` with the Telegram
+  user ID of the sender, the wine slug, and a snapshot of the card (name, producer, color, sugar,
+  region, grapes). A tentative card is recorded too. No card, an undelivered card, or an HTTP API
+  request records nothing.
+- «❌ Не совпало» sends `POST /v1/bot/history/undo` with the shown wine. Only the first press of the
+  sender counts.
+- A selected alternative sends `POST /v1/bot/history` with that wine and `replaces` = the shown
+  wine. «Ничего из этого» sends nothing.
+- The account service records a wine only for a linked Telegram user and only when the switch
+  «Записывать найденные вина» is on. Otherwise it answers `not_linked` or `off`.
+- Each call runs in the background with one attempt and a 2 s timeout
+  (`chto_za_vino_core.diary.DiaryHistory`). A failure gets one warning log line without the user
+  ID and the slug. The chat does not change.
 
 `endpoints.matcher` MUST name the matcher path `/v1/match`.
 The bot refuses to start with another path, for example `/v1/not-match`.

@@ -42,6 +42,18 @@
 - Stop the account service and open a new link. Confirm «Дневник временно недоступен…» and that
   a photo is still recognized.
 
+## «Винный дневник» history
+
+- Link Telegram as above. On `/account` → «Настройки», keep «Записывать найденные вина» on.
+- Send a wine photo. On `/account` → «История», confirm the wine with today's date and the
+  source «Telegram».
+- Send the photo again and select «❌ Не совпало». Confirm that today's date of the wine is gone.
+- Select an alternative. Confirm the alternative wine in «История» for today.
+- Turn «Записывать найденные вина» off and send a photo. Confirm that «История» does not change.
+- Send `/unlink` and send a photo. Confirm that «История» does not change.
+- Stop the account service and send a photo. Confirm the usual result card and one warning
+  `Diary history record failed` in the bot log without the user ID and the slug.
+
 ## Photo before the age confirmation
 
 - Start a new chat. Do not confirm the age. Send one wine photo.

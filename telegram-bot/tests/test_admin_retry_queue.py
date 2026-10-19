@@ -43,6 +43,7 @@ def test_admin_retry_enters_bot_queue(tmp_path):
     assert queue.jobs[0].request_id == reservation.request_id
     assert queue.jobs[0].received_at == 1200
     assert queue.jobs[0].stored_at == 1000
+    assert queue.jobs[0].user_id == 200
     assert repository.admin_request(reservation.request_id).status == "queued"
     assert enqueue_admin_retries(repository, queue) == 0
     repository.close()
@@ -76,4 +77,5 @@ def test_restart_restores_an_interrupted_retry_with_the_first_receipt_date(tmp_p
     assert queue.restore_flags == [True]
     assert queue.jobs[0].request_id == request_id
     assert queue.jobs[0].stored_at == 1000
+    assert queue.jobs[0].user_id == 200
     repository.close()
