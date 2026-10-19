@@ -34,6 +34,10 @@
 
 ## 2026-10-19
 
+- Added the permanent `android-device-match-k20-top2-mean` device pipeline.
+- Kept one worker and the device IPv4 parameter for the Android HTTP API.
+- Added the aggregation query check to the remote pipeline tests.
+
 - Static wine images, release format 2 (owner answers of 2026-10-19T21:46:00+0300, plan 06
   D10–D11): `build_wine_images.py` makes each file from the package cut of the image
   (`image_derivative`, kind `package`), else from the original, and trims the borders with no
@@ -872,7 +876,6 @@
   test photos and catalogue images (three links exist; the wines are not Active), the lab
   upload checks decode every Pillow format inside a write transaction, and the GitLab CI
   is red for 6 pushes with no workbench job.
-
 ## 2026-09-29
 
 - Corrected the p512 re-rank rule of the Aratti cluster `2d33f12d0b3e` (owner messages of

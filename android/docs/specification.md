@@ -1,6 +1,6 @@
 # Android application specification
 
-Date: 2026-10-18
+Date: 2026-10-19
 
 ## Purpose
 
@@ -62,6 +62,46 @@ The application MUST use this image pipeline:
 14. Use dot product as cosine similarity.
 15. Use the maximum score across all reference angles and images as the wine score.
 
+The matcher MUST support reference aggregation `max`.
+The matcher MUST support reference aggregation `top2-mean`.
+`top2-mean` MUST use the arithmetic mean of the two highest reference scores for one
+wine.
+It MUST use the only score when one wine has one reference.
+
+Format version 4 MUST replace steps 7 through 13 with this NaFlex path:
+
+1. Preserve the aspect ratio of the white-background crop.
+2. Select a 16 by 16 patch grid with no more than the manifest patch limit.
+3. Resize the crop to this grid.
+4. Normalize RGB values to `[-1, 1]`.
+5. Pack values in patch-row, patch-column, pixel-row, pixel-column, channel order.
+6. Resize the original 16 by 16 position table with antialiased bilinear interpolation.
+7. Run the LiteRT NaFlex backbone with patches, position vectors, and the additive mask.
+8. Run the LiteRT pooling model with patch tokens and the padding mask.
+9. L2-normalize the 1,152-dimensional output.
+10. Compare the output with format version 4 catalogue vectors.
+
+Format version 5 MUST use the same NaFlex path.
+It MUST use `google/siglip2-base-patch16-naflex`.
+It MUST return a 768-dimensional vector.
+It MAY use standard pooling or foreground-aware 5a pooling.
+
+The foreground-aware 5a pooling MUST reuse the selected segmentation mask.
+It MUST calculate a soft foreground mean for each valid patch.
+It MUST calculate the patch weight as `0.1 + 0.9 * foreground`.
+It MUST add `log(weight)` to the standard attention logit.
+It MUST keep padding logits masked.
+
+The NaFlex pooling model MUST apply the original vision `post_layernorm`.
+It MUST apply the original attention pooling head.
+It MUST apply the original pooling LayerNorm and MLP residual.
+The pooling model MUST use CPU.
+An unverified NaFlex backbone MUST use LiteRT CPU/XNNPACK.
+`Auto` MUST select CPU when the pack does not declare GPU compatibility.
+Explicit GPU selection MUST report a compatibility error in this case.
+The application MAY enable the NaFlex GPU backbone only when the model pack declares
+`gpu_compatible: true` after a device parity test passes.
+
 The application MUST process selected photographs in sequence.
 The application MUST NOT run multiple LiteRT image pipelines at the same time.
 The application MUST create a ranked result for each successfully processed photograph.
@@ -105,6 +145,7 @@ The settings page MUST provide `Авто`, `GPU`, and `CPU` for each model.
 The `Авто` mode MUST use the saved automatic selection.
 The `Авто` mode MUST retry a failed GPU inference on CPU.
 The application MUST save CPU as the automatic selection after this fallback.
+The saved accelerator check MUST identify the installed model files and patch limit.
 The explicit `GPU` mode MUST report an invalid GPU result when the dual-GPU safety
 rule does not select CPU.
 The explicit `CPU` mode MUST not load the model on GPU.
@@ -143,6 +184,19 @@ The source image MUST identify the selected vector and package cut only.
 The application MUST install the built-in pack on the first start.
 The application MUST show progress during this operation.
 
+The application MUST also accept an external format version 4 pack.
+The format version 4 pack MUST use `google/siglip2-so400m-patch16-naflex`.
+It MUST use the exact split runtime.
+It MUST contain 1,152-dimensional vectors from the same model revision and patch limit.
+The production APK MUST NOT include the generated p512 model pack until it meets the
+latency and distribution-size targets.
+
+The application MUST also accept an external format version 5 pack.
+The format version 5 pack MUST use `google/siglip2-base-patch16-naflex`.
+It MUST use the exact split runtime.
+It MUST contain 768-dimensional vectors from the same model revision, patch limit, and
+pooling mode.
+
 The user interface MUST NOT show a model-pack installation or replacement action.
 The settings page MUST show the built-in pack version and counts.
 The application MUST verify every root payload with SHA-256 and byte length.
@@ -171,10 +225,15 @@ The server MUST listen on all device interfaces.
 The server MUST provide `GET /healthz`.
 The server MUST provide `POST /v1/eval/predict` with the matcher `slug-object` response.
 The server MUST provide `POST /v1/match` with the matcher `candidates` response.
-Both POST operations MUST read the image from multipart field `image`.
+The server MUST provide `POST /v1/debug/embedding` with the normalized vector and stage
+latency.
+All POST operations MUST read the image from multipart field `image`.
 The server MUST reject an image above 20 MiB.
 The optional `k` value of `/v1/match` MUST be an integer from 1 through 20.
 The default `k` value MUST be 20.
+The optional `aggregation` value MUST be `max` or `top2-mean`.
+The optional `dis_accelerator` value MUST be `cpu` or `gpu`.
+The optional `siglip2_accelerator` value MUST be `cpu` or `gpu`.
 The server MUST use the installed model pack.
 The server MUST use the saved `DIS / YOLO` setting.
 The server MUST use the saved DIS and SigLIP2 accelerator settings.

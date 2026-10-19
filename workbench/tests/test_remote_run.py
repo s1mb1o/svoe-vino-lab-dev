@@ -143,16 +143,19 @@ class RemoteEntryTest(unittest.TestCase):
                          "https://api.vino-svoe.ru/v1/wines/search-by-photo")
         self.assertEqual((entry.remote["top_k"], entry.remote["query"]), (10, {"limit": 10}))
 
-    def test_the_project_config_holds_the_two_android_device_entries(self):
-        for name, suffix, response, top_k in (
-                ("android-device-eval-predict", "/v1/eval/predict", "slug-object", 1),
-                ("android-device-match-k20", "/v1/match", "candidates", 20)):
+    def test_the_project_config_holds_the_android_device_entries(self):
+        for name, suffix, response, top_k, query in (
+                ("android-device-eval-predict", "/v1/eval/predict", "slug-object", 1, {}),
+                ("android-device-match-k20", "/v1/match", "candidates", 20, {"k": 20}),
+                ("android-device-match-k20-top2-mean", "/v1/match", "candidates", 20,
+                 {"k": 20, "aggregation": "top2-mean"})):
             with self.subTest(name=name):
                 entry, _ = RR.find_entry(name)
                 self.assertTrue(entry.device_ip)
                 self.assertEqual(entry.remote["url"], "http://{device_ip}:18088" + suffix)
                 self.assertEqual((entry.remote["response"], entry.remote["top_k"]),
                                  (response, top_k))
+                self.assertEqual(entry.remote["query"], query)
 
 
 class RefusalTest(unittest.TestCase):

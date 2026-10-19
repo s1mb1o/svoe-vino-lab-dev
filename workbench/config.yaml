@@ -474,6 +474,16 @@ pipeline:
     timeout_s: 120
     workers: 1
 
+  - name: android-device-match-k20-top2-mean
+    backend: svoe-vino-ru
+    url: http://{device_ip}:18088/v1/match
+    device_ip: true
+    response: candidates
+    query: { k: 20, aggregation: top2-mean }
+    top_k: 20
+    timeout_s: 120
+    workers: 1
+
   # 3. SAM3 finds each bottle of the photo, and the matcher ranks each bottle. `k` is
   # the number of candidates of each bottle; a matcher before plan 83 ignores it and
   # gives 1. The ranked list of the row is the first candidate of each bottle, the

@@ -2,11 +2,14 @@ package com.alolalab.chtozavino
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Base64
 import android.util.Log
 import fi.iki.elonen.NanoHTTPD
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -85,13 +88,17 @@ private class AndroidMatcherServer(
         when {
             session.uri == "/healthz" && session.method == Method.GET -> health()
             session.uri == "/v1/eval/predict" && session.method == Method.POST -> {
-                recognize(session, null)
+                recognize(session, null, false)
             }
             session.uri == "/v1/match" && session.method == Method.POST -> {
                 val k = matchLimit(session.parameters["k"]?.firstOrNull())
-                recognize(session, k)
+                recognize(session, k, false)
             }
-            session.uri in setOf("/v1/eval/predict", "/v1/match") -> {
+            session.uri == "/v1/debug/embedding" && session.method == Method.POST -> {
+                val k = matchLimit(session.parameters["k"]?.firstOrNull())
+                recognize(session, k, true)
+            }
+            session.uri in setOf("/v1/eval/predict", "/v1/match", "/v1/debug/embedding") -> {
                 error(ApiStatus.METHOD_NOT_ALLOWED, "method not allowed")
             }
             else -> error(Response.Status.NOT_FOUND, "not found")
@@ -110,11 +117,16 @@ private class AndroidMatcherServer(
             .put("port", DEBUG_HTTP_PORT)
             .put("pack_version", pack?.manifest?.versionName ?: JSONObject.NULL)
             .put("wine_count", pack?.manifest?.wineCount ?: 0)
+            .put("siglip2_runtime", pack?.manifest?.sigLip2Runtime ?: JSONObject.NULL)
+            .put("vector_dim", pack?.manifest?.vectorDimension ?: 0)
+            .put("max_num_patches", pack?.manifest?.maxNumPatches ?: JSONObject.NULL)
+            .put("pooling_mode", pack?.manifest?.poolingMode ?: JSONObject.NULL)
+            .put("reference_aggregation", pack?.manifest?.referenceAggregation ?: JSONObject.NULL)
             .put("segmenter", savedSegmenterMode(context).name)
         return json(if (pack == null) Response.Status.SERVICE_UNAVAILABLE else Response.Status.OK, body)
     }
 
-    private fun recognize(session: IHTTPSession, k: Int?): Response {
+    private fun recognize(session: IHTTPSession, k: Int?, includeEmbedding: Boolean): Response {
         val contentLength = session.headers["content-length"]?.toLongOrNull()
         if (contentLength != null && contentLength > MAX_IMAGE_BYTES + 64 * 1024L) {
             return error(ApiStatus.PAYLOAD_TOO_LARGE, "image exceeds 20 MiB")
@@ -140,10 +152,16 @@ private class AndroidMatcherServer(
         }
         return try {
             val started = System.nanoTime()
+            var pipelineName = PIPELINE_NAME
+            val aggregation = ReferenceAggregation.fromId(
+                session.parameters["aggregation"]?.firstOrNull()
+                    ?: MAX_REFERENCE_AGGREGATION,
+            )
             val output = inferenceLock.withLock {
                 val pack = ModelPackManager(context).current()
                     ?: return error(Response.Status.SERVICE_UNAVAILABLE, "model pack is not ready")
                 val segmenterMode = savedSegmenterMode(context)
+                pipelineName = debugPipelineName(pack, segmenterMode)
                 val key = "${pack.directory.absolutePath}:${pack.manifest.versionName}:${pack.manifest.installedAt}"
                 if (engine == null || engineKey != key) {
                     engine?.close()
@@ -152,27 +170,77 @@ private class AndroidMatcherServer(
                 }
                 engine!!.recognize(
                     bitmap,
-                    savedRecognitionAccelerators(context),
+                    recognitionAccelerators(session),
                     segmenterMode,
                     k ?: 1,
+                    aggregation,
                 )
             }
             val latencyMs = (System.nanoTime() - started) / 1_000_000.0
-            val body = if (k == null) {
+            val body = if (includeEmbedding) {
+                embeddingJson(output, latencyMs, pipelineName, aggregation)
+            } else if (k == null) {
                 predictionJson(output.matches)
             } else {
-                val pipeline = if (output.segmenterName == SegmenterMode.YOLO.name) {
-                    YOLO_PIPELINE_NAME
-                } else {
-                    PIPELINE_NAME
-                }
-                matchJson(output.matches, latencyMs, pipeline)
+                matchJson(output.matches, latencyMs, pipelineName)
+                    .put("reference_aggregation", aggregation.id)
             }
             recycle(output)
             json(Response.Status.OK, body)
         } finally {
             bitmap.recycle()
         }
+    }
+
+    private fun recognitionAccelerators(session: IHTTPSession): RecognitionAccelerators {
+        val saved = savedRecognitionAccelerators(context)
+        val dis = acceleratorParameter(session, "dis_accelerator") ?: saved.dis
+        val sigLip2 = acceleratorParameter(session, "siglip2_accelerator") ?: saved.sigLip2
+        return RecognitionAccelerators(
+            dis = dis,
+            sigLip2 = sigLip2,
+            allowDisCpuFallback = if (dis == saved.dis) saved.allowDisCpuFallback else false,
+            allowSigLip2CpuFallback = if (sigLip2 == saved.sigLip2) {
+                saved.allowSigLip2CpuFallback
+            } else {
+                false
+            },
+        )
+    }
+
+    private fun acceleratorParameter(
+        session: IHTTPSession,
+        name: String,
+    ): ModelAccelerator? {
+        val raw = session.parameters[name]?.firstOrNull() ?: return null
+        return when (raw.lowercase()) {
+            "cpu" -> ModelAccelerator.CPU
+            "gpu" -> ModelAccelerator.GPU
+            else -> throw IllegalArgumentException("$name must be cpu or gpu")
+        }
+    }
+
+    private fun embeddingJson(
+        output: RecognitionOutput,
+        latencyMs: Double,
+        pipelineName: String,
+        aggregation: ReferenceAggregation,
+    ): JSONObject {
+        val bytes = ByteBuffer.allocate(output.embedding.size * Float.SIZE_BYTES)
+            .order(ByteOrder.LITTLE_ENDIAN)
+        output.embedding.forEach(bytes::putFloat)
+        return matchJson(output.matches, latencyMs, pipelineName)
+            .put("reference_aggregation", aggregation.id)
+            .put("embedding_dim", output.embedding.size)
+            .put(
+                "embedding_base64_f32le",
+                Base64.encodeToString(bytes.array(), Base64.NO_WRAP),
+            )
+            .put("segmentation_ms", output.segmentationMs)
+            .put("embedding_ms", output.embeddingMs)
+            .put("search_ms", output.searchMs)
+            .put("segmentation_accelerator", output.segmentationAccelerator)
+            .put("embedding_accelerator", output.embeddingAccelerator)
     }
 
     private fun recycle(output: RecognitionOutput) {
@@ -205,6 +273,20 @@ private class AndroidMatcherServer(
         }
         return error.javaClass.simpleName
     }
+}
+
+private fun debugPipelineName(pack: InstalledModelPack, segmenterMode: SegmenterMode): String {
+    if (!pack.isNaFlex()) {
+        return if (segmenterMode == SegmenterMode.YOLO) YOLO_PIPELINE_NAME else PIPELINE_NAME
+    }
+    val segmenter = if (segmenterMode == SegmenterMode.YOLO) "yolo26n-seg" else "dis"
+    val model = if (pack.manifest.vectorDimension == BASE_NAFLEX_VECTOR_DIMENSION) {
+        "base"
+    } else {
+        "so400m"
+    }
+    val pooling = if (pack.manifest.poolingMode == FOREGROUND_POOLING_MODE) "5a" else "standard"
+    return "android-$segmenter-siglip2-$model-naflex-p${pack.manifest.maxNumPatches}-$pooling"
 }
 
 private enum class ApiStatus(

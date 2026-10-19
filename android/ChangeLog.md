@@ -2,6 +2,16 @@
 
 ## 2026-10-19
 
+### Debug HTTP and repeatable device benchmarks
+
+- Added `/v1/debug/embedding` to the debug HTTP server.
+- Added per-request accelerator overrides for debug HTTP tests.
+- Added runtime, vector dimension, patch limit, pooling mode, and aggregation to health.
+- Added deterministic 30-image selection and Pixel 8 measurement tools.
+- Added CPU/GPU vector parity measurement.
+- Added the `android-device-match-k20-top2-mean` Workbench configuration.
+- Kept Base pilot packs separate from compatible retrieval catalogue packs.
+
 ### SigLIP2 NaFlex split runtimes and model packs
 
 - Added model-pack format version 4 for `google/siglip2-so400m-patch16-naflex`.
