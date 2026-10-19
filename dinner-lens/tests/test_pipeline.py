@@ -256,7 +256,7 @@ class PipelineTests(unittest.TestCase):
         recognizer = QwenRecognizer(self.knowledge, ROOT / 'prompts/image-system.en.txt')
         for body in [[1], 'error', None]:
             with self.subTest(body=body), patch.dict('os.environ', {'QWENCLOUD_PAYGO_API_KEY': 'unit-test-placeholder'}), patch('urllib.request.urlopen', return_value=io.BytesIO(json.dumps(body).encode())):
-                with self.assertRaisesRegex(RuntimeError, 'invalid response object'):
+                with self.assertRaisesRegex(RuntimeError, 'all_providers_failed'):
                     recognizer.recognize(output.getvalue())
 
     def test_provider_response_has_deadline_and_size_bounds(self):

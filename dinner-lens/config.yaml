@@ -8,7 +8,7 @@ server:
   access_log: true
 assets:
   dataset: bundle:data/pairing-dataset.v4.json
-  index: null  # Checkout data/index.v4; installed wheel ~/.cache/svoe-vino-dinner-lens/index.v4.
+  index: null # Checkout data/index.v4; installed wheel ~/.cache/svoe-vino-dinner-lens/index.v4.
   style: bundle:prompts/style-guidance.v2.en.json
 auth:
   api_token_env: DINNER_LENS_API_TOKEN
@@ -19,13 +19,13 @@ limits:
   recognition_queue_seconds: 1.0
   cursor_ttl_seconds: 3600
 recognition:
-  endpoint: https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions
-  model: qwen3.8-flash
+  endpoint: http://192.168.86.14:18081/v1/chat/completions
+  model: qwen3.5-9b-nvfp4
   prompt: bundle:prompts/image-system.en.txt
-  api_key_env: QWENCLOUD_PAYGO_API_KEY
-  socket_timeout_seconds: 20.0
+  api_key_env: null
+  socket_timeout_seconds: 45.0
   budget_seconds: 50.0
-  attempts: 3
+  attempts: 1
   max_response_bytes: 1048576
   max_tokens: 768
   temperature: 0.0
@@ -34,6 +34,20 @@ recognition:
     max_bytes: 5242880
     max_pixels: 20000000
     max_side: 2048
+  protocol: vllm
+  fallback:
+    endpoint: https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions
+    model: qwen3.8-flash
+    api_key_env: QWENCLOUD_PAYGO_API_KEY
+    socket_timeout_seconds: 20.0
+    budget_seconds: 50.0
+    attempts: 3
+    max_response_bytes: 1048576
+    max_tokens: 768
+    temperature: 0.0
+    enable_thinking: false
+    protocol: qwencloud
+  response_model: Qwen3.5-9B-NVFP4
 embeddings:
   endpoint: https://maas.qwencloudapi.com/compatible-mode/v1/embeddings
   model: qwen3.7-text-embedding

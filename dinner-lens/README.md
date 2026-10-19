@@ -5,7 +5,7 @@ Food-to-wine backend for issue [#28](https://github.com/s1mb1o/svoe-vino-lab-dev
 ## Selection pipeline
 
 1. Resolve a user-confirmed dish against complete canonical names and aliases in the current v4 dataset: 200 dishes, 104 intermediate classes, 16 broad fallback classes. The original 75 recipes and their nodes remain verbatim in v2 and in the separately retained v1 file. Unknown names return the 16 categories for manual selection. A substring such as a steak mentioned inside an unknown recipe does not confirm that recipe.
-2. For photographs, call `qwen3.8-flash` with English instructions and the taxonomy. The model supplies recognition and clarification only; it does not select wine IDs. Exact recipe predictions are conservatively reduced to their parent class until the user confirms the recipe. A hypothesis never counts as confirmation. Recognition can still choose the wrong food family.
+2. For photographs, call local `qwen3.5-9b-nvfp4` on gx10 with English instructions and the taxonomy. Use `qwen3.8-flash` in QwenCloud as fallback for provider failure or invalid output. The model supplies recognition and clarification only; it does not select wine IDs. Exact recipe predictions are conservatively reduced to their parent class until the user confirms the recipe. A hypothesis never counts as confirmation. Recognition can still choose the wrong food family.
 3. Derive the pairing profile in code from the selected recipe/style reference and explicit `confirmed_attributes`. User attributes override reference defaults; uncertain model observations never become hard facts. The response reports reference defaults separately from user-confirmed facts.
 4. Apply the same admission gate to every candidate: active catalog status, discovery eligibility, profile color/sweetness/wine kind, applicable alcohol limit, and explicit user constraints. A missing required fact fails the check. Conditional editorial picks and their whole conditional styles require confirmation: red for unspecified poultry, white for unspecified game, sweet wine for unspecified cheese, and red for an unspecified dessert. These styles cannot re-enter through discovery until their corresponding recipe attribute is confirmed.
 5. Serve eligible editorial picks first. The initial page uses distinct producers where possible. Remaining editorial picks precede all discovery picks. If only one or two producers qualify, the first page can be short. Editorial order can change to provide producer diversity on the initial page.
@@ -82,8 +82,8 @@ The Dockerfile uses a pinned Python 3.11 base digest and `requirements.lock` wit
 It runs as UID/GID 1000 with `/readyz` health checks. Build from a committed `dinner-lens/` archive.
 Mount `/config/config.yaml` and the verified index under `/data` read-only. Inject secrets from an
 environment file outside the image. Compose, installation, checks, rollback and secret locations are
-recorded in the private `chtozavino-deploy/gx10/dinner-lens-prod.md` runbook. The service does not
-need a GPU: QwenCloud performs recognition; the CPU ranks the mounted embedding vectors.
+recorded in the private `chtozavino-deploy/gx10/dinner-lens-prod.md` runbook. The API container uses the CPU. It calls the existing gx10 vLLM model through the model gateway;
+the model service uses the GPU. QwenCloud performs fallback recognition. The CPU ranks the mounted embedding vectors.
 
 ## API
 
@@ -165,3 +165,38 @@ A strongly acidic, hot chocolate dessert can have no reviewed wine with the requ
 Build with `scripts/build_dataset_v4.py`, build the matching `data/index.v4/`, then run `scripts/validate_dataset_v4.py`. `scripts/capture_full_sauce.py` exercises authenticated HTTP and checks that production source and data stayed unchanged throughout the capture. `scripts/score_full_sauce.py` validates the complete 3,200-case source contract and optionally scores a separately frozen blind reference. The actual 2,093 wine and 136 query vectors are unchanged from v3; v4 needs no new embedding-provider calls. The versioned audit directory contains the case matrix, captured lists, editorial reference, comparison, source hashes and actual Claude Opus 5.5 review receipt. No new photo-recognition accuracy is claimed.
 
 Post-review regressions preserve the duck profile when cream is added, retain reviewed intrinsic acidity for sour recipes, and inherit raw-shellfish guards through the raw_bivalves class and photo demotion. The 120 class/fallback routes are additionally tested with all 16 sauce combinations (1,920 scenarios). This tests the recognition-to-class guardrail with fixed recognized IDs; it is not a new vision-model accuracy evaluation. Full-bodied high-acid white is permitted with cream, and a confirmed high-sugar savory glaze can admit a semi-sweet white when other constraints permit it.
+
+## Local recognition and cloud fallback
+
+The public YAML config selects local `qwen3.5-9b-nvfp4` at
+`http://192.168.86.14:18081/v1/chat/completions`. The gateway requests this alias, while vLLM
+reports `Qwen3.5-9B-NVFP4`. `response_model` pins that exact response ID; a mismatch fails over.
+`protocol: vllm` sends `chat_template_kwargs.enable_thinking: false`. The local endpoint uses
+`api_key_env: null` and receives no cloud authorization header. Selecting `protocol: vllm`
+also defaults the credential reference to null when the field is omitted.
+
+The optional `recognition.fallback` holds one provider configuration, including its endpoint,
+model, protocol, credential environment name and limits. The default fallback is Qwen3.8-Flash.
+It receives the same sanitized image and English instructions. It is used after a local timeout,
+HTTP error, model mismatch, truncated output, invalid JSON or invalid recognition schema.
+A valid uncertain or unknown classification stays local and asks for clarification.
+There is no model confidence threshold or cloud vote. A plausible wrong local classification
+can still yield wines for the wrong food category. Compare the frozen benchmark before deployment.
+
+Local defaults: one attempt, 45-second socket timeout and 50-second read/retry budget.
+Cloud fallback defaults: three attempts, 20-second sockets and a 50-second budget.
+The budgets are per provider, checked between reads; a blocking socket can extend a budget.
+Clients should allow at least 180 seconds for the full chain. Recognition concurrency is per worker.
+Startup requires configured provider credentials, including the fallback cloud key.
+`/health` reports configured primary/fallback model IDs. It does not call either model.
+Each photo result reports the selected/requested/returned model, `fallback_used`, safe failure
+codes, provider attempts and total chain latency. Raw provider errors and secrets are not returned.
+The default embedded `RecognitionSettings()` remains cloud-only for explicit historical reproduction.
+The packaged YAML and gx10 deployment use the local-first configuration.
+
+`scripts/benchmark_recognition.py` performs fresh comparisons on the frozen 75 photos and 163 text/
+constraint/fallback cases. Invoke it through the current registry entry point with `--pipeline-eval`.
+It checks immutable image/label hashes, uses the current v4 taxonomy, and follows every wine page.
+The frozen v4 wine contracts are separate from the original v1 label sets. Constraint cases use
+intersection with their frozen original eligibility. Reports distinguish classification accuracy
+from wine eligibility for the selected class. These reference labels are not human expert validation.

@@ -42,7 +42,8 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_default_configuration_and_relative_paths(self):
         config, path = load_config(ROOT / 'config.yaml')
-        self.assertEqual(config.recognition.model, 'qwen3.8-flash')
+        self.assertEqual(config.recognition.model, 'qwen3.5-9b-nvfp4')
+        self.assertEqual(config.recognition.fallback.model, 'qwen3.8-flash')
         self.assertEqual(config.embeddings.dimensions, 1024)
         self.assertEqual(asset_path('relative/index', path), ROOT / 'relative/index')
         self.assertEqual(asset_path(config.assets.dataset, path), bundle_root() / 'data/pairing-dataset.v4.json')
@@ -152,7 +153,7 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(image).hexdigest(), reference['image_sha256'])
         self.assertEqual(self.knowledge.sha256, reference['dataset_sha256'])
         settings, path = load_config(ROOT / 'config.yaml')
-        recognizer = QwenRecognizer(self.knowledge, asset_path(settings.recognition.prompt, path), settings=settings.recognition)
+        recognizer = QwenRecognizer(self.knowledge, asset_path(settings.recognition.prompt, path), settings=RecognitionSettings())
         payload = recognizer.payload(image)
         sent = base64.b64decode(payload['messages'][1]['content'][0]['image_url']['url'].split(',', 1)[1])
         variants = {v['sent_image_sha256']: v['baseline_request_sha256'] for v in reference['preprocessor_variants']}

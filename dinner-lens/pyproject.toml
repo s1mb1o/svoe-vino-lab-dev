@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "svoe-vino-dinner-lens"
-version = "0.5.0"
+version = "0.6.0"
 description = "Deterministic food-to-wine filtering, curated selection and semantic continuation"
 requires-python = ">=3.11"
 dependencies = ["numpy>=1.26,<3", "fastapi>=0.115", "uvicorn>=0.30", "pillow>=10", "PyYAML>=6,<7"]

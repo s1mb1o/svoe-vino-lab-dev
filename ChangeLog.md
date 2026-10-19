@@ -5,6 +5,12 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Added local-first Dinner Lens recognition on gx10 Qwen3.5-9B-NVFP4 with Qwen3.8-Flash
+  fallback. YAML selects protocols, exact response model aliases, optional credentials
+  and per-provider limits. Fallback covers provider failures and invalid output; valid
+  uncertain answers retain clarification. Model receipts identify the actual selected
+  provider. The English prompt, data, wine filters and embedding ranking are unchanged.
+
 - Dinner Lens v0.5.0 moves public service settings to validated YAML. Secrets remain
   environment variables. Added persistent service cursor secrets, configurable model
   adapters and limits, public artifact readiness, a pinned Docker build and configuration

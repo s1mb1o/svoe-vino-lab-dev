@@ -8,7 +8,7 @@ from typing import Literal
 from urllib.parse import urlsplit
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from .paths import bundle_root, default_index
 
@@ -61,11 +61,12 @@ class ImageSettings(Settings):
     max_side: int = Field(default=2048, ge=256, le=4096)
 
 
-class RecognitionSettings(Settings):
+class ProviderSettings(Settings):
     endpoint: str = "https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions"
     model: str = Field(default="qwen3.8-flash", min_length=1, max_length=200)
-    prompt: str = "bundle:prompts/image-system.en.txt"
-    api_key_env: str = "QWENCLOUD_PAYGO_API_KEY"
+    response_model: str | None = Field(default=None, min_length=1, max_length=200)
+    protocol: Literal["qwencloud", "vllm"] = "qwencloud"
+    api_key_env: str | None = "QWENCLOUD_PAYGO_API_KEY"
     socket_timeout_seconds: float = Field(default=20.0, gt=0, le=300)
     budget_seconds: float = Field(default=50.0, gt=0, le=600)
     attempts: int = Field(default=3, ge=1, le=5)
@@ -73,9 +74,29 @@ class RecognitionSettings(Settings):
     max_tokens: int = Field(default=768, ge=1, le=8192)
     temperature: float = Field(default=0.0, ge=0, le=2)
     enable_thinking: bool = False
-    image: ImageSettings = Field(default_factory=ImageSettings)
 
     _endpoint = field_validator("endpoint")(validate_endpoint)
+
+    @model_validator(mode="before")
+    @classmethod
+    def provider_credential_default(cls, value):
+        # Selecting vLLM must not silently inherit a cloud secret reference.
+        if type(value) is dict and value.get("protocol") == "vllm" and "api_key_env" not in value:
+            return {**value, "api_key_env": None}
+        return value
+
+    @model_validator(mode="after")
+    def credential_policy(self):
+        if self.protocol == "qwencloud" and not self.api_key_env:
+            raise ValueError("Cloud providers require an environment secret reference")
+        return self
+
+
+
+class RecognitionSettings(ProviderSettings):
+    prompt: str = "bundle:prompts/image-system.en.txt"
+    image: ImageSettings = Field(default_factory=ImageSettings)
+    fallback: ProviderSettings | None = None
 
 
 class EmbeddingSettings(Settings):
@@ -119,8 +140,9 @@ def load_config(path: str | Path | None = None) -> tuple[Configuration, Path]:
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
         config = Configuration.model_validate(raw)
         for name in (config.auth.api_token_env, config.auth.cursor_secret_env,
-                     config.recognition.api_key_env, config.embeddings.api_key_env):
-            if not re.fullmatch(r"[A-Z][A-Z0-9_]*", name):
+                     config.recognition.api_key_env, config.embeddings.api_key_env,
+                     config.recognition.fallback.api_key_env if config.recognition.fallback else None):
+            if name is not None and not re.fullmatch(r"[A-Z][A-Z0-9_]*", name):
                 raise ConfigError("Secret references must be environment variable names")
     except (OSError, UnicodeError, yaml.YAMLError):
         raise ConfigError("Cannot read valid YAML configuration: " + str(path)) from None

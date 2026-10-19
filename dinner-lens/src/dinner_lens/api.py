@@ -102,7 +102,8 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str, li
     def health():
         return {"status": "ok", "bundle_version": engine.version,
                 "catalog_wines": len(engine.knowledge.wines), "embedding_model": engine.index.model,
-                "recognition_model": getattr(recognizer, "model", "qwen3.8-flash"), "instruction_language": "en"}
+                "recognition_model": getattr(recognizer, "model", "qwen3.8-flash"),
+                "recognition_fallback_model": getattr(recognizer, "fallback_model", None), "instruction_language": "en"}
 
     @app.post("/v1/recommendations")
     def recommend(body: RecommendRequest):
@@ -154,7 +155,10 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str, li
 def app_from_config(config: Configuration, config_path: Path) -> FastAPI:
     token = secret(config.auth.api_token_env)
     cursor_secret = secret(config.auth.cursor_secret_env)
-    secret(config.recognition.api_key_env)
+    if config.recognition.api_key_env:
+        secret(config.recognition.api_key_env)
+    if config.recognition.fallback and config.recognition.fallback.api_key_env:
+        secret(config.recognition.fallback.api_key_env)
     knowledge = Knowledge(asset_path(config.assets.dataset, config_path), asset_path(config.assets.style, config_path))
     index = EmbeddingIndex(knowledge, asset_path(config.assets.index, config_path), settings=config.embeddings)
     engine = Engine(knowledge, index, cursor_secret=cursor_secret.encode(),
