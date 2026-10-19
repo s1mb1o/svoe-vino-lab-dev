@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Legal pages: wine images from chtozavino.ru
+
+- Update `/privacy#site`: wine images load from `chtozavino.ru` (plan 06). Remove the portal from the recipients.
+
 ## 2026-10-19 — Legal pages for «Винный дневник» and wine for a dish
 
 - Rebase the legal pages onto `main`. Drop the HTML site map edit, because `main` has no `/sitemap` page.

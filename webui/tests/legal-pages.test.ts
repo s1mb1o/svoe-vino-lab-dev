@@ -87,6 +87,7 @@ describe('legal pages', () => {
     expect(privacy).toContain('<dt>Фотографии блюд, название блюда и уточнения</dt><dd>не хранятся</dd>')
     expect(privacy).not.toContain('Сам сайт не устанавливает cookie')
     expect(privacy).not.toMatch(/qwen|alibaba|за границу передаёт/i)
+    expect(privacy).toContain('Изображения вин загружаются с сервера сайта chtozavino.ru.')
     expect(account).toContain('<a href="/terms"')
     expect(account).toContain('<a href="/privacy"')
   })

@@ -33,6 +33,8 @@ The legal pages were rebased onto `origin/main` at `7911e52f`. This entry is the
 - MCP runs on the user's computer over stdio. Its account tools use application tokens.
 - The matcher has no retention job yet (`da8c8954` changed only the configuration format).
 - The web server moved from Princess to Claudette (Selectel VDS, Moscow) on 2026-10-19.
+- Plan 06 (`910e11d7`) serves wine images from `chtozavino.ru/img/wines/`. The browser loads no image from `api.vino-svoe.ru`.
+  The server requests wine cards from `api.vino-svoe.ru` with the slug only. `/privacy` no longer lists the portal as a recipient.
 
 ### Verification
 
