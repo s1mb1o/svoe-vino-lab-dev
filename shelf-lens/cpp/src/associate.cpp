@@ -2,6 +2,7 @@
 // calls): tracking, rescue, re-identification, neighbour habits, the check of the rows by
 // labels, conflicts with the map, new bottles, young duplicates.
 #include <algorithm>
+#include <iostream>
 #include <cmath>
 #include <functional>
 #include <limits>
@@ -98,7 +99,8 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
             if (!taken.count(k)) rest_lost.push_back(k);
         for (const auto& [i, k] : rescue(boxes, rest_free, rest_lost, first, last_c)) first[i] = k;
     }
-    // A box cut by the top or bottom of the frame is not re-identified: it waits to be whole.
+    const std::map<int, int> by_flow = first;   // for the trace: how each box got its bottle
+    // A box with too little of a bottle (cut) is not re-identified: it waits to show more.
     {
         std::vector<int> f;
         for (int i : free)
@@ -163,6 +165,7 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
         }
         if (!changed) break;
     }
+    const std::map<int, int> by_habit = matched;
     // Check every row against the labels of its boxes; the boxes left free take the
     // released bottles by place.
     const std::set<int> released = lost ? std::set<int>{} : check_rows(number, boxes, matched, centres, spans);
@@ -184,12 +187,26 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
         for (const auto& [i, k] : matched) waiting.erase(i);
     }
     const auto [conflict_boxes, closed_boxes] = conflicts_of(boxes, matched, ids, neighbours, centres, spans, view);
+    if (traced(number)) {
+        std::cerr << "assoc frame " << number << ":";
+        for (int i = 0; i < static_cast<int>(boxes.size()); ++i) {
+            auto m = matched.find(i);
+            const auto same = [&](const std::map<int, int>& stage) { auto s = stage.find(i); return m != matched.end() && s != stage.end() && s->second == m->second; };
+            std::cerr << " [" << static_cast<int>(boxes[i][0]) << "-" << static_cast<int>(boxes[i][2]) << "," << static_cast<int>(boxes[i][1])
+                      << " " << (m == matched.end() ? std::string("-") : std::to_string(bottles[m->second].id)) << " "
+                      << (m == matched.end() ? "free" : same(by_flow) ? "flow" : same(second) ? "place" : same(by_habit) ? "habit" : "rows") << "]";
+        }
+        std::cerr << "\n";
+    }
 
     std::vector<Shown> shown;
     const size_t count_before = bottles.size();
     for (int i = 0; i < static_cast<int>(detections.size()); ++i) {
         const Detection& det = detections[i];
-        const bool is_cut = cut(det.box);
+        // Cut at the top with most of a bottle: completed. A box that starts a bottle keeps off
+        // the bottom (bottom_margin): a bottle top above the edge has no label.
+        auto made_whole = completed(det.box);
+        if (made_whole && det.box[3] > size.height * (1 - cfg.bottom_margin)) made_whole.reset();
         auto m = matched.find(i);
         if (m != matched.end()) {
             Bottle& bottle = bottles[m->second];
@@ -200,18 +217,18 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
             bottle.last_seen = count;
             bottle.last_box = boxes[i];
             bottle.last_M = M;
-            if (!is_cut && bottle.hits < cfg.settle_hits) observe(bottle, det.box);
+            if (whole(det.box) && bottle.hits < cfg.settle_hits) observe(bottle, det.box);
             shown.push_back(Shown{det.box, bottle.appearance == 1 ? "new" : "returning", bottle.id});
         } else if (closed_boxes.count(i)) {
             shown.push_back(Shown{det.box, "ignored", kNone});
-        } else if (!is_cut && det.score >= cfg.new_score &&
+        } else if (made_whole && det.score >= cfg.new_score &&
                    (!trusted_now || waiting.count(i) || conflict_boxes.count(i))) {
             shown.push_back(Shown{det.box, "pending", kNone});
-        } else if (!is_cut && det.score >= cfg.new_score) {
+        } else if (made_whole && det.score >= cfg.new_score) {
             Bottle bottle;
             bottle.id = next_id++;
             bottle.anchor = ref;
-            bottle.quad = project(P, box_corners(det.box));
+            bottle.quad = project(P, box_corners(*made_whole));
             bottle.first_frame = number;
             bottle.last_seen = count;
             bottle.first_step = count;
@@ -236,7 +253,48 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
             left[b][a] += 1;
         }
     }
+    learn_offsets(shown);
     return shown;
+}
+
+void Tracker::learn_offsets(const std::vector<Shown>& shown) {
+    const double margin = cfg.edge_margin * size.width;
+    // A box cut at a side or the bottom is no use (completed); one cut at the top still has
+    // its centre, but not its height.
+    auto upright = [&](const Box& b) { return b[1] >= margin; };
+    std::vector<size_t> seen;
+    std::vector<double> heights, widths;
+    for (size_t i = 0; i < shown.size(); ++i) {
+        const Box& b = shown[i].box;
+        if (shown[i].bottle == kNone || shown[i].status == "ignored" || cut(b)) continue;
+        seen.push_back(i);
+        widths.push_back(b[2] - b[0]);
+        if (upright(b)) heights.push_back(b[3] - b[1]);
+    }
+    if (seen.empty()) return;
+    // The unit: the median height of the whole boxes, or, close to a shelf where every box is
+    // cut at the top or bottom, the median width over the shape of a bottle.
+    const double aspect = bottle_width && bottle_height ? std::clamp(*bottle_width / *bottle_height, 0.2, 0.45) : 0.3;
+    const double unit = std::max(heights.empty() ? percentile(widths, 50) / aspect : percentile(heights, 50), 1.0);
+    for (size_t i : seen) {
+        const Box& b = shown[i].box;
+        if (!upright(b)) continue;
+        Shape& shape = shapes[shown[i].bottle];
+        shape.width += (b[2] - b[0]) / unit;
+        shape.height += (b[3] - b[1]) / unit;
+        ++shape.n;
+    }
+    for (size_t p = 0; p < seen.size(); ++p)
+        for (size_t q = p + 1; q < seen.size(); ++q) {
+            const Shown* one = &shown[seen[p]];
+            const Shown* two = &shown[seen[q]];
+            if (one->bottle == two->bottle) continue;
+            if (one->bottle > two->bottle) std::swap(one, two);
+            Offset& o = offsets[{one->bottle, two->bottle}];
+            o.dx += ((two->box[0] + two->box[2]) - (one->box[0] + one->box[2])) / 2 / unit;
+            ++o.n;
+            if (upright(one->box) && upright(two->box)) o.dy += (two->box[3] - one->box[3]) / unit, ++o.ny;
+        }
 }
 
 std::vector<cv::Mat> Tracker::box_descriptors(const FrameFeatures* features, const std::vector<Box>& boxes) const {
@@ -602,7 +660,7 @@ std::vector<Shown> Tracker::merge_young(std::vector<Shown> shown, const Neighbou
     for (const auto& [young_id, k] : into) renames.emplace_back(young_id, bottles[k].id);
     bottles.erase(std::remove_if(bottles.begin(), bottles.end(), [&](const Bottle& b) { return into.count(b.id) > 0; }),
                   bottles.end());
-    for (const auto& [young_id, target_id] : renames) rename(young_id, target_id);
+    for (const auto& [young_id, target_id] : renames) rename(young_id, target_id, "young duplicate");
     merged_young += static_cast<int>(into.size());
     return shown;
 }

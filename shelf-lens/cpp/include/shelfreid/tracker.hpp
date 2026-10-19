@@ -53,6 +53,29 @@ struct Bottle {
     int labelled = kNever;
 };
 
+// Where bottle b stands from bottle a (a < b) in the frames that saw both: the sums of the
+// offsets of b's box from a's, in units of each frame's median box height, and the numbers
+// of frames: dx between the centres (n: boxes not cut, a box cut at the top still has its
+// centre), dy between the bottoms (ny: boxes inside the frame). A frame sees
+// the shelf without the drift of the map, so the planogram lays the bottles out from these.
+struct Offset {
+    double dx = 0, dy = 0;
+    int n = 0, ny = 0;
+};
+
+// The sums of a bottle's box sizes in the same units, and the number of frames.
+struct Shape {
+    double width = 0, height = 0;
+    int n = 0;
+};
+
+// A bottle of the map: its box corners in map coordinates (the pixels of keyframe 0).
+struct Placed {
+    int id = 0;
+    Quad quad{};
+    int hits = 0, first_frame = 0, last_seen = 0;
+};
+
 struct Keyframe {
     int frame = 0;
     int step = 0;
@@ -73,6 +96,7 @@ struct Good {
     Mat3 R;
     bool strong;
     int inliers;
+    std::vector<cv::Point2f> keyframe_points, frame_points;   // the matches it was fitted to
 };
 
 using Neighbours = std::vector<std::pair<int, int>>;   // left, right box of each box
@@ -86,6 +110,9 @@ public:
     virtual std::vector<Shown> step(int number, const cv::Mat& frame, std::vector<Detection> detections);
 
     Mat3 H() const;   // the frame -> the map
+    // Every bottle of the map where the map puts it now (after the pose graph's last
+    // optimisation), in the order of the ids.
+    std::vector<Placed> placed() const;
 
     // The state.
     Size2 size;
@@ -119,11 +146,13 @@ public:
     std::optional<Mat3> motion_hint;
     int hinted = 0;   // steps whose flow failed and the hint stood in
     std::map<int, Votes> votes;   // box -> votes of this frame
+    std::map<std::pair<int, int>, Offset> offsets;   // (a, b), a < b
+    std::map<int, Shape> shapes;
 
     // Counters.
     int dropped_edges = 0, rescued = 0, vetoed = 0, suggested = 0, jumps = 0, found = 0,
         new_grounds = 0, merged_young = 0, dropped = 0, lost_motion = 0, label_checks = 0,
-        label_confirmed = 0, conflicted = 0, conflicts = 0, closed = 0;
+        label_confirmed = 0, conflicted = 0, conflicts = 0, closed = 0, aliased = 0;
     std::vector<Contradiction> contradictions;
 
 protected:
@@ -137,7 +166,7 @@ protected:
     bool place_confirmed(const Bottle& bottle) const;
     bool contradicted(int bottle_id, int left_id, int right_id) const;
     int habit(const std::map<int, std::map<int, int>>& table, int bottle) const;
-    void rename(int old_id, int new_id);
+    void rename(int old_id, int new_id, const char* why);   // `why`: for SHELFREID_TRACE
     double width() const;
     Matrix point_distance(const std::vector<Box>& boxes, const std::vector<cv::Point2d>& centres,
                           const std::vector<cv::Vec2d>& spans) const;
@@ -145,7 +174,16 @@ protected:
     std::vector<char> in_view(const std::vector<cv::Point2d>& centres, double margin = 0.0) const;
     Quad local_quad(const Box& box, int anchor) const;
     Quad frame_quad() const;
+    // Too little of a bottle to go by: cut by a side of the frame (its centre is off) or the
+    // bottom (its label hidden), or by the top with less than cfg.min_visible of the running
+    // bottle height left.
     bool cut(const Box& box) const;
+    // Inside the frame, no edge touched: a box to refine a bottle's place on the map with.
+    bool whole(const Box& box) const;
+    // The box made whole: as it is when not cut; cut only at the top and showing at least
+    // cfg.min_visible of a bottle, with its top where a bottle of the running height would
+    // have it; else nothing.
+    std::optional<Box> completed(const Box& box) const;
     std::optional<double> running(std::optional<double> value, std::vector<double> samples, double q) const;
     std::vector<Detection> whole_bottles(const std::vector<Detection>& detections);
 
@@ -155,6 +193,15 @@ protected:
     Registration register_points(const std::vector<cv::Point2f>& points_k, const std::vector<cv::Point2f>& points_f) const;
     FrameFeatures features_of(const cv::Mat& frame, const std::vector<Detection>& detections) const;
     std::optional<Good> register_to(const FrameFeatures& features, int index) const;
+    // Whether registration `g` of a frame agrees with where the flow put that frame (`frame_ref`,
+    // `frame_P`, at step `step`; `seen`: the steps keyframes were last registered). Within
+    // cfg.alias_tolerance bottle widths of it, always. Further: never for the reference
+    // keyframe or one registered lately (the flow ties them to the frame, a registration only
+    // corrects the drift); for a keyframe met long ago (a loop back, where the drift MAY be
+    // that large), unless the flow's place fits the matches about as well as the
+    // registration's (cfg.alias_support, cfg.alias_ambiguity): then the matches are a row of
+    // one wine matched to a neighbour.
+    bool agrees(const Good& g, int frame_ref, const Mat3& frame_P, int step, const std::map<int, int>& seen) const;
     std::vector<Good> registrations(const FrameFeatures& features, const std::vector<int>& candidates);
     void relocalize(int number, const FrameFeatures& features);
     int merge_duplicates();
@@ -184,6 +231,9 @@ protected:
                               const std::map<int, int>& matched, const std::vector<cv::Point2d>& centres);
     std::vector<Shown> merge_young(std::vector<Shown> shown, const Neighbours& neighbours);
     void observe(Bottle& bottle, const Box& box);
+    void learn_offsets(const std::vector<Shown>& shown);
+    // Whether SHELFREID_TRACE_FRAMES ("from-to") holds this frame number.
+    static bool traced(int number);
     int index_of(int bottle_id) const;
     cv::Mat gray_of(const cv::Mat& frame) const;
 };

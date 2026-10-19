@@ -4,6 +4,9 @@
 #include "shelfreid/tracker.hpp"
 
 #include <algorithm>
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
 #include <cmath>
 #include <numeric>
 
@@ -20,6 +23,14 @@ double percentile(std::vector<double> v, double q) {
 Tracker::Tracker(Size2 size_, StreamConfig cfg_) : size(size_), cfg(cfg_), graph(size_) {}
 
 Mat3 Tracker::H() const { return ref == kNone ? P : graph.poses[ref] * P; }
+
+std::vector<Placed> Tracker::placed() const {
+    std::vector<Placed> out;
+    for (const Bottle& b : bottles)
+        out.push_back({b.id, project(graph.poses[b.anchor], b.quad), b.hits, b.first_frame, b.last_seen});
+    std::sort(out.begin(), out.end(), [](const Placed& a, const Placed& b) { return a.id < b.id; });
+    return out;
+}
 
 Quad Tracker::keyframe_quad(int index) const { return project(graph.poses[index], corners(size)); }
 
@@ -118,7 +129,8 @@ int Tracker::habit(const std::map<int, std::map<int, int>>& table, int bottle) c
     return (best >= cfg.habit_count && best >= cfg.habit_share * total) ? top : kNone;
 }
 
-void Tracker::rename(int old_id, int new_id) {
+void Tracker::rename(int old_id, int new_id, const char* why) {
+    if (std::getenv("SHELFREID_TRACE")) std::cerr << "rename " << old_id << " -> " << new_id << " (" << why << ") step " << count << "\n";
     for (auto* table : {&right, &left}) {
         std::map<int, int> counts;
         auto it = table->find(old_id);
@@ -136,6 +148,33 @@ void Tracker::rename(int old_id, int new_id) {
             cs.erase(f);
             if (owner != new_id) cs[new_id] += c;
         }
+    }
+    // The offsets of the old id become the new id's (the pair of the two goes).
+    std::map<std::pair<int, int>, Offset> moved;
+    for (auto it = offsets.begin(); it != offsets.end();) {
+        auto [a, b] = it->first;
+        if (a != old_id && b != old_id) {
+            ++it;
+            continue;
+        }
+        Offset o = it->second;
+        it = offsets.erase(it);
+        if (a == old_id) a = new_id;
+        if (b == old_id) b = new_id;
+        if (a == b) continue;
+        if (a > b) std::swap(a, b), o.dx = -o.dx, o.dy = -o.dy;
+        Offset& into = moved[{a, b}];
+        into.dx += o.dx, into.dy += o.dy, into.n += o.n, into.ny += o.ny;
+    }
+    for (const auto& [key, o] : moved) {
+        Offset& into = offsets[key];
+        into.dx += o.dx, into.dy += o.dy, into.n += o.n, into.ny += o.ny;
+    }
+    auto s = shapes.find(old_id);
+    if (s != shapes.end()) {
+        Shape& into = shapes[new_id];
+        into.width += s->second.width, into.height += s->second.height, into.n += s->second.n;
+        shapes.erase(old_id);
     }
 }
 
@@ -184,9 +223,31 @@ Quad Tracker::local_quad(const Box& box, int anchor) const {
 
 Quad Tracker::frame_quad() const { return project(H(), corners(size)); }
 
-bool Tracker::cut(const Box& b) const {
+bool Tracker::cut(const Box& b) const { return !completed(b); }
+
+bool Tracker::traced(int number) {
+    static const std::pair<int, int> range = [] {
+        const char* env = std::getenv("SHELFREID_TRACE_FRAMES");
+        int from = 1, to = 0;
+        if (env) std::sscanf(env, "%d-%d", &from, &to);
+        return std::make_pair(from, to);
+    }();
+    return number >= range.first && number <= range.second;
+}
+
+bool Tracker::whole(const Box& b) const {
     const double margin = cfg.edge_margin * size.width;
-    return b[0] < margin || b[1] < margin || b[2] > size.width - margin || b[3] > size.height - margin;
+    return b[0] >= margin && b[1] >= margin && b[2] <= size.width - margin && b[3] <= size.height - margin;
+}
+
+std::optional<Box> Tracker::completed(const Box& b) const {
+    const double margin = cfg.edge_margin * size.width;
+    if (b[0] < margin || b[2] > size.width - margin || b[3] > size.height - margin) return std::nullopt;
+    if (b[1] >= margin) return b;
+    if (!bottle_height || b[3] - b[1] < cfg.min_visible * *bottle_height) return std::nullopt;
+    Box whole = b;
+    whole[1] = std::min(b[1], b[3] - *bottle_height);
+    return whole;
 }
 
 std::optional<double> Tracker::running(std::optional<double> value, std::vector<double> samples, double q) const {
@@ -240,6 +301,20 @@ std::vector<Detection> Tracker::whole_bottles(const std::vector<Detection>& inpu
             if (d.width() >= cfg.min_width * *bottle_width || d.box[0] <= margin || d.box[2] >= size.width - margin)
                 narrow.push_back(d);
         kept.swap(narrow);
+    }
+    {
+        std::vector<Detection> front;
+        for (const auto& d : kept) {
+            double covered = 0;
+            for (const auto& o : kept) {
+                if (&o == &d || o.width() <= d.width()) continue;
+                const double across = std::min(d.box[2], o.box[2]) - std::max(d.box[0], o.box[0]);
+                const double up = std::min(d.box[3], o.box[3]) - std::max(d.box[1], o.box[1]);
+                if (across > 0 && up >= 0.5 * std::min(d.box[3] - d.box[1], o.box[3] - o.box[1])) covered += across;
+            }
+            if (covered < cfg.peek_overlap * d.width()) front.push_back(d);
+        }
+        kept.swap(front);
     }
     std::stable_sort(kept.begin(), kept.end(), [](const Detection& a, const Detection& b) { return a.score > b.score; });
     std::vector<Detection> unique;
@@ -349,7 +424,30 @@ std::optional<Good> Tracker::register_to(const FrameFeatures& features, int inde
     const Registration r = register_points(pk, pf);
     if (!(r.ok && r.inliers >= cfg.min_loop_inliers && r.coverage >= cfg.min_loop_coverage)) return std::nullopt;
     const bool strong = r.inliers >= cfg.strong_inliers && r.coverage >= cfg.strong_coverage;
-    return Good{index, r.H, strong, r.inliers};
+    return Good{index, r.H, strong, r.inliers, std::move(pk), std::move(pf)};
+}
+
+bool Tracker::agrees(const Good& g, int frame_ref, const Mat3& frame_P, int step, const std::map<int, int>& seen) const {
+    if (frame_ref == kNone) return true;
+    const Mat3 flow = graph.poses[g.index].inv() * graph.poses[frame_ref] * frame_P;   // the frame -> keyframe, by the flow
+    const Mat3 between = flow.inv() * g.R;                                             // the frame -> itself
+    const double bottle = bottle_width.value_or(0.1 * size.width);
+    double moved = 0;
+    for (double at : {0.25, 0.5, 0.75}) {
+        const cv::Point2d p(at * size.width, 0.5 * size.height);
+        moved = std::max(moved, cv::norm(project(between, p) - p));
+    }
+    if (moved <= cfg.alias_tolerance * bottle) return true;
+    const auto v = seen.find(g.index);
+    if (g.index == frame_ref || (v != seen.end() && step - v->second <= cfg.trust_steps)) return false;
+    int by_flow = 0, by_registration = 0;
+    const double reach = cfg.alias_support * bottle;
+    for (size_t i = 0; i < g.frame_points.size(); ++i) {
+        const cv::Point2d f(g.frame_points[i].x, g.frame_points[i].y), k(g.keyframe_points[i].x, g.keyframe_points[i].y);
+        by_flow += cv::norm(project(flow, f) - k) < reach;
+        by_registration += cv::norm(project(g.R, f) - k) < reach;
+    }
+    return by_flow < cfg.alias_ambiguity * by_registration;
 }
 
 std::vector<Good> Tracker::registrations(const FrameFeatures& features, const std::vector<int>& candidates) {
@@ -382,7 +480,18 @@ void Tracker::relocalize(int number, const FrameFeatures& features) {
         if (std::find(order.begin(), order.end(), k) == order.end()) order.push_back(k), ++added;
     }
     wanted.clear();
-    const std::vector<Good> good = registrations(features, order);
+    const auto seen = verified;
+    std::vector<Good> good = registrations(features, order);
+    for (auto g = good.begin(); g != good.end();) {
+        if (agrees(*g, ref, P, count, seen)) {
+            ++g;
+            continue;
+        }
+        ++aliased;
+        if (seen.count(g->index)) verified[g->index] = seen.at(g->index);
+        else verified.erase(g->index);
+        g = good.erase(g);
+    }
     if (good.empty()) return;
     const Good best = *std::max_element(good.begin(), good.end(),
                                         [](const Good& a, const Good& b) { return a.inliers < b.inliers; });
@@ -439,7 +548,7 @@ int Tracker::merge_duplicates() {
         const Bottle& two = bottles[seen[b]];
         if (gone.count(one.id) || gone.count(two.id)) continue;
         absorb(one, two);
-        rename(two.id, one.id);
+        rename(two.id, one.id, "duplicate after relocalisation");
         gone.insert(two.id);
     }
     bottles.erase(std::remove_if(bottles.begin(), bottles.end(), [&](const Bottle& b) { return gone.count(b.id) > 0; }),
@@ -469,8 +578,10 @@ void Tracker::add_keyframe(int number, const FrameFeatures& features) {
     double weight = cfg.chain_weight;
     std::string kind = "chain";
     if (ref != kNone) {
+        const auto seen = verified;
         const auto good = registrations(features, {ref});
-        if (!good.empty()) T = good[0].R, weight = cfg.loop_weight, kind = "odometry";
+        if (!good.empty() && agrees(good[0], ref, P, count, seen)) T = good[0].R, weight = cfg.loop_weight, kind = "odometry";
+        else if (!good.empty()) ++aliased;
     }
     const Mat3 pose = ref == kNone ? T : graph.poses[ref] * T;
     const int index = graph.add(pose);

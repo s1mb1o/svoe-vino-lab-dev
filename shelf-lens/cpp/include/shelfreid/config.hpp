@@ -33,8 +33,21 @@ struct StreamConfig {
     double min_row_height = 0.6;
     double row_gap = 0.2;
     double min_width = 0.6;
+    // A box that wider boxes of its row cover across by this share of its width in all is a
+    // bottle of the back row seen in the gap between two of the front: dropped.
+    double peek_overlap = 0.5;
     double height_rate = 0.2;
     double edge_margin = 0.02;
+    // A box cut only at the top of the frame (the neck hidden, the label in view) counts as a
+    // bottle when it shows at least this share of the running bottle height (its top is put
+    // where a bottle of that height would have it). A box cut at a side (its centre is off)
+    // or at the bottom (the label hidden: a bottle is no use without it) never does.
+    double min_visible = 0.8;
+    // A box reaching closer than this share of the frame height to its bottom does not start a
+    // bottle, nor refine one's place: the detector stops a box a little short of the edge, so
+    // a bottle top above it (the neck and shoulders, no label) would pass for a whole bottle.
+    // It still takes a bottle met before (edge_margin applies then).
+    double bottom_margin = 0.03;
     double leave_margin = 0.5;
     int settle_hits = 5;
     double keyframe_overlap = 0.6;
@@ -46,6 +59,15 @@ struct StreamConfig {
     double min_loop_coverage = 0.2;
     double small_correction = 0.15;
     double max_jump = 2.0;
+    // A registration to the reference keyframe or one registered in the last trust_steps
+    // may move the frame from where the flow puts it by at most this many bottle widths: on
+    // a row of identical bottles a registration shifted by a bottle or more fits as well.
+    double alias_tolerance = 0.5;
+    // A registration to a keyframe met long ago that moves the frame further is ambiguous (and
+    // dropped) when the place the flow gives fits at least alias_ambiguity as many matches as
+    // the registration's place, a match fitting within alias_support bottle widths.
+    double alias_support = 0.35;
+    double alias_ambiguity = 0.5;
     int strong_inliers = 80;
     double strong_coverage = 0.3;
     double loop_weight = 2.0;

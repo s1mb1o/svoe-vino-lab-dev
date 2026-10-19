@@ -13,4 +13,6 @@ set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ORT_ANDROID_DIR
 
 add_library(shelfreid_jni SHARED jni.cpp detector.cpp pipeline.cpp)
 target_include_directories(shelfreid_jni PRIVATE ${JSON_INCLUDE_DIR} ${ORT_ANDROID_DIR}/headers)
-target_link_libraries(shelfreid_jni shelfreid onnxruntime jnigraphics log)
+# PNG crops for the recognition server.
+find_package(OpenCV REQUIRED COMPONENTS imgcodecs)
+target_link_libraries(shelfreid_jni shelfreid opencv_imgcodecs onnxruntime jnigraphics log)

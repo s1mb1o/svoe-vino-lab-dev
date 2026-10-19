@@ -15,7 +15,8 @@ import java.util.function.IntSupplier;
  * are moved by the motion of the picture since that frame, so they stay on their bottles
  * between processed frames. The upright frame (frameWidth x frameHeight) is fitted into the
  * view at its centre, as the video view and the camera preview show it.
- * Green: a new bottle; red: a bottle that came back; white: waiting; grey: ignored.
+ * Grey: a bottle whose wine is not known yet; green: recognised (its wine under the box);
+ * a thin line: a box that is not a bottle the tracker keeps.
  *
  * The boxes follow the picture by the similarity (shift, scale, small turn) of the frames
  * since their frame. They vanish only when they are too old (MAX_LAG frames behind the
@@ -31,6 +32,7 @@ final class OverlayView extends View {
     private MotionTrack motion;
     private IntSupplier shownFrame;
     private String title = "";
+    private Recognizer recognizer;
     private String stats = "";
     private long statsAt;
     private boolean running;
@@ -50,7 +52,9 @@ final class OverlayView extends View {
         panelText.setTextSize(30);
     }
 
-    void start(long handle, int frameWidth, int frameHeight, MotionTrack motion, IntSupplier shownFrame, String title) {
+    void start(long handle, int frameWidth, int frameHeight, MotionTrack motion, IntSupplier shownFrame, String title,
+               Recognizer recognizer) {
+        this.recognizer = recognizer;
         this.handle = handle;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
@@ -71,13 +75,27 @@ final class OverlayView extends View {
         return new float[] {scale, (getWidth() - frameWidth * scale) / 2, (getHeight() - frameHeight * scale) / 2};
     }
 
-    private static int colour(int status) {
-        switch (status) {
-            case 0: return Color.rgb(60, 200, 60);
-            case 1: return Color.rgb(235, 40, 40);
-            case 2: return Color.rgb(235, 235, 235);
-            default: return Color.rgb(160, 160, 160);
-        }
+    private static int colour(int state) {
+        return state == 1 ? Color.rgb(60, 210, 60) : Color.rgb(170, 170, 170);
+    }
+
+    private final Paint wineText = new Paint();
+    private final Paint wineBack = new Paint();
+
+    {
+        wineText.setColor(Color.WHITE);
+        wineText.setTextSize(26);
+        wineBack.setColor(Color.argb(170, 20, 90, 20));
+    }
+
+    /** The wine's name under its box, cut to the box width (at least 220 px). */
+    private void drawWine(Canvas canvas, String wine, float x, float bottom, float width) {
+        float room = Math.max(220, width);
+        String text = wine;
+        while (text.length() > 4 && wineText.measureText(text) > room - 8) text = text.substring(0, text.length() - 2);
+        if (!text.equals(wine)) text = text + "…";
+        canvas.drawRect(x, bottom, x + wineText.measureText(text) + 10, bottom + 34, wineBack);
+        canvas.drawText(text, x + 5, bottom + 26, wineText);
     }
 
     @Override
@@ -115,11 +133,13 @@ final class OverlayView extends View {
             float x1 = (float) (f[1] + Math.min(ax, bx) * f[0]), y1 = (float) (f[2] + Math.min(ay, by) * f[0]);
             float x2 = (float) (f[1] + Math.max(ax, bx) * f[0]), y2 = (float) (f[2] + Math.max(ay, by) * f[0]);
             box.setColor(colour(status));
-            box.setStrokeWidth(status == 3 ? 2 : 5);
+            box.setStrokeWidth(status == 3 ? 2 : 6);
             canvas.drawRect(x1, y1, x2, y2, box);
             if (id >= 0) {
                 label.setColor(colour(status));
                 canvas.drawText(String.valueOf(id), x1 + 6, y1 + 36, label);
+                String wine = status == 1 && recognizer != null ? recognizer.wine(id) : null;
+                if (wine != null) drawWine(canvas, wine, x1, y2, x2 - x1);
             }
         }
         long t = SystemClock.uptimeMillis();
@@ -127,8 +147,9 @@ final class OverlayView extends View {
             stats = Native.stats(handle);
             statsAt = t;
         }
+        String recognition = recognizer == null ? "recognition off: no api_password.txt" : recognizer.stats();
         String[] lines = (title + "  frame " + now + " (analysed " + analysed + ", boxes of " + processed + ")\n"
-                + state + "\n" + stats).split("\n");
+                + state + "\n" + stats + "\n" + recognition).split("\n");
         canvas.drawRect(0, 0, getWidth(), 16 + 38 * lines.length, panel);
         for (int k = 0; k < lines.length; k++) canvas.drawText(lines[k], 14, 44 + 38 * k, panelText);
         if (running) postInvalidateOnAnimation();

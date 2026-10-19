@@ -4,7 +4,7 @@
 best one (large and sharp), the sharpest one in each size bin the bottle passes through,
 and the best one shrunk to fixed heights (a shelf seen from farther away).
 
-`send`: send each crop to /v1/match (at most 2 requests at a time, retries after 502, 503
+`send`: send each crop to /v1/match (at most 4 requests at a time, retries after 502, 503
 and 504 as the API guide asks) and keep each answer next to the crop. The password comes
 from CHTOZAVINO_API_PASSWORD.
 
@@ -155,7 +155,7 @@ def send(args):
         return answer["status"]
 
     started = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=2) as pool:
+    with ThreadPoolExecutor(max_workers=4) as pool:
         statuses = list(pool.map(run, todo))
     print(f"sent {len(todo)} crops in {time.perf_counter() - started:.0f} s; statuses",
           {s: statuses.count(s) for s in set(statuses)})

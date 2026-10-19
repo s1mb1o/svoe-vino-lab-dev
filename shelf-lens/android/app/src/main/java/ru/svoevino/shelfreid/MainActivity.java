@@ -44,6 +44,7 @@ public class MainActivity extends ComponentActivity {
     private VideoSource video;
     private CameraSource camera;
     private OverlayView overlay;
+    private Recognizer recognizer;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -114,6 +115,8 @@ public class MainActivity extends ComponentActivity {
     }
 
     private void stopRun() {
+        if (recognizer != null) recognizer.stop();
+        recognizer = null;
         if (overlay != null) overlay.stop();
         if (video != null) video.stop();
         if (camera != null) camera.stop();
@@ -153,7 +156,11 @@ public class MainActivity extends ComponentActivity {
                 if (video != source) return;
                 try {
                     source.start(holder.getSurface(), () -> {});
-                    overlay.start(handle, source.width, source.height, motion, source::shownFrame, file.getName());
+                    recognizer = Recognizer.create(getExternalFilesDir(null), handle);
+                    if (recognizer != null) recognizer.start();
+                    overlay.start(handle, source.width, source.height, motion, source::shownFrame, file.getName(), recognizer);
+                    new BottleTable(MainActivity.this, handle, recognizer).attach(root);
+                    new Planogram(MainActivity.this, handle, recognizer).attach(root);
                 } catch (Exception e) {
                     home();
                     status.setText("Cannot play " + file.getName() + ": " + e.getMessage());
@@ -197,7 +204,12 @@ public class MainActivity extends ComponentActivity {
         CameraSource source = camera;
         OverlayView view = overlay;
         source.start((w, h) -> runOnUiThread(() -> {
-            if (camera == source) view.start(handle, w, h, motion, source::shownFrame, "camera");
+            if (camera != source) return;
+            recognizer = Recognizer.create(getExternalFilesDir(null), handle);
+            if (recognizer != null) recognizer.start();
+            view.start(handle, w, h, motion, source::shownFrame, "camera", recognizer);
+            new BottleTable(this, handle, recognizer).attach(root);
+            new Planogram(this, handle, recognizer).attach(root);
         }));
     }
 

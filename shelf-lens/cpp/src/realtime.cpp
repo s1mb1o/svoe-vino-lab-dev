@@ -1,6 +1,7 @@
 #include "shelfreid/realtime.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
@@ -238,8 +239,13 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
     }
     std::vector<Good> good;
     for (int k : order)
-        if (auto g = register_to(features, k))
-            if (!snap.lost || g->strong) good.push_back(*g);
+        if (auto g = register_to(features, k)) {
+            if (snap.lost ? !g->strong : !agrees(*g, snap.ref, snap.P, snap.count, verified)) {
+                result.aliased += !snap.lost;
+                continue;
+            }
+            good.push_back(*g);
+        }
     slow_profile["registrations"] += static_cast<double>(order.size());
     lap("2 register");
     for (const auto& g : good) result.good.push_back(g.index);
@@ -289,9 +295,11 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
         SlowResult::NewKeyframe kf{features, ref, Mat3::eye(), 0.0, ""};
         if (result.found) {
             kf.T = result.found->second, kf.weight = cfg.loop_weight, kf.kind = "odometry";
-        } else if (auto direct = register_to(features, snap.ref)) {
+        } else if (auto direct = register_to(features, snap.ref);
+                   direct && agrees(*direct, snap.ref, snap.P, snap.count, verified)) {
             kf.T = direct->R, kf.weight = cfg.loop_weight, kf.kind = "odometry";
         } else {
+            result.aliased += direct.has_value();
             kf.T = snap.P, kf.weight = cfg.chain_weight, kf.kind = "chain";
         }
         result.keyframe = kf;
@@ -347,6 +355,7 @@ void RealtimeTracker::slow_labels(const Snapshot& snap, const FrameFeatures& fea
 void RealtimeTracker::apply(SlowResult& result) {
     const Snapshot& snap = result.snap;
     const Mat3 chain = snap.M.inv() * M;   // the current frame -> frame t
+    aliased += result.aliased;
     for (int index : result.good) verified[index] = snap.count;
     if (result.found) {
         if (result.graph) graph = std::move(*result.graph);
@@ -404,6 +413,10 @@ void RealtimeTracker::apply(SlowResult& result) {
         for (const auto& m : result.moves)
             if (m.held != kNone) held_ids.insert(m.held), took[m.held] = m.target;
         for (const auto& m : result.moves) {
+            if (traced(snap.number))
+                std::cerr << "slow move frame " << snap.number << " (landed at step " << count << "): box "
+                          << static_cast<int>(snap.detections[m.box].box[0]) << "-" << static_cast<int>(snap.detections[m.box].box[2])
+                          << " held " << m.held << " -> " << m.target << "\n";
             const int k = index_of(m.target);
             if (k == kNone) continue;
             Bottle& bottle = bottles[k];
@@ -432,7 +445,7 @@ void RealtimeTracker::apply(SlowResult& result) {
             bottle.last_box.reset();
             bottle.left = true;
             if (bottle.first_step >= snap.count - cfg.young_steps && index_of(took[held]) != kNone) {
-                rename(held, took[held]);
+                rename(held, took[held], "label moved its box");
                 gone.insert(held);
             }
         }

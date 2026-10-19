@@ -10,6 +10,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <deque>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -50,9 +51,48 @@ public:
     struct Result {
         int frame = -1;
         std::vector<Shown> shown;
+        std::vector<int> recognized;   // a box: 1 when its bottle's wine is known, else 0
     };
     Result latest() const;
     std::string stats() const;
+
+    // Recognition of the wines by the server, one bottle crop a request (/v1/match). Every
+    // tracker step (every other one) offers, for each bottle not yet sure whose box is at least kGate of the
+    // frame height (the server finds the producer from there), not cut by the frame and
+    // confirmed by the tracker, its crop to the bottle's reserve: at most kKeptPerBottle crops
+    // of different frames, by quality = sharpness x (height / the bottle's largest height)^2
+    // (a large crop first, but a blurred one loses to a sharper slightly smaller one); a new
+    // crop pushes out the worst. At most kKeptCrops crops in all: the worst of the bottles
+    // with more than one go first. A crop is offered every other step, so the reserve spans
+    // more time. One request a bottle (kMaxAttempts), with the best crop of its reserve,
+    // kMatureMs after the bottle first fit (a borderline first crop does not go when a better
+    // one comes a moment later). The crops
+    // are sent apart from the steps (take_crop), so the queue drains after a video ends and
+    // for bottles gone from the frame: no more than kMaxInflight requests out, the largest
+    // crop first; the reserve is freed when its crop goes. The answer decides (kAgree = 1). A
+    // failed request puts its crop back and does not count.
+    static constexpr double kGate = 0.19;
+    static constexpr int kSpacingMs = 500, kMaxAttempts = 1, kAgree = 1, kMaxInflight = 4, kKeptPerBottle = 4,
+                         kKeptCrops = 80, kMatureMs = 2000;
+    void set_recognition(bool on);
+    // The next crop to send, or empty: five little-endian int32 (bottle, frame, box height in
+    // px, sharpness x 10, crops it was chosen from), then the PNG. It picks the crop when a
+    // slot is free.
+    std::vector<unsigned char> take_crop();
+    // A server's answer for a crop (`ok` false: no answer; the attempt does not count). The
+    // decision when this answer changes it: "slug\tname\tsure|unsure", else empty.
+    std::string answer(int bottle, int frame, int height, const std::string& slug, const std::string& name, bool ok);
+    // Every bottle met, as JSON: id, state (known, asking, waiting: a crop kept for a slot,
+    // eligible: recognition off, small, cut, unconfirmed, done asking), box height (px and share of the frame), the frame
+    // last seen, requests, answers, the wine and whether it is sure.
+    std::string recognition_table() const;
+    // A small JPEG of the bottle's latest crop (renewed about once a second), or empty.
+    std::vector<unsigned char> thumbnail(int bottle) const;
+    // The planogram of the map as it is now (shelfreid/planogram.hpp, provisional bottles
+    // left out) as JSON: {"shelves": [{"width", "facings": [{"bottle", "x", "width",
+    // "height", "slug", "name", "sure"}]}], "duplicates": [...]}, the bottom shelf first;
+    // slug and name empty while the wine is not known.
+    std::string planogram() const;
 
 private:
     struct Job {
@@ -66,6 +106,7 @@ private:
 
     std::unique_ptr<BottleDetector> detector_;
     std::unique_ptr<RealtimeTracker> tracker_;
+    mutable std::mutex tracker_mutex_;   // the tracker's steps against a read of its map (planogram)
     StreamConfig cfg_;
     int cv_threads_ = 0;
 
@@ -82,6 +123,42 @@ private:
     int submitted_ = 0, dropped_ = 0;
     size_t bottles_ = 0, keyframes_ = 0;
     int ids_ = 0;
+
+    struct Recognition {
+        int attempts = 0, inflight = 0, last_step = -1000, answers = 0;
+        bool done = false, sure = false;
+        std::map<std::string, int> votes;     // slug -> answers naming it first
+        std::map<std::string, std::string> names;
+        std::string best_slug;                // the answer from the largest crop
+        int best_height = 0;
+        std::string slug, name;
+        std::string state = "small";          // why it is or is not asked (recognition_table)
+        int height = 0, frame = -1, thumb_step = -1000;
+        double share = 0;
+        std::vector<unsigned char> thumb;
+        struct Candidate {
+            cv::Mat crop;
+            int height = 0, frame = -1;
+            double sharpness = 0;
+        };
+        std::vector<Candidate> kept;          // the reserve: the best crops not sent yet
+        Candidate sent;                       // the crop out, put back if its request fails
+        int max_height = 0;                   // the largest box seen while it fit
+        std::chrono::steady_clock::time_point first_fit{};   // when it first fit (zero: not yet)
+        std::chrono::steady_clock::time_point last_sent{};
+        double quality(const Candidate& c) const {
+            const double size = max_height > 0 ? static_cast<double>(c.height) / max_height : 1.0;
+            return c.sharpness * size * size;
+        }
+    };
+    std::vector<unsigned char> dispatch();   // under recognition_mutex_
+    void plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown);
+    mutable std::mutex recognition_mutex_;
+    bool recognition_on_ = false;
+    std::map<int, Recognition> recognitions_;
+    std::deque<std::vector<unsigned char>> outbox_;
+    int out_ = 0;                  // crops queued or in flight
+    int track_steps_ = 0, sent_ = 0, answered_ = 0, failed_ = 0, accepted_ = 0;
 
     FrameMotion frame_motion_;
     mutable std::mutex chain_mutex_;

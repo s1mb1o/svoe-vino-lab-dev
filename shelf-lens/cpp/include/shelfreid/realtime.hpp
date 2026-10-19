@@ -53,6 +53,7 @@ struct SlowResult {
     std::vector<std::pair<int, cv::Mat>> labels;   // bottle id, descriptors
     std::vector<Move> moves;
     std::set<int> confirmed;                       // provisional bottles seen and kept
+    int aliased = 0;                               // registrations off the flow by a bottle or more
     double seconds = 0.0;
 };
 

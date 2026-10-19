@@ -32,8 +32,38 @@ final class Native {
                                     int uvRowStride, int uvPixelStride, int width, int height, int rotation,
                                     boolean process);
 
-    /** The last processed frame: its number, then six floats a box: x1, y1, x2, y2, status, bottle id. */
+    /**
+     * The last processed frame: its number, then six floats a box: x1, y1, x2, y2, state (0 a
+     * bottle whose wine is not known yet, 1 known, 3 no bottle), bottle id (-1 none).
+     */
     static native float[] latest(long handle);
+
+    /** Recognition of the wines by the server on or off (pipeline.hpp has the rules). */
+    static native void setRecognition(long handle, boolean on);
+
+    /**
+     * The next crop to send: five little-endian int32 (bottle, frame, box height, sharpness x
+     * 10, crops it was chosen from), then the PNG; null if none.
+     */
+    static native byte[] takeCrop(long handle);
+
+    /**
+     * The server's answer for a crop (ok false: no answer). Returns the decision when this
+     * answer changes it, "slug\tname\tsure|unsure", else null.
+     */
+    static native String answer(long handle, int bottle, int frame, int height, String slug, String name, boolean ok);
+
+    /**
+     * Every bottle met, as a JSON array: id, state (known, asking, waiting, eligible, small, cut,
+     * unconfirmed, done asking), height, share, frame, requests, answers, sure, wine.
+     */
+    static native String recognitionTable(long handle);
+
+    /** A small JPEG of the bottle's latest crop, or null. */
+    static native byte[] thumbnail(long handle, int bottle);
+
+    /** The planogram of the map as it is now, as JSON (Pipeline::planogram). */
+    static native String planogram(long handle);
 
     static native String stats(long handle);
 

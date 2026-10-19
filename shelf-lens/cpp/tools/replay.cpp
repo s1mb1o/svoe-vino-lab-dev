@@ -3,7 +3,13 @@
 //
 //   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N|rt:async OUT.jsonl [--every 3] [--slow-every K] [--pace MS]
 //          [--min-score S] [--new-score S] [--max-side PX] [--max-features N] [--loop-candidates N]
-//          [--cv-threads N] [--keep-steps 1] [--hints 1]
+//          [--cv-threads N] [--keep-steps 1] [--hints 1] [--map MAP.json] [--planogram PLANOGRAM.json]
+//          [--poses POSES.jsonl]
+//
+// --map writes the map at the end: the frame size, each bottle's corners in map coordinates
+// (keyframe 0's pixels) and whether it is still provisional; --planogram the planogram of
+// that map (planogram.hpp); --poses each step's frame -> map homography and the motion-only
+// one: [frame, H (9), M (9), ref].
 //
 // rt:async runs the slow loop on a thread of its own; --pace makes each step last at least
 // MS milliseconds, as frames come from a camera.
@@ -28,6 +34,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include "shelfreid/motion.hpp"
+#include "shelfreid/planogram.hpp"
 #include "shelfreid/realtime.hpp"
 
 using namespace shelfreid;
@@ -51,10 +58,14 @@ int main(int argc, char** argv) {
     int max_side = -1, max_features = -1, loop_candidates = -1, cv_threads = -2;
     bool keep_steps = false;   // --every without rescaling the parameters in steps, as the app drops frames
     bool hints = false;        // the frame-by-frame motion as the tracker's hint, as the app gives it
+    std::string map_path, planogram_path, poses_path;
     for (int a = 5; a + 1 < argc; ++a) {
         if (std::string(argv[a]) == "--every") every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--slow-every") slow_every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--pace") pace_ms = std::stoi(argv[a + 1]);
+        if (std::string(argv[a]) == "--map") map_path = argv[a + 1];
+        if (std::string(argv[a]) == "--planogram") planogram_path = argv[a + 1];
+        if (std::string(argv[a]) == "--poses") poses_path = argv[a + 1];
         if (std::string(argv[a]) == "--min-score") min_score = std::stod(argv[a + 1]);
         if (std::string(argv[a]) == "--new-score") new_score = std::stod(argv[a + 1]);
         if (std::string(argv[a]) == "--max-side") max_side = std::stoi(argv[a + 1]);
@@ -136,6 +147,8 @@ int main(int argc, char** argv) {
         tracker = std::move(r);
     }
     std::ofstream out(out_path);
+    std::ofstream poses;
+    if (!poses_path.empty()) poses.open(poses_path);
     int number = 0, pending_steps = 0, last_step = -1;
     FrameMotion frame_motion;
     MotionChain chain;
@@ -180,13 +193,23 @@ int main(int argc, char** argv) {
             }
             pending_steps += pending;
             out << nlohmann::json::array({number, boxes}).dump() << "\n";
+            if (poses.is_open()) {
+                const Mat3 h = tracker->H(), m = tracker->M;
+                nlohmann::json row = nlohmann::json::array({number});
+                nlohmann::json hj = nlohmann::json::array(), mj = nlohmann::json::array();
+                for (int k = 0; k < 9; ++k) hj.push_back(h.val[k]), mj.push_back(m.val[k]);
+                row.push_back(hj);
+                row.push_back(mj);
+                row.push_back(tracker->ref);
+                poses << row.dump() << "\n";
+            }
         }
         ++number;
         if (!from_dir && !capture.read(frame)) break;
     }
     std::cout << mode << " bottles " << tracker->bottles.size() << " ids " << tracker->next_id << " white steps "
               << pending_steps << " jumps " << tracker->jumps << " found " << tracker->found << " merged young "
-              << tracker->merged_young << " | step p50 " << pct(step_seconds, 50) * 1000 << " p95 " << pct(step_seconds, 95) * 1000
+              << tracker->merged_young << " aliased " << tracker->aliased << " | step p50 " << pct(step_seconds, 50) * 1000 << " p95 " << pct(step_seconds, 95) * 1000
               << " ms";
     if (rt)
         std::cout << " | fast p50 " << pct(rt->fast_seconds, 50) * 1000 << " p95 " << pct(rt->fast_seconds, 95) * 1000
@@ -201,5 +224,18 @@ int main(int argc, char** argv) {
                           << (part == "registrations" ? " a job" : " ms a job") << "\n";
         }
     std::cout << std::endl;
+    if (!map_path.empty()) {
+        nlohmann::json bottles = nlohmann::json::array();
+        for (const auto& p : tracker->placed()) {
+            nlohmann::json quad = nlohmann::json::array();
+            for (const auto& c : p.quad) quad.push_back({std::round(c.x * 10) / 10, std::round(c.y * 10) / 10});
+            bottles.push_back({{"id", p.id}, {"quad", quad}, {"hits", p.hits}, {"first_frame", p.first_frame},
+                               {"provisional", rt && rt->provisional.count(p.id) > 0}});
+        }
+        std::ofstream(map_path) << nlohmann::json{{"width", size.width}, {"height", size.height},
+                                                  {"keyframes", tracker->keyframes.size()}, {"bottles", bottles}}.dump(1);
+    }
+    if (!planogram_path.empty())
+        std::ofstream(planogram_path) << to_json(planogram(*tracker, rt ? rt->provisional : std::set<int>{}));
     return 0;
 }

@@ -26,13 +26,6 @@ std::string text(JNIEnv* env, jstring s) {
     return out;
 }
 
-int status_code(const std::string& status) {
-    if (status == "new") return 0;
-    if (status == "returning") return 1;
-    if (status == "pending") return 2;
-    return 3;
-}
-
 // A YUV_420_888 image (an Android Image) as an upright BGR frame. The chroma is
 // semi-planar (NV12 or NV21) when its pixel stride is 2 and the planes interleave, planar
 // otherwise.
@@ -127,15 +120,18 @@ extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_pushF
     return out;
 }
 
-// The last processed frame: its number, then six floats a box: x1, y1, x2, y2, status
-// (0 new, 1 returning, 2 waiting, 3 ignored), bottle id (-1 none).
+// The last processed frame: its number, then six floats a box: x1, y1, x2, y2, state
+// (0 a bottle whose wine is not known yet, 1 known, 3 no bottle), bottle id (-1 none).
 extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_latest(JNIEnv* env, jclass, jlong handle) {
     const auto result = reinterpret_cast<Pipeline*>(handle)->latest();
     std::vector<float> out{static_cast<float>(result.frame)};
     out.reserve(1 + result.shown.size() * 6);
-    for (const auto& s : result.shown)
-        out.insert(out.end(), {float(s.box[0]), float(s.box[1]), float(s.box[2]), float(s.box[3]),
-                               float(status_code(s.status)), float(s.bottle)});
+    for (size_t i = 0; i < result.shown.size(); ++i) {
+        const auto& s = result.shown[i];
+        const int state = s.bottle == kNone ? 3 : (i < result.recognized.size() ? result.recognized[i] : 0);
+        out.insert(out.end(), {float(s.box[0]), float(s.box[1]), float(s.box[2]), float(s.box[3]), float(state),
+                               float(s.bottle)});
+    }
     jfloatArray array = env->NewFloatArray(static_cast<jsize>(out.size()));
     env->SetFloatArrayRegion(array, 0, static_cast<jsize>(out.size()), out.data());
     return array;
@@ -147,4 +143,50 @@ extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_stats(JNI
 
 extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_destroy(JNIEnv*, jclass, jlong handle) {
     delete reinterpret_cast<Pipeline*>(handle);
+}
+
+extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_setRecognition(JNIEnv*, jclass, jlong handle,
+                                                                                 jboolean on) {
+    reinterpret_cast<Pipeline*>(handle)->set_recognition(on);
+}
+
+// The next crop to send: five little-endian int32 (bottle, frame, box height, sharpness x
+// 10, crops it was chosen from), then the PNG; null when none waits.
+extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_takeCrop(JNIEnv* env, jclass, jlong handle) {
+    const auto crop = reinterpret_cast<Pipeline*>(handle)->take_crop();
+    if (crop.empty()) return nullptr;
+    jbyteArray out = env->NewByteArray(static_cast<jsize>(crop.size()));
+    env->SetByteArrayRegion(out, 0, static_cast<jsize>(crop.size()), reinterpret_cast<const jbyte*>(crop.data()));
+    return out;
+}
+
+// The server's answer for a crop; the decision ("slug\tname\tsure|unsure") when this answer
+// settles the wine, else null.
+extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_answer(JNIEnv* env, jclass, jlong handle,
+                                                                            jint bottle, jint frame, jint height,
+                                                                            jstring slug, jstring name, jboolean ok) {
+    const std::string decision =
+        reinterpret_cast<Pipeline*>(handle)->answer(bottle, frame, height, text(env, slug), text(env, name), ok);
+    return decision.empty() ? nullptr : env->NewStringUTF(decision.c_str());
+}
+
+// Every bottle met, as JSON (Pipeline::recognition_table).
+extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_recognitionTable(JNIEnv* env, jclass,
+                                                                                      jlong handle) {
+    return env->NewStringUTF(reinterpret_cast<Pipeline*>(handle)->recognition_table().c_str());
+}
+
+// A small JPEG of the bottle's latest crop, or null.
+extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_thumbnail(JNIEnv* env, jclass, jlong handle,
+                                                                                  jint bottle) {
+    const auto jpeg = reinterpret_cast<Pipeline*>(handle)->thumbnail(bottle);
+    if (jpeg.empty()) return nullptr;
+    jbyteArray out = env->NewByteArray(static_cast<jsize>(jpeg.size()));
+    env->SetByteArrayRegion(out, 0, static_cast<jsize>(jpeg.size()), reinterpret_cast<const jbyte*>(jpeg.data()));
+    return out;
+}
+
+// The planogram of the map as it is now, as JSON (Pipeline::planogram).
+extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_planogram(JNIEnv* env, jclass, jlong handle) {
+    return env->NewStringUTF(reinterpret_cast<Pipeline*>(handle)->planogram().c_str());
 }
