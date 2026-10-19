@@ -144,7 +144,9 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     if (name === 'desktop-chromium') {
       await page.emulateMedia({ forcedColors: 'active' })
       const pressed = choose(taste, 'Сливочный')
+      await page.keyboard.press('Tab')
       await pressed.focus()
+      assert(await pressed.evaluate(button => button.matches(':focus-visible')), 'High-contrast focus check must use keyboard modality')
       assert.equal(await pressed.evaluate(button => getComputedStyle(button).outlineOffset), '4px', 'High-contrast focus must remain separate from the pressed indicator')
       await page.emulateMedia({ forcedColors: 'none' })
     }
@@ -185,7 +187,7 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.getByRole('button', { name: 'Убрать фото', exact: true }).click()
     await page.waitForFunction(() => document.activeElement?.textContent?.includes('Загрузить фото'))
     assert.deepEqual(errors, [])
-    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['three preference rows', 'seven taste presets and explicit negatives', 'composable sauce modifiers', 'exclusive and toggleable preferences', 'compatible brut and wine kind', 'keyboard activation', '44px preference targets', 'three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
+    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['three preference rows', 'seven taste presets and explicit negatives', 'composable sauce modifiers', 'exclusive and toggleable preferences', 'compatible brut and wine kind', 'keyboard activation', '44px preference targets', 'theme swatch variables', 'labels fit buttons', ...(name === 'desktop-chromium' ? ['forced-colors keyboard focus'] : []), 'three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
   } finally { await context.close(); await browser.close() }
 }
 
