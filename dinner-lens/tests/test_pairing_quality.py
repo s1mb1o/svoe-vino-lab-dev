@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from dinner_lens.data import Knowledge
 from dinner_lens.embeddings import EmbeddingIndex
@@ -19,8 +20,8 @@ class PairingQualityTests(unittest.TestCase):
     def setUp(self):
         self.engine = Engine(self.k, self.index, cursor_secret=b"quality-tests-only-secret-at-least-32-bytes")
 
-    def all_rows(self, node, attrs=None, filters=None):
-        first = self.engine.recommend(node_id=node, confirmed_attributes=attrs, filters=filters)
+    def all_rows(self, node, attrs=None, filters=None, *, limit=5):
+        first = self.engine.recommend(node_id=node, confirmed_attributes=attrs, filters=filters, limit=limit)
         rows = list(first["results"])
         page = first
         while page["next_cursor"]:
@@ -55,6 +56,34 @@ class PairingQualityTests(unittest.TestCase):
         first, rows = self.all_rows("spicy_butter_chicken", {"fatty_cream_sauce": True})
         self.assertEqual(first["effective_profile_id"], "spicy")
         self.assertTrue(all(r["facts"]["alcohol_percent"] <= 12.5 for r in rows))
+
+    def test_spicy_explanation_uses_each_wines_actual_strength_on_every_page(self):
+        for heat in ("medium", "high"):
+            with self.subTest(heat=heat):
+                first, rows = self.all_rows("ribeye_grilled", {"heat": heat}, limit=1)
+                self.assertTrue(first["next_cursor"])
+                self.assertEqual({r["facts"]["alcohol_percent"] for r in rows}, {11, 12})
+                for row in rows:
+                    self.assertIn(
+                        f"С учётом остроты блюда выбрано вино умеренной крепости — {row['facts']['alcohol_percent']}%.",
+                        row["reason"])
+                    self.assertNotIn("Учитываются: чили и умеренный алкоголь", row["reason"])
+
+    def test_spicy_explanation_formats_fractional_and_whole_float_strength(self):
+        slug = "vinodelnya-myshako-risling-mode-kabinett-beloe-polusuhoe-126"
+        for actual, expected in ((12.5, "12,5%"), (12.0, "12%")):
+            with self.subTest(actual=actual), patch.dict(self.k.wines[slug], alcohol_percent=actual):
+                _, rows = self.all_rows("ribeye_grilled", {"heat": "high"})
+                row = next(r for r in rows if r["wine_slug"] == slug)
+                self.assertEqual(row["facts"]["alcohol_percent"], actual)
+                self.assertIn(f"С учётом остроты блюда выбрано вино умеренной крепости — {expected}.", row["reason"])
+
+    def test_non_spicy_explanation_has_no_spicy_strength_sentence(self):
+        for heat in ("none", "low"):
+            with self.subTest(heat=heat):
+                _, rows = self.all_rows("ribeye_grilled", {"heat": heat})
+                self.assertTrue(rows)
+                self.assertTrue(all("С учётом остроты блюда" not in r["reason"] for r in rows))
 
     def test_known_fish_protein_need_not_be_repeated_by_client(self):
         attrs = {"fatty_cream_sauce": True}
@@ -118,7 +147,7 @@ class PairingQualityTests(unittest.TestCase):
         self.assertEqual(first["confirmed_attributes"], attrs)
         self.assertIn("Prioritize freshness", first["diagnostics"]["query_text"])
         self.assertTrue(all(r["facts"]["alcohol_percent"] <= 12.5 for r in rows))
-        self.assertTrue(all("чили" in r["reason"] and "сладость" in r["reason"] and "кислая" in r["reason"] for r in rows))
+        self.assertTrue(all("С учётом остроты блюда" in r["reason"] and "сладость соуса" in r["reason"] and "кислая подача" in r["reason"] for r in rows))
 
     def test_chilli_dessert_retains_sweetness_and_alcohol_cap(self):
         _, rows = self.all_rows("chocolate_fondant", {"heat": "medium", "is_dessert": True})

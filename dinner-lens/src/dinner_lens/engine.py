@@ -329,7 +329,8 @@ class Engine:
                 pairing_attrs = self.knowledge.rule_context(node_id, context["attributes"])["effective_rule_attributes"]
                 details = []
                 if pairing_attrs.get("heat") in {"medium", "high"}:
-                    details.append("чили и умеренный алкоголь")
+                    alcohol = f"{wine['alcohol_percent']:g}".replace(".", ",")
+                    reason += f" С учётом остроты блюда выбрано вино умеренной крепости — {alcohol}%."
                 if (pairing_attrs.get("sauce_sweetness") in {"medium", "high"}
                         and profile_id in {"sweet_glaze", "sweet_glaze_rich_meat", "sweet_glaze_duck", "spicy", "spicy_sour"}):
                     details.append("сладость соуса")

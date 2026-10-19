@@ -5,6 +5,11 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Dinner Lens now explains the alcohol choice for spicy food with the actual wine
+  strength. Russian copy formats whole percentages without decimals and fractional
+  percentages with a comma. All 114 package tests pass, including continuation pages,
+  11% and 12% source facts, decimal formatting, and non-spicy dishes.
+
 - Added local-first Dinner Lens recognition on gx10 Qwen3.5-9B-NVFP4 with Qwen3.8-Flash
   fallback. YAML selects protocols, exact response model aliases, optional credentials
   and per-provider limits. Fallback covers provider failures and invalid output; valid
