@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Visible sauce heading
+
+- Show «Вкус» above the heat choices and «Соус» above the sauce choices, starting with «Сливочный». Keep the shared accessible legend and existing selection behavior.
+
 ## 2026-10-19 — Bottle result spacing (#67)
 
 - Let the result image set the height of `.match-bottle`. Prevent the image container from shrinking. The bottle stays above «Лучшее совпадение» on desktop and mobile.

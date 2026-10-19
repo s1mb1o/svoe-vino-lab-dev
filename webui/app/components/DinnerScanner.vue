@@ -119,9 +119,10 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <select id="dinner-category" ref="categoryInput" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
         <div class="dinner-preferences" lang="ru">
           <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint">
-            <legend>Вкус и соус</legend>
+            <legend class="sr-only">Вкус и соус</legend>
             <div class="dinner-choices">
               <div v-for="group in tasteGroups" :key="group.id" class="dinner-choice-group" :class="`dinner-choice-group--${group.id}`" role="group" :aria-label="group.label">
+                <p class="dinner-choice-group-title" aria-hidden="true">{{ group.id === 'sauce' ? 'Соус' : 'Вкус' }}</p>
                 <button v-for="preset in group.presets" :key="preset.label" class="dinner-choice" type="button" :aria-pressed="settings[preset.key] === preset.value" :disabled="!available" @click="toggleTaste(preset)"><AppIcon :name="preset.icon" /><span>{{ preset.label }}</span></button>
               </div>
             </div>
@@ -179,6 +180,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-preference-row legend { padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
 .dinner-choices { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,5fr); gap: 12px; }
 .dinner-choice-group { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; min-width: 0; }
+.dinner-choice-group-title { grid-column: 1 / -1; margin: 0 0 4px; font-size: 13px; font-weight: 600; line-height: 1.4; }
 .dinner-choice-group--sauce { grid-template-columns: repeat(5,minmax(0,1fr)); border-inline-start: 1px solid var(--line); padding-inline-start: 12px; }
 .dinner-choice { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 86px; padding: 12px 3px 9px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 11px; line-height: 1.35; text-align: center; }
 .dinner-choice span { max-width: 100%; hyphens: auto; overflow-wrap: break-word; }
