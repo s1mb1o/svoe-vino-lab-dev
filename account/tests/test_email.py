@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from conftest import WEB_TOKEN
 
+from chto_za_vino_account.mailer import build_message
+
 
 def start(harness, email="Anna@Example.ru", **kwargs):
     return harness.web("POST", "/v1/auth/email/start", json={"email": email}, **kwargs)
@@ -14,6 +16,21 @@ def verify(harness, challenge_id, code, **kwargs):
         json={"challenge_id": challenge_id, "code": code},
         **kwargs,
     )
+
+
+def test_code_mail_has_a_large_code_in_html(harness):
+    start(harness)
+    mail = harness.mailer.sent[-1]
+    code = harness.last_code()
+    grouped = f"{code[:3]} {code[3:]}"
+    assert mail.subject == f"{grouped} — код для входа в «Винный дневник»"
+    assert mail.html is not None
+    assert f">{code[:3]}</span>" in mail.html and f">{code[3:]}</span>" in mail.html
+    assert "font-size:40px" in mail.html
+    assert "<img" not in mail.html and "href=" not in mail.html
+    message = build_message(mail, "noreply@chtozavino.ru")
+    assert message.get_content_type() == "multipart/alternative"
+    assert [part.get_content_type() for part in message.iter_parts()] == ["text/plain", "text/html"]
 
 
 def test_new_email_signs_up_and_gets_a_session(harness):

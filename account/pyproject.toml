@@ -41,3 +41,5 @@ ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S105", "S106"]
+# The HTML of the code email is one inline-styled line per element.
+"src/chto_za_vino_account/mailer.py" = ["E501"]

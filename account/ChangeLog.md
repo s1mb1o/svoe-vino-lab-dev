@@ -1,5 +1,15 @@
 # ChangeLog
 
+## 2026-10-20 — Code email in HTML
+
+Owner request: show the code as clearly as the Link (Stripe) email does.
+
+- The code email is `multipart/alternative`: the same text, and an HTML card with the title, one line of
+  text, and the code in 40 px type in two groups (`317 220`; a copy gives the digits without a space).
+  No images and no links.
+- The subject starts with the code: «317 220 — код для входа в «Винный дневник»».
+- 102 tests.
+
 ## 2026-10-20 — Forms of MAX launch data
 
 The refusal log of the first real link said «launch data has no hash»: the MAX client did not give the plain
