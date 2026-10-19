@@ -3,6 +3,7 @@
 ## 2026-10-19: Wine Crocodile landing
 
 - Add `/crocodile` and its invitation on `/ideas`.
+- Deploy `e2e36bf` to Claudette after explicit owner approval. Pass 481 Linux tests, sixteen staging layouts, sixteen live layouts, and 23 live HTTP checks. Retain the previous production release for rollback.
 - Pass the type check, production build, bundle check, and sixteen browser layouts. Check photo proportions and text contrast.
 - Add the three explanation modes, exact card examples, keyboard-operable card flips, filters, rules, and FAQ.
 - Retouch the owner's three photo references into two product images with built-in image_gen.

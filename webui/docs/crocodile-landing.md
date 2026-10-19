@@ -64,7 +64,11 @@ The browser check uses Chromium and WebKit at 320, 390, 768, and 1440 pixels in 
 The check covers navigation, the existing age gate, metadata, filters, card flips, keyboard input, FAQ, image loading, overflow, and PDF download hashes.
 The check saves screenshots and a JSON result under `reports/crocodile/`.
 Browser emulation does not establish physical-device acceptance.
-This task prepares local source and a production build. It does not deploy the portal.
+Production publication uses the existing Claudette portal procedure.
+Read `<drink-atlas-workspace>/deploy/princess/webui.md` for the production release record.
+Set `PORTAL_PASSWORD_FILE` to the existing password file for authenticated browser checks.
+The check reads that file only in process memory. It does not print the password.
+Set `REQUIRE_ACCOUNT_LINK=1` to verify the production Diary link.
 
 ## Accepted verification
 
