@@ -59,7 +59,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
   function reset() { invalidate(); dish.value = ''; preview.value = ''; file.value = null; phase.value = 'idle' }
   const message = (status: number) => ({
     400: 'Не удалось прочитать запрос. Попробуйте ещё раз.', 413: 'Выберите фотографию размером до 10 МБ.',
-    415: 'Выберите JPG, JPEG, HEIC, PNG или WebP.', 422: 'Проверьте название блюда и выбранные условия.',
+    415: 'Выберите JPEG, HEIC, PNG или WebP.', 422: 'Проверьте название блюда и выбранные условия.',
     429: 'Слишком много запросов. Попробуйте немного позже.', 503: 'Подбор вина временно недоступен. Попробуйте ещё раз позже.',
     504: 'Подбор занял слишком много времени. Попробуйте ещё раз.',
   } as Record<number, string>)[status] || 'Сервис не смог выполнить подбор. Попробуйте ещё раз.'

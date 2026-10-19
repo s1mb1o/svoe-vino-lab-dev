@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Format error on «Вино к блюду» without «JPG»
+
+- The format error on `/dish` is «Выберите JPEG, HEIC, PNG или WebP.», the same list as the upload hint. It shows when the browser refuses a file and when the server returns 415. The accepted files do not change: `.jpg` files are accepted as before.
+
 ## 2026-10-19 — Wine Crocodile highlights
 
 - Replace the hero round-time and score highlights with three difficulty levels and card stories.

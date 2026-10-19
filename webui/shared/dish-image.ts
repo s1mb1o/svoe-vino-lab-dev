@@ -4,7 +4,7 @@ export const DISH_IMAGE_ACCEPT = 'image/jpeg,image/heic,image/heif,image/png,ima
 export const DISH_CAMERA_ACCEPT = 'image/jpeg,image/heic,image/heif,image/png,image/webp'
 export const DISH_MAX_PIXELS = 50_000_000
 export const DISH_HEIC_TIMEOUT_MS = 60_000
-export const DISH_IMAGE_FORMAT_ERROR = 'Выберите JPG, JPEG, HEIC, PNG или WebP.'
+export const DISH_IMAGE_FORMAT_ERROR = 'Выберите JPEG, HEIC, PNG или WebP.'
 export const DISH_IMAGE_SIZE_ERROR = 'Снимок слишком большой. Выберите уменьшенную копию.'
 const brands = new Set(['heic', 'heix', 'heim', 'heis', 'hevc', 'hevx', 'hevm', 'hevs', 'mif1', 'msf1'])
 const ascii = (bytes: Uint8Array, start: number, end: number) => String.fromCharCode(...bytes.subarray(start, end))
