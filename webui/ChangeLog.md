@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-20 — Centered MAX QR code
+
+- The QR code of the MAX mini-app link is centered in the card: on `/max` outside MAX and in «Привязать мессенджер» → «MAX» (owner report).
+
 ## 2026-10-19 — No age warning flash for a returning visitor
 
 - A confirmed visitor saw the 18+ warning for a moment on each page load. The server renders the

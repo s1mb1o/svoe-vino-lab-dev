@@ -790,7 +790,7 @@ body:has(.experience-dialog[open]) { overflow: hidden; }
 .account-secret { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
 .account-config { resize: vertical; white-space: pre; overflow-x: auto; overflow-wrap: normal; }
 .account-select { min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 16px; }
-.account-qr { width: 200px; height: 200px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.account-qr { display: block; align-self: center; margin-inline: auto; width: 200px; height: 200px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .account-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .account-danger { color: var(--danger); }
 .account-danger-fill { background: var(--danger); color: #fff; }
