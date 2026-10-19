@@ -315,6 +315,7 @@ class QualityRuntimeTest(unittest.TestCase):
             root = Path(directory)
             write_bundle_v2(root/'bundle')
             config = {'matcher': {'pipeline': 'primary', 'group_pipeline': 'quality',
+                                  'sam3_endpoint': 'http://sam.test',
                                   'output_dir': str(root/'output')},
                       'pipeline': [{'name': 'primary', 'backend': 'mock', 'answers': {}},
                                    {'name': 'quality', 'backend': 'siglip2', 'bundle': str(root/'bundle'),
@@ -327,12 +328,14 @@ class QualityRuntimeTest(unittest.TestCase):
             segmented = segment_group(body, 'http://sam.test',
                                       opener=FakeOpener(json.dumps(sam3_answer()).encode()))
             app = create_app(root/'config.yaml', output_dir=str(root/'output'))
-            with patch.object(QualityGroupMatcher, 'match_group_photo',
+            with patch.dict(os.environ, {'SAM3_ENDPOINT': 'http://ignored.test'}), \
+                 patch.object(QualityGroupMatcher, 'match_group_photo',
                               return_value=(segmented, [[('wine-a', .91)], []],
-                                            [{'reason':'supported'}, {'reason':'unreadable'}])):
+                                            [{'reason':'supported'}, {'reason':'unreadable'}])) as group_call:
                 with TestClient(app) as client:
                     answer = client.post('/v1/group/match', files={'image': ('shelf.jpg', body, 'image/jpeg')})
             self.assertEqual(answer.status_code, 200, answer.text)
+            self.assertEqual(group_call.call_args.args[1], 'http://sam.test')
             self.assertEqual(answer.json()['pipeline'], 'quality')
             self.assertEqual(answer.json()['bottles'][0]['match']['slug'], 'wine-a')
             self.assertIsNone(answer.json()['bottles'][1]['match'])

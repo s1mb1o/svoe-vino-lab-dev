@@ -5,8 +5,8 @@
 matcher:
   # Select one entry of pipeline by name. Restart the matcher after a change.
   pipeline: official-eval-mock
-  # Each test sets this variable to its private temporary archive directory.
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  # Each subprocess test writes a private YAML file with its archive directory.
+  output_dir: work/matcher-test-requests
 
 # This list uses the name and backend notation of ../../workbench/config.yaml.
 pipeline:

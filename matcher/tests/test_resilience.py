@@ -1,5 +1,7 @@
 """Bounded adversarial tests for matcher upload protections."""
 
+from matcher.tests.config_helpers import process_environment
+
 from io import BytesIO
 import http.client
 import json
@@ -145,17 +147,11 @@ class MatcherResilienceTest(unittest.TestCase):
         self.port = free_port()
         self.output_directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.output_directory.cleanup)
-        environment = os.environ.copy()
-        environment["SVOE_VINO_MATCHER_CONFIG"] = str(CONFIG)
-        environment["SVOE_VINO_MATCHER_OUTPUT_DIR"] = self.output_directory.name
-        environment["SVOE_VINO_MATCHER_MAX_IMAGE_BYTES"] = str(MAX_IMAGE_BYTES)
-        environment["SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS"] = "1000000"
-        environment["SVOE_VINO_MATCHER_UPLOAD_TIMEOUT_SECONDS"] = str(
-            UPLOAD_TIMEOUT_SECONDS)
-        environment["SVOE_VINO_MATCHER_MAX_INFLIGHT_REQUESTS"] = "2"
-        environment["SVOE_VINO_MATCHER_MAX_QUEUED_REQUESTS"] = "1"
-        environment["SVOE_VINO_MATCHER_QUEUE_TIMEOUT_SECONDS"] = str(
-            QUEUE_TIMEOUT_SECONDS)
+        environment = process_environment(CONFIG, output_dir=self.output_directory.name,
+            limits={"max_image_bytes": MAX_IMAGE_BYTES, "max_image_pixels": 1000000,
+                    "upload_timeout_seconds": UPLOAD_TIMEOUT_SECONDS,
+                    "max_inflight_requests": 2, "max_queued_requests": 1,
+                    "queue_timeout_seconds": QUEUE_TIMEOUT_SECONDS})
         self.process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",
              "--host", "127.0.0.1", "--port", str(self.port),
@@ -398,10 +394,8 @@ class ImageValidationTest(unittest.TestCase):
         limit = Image.MAX_IMAGE_PIXELS
         for value, stops in ((limit, False), (limit + 1, True)):
             with self.subTest(value=value), tempfile.TemporaryDirectory() as directory:
-                environment = os.environ.copy()
-                environment["SVOE_VINO_MATCHER_CONFIG"] = str(CONFIG)
-                environment["SVOE_VINO_MATCHER_OUTPUT_DIR"] = directory
-                environment["SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS"] = str(value)
+                environment = process_environment(CONFIG, output_dir=directory,
+                                                  limits={"max_image_pixels": value})
                 result = subprocess.run(
                     [sys.executable, "-c", "import matcher.app"], cwd=ROOT,
                     env=environment, capture_output=True, text=True, timeout=60)

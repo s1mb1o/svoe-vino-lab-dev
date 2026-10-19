@@ -45,10 +45,10 @@ class MockMatcherTest(unittest.TestCase):
     def test_configuration_selects_the_mock_pipeline(self):
         self.assertEqual(self.matcher.pipeline, "official-eval-mock")
 
-    def test_test_config_uses_the_output_directory_environment_reference(self):
+    def test_test_config_uses_a_literal_output_directory(self):
         self.assertEqual(
             self.matcher.output_dir,
-            "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}",
+            "work/matcher-test-requests",
         )
 
     def test_config_without_authentication_has_no_token_environment(self):
@@ -160,36 +160,13 @@ class MockMatcherTest(unittest.TestCase):
             "work/matcher-requests",
         )
 
-    def test_output_dir_environment_reference_is_resolved(self):
-        config = valid_config()
-        config["matcher"]["output_dir"] = "{env:MATCHER_TEST_OUTPUT_DIR}"
-        matcher = self.load_config(config)
-        self.assertEqual(
-            matcher.resolved_output_dir({"MATCHER_TEST_OUTPUT_DIR": "/tmp/matcher"}),
-            "/tmp/matcher",
-        )
-
-    def test_missing_output_dir_environment_variable_is_rejected(self):
-        config = valid_config()
-        config["matcher"]["output_dir"] = "{env:MATCHER_TEST_OUTPUT_DIR}"
-        matcher = self.load_config(config)
-        with self.assertRaisesRegex(ConfigError, "MATCHER_TEST_OUTPUT_DIR MUST be set"):
-            matcher.resolved_output_dir({})
-
-    def test_empty_output_dir_environment_variable_is_rejected(self):
-        config = valid_config()
-        config["matcher"]["output_dir"] = "{env:MATCHER_TEST_OUTPUT_DIR}"
-        matcher = self.load_config(config)
-        with self.assertRaisesRegex(ConfigError, "MATCHER_TEST_OUTPUT_DIR MUST be set"):
-            matcher.resolved_output_dir({"MATCHER_TEST_OUTPUT_DIR": ""})
-
-    def test_malformed_output_dir_environment_reference_is_rejected(self):
-        for value in ("{env:}", "{env:9BAD}", "{env:BAD NAME}",
-                      "prefix{env:GOOD}", "{env:GOOD}suffix", 12):
+    def test_output_dir_requires_a_literal_yaml_path(self):
+        for value in ("{env:MATCHER_TEST_OUTPUT_DIR}", "{env:}", "{env:9BAD}",
+                      "prefix{env:GOOD}", "{env:GOOD}suffix", 12, "", "   "):
             with self.subTest(value=value):
                 config = valid_config()
                 config["matcher"]["output_dir"] = value
-                self.assert_config_error(config, "exact \\{env:NAME\\} reference")
+                self.assert_config_error(config, "non-empty literal path in YAML")
 
     def test_missing_or_empty_token_environment_variable_is_rejected(self):
         config = valid_config()

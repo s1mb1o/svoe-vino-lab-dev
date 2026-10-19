@@ -1,5 +1,7 @@
 """Tests for shelf segmentation and POST /v1/group/match."""
 
+from matcher.tests.config_helpers import process_environment
+
 import base64
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
@@ -249,7 +251,7 @@ class GroupSegmentationTest(unittest.TestCase):
         for endpoint in (None, "", "sam3.test", "http://sam3.test:bad",
                          "http://user:secret@sam3.test"):
             with self.subTest(endpoint=endpoint):
-                with self.assertRaisesRegex(GroupMatchError, "SAM3_ENDPOINT") as caught:
+                with self.assertRaisesRegex(GroupMatchError, "matcher.sam3_endpoint") as caught:
                     segment_group(self.photo(), endpoint, opener=self.opener())
                 self.assertEqual(caught.exception.status_code, 503)
 
@@ -338,13 +340,8 @@ class GroupEndpointTest(unittest.TestCase):
         pipeline = dict(pipeline or {"name": "group-mock", "backend": "mock", "answers": {}},
                         bundle=str(root / "bundle"))
         config = write_config(root / "config.yaml", pipeline, token)
-        environment = os.environ.copy()
-        environment["SVOE_VINO_MATCHER_CONFIG"] = str(config)
+        environment = process_environment(config, sam3_endpoint=sam3_endpoint)
         environment["SVOE_VINO_MATCHER_TOKEN"] = TOKEN
-        if sam3_endpoint is None:
-            environment.pop("SAM3_ENDPOINT", None)
-        else:
-            environment["SAM3_ENDPOINT"] = sam3_endpoint
         port = free_port()
         process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",
@@ -432,7 +429,7 @@ class GroupEndpointTest(unittest.TestCase):
         port, root = self.start(None, token=False)
         status, answer = self.post(port, token=None)
         self.assertEqual(status, 503, answer)
-        self.assertIn("SAM3_ENDPOINT", answer["detail"])
+        self.assertIn("matcher.sam3_endpoint", answer["detail"])
         records = [json.loads(path.read_text(encoding="utf-8"))
                    for path in (root / "requests").rglob("request.json")]
         self.assertEqual(records[0]["response"]["status_code"], 503)

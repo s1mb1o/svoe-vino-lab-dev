@@ -5,6 +5,13 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Moved matcher public settings to YAML. Added validated `matcher.limits` and
+  `matcher.sam3_endpoint`. Shelf matching, hand selection, and readiness share the
+  configured segmentation endpoint. Secret tokens stay environment references.
+  Removed public environment lookups and the Docker output-directory default.
+  Updated HTTP tests and configuration documentation. HTTP factory overrides now
+  require numeric YAML-compatible types; numeric strings are rejected.
+
 - Merged the producer product-line maps into `webui/` (branch `product-line-map`): 19 producers and 1,046 products.
   Read `webui/ChangeLog.md`.
 - Replaced the six-node Abrau demo of the MCP tool `get_producer_line` with these maps (#25).

@@ -1,11 +1,8 @@
 """Select an independent SigLIP2 pipeline for segmented shelf bottles."""
 
-from pathlib import Path
-
-import yaml
-
 from .service import (ConfigError, GROUP_MIN_FULL_SCORE, Siglip2Matcher,
                       _load_siglip2, _endpoint)
+from .configuration import read_configuration, sam3_endpoint
 
 
 class SegmentedSiglip2Matcher(Siglip2Matcher):
@@ -23,9 +20,9 @@ class SegmentedSiglip2Matcher(Siglip2Matcher):
                 for ranked in self.match_many(images, k)]
 
 
-def load_group_matcher(config_path, fallback):
+def load_group_matcher(config_path, fallback, *, document=None):
     """Keep the existing group matcher unless `matcher.group_pipeline` is set."""
-    config = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    config = read_configuration(config_path) if document is None else document
     settings = config["matcher"]
     if "group_pipeline" not in settings:
         return fallback
@@ -37,7 +34,8 @@ def load_group_matcher(config_path, fallback):
         raise ConfigError("matcher.group_pipeline names an unknown pipeline: %s" % name)
     if entry.get("backend") != "siglip2":
         raise ConfigError("matcher.group_pipeline requires backend siglip2")
-    loaded = _load_siglip2(name, entry, fallback.output_dir, fallback.token)
+    loaded = _load_siglip2(name, entry, fallback.output_dir, fallback.token,
+                          sam3_endpoint=sam3_endpoint(config))
     if "quality_model" in entry:
         model = entry["quality_model"]
         if not isinstance(model, str) or not model.strip():
@@ -47,6 +45,8 @@ def load_group_matcher(config_path, fallback):
                              name, "quality_endpoint")
         return QualityGroupMatcher(pipeline=name, backend=loaded.backend,
                                    output_dir=loaded.output_dir, token=loaded.token,
+                                   sam3_endpoint=loaded.sam3_endpoint,
                                    quality_endpoint=endpoint, quality_model=model)
     return SegmentedSiglip2Matcher(pipeline=name, backend=loaded.backend,
-                                  output_dir=loaded.output_dir, token=loaded.token)
+                                  output_dir=loaded.output_dir, token=loaded.token,
+                                  sam3_endpoint=loaded.sam3_endpoint)

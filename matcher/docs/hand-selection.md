@@ -11,19 +11,19 @@ pipeline:
   - name: siglip2-hand
     backend: siglip2
     bundle: matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
-    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    endpoint: "http://192.168.86.14:18081"
     hand_selection: true
 ```
 
 The matcher MUST use the selected pipeline entry. Restart the matcher after a
-configuration change. Set `SAM3_ENDPOINT` to the SAM3 base URL when the option is
+configuration change. Set `matcher.sam3_endpoint` to the SAM3 base URL when the option is
 enabled. The default configuration MUST keep the option disabled.
 
 ## Single-image behavior
 
 - `POST /v1/match` and `POST /v1/eval/predict` MUST use the same selection step.
 - The selector MUST request `wine bottle, can, packet, box, hand` from SAM3 in one
-  `POST <SAM3_ENDPOINT>/segment_multi` request, field `texts`. SAM3 encodes the image
+  `POST <matcher.sam3_endpoint>/segment_multi` request, field `texts`. SAM3 encodes the image
   one time for all nouns. Each instance MUST carry one of these nouns as its label.
   `/segment` takes one noun and gives no label, so the selector MUST NOT use it.
 - The selector MUST apply EXIF orientation before segmentation. It MUST limit the
@@ -40,7 +40,7 @@ enabled. The default configuration MUST keep the option disabled.
   binary SAM3 mask with white. It MUST NOT reconstruct an occluded label.
 - With no usable package mask, the matcher MUST use the original image and its
   existing preprocessing. An invalid SAM3 response MUST be an error, not a fallback.
-- A missing or invalid `SAM3_ENDPOINT` MUST return HTTP 503. Invalid service data
+- A missing or invalid `matcher.sam3_endpoint` MUST return HTTP 503. Invalid service data
   MUST return HTTP 502. A SAM3 timeout MUST return HTTP 504.
 - With the option disabled, single-image requests MUST NOT call SAM3.
 

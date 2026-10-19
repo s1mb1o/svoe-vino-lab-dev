@@ -1,5 +1,7 @@
 """Run the official shell harness against a live matcher process."""
 
+from matcher.tests.config_helpers import process_environment
+
 import json
 import os
 from pathlib import Path
@@ -64,10 +66,8 @@ class OfficialHarnessTest(unittest.TestCase):
         self.output_directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.output_directory.cleanup)
         self.output_path = Path(self.output_directory.name)
-        environment = os.environ.copy()
-        environment["SVOE_VINO_MATCHER_CONFIG"] = str(CONFIG)
-        environment["SVOE_VINO_MATCHER_OUTPUT_DIR"] = str(self.output_path)
-        environment["SVOE_VINO_MATCHER_MAX_IMAGE_BYTES"] = str(MAX_IMAGE_BYTES)
+        environment = process_environment(CONFIG, output_dir=self.output_path,
+                                          limits={"max_image_bytes": MAX_IMAGE_BYTES})
         self.process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",
              "--host", "127.0.0.1", "--port", str(self.port),

@@ -3,7 +3,7 @@
 # reference. The secret token MUST be in SVOE_VINO_MATCHER_TOKEN at process start.
 matcher:
   pipeline: official-eval-mock
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  output_dir: work/matcher-test-requests
   token: "{env:SVOE_VINO_MATCHER_TOKEN}"
 
 # Keep the same mock answers as config.yaml. This isolates authentication as the only

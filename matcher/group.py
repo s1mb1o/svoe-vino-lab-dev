@@ -249,7 +249,7 @@ def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
 
 def _sam3_url(endpoint: str | None) -> str:
     if not isinstance(endpoint, str) or not endpoint:
-        raise GroupMatchError(503, "SAM3_ENDPOINT is not configured")
+        raise GroupMatchError(503, "matcher.sam3_endpoint is not configured")
     try:
         parsed = urllib.parse.urlsplit(endpoint)
         _ = parsed.port
@@ -258,7 +258,7 @@ def _sam3_url(endpoint: str | None) -> str:
                 or parsed.query or parsed.fragment):
             raise ValueError("invalid endpoint")
     except ValueError as exc:
-        raise GroupMatchError(503, "SAM3_ENDPOINT is not configured correctly") from exc
+        raise GroupMatchError(503, "matcher.sam3_endpoint is not configured correctly") from exc
     return endpoint.rstrip("/") + "/segment_multi"
 
 

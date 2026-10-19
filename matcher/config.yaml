@@ -5,7 +5,15 @@ matcher:
   pipeline: siglip2-p512-as-is
   # Independent shelf ranking. Enable this key with the installed catalogue path.
   # group_pipeline: siglip2-p512-rot5-seg
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  output_dir: work/matcher-requests
+  sam3_endpoint: http://192.168.86.14:18081/upstream/sam3
+  limits:
+    max_image_bytes: 20971520
+    max_image_pixels: 40000000
+    upload_timeout_seconds: 30.0
+    max_inflight_requests: 8
+    max_queued_requests: 16
+    queue_timeout_seconds: 0.25
   # The time budget of POST /v1/eval/predict (docs/cascade.md). It is valid only with a
   # pipeline of the backend cascade. The times count from the arrival of the request
   # headers. Enable it together with `pipeline: cascade-p512-rot5`.
@@ -20,7 +28,7 @@ pipeline:
     backend: siglip2
     catalog: workbench/data/catalog
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
-    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    endpoint: "http://192.168.86.14:18081"
 
   # One SigLIP2 vector of the photo as it is: no segmentation. The photo steps are the
   # steps of the lab pipeline siglip2-p512-as-is. The vector ranks the view `full` of
@@ -33,9 +41,9 @@ pipeline:
     # The root URL of the OpenAI-compatible gateway, for example
     # http://192.168.86.14:18081. The service sends POST <endpoint>/v1/embeddings. The
     # bundle gives the model name.
-    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    endpoint: "http://192.168.86.14:18081"
     # Optional main-package selection with SAM3 package and hand detections.
-    # Requires SAM3_ENDPOINT when true. Applies only to single-image requests.
+    # Requires matcher.sam3_endpoint when true. Applies only to single-image requests.
     # Group matching always processes all retained bottles and ignores this option.
     hand_selection: false
 
@@ -51,15 +59,15 @@ pipeline:
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     # POST /v1/group/match needs the view `label`, which the rot5 index does not hold.
     group_embedding: gx10-siglip2-so400m-patch16-naflex-p512
-    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    endpoint: "http://192.168.86.14:18081"
     # SigLIP2 of the whole photo at the start: the answer when SAM3 is slow.
     whole_image: true
     barcode:
-      endpoint: "{env:QR_SCANNER_ENDPOINT}"   # .../upstream/qr-scanner; never engine auto
+      endpoint: "http://192.168.86.14:18081/upstream/qr-scanner"   # .../upstream/qr-scanner; never engine auto
       engine: zxing-cpp
       crops: true          # scan the package crop and the label crop after SAM3
     sam3:
-      endpoint: "{env:SAM3_ENDPOINT}"         # .../upstream/sam3
+      endpoint: "http://192.168.86.14:18081/upstream/sam3"         # .../upstream/sam3
       threshold: 0.35
       hand: true
       label: true
@@ -68,7 +76,7 @@ pipeline:
       packages_first: false
     rerank:
       clusters: gx10-siglip2-so400m-patch16-naflex-p512   # clusters.json, cluster-rules.json
-      endpoint: "{env:VLM_ENDPOINT}"          # http://<gateway>/v1
+      endpoint: "http://192.168.86.14:18081/v1"          # http://<gateway>/v1
       model: qwen3.5-9b-nvfp4
       window: 10
       side: 1536

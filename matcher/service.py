@@ -10,7 +10,6 @@ import random
 import re
 
 from PIL import Image
-import yaml
 
 from .bundle import BundleError, load_bundle
 from .cascade import (BarcodeConfig, Cascade, CascadeConfig, FastAnswer, RerankConfig,
@@ -20,6 +19,7 @@ from .main_scene import select_main_package
 from .rerank import RuleBook, RuleError
 from .services import Services
 from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
+from .configuration import ConfigError, endpoint_url, read_configuration, sam3_endpoint
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -52,27 +52,12 @@ GROUP_STRONG_FULL_SCORE = 0.925
 GROUP_STRONG_LABEL_SCORE = 0.84
 
 
-class ConfigError(ValueError):
-    """The matcher configuration is not valid."""
-
-
 class _MatcherSettings:
     """The output directory and token resolution that every backend shares."""
 
     def resolved_output_dir(self, environ=None) -> str | None:
-        """Resolve the configured output directory without exposing other variables."""
-        if self.output_dir is None:
-            return None
-        match = ENV_REFERENCE.fullmatch(self.output_dir)
-        if match is None:
-            return self.output_dir
-        variables = os.environ if environ is None else environ
-        name = match.group(1)
-        value = variables.get(name)
-        if not isinstance(value, str) or not value:
-            raise ConfigError("matcher.output_dir environment variable %s MUST be set"
-                              % name)
-        return value
+        """Return the public path from YAML. The environment argument is unused."""
+        return self.output_dir
 
     def resolved_token(self, environ=None) -> str | None:
         """Read the optional bearer token without storing it in YAML."""
@@ -152,6 +137,7 @@ class Siglip2Matcher(_MatcherSettings):
     output_dir: str | None = None
     token: str | None = None
     hand_selection: bool = False
+    sam3_endpoint: str | None = None
 
     @property
     def cards(self) -> dict | None:
@@ -172,7 +158,7 @@ class Siglip2Matcher(_MatcherSettings):
         if self.hand_selection:
             image = select_main_package(
                 image,
-                os.environ.get("SAM3_ENDPOINT"),
+                self.sam3_endpoint,
                 timeout=READINESS_TIMEOUT_SECONDS,
             )
         self.backend.embed(
@@ -208,7 +194,7 @@ class Siglip2Matcher(_MatcherSettings):
 
     def _single_image(self, image: bytes) -> bytes:
         if self.hand_selection:
-            return select_main_package(image, os.environ.get("SAM3_ENDPOINT"))
+            return select_main_package(image, self.sam3_endpoint)
         return image
 
     def _rank(self, vector, k: int) -> list[tuple[str, float]]:
@@ -316,12 +302,9 @@ def _mapping(value, label):
 def _output_dir(value):
     if value is None:
         return None
-    if not isinstance(value, str) or not value:
+    if not isinstance(value, str) or not value.strip() or "{env:" in value:
         raise ConfigError(
-            "matcher.output_dir MUST be a non-empty path or exact {env:NAME} reference")
-    if "{env:" in value and ENV_REFERENCE.fullmatch(value) is None:
-        raise ConfigError(
-            "matcher.output_dir MUST be a non-empty path or exact {env:NAME} reference")
+            "matcher.output_dir MUST be a non-empty literal path in YAML")
     return value
 
 
@@ -334,13 +317,9 @@ def _token(value):
     return value
 
 
-def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
+def load_matcher(config_path, *, document=None) -> MockMatcher | Siglip2Matcher:
     """Load and validate the selected pipeline."""
-    path = Path(config_path)
-    try:
-        config = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, yaml.YAMLError) as exc:
-        raise ConfigError("cannot read matcher configuration %s: %s" % (path, exc)) from exc
+    config = read_configuration(config_path) if document is None else document
     config = _mapping(config, "configuration")
 
     matcher = _mapping(config.get("matcher"), "matcher")
@@ -379,7 +358,8 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     if entry.get("backend") == "cascade":
         return _load_cascade(selected, entry, output_dir, token, fast_answer)
     if entry.get("backend") == "siglip2":
-        return _load_siglip2(selected, entry, output_dir, token)
+        return _load_siglip2(selected, entry, output_dir, token,
+                             sam3_endpoint=sam3_endpoint(config))
     if entry.get("backend") != "mock":
         raise ConfigError("pipeline %s uses unsupported backend: %s"
                           % (selected, entry.get("backend")))
@@ -410,23 +390,7 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
 
 
 def _endpoint(value, selected, key="endpoint"):
-    """Return the endpoint URL of a plain value or of an exact {env:NAME} reference."""
-    label = "pipeline %s %s" % (selected, key)
-    if not isinstance(value, str) or not value:
-        raise ConfigError("%s MUST be a URL or an exact {env:NAME} reference" % label)
-    match = ENV_REFERENCE.fullmatch(value)
-    if match is None:
-        if "{env:" in value:
-            raise ConfigError("%s MUST be a URL or an exact {env:NAME} reference" % label)
-        url = value
-    else:
-        url = os.environ.get(match.group(1))
-        if not isinstance(url, str) or not url:
-            raise ConfigError("%s environment variable %s MUST be set"
-                              % (label, match.group(1)))
-    if not url.startswith(("http://", "https://")):
-        raise ConfigError("%s MUST start with http:// or https://" % label)
-    return url
+    return endpoint_url(value, "pipeline %s %s" % (selected, key))
 
 
 def _load_source(selected, entry, required):
@@ -462,7 +426,7 @@ def _load_source(selected, entry, required):
         raise ConfigError("pipeline %s bundle: %s" % (selected, exc)) from exc
 
 
-def _load_siglip2(selected, entry, output_dir, token):
+def _load_siglip2(selected, entry, output_dir, token, *, sam3_endpoint=None):
     """Load the vectors of one siglip2 pipeline and check them against the backend."""
     if "bundle" not in entry and "catalog" not in entry:
         raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
@@ -475,6 +439,7 @@ def _load_siglip2(selected, entry, output_dir, token):
         output_dir=output_dir,
         token=token,
         hand_selection=entry.get("hand_selection", False),
+        sam3_endpoint=sam3_endpoint,
     )
 
 

@@ -21,7 +21,7 @@ can limit `POST /v1/eval/predict`. The plan is
 ```yaml
 matcher:
   pipeline: cascade-p512-rot5
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  output_dir: work/matcher-requests
   fast_answer:
     enabled: true
     answer_at_seconds: 2.9
@@ -33,13 +33,13 @@ pipeline:
     catalog: workbench/data/catalog
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     group_embedding: gx10-siglip2-so400m-patch16-naflex-p512
-    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    endpoint: "http://192.168.86.14:18081"
     whole_image: true
-    barcode: {endpoint: "{env:QR_SCANNER_ENDPOINT}", engine: zxing-cpp, crops: true}
-    sam3: {endpoint: "{env:SAM3_ENDPOINT}", threshold: 0.35, hand: true, label: true,
+    barcode: {endpoint: "http://192.168.86.14:18081/upstream/qr-scanner", engine: zxing-cpp, crops: true}
+    sam3: {endpoint: "http://192.168.86.14:18081/upstream/sam3", threshold: 0.35, hand: true, label: true,
            packages_first: false}
     rerank: {clusters: gx10-siglip2-so400m-patch16-naflex-p512,
-             endpoint: "{env:VLM_ENDPOINT}", model: qwen3.5-9b-nvfp4, window: 10,
+             endpoint: "http://192.168.86.14:18081/v1", model: qwen3.5-9b-nvfp4, window: 10,
              side: 1536, max_tokens: 256, timeout_seconds: 60}
 ```
 
@@ -62,7 +62,7 @@ pipeline:
 | `sam3.label` | `true` | The noun `label` in the request: the label cut, its scan, and the VLM picture. |
 | `sam3.packages_first` | `false` | A second request with the package nouns alone. |
 | `rerank.clusters` | required | The index directory of `clusters.json` and `cluster-rules.json`. |
-| `rerank.endpoint` | required | The VLM root with `/v1` (`VLM_ENDPOINT`). The client adds `/chat/completions`. |
+| `rerank.endpoint` | required | The literal VLM root URL with `/v1`. The client adds `/chat/completions`. |
 | `rerank.model` | `qwen3.5-9b-nvfp4` | The VLM model. |
 | `rerank.window` | 10 | The trigger window. |
 | `rerank.side` | 1536 | The long side of the VLM picture. |

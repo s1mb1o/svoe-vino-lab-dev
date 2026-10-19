@@ -381,23 +381,19 @@ class Siglip2Test(unittest.TestCase):
                     ({"bundle": ""}, "bundle MUST be a non-empty path"),
                     ({"bundle": str(self.directory / "missing")}, "not a directory"),
                     ({"endpoint": "{env:MATCHER_TEST_SIGLIP2}"},
-                     "MATCHER_TEST_SIGLIP2 MUST be set"),
+                     "literal http:// or https://"),
                     ({"endpoint": "{env:MISSING_MATCHER_TEST_SIGLIP2}"},
-                     "MISSING_MATCHER_TEST_SIGLIP2 MUST be set"),
-                    ({"endpoint": "x{env:GOOD}"}, "exact \\{env:NAME\\} reference"),
+                     "literal http:// or https://"),
+                    ({"endpoint": "x{env:GOOD}"}, "literal http:// or https://"),
                     ({"endpoint": "192.168.86.14:18081"}, "http:// or https://")):
                 with self.subTest(entry=entry):
                     with self.assertRaisesRegex(ConfigError, pattern):
                         self.matcher((1, 0, 0, 0), **entry)
 
-    def test_the_endpoint_environment_reference_is_resolved(self):
-        fake = FakeSiglip2((0, 1, 0, 0))
-        self.addCleanup(fake.close)
-        with mock.patch.dict(os.environ, {"MATCHER_TEST_SIGLIP2": fake.url + "/"}):
-            matcher, _ = self.matcher((1, 0, 0, 0),
-                                      endpoint="{env:MATCHER_TEST_SIGLIP2}")
-        self.assertEqual(matcher.predict(self.photo()), "wine-b")
-        self.assertEqual(len(fake.requests), 1)
+    def test_endpoints_cannot_read_public_values_from_environment(self):
+        with mock.patch.dict(os.environ, {"MATCHER_TEST_SIGLIP2": "http://hidden.test"}):
+            with self.assertRaisesRegex(ConfigError, "literal http:// or https://"):
+                self.matcher((1, 0, 0, 0), endpoint="{env:MATCHER_TEST_SIGLIP2}")
 
     def test_a_changed_or_unsupported_bundle_is_rejected(self):
         manifest_path = self.bundle / "manifest.json"
@@ -423,10 +419,9 @@ class Siglip2Test(unittest.TestCase):
 
     def test_the_default_config_selects_the_siglip2_pipeline(self):
         config = yaml.safe_load(DEFAULT_CONFIG.read_text(encoding="utf-8"))
-        self.assertEqual(config["matcher"], {
-            "pipeline": "siglip2-p512-as-is",
-            "output_dir": "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}",
-        })
+        self.assertEqual(config["matcher"]["pipeline"], "siglip2-p512-as-is")
+        self.assertEqual(config["matcher"]["output_dir"], "work/matcher-requests")
+        self.assertEqual(config["matcher"]["limits"]["max_inflight_requests"], 8)
         # The file holds other entries too, for example `cascade-p512-rot5`. Only the
         # selected entry is fixed here.
         entries = {entry["name"]: entry for entry in config["pipeline"]}
@@ -434,7 +429,7 @@ class Siglip2Test(unittest.TestCase):
             "name": "siglip2-p512-as-is",
             "backend": "siglip2",
             "bundle": "matcher/data/gx10-siglip2-so400m-patch16-naflex-p512",
-            "endpoint": "{env:SIGLIP2_ENDPOINT}",
+            "endpoint": "http://192.168.86.14:18081",
             "hand_selection": False,
         })
 
@@ -475,11 +470,10 @@ class Siglip2HarnessTest(unittest.TestCase):
                         "output_dir": str(root / "requests")},
             "pipeline": [{"name": "harness-siglip2", "backend": "siglip2",
                           "bundle": str(root / "bundle"),
-                          "endpoint": "{env:SIGLIP2_ENDPOINT}"}],
+                          "endpoint": fake.url}],
         }), encoding="utf-8")
         environment = os.environ.copy()
         environment["SVOE_VINO_MATCHER_CONFIG"] = str(config)
-        environment["SIGLIP2_ENDPOINT"] = fake.url
         port = free_port()
         process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",

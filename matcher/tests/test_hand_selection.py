@@ -1,5 +1,8 @@
 """Hand-aware single-image selection and strict isolation of shelf matching."""
 
+import dataclasses
+from matcher.tests.config_helpers import process_environment
+
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import http.client
 from io import BytesIO
@@ -178,9 +181,9 @@ class HandSelectionConfigTest(unittest.TestCase):
         selector.assert_not_called()
 
     def test_enabled_single_methods_share_the_selector(self):
-        matcher = self.matcher(hand_selection=True)
-        with mock.patch.dict(os.environ, {"SAM3_ENDPOINT": "http://sam3.test"}), \
-                mock.patch("matcher.service.select_main_package", return_value=photo()) as selector, \
+        matcher = dataclasses.replace(self.matcher(hand_selection=True),
+                                      sam3_endpoint="http://sam3.test")
+        with mock.patch("matcher.service.select_main_package", return_value=photo()) as selector, \
                 mock.patch.object(type(matcher.backend), "embed", return_value=[1, 0, 0, 0]):
             self.assertEqual(matcher.predict(photo()), "wine-a")
             self.assertEqual(matcher.match(photo(), 1)[0][0], "wine-a")
@@ -247,11 +250,8 @@ class HandSelectionEndpointTest(unittest.TestCase):
         pipeline = {"name": "hand-test", "backend": "siglip2", "hand_selection": enabled,
                     "bundle": str(root / "bundle"), "endpoint": embedding.url}
         config = write_config(root / "config.yaml", pipeline, token=True)
-        environment = dict(os.environ, SVOE_VINO_MATCHER_CONFIG=str(config),
-                           SVOE_VINO_MATCHER_TOKEN=TOKEN)
-        environment.pop("SAM3_ENDPOINT", None)
-        if sam3_endpoint is not None:
-            environment["SAM3_ENDPOINT"] = sam3_endpoint
+        environment = process_environment(config, sam3_endpoint=sam3_endpoint)
+        environment["SVOE_VINO_MATCHER_TOKEN"] = TOKEN
         port = free_port()
         process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",
@@ -372,11 +372,11 @@ class HandSelectionEndpointTest(unittest.TestCase):
         port, root, embedding = self.start(None)
         status, answer = self.get(port, "/readyz")
         self.assertEqual(status, 503, answer)
-        self.assertIn("SAM3_ENDPOINT", answer["detail"])
+        self.assertIn("matcher.sam3_endpoint", answer["detail"])
         for path in ("/v1/eval/predict", "/v1/match"):
             status, answer = self.post(port, path)
             self.assertEqual(status, 503, answer)
-            self.assertIn("SAM3_ENDPOINT", answer["detail"])
+            self.assertIn("matcher.sam3_endpoint", answer["detail"])
         self.assertEqual(embedding.requests, [])
         records = [json.loads(path.read_text())
                    for path in (root / "requests").rglob("request.json")]

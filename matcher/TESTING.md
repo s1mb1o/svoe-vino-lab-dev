@@ -23,7 +23,7 @@ official harness. Выполняйте команды из корня `svoe-vino
 ~~~yaml
 matcher:
   pipeline: official-eval-mock
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  output_dir: work/matcher-test-requests
 
 pipeline:
   - name: official-eval-mock
@@ -39,7 +39,7 @@ pipeline:
 ~~~yaml
 matcher:
   pipeline: official-eval-mock
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  output_dir: work/matcher-test-requests
   token: "{env:SVOE_VINO_MATCHER_TOKEN}"
 ~~~
 
@@ -48,8 +48,8 @@ matcher:
 объясняют назначение конфигурации. Эти файлы предназначены только для тестов и
 локального mock-запуска. Они не заменяют будущий рабочий файл `matcher/config.yaml`.
 
-Тесты явно задают `SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml`. Они также
-создают временный `SVOE_VINO_MATCHER_OUTPUT_DIR` и задают отдельный лимит файла.
+Tests write private YAML files with an archive path and runtime limits.
+`SVOE_VINO_MATCHER_CONFIG` selects each private test file.
 
 ## Автоматические тесты
 
@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 213 tests.
+The suite contains 262 tests.
 
 ### API и official harness
 
@@ -83,12 +83,12 @@ The suite contains 213 tests.
 
 ### Конфигурация и авторизация
 
-Unit tests отклоняют повреждённый YAML, неизвестный pipeline, дублированное имя
-pipeline, неверный SHA-256 и неподдерживаемый backend. Они проверяют обычный output
-directory, ссылку `"{env:NAME}"`, конфигурацию без output_dir, отсутствующую или пустую
-переменную окружения и неверную ссылку. Для matcher.token они отдельно проверяют точную
-ссылку, bare-имя, malformed-ссылки, отсутствующую и пустую переменную. Устаревший ключ
-matcher.token_env также отклоняется.
+Unit tests reject malformed YAML, unknown pipelines, duplicate pipeline names,
+invalid image hashes and unsupported backends. Public paths and endpoints MUST be
+literal YAML values. Limit names, numeric types and bounds are validated at startup.
+Secret tokens MUST be exact environment references. Missing or empty secret values,
+literal tokens, and malformed references are rejected. The obsolete token_env key
+is rejected. Each explicit HTTP factory override uses the same strict validation.
 
 Тесты авторизации проверяют публичный доступ к `/healthz`, `/readyz` и OpenAPI.
 Они проверяют отсутствующий токен, неверную схему, неверное значение и успешный
@@ -140,7 +140,7 @@ calls in a forced order leave the process warnings filters unchanged. A JPEG hea
 - Ошибка HTTP, вектор другой размерности и нулевой вектор дают `Siglip2Error` со
   статусом HTTP 502. Таймаут получает статус HTTP 504.
 - API возвращает HTTP 502 для ошибки SigLIP2. Audit record сохраняет тот же статус.
-- Неверные поля bundle и endpoint, отсутствующая переменная окружения, изменённый payload,
+- Неверные поля bundle и endpoint, rejected public environment references, изменённый payload,
   другой формат bundle и bundle без view `full` дают `ConfigError`.
 - `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
 - Official harness получает slug через uvicorn, pipeline siglip2 и fake-сервер.
@@ -323,7 +323,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=213 run=213 skipped=0`.
+`matcher tests: discovered=262 run=262 skipped=0`.
 
 ## GitLab CI
 
@@ -332,4 +332,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 213 tests` и итог `OK`.
+строка `Ran 262 tests` и итог `OK`.

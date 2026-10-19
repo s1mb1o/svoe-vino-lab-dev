@@ -20,8 +20,8 @@ A pipeline of the backend `siglip2` or `cascade` MUST also hold vectors of the v
 The query parameter `k` MAY set the maximum number of candidates for each bottle.
 The range of `k` is 1 to 20. The default is 1. A value out of the range gives HTTP 422.
 
-The matcher MUST read the SAM3 base URL from `SAM3_ENDPOINT`.
-The matcher MUST send the normalized image to `${SAM3_ENDPOINT}/segment_multi`.
+The matcher MUST read the SAM3 base URL from `matcher.sam3_endpoint` in YAML.
+The matcher MUST send the normalized image to `<matcher.sam3_endpoint>/segment_multi`.
 The request MUST use `texts=wine bottle, wine label`.
 The request MUST use `threshold=0.4`.
 The request MUST use `mask_threshold=0.5`.
@@ -99,7 +99,7 @@ When a limit excludes bottles, the matcher MUST keep the bottles with the highes
 
 ## Errors
 
-The endpoint MUST return HTTP 503 when `SAM3_ENDPOINT` is absent or invalid.
+The endpoint MUST return HTTP 503 when `matcher.sam3_endpoint` in YAML is absent or invalid.
 The endpoint MUST return HTTP 503 before the SAM3 request when the selected pipeline has no vectors of the view `label`.
 The endpoint MUST return HTTP 502 for an invalid or failed SAM3 response.
 The endpoint MUST return HTTP 504 when the 300-second SAM3 budget expires.

@@ -13,7 +13,6 @@ from typing import Literal
 import uuid
 
 from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
-from PIL import Image
 from pillow_heif import register_heif_opener
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -25,6 +24,7 @@ from .protection import (REQUEST_STARTED_AT, ImageRejected, RequestProtectionMid
 from .service import CascadeMatcher, load_matcher
 from .services import ServiceError
 from .siglip2 import Siglip2Error
+from .configuration import read_configuration, runtime_settings, sam3_endpoint
 
 
 # Pillow opens HEIF (HEIC) uploads through the pillow-heif plugin. The service registers
@@ -34,12 +34,6 @@ register_heif_opener()
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG = ROOT / "config.yaml"
-DEFAULT_MAX_IMAGE_BYTES = 20 * 1024 * 1024
-DEFAULT_MAX_IMAGE_PIXELS = 40_000_000
-DEFAULT_UPLOAD_TIMEOUT_SECONDS = 30.0
-DEFAULT_MAX_INFLIGHT_REQUESTS = 8
-DEFAULT_MAX_QUEUED_REQUESTS = 16
-DEFAULT_QUEUE_TIMEOUT_SECONDS = 0.25
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
 DEFAULT_MATCH_K = 20
 MAX_MATCH_K = 20
@@ -162,40 +156,30 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                queue_timeout_seconds=None):
     """Create the API and load its selected pipeline."""
     path = config_path or os.environ.get("SVOE_VINO_MATCHER_CONFIG") or DEFAULT_CONFIG
-    matcher = load_matcher(path)
-    group_matcher = load_group_matcher(path, matcher)
+    document = read_configuration(path)
+    settings = runtime_settings(document).with_overrides(
+        max_image_bytes=max_image_bytes, max_image_pixels=max_image_pixels,
+        upload_timeout_seconds=upload_timeout_seconds,
+        max_inflight_requests=max_inflight_requests, max_queued_requests=max_queued_requests,
+        queue_timeout_seconds=queue_timeout_seconds)
+    segmentation_endpoint = sam3_endpoint(document)
+    matcher = load_matcher(path, document=document)
+    group_matcher = load_group_matcher(path, matcher, document=document)
     if output_dir is not None:
         output = output_dir
     elif matcher.output_dir is not None:
         output = matcher.resolved_output_dir()
     else:
-        output = os.environ.get("SVOE_VINO_MATCHER_OUTPUT_DIR")
+        output = None
     if not output:
         raise RuntimeError(
-            "matcher.output_dir or SVOE_VINO_MATCHER_OUTPUT_DIR MUST specify "
-            "an output directory")
-    limit = _positive_int_setting(
-        max_image_bytes, "SVOE_VINO_MATCHER_MAX_IMAGE_BYTES", DEFAULT_MAX_IMAGE_BYTES)
-    pixel_limit = _positive_int_setting(
-        max_image_pixels, "SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS", DEFAULT_MAX_IMAGE_PIXELS)
-    # Pillow warns above its own limit and raises above twice that limit, so a larger
-    # setting does not work as configured.
-    if pixel_limit > Image.MAX_IMAGE_PIXELS:
-        raise RuntimeError(
-            "SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS MUST NOT exceed the Pillow limit %d"
-            % Image.MAX_IMAGE_PIXELS)
-    upload_timeout = _positive_float_setting(
-        upload_timeout_seconds, "SVOE_VINO_MATCHER_UPLOAD_TIMEOUT_SECONDS",
-        DEFAULT_UPLOAD_TIMEOUT_SECONDS)
-    inflight_limit = _positive_int_setting(
-        max_inflight_requests, "SVOE_VINO_MATCHER_MAX_INFLIGHT_REQUESTS",
-        DEFAULT_MAX_INFLIGHT_REQUESTS)
-    queue_limit = _positive_int_setting(
-        max_queued_requests, "SVOE_VINO_MATCHER_MAX_QUEUED_REQUESTS",
-        DEFAULT_MAX_QUEUED_REQUESTS)
-    queue_timeout = _positive_float_setting(
-        queue_timeout_seconds, "SVOE_VINO_MATCHER_QUEUE_TIMEOUT_SECONDS",
-        DEFAULT_QUEUE_TIMEOUT_SECONDS)
+            "matcher.output_dir MUST specify an output directory in YAML")
+    limit = settings.max_image_bytes
+    pixel_limit = settings.max_image_pixels
+    upload_timeout = settings.upload_timeout_seconds
+    inflight_limit = settings.max_inflight_requests
+    queue_limit = settings.max_queued_requests
+    queue_timeout = settings.queue_timeout_seconds
     token = matcher.resolved_token()
     archive = RequestArchive(output)
 
@@ -233,6 +217,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     application.state.request_archive = archive
     application.state.max_image_bytes = limit
     application.state.max_image_pixels = pixel_limit
+    application.state.runtime_settings = settings
     application.state.auth_required = token is not None
     application.state.max_queued_requests = queue_limit
     application.add_middleware(
@@ -549,9 +534,9 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 quality_match = getattr(group_matcher, "match_group_photo", None)
                 if quality_match is not None:
                     segmented, ranked_groups, evidence = quality_match(
-                        body, os.environ.get("SAM3_ENDPOINT"), k)
+                        body, segmentation_endpoint, k)
                 else:
-                    segmented = segment_group(body, os.environ.get("SAM3_ENDPOINT"))
+                    segmented = segment_group(body, segmentation_endpoint)
                     ranked_groups = group_matcher.match_group_many(
                         [bottle.crop for bottle in segmented.bottles],
                         [bottle.label_crop for bottle in segmented.bottles], k)
@@ -611,32 +596,6 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     return application
 
 
-def _positive_int_setting(explicit, environment_name, default):
-    raw = explicit if explicit is not None else os.environ.get(environment_name)
-    if raw is None or raw == "":
-        return default
-    try:
-        value = int(raw)
-    except (TypeError, ValueError) as exc:
-        raise RuntimeError("%s MUST be a positive integer" % environment_name) from exc
-    if value <= 0:
-        raise RuntimeError("%s MUST be a positive integer" % environment_name)
-    return value
-
-
-def _positive_float_setting(explicit, environment_name, default):
-    raw = explicit if explicit is not None else os.environ.get(environment_name)
-    if raw is None or raw == "":
-        return default
-    try:
-        value = float(raw)
-    except (TypeError, ValueError) as exc:
-        raise RuntimeError("%s MUST be a positive number" % environment_name) from exc
-    if value <= 0:
-        raise RuntimeError("%s MUST be a positive number" % environment_name)
-    return value
-
-
 async def _read_image(image, limit):
     body = await image.read(limit + 1)
     if not body:
@@ -644,7 +603,7 @@ async def _read_image(image, limit):
     if len(body) > limit:
         raise HTTPException(
             status_code=413,
-            detail="image exceeds SVOE_VINO_MATCHER_MAX_IMAGE_BYTES",
+            detail="image exceeds matcher.limits.max_image_bytes",
         )
     return body
 

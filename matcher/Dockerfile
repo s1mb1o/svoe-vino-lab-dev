@@ -10,10 +10,8 @@
 #   /config/config.yaml  the matcher configuration, read-only
 #   /data                the data directory; the request archive is /data/requests
 #
-# The endpoints of the gx10 model services are optional environment variables:
-# SIGLIP2_ENDPOINT, GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL,
-# QR_SCANNER_ENDPOINT. The image sets none of them. The siglip2 pipeline reads the
-# variable of its endpoint field.
+# Put model URLs, runtime limits, and the output path in /config/config.yaml.
+# Pass secret values through environment variables referenced by matcher.token.
 #
 # The image holds no embedding bundle. Mount the bundle read-only at the path of the
 # bundle field; a relative path resolves against /app, for example
@@ -28,8 +26,7 @@ LABEL org.opencontainers.image.title="svoe-vino-lab-matcher" \
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    SVOE_VINO_MATCHER_CONFIG=/config/config.yaml \
-    SVOE_VINO_MATCHER_OUTPUT_DIR=/data/requests
+    SVOE_VINO_MATCHER_CONFIG=/config/config.yaml
 
 WORKDIR /app
 

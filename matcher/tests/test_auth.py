@@ -1,5 +1,7 @@
 """Integration tests for optional Bearer authentication."""
 
+from matcher.tests.config_helpers import process_environment
+
 import http.client
 import json
 import os
@@ -55,9 +57,7 @@ class BearerAuthenticationTest(unittest.TestCase):
     def setUpClass(cls):
         cls.port = free_port()
         cls.output_directory = tempfile.TemporaryDirectory()
-        environment = os.environ.copy()
-        environment["SVOE_VINO_MATCHER_CONFIG"] = str(CONFIG)
-        environment["SVOE_VINO_MATCHER_OUTPUT_DIR"] = cls.output_directory.name
+        environment = process_environment(CONFIG, output_dir=cls.output_directory.name)
         environment["SVOE_VINO_MATCHER_TOKEN"] = TOKEN
         cls.process = subprocess.Popen(
             [sys.executable, "-m", "uvicorn", "matcher.app:app",
