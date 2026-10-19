@@ -1,0 +1,10 @@
+{
+  "cases": 216,
+  "groups": 31,
+  "source_assets": 3768,
+  "source_bytes": 233580061,
+  "scene_v1_photo_failure_rows": 107,
+  "scene_v1_photo_failure_cases": 77,
+  "scene_v1_wrong_target_rows": 79,
+  "scene_v1_label_loss_rows": 96
+}

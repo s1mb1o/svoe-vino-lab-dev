@@ -1,0 +1,497 @@
+{
+  "case": {
+    "id": "fb-held-neck-pending-logo",
+    "name": "A held subject retains pending full paper even if its mask is only a logo (contact alone is unconfirmed; use geometric fallback)",
+    "group": "review",
+    "operation": "held-neck-pending-logo",
+    "provenance": "geometry_fixture",
+    "width": 240,
+    "height": 240,
+    "image": "images/fb-held-neck-pending-logo.png",
+    "image_sha256": "1c4a3439c83c8aed9a96ee3e4ed02b373c53a0ea9c629f4e56467b3fababf609",
+    "annotations": [
+      {
+        "instance_id": 1,
+        "category": "bottle",
+        "parent_instance_id": null,
+        "mask": "masks/fb-held-neck-pending-logo-i1.png",
+        "box": [
+          180,
+          30,
+          230,
+          230
+        ],
+        "area": 10000,
+        "segmentation": {
+          "size": [
+            240,
+            240
+          ],
+          "counts": [
+            43230,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            2410
+          ]
+        },
+        "sha256": "45ec32a7597f0230ae56526e46296b5a00ba559d2d5bb5d7c0ffeea92f7b40a2"
+      },
+      {
+        "instance_id": 2,
+        "category": "label_front",
+        "parent_instance_id": null,
+        "mask": "masks/fb-held-neck-pending-logo-i2.png",
+        "box": [
+          0,
+          0,
+          20,
+          40
+        ],
+        "area": 800,
+        "segmentation": {
+          "size": [
+            240,
+            240
+          ],
+          "counts": [
+            0,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            200,
+            40,
+            53000
+          ]
+        },
+        "sha256": "35a3cb1885fc77ad10c667fe01ccdd1ce34bfdbe7b00731b4a0580ae56193d2d"
+      },
+      {
+        "instance_id": 3,
+        "category": "hand",
+        "parent_instance_id": null,
+        "mask": "masks/fb-held-neck-pending-logo-i3.png",
+        "box": [
+          165,
+          70,
+          180,
+          190
+        ],
+        "area": 1800,
+        "segmentation": {
+          "size": [
+            240,
+            240
+          ],
+          "counts": [
+            39670,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            14450
+          ]
+        },
+        "sha256": "445deb1b1592dd7e864615027c37fe007204b1a815418dc21b767640a1de9b10"
+      }
+    ],
+    "interaction": {},
+    "expected_status": "selected",
+    "target_instance_id": 1,
+    "acceptable_instance_ids": [
+      1
+    ],
+    "expected_detection_id": "d0",
+    "expected_reason": "fallback_nearest_center",
+    "expected_selection_mode": "fallback",
+    "expected_crop_scope": "context_frame",
+    "expected_tap_candidate_ids": null,
+    "preserve_points": [
+      [
+        100,
+        180
+      ]
+    ],
+    "label_ground_truth": false,
+    "fixture_detections": [
+      {
+        "label": "wine bottle",
+        "box": [
+          180,
+          30,
+          230,
+          230
+        ],
+        "score": 0.9,
+        "mask_png_b64": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAAAAAAbPrZOAAABY0lEQVR4nO3QQQ2AAADDwFL/niFo4EGgOwXdYGZmZmZmZmZmZmZmZmbmdnzxhvPBTImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGImRGN8OmJmZmRl+4gK4PQKQQOSSywAAAABJRU5ErkJggg=="
+      },
+      {
+        "label": "wine label",
+        "box": [
+          0,
+          0,
+          170,
+          240
+        ],
+        "score": 0.9,
+        "mask_png_b64": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAAAAAAbPrZOAAAAm0lEQVR4nO3OQQ2AQAADsN38ewYBPHmQsFZBz5Wnk/9qxjRjmjHNmGZMM6YZ04xpxjRjmjHNmGZMM6YZ04xpxjRjmjHNmGZMM6YZ04xpxjRjmjHNmGZMM6YZ04xpxjRjmjHNmGZMM6ZfBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAvHYD3lIBUEYWMz8AAAAASUVORK5CYII="
+      },
+      {
+        "label": "hand",
+        "box": [
+          165,
+          70,
+          180,
+          190
+        ],
+        "score": 0.9,
+        "mask_png_b64": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAAAAAAbPrZOAAABD0lEQVR4nO3OQQ2AAADEsDH/nsECDwghuyoozMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM+w7+4HwuLTESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzESIzES49eBmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZnhhgs6/gHwV4iRcgAAAABJRU5ErkJggg=="
+      }
+    ],
+    "annotation_source": "declared geometry fixture",
+    "previous_contact_expectation": {
+      "winner": 0,
+      "reason": "unique_visible_hand_contact",
+      "mode": "confident"
+    },
+    "confidence_contract_revision": "2026-10-19-positive-grip-and-panel",
+    "target_explanation": "Diagnostic geometry fixture, not a photograph or model output. The gold crosshair marks the photo center; no aim is supplied unless declared."
+  },
+  "saved_outputs": [
+    {
+      "case_id": "fb-held-neck-pending-logo",
+      "group": "review",
+      "mode": "fallback",
+      "selector_ms": 0.5478750681504607,
+      "shared_detection_ms": 0,
+      "interaction_case": false,
+      "selector_source_sha256": {
+        "semantic_selector.py": "714c380b66180152792e1df52b93912640762dc6d48193628fe6d7287b74c253",
+        "main_scene.py": "01a0449e6cc976bfc788ba24354d07a60828a62b1c7233ef105af568bac9e491"
+      },
+      "comparison_inputs_sha256": "4a818140345396da10d325cbaea23c96d1c209fa13b4d3b13ad0eb7b6c2a7d37",
+      "prediction_inputs_sha256": "7c73cdcd8dc037110cb0d73326e688d597dc00b8f86e267869dd90b57b9229a2",
+      "variant": "scene-v1",
+      "status": "selected",
+      "width": 240,
+      "height": 240,
+      "selected_id": "d0",
+      "reason": "existing_scene_v1_rank",
+      "candidates": [
+        {
+          "id": "d0",
+          "source_index": 0,
+          "kind": "wine bottle",
+          "box": [
+            180,
+            30,
+            230,
+            230
+          ]
+        }
+      ],
+      "crop_box": [
+        180,
+        30,
+        230,
+        230
+      ],
+      "label_boxes": [],
+      "rejected": [],
+      "label_views_truncated": false,
+      "selection_mode": "legacy",
+      "fallback_trigger": null,
+      "crop_scope": "subject_region",
+      "tap_candidate_ids": [],
+      "tap_status": "absent",
+      "correct": true,
+      "metric_cohort": "rule_conformance",
+      "intent_target_correct": null,
+      "policy_target_match": null,
+      "policy_fallback_pass": null,
+      "no_target_correct": null,
+      "conformance_pass": null,
+      "matched_instance_id": 1,
+      "expected_mode_match": null,
+      "assignment_mask_iou": 1.0,
+      "crop_target_coverage": null,
+      "crop_distractor_retention": null,
+      "label_retention": null,
+      "raw_label_retention": null,
+      "full_frame_context": false,
+      "retained_image_fraction": 0.1736111111111111,
+      "foreign_label_retention": null,
+      "representation_retention": null,
+      "price_tag_retention": null,
+      "wrong_subject": false,
+      "crop_path": "crops/fb-held-neck-pending-logo-fallback-scene-v1.png",
+      "keep_mask_path": "crops/fb-held-neck-pending-logo-fallback-scene-v1-keep.png",
+      "label_crop_paths": []
+    },
+    {
+      "case_id": "fb-held-neck-pending-logo",
+      "group": "review",
+      "mode": "fallback",
+      "selector_ms": 15.987333958037198,
+      "shared_detection_ms": 0,
+      "interaction_case": false,
+      "selector_source_sha256": {
+        "semantic_selector.py": "714c380b66180152792e1df52b93912640762dc6d48193628fe6d7287b74c253",
+        "main_scene.py": "01a0449e6cc976bfc788ba24354d07a60828a62b1c7233ef105af568bac9e491"
+      },
+      "comparison_inputs_sha256": "4a818140345396da10d325cbaea23c96d1c209fa13b4d3b13ad0eb7b6c2a7d37",
+      "prediction_inputs_sha256": "7c73cdcd8dc037110cb0d73326e688d597dc00b8f86e267869dd90b57b9229a2",
+      "variant": "semantic-v2",
+      "status": "selected",
+      "width": 240,
+      "height": 240,
+      "selected_id": "d0",
+      "reason": "fallback_nearest_center",
+      "candidates": [
+        {
+          "id": "d0",
+          "source_index": 0,
+          "kind": "wine bottle",
+          "box": [
+            180,
+            30,
+            230,
+            230
+          ],
+          "score": 0.629447,
+          "signals": {
+            "prominence": 0.757576,
+            "aim_distance": 0.356609,
+            "hand_contact": 5.240909,
+            "hand_contacts": {
+              "d2": 5.240909
+            },
+            "isolation": 1.0,
+            "focus": 0.0,
+            "foreground_axis": null,
+            "hand_wrap": {
+              "d2": false
+            },
+            "ambiguous_hand_contact": true,
+            "confirmed_hand_owner": true,
+            "grip_evidence": {
+              "d2": {
+                "front_wrap": false,
+                "front_fraction": 0.0,
+                "front_body_fraction": 0.0,
+                "terminal_opposition": false,
+                "contact_span": 0.628141,
+                "localized_front_contact": false,
+                "broad_front_contact": false,
+                "confirmed": false
+              }
+            },
+            "panel_context": false,
+            "contains_photo_center": false,
+            "photo_center_distance_px": 85.586214
+          },
+          "label_ids": [],
+          "label_boxes": [],
+          "eligible_for_selection": true
+        }
+      ],
+      "crop_box": [
+        0,
+        0,
+        240,
+        240
+      ],
+      "label_boxes": [],
+      "rejected": [
+        {
+          "id": "d1",
+          "reason": "orphan_label_beside_bottle"
+        }
+      ],
+      "label_views_truncated": false,
+      "selection_mode": "fallback",
+      "fallback_trigger": "hand_contact_not_confirmed",
+      "crop_scope": "context_frame",
+      "tap_candidate_ids": [],
+      "tap_status": "absent",
+      "correct": true,
+      "metric_cohort": "rule_conformance",
+      "intent_target_correct": null,
+      "policy_target_match": null,
+      "policy_fallback_pass": null,
+      "no_target_correct": null,
+      "conformance_pass": true,
+      "matched_instance_id": 1,
+      "expected_mode_match": true,
+      "assignment_mask_iou": 1.0,
+      "crop_target_coverage": 1.0,
+      "crop_distractor_retention": null,
+      "label_retention": null,
+      "raw_label_retention": null,
+      "full_frame_context": true,
+      "retained_image_fraction": 1.0,
+      "foreign_label_retention": 1.0,
+      "representation_retention": null,
+      "price_tag_retention": null,
+      "wrong_subject": false,
+      "crop_path": "crops/fb-held-neck-pending-logo-fallback-semantic-v2.png",
+      "keep_mask_path": "crops/fb-held-neck-pending-logo-fallback-semantic-v2-keep.png",
+      "label_crop_paths": []
+    }
+  ]
+}

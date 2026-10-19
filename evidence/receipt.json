@@ -1,0 +1,157 @@
+{
+  "schema_version": 5,
+  "release": "main-selector-hardcases-v2",
+  "created_local": "2026-10-19",
+  "base_commit": "438065b0b48cf02b9a070d9cbc1baf2d374d72f7",
+  "branch": "codex/main-selector-input",
+  "source_checkout": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector",
+  "source_files_sha256": {
+    "matcher/ChangeLog.md": "e69bd60e97318449cf59816ccb3581142c32e8f971b661b340c7eead3c7e3852",
+    "matcher/README.md": "633f266eacb17af24a2fd6467faa15c88e544accee2b12146b0a3ddf1f4438bb",
+    "matcher/cascade.py": "44dfa27692b3e3a1fc1a9b028758d9f300a03b614fd501cdc1fa169c22ea664c",
+    "matcher/cascade_run.py": "868ae0c35c44cb96fdebaa2d6a238128708698827dac1c955c3eb57c8f9c9487",
+    "matcher/config.main-selector.example.yaml": "d12a69e6086c3516f5f0e40c6cbdfc489c72c65abd586b6cc4b45bf493160d61",
+    "matcher/config.yaml": "431fc138565ab0a36c4c55d7686270d111c03d62d65bebced36943d4bd6ca834",
+    "matcher/docs/input-selector.md": "bfe0811de2f2c1fabe9ccd500cec557ad98dffa32e05d00a8901f6ff7eb8171f",
+    "matcher/experiments/main_selector/audit_additional_coverage.py": "02cfd3b5dd464b4f18038ba1bb2dae1cfe4e2cf42d847b76ffd13fc853f63f28",
+    "matcher/experiments/main_selector/audit_assignment.py": "9aa80652b7bb7477302b89c5c2dfda333033049937687720f58a707882cf85d8",
+    "matcher/experiments/main_selector/benchmark.py": "5f610191e8c85be10e9d75ef8b37a3d16bd3a2e62f85fe9a91c66814cf29663e",
+    "matcher/experiments/main_selector/collect_predictions.py": "ecad1fb00555c1b661c094756b3a9a78abc390113aee0e50bf39b7c1a50ef83b",
+    "matcher/experiments/main_selector/expand_suite.py": "a5209f34e4616c3e9772667ecafef183340ba7dc275df9c0756c87f24c05ba63",
+    "matcher/experiments/main_selector/expand_v2.py": "0ca9f6105f566f97924e52e515d6a21cda478994cd39c3574f8a10b9910c9b83",
+    "matcher/experiments/main_selector/expansion_scenes.py": "20ffcc6bd2d03634538bcf83e3e20731a949ec9a70423b9a3185449112674354",
+    "matcher/experiments/main_selector/export_suite.py": "104f491eb1b4b6430db4c08293b84e9fc76438e3157f381718bcb088ee87d43a",
+    "matcher/experiments/main_selector/fallback_cases.py": "b1a17e77b5c3cf4e3585ea8da376f36fb5e193ad56d945003e1ee58fa17d9a5f",
+    "matcher/experiments/main_selector/fallback_suite.py": "f9098fa5cc58fbf37d296462eeaf7bebf16b94782b01ca149c57be6118e62b65",
+    "matcher/experiments/main_selector/import_real_samples.py": "2256c7eb40f57743501826358d3eae52f292313537b59e3ed5f28b7199918198",
+    "matcher/experiments/main_selector/import_real_v2.py": "abb1a326b53d7c6ccb6c5b79db693d7302cdd0d0bd18f66d202a4e0748718eab",
+    "matcher/experiments/main_selector/make_suite.py": "dce3d29562e583c03a5313c1668bb19c9d6c9b0ef4f7428bdaca3c7556f3e628",
+    "matcher/experiments/main_selector/metrics.py": "e89d4b35d38329c977e1153fe8a9cb4333e61f2b26cb0f1a267c84284e2dc9f6",
+    "matcher/experiments/main_selector/perturbations.py": "b42c11858fe617272e19cb5729d6040551911dd6582f929b3f0f9291f306626b",
+    "matcher/experiments/main_selector/render_suite.py": "4b6baabecc060bbb442937d475e18cd24f32dfc6e450f06556e32b499f77203c",
+    "matcher/experiments/main_selector/report.py": "ab4a536b2594a362685cc6abecca17f3e08d284b539bde7a519c29b760121ee3",
+    "matcher/experiments/main_selector/report_template.html": "b6dc33e46655c7deaab88bf2b8c67edb10db5b83738af496b058d04bacb0f5c5",
+    "matcher/experiments/main_selector/v2_scenes.py": "efa352a215a60c1e2fc39f945f929f2dc1b4f73cb6b0af1cf47caf6d86e55547",
+    "matcher/experiments/main_selector/validate_suite.py": "09d818e68dd8a318eb7d399f5866ab392ac578cd70fc0decdb9bdc7a6903ede5",
+    "matcher/experiments/main_selector/verify_report.py": "b5166f70d091b1809504653d99a7c264cb33661e7e80f3a7448b9b99e86ea4a0",
+    "matcher/group.py": "d632eb1a709e2272e603af6ba134718cd8b2d7c6b0f57c9526a796e321ef87c0",
+    "matcher/input_selector.py": "6af8230b53bbe2183dd475aa73a0519b8e748487074a7f8e41c6930abf708366",
+    "matcher/main_scene.py": "01a0449e6cc976bfc788ba24354d07a60828a62b1c7233ef105af568bac9e491",
+    "matcher/semantic_selector.py": "714c380b66180152792e1df52b93912640762dc6d48193628fe6d7287b74c253",
+    "matcher/service.py": "da4207e7ef1ffc82fcc7e251b5745073a1e97113df4269668ea9ecc55b7278da",
+    "matcher/tests/data/semantic-confidence-masks.json": "997f505f394418130cddc4a784a9252a6f35bd6de567b0ae55f513a6dd426560",
+    "matcher/tests/selector_cases.py": "b1a17e77b5c3cf4e3585ea8da376f36fb5e193ad56d945003e1ee58fa17d9a5f",
+    "matcher/tests/test_input_selector.py": "01e981ae418aa9a80778861d1522c861b74088634fd72b1cd2e1584e566a29a8",
+    "matcher/tests/test_selector_expansion.py": "aa9d6473c520ca04525cc865d5454e7a9c6aa176a3f84407cedd0b412d0d6685",
+    "matcher/tests/test_selector_metrics.py": "c5f9867838bf23979a42283e975823b0cdea14bdd9192dd86b7f3e8ebf13deea",
+    "matcher/tests/test_semantic_selector.py": "4065a15cd87bee0d0ffcf071030b80929e2f25d7a91ee578f2ae4976fad0aa2f"
+  },
+  "source_changes_local_unpushed": true,
+  "selector_policy_unchanged_from_v1": true,
+  "baseline_ranker_unchanged": true,
+  "selection_policy_revision": "2026-10-19-positive-grip-and-panel",
+  "coverage_revision": "2026-10-19-additional-hardcases-v2",
+  "patch_applies_to_base": true,
+  "patch_sha256": "35a053bc3107f1fcc1421b855a070e1660784c583b232013ae7bca870c36d91f",
+  "patch_changed_files": 37,
+  "dataset": {
+    "cases": 216,
+    "photos": 166,
+    "native_renders": 153,
+    "real_photos": 13,
+    "geometry_fixtures": 50,
+    "binary_pixel_masks": 1621,
+    "source_scene_hashes_verified": 11,
+    "added_inputs": 92,
+    "additional_existing_scenario_views": 69,
+    "new_native_scenarios": 15,
+    "additional_real_photos": 8
+  },
+  "inheritance": {
+    "inherited_cases": 124,
+    "unchanged_pixel_files": 955,
+    "unchanged_prediction_caches": 143,
+    "additional_existing_scenario_views": 69,
+    "old_case_dictionaries_unchanged": true
+  },
+  "full_v1_bundle_verification": {
+    "passed": true,
+    "files": 3344,
+    "manifest_sha256": "fd2742535e1b2e21deba6b8fef3afd72739e8a47e5c090e5f45ba69f5037d9c6",
+    "interpretation": "Full frozen v1 bundle manifest rechecked; no v1 file was written by this expansion."
+  },
+  "frozen_inputs_sha256": {
+    "comparison-inputs.json": "4a818140345396da10d325cbaea23c96d1c209fa13b4d3b13ad0eb7b6c2a7d37",
+    "prediction-inputs.json": "7c73cdcd8dc037110cb0d73326e688d597dc00b8f86e267869dd90b57b9229a2",
+    "v2-declaration.json": "a2f0db5aeb9fa71c261e796ff3c75ec357108b706f3ef3d7223ef5d9276ba160",
+    "real-v2-declaration.json": "cd1b447b0267d94117f66c5fed13ca8e9cede94c282b8e4afd0e9966797a49bb",
+    "inheritance-proof.json": "41b3bbab55e8846df3896c1540b46fedb8d6cb5884ac3d6857f69fe1d5970e2c"
+  },
+  "tests": {
+    "focused_selector_integration_and_metrics": {
+      "tests": 125,
+      "passed": true,
+      "log": "v2-selector-tests-final.log"
+    },
+    "lint_and_diff_check": {
+      "passed": true,
+      "log": "v2-lint-verification.log"
+    },
+    "integrity": {
+      "passed": true,
+      "report": "validation.json"
+    },
+    "report": {
+      "passed": true,
+      "report": "report-verification.json",
+      "group_source_mode_aggregation_scopes": 480
+    },
+    "offline_javascript_render_wiring": {
+      "passed": true,
+      "scopes": 480,
+      "report": "v2-report-runtime-verification.json",
+      "interpretation": "Offline JavaScript execution with lightweight element stubs; checks render/filter wiring and case/crop denominators, not browser layout."
+    },
+    "full_matcher_suite": "Not rerun for this dataset/harness expansion. No selector or matcher runtime logic changed in this turn."
+  },
+  "comparison": {
+    "result_rows": 738,
+    "semantic_rows": 369,
+    "semantic_rows_with_crop": 369,
+    "photo_semantic_rows": 319,
+    "assigned_selected_label_trials": 297,
+    "assigned_selected_labels_ge98": 297,
+    "assigned_selected_label_min": 1.0,
+    "new_issue_case_mode_rows": 18,
+    "new_issue_unique_cases": 12,
+    "interpretation": "Full selected-subject labels and target correctness are separate measurements. A preserved wrong bottle remains a decision failure. No real label GT is fabricated."
+  },
+  "derived_probes": {
+    "rows": 1424,
+    "all_return_crop": true,
+    "inputs": 89,
+    "modes": 2,
+    "perturbations": 8,
+    "independent_photos": false
+  },
+  "detector_collection": {
+    "new_live_requests": 92,
+    "reused_live": 74,
+    "controlled": 84
+  },
+  "total_prediction_caches": 319,
+  "unused_crop_assets_removed": 0,
+  "limitations": [
+    "Correlated procedural native assets and Codex-assigned real targets; not independent user-intent accuracy.",
+    "COCO bottle polygons can omit background candidates; real policy targets are conditional on available GT.",
+    "No real label or hand ground truth; COCO original JPEGs, per-image source and license metadata retained.",
+    "COCO uses generic bottle GT, not verified wine identity. Real-402720 has a visible taxonomy caveat and is not a verified wine-intent positive.",
+    "Native opaque visible masks are exact rasters; transparent/refraction regions are proxies.",
+    "The SAM3 server did not disclose an exact checkpoint revision; saved responses are replay evidence.",
+    "Both selectors use the same seven-noun detections; production five-noun scene-v1 was not remeasured.",
+    "No selector tuning or target reassignment was made after predictions. New failures remain visible.",
+    "No browser visual check for this release; offline JS/data/assets verification and native-image inspection only.",
+    "Historical artifacts under inherited-v1 and historical/confidence/rotation JSON names retain their original scope.",
+    "No blanket native artwork or source-geometry redistribution license is asserted."
+  ]
+}
