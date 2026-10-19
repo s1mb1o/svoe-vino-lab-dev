@@ -1,5 +1,15 @@
 # Asset provenance
 
+## Wine&Dine Merge landing, 2026-10-19
+
+`public/game-art/` contains seven standalone SVG illustrations.
+They derive from the owner's original Wine&Dine Merge source at revision `1bb250e45a801c11cec3c08e9843f695146fba9a`.
+The hero composes the existing regional scene, guest, ingredients, dish, and wine art.
+Three region images preserve the existing regional scenery.
+The remaining images illustrate merging, pairing, and pouring.
+Read [the content and artwork record](game-landing.md).
+No Hollywood Merge asset, external image host, or generated bitmap is used.
+
 Date: 2026-09-15.
 
 The user requested the source portal look and feel.

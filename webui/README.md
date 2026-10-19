@@ -25,6 +25,7 @@ The current release uses a mock prediction service and local result metadata.
 - Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
 - Open the project PowerPoint and PDF files from two adjacent links at `/presentation`.
 - Explore ideas beyond recognition at `/ideas`, in implemented, demo, and mock order.
+- Open the Wine&Dine Merge landing page at `/game` from `/ideas`. Play on the separate game origin. Read [the page contract](docs/game-landing.md).
 
 The mock service does not recognize wine. The UI MUST state this limitation.
 The mock service MUST use the same HTTP contract as the official evaluator.

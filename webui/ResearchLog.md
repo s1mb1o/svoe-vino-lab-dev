@@ -1,5 +1,22 @@
 # Research log
 
+## Game landing evidence, 2026-10-19
+
+The game is a separate public PWA at `game.chtozavino.ru`.
+Version `0.8.22` has six main route regions, eight optional regions, and a separate pouring mode.
+The owner selected a main-portal landing page reached from `/ideas`.
+Decision: add `/game` and a separate Game invitation on `/ideas`. Keep the existing game root and pouring URL.
+This preserves campaign storage under its current origin and keeps the blind-style quiz mock distinct.
+Use original game SVG artwork as local static assets. Do not import the game runtime into Nuxt.
+Runtime SVG strings can contain HTML boolean attributes and CSS-controlled overflow layers.
+Standalone image exports need valid XML attributes and explicit removal of inactive overflow artwork.
+Check regional menu names against current `WINE_STAGES` and the Russian catalog before publishing copy.
+Read [the page contract](docs/game-landing.md) for the source revision and verification procedure.
+Vue scoped styles need the complete dark descendant selector inside `:global(...)`.
+A trailing descendant outside that construct can be omitted by the scoped transform.
+The narrow dark browser check detected an unintended root border from that pattern.
+The corrected selectors preserve the root dimensions and all 16 production layout checks pass.
+
 ## Bottle result overlap, 2026-10-19 (#67)
 
 The owner reported that a bottle covers «Лучшее совпадение» in the result for «БЮРНЬЕ.КРАСНОСТОП сухое красное».

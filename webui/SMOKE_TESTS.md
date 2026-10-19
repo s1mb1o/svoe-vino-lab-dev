@@ -1,5 +1,17 @@
 # Smoke tests
 
+## Wine&Dine Merge landing
+
+Verified locally on 2026-10-19: type checks, the production build, 94 required build checks, and the first-load bundle check passed. Twenty existing optional catalog checks were skipped. All 16 production browser layouts passed in Chromium and WebKit. Physical-device verification was not performed.
+
+1. Follow `/hackaton` → `/ideas` → the Game invitation → `/game`. Check the page heading, header label, canonical URL, and back link.
+2. Confirm the existing portal age gate on a fresh browser context.
+3. Check Play links to `https://game.chtozavino.ru/` and the separate pouring link to `https://game.chtozavino.ru/?mode=pour`.
+4. Select each region. Check the matching scene and menu. Use arrow keys, Home, and End. Check focus follows the selected tab.
+5. Open and close each native FAQ disclosure with mouse and keyboard.
+6. Check 320, 390, 768, and 1440 pixel layouts in both system themes. Check local SVG loading, complete words, and no horizontal overflow.
+7. Run `scripts/check-game-landing-browser.mjs` with the browser environment in `docs/game-landing.md`. Preserve the screenshots and JSON result. Browser emulation does not establish physical-device acceptance.
+
 ## Bottle result spacing (#67)
 
 Verified locally on 2026-10-19: 40 cases passed in Chromium and WebKit, with both themes, two image shapes, and all five widths below. The gap was 9 px on desktop and 10 px on mobile. No image, title, or portal link was clipped. All 469 unit tests passed; 20 optional catalog snapshot tests were skipped. Type checks, the production build, and the bundle check passed.

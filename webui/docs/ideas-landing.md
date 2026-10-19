@@ -1,5 +1,13 @@
 # Ideas landing page
 
+## Wine&Dine Merge entry, 2026-10-19
+
+The Game invitation after the interactive demos opens `/game`.
+The game is a working educational prototype on a separate origin.
+It is not the blind-style quiz mock.
+The four existing result demos and six mockups retain their existing meanings and counts.
+Read [the game landing contract](game-landing.md).
+
 The `/ideas` page describes product ideas beyond photo recognition.
 The page uses Russian UI text and the shared product identity.
 The page keeps the shared age gate, theme control, and health warning.

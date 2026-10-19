@@ -111,6 +111,11 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
       </div>
     </section>
 
+    <section class="ideas-game" aria-labelledby="ideas-game-title">
+      <img src="/game-art/hero.svg" width="960" height="820" alt="Бистро Wine&Dine Merge с полем ингредиентов, гостем и вином" loading="lazy">
+      <div><span class="status-badge demo"><AppIcon name="game" />Игра · можно попробовать</span><p class="section-kicker">WINE&DINE MERGE</p><h2 id="ideas-game-title">А если знакомиться<br> с вином <em>через игру?</em></h2><p>Собирайте блюда, подбирайте винные пары и подавайте заказы гостям своего маленького бистро. Впереди — путешествие по винным регионам.</p><NuxtLink to="/game" class="button primary" data-testid="ideas-game-link">Знакомство с игрой<AppIcon name="arrow" /></NuxtLink><small>Работающий учебный прототип. Сочетания и правила подачи упрощены.</small></div>
+    </section>
+
     <section id="mock" class="ideas-section" aria-labelledby="mock-title" data-stage="mock">
       <div class="section-heading">
         <div><p class="section-kicker"><span>03</span> МАКЕТЫ И ИДЕИ</p><h2 id="mock-title">Куда пойти дальше.</h2></div>
@@ -136,6 +141,8 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
 
 <style scoped>
 .ideas-page { --ideas-muted: color-mix(in srgb, var(--ink) 72%, var(--paper)); width: calc(100% - 80px); max-width: 1240px; margin: 0 auto; }
+.ideas-game{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center;padding:25px 55px 30px 25px;margin-top:70px;border:1px solid var(--line);border-radius:24px;background:var(--cream)}.ideas-game>img{width:100%;height:auto}.ideas-game .status-badge .icon{width:14px;height:14px}.ideas-game .section-kicker{margin-top:20px}.ideas-game h2{font-size:clamp(29px,3.3vw,44px);line-height:1.25;letter-spacing:-.035em;margin:12px 0 18px}.ideas-game h2 em{font-style:normal;color:var(--accent)}.ideas-game>div>p:not(.section-kicker){font-size:13px;line-height:1.9;color:var(--ideas-muted);max-width:440px}.ideas-game .button{margin-top:24px}.ideas-game small{display:block;margin-top:14px;font-size:10px;line-height:1.8;color:var(--ideas-muted)}
+@media(max-width:767px){.ideas-game{grid-template-columns:1fr;gap:5px;padding:20px 28px 30px;margin-top:50px}.ideas-game>img{max-width:320px;margin:auto}.ideas-game h2{font-size:31px}.ideas-game h2>br{display:none}}
 .ideas-hero { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 24px; padding: 68px 32px 52px; }
 .hero-copy { position: relative; z-index: 1; }
 .hero-copy h1 { margin: 24px 0; font-size: clamp(44px, 5.3vw, 74px); line-height: 1.08; letter-spacing: -.045em; }

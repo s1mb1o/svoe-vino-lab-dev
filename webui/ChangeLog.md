@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-19 — Wine&Dine Merge landing
+
+- Added `/game` with original game illustrations, a three-step introduction, selectable regional scenes, separate pouring practice, and a native FAQ.
+- Added the Game invitation on `/ideas`. Kept `/hackaton` → `/ideas` as the existing entry path.
+- Linked Play to the existing game origin and kept standalone pouring at `?mode=pour`.
+- Added the portal header label, sitemap entry, canonical metadata, system themes, responsive layout, and keyboard region selection.
+- Documented content evidence, artwork provenance, prototype limits, and browser verification.
+- Passed type checks, the production build, 94 required build checks, and the first-load bundle check. Twenty existing optional catalog checks were skipped.
+- Passed all 16 production browser layouts in Chromium and WebKit, including route navigation, region keyboard focus, FAQ disclosure, image loading, and exact game links.
+
 ## 2026-10-19 — One searchable dish picker
 
 - Combine dish name and broad category in one editable picker. Browse up to three visual levels, search by name and category, select a broad group, or enter a custom dish. Preserve all 320 source IDs; fold extra intermediate class names into the second level.
