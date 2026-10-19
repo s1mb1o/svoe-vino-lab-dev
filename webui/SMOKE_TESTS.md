@@ -1,5 +1,11 @@
 # Smoke tests
 
+## Wine Crocodile highlights
+
+1. Confirm that the four hero highlights describe 30 illustrated cards, three explanation modes, three difficulty levels, and card stories.
+2. Confirm that the hero highlights have no round-time or score claim. Keep both rules in the rules section.
+3. Check the text highlight at 320, 390, 768, and 1440 pixels in both themes. Keep every word inside its column.
+
 ## Wine Crocodile hero wording
 
 1. Open `/crocodile`. Confirm the exact tagline «Объясняйте. Угадывайте. Общайтесь».

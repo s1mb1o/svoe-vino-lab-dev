@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Wine Crocodile highlights
+
+- Replace the hero round-time and score highlights with three difficulty levels and card stories.
+- Keep the detailed rules unchanged. Fit the text highlight on phones.
+
 ## 2026-10-19 — Wine Crocodile hero copy
 
 - Replace the hero tagline with the owner's three-action text.

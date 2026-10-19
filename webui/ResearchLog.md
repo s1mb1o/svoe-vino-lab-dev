@@ -1,5 +1,11 @@
 # Research log
 
+## Wine Crocodile highlight content, 2026-10-19
+
+The owner removed the round-time and score highlights below the hero.
+Use the existing three difficulty levels and the fact-or-legend card stories as replacement benefits.
+Keep the detailed rules unchanged.
+
 ## Wine Crocodile hero wording, 2026-10-19
 
 The owner supplied exact replacement text for the hero tagline and photo caption.
