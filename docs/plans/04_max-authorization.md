@@ -236,6 +236,8 @@ Routes:
 - «Настройки»: «Привязать MAX» with the same QR code.
 - `/max/*`: the mini-app pages (`/max`, `/max/onboarding`, `/max/settings`, and others).
   They reuse the account components of plan 03. Their navigation stays under `/max/*`.
+  They use a small header of their own without the site links: the route list of the mini-app
+  host does not allow `/android`, `/ideas`, and the other site pages.
 - The global 18+ gate also covers `/max/*`.
 - On the mini-app host, do not load Metrika and do not register the service worker.
   This keeps the cookie question of #41 off the mini app.

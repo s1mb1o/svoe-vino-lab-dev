@@ -262,7 +262,18 @@ Pages:
 - «Настройки»: «Email» (change), «Яндекс ID» (link or unlink), «Сохранять историю поисков
   с фото», «Удалить все фото», «Удалить аккаунт», and application tokens (Phase 2). Plan 04
   adds «Привязать MAX»; #51 adds «Привязать Telegram».
-- The header gets «Войти» or «Дневник» in `.header-actions` (`webui/app/app.vue:25-29`).
+- Header entry on every page (owner requirement, 2026-10-19): «Дневник» in `.header-actions`
+  (`webui/app/app.vue:25-29`). `app.vue` renders the header on `/`, `/shelf`, `/ideas`,
+  `/android`, `/hackaton`, and the account pages. `/presentation` has no header.
+  - The link always goes to `/account`. `/account` shows the login or the diary.
+  - The header makes no account call: no extra request per page, no layout shift, and it
+    works when the service is down. The httpOnly session cookie is not readable in the
+    browser anyway.
+  - An empty `NUXT_ACCOUNT_ENDPOINT` hides the link (runtime config, no network call).
+  - Phones (≤767 px): an icon with `aria-label="Винный дневник"`.
+- Other entry points: «Сохранить в дневник» on the result card (`PhotoScanner.vue:74`), a
+  footer link, and the «Винный дневник» card on `/ideas` after release. `/account?next=<path>`
+  returns the person after login; only same-site paths are accepted.
 
 Server routes under `/api/account/*` forward to the service. The Nuxt server:
 
