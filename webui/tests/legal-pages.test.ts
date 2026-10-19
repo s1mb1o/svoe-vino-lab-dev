@@ -71,11 +71,24 @@ describe('legal pages', () => {
   it('states the retention and does not claim Metrika consent before the banner exists', async () => {
     const privacy = await source(pages['/privacy'])
     const scanner = await source('app/components/PhotoScanner.vue')
+    const metrika = privacy.slice(privacy.indexOf('<h3 id="metrika">'), privacy.indexOf('<h3>Изображения вин</h3>'))
     expect(privacy).toContain('включая резервные копии, хранятся 30 дней')
-    expect(privacy).toContain('https://yandex.ru/support/metrica/general/opt-out.html')
-    expect(privacy).not.toMatch(/согласи/i)
+    expect(metrika).toContain('https://yandex.ru/support/metrica/general/opt-out.html')
+    expect(metrika).not.toMatch(/согласи/i)
     expect(scanner).not.toContain('Фото не сохраняется')
     expect(scanner).toContain('<NuxtLink to="/privacy#site">Фото хранится 30 дней</NuxtLink>')
+  })
+
+  it('covers «Винный дневник» and the dish photos', async () => {
+    const privacy = await source(pages['/privacy'])
+    const terms = await source(pages['/terms'])
+    const account = await source('app/pages/account.vue')
+    for (const page of [privacy, terms]) expect(page).toContain('<section id="account" aria-labelledby="account-title">')
+    expect(privacy).toContain('<dt>Фотографии блюд, название блюда и уточнения</dt><dd>не хранятся</dd>')
+    expect(privacy).not.toContain('Сам сайт не устанавливает cookie')
+    expect(privacy).not.toMatch(/qwen|alibaba|за границу передаёт/i)
+    expect(account).toContain('<a href="/terms"')
+    expect(account).toContain('<a href="/privacy"')
   })
 
   it('gives every table-of-contents entry a matching section', async () => {

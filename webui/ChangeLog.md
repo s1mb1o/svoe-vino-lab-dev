@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — Legal pages for «Винный дневник» and wine for a dish
+
+- Rebase the legal pages onto `main`. Drop the HTML site map edit, because `main` has no `/sitemap` page.
+- Add the «Винный дневник» sections to `/privacy` and `/terms`: stored data, login, cookies, linked messengers, application tokens, and deletion.
+- Describe the wine-for-dish photos in `/privacy#dish`. The text assumes that the Dinner Lens cloud fallback is off.
+- Replace «Сам сайт не устанавливает cookie». The site sets cookies only for the diary login.
+- Add the release conditions: the fallback is off and the production SMTP host is confirmed.
+
 ## 2026-10-19 — Legal pages
 
 - Add `/terms`, `/privacy`, and `/contacts` (#37). One set of pages covers the website, the Telegram and MAX bots, and the Android and iOS apps.

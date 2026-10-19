@@ -11,7 +11,9 @@
 - Open `/privacy#max` and `/terms#android`. Confirm that the browser scrolls to the section.
 - Follow every entry in «Содержание». Confirm that each one scrolls to its section.
 - Confirm the footer links «Условия использования», «Политика обработки персональных данных», and «Контакты», and the current-page mark.
-- Confirm the section «Правовая информация» on `/sitemap` and the three paths in `/sitemap.xml`.
+- Confirm the three paths in `/sitemap.xml`.
+- On `/account`, start the sign-up. Confirm that the links «условия использования» and «согласие на обработку персональных данных» open `/terms` and `/privacy`.
+- Open `/privacy#account` and `/privacy#dish`. Confirm the «Винный дневник» section and the wine-for-dish text.
 - On `/`, confirm the link «Фото хранится 30 дней» opens `/privacy#site`.
 - Check 320, 390, 768, and 1440 pixel widths in both system themes. Confirm no horizontal overflow.
 - Use Tab from the page start. Confirm that the skip link gets the first focus and that focus stays visible.

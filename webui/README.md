@@ -142,10 +142,11 @@ Development mode does not register the service worker.
 
 Open `/terms` for «Условия использования», `/privacy` for «Политика обработки персональных данных»,
 and `/contacts` for «Контакты».
-One set of pages covers the website, both bots, and both mobile apps.
+One set of pages covers the website with «Винный дневник» and the wine-for-dish mode, both bots, and both mobile apps.
 The bots use these addresses in `BOT_TERMS_URL`, `BOT_PRIVACY_URL`, and `BOT_CONTACT_URL`.
+The `/account` sign-up form links to `/terms` and `/privacy`.
 `app/data/legal.ts` holds the operator details, the contact channels, and the revision date.
-The shared footer and `/sitemap` link to the pages.
+The shared footer links to the pages.
 Read `docs/legal-pages.md` for the content rules. `ResearchLog.md` lists the evidence for each statement.
 
 ## Android application page

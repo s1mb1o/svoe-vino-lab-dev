@@ -1,5 +1,43 @@
 # Research log
 
+## Legal pages: features on main, 2026-10-19
+
+The legal pages were rebased onto `origin/main` at `7911e52f`. This entry is the evidence for the new sections.
+
+### «Винный дневник» (`account/`, `app/pages/account.vue`)
+
+- Login by a 6-digit e-mail code (10 minutes, 5 attempts) or by Yandex ID. Telegram and MAX can only be linked (`account/src/chto_za_vino_account/service.py`, `yandex.py`).
+- The service stores the username, the creation time, the consent and terms versions with times, identities (e-mail address, Yandex user ID with the Yandex `default_email`, Telegram user ID, MAX user ID), session token hashes with the login method and times, and application token hashes with names and times (`schema/001`–`004`).
+- Diary entries do not exist yet. Recognition requests are not linked to accounts.
+- Yandex: the service reads and stores only `id` and `default_email`. The access token is used once.
+- E-mail: SMTP from `noreply@chtozavino.ru`. The deploy records name REG.RU hosting SMTP. The production SMTP host is not recorded.
+- Cookies: `__Host-cv_session` (400 days, renewed at every visit), `__Host-cv_email`, `__Host-cv_signup`, `__Host-cv_yandex`, `__Host-cv_next` (10 to 30 minutes). All are `HttpOnly`, `Secure`, `__Host-` (`webui/server/utils/account.ts`).
+- Sessions have a 100-year TTL. They end at logout or account deletion.
+- Self-service deletion cascades to identities, sessions, link codes, and tokens. Backups keep data for at most 8 days (`account/README.md`). Login and link codes are deleted 1 hour after expiry. Application tokens are deleted 30 days after expiry or revocation.
+- The service logs no e-mail address or user IP. Rate limits keep IP addresses in memory only (`limits.py`).
+- MAX mini app: the service checks the launch signature and stores only the MAX user ID. Telegram: the bot sends only the Telegram user ID.
+- Metrika skips the account pages and hides the code and token fields (`shared/metrika.ts`, `account.vue`).
+- The sign-up consent checkbox names only the username and the e-mail or Yandex ID. The owner decided to keep this text until the lawyer review (#45).
+
+### Wine for a dish (`/dish`, `dinner-lens/`)
+
+- The browser re-encodes the photo to JPEG, at most 1600 px, without EXIF, and sends it as base64 JSON (`app/composables/useDinnerLens.ts`).
+- The web UI forwards only the validated body to Dinner Lens on gx10. It sends no cookie or client IP (`server/utils/dinner.ts`).
+- Dinner Lens and the web UI store no photo, dish name, preference, or result. The continuation cursor is signed and expires after 1 hour.
+- The primary model is the local Qwen3.5-9B on gx10.
+- The production config has a cloud fallback `qwen3.8-flash` at `maas.qwencloudapi.com`. On 2026-10-19 this host resolved to `8.219.175.122`, registered to Alibaba Cloud (Singapore) Private Limited.
+- The owner decided on 2026-10-19 to turn the fallback off. `/privacy` describes local processing only.
+
+### Other changes
+
+- MCP runs on the user's computer over stdio. Its account tools use application tokens.
+- The matcher has no retention job yet (`da8c8954` changed only the configuration format).
+- The web server moved from Princess to Claudette (Selectel VDS, Moscow) on 2026-10-19.
+
+### Verification
+
+- 484 tests passed, 20 optional catalog checks were skipped. The type check passed.
+
 ## Legal pages: data flow facts, 2026-10-19
 
 This entry is the evidence for `/terms`, `/privacy`, and `/contacts` (`docs/legal-pages.md`, #37).

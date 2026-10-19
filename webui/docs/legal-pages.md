@@ -12,9 +12,11 @@ The site publishes one shared set of legal pages:
 | `/privacy` | Политика обработки персональных данных | `BOT_PRIVACY_URL` |
 | `/contacts` | Контакты | `BOT_CONTACT_URL` |
 
-The pages cover all services: the website, the Telegram bot, the MAX bot, the Android app, and the iOS app.
+The pages cover all services: the website with «Винный дневник» and the wine-for-dish mode, the Telegram bot, the MAX bot, the Android app, and the iOS app.
 Each page has a common part and one section for each service that differs.
-The service sections use stable fragments: `#site`, `#telegram`, `#max`, `#android`, `#ios`.
+The service sections use stable fragments: `#site`, `#account`, `#telegram`, `#max`, `#android`, `#ios`.
+`/privacy#dish` and `/privacy#metrika` are stable subsection fragments.
+The sign-up form of `/account` links to `/terms` and `/privacy`. The MAX mini app footer links to both pages.
 Links from a service MAY point to its fragment, for example `https://chtozavino.ru/privacy#max`.
 
 The published paths and fragments MUST NOT change.
@@ -64,13 +66,23 @@ On 2026-10-19 the matcher has no retention job, and no job removes old snapshots
 Do not deploy the pages before a cleanup job enforces the 30-day period on the archive and the backups.
 Before deployment, also delete the old Telegram data on the NAS and the Telegram deployment backup of 2026-09-29, or document why they stay.
 
-The owner confirmed on 2026-10-19 that all hosts with user data are in Russia: Princess, gx10, the ds1825 NAS, and the owner's Mac with the T7 drive.
+On 2026-10-19 the Dinner Lens production config has a cloud fallback: `qwen3.8-flash` at `maas.qwencloudapi.com`.
+This host resolves to an Alibaba Cloud (Singapore) address.
+The owner decided on 2026-10-19 to turn the fallback off.
+`/privacy` says that dish photos are processed only on the operator's server.
+Do not deploy the pages before the fallback is off in the production config.
+
+`/privacy` names REG.RU as the e-mail provider for login codes. The deploy records name REG.RU, but the production SMTP host is not recorded.
+Confirm the SMTP host before deployment.
+
+The owner confirmed on 2026-10-19 that all hosts with user data are in Russia: the web server (Princess, replaced by Claudette on 2026-10-19), gx10, the ds1825 NAS, and the owner's Mac with the T7 drive.
+Claudette is a Selectel VDS in Moscow.
 
 ## Discovery and navigation
 
 The shared footer links to all three pages.
-`/sitemap` lists the pages in the section «Правовая информация».
 `/sitemap.xml` includes the three paths.
+When the HTML site map `/sitemap` reaches `main`, add the section «Правовая информация» with the three pages.
 Each page has a canonical URL and social metadata.
 
 ## Layout and accessibility

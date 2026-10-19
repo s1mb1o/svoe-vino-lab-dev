@@ -21,7 +21,7 @@ const contents = [
   >
     <section id="about" aria-labelledby="about-title">
       <h2 id="about-title">О сервисе</h2>
-      <p>«Что за вино?» распознаёт российское вино по фотографии и показывает страницу вина в каталоге портала «Свое Вино» (<a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">vino-svoe.ru</a>). Сведения носят справочный характер и не являются предложением о продаже.</p>
+      <p>«Что за вино?» распознаёт российское вино по фотографии, подбирает вино к блюду и показывает страницу вина в каталоге портала «Свое Вино» (<a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">vino-svoe.ru</a>). Сведения носят справочный характер и не являются предложением о продаже.</p>
       <p>Сервис работает на сайте chtozavino.ru, в боте <a href="https://t.me/ChtoZaVinoBot" target="_blank" rel="noopener noreferrer">@ChtoZaVinoBot</a> в Telegram, в боте <a href="https://max.ru/se14697933_bot" target="_blank" rel="noopener noreferrer">@se14697933_bot</a> в MAX и в приложении для Android. Приложение для iOS пока не распространяется.</p>
       <dl>
         <dt>Возрастная категория</dt><dd>18+</dd>
@@ -63,6 +63,7 @@ const contents = [
     <section id="data-requests" aria-labelledby="data-requests-title">
       <h2 id="data-requests-title">Запросы о персональных данных</h2>
       <p>Вы можете узнать, какие ваши данные хранит оператор, попросить исправить или удалить их и отозвать согласие. Права описаны в <NuxtLink to="/privacy#rights">Политике обработки персональных данных</NuxtLink>.</p>
+      <p>«Винный дневник» вы можете удалить сами кнопкой «Удалить аккаунт» на странице дневника. Если пишете о дневнике, укажите имя пользователя.</p>
       <p>Чтобы оператор нашёл ваши данные в боте, укажите ваш user ID:</p>
       <ul>
         <li>в MAX бот показывает ваш MAX user ID в ответе на команду /privacy;</li>
