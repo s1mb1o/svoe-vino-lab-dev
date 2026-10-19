@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — /privacy: 30 days without «включая резервные копии»
+
+- The recognition server keeps photos and request data 30 days. `/privacy` no longer says «включая резервные копии»: the project makes no backups during the hackathon (owner decision).
+- The release condition in `docs/legal-pages.md` names only the 30-day cleanup of the gx10 archive.
+
 ## 2026-10-19 — Public site map
 
 - Port `/sitemap` from `feature/im-bot` (`a82c96c8`) to `main`. Leave out the PWA, Telegram, and MAX guides of `b087d387`: their `/max` page conflicts with the MAX mini app path on `main`.
