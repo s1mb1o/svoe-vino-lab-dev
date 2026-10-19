@@ -1,0 +1,26 @@
+{
+  "baseline_revision": "53badce",
+  "dataset_sha256": "efd694fe948c6bf1f0fe704dab8c482a600f14fa2d0fb499cc7fbeef61f1cf47",
+  "image_sha256": "d955af98a4506789604015cbd0d780a619b20cf03b0f2db268195650e16de75a",
+  "preprocessor_variants": [
+    {
+      "baseline_revision": "53badce",
+      "baseline_request_sha256": "2bfa73769aecb1bda181379d584b940bc07de7e6e35c4b8fb9cdd09c10df7047",
+      "current_request_sha256": "2bfa73769aecb1bda181379d584b940bc07de7e6e35c4b8fb9cdd09c10df7047",
+      "identical": true,
+      "sent_image_sha256": "d955af98a4506789604015cbd0d780a619b20cf03b0f2db268195650e16de75a",
+      "pillow": "13.0.0",
+      "zlib": "1.2.12"
+    },
+    {
+      "baseline_revision": "53badce",
+      "baseline_request_sha256": "2edf986d1b06305a831c7a49f9e12df2dbf5999fd5b1f7cb0c22b9bdbaad28ad",
+      "current_request_sha256": "2edf986d1b06305a831c7a49f9e12df2dbf5999fd5b1f7cb0c22b9bdbaad28ad",
+      "identical": true,
+      "sent_image_sha256": "321c428ee955e889c51e070ff7e66bd70d1c3da9bb1bd7d1ce024493b80bb4d8",
+      "pillow": "13.0.0",
+      "zlib": "1.3.1"
+    }
+  ],
+  "note": "Pillow/zlib versions produce different PNG encoding bytes. Each request hash was captured from the actual unchanged baseline provider on that runtime. Neither variant changes instructions or taxonomy."
+}

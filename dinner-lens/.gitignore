@@ -12,3 +12,5 @@ data/index.v3/
 data/index.v4/
 build/
 dist/
+
+!requirements.lock

@@ -1,33 +1,34 @@
-"""Build a real embedding artifact or serve the complete authenticated API."""
+"""Build an embedding index or serve the API with public YAML settings."""
 import argparse
 import json
 from pathlib import Path
 
+from .configuration import asset_path, load_config
 from .data import Knowledge
 from .embeddings import build_index
-from .paths import bundle_root, default_dataset, default_index, default_style
 
 
 def main():
-    root = bundle_root()
     parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=Path, help="Public YAML configuration file")
     commands = parser.add_subparsers(dest="command", required=True)
-    build = commands.add_parser("build-index")
-    build.add_argument("--dataset", default=str(default_dataset()))
-    build.add_argument("--index", default=str(default_index()))
-    build.add_argument("--workers", type=int, default=4)
-    serve = commands.add_parser("serve")
-    serve.add_argument("--host", default="127.0.0.1")
-    serve.add_argument("--port", type=int, default=8176)
+    commands.add_parser("build-index")
+    commands.add_parser("serve")
     args = parser.parse_args()
+    config, path = load_config(args.config)
     if args.command == "build-index":
-        k = Knowledge(args.dataset, default_style())
-        manifest = build_index(k, args.index, args.workers)
+        knowledge = Knowledge(asset_path(config.assets.dataset, path), asset_path(config.assets.style, path))
+        manifest = build_index(knowledge, asset_path(config.assets.index, path), settings=config.embeddings)
         print(json.dumps({"model": manifest["model"], "wines": manifest["wine_documents"],
                           "queries": manifest["query_documents"], "dimensions": manifest["dimensions"]}))
     else:
+        import os
         import uvicorn
-        uvicorn.run("dinner_lens.api:app_from_environment", factory=True, host=args.host, port=args.port)
+        # Workers import the factory independently. This variable selects the YAML only.
+        os.environ["DINNER_LENS_CONFIG"] = str(path)
+        uvicorn.run("dinner_lens.api:app_from_environment", factory=True,
+                    host=config.server.host, port=config.server.port, workers=config.server.workers,
+                    log_level=config.server.log_level, access_log=config.server.access_log)
 
 
 if __name__ == "__main__":

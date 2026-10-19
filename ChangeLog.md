@@ -5,6 +5,12 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Dinner Lens v0.5.0 moves public service settings to validated YAML. Secrets remain
+  environment variables. Added persistent service cursor secrets, configurable model
+  adapters and limits, public artifact readiness, a pinned Docker build and configuration
+  regression tests. The food/wine rules, datasets, embedding vectors and English prompt
+  remain unchanged.
+
 - Moved matcher public settings to YAML. Added validated `matcher.limits` and
   `matcher.sam3_endpoint`. Shelf matching, hand selection, and readiness share the
   configured segmentation endpoint. Secret tokens stay environment references.

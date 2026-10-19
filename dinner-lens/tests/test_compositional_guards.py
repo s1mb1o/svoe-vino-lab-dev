@@ -15,7 +15,7 @@ class CompositionalGuardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.knowledge = Knowledge(default_dataset(), default_style())
-        cls.engine = Engine(cls.knowledge, EmbeddingIndex(cls.knowledge, default_index()), cursor_secret=b'compositional-regression-secret-at-least-32-bytes')
+        cls.engine = Engine(cls.knowledge, EmbeddingIndex(cls.knowledge, Path(__file__).resolve().parents[1] / "data/index.v4"), cursor_secret=b'compositional-regression-secret-at-least-32-bytes')
         cls.codes = {w['wine_slug']: w['id'] for w in json.loads(default_dataset().read_bytes())['wines']}
 
     def all_codes(self, node, attrs=None, filters=None):

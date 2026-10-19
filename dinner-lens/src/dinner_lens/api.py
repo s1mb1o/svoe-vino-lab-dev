@@ -5,7 +5,6 @@ import asyncio
 import base64
 import binascii
 import hmac
-import os
 import re
 from pathlib import Path
 from typing import Any
@@ -20,7 +19,7 @@ from .data import Knowledge
 from .embeddings import EmbeddingIndex
 from .engine import Engine, PipelineError
 from .provider import QwenRecognizer
-from .paths import bundle_root, default_dataset, default_index, default_style
+from .configuration import Configuration, LimitSettings, asset_path, load_config, secret
 
 
 class RecommendRequest(BaseModel):
@@ -62,7 +61,7 @@ class BoundedBody:
                 return
             body.extend(message.get("body", b""))
             if len(body) > self.max_bytes:
-                return await JSONResponse({"detail": "Request body exceeds 8 MiB"}, status_code=413)(scope, receive, send)
+                return await JSONResponse({"detail": "Request body exceeds the configured limit"}, status_code=413)(scope, receive, send)
             if not message.get("more_body"):
                 break
         first = True
@@ -76,16 +75,17 @@ class BoundedBody:
         return await self.app(scope, replay, send)
 
 
-def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str) -> FastAPI:
+def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str, limits: LimitSettings | None = None) -> FastAPI:
     if type(api_token) is not str or len(api_token) < 24 or not re.fullmatch(r"[A-Za-z0-9._~-]+", api_token):
         raise ValueError("A safe API token of at least 24 characters is required")
     app = FastAPI(title="Dinner Lens", version=__version__)
-    app.add_middleware(BoundedBody)
-    semaphore = asyncio.Semaphore(4)
+    limits = limits or LimitSettings()
+    app.add_middleware(BoundedBody, max_bytes=limits.max_request_bytes)
+    semaphore = asyncio.Semaphore(limits.recognition_concurrency)
 
     @app.middleware("http")
     async def authorize(request: Request, call_next):
-        if request.url.path != "/health":
+        if request.url.path not in {"/health", "/readyz"}:
             provided = request.headers.get("authorization", "").encode()
             if not hmac.compare_digest(provided, ("Bearer " + api_token).encode()):
                 return JSONResponse({"detail": "Unauthorized"}, status_code=401)
@@ -97,11 +97,12 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str) ->
     async def pipeline_error(_request, exc):
         return JSONResponse({"code": exc.code, "detail": str(exc)}, status_code=422)
 
+    @app.get("/readyz")
     @app.get("/health")
     def health():
         return {"status": "ok", "bundle_version": engine.version,
                 "catalog_wines": len(engine.knowledge.wines), "embedding_model": engine.index.model,
-                "recognition_model": "qwen3.8-flash", "instruction_language": "en"}
+                "recognition_model": getattr(recognizer, "model", "qwen3.8-flash"), "instruction_language": "en"}
 
     @app.post("/v1/recommendations")
     def recommend(body: RecommendRequest):
@@ -130,7 +131,7 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str) ->
         except (ValueError, binascii.Error):
             raise PipelineError("invalid_image", "Invalid base64 image") from None
         try:
-            await asyncio.wait_for(semaphore.acquire(), timeout=1.0)
+            await asyncio.wait_for(semaphore.acquire(), timeout=limits.recognition_queue_seconds)
         except TimeoutError:
             raise HTTPException(status_code=503, detail="Recognition capacity is busy; retry shortly") from None
         try:
@@ -150,13 +151,21 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str) ->
     return app
 
 
+def app_from_config(config: Configuration, config_path: Path) -> FastAPI:
+    token = secret(config.auth.api_token_env)
+    cursor_secret = secret(config.auth.cursor_secret_env)
+    secret(config.recognition.api_key_env)
+    knowledge = Knowledge(asset_path(config.assets.dataset, config_path), asset_path(config.assets.style, config_path))
+    index = EmbeddingIndex(knowledge, asset_path(config.assets.index, config_path), settings=config.embeddings)
+    engine = Engine(knowledge, index, cursor_secret=cursor_secret.encode(),
+                    cursor_ttl_seconds=config.limits.cursor_ttl_seconds)
+    recognizer = QwenRecognizer(knowledge, asset_path(config.recognition.prompt, config_path),
+                                settings=config.recognition)
+    app = create_app(engine, recognizer, api_token=token, limits=config.limits)
+    app.state.configuration = config
+    return app
+
+
 def app_from_environment() -> FastAPI:
-    project = bundle_root()
-    dataset = Path(os.environ.get("DINNER_LENS_DATASET", str(default_dataset())))
-    index_path = Path(os.environ.get("DINNER_LENS_INDEX", str(default_index())))
-    knowledge = Knowledge(dataset, default_style())
-    index = EmbeddingIndex(knowledge, index_path)
-    secret = os.environ.get("DINNER_LENS_CURSOR_SECRET")
-    engine = Engine(knowledge, index, cursor_secret=secret.encode() if secret is not None else None)
-    recognizer = QwenRecognizer(knowledge, project / "prompts/image-system.en.txt")
-    return create_app(engine, recognizer, api_token=os.environ.get("DINNER_LENS_API_TOKEN", ""))
+    """ASGI factory. Only the configuration selector and secrets use the environment."""
+    return app_from_config(*load_config())

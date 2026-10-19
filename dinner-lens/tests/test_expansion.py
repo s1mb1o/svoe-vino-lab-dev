@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 import numpy as np
+import yaml
 
 from dinner_lens.api import app_from_environment
 from dinner_lens.data import Knowledge
@@ -36,15 +37,19 @@ class ExpansionTests(unittest.TestCase):
         self.assertTrue(np.array_equal(self.old_index.matrix, self.new_index.matrix))
 
     def test_default_factory_serves_expansion(self):
-        with patch.dict(os.environ, {"DINNER_LENS_API_TOKEN": "expanded-test-token-at-least-24-characters",
-                                    "DINNER_LENS_DATASET": str(default_dataset()),
-                                    "DINNER_LENS_INDEX": str(default_index())}):
-            with TestClient(app_from_environment()) as client:
-                response = client.post("/v1/recommendations", json={"confirmed_dish": "Хумус с тахини"},
-                    headers={"Authorization": "Bearer expanded-test-token-at-least-24-characters"})
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(response.json()["resolved_node_id"], "hummus_tahini")
-                self.assertTrue(all(r["selection_source"] == "curated" for r in response.json()["results"]))
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.yaml"
+            document = yaml.safe_load((ROOT / "config.yaml").read_text())
+            document["assets"]["index"] = str(ROOT / "data/index.v4")
+            config_path.write_text(yaml.safe_dump(document))
+            with patch.dict(os.environ, {"QWENCLOUD_PAYGO_API_KEY": "unit-test-placeholder", "DINNER_LENS_CONFIG": str(config_path), "DINNER_LENS_API_TOKEN": "expanded-test-token-at-least-24-characters",
+                                    "DINNER_LENS_CURSOR_SECRET": "expansion-cursor-secret-at-least-32-bytes"}):
+                with TestClient(app_from_environment()) as client:
+                    response = client.post("/v1/recommendations", json={"confirmed_dish": "Хумус с тахини"},
+                        headers={"Authorization": "Bearer expanded-test-token-at-least-24-characters"})
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response.json()["resolved_node_id"], "hummus_tahini")
+                    self.assertTrue(all(r["selection_source"] == "curated" for r in response.json()["results"]))
 
     def test_ambiguous_names_do_not_confirm_hidden_recipes(self):
         for phrase, expected in {"роллы": "sushi_rolls", "паста": "pasta", "цезарь": "salads",

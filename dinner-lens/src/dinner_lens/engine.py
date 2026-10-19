@@ -143,12 +143,15 @@ def rejection_reasons(wine: dict, eligibility: dict, filters: dict, *, prepared:
 
 
 class Engine:
-    def __init__(self, knowledge: Knowledge, index: EmbeddingIndex, *, cursor_secret: bytes | None = None, clock=time.time):
+    def __init__(self, knowledge: Knowledge, index: EmbeddingIndex, *, cursor_secret: bytes | None = None, cursor_ttl_seconds: int = 3600, clock=time.time):
         self.knowledge = knowledge
         self.index = index
         self.secret = cursor_secret if cursor_secret is not None else secrets.token_bytes(32)
         if type(self.secret) is not bytes or len(self.secret) < 32:
             raise ValueError("Cursor secret must contain at least 32 bytes")
+        if type(cursor_ttl_seconds) is not int or not 1 <= cursor_ttl_seconds <= 86400:
+            raise ValueError("Cursor lifetime must contain 1 to 86400 seconds")
+        self.cursor_ttl_seconds = cursor_ttl_seconds
         self.clock = clock
         self.version = digest({"dataset": knowledge.sha256, "index": index.version, "ranking": RANKING_VERSION})
 
@@ -343,7 +346,7 @@ class Engine:
                          "ranking_evidence": {"semantic_similarity": scores[slug], "preferred_grape_matches": structured_fit(slug), "known_fact_count": evidence_count(slug)},
                          "fact_evidence": wine.get("evidence", {})})
         end = offset + len(selected)
-        expiry = expires if expires is not None else int(self.clock()) + 3600
+        expiry = expires if expires is not None else int(self.clock()) + self.cursor_ttl_seconds
         cursor = self._encode_cursor({"version": self.version, "expires": expiry, "context": context,
                                       "offset": end, "ranking_sha256": ranking_hash}) if end < len(order) else None
         resolution = context["resolution"]

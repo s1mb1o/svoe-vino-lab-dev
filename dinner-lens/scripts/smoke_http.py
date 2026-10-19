@@ -9,6 +9,7 @@ import socket
 import subprocess
 import sys
 import time
+import yaml
 import urllib.error
 import urllib.request
 
@@ -20,9 +21,14 @@ def run(args):
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     env = dict(os.environ)
-    env.update(DINNER_LENS_API_TOKEN=secrets.token_urlsafe(32), DINNER_LENS_CURSOR_SECRET=secrets.token_urlsafe(48),
-               DINNER_LENS_INDEX=str(args.index.resolve()))
+    env.setdefault('QWENCLOUD_PAYGO_API_KEY', 'invalid-photo-smoke-placeholder')
+    env.update(DINNER_LENS_API_TOKEN=secrets.token_urlsafe(32), DINNER_LENS_CURSOR_SECRET=secrets.token_urlsafe(48))
     args.output.parent.mkdir(parents=True, exist_ok=True)
+    config = yaml.safe_load((bundle_root() / "config.yaml").read_text())
+    config["server"].update(host="127.0.0.1", port=port)
+    config["assets"]["index"] = str(args.index.resolve())
+    config_path = args.output.with_suffix(".config.yaml").resolve()
+    config_path.write_text(yaml.safe_dump(config))
     checks = []
 
     def request(path, payload=None, auth=True):
@@ -41,7 +47,7 @@ def run(args):
         checks.append({"name": name, "passed": bool(passed)})
 
     with args.output.with_suffix(".server.log").open("w") as log:
-        process = subprocess.Popen([sys.executable, "-m", "dinner_lens.cli", "serve", "--port", str(port)],
+        process = subprocess.Popen([sys.executable, "-m", "dinner_lens.cli", "--config", str(config_path), "serve"],
                                    env=env, cwd="/tmp", stdout=log, stderr=log)
         try:
             for _ in range(150):

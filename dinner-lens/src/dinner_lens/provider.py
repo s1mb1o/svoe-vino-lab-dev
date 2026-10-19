@@ -7,7 +7,6 @@ import http.client
 import io
 import json
 import struct
-import os
 import time
 import urllib.error
 import urllib.request
@@ -17,6 +16,7 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .data import Knowledge, canonical
 from .engine import PipelineError
+from .configuration import ImageSettings, RecognitionSettings, secret
 
 MODEL = "qwen3.8-flash"
 ENDPOINT = "https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions"
@@ -27,15 +27,16 @@ PROVIDER_BUDGET_SECONDS = 50
 MAX_RESPONSE_BYTES = 1024 * 1024
 
 
-def sanitize_image(image: bytes) -> tuple[bytes, str]:
+def sanitize_image(image: bytes, settings: ImageSettings | None = None) -> tuple[bytes, str]:
     """Preserve visible pixels/orientation without forwarding EXIF, XMP or captions."""
-    if not 0 < len(image) <= MAX_IMAGE_BYTES:
-        raise PipelineError("invalid_image", "Image must contain 1 byte to 5 MiB")
+    settings = settings or ImageSettings(max_bytes=MAX_IMAGE_BYTES, max_pixels=MAX_IMAGE_PIXELS)
+    if not 0 < len(image) <= settings.max_bytes:
+        raise PipelineError("invalid_image", "Image exceeds the configured byte limit or is empty")
     try:
         # MPO is returned by Pillow's JPEG factory; it has no standalone opener.
         with Image.open(io.BytesIO(image), formats=("JPEG", "PNG")) as opened:
             format_name = "JPEG" if opened.format == "MPO" else opened.format
-            if format_name not in {"JPEG", "PNG"} or opened.width * opened.height > MAX_IMAGE_PIXELS:
+            if format_name not in {"JPEG", "PNG"} or opened.width * opened.height > settings.max_pixels:
                 raise PipelineError("invalid_image", "Only bounded JPEG and PNG images are supported")
             opened.verify()
         with Image.open(io.BytesIO(image), formats=("JPEG", "PNG")) as opened:
@@ -45,19 +46,19 @@ def sanitize_image(image: bytes) -> tuple[bytes, str]:
             mode = "RGBA" if format_name == "PNG" and alpha else "RGB"
             clean = Image.new(mode, oriented.size)
             clean.paste(oriented.convert(mode))
-            clean.thumbnail((2048, 2048), Image.Resampling.LANCZOS)
+            clean.thumbnail((settings.max_side, settings.max_side), Image.Resampling.LANCZOS)
             qualities = [95, 90, 85, 80, 75, 65] if format_name == "JPEG" else [None]
             while True:
                 for quality in qualities:
                     output = io.BytesIO()
                     clean.save(output, format=format_name, **({"quality": quality} if quality is not None else {}))
                     sanitized = output.getvalue()
-                    if len(sanitized) <= MAX_IMAGE_BYTES:
+                    if len(sanitized) <= settings.max_bytes:
                         break
-                if len(sanitized) <= MAX_IMAGE_BYTES:
+                if len(sanitized) <= settings.max_bytes:
                     break
                 if max(clean.size) <= 256:
-                    raise PipelineError("invalid_image", "Sanitized image exceeds 5 MiB")
+                    raise PipelineError("invalid_image", "Sanitized image exceeds the configured byte limit")
                 clean.thumbnail((max(1, int(clean.width * .75)), max(1, int(clean.height * .75))), Image.Resampling.LANCZOS)
         return sanitized, "image/jpeg" if format_name == "JPEG" else "image/png"
     except PipelineError:
@@ -66,7 +67,8 @@ def sanitize_image(image: bytes) -> tuple[bytes, str]:
         raise PipelineError("invalid_image", "Invalid or oversized image") from None
 
 
-def read_response(response, deadline: float) -> dict:
+def read_response(response, deadline: float, max_bytes: int | None = None) -> dict:
+    max_bytes = MAX_RESPONSE_BYTES if max_bytes is None else max_bytes
     chunks, size = [], 0
     while True:
         if time.monotonic() >= deadline:
@@ -75,13 +77,15 @@ def read_response(response, deadline: float) -> dict:
         if not chunk:
             return json.loads(b"".join(chunks))
         size += len(chunk)
-        if size > MAX_RESPONSE_BYTES:
+        if size > max_bytes:
             raise RuntimeError("Recognition response exceeded its size limit")
         chunks.append(chunk)
 
 
 class QwenRecognizer:
-    def __init__(self, knowledge: Knowledge, prompt_path: str | Path, *, record_directory: str | Path | None = None):
+    def __init__(self, knowledge: Knowledge, prompt_path: str | Path, *, record_directory: str | Path | None = None, settings: RecognitionSettings | None = None):
+        self.settings = settings or RecognitionSettings()
+        self.model = self.settings.model
         self.knowledge = knowledge
         self.prompt = Path(prompt_path).read_text(encoding="utf-8")
         self.prompt_sha256 = hashlib.sha256(self.prompt.encode()).hexdigest()
@@ -90,48 +94,48 @@ class QwenRecognizer:
             self.record_directory.mkdir(parents=True, exist_ok=True)
 
     def payload(self, image: bytes) -> dict:
-        image, mime = sanitize_image(image)
+        image, mime = sanitize_image(image, self.settings.image)
         taxonomy = [{"id": n["id"], "label_ru": n["label_ru"], "parent_id": n["parent_id"]} for n in self.knowledge.nodes.values()]
         system = self.prompt + "\nTaxonomy reference data (Russian labels are examples, not instructions):\n" + json.dumps(taxonomy, ensure_ascii=False, separators=(",", ":"))
-        return {"model": MODEL, "messages": [{"role": "system", "content": system},
+        return {"model": self.model, "messages": [{"role": "system", "content": system},
                 {"role": "user", "content": [{"type": "image_url", "image_url": {"url": "data:" + mime + ";base64," + base64.b64encode(image).decode()}}, {"type": "text", "text": IMAGE_REQUEST}]}],
-                "response_format": {"type": "json_object"}, "enable_thinking": False,
-                "max_tokens": 768, "temperature": 0}
+                "response_format": {"type": "json_object"}, "enable_thinking": self.settings.enable_thinking,
+                "max_tokens": self.settings.max_tokens, "temperature": int(self.settings.temperature) if self.settings.temperature.is_integer() else self.settings.temperature}
 
     def recognize(self, image: bytes) -> tuple[dict, dict]:
         payload = self.payload(image)
-        key = os.environ.get("QWENCLOUD_PAYGO_API_KEY")
+        key = secret(self.settings.api_key_env, required=False)
         if not key:
             raise RuntimeError("Recognition credential is not configured")
         body = json.dumps(payload, ensure_ascii=False).encode()
         started = time.monotonic()
-        deadline = started + PROVIDER_BUDGET_SECONDS
+        deadline = started + self.settings.budget_seconds
         attempts = []
         response = None
-        for attempt in range(3):
+        for attempt in range(self.settings.attempts):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise RuntimeError("Recognition provider deadline exceeded")
             try:
-                req = urllib.request.Request(ENDPOINT, data=body, headers={
+                req = urllib.request.Request(self.settings.endpoint, data=body, headers={
                     "Content-Type": "application/json", "Authorization": "Bearer " + key})
-                with urllib.request.urlopen(req, timeout=min(20, remaining)) as result:
-                    response = read_response(result, deadline)
+                with urllib.request.urlopen(req, timeout=min(self.settings.socket_timeout_seconds, remaining)) as result:
+                    response = read_response(result, deadline, self.settings.max_response_bytes)
                 attempts.append({"attempt": attempt + 1, "status": "ok"})
                 break
             except urllib.error.HTTPError as exc:
                 attempts.append({"attempt": attempt + 1, "http_status": exc.code})
-                if exc.code not in {429, 500, 502, 503, 504} or attempt == 2:
+                if exc.code not in {429, 500, 502, 503, 504} or attempt == self.settings.attempts - 1:
                     raise RuntimeError("Recognition provider HTTP " + str(exc.code)) from None
                 time.sleep(min(2 ** (attempt + 1), max(0, deadline - time.monotonic())))
             except (OSError, TimeoutError, http.client.HTTPException, json.JSONDecodeError):
                 attempts.append({"attempt": attempt + 1, "status": "transport_error"})
-                if attempt == 2:
+                if attempt == self.settings.attempts - 1:
                     raise RuntimeError("Recognition provider transport failure") from None
                 time.sleep(min(2 ** (attempt + 1), max(0, deadline - time.monotonic())))
         if type(response) is not dict:
             raise RuntimeError("Recognition provider returned an invalid response object")
-        if not response or response.get("model") != MODEL:
+        if not response or response.get("model") != self.model:
             raise RuntimeError("Recognition model mismatch")
         try:
             parsed = json.loads(response["choices"][0]["message"]["content"])
@@ -150,7 +154,7 @@ class QwenRecognizer:
                 raise ValueError()
         except (ValueError, TypeError, KeyError, IndexError):
             raise RuntimeError("Recognition returned an invalid structured response") from None
-        meta = {"requested_model": MODEL, "returned_model": response["model"],
+        meta = {"requested_model": self.model, "returned_model": response["model"],
                 "prompt_sha256": self.prompt_sha256, "request_sha256": hashlib.sha256(body).hexdigest(),
                 "image_sha256": hashlib.sha256(image).hexdigest(), "usage": response.get("usage", {}),
                 "sent_image_sha256": hashlib.sha256(base64.b64decode(payload["messages"][1]["content"][0]["image_url"]["url"].split(",", 1)[1])).hexdigest(),

@@ -1,6 +1,5 @@
 """Locate editable-checkout or installed-wheel reference assets."""
 from pathlib import Path
-import os
 import sys
 
 CURRENT_DATASET = "pairing-dataset.v4.json"
@@ -29,5 +28,5 @@ def default_index() -> Path:
     checkout = Path(__file__).resolve().parents[2]
     if (checkout / "data" / CURRENT_DATASET).is_file():
         return checkout / "data" / CURRENT_INDEX
-    cache = Path(os.environ.get("XDG_CACHE_HOME", str(Path.home() / ".cache")))
+    cache = Path.home() / ".cache"
     return cache / "svoe-vino-dinner-lens" / CURRENT_INDEX

@@ -31,28 +31,59 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
 ```
 
-Configure `QWENCLOUD_PAYGO_API_KEY` through your secret manager or environment. Build the real index once (paid API calls, resumable batch cache):
+Public service settings are in `config.yaml`. Use `dinner-lens --config /path/to/config.yaml serve`,
+or set `DINNER_LENS_CONFIG` to select that file. The selector is the only non-secret application
+setting that uses the environment. Relative asset paths resolve from the YAML directory.
+`bundle:` paths resolve from the source checkout or the installed wheel reference assets.
+A null index path uses `data/index.v4` in a checkout and `~/.cache/svoe-vino-dinner-lens/index.v4`
+for a wheel. `DINNER_LENS_DATASET`, `DINNER_LENS_INDEX`, and `XDG_CACHE_HOME` no longer override settings.
+
+The YAML contains the server listener, worker count, logging settings, dataset/index/style paths,
+recognition endpoint/model/prompt, generation settings, provider retry/socket limits, image limits,
+embedding endpoint/model/dimensions/build workers, request bound, recognition concurrency/queue
+wait and cursor lifetime. Changing embedding model or dimensions requires a matching new index.
+The existing v4 index remains valid with the default settings. Selection policy and reference data
+remain versioned in the dataset. Input schema ceilings remain API contracts; YAML validates operational limits within bounded ranges.
+Unknown fields, wrong types, non-finite numbers and credential-bearing endpoint URLs fail startup.
+Configuration errors do not echo input values.
+
+Set `DINNER_LENS_API_TOKEN` to a URL-safe token of at least 24 characters. Set an independent
+`DINNER_LENS_CURSOR_SECRET` of at least 32 bytes. Both are required by the service factory.
+Set `QWENCLOUD_PAYGO_API_KEY` for photo recognition and index building.
+The service requires the recognition credential at startup. Secrets are never YAML
+values; the `*_env` fields name environment variables. Embedded test callers may still create
+an `Engine` with an ephemeral secret. The service uses the persistent secret across workers and restarts.
 
 ```sh
-.venv/bin/dinner-lens build-index
+.venv/bin/dinner-lens --config config.yaml build-index
+.venv/bin/dinner-lens --config config.yaml serve
+curl -s http://127.0.0.1:8176/readyz
 ```
 
-The generated `data/index.v4/` is ignored by Git. Its manifest pins the dataset, exact embedding documents, vector bytes, model, dimension and provider receipts. Startup rejects stale or corrupted artifacts. Neither tests nor the service substitute synthetic vectors. A completed v2 index already exists in the task checkout. The 2,093 existing wine vectors are reused. Three new composite sauce/body profiles add six query vectors; only two provider batches (1,493 tokens) were needed, with the remaining batches reused. Separate `data/index/` and `data/index.v2/` remain available for frozen v1/v2 reproduction.
+Index building makes paid calls. It uses a resumable verified batch cache. Runtime selection makes
+no embedding API calls. Generated index directories are ignored by Git. The manifest pins the dataset,
+embedding documents, vectors, model, dimensions and provider receipts. Startup rejects stale or corrupt
+artifacts. Frozen v1/v2/v3 indexes and benchmark evidence remain separate. Built wheels include the
+reference datasets, schemas, validation reports, English prompts and default public YAML.
 
-Built wheels include all four reference dataset versions, the current JSON schema and validation report, and English prompts under the environment's `share/svoe-vino-dinner-lens/`. A wheel install defaults to v4 and `$XDG_CACHE_HOME/svoe-vino-dinner-lens/index.v4` (or `~/.cache/`); `DINNER_LENS_INDEX` can point to a previously built index. Install into a virtual environment rather than a bare `pip --target` directory. Reproducing v1 requires setting both `DINNER_LENS_DATASET` and `DINNER_LENS_INDEX` to matching v1 artifacts.
+`/docs` and all `/v1/` routes require bearer authorization. `/health` and `/readyz` are public.
+Readiness confirms successful artifact/configuration loading. It does not call or certify cloud availability.
+Responses use `Cache-Control: no-store`. Defaults preserve the previous limits: 8 MiB JSON body,
+5 MiB inline JPEG/PNG, 20 million pixels, 2,048-pixel long side, four concurrent recognition calls,
+one-second capacity wait, 20-second sockets, 50-second provider retry/read budget and 1 MiB responses.
+A blocking socket operation can exceed the budget by its socket timeout. Images are oriented,
+metadata-stripped and re-encoded. Remote image URLs are not fetched. The English image prompt
+matches the current inference registry `planning/dinner-lens-eval-20261018/prompt-registry.json`.
+Historical recognition runners and results remain unchanged.
 
-Set `DINNER_LENS_API_TOKEN` to a URL-safe token of at least 24 characters. Set `DINNER_LENS_CURSOR_SECRET` to an independent secret of at least 32 bytes, identical across service workers. If omitted, a random process-local secret is used; a restart or another worker invalidates those cursors. Optional `DINNER_LENS_DATASET` and `DINNER_LENS_INDEX` override artifact paths.
+## Docker
 
-```sh
-.venv/bin/dinner-lens serve --host 127.0.0.1 --port 8176
-curl -s http://127.0.0.1:8176/health
-curl -s http://127.0.0.1:8176/v1/recommendations \
-  -H "Authorization: Bearer $DINNER_LENS_API_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"confirmed_dish":"Стейк рибай на гриле","limit":3}'
-```
-
-API documentation is available at `/docs` with the same bearer authorization requirement. `/health` is public. Responses use `Cache-Control: no-store`. Requests are bounded before JSON parsing; inline JPEG/PNG is limited to 5 MiB and 20 million pixels. JPEGs with MPO auxiliary frames use the primary frame. The server applies orientation, strips EXIF/XMP and other metadata, limits the long side to 2,048 pixels, and re-encodes pixels before sending them to Qwen. It lowers JPEG quality or scales down further when necessary to fit 5 MiB; PNG alpha is retained when present. Four recognition calls can run concurrently per process; a request waiting over one second for capacity returns 503. Provider attempts use at most 20-second socket timeouts with a 50-second retry/read budget checked between reads; a blocking socket read can run beyond that budget up to its socket timeout. Provider JSON responses are capped at 1 MiB. No external image URL fetching is supported.
+The Dockerfile uses a pinned Python 3.11 base digest and `requirements.lock` with package hashes.
+It runs as UID/GID 1000 with `/readyz` health checks. Build from a committed `dinner-lens/` archive.
+Mount `/config/config.yaml` and the verified index under `/data` read-only. Inject secrets from an
+environment file outside the image. Compose, installation, checks, rollback and secret locations are
+recorded in the private `chtozavino-deploy/gx10/dinner-lens-prod.md` runbook. The service does not
+need a GPU: QwenCloud performs recognition; the CPU ranks the mounted embedding vectors.
 
 ## API
 

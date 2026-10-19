@@ -14,7 +14,7 @@ class PairingQualityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.k = Knowledge(default_dataset(), default_style())
-        cls.index = EmbeddingIndex(cls.k, default_index())
+        cls.index = EmbeddingIndex(cls.k, Path(__file__).resolve().parents[1] / "data/index.v4")
 
     def setUp(self):
         self.engine = Engine(self.k, self.index, cursor_secret=b"quality-tests-only-secret-at-least-32-bytes")
