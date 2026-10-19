@@ -958,7 +958,27 @@ async function lineupIndexPage() {
     }
     await context.close()
   }
-  checks.push('Index /lineup: one card per producer with name and link, cover images, canonical URL, no noindex header, no overflow at 1440, 390, and 320 px, card and back-link navigation')
+  // A cover that fails before hydration must still become the fallback icon.
+  const context = await newContext()
+  let releaseScripts
+  const scriptsReady = new Promise(resolve => { releaseScripts = resolve })
+  try {
+    const page = await context.newPage()
+    page.on('pageerror', error => errors.push(`lineup-index-cover-failure: ${error.message}`))
+    const failed = index.producers[0]
+    await page.route('**/_nuxt/*.js', async route => { await scriptsReady; await route.continue() })
+    await page.route(`**${failed.summary.cover.src}`, route => route.fulfill({ status: 404, body: '' }))
+    await page.goto(`${origin}/lineup`, { waitUntil: 'commit' })
+    await page.waitForFunction(src => [...document.querySelectorAll('img[data-cover]')].some(image => image.dataset.cover === src && image.complete && image.naturalWidth === 0), failed.summary.cover.src)
+    releaseScripts()
+    const card = page.locator(`[data-producer-card="${failed.producer.id}"]`)
+    await card.locator('.lineup-card-bottle .icon').waitFor({ state: 'attached' })
+    assert.equal(await card.locator('img[data-cover]').count(), 0, 'A failed cover must be replaced by the fallback icon')
+  } finally {
+    releaseScripts()
+    await context.close()
+  }
+  checks.push('Index /lineup: one card per producer with name and link, cover images, canonical URL, no noindex header, no overflow at 1440, 390, and 320 px, card and back-link navigation, cover failure before hydration')
 }
 
 try {

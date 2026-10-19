@@ -10,6 +10,7 @@
 - On `/lineup/<producer>`, the first toolbar row («Перейти к группе» and «Показать исходное вино», about 60 px) sticks to the window top inside the map. Group jumps and keyboard focus stay below it.
 - In a window up to 700 px high, the details popup uses the compact summary, so that its heading stays visible.
 - Link the index from each map page («Все карты производителей») and from the guide for a producer without a map.
+- On `/lineup`, a cover that fails before hydration becomes the fallback icon. The page checks completed images on mount, like the map.
 - Adapt the browser suites: the canvas scenarios run in the guide dialog, and new checks cover the page layout and the index.
 - Read `docs/plans/05_lineup-index-and-page-layout.md`.
 

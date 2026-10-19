@@ -15,6 +15,12 @@ function plural(count: number, one: string, few: string, many: string) {
 const date = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('.') : value
 const failedCovers = ref(new Set<string>())
 function coverFailed(src: string) { failedCovers.value = new Set([...failedCovers.value, src]) }
+// A cover can fail before hydration adds the error listener. Check the completed images on mount.
+onMounted(() => {
+  for (const image of document.querySelectorAll<HTMLImageElement>('img[data-cover]')) {
+    if (image.complete && image.naturalWidth === 0 && image.dataset.cover) coverFailed(image.dataset.cover)
+  }
+})
 </script>
 
 <template>
@@ -31,7 +37,7 @@ function coverFailed(src: string) { failedCovers.value = new Set([...failedCover
       <li v-for="entry in producers" :key="entry.producer.id">
         <NuxtLink :to="`/lineup/${entry.producer.id}`" class="lineup-card" :data-producer-card="entry.producer.id">
           <span class="lineup-card-bottle" aria-hidden="true">
-            <ProductLineImage v-if="entry.summary.cover && !failedCovers.has(entry.summary.cover.src)" :src="entry.summary.cover.src" :frame="entry.summary.cover.frame" alt="" width="60" height="140" loading="lazy" decoding="async" draggable="false" @error="coverFailed(entry.summary.cover.src)" />
+            <ProductLineImage v-if="entry.summary.cover && !failedCovers.has(entry.summary.cover.src)" :src="entry.summary.cover.src" :frame="entry.summary.cover.frame" :data-cover="entry.summary.cover.src" alt="" width="60" height="140" loading="lazy" decoding="async" draggable="false" @error="coverFailed(entry.summary.cover.src)" />
             <AppIcon v-else name="image" />
           </span>
           <span class="lineup-card-text">
