@@ -2,6 +2,20 @@
 
 ## 2026-10-19
 
+- Static wine images, release format 2 (owner answers of 2026-10-19T21:46:00+0300, plan 06
+  D10–D11): `build_wine_images.py` makes each file from the package cut of the image
+  (`image_derivative`, kind `package`), else from the original, and trims the borders with no
+  margin. An image with transparency loses its transparent outer lines; a fully opaque image
+  loses its white or black frame, one kind for each side, so a dark bottle stays whole. The
+  manifest (version 2) adds `cut_sha256`; the check compares it with `image_derivative`. A real
+  build: 2,193 images, all from a cut; 2,189 with a transparent background; at most 1 px of
+  margin at 400 px; 105 MB; no difference to the prod matcher catalogue copy. Tests:
+  `test_wine_images.py` 15 (2 new). The Codex review (gpt-6.1-sol, xhigh) found two P2 points.
+  Fixed: a fully opaque package cut (a can with a black cap) lost content to the colour trim;
+  a package cut now loses its transparent lines alone. Kept as a deliberate limit: a frame with
+  two colours keeps its sides that start mixed, because a re-check of those sides would cut
+  the black base of a bottle that touches the edge; a test records both cases.
+
 - Static wine images of chtozavino.ru (plan `../docs/plans/06_wine-images.md`, owner message of
   2026-10-19T19:25:00+0300). New module `pipeline/wine_images.py` and the scripts
   `scripts/build_wine_images.py` and `scripts/check_wine_images.py`. A release holds

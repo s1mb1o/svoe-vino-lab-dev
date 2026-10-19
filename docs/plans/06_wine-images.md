@@ -30,6 +30,12 @@ The published files MUST agree with the catalogue database. A deploy MUST check 
 - D8. The images use `max-age` of 1 hour.
 - D9. The matcher card keeps `image_url` = `null` for a wine with no image (Q1). This is the
   current behavior (see "Current state").
+- D10. The file is made from the package cut of the image (`image_derivative`, kind `package`,
+  plan 09 of the workbench), not from the original (owner answer "A", 2026-10-19 21:46 MSK).
+  An image with no package cut uses the original.
+- D11. The build cuts the borders with no margin: the transparent lines, and the white and
+  black frames (owner answers "0 вплотную" and "удалял не только белые но и полностью черные
+  поля, а также прозрачные поля", 2026-10-19 21:46 MSK).
 
 ## Current state
 
@@ -94,8 +100,13 @@ For each Active wine of the view `matcher_wine`:
 1. Use the row of `matcher_wine_image` with `image_type` `main_patched` or `main`. The view
    already replaces `main` with `main_patched`.
 2. If the wine has no such row, the wine gets no file. The manifest records `source` = `null`.
+3. The file is made from the package cut of the selected image (D10): the row of
+   `image_derivative` with `kind` = `package` and `source_sha256` = the image. A crop cut is
+   an alpha crop of a transparent original; a seg cut is the SAM3 cut of an opaque original.
+   With no cut, the file is made from the original.
 
-The rule reads only the fixed views. No schema change is necessary.
+The rule reads the fixed views and `image_derivative`. No schema change is necessary. A matcher
+catalogue copy holds `image_derivative`, so the check works with it.
 
 ## Image derivatives
 
@@ -103,6 +114,18 @@ The rule reads only the fixed views. No schema change is necessary.
   (the limit of `patches.py`).
 - Apply the EXIF orientation. Remove the EXIF and XMP data. Keep the ICC profile, so that the
   colours stay correct.
+- Trim the borders with no margin (D11, `wine_images.trim`):
+  - An image with transparent pixels loses its fully transparent outer lines (alpha ≤ 32).
+    A white or a black line of such an image is content, for example the dark bottom of a
+    bottle cut.
+  - A fully opaque original (no package cut) loses its white frame (each channel ≥ 245) or
+    its black frame (each channel ≤ 10). The outermost line of each side sets the kind of that
+    side. A side does not change from white to black, and a side with a mixed outermost line
+    cuts nothing, so a black bottle on a white background stays whole. A frame with two
+    colours keeps the sides that start mixed (a deliberate limit).
+  - A fully opaque package cut is tight already. Its trim cuts nothing, so the black cap of a
+    can stays (Codex review of 2026-10-19).
+  - The trim repeats until no side changes. An image that is only border keeps its canvas.
 - Keep the alpha channel when the original has one.
 - Reduce the image so that the long side is at most the size. Do not enlarge a smaller image.
 - Write WebP with the Pillow default quality.
@@ -123,7 +146,7 @@ The rule reads only the fixed views. No schema change is necessary.
 ```json
 {
   "format": "svoe-vino-wine-images",
-  "version": 1,
+  "version": 2,
   "created_at": "2026-10-19T12:00:00Z",
   "catalog": {"sha256": "<sha256 of catalog.sqlite3>", "schema": 32, "active_wines": 2198},
   "sizes": [1600, 400],
@@ -131,6 +154,7 @@ The rule reads only the fixed views. No schema change is necessary.
     "<slug>": {
       "source": "main | main_patched | null",
       "source_sha256": "<sha256 of the original, or null>",
+      "cut_sha256": "<sha256 of the package cut, or null>",
       "files": {
         "1600": {"sha256": "...", "width": 0, "height": 0, "bytes": 0},
         "400": {"sha256": "...", "width": 0, "height": 0, "bytes": 0}
@@ -278,6 +302,11 @@ the catalogue update procedure), `infra/services/svoe-vino-webui` and
 - A real build from the lab database: 2,198 Active wines, 2,193 images (24 `main_patched`),
   5 with no image, 4,386 files, 104 MB, `manifest.json` 0.9 MB. The build takes 4 minutes. The
   full check takes 1 second and finds no difference.
+- Release 2 (D10, D11): all 2,193 images come from their package cut. 2,189 have a transparent
+  background. The other four: two cans that fill their box, `gran-shen` in a gift box (the
+  package), and `chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142` on a white
+  background (fix with `main_patched`). The trim left at most 1 px of transparent margin at
+  400 px; 879 files got a smaller area. The build takes 3 minutes; 105 MB.
 - 15 Active slugs start with `__`. The slug rule of the files is `^[a-z0-9_][a-z0-9_-]*$`.
 - The web UI uses relative addresses (`/img/wines/...`). `nuxt dev` does not serve them, so a
   local portal shows the placeholder.

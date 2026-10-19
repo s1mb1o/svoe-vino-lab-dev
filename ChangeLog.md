@@ -5,6 +5,10 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Static wine images, release format 2 (plan 06 D10–D11): each file comes from the SAM3 or
+  alpha package cut of the lab, with transparent, white, and black borders trimmed and no
+  margin. 2,189 of 2,193 images now have a transparent background. Read `workbench/ChangeLog.md`.
+
 - Dinner Lens 0.7.0 accepts direct HEIC/HEIF and WebP uploads as raw base64 or
   inline data URLs. It selects the HEIF primary image, preserves orientation and
   transparency, strips metadata, and keeps the existing byte and pixel limits.

@@ -7,11 +7,19 @@ Active wine with an image, `manifest.json`, and `SHA256SUMS`. `check_release` an
 
 Rules:
 - The image of a wine is its `main_patched` image, else its `main` image. The code reads
-  the two fixed views of schema 031 for the rule, so a matcher catalogue copy with no
-  image files is enough for a check. `build` also reads the table `image` for the files.
+  the two fixed views of schema 031 for the rule.
+- The file is made from the package cut of that image (`image_derivative`, kind `package`,
+  plan 09): an alpha crop of a transparent original, or the SAM3 cut of an opaque one. An
+  image with no package cut uses the original. The owner chose this on 2026-10-19 (answer
+  "A"). The check reads the views and `image_derivative`, so a matcher catalogue copy with no
+  image files is enough. `build` also reads the table `image` for the files.
+- `trim` cuts the outer border lines with no margin (owner answers of
+  2026-10-19T21:46:00+0300): the fully transparent lines of an image with transparency, and
+  the white or black frame of a fully opaque original. A package cut is tight already, so it
+  loses its transparent lines alone. Read `trim` for the rules that keep a dark bottle whole.
 - A wine with no image gets no file. Its manifest record has `source` null and no files.
-- A file keeps the aspect ratio of the original. Its long side is at most the size. A
-  smaller original is not enlarged. The file has no EXIF and no XMP data; the ICC profile
+- A file keeps the aspect ratio of the trimmed image. Its long side is at most the size. A
+  smaller image is not enlarged. The file has no EXIF and no XMP data; the ICC profile
   stays, so that the colours stay correct.
 - A check compares the SHA-256 of the originals and of the files. It does not compare a
   date: the table `wine_image` has no time column.
@@ -34,13 +42,15 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import numpy as np
 from PIL import Image, ImageOps
 
 import labdb
 
 
 FORMAT = "svoe-vino-wine-images"
-VERSION = 1
+# Version 2 adds `cut_sha256`: the file is made from the package cut.
+VERSION = 2
 # The sizes in decreasing order: each file is made from the file of the size before it.
 SIZES = (1600, 400)
 MANIFEST = "manifest.json"
@@ -49,6 +59,12 @@ SUMS = "SHA256SUMS"
 SOURCES = ("main_patched", "main")
 # The limit of `patches.py`. The largest catalogue original has about 60 MP.
 MAX_PIXELS = 100_000_000
+# The levels of `derive.py`: a pixel with alpha at most ALPHA_THRESHOLD is transparent. An
+# opaque pixel with each channel at least WHITE_LEVEL is white, with each channel at most
+# BLACK_LEVEL (255 - WHITE_LEVEL) black.
+ALPHA_THRESHOLD = 32
+WHITE_LEVEL = 245
+BLACK_LEVEL = 10
 # 15 Active slugs start with `__`. A leading `-` would read as an option in a shell command.
 SLUG = re.compile(r"^[a-z0-9_][a-z0-9_-]*$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -71,17 +87,21 @@ def connect(db_path):
 
 
 def expected(conn):
-    """Return slug -> (source, source sha256) of each Active wine.
+    """Return slug -> (source, source sha256, cut sha256) of each Active wine.
 
-    `source` is `main_patched` or `main`. A wine with no image gives (None, None).
+    `source` is `main_patched` or `main`. The cut is the package cut of the source, or None.
+    A wine with no image gives (None, None, None).
     """
     try:
         wines = {slug: (None, None) for (slug,) in
                  conn.execute("SELECT wine_slug FROM matcher_wine")}
         rows = conn.execute("SELECT wine_slug, image_type, sha256 FROM matcher_wine_image "
                             "WHERE image_type IN ('main', 'main_patched')").fetchall()
+        cuts = dict(conn.execute("SELECT source_sha256, sha256 FROM image_derivative "
+                                 "WHERE kind = 'package'"))
     except sqlite3.Error as exc:
-        raise ImageError("cannot read the views of the matcher: %s" % exc) from exc
+        raise ImageError("cannot read the views of the matcher or image_derivative: %s"
+                         % exc) from exc
     for slug, image_type, digest in rows:
         if slug not in wines:
             raise ImageError("matcher_wine_image has an image of the unknown wine %s" % slug)
@@ -93,7 +113,8 @@ def expected(conn):
     for slug in wines:
         if not SLUG.match(slug):
             raise ImageError("the slug %r cannot be a file name" % slug)
-    return wines
+    return {slug: (source, digest, cuts.get(digest) if digest else None)
+            for slug, (source, digest) in wines.items()}
 
 
 def sha256_bytes(data):
@@ -108,8 +129,61 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
-def derivatives(path):
-    """Return size -> (WebP bytes, width, height) of the original at `path`."""
+def trim(image, frames=True):
+    """Cut the outer rows and columns that are a border: fully transparent, white, or black.
+
+    - An image with transparent pixels loses its fully transparent outer lines. A white or
+      a black line of such an image is content, for example the dark bottom of a bottle cut.
+    - A fully opaque image loses its white or black frame when `frames` is true. The
+      outermost line of each side sets the kind of that side, white or black, and the side
+      cuts lines of that kind alone. A side with a mixed outermost line cuts nothing, also
+      after the other sides change: so a black bottle on a white background stays whole,
+      and a frame with two colours keeps the sides that start mixed.
+    - With `frames` false (a package cut, which is tight already), a fully opaque image
+      stays as it is: the black cap of a can is content.
+    - The cut repeats until no side changes. An image that is only border keeps its canvas.
+    """
+    pixels = np.asarray(image.convert("RGBA"))
+    clear = pixels[..., 3] <= ALPHA_THRESHOLD
+    height, width = clear.shape
+    if not clear.any() and not frames:
+        return image
+    if clear.any():
+        kinds = {"top": clear, "bottom": clear, "left": clear, "right": clear}
+    else:
+        white = pixels[..., :3].min(axis=2) >= WHITE_LEVEL
+        black = pixels[..., :3].max(axis=2) <= BLACK_LEVEL
+        lines = {"top": (0, slice(None)), "bottom": (height - 1, slice(None)),
+                 "left": (slice(None), 0), "right": (slice(None), width - 1)}
+        kinds = {side: next((kind for kind in (white, black) if kind[line].all()), None)
+                 for side, line in lines.items()}
+
+    def border(side, rows, cols):
+        return kinds[side] is not None and kinds[side][rows, cols].all()
+
+    top, bottom, left, right = 0, height, 0, width
+    changed = True
+    while changed:
+        changed = False
+        while bottom - top > 1 and border("top", top, slice(left, right)):
+            top, changed = top + 1, True
+        while bottom - top > 1 and border("bottom", bottom - 1, slice(left, right)):
+            bottom, changed = bottom - 1, True
+        while right - left > 1 and border("left", slice(top, bottom), left):
+            left, changed = left + 1, True
+        while right - left > 1 and border("right", slice(top, bottom), right - 1):
+            right, changed = right - 1, True
+    if (bottom - top <= 1 or right - left <= 1
+            or (top, bottom, left, right) == (0, height, 0, width)):
+        return image
+    return image.crop((left, top, right, bottom))
+
+
+def derivatives(path, cut=False):
+    """Return size -> (WebP bytes, width, height) of the image at `path`, trimmed.
+
+    `cut` is true for a package cut: its trim keeps the colour frames (`trim`).
+    """
     with Image.open(path) as original:
         if original.width * original.height > MAX_PIXELS:
             raise ImageError("%s has %d pixels; the limit is %d"
@@ -118,7 +192,7 @@ def derivatives(path):
         image = ImageOps.exif_transpose(original)
         # A palette, RGB, or grey PNG can keep its transparency in `info` (a tRNS chunk).
         alpha = image.mode in ("RGBA", "LA", "PA") or "transparency" in image.info
-        image = image.convert("RGBA" if alpha else "RGB")
+        image = trim(image.convert("RGBA" if alpha else "RGB"), frames=not cut)
     options = {"icc_profile": icc_profile} if icc_profile else {}
     result = {}
     for size in SIZES:
@@ -152,34 +226,39 @@ def build(db_path, out):
         originals = _originals(conn, db_path)
         schema = conn.execute("PRAGMA user_version").fetchone()[0]
         conn.rollback()
-    uses = collections.Counter(digest for _, digest in wines.values() if digest)
+    # The file is made from the package cut, else from the original.
+    uses = collections.Counter(cut or digest for _, digest, cut in wines.values() if digest)
     cache = {}
     temp = Path(tempfile.mkdtemp(prefix=".%s." % out.name, dir=out.parent))
     try:
         for size in SIZES:
             (temp / str(size)).mkdir()
         records = {}
-        for slug, (source, digest) in sorted(wines.items()):
+        for slug, (source, digest, cut) in sorted(wines.items()):
             if source is None:
-                records[slug] = {"source": None, "source_sha256": None, "files": {}}
+                records[slug] = {"source": None, "source_sha256": None, "cut_sha256": None,
+                                 "files": {}}
                 continue
-            if digest in cache:
-                made = cache[digest]
+            used = cut or digest
+            if used in cache:
+                made = cache[used]
             else:
-                path = originals.get(digest)
+                path = originals.get(used)
                 if path is None or not os.path.isfile(path):
-                    raise ImageError("the original %s of %s is missing" % (digest, slug))
-                if sha256_file(path) != digest:
+                    raise ImageError("the %s %s of %s is missing"
+                                     % ("package cut" if cut else "original", used, slug))
+                if sha256_file(path) != used:
                     raise ImageError("%s: the bytes do not agree with the name" % path)
-                made = derivatives(path)
-                if uses[digest] > 1:
-                    cache[digest] = made
+                made = derivatives(path, cut=bool(cut))
+                if uses[used] > 1:
+                    cache[used] = made
             files = {}
             for size, (data, width, height) in made.items():
                 (temp / str(size) / ("%s.webp" % slug)).write_bytes(data)
                 files[str(size)] = {"sha256": sha256_bytes(data), "width": width,
                                     "height": height, "bytes": len(data)}
-            records[slug] = {"source": source, "source_sha256": digest, "files": files}
+            records[slug] = {"source": source, "source_sha256": digest, "cut_sha256": cut,
+                             "files": files}
         manifest = {
             "format": FORMAT,
             "version": VERSION,
@@ -204,6 +283,7 @@ def build(db_path, out):
     return {"out": str(out), "wines": len(records), "images": images,
             "no_image": len(records) - images,
             "patched": sum(1 for r in records.values() if r["source"] == "main_patched"),
+            "from_cut": sum(1 for r in records.values() if r["cut_sha256"]),
             "files": images * len(SIZES),
             "bytes": sum(f["bytes"] for r in records.values() for f in r["files"].values())}
 
@@ -249,9 +329,9 @@ def check_manifest(wines, manifest, catalog_update=False):
 def _check_record(slug, want, record):
     if not isinstance(record, dict):
         return ["%s: the manifest record is not an object" % slug]
-    found = (record.get("source"), record.get("source_sha256"))
+    found = (record.get("source"), record.get("source_sha256"), record.get("cut_sha256"))
     if found != want:
-        return ["%s: the manifest has the image %s %s; the database has %s %s"
+        return ["%s: the manifest has the image %s %s (cut %s); the database has %s %s (cut %s)"
                 % ((slug,) + found + want)]
     files = record.get("files")
     if want[0] is None:

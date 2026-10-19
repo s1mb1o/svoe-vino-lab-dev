@@ -11,7 +11,7 @@ import sys
 import tempfile
 import unittest
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
@@ -29,6 +29,24 @@ def png_bytes(image, **options):
     return buffer.getvalue()
 
 
+def two_bottles():
+    """RGBA 60 x 100: two opaque bottles (10..20, 40..50) x (10..90), transparent between."""
+    image = Image.new("RGBA", (60, 100), (0, 0, 0, 0))
+    ImageDraw.Draw(image).rectangle((10, 10, 19, 89), fill=(90, 30, 20, 255))
+    ImageDraw.Draw(image).rectangle((40, 10, 49, 89), fill=(90, 30, 20, 255))
+    return image
+
+
+def framed_photo():
+    """RGB 100 x 150: a black frame of 5 px around a grey photo with a red bottle. The box
+    of the photo is (5, 5, 95, 145)."""
+    image = Image.new("RGB", (100, 150), (0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((5, 5, 94, 144), fill=(128, 128, 128))
+    draw.rectangle((30, 30, 69, 119), fill=(200, 20, 20))
+    return image
+
+
 class WineImagesTest(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
@@ -38,7 +56,7 @@ class WineImagesTest(unittest.TestCase):
         self.addCleanup(lab.close)
         grey = embedding_lab.bottle_on_grey
         for slug in ("wine-a", "wine-b", "wine-big", "wine-c", "wine-d", "wine-rot",
-                     "wine-twin", "wine-alpha"):
+                     "wine-twin", "wine-alpha", "wine-cut", "wine-frame"):
             lab.wine(slug)
         lab.wine("wine-off", state="Disabled")
         # wine-a: the patch replaces the `main` image.
@@ -48,7 +66,22 @@ class WineImagesTest(unittest.TestCase):
         # wine-twin has the original of wine-b.
         lab.link("wine-twin", "main", self.b_main)
         self.big = lab.image("wine-big", "main", Image.new("RGB", (2000, 3000), (200, 10, 10)))
-        self.alpha = lab.image("wine-alpha", "main", embedding_lab.bottle_on_transparent())
+        self.alpha = lab.image("wine-alpha", "main", two_bottles())
+        self.framed = lab.image("wine-frame", "main", framed_photo())
+        # wine-cut: a grey original with its SAM3 package cut of plan 09.
+        original = grey((14, 24, 34))
+        self.cut_source = lab.image("wine-cut", "main", original,
+                                    derivative=embedding_lab.seg_derivative(original, (30, 20, 50, 100)),
+                                    box=(30, 20, 50, 100))
+        self.cut = lab.conn.execute("SELECT sha256 FROM image_derivative WHERE source_sha256 = ?",
+                                    (self.cut_source,)).fetchone()[0]
+        # wine-can: a tight, fully opaque package cut of a can with a black cap and base.
+        can = Image.new("RGBA", (40, 100), (30, 140, 120, 255))
+        ImageDraw.Draw(can).rectangle((0, 0, 39, 9), fill=(0, 0, 0, 255))
+        ImageDraw.Draw(can).rectangle((0, 90, 39, 99), fill=(0, 0, 0, 255))
+        lab.wine("wine-can")
+        lab.image("wine-can", "main", embedding_lab.bottle_on_transparent(), derivative=can,
+                  box=(10, 0, 50, 100))
         # wine-c has no image. wine-d has a label close-up alone, so it has no image either.
         lab.image("wine-d", "label_front", grey((13, 23, 33)), folder="additional")
         # wine-off is not Active.
@@ -75,23 +108,27 @@ class WineImagesTest(unittest.TestCase):
         out, result, manifest = self.build()
         wines = manifest["wines"]
         self.assertEqual(sorted(wines), ["wine-a", "wine-alpha", "wine-b", "wine-big",
-                                         "wine-c", "wine-d", "wine-key", "wine-rot",
-                                         "wine-twin"])
+                                         "wine-c", "wine-can", "wine-cut", "wine-d",
+                                         "wine-frame", "wine-key", "wine-rot", "wine-twin"])
         self.assertEqual((wines["wine-a"]["source"], wines["wine-a"]["source_sha256"]),
                          ("main_patched", self.a_patch))
         self.assertEqual((wines["wine-b"]["source"], wines["wine-b"]["source_sha256"]),
                          ("main", self.b_main))
         self.assertEqual(wines["wine-twin"]["files"], wines["wine-b"]["files"])
         for slug in ("wine-c", "wine-d"):
-            self.assertEqual(wines[slug], {"source": None, "source_sha256": None, "files": {}})
+            self.assertEqual(wines[slug], {"source": None, "source_sha256": None,
+                                           "cut_sha256": None, "files": {}})
             self.assertFalse((out / "1600" / ("%s.webp" % slug)).exists())
         self.assertEqual((manifest["format"], manifest["version"], manifest["sizes"]),
-                         (wine_images.FORMAT, 1, [1600, 400]))
-        self.assertEqual(manifest["catalog"]["active_wines"], 9)
+                         (wine_images.FORMAT, 2, [1600, 400]))
+        self.assertEqual((wines["wine-cut"]["source_sha256"], wines["wine-cut"]["cut_sha256"]),
+                         (self.cut_source, self.cut))
+        self.assertIsNone(wines["wine-b"]["cut_sha256"])
+        self.assertEqual(manifest["catalog"]["active_wines"], 12)
         self.assertEqual(manifest["catalog"]["sha256"], wine_images.sha256_file(self.db))
-        self.assertEqual(result["wines"], 9)
+        self.assertEqual(result["wines"], 12)
         self.assertEqual((result["images"], result["no_image"], result["patched"],
-                          result["files"]), (7, 2, 1, 14))
+                          result["from_cut"], result["files"]), (10, 2, 1, 2, 20))
         self.assertEqual(oct(out.stat().st_mode & 0o777), "0o755")
         self.assertEqual([p.name for p in out.parent.iterdir() if p.name.startswith(".")], [])
 
@@ -103,17 +140,29 @@ class WineImagesTest(unittest.TestCase):
         small = manifest["wines"]["wine-b"]["files"]
         self.assertEqual((small["1600"]["width"], small["1600"]["height"]), (80, 120))
         self.assertEqual((small["400"]["width"], small["400"]["height"]), (80, 120))
+        # An image that is only black border keeps its whole canvas.
         rotated = manifest["wines"]["wine-rot"]["files"]["400"]
         self.assertEqual((rotated["width"], rotated["height"]), (100, 200))
+        # The file of wine-cut is its package cut, not the 80 x 120 grey original.
+        cut = manifest["wines"]["wine-cut"]["files"]["400"]
+        self.assertEqual((cut["width"], cut["height"]), (20, 80))
+        # The opaque can cut keeps its black cap and base (review of 2026-10-19).
+        can = manifest["wines"]["wine-can"]["files"]["400"]
+        self.assertEqual((can["width"], can["height"]), (40, 100))
+        # The black frame of the opaque photo goes.
+        framed = manifest["wines"]["wine-frame"]["files"]["400"]
+        self.assertEqual((framed["width"], framed["height"]), (90, 140))
         with Image.open(out / "400" / "wine-big.webp") as image:
             self.assertEqual((image.format, image.size), ("WEBP", (267, 400)))
             self.assertNotIn("exif", image.info)
-        # A point outside and a point inside the bottle of each original.
-        for slug, inside in (("wine-alpha", (30, 50)), ("wine-key", (40, 60))):
-            with Image.open(out / "400" / ("%s.webp" % slug)) as image:
-                self.assertEqual(image.mode, "RGBA")
-                self.assertEqual(image.getpixel((0, 0))[3], 0)
-                self.assertEqual(image.getpixel(inside)[3], 255)
+        # The trim keeps the transparency between the two bottles.
+        with Image.open(out / "400" / "wine-alpha.webp") as image:
+            self.assertEqual((image.mode, image.size), ("RGBA", (40, 80)))
+            self.assertEqual((image.getpixel((20, 40))[3], image.getpixel((5, 40))[3]), (0, 255))
+        # The tRNS key makes the grey transparent, so the trim keeps the bottle alone. The
+        # WebP encoder drops an alpha channel that is fully opaque.
+        with Image.open(out / "400" / "wine-key.webp") as image:
+            self.assertEqual(image.size, (20, 80))
 
     def test_the_sums_file_names_each_file(self):
         out, _, manifest = self.build()
@@ -121,7 +170,7 @@ class WineImagesTest(unittest.TestCase):
         names = [line.split("  ", 1)[1] for line in lines]
         self.assertEqual(names, sorted(names))
         self.assertIn(wine_images.MANIFEST, names)
-        self.assertEqual(len(names), 1 + 14)
+        self.assertEqual(len(names), 1 + 20)
         for line in lines:
             digest, name = line.split("  ", 1)
             self.assertEqual(wine_images.sha256_file(out / name), digest)
@@ -136,6 +185,59 @@ class WineImagesTest(unittest.TestCase):
         with self.assertRaisesRegex(wine_images.ImageError, "missing"):
             wine_images.build(self.db, self.root / "two")
         self.assertEqual(sorted(p.name for p in self.root.iterdir()), ["lab"])
+
+    def test_a_changed_or_missing_package_cut_is_found(self):
+        out, _, _ = self.build()
+        other = self.lab.store_file(png_bytes(Image.new("RGBA", (20, 80), (1, 2, 3, 255))),
+                                    "cropped", "png")
+        self.lab.conn.execute("UPDATE image_derivative SET sha256 = ? WHERE source_sha256 = ?",
+                              (other, self.cut_source))
+        self.lab.conn.commit()
+        errors, _ = wine_images.check_release(self.db, out)
+        self.assertEqual(errors, ["wine-cut: the manifest has the image main %s (cut %s); the "
+                                  "database has main %s (cut %s)"
+                                  % (self.cut_source, self.cut, self.cut_source, other)])
+        (Path(self.lab.db_path).parent / "cuts" / ("%s.png" % other)).unlink()
+        with self.assertRaisesRegex(wine_images.ImageError, "package cut .* of wine-cut is missing"):
+            wine_images.build(self.db, self.root / "again")
+
+    def test_the_trim_cuts_borders_and_keeps_dark_and_light_bottles_whole(self):
+        self.assertEqual(wine_images.trim(framed_photo()).size, (90, 140))
+        # A white frame around the same photo goes too.
+        white = Image.new("RGB", (110, 160), (255, 255, 255))
+        white.paste(framed_photo().crop((5, 5, 95, 145)), (10, 10))
+        self.assertEqual(wine_images.trim(white).size, (90, 140))
+        # A cut with transparency loses its transparent lines alone: the dark bottom of the
+        # bottle stays, and the label row does not stop at a black row.
+        cut = Image.new("RGBA", (30, 60), (0, 0, 0, 0))
+        ImageDraw.Draw(cut).rectangle((13, 0, 16, 19), fill=(5, 5, 5, 255))
+        ImageDraw.Draw(cut).rectangle((10, 20, 19, 59), fill=(5, 5, 5, 255))
+        ImageDraw.Draw(cut).rectangle((12, 30, 17, 40), fill=(240, 230, 200, 255))
+        self.assertEqual(wine_images.trim(cut).size, (10, 60))
+        # A black bottle on a white background: the white goes, the black bottom stays.
+        photo = Image.new("RGB", (40, 80), (255, 255, 255))
+        ImageDraw.Draw(photo).rectangle((14, 5, 25, 20), fill=(0, 0, 0))
+        ImageDraw.Draw(photo).rectangle((10, 21, 29, 69), fill=(0, 0, 0))
+        self.assertEqual(wine_images.trim(photo).size, (20, 65))
+        # The same bottle touching the bottom edge: the mixed bottom side cuts nothing, also
+        # after the white sides go, so its black base stays.
+        touching = photo.crop((0, 0, 40, 70))
+        self.assertEqual(wine_images.trim(touching).size, (20, 65))
+        # A frame with two colours keeps the sides that start mixed: white top and bottom
+        # go, the black sides stay (a deliberate limit, review of 2026-10-19).
+        mixed = Image.new("RGB", (100, 150), (0, 0, 0))
+        ImageDraw.Draw(mixed).rectangle((0, 0, 99, 9), fill=(255, 255, 255))
+        ImageDraw.Draw(mixed).rectangle((0, 140, 99, 149), fill=(255, 255, 255))
+        ImageDraw.Draw(mixed).rectangle((10, 10, 89, 139), fill=(128, 128, 128))
+        self.assertEqual(wine_images.trim(mixed).size, (100, 130))
+        # A package cut keeps an opaque frame: it is content.
+        self.assertEqual(wine_images.trim(framed_photo(), frames=False).size, (100, 150))
+        # A white bottle on a black background stays whole too.
+        inverse = Image.eval(photo, lambda value: 255 - value)
+        self.assertEqual(wine_images.trim(inverse).size, (20, 65))
+        # Only border: the whole canvas stays.
+        blank = Image.new("RGBA", (30, 60), (255, 255, 255, 255))
+        self.assertEqual(wine_images.trim(blank).size, (30, 60))
 
     def test_the_build_needs_a_new_directory(self):
         (self.root / "release").mkdir()
@@ -170,8 +272,8 @@ class WineImagesTest(unittest.TestCase):
         self.assertIn("wine-new: an Active wine that the manifest does not hold", errors)
         self.assertIn("wine-twin: in the manifest, but not an Active wine of the database",
                       errors)
-        self.assertIn("wine-b: the manifest has the image main %s; the database has "
-                      "main_patched %s" % (self.b_main, patch), errors)
+        self.assertIn("wine-b: the manifest has the image main %s (cut None); the database has "
+                      "main_patched %s (cut None)" % (self.b_main, patch), errors)
         # Before a catalogue update, a wine that the new catalogue made non-Active is a
         # warning alone.
         errors, warnings = wine_images.check_release(self.db, out, catalog_update=True)
@@ -184,7 +286,7 @@ class WineImagesTest(unittest.TestCase):
         with contextlib.closing(wine_images.connect(self.db)) as conn:
             wines = wine_images.expected(conn)
         self.assertEqual(wine_images.check_manifest(wines, {"format": "x"})[0],
-                         ["the manifest is not a svoe-vino-wine-images manifest of version 1"])
+                         ["the manifest is not a svoe-vino-wine-images manifest of version 2"])
         manifest["wines"]["wine-c"]["files"] = {"400": {}}
         manifest["wines"]["wine-a"]["files"]["400"]["width"] = 401
         manifest["wines"]["wine-b"]["files"].pop("1600")
@@ -244,7 +346,7 @@ class WineImagesTest(unittest.TestCase):
         out = self.root / "release"
         with contextlib.redirect_stdout(io.StringIO()) as stdout:
             self.assertEqual(build_wine_images.main(["--db", self.db, "--out", str(out)]), 0)
-        self.assertEqual(json.loads(stdout.getvalue())["images"], 7)
+        self.assertEqual(json.loads(stdout.getvalue())["images"], 10)
         with contextlib.redirect_stdout(io.StringIO()) as stdout:
             self.assertEqual(check_wine_images.main(["--db", self.db, "--release", str(out)]), 0)
         self.assertEqual(json.loads(stdout.getvalue().splitlines()[-1]),
