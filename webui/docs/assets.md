@@ -75,6 +75,26 @@ The selected files are:
 The source and public copies have the same bytes.
 No third-party screenshot or generated marketing mockup is used.
 
+## iPhone application screenshots
+
+Date: 2026-10-19
+
+The iPhone landing page uses two screenshots from the native iPhone application.
+The source directory is `ios/docs/screenshots/` in commit `2e1d4033` of the
+dedicated iPhone repository.
+The simulator was an iPhone 17 Pro with iOS 26.2.
+The application used the production resource pack with 2,093 wines.
+
+The source files are:
+
+- `01-main.png`, 1,206 by 2,622 pixels.
+- `02-settings.png`, 1,206 by 2,622 pixels.
+
+The public WebP derivatives use quality 88 and contain no generated marketing content.
+
+- `public/screenshots/iphone/01-main.webp`: SHA-256 `493703485ce6df2ec96fe24f373799fd6d1d70af12c4ba10bfa0239a83babd25`.
+- `public/screenshots/iphone/02-settings.webp`: SHA-256 `df1dc8adaf06765fd67195ae9e93f5f90b5bc6dea4c591d82576dd59ecd8bbd3`.
+
 ## Sources
 
 - [PlayfairDisplay-VariableFont_wght.woff2](https://vino-svoe.ru/fonts/Playfair/PlayfairDisplay-VariableFont_wght.woff2)

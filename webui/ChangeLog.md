@@ -4,6 +4,21 @@
 
 - The format error on `/dish` is «Выберите JPEG, HEIC, PNG или WebP.», the same list as the upload hint. It shows when the browser refuses a file and when the server returns 415. The accepted files do not change: `.jpg` files are accepted as before.
 
+## 2026-10-19 — iPhone application landing page
+
+- Add the public `/iphone` route.
+- Present offline photo and code recognition, Core ML, the 2,093-wine catalogue, and local history.
+- Show verified main and Settings screenshots from the iPhone 17 Pro simulator.
+- Explain the DIS or YOLO26n-seg and SigLIP2 Base NaFlex p512 pipeline.
+- Present VoiceOver, Dynamic Type, Voice Control, Switch Control, Reduce Motion, and Reduce Transparency support.
+- Identify simulator measurements and the remaining physical-iPhone verification.
+- State that TestFlight is not public. Link release status to GitHub issue 36.
+- Add canonical, social, structured, sitemap, asset-cache, and footer-navigation metadata.
+- Add static landing-page tests and asset provenance.
+- Pass 509 tests with 26 documented skips, type checks, and the production build.
+- Pass visual checks in light and dark themes at desktop, 390-pixel, and 320-pixel widths.
+- Confirm the 18+ gate, one H1, loaded screenshots, canonical metadata, structured data, cache headers, and no browser errors.
+
 ## 2026-10-19 — Wine Crocodile highlights
 
 - Replace the hero round-time and score highlights with three difficulty levels and card stories.

@@ -1,5 +1,30 @@
 # Smoke tests
 
+## iPhone application landing page
+
+1. Open `/iphone` in a new browser profile. Confirm that the 18+ gate blocks interaction.
+2. Accept the age confirmation. Confirm one visible H1.
+3. Confirm the main and Settings screenshots load.
+4. Confirm that the page states `iOS 17.2+`, `2 093 вина`, and `TestFlight готовится`.
+5. Confirm that the page has no direct application-download action.
+6. Follow `Открыть веб-сканер`. Confirm that `/` opens.
+7. Follow `Следить за TestFlight`. Confirm GitHub issue 36 opens in a new tab.
+8. Confirm that the footer links to `/iphone` from another public page.
+9. Confirm that the iPhone page header links to the WebApp.
+10. Check 320, 390, 768, 1024, and 1440 CSS pixels in both themes.
+11. Confirm that the page has no horizontal overflow.
+12. Enable reduced motion. Confirm that benefit cards do not move on hover.
+13. Confirm the canonical URL is `https://chtozavino.ru/iphone`.
+14. Confirm that the page publishes `SoftwareApplication` structured data.
+15. Confirm that the sitemap contains `/iphone`.
+16. Confirm that both screenshot responses use the public cache policy.
+
+The local production build passed these checks on 2026-10-19.
+The browser check covered desktop dark, 390-pixel light, and 320-pixel dark layouts.
+The browser console had no errors or warnings.
+Type checks, the production build, and all 509 active tests passed.
+The suite kept 26 documented snapshot-dependent tests skipped.
+
 ## Wine Crocodile highlights
 
 1. Confirm that the four hero highlights describe 30 illustrated cards, three explanation modes, three difficulty levels, and card stories.

@@ -71,7 +71,7 @@ describe('Android landing page', () => {
     ])
     expect(page).toContain("href: 'https://chtozavino.ru/android'")
     expect(page).toContain("'@type': 'SoftwareApplication'")
-    expect(app).toContain("isAndroidPage ? '/' : '/android'")
+    expect(app).toContain("(isAndroidPage || isIphonePage) ? '/' : '/android'")
     expect(sitemap).toContain('<loc>https://chtozavino.ru/android</loc>')
     expect(config).toContain('androidApkPath: defaultAndroidApkPath')
     expect(config).toContain('androidApkUrl: DEFAULT_ANDROID_APK_URL')

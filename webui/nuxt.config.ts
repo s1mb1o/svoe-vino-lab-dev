@@ -169,6 +169,7 @@ export default defineNuxtConfig({
     '/wines/': { redirect: { to: '/', statusCode: 308 } },
     '/reference/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
     '/screenshots/android/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
+    '/screenshots/iphone/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
   },
   nitro: { preset: 'node-server' },
 })

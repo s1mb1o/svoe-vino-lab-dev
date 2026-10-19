@@ -28,6 +28,7 @@ Read [the page contract](docs/crocodile-landing.md).
 - Install the portal as a Progressive Web App.
 - Open the Android application landing page at `/android`.
 - Download the versioned Android APK from a configurable URL.
+- Open the iPhone application landing page at `/iphone`.
 - Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
 - Open the project PowerPoint and PDF files from two adjacent links at `/presentation`.
 - Explore ideas beyond recognition at `/ideas`, in implemented, demo, and mock order.
@@ -70,6 +71,7 @@ npm run dev
 
 Open [the photo search page](http://127.0.0.1:8153/).
 Open [the Android application page](http://127.0.0.1:8153/android).
+Open [the iPhone application page](http://127.0.0.1:8153/iphone).
 Open [the hackathon landing page](http://127.0.0.1:8153/hackaton).
 This page is intended for organizers who receive its direct URL.
 Public navigation and the sitemap do not list it. `robots.txt` disallows its path.
@@ -162,6 +164,18 @@ The public URL MAY point to a different static file host.
 The current file is a test APK that is signed with the development key.
 The page labels it as a test version.
 Read [the Android landing page specification](docs/android-landing.md).
+
+## iPhone application page
+
+The `/iphone` page presents the native iPhone application.
+It uses two verified screenshots from the iPhone 17 Pro simulator with iOS 26.2.
+It explains offline recognition, Core ML, the local catalogue, code scanning,
+and accessibility support.
+
+The page does not offer a direct application download.
+The TestFlight release is not public.
+The release action links to the public GitHub issue for status updates.
+Read [the iPhone landing page specification](docs/iphone-landing.md).
 
 Run the browser check against a production server:
 

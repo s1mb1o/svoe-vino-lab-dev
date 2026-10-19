@@ -1,5 +1,31 @@
 # Research log
 
+## iPhone landing page, 2026-10-19
+
+The native iPhone application supports iOS 17.2 and later.
+The verified simulator used an iPhone 17 Pro with iOS 26.2.
+The verified application pack contains 2,093 wines and 2,093 images.
+The simulator does not provide Neural Engine execution.
+The landing page does not present simulator speed as physical-device speed.
+
+The default encoder is SigLIP2 Base NaFlex p512.
+The application also includes SigLIP2 Base 224 and MobileCLIP2-S2.
+The application includes DIS and YOLO26n-seg segmentation.
+The settings offer `Авто`, `ANE`, and `CPU` compute modes.
+
+The optimized simulator search stage took 11 ms.
+The warm DIS and NaFlex request took 3,216 ms.
+The warm YOLO and NaFlex request took 1,884 ms.
+The landing page shows only the 11 ms search value and gives its simulator context.
+
+The final accessibility run passed 12 unit tests and 6 accessibility UI tests.
+It covered VoiceOver, Dynamic Type, Reduce Motion, Reduce Transparency,
+Voice Control, Switch Control, focus movement, status announcements, and 44-point controls.
+
+The project has no public TestFlight link.
+The page uses the WebApp as the available action.
+GitHub issue 36 is the release-status action.
+
 ## Wine Crocodile highlight content, 2026-10-19
 
 The owner removed the round-time and score highlights below the hero.
