@@ -1,0 +1,266 @@
+{
+  "schema_version": "1.0.0",
+  "profiles": {
+    "crab_butter": {
+      "source_input_sha256": "63f426432453b6ee91fe035f1b812670ebf5a32486a9960a4f52cd3ac0d1cb9b",
+      "text_en": "Fresh, medium-bodied dry white wine with delicate creamy and citrus notes; white brut sparkling wine is an alternative."
+    },
+    "scallops_grilled": {
+      "source_input_sha256": "2708cb3b68f83e80bf6ead32577d2b3e55767da3519fe6696a4eadb484d79895",
+      "text_en": "Medium-bodied dry white wine with fruit, freshness, and delicate creaminess; white brut is also possible."
+    },
+    "raw_fish": {
+      "source_input_sha256": "b79e522da65946b4eb38e310760100daf2d20cab63fd3613dbf7e9b9025bc2eb",
+      "text_en": "Delicate dry white or white brut sparkling wine, fresh and light, with citrus and mineral notes."
+    },
+    "fish_plain": {
+      "source_input_sha256": "d9e8f2b720af7be4e3a94776c57300d9f1773ef881dd047fa15e4c1d2eeee5b6",
+      "text_en": "Dry white wine with clean fruit and freshness, light to medium-bodied; delicate white brut sparkling wine is also acceptable."
+    },
+    "dumplings": {
+      "source_input_sha256": "11fba130f1e680dd92f8db5b523b7f6eb7619e3ba5a11621573c9a34a1b2211c",
+      "text_en": "Delicate dry red wine with soft tannins, or fresh medium-bodied dry white wine suitable for a sour-cream accompaniment."
+    },
+    "fish_soup": {
+      "source_input_sha256": "2dcf982563946962f53df2c9a60a3b3606fbe76435766c728c10d8033ada4e0e",
+      "text_en": "Light to medium-bodied dry white wine, fresh, with a clean fruit and citrus profile."
+    },
+    "fried": {
+      "source_input_sha256": "baf68294d698088b32871c2a1b699e9145ed968e6557746a91979e4243f3d216",
+      "text_en": "Fresh white or rose brut sparkling wine, or a light dry white wine, with a clean fruit profile."
+    },
+    "potato_pastry": {
+      "source_input_sha256": "a1cfd2eefbcf214d80667645996b0ffcdc7971c561fd23dd64f003a17ce5bc81",
+      "text_en": "Fresh, rounded, medium-bodied dry white wine with gentle fruit or creamy notes; white brut is an alternative."
+    },
+    "mushrooms": {
+      "source_input_sha256": "c55514cbf7290b1d0de39a8eeb4c40eeaa9f9caf4947daaecd233ecf55491ed3",
+      "text_en": "Delicate dry red wine with soft tannins and woodland notes, or a rounded, fresh, medium-bodied dry white wine."
+    },
+    "meat_pastry": {
+      "source_input_sha256": "a6c5375216be3208fb492c1b59e344147574ea20ada0051e969b1b97356914f1",
+      "text_en": "Medium-bodied dry red wine with soft tannins, dry rose, or delicate brut sparkling wine with fried preparations."
+    },
+    "sour_cabbage": {
+      "source_input_sha256": "7b666c0211b412df3cd788146f6c795c0a8ed4dc1b134f0c65128f2b39ec3912",
+      "text_en": "Fresh dry or semi-dry white wine with citrus acidity; dry rose with sufficient freshness is an alternative."
+    },
+    "white_butter_cream": {
+      "source_input_sha256": "92639ee9c20d57993159feaa093bbdf0a08fa4c75d6cf9f82419a77e546e0d43",
+      "text_en": "Medium-bodied dry white wine with freshness and delicate creaminess; white brut sparkling wine is a refreshing alternative."
+    },
+    "meat_dough": {
+      "source_input_sha256": "e7851cf735742b17f80266a2161ef0b4ab2b47fe992cd4e5d74dfafb7eb8409a",
+      "text_en": "Medium-bodied dry red wine with soft tannins and freshness; fruity dry rose is also acceptable."
+    },
+    "pumpkin": {
+      "source_input_sha256": "cab6d14e802e7dda1daeabfd49b3acafae4ff87532f2ed2947516bad7b2998c3",
+      "text_en": "Rounded dry or semi-dry white wine with fruit and floral notes, medium body, and sufficient freshness."
+    },
+    "cheese_pastry": {
+      "source_input_sha256": "2458527c08265bcdfc46dc8356ba8f7698221d469c22b5f7b6f1381e2587526a",
+      "text_en": "Medium-bodied dry white wine with a rounded texture and freshness; delicate white or rose brut is an alternative."
+    },
+    "soft_cheese": {
+      "source_input_sha256": "02dabcba5088931ade2c034e47d7cffde8ff18d7a5a3e9cc2f66f94a275a32e8",
+      "text_en": "Fresh medium-bodied dry white wine or delicate brut sparkling wine with gentle fruit or creamy notes."
+    },
+    "venison": {
+      "source_input_sha256": "4ef304ae11202c1e6af12928798140b1b8e24ae4c9e73e57745fedf90f36e4c3",
+      "text_en": "Medium to full-bodied dry red wine with berry and spice notes, ripe tannins, and freshness."
+    },
+    "minced_meat": {
+      "source_input_sha256": "2f08fee598750366e7f2a094a971746f0027e7c1a9cbb141a99a5b28a1a5ea03",
+      "text_en": "Medium-bodied dry red wine with gentle tannins and juicy berry fruit; a fresh rose style is also possible."
+    },
+    "olivier": {
+      "source_input_sha256": "fea4c60b8ce9aa9f0b87460fbeaa08b41ea9291eec829a9498f6ce62fe1cb088",
+      "text_en": "Fresh white brut sparkling wine is preferred; still dry white wine with citrus acidity and moderate body is an alternative."
+    },
+    "roe": {
+      "source_input_sha256": "4550b2fb98da4739b02f2512a346e99548f81e2f4af36aa70f622484c9ff71dc",
+      "text_en": "Fresh white or rose brut sparkling wine with delicate fruit; dry white wine with sufficient freshness is an alternative."
+    },
+    "grilled_meat": {
+      "source_input_sha256": "abbca12731f4bb83658ea61b364eb8b8a29a095092e9319725bcebe55781fc6f",
+      "text_en": "Fruity medium-bodied dry red wine or a substantial rose, with freshness, moderate tannins, and spice notes."
+    },
+    "mayonnaise": {
+      "source_input_sha256": "14109c5e755708c07adbe74758cd251ac70536aa499cdcaab598f9c5098a6034",
+      "text_en": "Fresh white brut sparkling wine or dry white wine with noticeable acidity and moderate body; a semi-dry style is acceptable with salted fish and acidic dressing."
+    },
+    "vegetable_acid": {
+      "source_input_sha256": "24a0fd31e114e0532c84d517fc7c527c364caa62811c9758c9f37f1845a40701",
+      "text_en": "Dry rose or fresh white wine with sufficient acidity, light body, fruit, and delicate structure."
+    },
+    "salted_fish": {
+      "source_input_sha256": "e503eaffcfe2f1a0c6377713d191377179ab0cfeec0502ffc8550b069c147744",
+      "text_en": "Fresh dry or semi-dry white wine, or delicate brut sparkling wine, with citrus character and low tannins."
+    },
+    "cold_meat": {
+      "source_input_sha256": "36af13bcf8e65eed45439fd5e5d1e049f142c0fd729d60d4635bd40b50aceb08",
+      "text_en": "Fresh dry rose, delicate red with soft tannins, or white brut sparkling wine, with moderate body."
+    },
+    "veg_pastry": {
+      "source_input_sha256": "e5317952a611361fc3bf85bd051f1d4bb117073957c41d4f9753e13e4e919177",
+      "text_en": "Fresh medium-bodied dry white wine or dry rose; delicate white brut is an alternative."
+    },
+    "meat_soup_tomato": {
+      "source_input_sha256": "b62289fa5883664ef83536786570ac4866bf27f4effd663583e9d5b4f3439030",
+      "text_en": "Dry rose, juicy red with soft tannins, or fresh white wine, medium-bodied with sufficient acidity."
+    },
+    "braised_beef": {
+      "source_input_sha256": "930d4557448164a1e536c3968aebb37c1923d32f76e66c7793e15bce4ddb9d0a",
+      "text_en": "Medium-bodied dry red wine with fruit, soft tannins, freshness, and moderate spice."
+    },
+    "meat_tomato": {
+      "source_input_sha256": "4eb422ff937829e1355dcfddbb2e6c125e39b4a7c493ffb7b68537263bc87cc5",
+      "text_en": "Juicy medium-bodied dry red wine with sufficient freshness, berry fruit, and soft tannins; a substantial rose is acceptable."
+    },
+    "curd_dessert": {
+      "source_input_sha256": "b35b3a715d6dfd26cfd727ff54abf9ec17e3f094b7922751a5fe88aa21e97428",
+      "text_en": "Sweet white or rose wine with fruit and honey notes, a soft texture, and freshness; sufficiently sweet for jam or syrup."
+    },
+    "honey_cake": {
+      "source_input_sha256": "35eee9f069fbaf3aa69c43b3d1c9bd6cea9110a3fdc21f01b9ce6c1b224dfdf2",
+      "text_en": "Full-bodied sweet white wine with honey, fruit, or spice notes and freshness, sufficiently sweet for the cake."
+    },
+    "fruit_dessert": {
+      "source_input_sha256": "92f2241a4695e92b8ca1769e905eb502bb1b27e0e24622f571e3bf36049ff7b6",
+      "text_en": "Sweet white or rose wine with fruit, honey, or floral notes and freshness suited to the sweet fruit dessert."
+    },
+    "ribeye": {
+      "source_input_sha256": "f2f793205ca3331aac25c4fe267d5a336b793e489e73a3b88685dff298fc6c94",
+      "text_en": "Full-bodied, structured, fresh dry red wine with moderate to pronounced tannins and berry, spice, and smoky notes."
+    },
+    "meat_steak": {
+      "source_input_sha256": "f8418513575a95a99990626f8418db28e7915a01be8015d930835a863058970f",
+      "text_en": "Medium to full-bodied dry red wine with berry fruit, freshness, moderate tannins, and spice notes."
+    },
+    "lamb": {
+      "source_input_sha256": "1953ab0476ca767a4861392b3fdacdabfe0ef5d8613b6225cf38f2f82d5e8ee6",
+      "text_en": "Full-bodied dry red wine with ripe tannins, dark berries, spice, and herbal notes while retaining freshness."
+    },
+    "duck_berry": {
+      "source_input_sha256": "59f9e78fb21434e327cc1358447586dc110e54483d5d6a370031dc2a1887e689",
+      "text_en": "Medium-bodied dry red wine with red berries, freshness, soft tannins, and delicate spice; a berry-fruited rose style is also possible."
+    },
+    "molluscs": {
+      "source_input_sha256": "15256a38679653e013b297fc69254aea6fdb92836487fa1a667babaf2cd08cc1",
+      "text_en": "Fresh dry white or white brut sparkling wine, light to medium-bodied, with citrus character and a clean finish."
+    },
+    "seafood_citrus": {
+      "source_input_sha256": "730d70620cec86f9c652c45882f4b2a15abdaef1283d619de7463ac0d8459005",
+      "text_en": "Dry white wine with pronounced freshness, citrus character, and sufficient acidity; white brut sparkling wine is acceptable."
+    },
+    "seafood_tomato": {
+      "source_input_sha256": "f328049cde2382da02a34f40134fa234a1194cf88b23ac88c2739a5a1d717d87",
+      "text_en": "Dry white or rose wine with sufficient acidity, fresh fruit, moderate body, and delicate tannins."
+    },
+    "vegetables_tomato": {
+      "source_input_sha256": "273d09fa7f99a7e30232903014ed9bbd81e495d7ce6708a88fe59cf5470f44f5",
+      "text_en": "Dry rose or juicy medium-bodied red wine with freshness and moderate astringency; fresh white wine is acceptable for vegetable dishes with cheese."
+    },
+    "seafood_rice": {
+      "source_input_sha256": "44a242d58a5532f53bf751e7e9c4aded05570854bfa2dd6d9571768b31adb02f",
+      "text_en": "Medium-bodied dry white or rose wine with fresh fruit, sufficient acidity, and gentle tannins."
+    },
+    "sweet_glaze": {
+      "source_input_sha256": "01ff7e6432be263c43806251ad6a2b7ba407bf33b822852a3e1046d4f9ad7050",
+      "text_en": "Fruity semi-dry or semi-sweet wine with freshness and a soft structure; a sweeter style is acceptable with a very sweet glaze."
+    },
+    "spicy": {
+      "source_input_sha256": "83f0444b2368f0bba91ff4dbfe23927c997b5551345fae99d98adc1fb36f8147",
+      "text_en": "Aromatic semi-dry or semi-sweet white wine with fruit, freshness, moderate alcohol, and low tannins."
+    },
+    "spicy_sour": {
+      "source_input_sha256": "8722236bb0d7c24b237eb5a6dd402742825f3ac64910edc6be2ae18eb05a9b00",
+      "text_en": "Fresh semi-dry or semi-sweet white wine with citrus and fruit notes, moderate alcohol, and low tannins."
+    },
+    "coffee_cocoa": {
+      "source_input_sha256": "1dd2867d8b16200f7bfb9197cfe0a0d5892607a4b91e6f78fe268dbb99ec7f5d",
+      "text_en": "Full-bodied sweet red wine with chocolate and berry notes, or a rounded sweet white wine with honey and spice character for the creamy base."
+    },
+    "meat_general": {
+      "source_input_sha256": "a79d89d2e8f72fd17ee39b66650b261633f829e6b982c1659584102fe572276e",
+      "text_en": "Medium-bodied dry red wine with fruit, freshness, and soft to moderate tannins; a substantial dry rose is acceptable."
+    },
+    "poultry": {
+      "source_input_sha256": "9dded1e757b482f13a93674c634d3d5f5b37483ad91b23506224d43965b77692",
+      "text_en": "Fresh medium-bodied dry white wine or white brut sparkling wine; delicate red wine is acceptable for confirmed duck and rich preparations."
+    },
+    "game": {
+      "source_input_sha256": "8faf572b1aef2cbaaba396320e0f4a22eabad6259b4fe96c594d32e44f22afae",
+      "text_en": "Medium to full-bodied dry red wine with soft, ripe tannins and berry or spice notes; rounded white wine is acceptable for confirmed delicate game birds."
+    },
+    "fish_general": {
+      "source_input_sha256": "e2a356e1ea708ffc7daaf22112eae46875992b586996ee296c04952d6bd12c0b",
+      "text_en": "Fresh dry white or white brut sparkling wine, delicate and light to medium-bodied; dry rose is acceptable for richer preparations."
+    },
+    "cheese_general": {
+      "source_input_sha256": "849e0fd6dd78060653f418d0e099ca02892bebc9e2a53c81328b2f8b2af20efb",
+      "text_en": "Fresh medium-bodied white wine, white brut, or soft red wine; sweet white wine is intended for confirmed blue cheese."
+    },
+    "vegetables": {
+      "source_input_sha256": "e7937ad3b727f9372a5c7c0e81b63f9883997f50a1ce2e80074624f4791381e2",
+      "text_en": "Fresh white wine, dry rose, or delicate red wine with soft tannins, moderate body, and fruit."
+    },
+    "legumes": {
+      "source_input_sha256": "0bdf811e74f1b0b81c2ecbfa749794cb4da44c8596c5959cecc50993498fb2bd",
+      "text_en": "Fresh medium-bodied white wine or dry rose, or delicate red wine with soft tannins; a fruit profile without dominant oak."
+    },
+    "grains": {
+      "source_input_sha256": "734a174393fa61bdb2b409b402ed36b80ffacfb39391d7d1a5e79d2b72bc2a81",
+      "text_en": "Fresh medium-bodied white wine, dry rose, or soft red wine; match body and acidity to the sauce."
+    },
+    "salads": {
+      "source_input_sha256": "68d8806f19dec5a01fcabd4db953be9ddc422ee7e088da7398bc569272dfc017",
+      "text_en": "Fresh dry white wine, delicate rose, or white brut sparkling wine, light to medium-bodied."
+    },
+    "soup_general": {
+      "source_input_sha256": "f5da7006e4c2ba01e5446608afd1b605b3e2f81e073b0ad30d9fd5c310642fe3",
+      "text_en": "Fresh white wine, dry rose, or soft red wine of moderate body; semi-dry white wine is acceptable with sour or spicy preparations."
+    },
+    "savory_pastry": {
+      "source_input_sha256": "54e032a38d07211428fd3820bda1248007e67e961869238cf8b666bdb672b172",
+      "text_en": "Fresh medium-bodied white wine, dry rose, soft red wine, or delicate brut, depending on the filling."
+    },
+    "fruit": {
+      "source_input_sha256": "e11de2137de93c6153dc661d95dd661cdee174adea63e21d3bbd796a7d885a13",
+      "text_en": "Fruity semi-sweet or sweet white or rose wine with freshness and delicate structure; semi-dry wine is acceptable with less-sweet fruit."
+    },
+    "dessert_general": {
+      "source_input_sha256": "f998f32be84928d633113873a88220c4fb366277aab8267d1c19e7445c43fddb",
+      "text_en": "Sweet wine with freshness and sufficient body: fruit-and-honey white wine with fruit and cream, berry-fruited red wine with cocoa and chocolate."
+    },
+    "eggs": {
+      "source_input_sha256": "6dc0774a1eefeb44a791713ecc8758fb6a506a6faf286835783b27e173c201db",
+      "text_en": "Delicate medium-bodied dry white or white brut sparkling wine, fresh and fruity; light dry rose is acceptable."
+    },
+    "mixed": {
+      "source_input_sha256": "1e60749c3461521ce86331eff7076f34ac2aaf0fcb8af7a16b6be4b1c2c8fea5",
+      "text_en": "Fresh white or rose wine of moderate body, delicate brut, or soft red wine, with fruit and low astringency."
+    },
+    "offal_general": {
+      "source_input_sha256": "2f96fe892cd13bd91ea0aa3f2e0ea908f9e53cafbdf2e8b059194e852a7c943b",
+      "text_en": "Dry red wine with soft tannins, fresh white wine, or delicate rose of moderate body; match intensity to the offal type and sauce."
+    },
+    "crustaceans": {
+      "source_input_sha256": "96b3539cf991b4ce3ef1a262eae3ab31d8640dfe35bb8f4effbca0ea8e5ee2db",
+      "text_en": "Delicate medium-bodied dry white or white brut sparkling wine with a fresh fruit profile."
+    },
+    "crab": {
+      "source_input_sha256": "09994d6aee3ced57eb216c37967e09238b09139962af59cc0b692a11368166b0",
+      "text_en": "Fresh, delicate dry white or white brut sparkling wine, light to medium-bodied, with clean fruit."
+    },
+    "hard_cheese": {
+      "source_input_sha256": "554a771b71b52c136e192abc8b333a1bb74dd91b7e6c638cdf09e67dc8a14a7d",
+      "text_en": "Medium-bodied dry white wine with a rounded texture, or dry red wine with soft, ripe tannins, freshness, and fruit."
+    },
+    "blue_cheese": {
+      "source_input_sha256": "1d4c31974ff934dbd2c40565c00e60482c1b3d19ab979f7073fc50651805ec46",
+      "text_en": "Sweet wine with sufficient body, fruit, and freshness: white, rose, or red depending on the strength of the cheese."
+    }
+  },
+  "translation_note": "English translations of supplied soft style guidance, matched only by the SHA-256 of the original input text; expected labels are never read by the request adapter."
+}

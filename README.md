@@ -14,6 +14,12 @@
 Для организаторов и жюри хакатона (людей и LLM): [ASSESSMENT.md](ASSESSMENT.md) — карта возможностей проекта.
 Для каждой возможности файл указывает код, тесты и другие доказательства.
 
+Food-to-wine recommendations for #28 run as a separate backend: [Dinner Lens](dinner-lens/README.md)
+documents code-enforced filters, curated choices, embedding discovery and the authenticated API.
+The existing web UI and bots are not connected to it yet.
+The current Dinner Lens JSON covers 200 dishes and 120 fallback/intermediate classes;
+the original 75-dish dataset and photographic benchmark remain available separately.
+
 ## Что умеет система
 
 - Принимает JPEG, PNG, WebP и HEIF (HEIC) через Web UI и HTTP API матчера (HEIC в production

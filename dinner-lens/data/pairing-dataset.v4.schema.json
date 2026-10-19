@@ -1,0 +1,364 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dinner-lens:pairing-dataset:4.0.0",
+  "title": "Dinner Lens — expanded dishes and fallback classes",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "scope",
+    "catalog_snapshot",
+    "nodes",
+    "profiles",
+    "wines",
+    "modifier_rules",
+    "retrieval_contract",
+    "embedding_documents",
+    "evaluation_cases",
+    "suitability_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "4.0.0"
+    },
+    "dataset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "dishes",
+        "total_nodes",
+        "fallback_root_classes",
+        "all_nodes_have_curated_selections"
+      ],
+      "properties": {
+        "dishes": {
+          "type": "integer",
+          "minimum": 75
+        },
+        "all_nodes_have_curated_selections": {
+          "const": true
+        }
+      }
+    },
+    "catalog_snapshot": {
+      "type": "object",
+      "required": [
+        "version",
+        "catalog_count",
+        "active_count"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 75,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "wines": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/wine"
+      }
+    },
+    "modifier_rules": {
+      "type": "array",
+      "minItems": 1
+    },
+    "retrieval_contract": {
+      "type": "object"
+    },
+    "embedding_documents": {
+      "type": "object",
+      "required": [
+        "query_profiles",
+        "wines",
+        "vectors_status"
+      ],
+      "properties": {
+        "query_profiles": {
+          "type": "array"
+        },
+        "wines": {
+          "type": "array"
+        },
+        "vectors_status": {
+          "const": "texts_ready_vectors_not_computed"
+        }
+      }
+    },
+    "evaluation_cases": {
+      "type": "object",
+      "required": [
+        "recognition",
+        "disambiguation",
+        "retrieval_behavior"
+      ]
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9_][a-z0-9_-]{0,199}$"
+    },
+    "curated": {
+      "type": "object",
+      "required": [
+        "wine_slug",
+        "rank",
+        "explanation_ru",
+        "source_facts_used",
+        "explanation_basis",
+        "applicability_conditions"
+      ],
+      "properties": {
+        "wine_slug": {
+          "$ref": "#/$defs/slug"
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "explanation_ru": {
+          "type": "string",
+          "minLength": 35
+        },
+        "source_facts_used": {
+          "type": "object"
+        },
+        "applicability_conditions": {
+          "type": "array"
+        },
+        "explanation_basis": {
+          "const": "editorial_pairing_rule_plus_source_facts"
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "label_ru",
+        "parent_id",
+        "kind",
+        "aliases",
+        "hierarchy_path",
+        "depth",
+        "pairing_rule",
+        "curated",
+        "embedding_query_document"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "label_ru": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/slug"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "dish",
+            "class",
+            "fallback_class"
+          ]
+        },
+        "aliases": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "hierarchy_path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "curated": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/curated"
+          }
+        },
+        "pairing_rule": {
+          "type": "object",
+          "required": [
+            "id",
+            "profile_id",
+            "target_wine_description_ru",
+            "rationale_ru"
+          ]
+        },
+        "embedding_query_document": {
+          "type": "object",
+          "required": [
+            "id",
+            "text",
+            "profile_id"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "dish"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "original_number",
+              "group",
+              "editorial_recipe_template",
+              "confirmed_attribute_requirements"
+            ],
+            "properties": {
+              "original_number": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "group": {
+                "enum": [
+                  "regional",
+                  "common_russian_menu",
+                  "international"
+                ]
+              },
+              "editorial_recipe_template": {
+                "type": "object"
+              },
+              "confirmed_attribute_requirements": {
+                "type": "array"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "id",
+        "target",
+        "eligibility",
+        "embedding_query_text",
+        "curation_pool",
+        "match_rationale_ru"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "embedding_query_text": {
+          "type": "string",
+          "minLength": 35
+        },
+        "curation_pool": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        }
+      }
+    },
+    "wine": {
+      "type": "object",
+      "required": [
+        "id",
+        "wine_slug",
+        "name",
+        "producer",
+        "catalog_state",
+        "catalog_record_sha256",
+        "source_url",
+        "source_check",
+        "facts",
+        "style_summary"
+      ],
+      "properties": {
+        "wine_slug": {
+          "$ref": "#/$defs/slug"
+        },
+        "catalog_state": {
+          "const": "Active"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "catalog_record_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_check": {
+          "type": "object",
+          "required": [
+            "api_url",
+            "checked_at"
+          ]
+        },
+        "facts": {
+          "type": "object",
+          "required": [
+            "color",
+            "sweetness",
+            "wine_kind",
+            "alcohol_percent",
+            "grapes_reported"
+          ]
+        },
+        "style_summary": {
+          "type": "object",
+          "required": [
+            "text_ru",
+            "basis"
+          ]
+        }
+      }
+    }
+  }
+}

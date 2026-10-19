@@ -1,0 +1,2476 @@
+{
+  "version": "2.0.0",
+  "selection_basis": "Editorial gap audit of v1, not measured Russian restaurant market coverage. Recipe names specify a variant; photographs and abbreviated names do not confirm hidden ingredients.",
+  "class_columns": [
+    "id",
+    "label_ru",
+    "parent_id",
+    "profile_id",
+    "pairing_context_ru",
+    "aliases"
+  ],
+  "classes": [
+    [
+      "raw_meat",
+      "Сырая говядина: тартар и карпаччо",
+      "meat",
+      "cold_meat",
+      "нежная сырая говядина, соль и возможная кислая заправка",
+      [
+        "beef tartare and carpaccio"
+      ]
+    ],
+    [
+      "roast_meat",
+      "Запечённое мясо",
+      "meat",
+      "meat_general",
+      "насыщенное мясо и запечённая корочка, соус требует уточнения",
+      [
+        "мясное жаркое",
+        "roast meat"
+      ]
+    ],
+    [
+      "braised_meat",
+      "Тушёное мясо",
+      "meat",
+      "braised_beef",
+      "мягкая текстура и насыщенный мясной соус",
+      [
+        "braised meat"
+      ]
+    ],
+    [
+      "breaded_meat",
+      "Мясо в панировке",
+      "meat",
+      "fried",
+      "жирность жарки и хрустящая панировка",
+      [
+        "мясной шницель",
+        "breaded meat"
+      ]
+    ],
+    [
+      "glazed_meat",
+      "Мясо в сладкой глазури",
+      "meat",
+      "sweet_glaze",
+      "подтверждённая сладость глазури важнее цвета мяса",
+      [
+        "glazed meat"
+      ]
+    ],
+    [
+      "roasted_poultry",
+      "Жареная и запечённая птица",
+      "poultry",
+      "poultry",
+      "птица с румяной корочкой; вид и соус ещё не уточнены",
+      [
+        "запеченная птица",
+        "roasted poultry"
+      ]
+    ],
+    [
+      "tomato_poultry",
+      "Птица в томатном соусе",
+      "poultry",
+      "vegetables_tomato",
+      "кислотность томатов и умеренная насыщенность птицы",
+      [
+        "poultry in tomato sauce"
+      ]
+    ],
+    [
+      "glazed_poultry",
+      "Птица в сладкой глазури",
+      "poultry",
+      "sweet_glaze",
+      "подтверждённая сладость соуса и мясо птицы",
+      [
+        "glazed poultry"
+      ]
+    ],
+    [
+      "fried_poultry",
+      "Птица в хрустящей панировке",
+      "poultry",
+      "fried",
+      "жирность жарки и нежное мясо птицы",
+      [
+        "chicken katsu",
+        "птица в кляре"
+      ]
+    ],
+    [
+      "rabbit",
+      "Кролик",
+      "meat",
+      "poultry",
+      "нежное мясо кролика; сливочная подача требует подтверждения",
+      [
+        "rabbit"
+      ]
+    ],
+    [
+      "wild_boar",
+      "Кабан",
+      "game",
+      "game",
+      "насыщенная дичь; способ приготовления и соус требуют уточнения",
+      [
+        "wild boar"
+      ]
+    ],
+    [
+      "cream_fish",
+      "Рыба в сливочном или молочном соусе",
+      "fish",
+      "white_butter_cream",
+      "нежная рыба и подтверждённая жирность молочной подачи",
+      [
+        "рыба в сливочном соусе",
+        "fish in cream sauce"
+      ]
+    ],
+    [
+      "smoked_fish",
+      "Копчёная рыба",
+      "fish",
+      "salted_fish",
+      "солёность, жирность рыбы и дымные оттенки",
+      [
+        "smoked fish"
+      ]
+    ],
+    [
+      "sushi_rolls",
+      "Суши и роллы",
+      "grains_pasta",
+      "grains",
+      "рисовая основа; начинка, термообработка, сладость и острота соусов неизвестны",
+      [
+        "суши",
+        "роллы",
+        "sushi",
+        "sushi rolls"
+      ]
+    ],
+    [
+      "raw_fish_sushi",
+      "Суши с сырой рыбой",
+      "sushi_rolls",
+      "raw_fish",
+      "сырая рыба и подкислённый рис; соусы уточняются отдельно",
+      [
+        "raw fish sushi"
+      ]
+    ],
+    [
+      "vegetable_rolls",
+      "Овощные роллы",
+      "sushi_rolls",
+      "vegetable_acid",
+      "овощи и рис с уксусной заправкой",
+      [
+        "vegetarian sushi rolls"
+      ]
+    ],
+    [
+      "cream_cheese_rolls",
+      "Роллы со сливочным сыром",
+      "sushi_rolls",
+      "soft_cheese",
+      "сливочная текстура сыра; рыба и соусы требуют уточнения",
+      [
+        "cream cheese rolls"
+      ]
+    ],
+    [
+      "fried_rolls",
+      "Роллы с жареной начинкой",
+      "sushi_rolls",
+      "fried",
+      "рис и хрустящая жирная начинка; сладкий соус не предполагается",
+      [
+        "tempura rolls"
+      ]
+    ],
+    [
+      "glazed_rolls",
+      "Роллы со сладким соусом унаги",
+      "sushi_rolls",
+      "sweet_glaze",
+      "подтверждённая сладость унаги и рисовая основа",
+      [
+        "unagi sauce rolls"
+      ]
+    ],
+    [
+      "leafy_salads",
+      "Листовые и овощные салаты с кислой заправкой",
+      "salads",
+      "vegetable_acid",
+      "свежие овощи, зелень и подтверждённая кислая заправка",
+      [
+        "салат с кислой заправкой",
+        "leafy salad with acidic dressing"
+      ]
+    ],
+    [
+      "cheese_salads",
+      "Салаты с мягким сыром",
+      "salads",
+      "soft_cheese",
+      "мягкий сыр и овощная основа; вид заправки уточняется",
+      [
+        "soft cheese salad"
+      ]
+    ],
+    [
+      "grilled_vegetables",
+      "Овощи на гриле",
+      "vegetables_mushrooms",
+      "vegetables",
+      "овощная сладость и лёгкая обжаренная корочка",
+      [
+        "grilled vegetables"
+      ]
+    ],
+    [
+      "bean_dishes",
+      "Блюда из фасоли",
+      "legumes",
+      "legumes",
+      "мягкая крахмалистая фасоль; острота и мясные добавки уточняются",
+      [
+        "beans",
+        "фасоль"
+      ]
+    ],
+    [
+      "chickpea_dishes",
+      "Блюда из нута",
+      "legumes",
+      "legumes",
+      "плотная нутовая основа и возможная кунжутная паста",
+      [
+        "chickpea dishes",
+        "нут"
+      ]
+    ],
+    [
+      "lentil_dishes",
+      "Блюда из чечевицы",
+      "legumes",
+      "legumes",
+      "крахмалистая чечевица и овощи; соус уточняется",
+      [
+        "lentils",
+        "чечевица"
+      ]
+    ],
+    [
+      "egg_breakfast",
+      "Омлеты и блюда из яиц",
+      "eggs",
+      "eggs",
+      "мягкая яичная текстура; начинка и соус требуют уточнения",
+      [
+        "омлет",
+        "яичница",
+        "omelette",
+        "scrambled eggs"
+      ]
+    ],
+    [
+      "tomato_eggs",
+      "Яйца в томатном соусе",
+      "eggs",
+      "vegetables_tomato",
+      "томаты и мягкий желток; чили не предполагается",
+      [
+        "шакшука",
+        "shakshuka"
+      ]
+    ],
+    [
+      "cream_soups",
+      "Сливочные супы",
+      "soups",
+      "white_butter_cream",
+      "сливочная текстура; основной продукт требует уточнения",
+      [
+        "сливочный суп",
+        "cream soup"
+      ]
+    ],
+    [
+      "vegetable_soups",
+      "Овощные супы",
+      "soups",
+      "vegetables",
+      "овощной бульон без подтверждённых мяса, сливок и чили",
+      [
+        "vegetable soup"
+      ]
+    ],
+    [
+      "legume_soups",
+      "Супы из бобовых",
+      "soups",
+      "legumes",
+      "крахмалистые бобовые; копчёности и чили требуют уточнения",
+      [
+        "legume soup"
+      ]
+    ],
+    [
+      "poultry_soups",
+      "Супы с птицей",
+      "soups",
+      "poultry",
+      "нежный птичий бульон и возможная лапша",
+      [
+        "куриный суп",
+        "chicken soup"
+      ]
+    ],
+    [
+      "cold_soups",
+      "Холодные кислые супы",
+      "soups",
+      "vegetable_acid",
+      "подтверждённая кислотность холодного супа; основа требует уточнения",
+      [
+        "холодный кислый суп",
+        "cold sour soup"
+      ]
+    ],
+    [
+      "meat_pasta",
+      "Паста с мясным томатным соусом",
+      "pasta",
+      "meat_tomato",
+      "мясная насыщенность и томатная составляющая; сливки уточняются",
+      [
+        "meat tomato sauce pasta"
+      ]
+    ],
+    [
+      "cream_pasta",
+      "Паста со сливочным или масляным соусом",
+      "pasta",
+      "white_butter_cream",
+      "жирность сливочного соуса и крахмалистая паста",
+      [
+        "сливочная паста",
+        "cream sauce pasta"
+      ]
+    ],
+    [
+      "herb_pasta",
+      "Паста с зеленью и песто",
+      "pasta",
+      "vegetables",
+      "травянистый соус и масло; сыр и орехи требуют уточнения",
+      [
+        "паста с песто",
+        "pesto pasta"
+      ]
+    ],
+    [
+      "wok_noodles",
+      "Лапша вок",
+      "grains_pasta",
+      "grains",
+      "лапша; белок, сладость, кислота и чили в соусе неизвестны",
+      [
+        "лапша вок",
+        "wok noodles"
+      ]
+    ],
+    [
+      "vegetable_rice",
+      "Рис с овощами",
+      "rice_dishes",
+      "vegetables",
+      "крахмалистый рис и овощная основа",
+      [
+        "vegetable rice"
+      ]
+    ],
+    [
+      "cheese_pizza",
+      "Сырная пицца",
+      "pizza",
+      "cheese_pastry",
+      "солёность сыра и жирность теста; голубой сыр уточняется",
+      [
+        "cheese pizza"
+      ]
+    ],
+    [
+      "meat_pizza",
+      "Пицца с мясом",
+      "pizza",
+      "meat_tomato",
+      "солёные мясные добавки, тесто и томатный соус",
+      [
+        "meat pizza"
+      ]
+    ],
+    [
+      "mushroom_pizza",
+      "Пицца с грибами",
+      "pizza",
+      "mushrooms",
+      "грибная насыщенность, тесто и сыр",
+      [
+        "mushroom pizza"
+      ]
+    ],
+    [
+      "vegetable_dumplings",
+      "Вареники с несладкой овощной начинкой",
+      "savory_pastry",
+      "potato_pastry",
+      "тесто и мягкая овощная начинка",
+      [
+        "savory vegetable dumplings"
+      ]
+    ],
+    [
+      "sweet_dumplings",
+      "Сладкие вареники",
+      "desserts",
+      "fruit_dessert",
+      "тесто и подтверждённо сладкая ягодная начинка",
+      [
+        "sweet dumplings"
+      ]
+    ],
+    [
+      "cream_desserts",
+      "Сливочные десерты",
+      "desserts",
+      "curd_dessert",
+      "сладкая сливочная основа без подтверждённого шоколада",
+      [
+        "cream desserts"
+      ]
+    ],
+    [
+      "chocolate_desserts",
+      "Шоколадные десерты",
+      "desserts",
+      "coffee_cocoa",
+      "насыщенное какао и сладость; горечь шоколада требует уточнения",
+      [
+        "chocolate dessert"
+      ]
+    ],
+    [
+      "ice_cream",
+      "Мороженое",
+      "desserts",
+      "curd_dessert",
+      "сладкая холодная молочная текстура; вкус требует уточнения",
+      [
+        "ice cream"
+      ]
+    ],
+    [
+      "fresh_fruit",
+      "Свежие фрукты и ягоды",
+      "fruit",
+      "fruit",
+      "сладость и кислотность фруктов без добавленного сиропа",
+      [
+        "fruit and berries"
+      ]
+    ],
+    [
+      "pates",
+      "Паштеты из печени",
+      "offal",
+      "offal_general",
+      "нежная жирная печёночная текстура; сладкая подача уточняется",
+      [
+        "печеночный паштет",
+        "liver pate"
+      ]
+    ],
+    [
+      "hot_offal",
+      "Горячие блюда из субпродуктов",
+      "offal",
+      "offal_general",
+      "насыщенный вкус субпродуктов; соус требует уточнения",
+      [
+        "cooked offal"
+      ]
+    ],
+    [
+      "sweet_sour_dishes",
+      "Блюда в кисло-сладком соусе",
+      "mixed_dishes",
+      "sweet_glaze",
+      "подтверждённая сладость и кислотность соуса",
+      [
+        "sweet and sour dishes"
+      ]
+    ],
+    [
+      "grilled_fish",
+      "Рыба на гриле",
+      "fish",
+      "fish_plain",
+      "рыба с лёгкой корочкой гриля; соус требует уточнения",
+      [
+        "grilled fish"
+      ]
+    ],
+    [
+      "soft_ripened_cheese",
+      "Мягкие сыры с белой плесенью",
+      "cheese",
+      "soft_cheese",
+      "мягкая жирная сырная текстура; сладкие добавки уточняются",
+      [
+        "white mould soft cheese"
+      ]
+    ],
+    [
+      "sour_brine_soups",
+      "Супы на кислом рассоле",
+      "soups",
+      "sour_cabbage",
+      "подтверждённая кислота рассола; мясо и крупа требуют уточнения",
+      [
+        "рассольник",
+        "sour brine soup"
+      ]
+    ]
+  ],
+  "dish_columns": [
+    "id",
+    "label_ru",
+    "parent_id",
+    "profile_id",
+    "group",
+    "region_or_cuisine",
+    "protein_or_base",
+    "preparation",
+    "sauce_or_dressing",
+    "pairing_context_ru",
+    "aliases"
+  ],
+  "dishes": [
+    [
+      "striploin_grilled",
+      "Стейк стриплойн на гриле",
+      "meat_steak",
+      "meat_steak",
+      "international",
+      "Стейк-кухня",
+      "говядина, стриплойн",
+      "гриль",
+      null,
+      "мясная насыщенность и корочка гриля при меньшей жирности, чем у рибая",
+      [
+        "grilled striploin steak"
+      ]
+    ],
+    [
+      "beef_tenderloin_pepper_cream",
+      "Медальоны из говядины со сливочно-перечным соусом",
+      "meat_steak",
+      "braised_beef",
+      "international",
+      "Европейская кухня",
+      "говяжья вырезка",
+      "обжаривание",
+      "сливочно-перечный соус",
+      "нежное мясо и сливочная насыщенность без предполагаемой жгучести чили",
+      [
+        "beef medallions with pepper cream sauce"
+      ]
+    ],
+    [
+      "beef_tartare_capers",
+      "Тартар из говядины с каперсами",
+      "raw_meat",
+      "cold_meat",
+      "international",
+      "Европейская кухня",
+      "сырая говядина",
+      "рубленая сырая подача",
+      "каперсы и горчица",
+      "деликатная говядина, солёные каперсы и горчичная заправка",
+      [
+        "beef tartare with capers"
+      ]
+    ],
+    [
+      "beef_carpaccio_parmesan",
+      "Карпаччо из говядины с пармезаном",
+      "raw_meat",
+      "cold_meat",
+      "international",
+      "Итальянская кухня",
+      "сырая говядина",
+      "тонкая нарезка",
+      "оливковое масло и лимон",
+      "тонкая текстура мяса, солёный пармезан и лимонная кислота",
+      [
+        "beef carpaccio with parmesan"
+      ]
+    ],
+    [
+      "pork_ribs_bbq",
+      "Свиные рёбра в сладком соусе барбекю",
+      "glazed_meat",
+      "sweet_glaze",
+      "international",
+      "Американская кухня",
+      "свиные рёбра",
+      "запекание",
+      "сладкий соус барбекю",
+      "жирные рёбра и подтверждённо сладкая глазурь",
+      [
+        "sweet bbq pork ribs"
+      ]
+    ],
+    [
+      "pork_roast_herbs",
+      "Свинина запечённая с травами",
+      "roast_meat",
+      "meat_general",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "свинина",
+      "запекание",
+      null,
+      "свиной жир, травы и румяная корочка",
+      [
+        "herb roast pork"
+      ]
+    ],
+    [
+      "pork_schnitzel",
+      "Шницель из свинины в сухарях",
+      "breaded_meat",
+      "fried",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "свинина и сухари",
+      "жарка в панировке",
+      null,
+      "жирность жарки и хрустящая корочка",
+      [
+        "pork schnitzel"
+      ]
+    ],
+    [
+      "beef_meatballs_tomato",
+      "Тефтели из говядины в томатном соусе",
+      "minced_meat",
+      "meat_tomato",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "говяжий фарш",
+      "тушение",
+      "томатный соус",
+      "мясной фарш и кислая томатная подлива",
+      [
+        "beef meatballs in tomato sauce"
+      ]
+    ],
+    [
+      "veal_osso_buco",
+      "Оссобуко из телятины",
+      "braised_meat",
+      "braised_beef",
+      "international",
+      "Итальянская кухня",
+      "телячья голяшка",
+      "длительное тушение",
+      "овощной мясной соус",
+      "мягкое тушёное мясо и насыщенный соус",
+      [
+        "veal osso buco"
+      ]
+    ],
+    [
+      "beef_brisket_slow_roast",
+      "Говяжий брискет медленного приготовления",
+      "roast_meat",
+      "braised_beef",
+      "international",
+      "Американская кухня",
+      "говяжья грудинка",
+      "медленное запекание",
+      null,
+      "насыщенная грудинка и мягкая мясная текстура",
+      [
+        "slow cooked beef brisket"
+      ]
+    ],
+    [
+      "chicken_roast_herbs",
+      "Курица запечённая с травами",
+      "roasted_poultry",
+      "poultry",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "курица",
+      "запекание",
+      null,
+      "нежное мясо птицы и умеренно жирная кожица",
+      [
+        "herb roast chicken"
+      ]
+    ],
+    [
+      "turkey_cutlet",
+      "Котлета из индейки",
+      "poultry",
+      "poultry",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "фарш индейки",
+      "обжаривание",
+      null,
+      "нежная птица и лёгкая обжаренная корочка",
+      [
+        "turkey cutlet"
+      ]
+    ],
+    [
+      "chicken_shashlik",
+      "Шашлык из курицы",
+      "roasted_poultry",
+      "poultry",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "курица",
+      "мангал",
+      null,
+      "куриное мясо и корочка мангала; маринад требует уточнения",
+      [
+        "chicken shashlik"
+      ]
+    ],
+    [
+      "chicken_tabbaka",
+      "Цыплёнок табака",
+      "roasted_poultry",
+      "poultry",
+      "international",
+      "Грузинская кухня",
+      "цыплёнок",
+      "жарка под прессом",
+      null,
+      "румяная кожица и нежное мясо цыплёнка",
+      [
+        "chicken tabaka",
+        "цыпленок тапака"
+      ]
+    ],
+    [
+      "chicken_chakhokhbili",
+      "Чахохбили из курицы с томатами",
+      "tomato_poultry",
+      "vegetables_tomato",
+      "international",
+      "Грузинская кухня",
+      "курица",
+      "тушение",
+      "томаты и зелень",
+      "кислотность томатов и травянистый соус к птице",
+      [
+        "chicken chakhokhbili with tomatoes"
+      ]
+    ],
+    [
+      "chicken_katsu",
+      "Курица кацу в панировке панко",
+      "fried_poultry",
+      "fried",
+      "international",
+      "Японская кухня",
+      "куриное филе и панко",
+      "жарка",
+      null,
+      "хрустящая панировка и нежная курица без предполагаемого сладкого соуса",
+      [
+        "chicken katsu in panko"
+      ]
+    ],
+    [
+      "chicken_teriyaki",
+      "Курица в сладком соусе терияки",
+      "glazed_poultry",
+      "sweet_glaze",
+      "international",
+      "Японская кухня",
+      "курица",
+      "обжаривание",
+      "сладкий терияки",
+      "сладко-солёная глазурь и мясо птицы",
+      [
+        "sweet teriyaki chicken"
+      ]
+    ],
+    [
+      "rabbit_sour_cream",
+      "Кролик тушёный в сметане",
+      "rabbit",
+      "white_butter_cream",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "кролик",
+      "тушение",
+      "сметана",
+      "нежное мясо кролика и сметанная жирность",
+      [
+        "rabbit stewed in sour cream"
+      ]
+    ],
+    [
+      "wild_boar_stew",
+      "Рагу из кабана",
+      "wild_boar",
+      "game",
+      "international",
+      "Европейская кухня",
+      "кабан",
+      "тушение",
+      "мясной соус",
+      "насыщенная дичь и плотный тушёный соус",
+      [
+        "wild boar stew"
+      ]
+    ],
+    [
+      "duck_confit_lingonberry",
+      "Утиная ножка конфи с брусникой",
+      "duck",
+      "duck_berry",
+      "international",
+      "Европейская кухня",
+      "утиная ножка",
+      "конфи",
+      "брусничный соус",
+      "жирная утка и кислая ягодная подача",
+      [
+        "duck confit with lingonberry"
+      ]
+    ],
+    [
+      "salmon_grilled_lemon",
+      "Лосось на гриле с лимоном",
+      "grilled_fish",
+      "fish_plain",
+      "international",
+      "Ресторанная кухня",
+      "лосось",
+      "гриль",
+      "лимон",
+      "жирность лосося и лимонная свежесть",
+      [
+        "grilled salmon with lemon"
+      ]
+    ],
+    [
+      "tuna_grilled",
+      "Стейк из тунца на гриле",
+      "grilled_fish",
+      "fish_plain",
+      "international",
+      "Ресторанная кухня",
+      "тунец",
+      "гриль",
+      null,
+      "плотная рыбная текстура и лёгкая корочка гриля",
+      [
+        "grilled tuna steak"
+      ]
+    ],
+    [
+      "trout_baked_herbs",
+      "Форель запечённая с травами",
+      "baked_fish",
+      "fish_plain",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "форель",
+      "запекание",
+      null,
+      "сочная рыба и травы без тяжёлого соуса",
+      [
+        "baked trout with herbs"
+      ]
+    ],
+    [
+      "cod_cream",
+      "Треска в сливочном соусе",
+      "cream_fish",
+      "white_butter_cream",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "треска",
+      "запекание",
+      "сливочный соус",
+      "нежная белая рыба и жирность сливок",
+      [
+        "cod in cream sauce"
+      ]
+    ],
+    [
+      "halibut_baked",
+      "Палтус запечённый",
+      "baked_fish",
+      "fish_plain",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "палтус",
+      "запекание",
+      null,
+      "сочная рыба и деликатная запечённая корочка",
+      [
+        "baked halibut"
+      ]
+    ],
+    [
+      "eel_glazed_rice",
+      "Угорь в соусе унаги с рисом",
+      "rice_dishes",
+      "sweet_glaze",
+      "international",
+      "Японская кухня",
+      "угорь и рис",
+      "запекание",
+      "сладкий унаги",
+      "жирная рыба и подтверждённая сладость унаги",
+      [
+        "unagi eel with rice"
+      ]
+    ],
+    [
+      "octopus_grilled",
+      "Осьминог на гриле",
+      "cooked_molluscs",
+      "scallops_grilled",
+      "international",
+      "Средиземноморская кухня",
+      "осьминог",
+      "гриль",
+      null,
+      "плотный моллюск и корочка гриля",
+      [
+        "grilled octopus"
+      ]
+    ],
+    [
+      "calamari_fried",
+      "Кольца кальмара во фритюре",
+      "cooked_molluscs",
+      "fried",
+      "international",
+      "Ресторанная кухня",
+      "кальмар",
+      "фритюр",
+      null,
+      "хрустящий кляр и нежный моллюск",
+      [
+        "fried calamari rings"
+      ]
+    ],
+    [
+      "shrimp_garlic_butter",
+      "Креветки в чесночном сливочном масле",
+      "shrimp",
+      "crab_butter",
+      "international",
+      "Средиземноморская кухня",
+      "креветки",
+      "обжаривание",
+      "сливочное масло и чеснок",
+      "нежные ракообразные и насыщенная масляная подача",
+      [
+        "garlic butter shrimp"
+      ]
+    ],
+    [
+      "crayfish_boiled",
+      "Раки отварные с укропом",
+      "crustaceans",
+      "crustaceans",
+      "common_russian_menu",
+      "Русская кухня",
+      "раки",
+      "варка",
+      null,
+      "деликатное мясо ракообразных и укроп",
+      [
+        "boiled crayfish with dill"
+      ]
+    ],
+    [
+      "mackerel_smoked",
+      "Скумбрия горячего копчения",
+      "smoked_fish",
+      "salted_fish",
+      "common_russian_menu",
+      "Рыбная закуска",
+      "скумбрия",
+      "горячее копчение",
+      null,
+      "жирная солёная рыба и дымные оттенки",
+      [
+        "hot smoked mackerel"
+      ]
+    ],
+    [
+      "squid_steamed_lemon",
+      "Кальмар на пару с лимоном",
+      "cooked_molluscs",
+      "seafood_citrus",
+      "international",
+      "Ресторанная кухня",
+      "кальмар",
+      "пар",
+      "лимон",
+      "деликатный моллюск без панировки и лимонная кислота",
+      [
+        "steamed squid with lemon"
+      ]
+    ],
+    [
+      "salmon_nigiri",
+      "Нигири с сырым лососем",
+      "raw_fish_sushi",
+      "raw_fish",
+      "international",
+      "Японская кухня",
+      "сырой лосось и рис",
+      "сырая подача",
+      "рисовый уксус",
+      "нежный лосось и подкислённый рис",
+      [
+        "raw salmon nigiri"
+      ]
+    ],
+    [
+      "tuna_nigiri",
+      "Нигири с сырым тунцом",
+      "raw_fish_sushi",
+      "raw_fish",
+      "international",
+      "Японская кухня",
+      "сырой тунец и рис",
+      "сырая подача",
+      "рисовый уксус",
+      "плотная сырая рыба и подкислённый рис",
+      [
+        "raw tuna nigiri"
+      ]
+    ],
+    [
+      "cucumber_maki",
+      "Маки с огурцом",
+      "vegetable_rolls",
+      "vegetable_acid",
+      "international",
+      "Японская кухня",
+      "огурец, рис и нори",
+      "холодная подача",
+      "рисовый уксус",
+      "свежий огурец и уксусная заправка риса",
+      [
+        "cucumber maki",
+        "каппа маки"
+      ]
+    ],
+    [
+      "avocado_maki",
+      "Маки с авокадо",
+      "vegetable_rolls",
+      "vegetable_acid",
+      "international",
+      "Японская кухня",
+      "авокадо, рис и нори",
+      "холодная подача",
+      "рисовый уксус",
+      "маслянистое авокадо и кислая рисовая основа",
+      [
+        "avocado maki"
+      ]
+    ],
+    [
+      "philadelphia_salmon_cream_cheese",
+      "Ролл Филадельфия с лососем и сливочным сыром",
+      "cream_cheese_rolls",
+      "soft_cheese",
+      "international",
+      "Японская ресторанная кухня",
+      "лосось, рис и сливочный сыр",
+      "холодная подача",
+      "рисовый уксус",
+      "жирность сливочного сыра, нежный лосось и подкислённый рис",
+      [
+        "philadelphia roll with salmon and cream cheese"
+      ]
+    ],
+    [
+      "shrimp_tempura_roll",
+      "Ролл с креветкой темпура без сладкого соуса",
+      "fried_rolls",
+      "fried",
+      "international",
+      "Японская ресторанная кухня",
+      "креветка темпура и рис",
+      "жарка начинки",
+      "без сладкого соуса",
+      "жирность темпуры без сладкой глазури",
+      [
+        "shrimp tempura roll without sweet sauce"
+      ]
+    ],
+    [
+      "eel_unagi_roll",
+      "Ролл с угрём и сладким соусом унаги",
+      "glazed_rolls",
+      "sweet_glaze",
+      "international",
+      "Японская ресторанная кухня",
+      "угорь и рис",
+      "готовый запечённый угорь",
+      "сладкий унаги",
+      "жирная рыба и сладко-солёный соус",
+      [
+        "eel roll with sweet unagi sauce"
+      ]
+    ],
+    [
+      "caesar_chicken",
+      "Цезарь с курицей и сливочно-яичной заправкой",
+      "mayonnaise_salads",
+      "mayonnaise",
+      "international",
+      "Ресторанная кухня",
+      "курица, ромейн и сухарики",
+      "холодная сборка",
+      "сливочно-яичная заправка",
+      "жирная яичная заправка и умеренная насыщенность курицы",
+      [
+        "chicken caesar with creamy egg dressing"
+      ]
+    ],
+    [
+      "caesar_shrimp",
+      "Цезарь с креветками и сливочно-яичной заправкой",
+      "mayonnaise_salads",
+      "mayonnaise",
+      "international",
+      "Ресторанная кухня",
+      "креветки, ромейн и сухарики",
+      "холодная сборка",
+      "сливочно-яичная заправка",
+      "жирная заправка и нежные креветки",
+      [
+        "shrimp caesar with creamy egg dressing"
+      ]
+    ],
+    [
+      "caprese",
+      "Капрезе с томатами и моцареллой",
+      "cheese_salads",
+      "soft_cheese",
+      "international",
+      "Итальянская кухня",
+      "томаты, моцарелла и базилик",
+      "холодная подача",
+      "оливковое масло",
+      "кислые томаты, мягкий сыр и базилик",
+      [
+        "tomato mozzarella caprese"
+      ]
+    ],
+    [
+      "nicoise_tuna",
+      "Нисуаз с тунцом и лимонной заправкой",
+      "leafy_salads",
+      "vegetable_acid",
+      "international",
+      "Французская кухня",
+      "тунец, овощи и яйцо",
+      "сборка салата",
+      "лимонная заправка",
+      "рыба, оливки и кислая лимонная заправка",
+      [
+        "tuna nicoise with lemon dressing"
+      ]
+    ],
+    [
+      "beet_goat_cheese_salad",
+      "Салат с печёной свёклой и козьим сыром",
+      "cheese_salads",
+      "soft_cheese",
+      "international",
+      "Европейская кухня",
+      "свёкла и мягкий козий сыр",
+      "запекание свёклы",
+      null,
+      "сладость печёной свёклы и мягкий солоноватый сыр",
+      [
+        "roasted beet and goat cheese salad"
+      ]
+    ],
+    [
+      "tabbouleh",
+      "Табуле с булгуром и лимоном",
+      "leafy_salads",
+      "vegetable_acid",
+      "international",
+      "Ближневосточная кухня",
+      "булгур, петрушка и овощи",
+      "холодная подача",
+      "лимон и оливковое масло",
+      "кислотность лимона и обилие свежей зелени",
+      [
+        "tabbouleh with bulgur and lemon"
+      ]
+    ],
+    [
+      "fresh_vegetable_salad",
+      "Салат из огурцов и помидоров с маслом",
+      "vegetable_salads",
+      "vegetable_acid",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "огурцы и томаты",
+      "сырая подача",
+      "растительное масло",
+      "свежие овощи и кислотность томатов",
+      [
+        "cucumber tomato salad with oil"
+      ]
+    ],
+    [
+      "grilled_vegetable_platter",
+      "Овощи гриль с оливковым маслом",
+      "grilled_vegetables",
+      "vegetables",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "кабачок, баклажан и перец",
+      "гриль",
+      "оливковое масло",
+      "овощная сладость и лёгкая корочка гриля",
+      [
+        "grilled vegetable platter with olive oil"
+      ]
+    ],
+    [
+      "ratatouille",
+      "Рататуй с томатами",
+      "tomato_vegetables",
+      "vegetables_tomato",
+      "international",
+      "Французская кухня",
+      "баклажаны, кабачки и томаты",
+      "тушение",
+      "томатный соус",
+      "тушёные овощи и томатная кислотность",
+      [
+        "tomato ratatouille"
+      ]
+    ],
+    [
+      "hummus_tahini",
+      "Хумус с тахини",
+      "chickpea_dishes",
+      "legumes",
+      "international",
+      "Ближневосточная кухня",
+      "нут и кунжутная паста",
+      "пюрирование варёного нута",
+      "тахини и лимон",
+      "плотная нутовая текстура, кунжут и лимон",
+      [
+        "hummus with tahini"
+      ]
+    ],
+    [
+      "falafel_tahini",
+      "Фалафель с соусом тахини",
+      "chickpea_dishes",
+      "legumes",
+      "international",
+      "Ближневосточная кухня",
+      "нут и зелень",
+      "жарка",
+      "тахини",
+      "крахмалистый нут, жареная корочка и кунжутный соус",
+      [
+        "falafel with tahini"
+      ]
+    ],
+    [
+      "lobio",
+      "Лобио из красной фасоли с зеленью",
+      "bean_dishes",
+      "legumes",
+      "international",
+      "Грузинская кухня",
+      "красная фасоль",
+      "тушение",
+      "зелень и специи без подтверждённого чили",
+      "мягкая фасоль и пряная зелень",
+      [
+        "red bean lobio with herbs"
+      ]
+    ],
+    [
+      "lentil_vegetable_stew",
+      "Чечевица тушёная с овощами",
+      "lentil_dishes",
+      "legumes",
+      "common_russian_menu",
+      "Постное меню",
+      "чечевица и овощи",
+      "тушение",
+      null,
+      "крахмалистая чечевица и умеренная овощная насыщенность",
+      [
+        "lentil vegetable stew"
+      ]
+    ],
+    [
+      "eggplant_walnut_rolls",
+      "Рулетики из баклажанов с грецким орехом",
+      "vegetables_mushrooms",
+      "vegetables",
+      "international",
+      "Грузинская кухня",
+      "баклажаны и грецкие орехи",
+      "обжаривание баклажанов",
+      "ореховая паста",
+      "маслянистый баклажан и ореховая начинка",
+      [
+        "eggplant walnut rolls"
+      ]
+    ],
+    [
+      "grilled_corn_butter",
+      "Кукуруза на гриле со сливочным маслом",
+      "grilled_vegetables",
+      "white_butter_cream",
+      "international",
+      "Ресторанная кухня",
+      "кукуруза",
+      "гриль",
+      "сливочное масло",
+      "сладость кукурузы, масло и обжаренная корочка",
+      [
+        "grilled corn with butter"
+      ]
+    ],
+    [
+      "tofu_vegetable_wok",
+      "Тофу с овощами вок без сладкого соуса",
+      "legumes",
+      "vegetables",
+      "international",
+      "Паназиатская кухня",
+      "тофу и овощи",
+      "быстрое обжаривание",
+      "несладкий соевый соус",
+      "соевый белок, овощи и солёная подача без сладкой глазури",
+      [
+        "tofu vegetable wok without sweet sauce"
+      ]
+    ],
+    [
+      "cheese_omelette",
+      "Омлет с сыром",
+      "egg_breakfast",
+      "eggs",
+      "common_russian_menu",
+      "Завтраки",
+      "яйца и сыр",
+      "жарка",
+      null,
+      "мягкая яичная текстура и солёность сыра",
+      [
+        "cheese omelette"
+      ]
+    ],
+    [
+      "shakshuka_tomato",
+      "Шакшука с томатами без чили",
+      "tomato_eggs",
+      "vegetables_tomato",
+      "international",
+      "Ближневосточная кухня",
+      "яйца и томаты",
+      "тушение яиц в соусе",
+      "томатный соус без чили",
+      "кислотность томатов и мягкий желток без жгучести",
+      [
+        "tomato shakshuka without chilli"
+      ]
+    ],
+    [
+      "eggs_benedict_ham",
+      "Яйца Бенедикт с ветчиной и голландским соусом",
+      "egg_breakfast",
+      "white_butter_cream",
+      "international",
+      "Завтраки",
+      "яйца пашот, ветчина и хлеб",
+      "пашот",
+      "голландский соус",
+      "солёная ветчина, желток и жирный масляный соус",
+      [
+        "eggs benedict with ham and hollandaise"
+      ]
+    ],
+    [
+      "poached_egg_avocado",
+      "Яйцо пашот с авокадо на тосте",
+      "egg_breakfast",
+      "eggs",
+      "international",
+      "Завтраки",
+      "яйцо, авокадо и хлеб",
+      "пашот",
+      null,
+      "мягкий желток и маслянистое авокадо",
+      [
+        "poached egg avocado toast"
+      ]
+    ],
+    [
+      "chicken_noodle_soup",
+      "Куриный суп с лапшой",
+      "poultry_soups",
+      "poultry",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "курица и лапша",
+      "варка",
+      null,
+      "лёгкий куриный бульон и мягкая лапша",
+      [
+        "chicken noodle soup"
+      ]
+    ],
+    [
+      "mushroom_cream_soup",
+      "Грибной крем-суп со сливками",
+      "cream_soups",
+      "mushrooms",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "грибы",
+      "варка и пюрирование",
+      "сливки",
+      "грибная насыщенность и сливочная текстура",
+      [
+        "mushroom soup with cream"
+      ]
+    ],
+    [
+      "pumpkin_cream_soup",
+      "Тыквенный крем-суп со сливками",
+      "cream_soups",
+      "pumpkin",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "тыква",
+      "варка и пюрирование",
+      "сливки",
+      "овощная сладость тыквы и мягкая сливочная основа",
+      [
+        "pumpkin soup with cream"
+      ]
+    ],
+    [
+      "lentil_soup",
+      "Чечевичный суп с овощами",
+      "legume_soups",
+      "legumes",
+      "common_russian_menu",
+      "Постное меню",
+      "чечевица и овощи",
+      "варка",
+      null,
+      "плотность чечевицы и овощной бульон без чили",
+      [
+        "lentil vegetable soup"
+      ]
+    ],
+    [
+      "gazpacho",
+      "Гаспачо из томатов и огурцов",
+      "cold_soups",
+      "vegetable_acid",
+      "international",
+      "Испанская кухня",
+      "томаты, огурцы и перец",
+      "холодное пюрирование",
+      "оливковое масло и уксус",
+      "кислые свежие томаты и уксусная заправка",
+      [
+        "tomato cucumber gazpacho"
+      ]
+    ],
+    [
+      "okroshka_kefir",
+      "Окрошка на кефире с колбасой",
+      "cold_soups",
+      "vegetable_acid",
+      "common_russian_menu",
+      "Русская кухня",
+      "овощи, яйцо и варёная колбаса",
+      "холодная сборка",
+      "кефир",
+      "кисломолочная основа и свежие овощи",
+      [
+        "kefir okroshka with sausage"
+      ]
+    ],
+    [
+      "salmon_cream_soup",
+      "Сливочный суп с лососем",
+      "cream_soups",
+      "white_butter_cream",
+      "international",
+      "Североевропейская кухня",
+      "лосось и картофель",
+      "варка",
+      "сливки",
+      "жирность лосося и сливочная текстура бульона",
+      [
+        "salmon cream soup"
+      ]
+    ],
+    [
+      "pasta_bolognese",
+      "Паста болоньезе с говядиной и томатами",
+      "meat_pasta",
+      "meat_tomato",
+      "international",
+      "Итальянская кухня",
+      "паста и говяжий фарш",
+      "тушение соуса",
+      "мясной томатный соус",
+      "томатная кислотность и мясная насыщенность",
+      [
+        "beef tomato pasta bolognese"
+      ]
+    ],
+    [
+      "pasta_alfredo",
+      "Паста Альфредо с маслом и пармезаном",
+      "cream_pasta",
+      "white_butter_cream",
+      "international",
+      "Итальянская кухня",
+      "паста и пармезан",
+      "варка",
+      "сливочное масло",
+      "жирность масла, солёный сыр и крахмалистая паста",
+      [
+        "pasta alfredo with butter and parmesan"
+      ]
+    ],
+    [
+      "pasta_basil_pesto",
+      "Паста с базиликовым песто",
+      "herb_pasta",
+      "vegetables",
+      "international",
+      "Итальянская кухня",
+      "паста, базилик, орехи и сыр",
+      "варка",
+      "песто с оливковым маслом",
+      "травянистый базилик и маслянистый ореховый соус",
+      [
+        "pasta with basil pesto"
+      ]
+    ],
+    [
+      "lasagna_bolognese",
+      "Лазанья с говядиной и томатами",
+      "meat_pasta",
+      "meat_tomato",
+      "international",
+      "Итальянская кухня",
+      "листы пасты и говядина",
+      "запекание",
+      "томатный соус и бешамель",
+      "мясная начинка, томаты и жирность бешамеля",
+      [
+        "beef tomato lasagna"
+      ]
+    ],
+    [
+      "wok_chicken_vegetables",
+      "Лапша вок с курицей и овощами без сладкого соуса",
+      "wok_noodles",
+      "poultry",
+      "international",
+      "Паназиатская кухня",
+      "лапша, курица и овощи",
+      "быстрое обжаривание",
+      "несладкий соевый соус",
+      "нежная курица, лапша и солёный соевый соус",
+      [
+        "chicken vegetable noodles without sweet sauce"
+      ]
+    ],
+    [
+      "wok_beef_black_pepper",
+      "Лапша вок с говядиной и чёрным перцем",
+      "wok_noodles",
+      "meat_general",
+      "international",
+      "Паназиатская кухня",
+      "лапша и говядина",
+      "быстрое обжаривание",
+      "несладкий соевый соус и чёрный перец",
+      "мясная насыщенность и перечная пряность без предполагаемого чили",
+      [
+        "beef black pepper wok noodles"
+      ]
+    ],
+    [
+      "saffron_risotto",
+      "Ризотто с шафраном и пармезаном",
+      "rice_dishes",
+      "white_butter_cream",
+      "international",
+      "Итальянская кухня",
+      "рис, шафран и пармезан",
+      "варка",
+      "сливочное масло",
+      "сливочная текстура риса, солёный сыр и шафран",
+      [
+        "saffron parmesan risotto"
+      ]
+    ],
+    [
+      "rice_vegetables",
+      "Рис с тушёными овощами",
+      "vegetable_rice",
+      "vegetables",
+      "common_russian_menu",
+      "Постное меню",
+      "рис и овощи",
+      "тушение",
+      null,
+      "крахмалистая основа и умеренный овощной вкус",
+      [
+        "rice with stewed vegetables"
+      ]
+    ],
+    [
+      "pizza_four_cheese",
+      "Пицца четыре сыра",
+      "cheese_pizza",
+      "cheese_pastry",
+      "international",
+      "Итальянская кухня",
+      "тесто и четыре сыра",
+      "выпечка",
+      null,
+      "солёность сыров и жирность теста; набор сыров требует подтверждения",
+      [
+        "four cheese pizza",
+        "quattro formaggi"
+      ]
+    ],
+    [
+      "pizza_pepperoni",
+      "Пицца пепперони с томатным соусом",
+      "meat_pizza",
+      "meat_tomato",
+      "international",
+      "Ресторанная кухня",
+      "тесто, пепперони и сыр",
+      "выпечка",
+      "томатный соус",
+      "солёная колбаса и томаты; фактическая жгучесть уточняется",
+      [
+        "pepperoni pizza with tomato sauce"
+      ]
+    ],
+    [
+      "pizza_ham_mushrooms",
+      "Пицца с ветчиной и грибами",
+      "mushroom_pizza",
+      "mushrooms",
+      "international",
+      "Ресторанная кухня",
+      "тесто, ветчина, грибы и сыр",
+      "выпечка",
+      null,
+      "грибная насыщенность, сыр и солёная ветчина",
+      [
+        "ham and mushroom pizza"
+      ]
+    ],
+    [
+      "vareniki_potato",
+      "Вареники с картофелем и сметаной",
+      "vegetable_dumplings",
+      "potato_pastry",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "тесто и картофель",
+      "варка",
+      "сметана",
+      "мягкая картофельная начинка, тесто и сметана",
+      [
+        "potato vareniki with sour cream"
+      ]
+    ],
+    [
+      "vareniki_cherry",
+      "Сладкие вареники с вишней",
+      "sweet_dumplings",
+      "fruit_dessert",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "тесто и подслащённая вишня",
+      "варка",
+      null,
+      "сладкая ягодная начинка и вишнёвая кислотность",
+      [
+        "sweet cherry vareniki"
+      ]
+    ],
+    [
+      "khachapuri_imeretian",
+      "Хачапури по-имеретински с сыром",
+      "cheese_pastry",
+      "cheese_pastry",
+      "international",
+      "Грузинская кухня",
+      "тесто и сыр",
+      "выпечка",
+      null,
+      "солёный сыр и жирное тесто без отдельного яйца сверху",
+      [
+        "imeretian cheese khachapuri"
+      ]
+    ],
+    [
+      "quiche_lorraine",
+      "Киш лорен с беконом и сливками",
+      "savory_pastry",
+      "cheese_pastry",
+      "international",
+      "Французская кухня",
+      "тесто, яйца и бекон",
+      "выпечка",
+      "сливочная заливка",
+      "жирные сливки, яйца и солёный бекон",
+      [
+        "quiche lorraine with bacon and cream"
+      ]
+    ],
+    [
+      "blini_meat",
+      "Блины с мясной начинкой",
+      "filled_pancakes",
+      "meat_pastry",
+      "common_russian_menu",
+      "Русская кухня",
+      "блины и мясной фарш",
+      "обжаривание",
+      null,
+      "тесто, мясная начинка и румяная корочка",
+      [
+        "meat filled blini"
+      ]
+    ],
+    [
+      "croissant_ham_cheese",
+      "Круассан с ветчиной и сыром",
+      "sandwiches",
+      "cheese_pastry",
+      "international",
+      "Завтраки",
+      "слоёное тесто, ветчина и сыр",
+      "выпечка и сборка",
+      null,
+      "масляное тесто, солёная ветчина и сыр",
+      [
+        "ham cheese croissant"
+      ]
+    ],
+    [
+      "baked_brie",
+      "Бри запечённый без сладкого топпинга",
+      "soft_ripened_cheese",
+      "soft_cheese",
+      "international",
+      "Европейская кухня",
+      "сыр бри",
+      "запекание",
+      "без сладкого топпинга",
+      "мягкая жирная сырная текстура без мёда и варенья",
+      [
+        "baked brie without sweet topping"
+      ]
+    ],
+    [
+      "parmesan_plate",
+      "Пармезан без сладких добавок",
+      "hard_cheese",
+      "hard_cheese",
+      "international",
+      "Сырная подача",
+      "пармезан",
+      "нарезка",
+      "без сладких добавок",
+      "выдержанный твёрдый сыр, соль и насыщенный вкус",
+      [
+        "parmesan without sweet accompaniments"
+      ]
+    ],
+    [
+      "aged_gouda_plate",
+      "Выдержанная гауда без сладких добавок",
+      "hard_cheese",
+      "hard_cheese",
+      "international",
+      "Сырная подача",
+      "выдержанная гауда",
+      "нарезка",
+      "без сладких добавок",
+      "плотный солоноватый сыр и ореховые оттенки",
+      [
+        "aged gouda without sweet accompaniments"
+      ]
+    ],
+    [
+      "blue_cheese_pear",
+      "Сыр с голубой плесенью и спелой грушей",
+      "blue_cheese",
+      "blue_cheese",
+      "international",
+      "Сырная подача",
+      "голубой сыр и груша",
+      "холодная подача",
+      null,
+      "солёный острый сыр и сладкая спелая груша",
+      [
+        "blue cheese with ripe pear"
+      ]
+    ],
+    [
+      "burrata_tomatoes",
+      "Буррата с томатами",
+      "fresh_cheese",
+      "soft_cheese",
+      "international",
+      "Итальянская кухня",
+      "буррата и томаты",
+      "холодная подача",
+      "оливковое масло",
+      "сливочная буррата и кислотность свежих томатов",
+      [
+        "burrata with tomatoes"
+      ]
+    ],
+    [
+      "fresh_berry_plate",
+      "Ассорти свежих ягод без сиропа",
+      "fresh_fruit",
+      "fruit",
+      "common_russian_menu",
+      "Фруктовая подача",
+      "свежие ягоды",
+      "сырая подача",
+      "без сиропа",
+      "естественная сладость и кислотность ягод",
+      [
+        "fresh berries without syrup"
+      ]
+    ],
+    [
+      "fresh_fruit_plate",
+      "Фруктовая тарелка без сиропа",
+      "fresh_fruit",
+      "fruit",
+      "common_russian_menu",
+      "Фруктовая подача",
+      "свежие фрукты",
+      "нарезка",
+      "без сиропа",
+      "естественная сладость фруктов; состав и спелость уточняются",
+      [
+        "fresh fruit plate without syrup"
+      ]
+    ],
+    [
+      "vanilla_cheesecake",
+      "Ванильный чизкейк",
+      "curd_desserts",
+      "curd_dessert",
+      "international",
+      "Ресторанные десерты",
+      "сливочный сыр и сладкая основа",
+      "выпечка",
+      null,
+      "сладкая сырная основа и сливочная текстура",
+      [
+        "vanilla cheesecake"
+      ]
+    ],
+    [
+      "panna_cotta_berries",
+      "Панна-котта с ягодным соусом",
+      "cream_desserts",
+      "curd_dessert",
+      "international",
+      "Итальянская кухня",
+      "сладкие сливки",
+      "желирование",
+      "ягодный соус",
+      "сладкие сливки и кисло-сладкая ягодная подача",
+      [
+        "panna cotta with berry sauce"
+      ]
+    ],
+    [
+      "chocolate_fondant",
+      "Шоколадный фондан",
+      "chocolate_desserts",
+      "coffee_cocoa",
+      "international",
+      "Ресторанные десерты",
+      "шоколад и сладкое тесто",
+      "выпечка",
+      null,
+      "насыщенное какао и сладкая текучая начинка",
+      [
+        "chocolate fondant"
+      ]
+    ],
+    [
+      "dark_chocolate_brownie",
+      "Брауни с тёмным шоколадом",
+      "chocolate_desserts",
+      "coffee_cocoa",
+      "international",
+      "Ресторанные десерты",
+      "тёмный шоколад и сладкое тесто",
+      "выпечка",
+      null,
+      "плотная шоколадная текстура и сладость с горчинкой какао",
+      [
+        "dark chocolate brownie"
+      ]
+    ],
+    [
+      "vanilla_ice_cream",
+      "Ванильное сливочное мороженое",
+      "ice_cream",
+      "curd_dessert",
+      "common_russian_menu",
+      "Десерты",
+      "сладкие сливки и ваниль",
+      "замораживание",
+      null,
+      "сладкая холодная сливочная текстура",
+      [
+        "vanilla dairy ice cream"
+      ]
+    ],
+    [
+      "creme_brulee",
+      "Крем-брюле с карамельной корочкой",
+      "cream_desserts",
+      "honey_cake",
+      "international",
+      "Французская кухня",
+      "сладкий сливочно-яичный крем",
+      "запекание",
+      "карамелизированный сахар",
+      "сладкие сливки и насыщенная карамельная корочка",
+      [
+        "creme brulee with caramel crust"
+      ]
+    ],
+    [
+      "pavlova_berries",
+      "Павлова со сливками и ягодами",
+      "desserts",
+      "fruit_dessert",
+      "international",
+      "Ресторанные десерты",
+      "сладкая меренга, сливки и ягоды",
+      "выпечка меренги",
+      "ягоды",
+      "высокая сладость меренги и ягодная кислотность",
+      [
+        "pavlova with cream and berries"
+      ]
+    ],
+    [
+      "apple_strudel",
+      "Яблочный штрудель",
+      "fruit_pastry",
+      "fruit_dessert",
+      "international",
+      "Австрийская кухня",
+      "тесто и подслащённые яблоки",
+      "выпечка",
+      null,
+      "сладкая яблочная начинка и выпечка",
+      [
+        "apple strudel"
+      ]
+    ],
+    [
+      "chicken_liver_pate",
+      "Паштет из куриной печени без сладкого соуса",
+      "pates",
+      "offal_general",
+      "common_russian_menu",
+      "Закуски",
+      "куриная печень и сливочное масло",
+      "обжаривание и пюрирование",
+      "без сладкого соуса",
+      "нежная жирная печёночная текстура без фруктового конфитюра",
+      [
+        "chicken liver pate without sweet sauce"
+      ]
+    ],
+    [
+      "beef_liver_onions",
+      "Говяжья печень с жареным луком",
+      "hot_offal",
+      "offal_general",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "говяжья печень и лук",
+      "обжаривание",
+      null,
+      "насыщенный вкус печени и сладость жареного лука",
+      [
+        "beef liver with fried onions"
+      ]
+    ],
+    [
+      "chicken_hearts_grilled",
+      "Куриные сердечки на гриле",
+      "hot_offal",
+      "offal_general",
+      "common_russian_menu",
+      "Ресторанная кухня",
+      "куриные сердечки",
+      "гриль",
+      null,
+      "плотная текстура субпродуктов и жареная корочка",
+      [
+        "grilled chicken hearts"
+      ]
+    ],
+    [
+      "spicy_butter_chicken",
+      "Острая курица в томатно-сливочном соусе",
+      "curries",
+      "spicy",
+      "international",
+      "Индийская кухня",
+      "курица",
+      "тушение",
+      "томатно-сливочный соус с чили",
+      "подтверждённый чили и жирность сливочного соуса",
+      [
+        "spicy chicken in tomato cream sauce"
+      ]
+    ],
+    [
+      "pork_sweet_sour",
+      "Свинина в кисло-сладком соусе",
+      "sweet_sour_dishes",
+      "sweet_glaze",
+      "international",
+      "Китайская кухня",
+      "свинина",
+      "обжаривание",
+      "кисло-сладкий соус",
+      "подтверждённая сладость и кислотность соуса",
+      [
+        "sweet and sour pork"
+      ]
+    ],
+    [
+      "spicy_beef_noodles",
+      "Острая лапша с говядиной и чили",
+      "wok_noodles",
+      "spicy",
+      "international",
+      "Паназиатская кухня",
+      "лапша и говядина",
+      "обжаривание",
+      "соус с чили",
+      "жгучесть чили при мясной и крахмалистой основе",
+      [
+        "spicy beef chilli noodles"
+      ]
+    ],
+    [
+      "indigirka_whitefish",
+      "Индигирка из чира с луком",
+      "raw_fish",
+      "raw_fish",
+      "regional",
+      "Республика Саха (Якутия)",
+      "свежемороженый чир и лук",
+      "сырая холодная подача",
+      "растительное масло",
+      "нежная холодная рыба, масло и свежий лук",
+      [
+        "indigirka salad with chir"
+      ]
+    ],
+    [
+      "omul_light_salt",
+      "Омуль слабосолёный",
+      "salted_fish",
+      "salted_fish",
+      "regional",
+      "Байкальский регион",
+      "омуль",
+      "слабый посол",
+      null,
+      "солёность и жирность холодной рыбы",
+      [
+        "lightly salted omul"
+      ]
+    ],
+    [
+      "kystyby_potato",
+      "Кыстыбый с картофелем",
+      "potato_pastry",
+      "potato_pastry",
+      "regional",
+      "Республика Татарстан",
+      "лепёшка и картофельное пюре",
+      "печёная лепёшка",
+      "сливочное масло",
+      "крахмалистая начинка, лепёшка и сливочное масло",
+      [
+        "potato kystyby"
+      ]
+    ],
+    [
+      "ossetian_fydzhin",
+      "Осетинский фыдджын с говядиной",
+      "meat_pastry",
+      "meat_pastry",
+      "regional",
+      "Республика Северная Осетия — Алания",
+      "тесто и рубленая говядина",
+      "выпечка",
+      null,
+      "сочная мясная начинка и насыщенная выпечка",
+      [
+        "ossetian beef fydzhin"
+      ]
+    ],
+    [
+      "crimean_cheburek_beef",
+      "Крымский чебурек с говядиной",
+      "meat_pastry",
+      "meat_pastry",
+      "regional",
+      "Крымская кухня",
+      "тесто и говяжий фарш",
+      "жарка в масле",
+      null,
+      "жирность жарки, хрустящее тесто и мясная начинка",
+      [
+        "crimean beef cheburek"
+      ]
+    ],
+    [
+      "kalakeitto_whitefish_milk",
+      "Калакейтто из белой рыбы с молоком",
+      "cream_soups",
+      "white_butter_cream",
+      "regional",
+      "Республика Карелия",
+      "белая рыба и картофель",
+      "варка",
+      "молоко",
+      "нежная рыба и мягкая молочная текстура бульона",
+      [
+        "whitefish milk kalakeitto"
+      ]
+    ],
+    [
+      "steamed_broccoli",
+      "Брокколи на пару с оливковым маслом",
+      "vegetables_mushrooms",
+      "vegetables",
+      "common_russian_menu",
+      "Овощной гарнир",
+      "брокколи",
+      "пар",
+      "оливковое масло",
+      "деликатные овощи и лёгкая масляная подача",
+      [
+        "steamed broccoli with olive oil"
+      ]
+    ],
+    [
+      "grilled_mushrooms",
+      "Шампиньоны на гриле",
+      "mushrooms",
+      "mushrooms",
+      "common_russian_menu",
+      "Овощной гарнир",
+      "шампиньоны",
+      "гриль",
+      null,
+      "грибная насыщенность и жареная корочка",
+      [
+        "grilled button mushrooms"
+      ]
+    ],
+    [
+      "cauliflower_gratin",
+      "Цветная капуста под сливками и сыром",
+      "vegetables_mushrooms",
+      "white_butter_cream",
+      "international",
+      "Европейская кухня",
+      "цветная капуста и сыр",
+      "запекание",
+      "сливки",
+      "жирная сливочно-сырная заливка и нежные овощи",
+      [
+        "cauliflower cream cheese gratin"
+      ]
+    ],
+    [
+      "focaccia_olive_oil",
+      "Фокачча с оливковым маслом и розмарином",
+      "savory_pastry",
+      "savory_pastry",
+      "international",
+      "Итальянская кухня",
+      "тесто и розмарин",
+      "выпечка",
+      "оливковое масло",
+      "солёная выпечка, масло и травы",
+      [
+        "focaccia with olive oil and rosemary"
+      ]
+    ],
+    [
+      "sauteed_zucchini",
+      "Кабачки жареные с зеленью",
+      "vegetables_mushrooms",
+      "vegetables",
+      "common_russian_menu",
+      "Овощной гарнир",
+      "кабачки и зелень",
+      "обжаривание",
+      null,
+      "деликатный овощной вкус и лёгкая корочка",
+      [
+        "sauteed zucchini with herbs"
+      ]
+    ],
+    [
+      "bruschetta_tomato",
+      "Брускетта с томатами и базиликом",
+      "sandwiches",
+      "vegetables_tomato",
+      "international",
+      "Итальянская кухня",
+      "хлеб, томаты и базилик",
+      "поджаренный хлеб",
+      "оливковое масло",
+      "кислые свежие томаты, масло и хрустящий хлеб",
+      [
+        "tomato basil bruschetta"
+      ]
+    ],
+    [
+      "rassolnik_beef",
+      "Рассольник с говядиной и перловкой",
+      "sour_brine_soups",
+      "sour_cabbage",
+      "common_russian_menu",
+      "Русская кухня",
+      "говядина, перловка и солёные огурцы",
+      "варка",
+      "огуречный рассол",
+      "кислый рассол, соль и насыщенный мясной бульон",
+      [
+        "beef barley rassolnik"
+      ]
+    ],
+    [
+      "pea_soup_smoked_pork",
+      "Гороховый суп с копчёностями",
+      "legume_soups",
+      "legumes",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "горох и копчёная свинина",
+      "варка",
+      null,
+      "крахмалистый горох и солёные дымные мясные добавки",
+      [
+        "pea soup with smoked pork"
+      ]
+    ],
+    [
+      "pike_fish_cutlet",
+      "Котлета из щуки",
+      "fish",
+      "fish_plain",
+      "common_russian_menu",
+      "Русская кухня",
+      "фарш щуки",
+      "обжаривание",
+      null,
+      "нежная рыбная котлета без предполагаемой панировки и соуса",
+      [
+        "pike fish cutlet"
+      ]
+    ],
+    [
+      "chicken_aspic",
+      "Заливное из курицы",
+      "poultry",
+      "poultry",
+      "common_russian_menu",
+      "Русская кухня",
+      "курица и желированный бульон",
+      "холодная подача",
+      null,
+      "нежная холодная птица и желе; хрен уточняется отдельно",
+      [
+        "chicken aspic"
+      ]
+    ],
+    [
+      "surimi_mayonnaise_salad",
+      "Салат с крабовыми палочками и майонезом",
+      "mayonnaise_salads",
+      "mayonnaise",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "сурими, яйцо и кукуруза",
+      "холодная сборка",
+      "майонез",
+      "жирная яичная заправка; сурими не является крабовым мясом",
+      [
+        "surimi mayonnaise salad"
+      ]
+    ],
+    [
+      "pork_potato_roast",
+      "Жаркое из свинины с картофелем",
+      "roast_meat",
+      "meat_general",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "свинина и картофель",
+      "тушение и запекание",
+      null,
+      "мясная насыщенность, свиной жир и крахмалистый картофель",
+      [
+        "pork potato roast"
+      ]
+    ],
+    [
+      "vegetable_rice_cabbage_rolls",
+      "Голубцы с рисом и овощами в томатном соусе",
+      "vegetables_mushrooms",
+      "vegetables_tomato",
+      "common_russian_menu",
+      "Постное меню",
+      "капуста, рис и овощи без мяса",
+      "тушение",
+      "томатный соус",
+      "овощная начинка и томатная кислотность без мясного фарша",
+      [
+        "vegetable rice cabbage rolls in tomato sauce"
+      ]
+    ],
+    [
+      "baked_potato_sour_cream",
+      "Картофель запечённый со сметаной",
+      "potato_dishes",
+      "potato_pastry",
+      "common_russian_menu",
+      "Домашняя кухня",
+      "картофель",
+      "запекание",
+      "сметана",
+      "крахмалистый картофель и жирная кисломолочная подача",
+      [
+        "baked potato with sour cream"
+      ]
+    ],
+    [
+      "cabbage_stew",
+      "Капуста тушёная без мяса",
+      "vegetables_mushrooms",
+      "vegetables",
+      "common_russian_menu",
+      "Постное меню",
+      "свежая капуста и лук",
+      "тушение",
+      null,
+      "мягкая овощная основа без квашеной капусты и мясных добавок",
+      [
+        "stewed cabbage without meat"
+      ]
+    ]
+  ],
+  "superseded_v1_resolutions": [
+    {
+      "phrase": "шашлык",
+      "v1": "grilled_meat",
+      "v2": null,
+      "reason": "An unqualified shashlik may contain poultry or fish. Ask for the main ingredient instead of assuming red meat. The frozen v1 resolver remains available unchanged."
+    }
+  ],
+  "cross_branch_fallbacks": [
+    {
+      "phrase": "бургер",
+      "fallback_node_id": "sandwiches",
+      "reason": "The generic name confirms a bread-based assembled dish, not a beef filling. The original confirmed beef burger lives in the meat branch."
+    },
+    {
+      "phrase": "голубцы",
+      "fallback_node_id": "mixed_dishes",
+      "reason": "An unspecified filling may be meat or vegetables. The mixed-dish fallback deliberately makes no meat claim."
+    },
+    {
+      "phrase": "перец фаршированный",
+      "fallback_node_id": "mixed_dishes",
+      "reason": "An unspecified filling may be meat or vegetables. The mixed-dish fallback deliberately makes no meat claim."
+    }
+  ]
+}

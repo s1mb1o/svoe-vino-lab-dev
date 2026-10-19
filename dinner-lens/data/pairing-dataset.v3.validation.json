@@ -1,0 +1,2269 @@
+{
+  "passed": true,
+  "dataset_sha256": "80fff7a5f8f51539fcfee6e0b8bed1c227f0b4b755dc20733a16d2be1978d3ff",
+  "canonical_cases": 320,
+  "pages": 1781,
+  "scope": {
+    "dishes": 200,
+    "dish_groups": {
+      "regional": 31,
+      "common_russian_menu": 68,
+      "international": 101
+    },
+    "fallback_root_classes": 16,
+    "intermediate_classes": 104,
+    "total_nodes": 320,
+    "curated_wine_links": 1269,
+    "unique_curated_wines": 49,
+    "curated_producers": 12,
+    "catalog_index_documents": 2093,
+    "all_nodes_have_curated_selections": true,
+    "vectors_computed": false,
+    "vlm_evaluated": false,
+    "taste_panel_evaluated": false
+  },
+  "profiles": 68,
+  "results": [
+    {
+      "node_id": "meat",
+      "profile": "meat_general",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "poultry",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "game",
+      "profile": "game",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "fish_seafood",
+      "profile": "fish_general",
+      "wine_count": 16,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "cheese",
+      "profile": "cheese_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "vegetables_mushrooms",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "legumes",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "grains_pasta",
+      "profile": "grains",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "salads",
+      "profile": "salads",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "soups",
+      "profile": "soup_general",
+      "wine_count": 24,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "savory_pastry",
+      "profile": "savory_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "fruit",
+      "profile": "fruit",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "desserts",
+      "profile": "dessert_general",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "eggs",
+      "profile": "eggs",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "mixed_dishes",
+      "profile": "mixed",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "offal",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "meat_steak",
+      "profile": "meat_steak",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_meat",
+      "profile": "grilled_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_lamb",
+      "profile": "lamb",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "minced_meat",
+      "profile": "minced_meat",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "meat_tomato",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "beef_stew",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "meat_with_dough",
+      "profile": "meat_dough",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "cold_meat",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "poultry_breaded",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "poultry_creamy",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "duck",
+      "profile": "duck_berry",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "venison",
+      "profile": "venison",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "fish",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "raw_fish",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "baked_fish",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "fried_fish",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "salted_fish",
+      "profile": "salted_fish",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "crustaceans",
+      "profile": "crustaceans",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "crab",
+      "profile": "crab",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "shrimp",
+      "profile": "crustaceans",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "molluscs",
+      "profile": "molluscs",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "raw_bivalves",
+      "profile": "molluscs",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "cooked_molluscs",
+      "profile": "scallops_grilled",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "mayonnaise_salads",
+      "profile": "mayonnaise",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_salads",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "fish_soups",
+      "profile": "fish_soup",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "cabbage_soups",
+      "profile": "sour_cabbage",
+      "wine_count": 15,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "meat_soups",
+      "profile": "meat_soup_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "spicy_seafood_soups",
+      "profile": "spicy_sour",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "fresh_cheese",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "hard_cheese",
+      "profile": "hard_cheese",
+      "wine_count": 24,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "blue_cheese",
+      "profile": "blue_cheese",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "mushrooms",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "tomato_vegetables",
+      "profile": "vegetables_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "mushroom_grains",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pasta",
+      "profile": "grains",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "rice_dishes",
+      "profile": "grains",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "potato_dishes",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "potato_pastry",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cheese_pastry",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "meat_pastry",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "mushroom_pastry",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_pastry",
+      "profile": "veg_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "dumplings",
+      "profile": "dumplings",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pizza",
+      "profile": "vegetables_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "filled_pancakes",
+      "profile": "savory_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "sandwiches",
+      "profile": "mixed",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "curd_desserts",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "cakes",
+      "profile": "honey_cake",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "fruit_pastry",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "coffee_desserts",
+      "profile": "coffee_cocoa",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "curries",
+      "profile": "spicy",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "king_crab_steamed_butter",
+      "profile": "crab_butter",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "far_east_scallop_grilled",
+      "profile": "scallops_grilled",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "chir_stroganina",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "whitefish_sugudai",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "muksun_baked_potato",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "buuzy_beef",
+      "profile": "dumplings",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "astrakhan_fish_soup",
+      "profile": "fish_soup",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "smelt_fried",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "karelian_kalitki_potato",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "udmurt_perepechi_mushrooms",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "perm_posikunchiki_meat",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "shangi_potato",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "vologda_grey_shchi",
+      "profile": "sour_cabbage",
+      "wine_count": 15,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pozharsky_cutlet",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "echpochmak_beef_potato",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "bashkir_bishbarmak_horse",
+      "profile": "meat_dough",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "avar_khinkal_beef",
+      "profile": "meat_dough",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "dagestan_chudu_pumpkin",
+      "profile": "pumpkin",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "ossetian_tsakharadzhin",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "balkar_khychiny_potato_cheese",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "chechen_chepalgash_curd",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "gedlibzhe_chicken_sour_cream",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "adyghe_cheese_fried_tomato",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "venison_lingonberry",
+      "profile": "venison",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "don_carp_sour_cream",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "homestyle_cutlet_mash",
+      "profile": "minced_meat",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "olivier_doctors",
+      "profile": "olivier",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "red_caviar_sandwich",
+      "profile": "roe",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pork_shashlik",
+      "profile": "grilled_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "herring_under_fur_coat",
+      "profile": "mayonnaise",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "vinaigrette_salad",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "herring_potato_onion",
+      "profile": "salted_fish",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "beef_aspic_horseradish",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "beef_tongue_mustard",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "blini_salted_salmon",
+      "profile": "roe",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cabbage_pirozhki",
+      "profile": "veg_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pelmeni_beef_pork_sour_cream",
+      "profile": "dumplings",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "borsch_beef_sour_cream",
+      "profile": "meat_soup_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "mixed_meat_solyanka",
+      "profile": "meat_soup_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "mushroom_julienne",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "beef_stroganoff_mash",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "stuffed_cabbage_meat_rice",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "stuffed_peppers_meat_rice",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "buckwheat_porcini",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "fried_potato_chanterelles",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "zander_batter",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_kyiv",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "syrniki_sour_cream_jam",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "medovik",
+      "profile": "honey_cake",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "apple_sharlotka",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "ribeye_grilled",
+      "profile": "ribeye",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "beef_cheddar_burger",
+      "profile": "meat_steak",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "lamb_rack_rosemary",
+      "profile": "lamb",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "duck_breast_cherry",
+      "profile": "duck_berry",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "beef_bourguignon",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "oysters_lemon",
+      "profile": "molluscs",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "mussels_white_wine_garlic",
+      "profile": "molluscs",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "seabass_ceviche",
+      "profile": "seafood_citrus",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "salmon_sashimi",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "shrimp_tempura",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pasta_carbonara",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "seafood_pasta_tomato",
+      "profile": "seafood_tomato",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "porcini_risotto",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pizza_margherita",
+      "profile": "vegetables_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "eggplant_parmigiana",
+      "profile": "vegetables_tomato",
+      "wine_count": 23,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "seafood_paella",
+      "profile": "seafood_rice",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "greek_salad_feta",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "adjarian_khachapuri",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "khinkali_beef_pork",
+      "profile": "dumplings",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "lamb_lula_kebab",
+      "profile": "lamb",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "uzbek_lamb_plov",
+      "profile": "lamb",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "peking_duck_hoisin",
+      "profile": "sweet_glaze_duck",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "thai_green_chicken_curry",
+      "profile": "spicy",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "tom_yam_shrimp",
+      "profile": "spicy_sour",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "tiramisu",
+      "profile": "coffee_cocoa",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "raw_meat",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "roast_meat",
+      "profile": "meat_general",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "braised_meat",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "breaded_meat",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "glazed_meat",
+      "profile": "sweet_glaze_rich_meat",
+      "wine_count": 7,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "roasted_poultry",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "tomato_poultry",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "glazed_poultry",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "fried_poultry",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "rabbit",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "wild_boar",
+      "profile": "game",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "cream_fish",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "smoked_fish",
+      "profile": "salted_fish",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "sushi_rolls",
+      "profile": "grains",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "raw_fish_sushi",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_rolls",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cream_cheese_rolls",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "fried_rolls",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "glazed_rolls",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "leafy_salads",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cheese_salads",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_vegetables",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "bean_dishes",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "chickpea_dishes",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "lentil_dishes",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "egg_breakfast",
+      "profile": "eggs",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "tomato_eggs",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "cream_soups",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_soups",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "legume_soups",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "poultry_soups",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "cold_soups",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "meat_pasta",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "cream_pasta",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "herb_pasta",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "wok_noodles",
+      "profile": "grains",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_rice",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "cheese_pizza",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "meat_pizza",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "mushroom_pizza",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_dumplings",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "sweet_dumplings",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "cream_desserts",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "chocolate_desserts",
+      "profile": "coffee_cocoa",
+      "wine_count": 3,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "ice_cream",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "fresh_fruit",
+      "profile": "fruit",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "pates",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "hot_offal",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "sweet_sour_dishes",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_fish",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "soft_ripened_cheese",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "sour_brine_soups",
+      "profile": "sour_cabbage",
+      "wine_count": 15,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "striploin_grilled",
+      "profile": "meat_steak",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "beef_tenderloin_pepper_cream",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "beef_tartare_capers",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "beef_carpaccio_parmesan",
+      "profile": "cold_meat",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "pork_ribs_bbq",
+      "profile": "sweet_glaze_rich_meat",
+      "wine_count": 7,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "pork_roast_herbs",
+      "profile": "meat_general",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "pork_schnitzel",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "beef_meatballs_tomato",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "veal_osso_buco",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "beef_brisket_slow_roast",
+      "profile": "braised_beef",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_roast_herbs",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "turkey_cutlet",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_shashlik",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_tabbaka",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_chakhokhbili",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_katsu",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_teriyaki",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "rabbit_sour_cream",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "wild_boar_stew",
+      "profile": "game",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "duck_confit_lingonberry",
+      "profile": "duck_berry",
+      "wine_count": 10,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "salmon_grilled_lemon",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "tuna_grilled",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "trout_baked_herbs",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "cod_cream",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "halibut_baked",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "eel_glazed_rice",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "octopus_grilled",
+      "profile": "scallops_grilled",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "calamari_fried",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "shrimp_garlic_butter",
+      "profile": "crab_butter",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "crayfish_boiled",
+      "profile": "crustaceans",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "mackerel_smoked",
+      "profile": "salted_fish",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "squid_steamed_lemon",
+      "profile": "seafood_citrus",
+      "wine_count": 13,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "salmon_nigiri",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "tuna_nigiri",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "cucumber_maki",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "avocado_maki",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "philadelphia_salmon_cream_cheese",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "shrimp_tempura_roll",
+      "profile": "fried",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "eel_unagi_roll",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "caesar_chicken",
+      "profile": "mayonnaise",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "caesar_shrimp",
+      "profile": "mayonnaise",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "caprese",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "nicoise_tuna",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "beet_goat_cheese_salad",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "tabbouleh",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "fresh_vegetable_salad",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_vegetable_platter",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "ratatouille",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "hummus_tahini",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "falafel_tahini",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "lobio",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "lentil_vegetable_stew",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "eggplant_walnut_rolls",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_corn_butter",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "tofu_vegetable_wok",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "cheese_omelette",
+      "profile": "eggs",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "shakshuka_tomato",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "eggs_benedict_ham",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "poached_egg_avocado",
+      "profile": "eggs",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_noodle_soup",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "mushroom_cream_soup",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pumpkin_cream_soup",
+      "profile": "pumpkin",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "lentil_soup",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "gazpacho",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "okroshka_kefir",
+      "profile": "vegetable_acid",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "salmon_cream_soup",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pasta_bolognese",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pasta_alfredo",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pasta_basil_pesto",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "lasagna_bolognese",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "wok_chicken_vegetables",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "wok_beef_black_pepper",
+      "profile": "meat_general",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "saffron_risotto",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "rice_vegetables",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "pizza_four_cheese",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "pizza_pepperoni",
+      "profile": "meat_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pizza_ham_mushrooms",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "vareniki_potato",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "vareniki_cherry",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "khachapuri_imeretian",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "quiche_lorraine",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "blini_meat",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "croissant_ham_cheese",
+      "profile": "cheese_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "baked_brie",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "parmesan_plate",
+      "profile": "hard_cheese",
+      "wine_count": 24,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "aged_gouda_plate",
+      "profile": "hard_cheese",
+      "wine_count": 24,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "blue_cheese_pear",
+      "profile": "blue_cheese",
+      "wine_count": 8,
+      "pages": 3,
+      "passed": true
+    },
+    {
+      "node_id": "burrata_tomatoes",
+      "profile": "soft_cheese",
+      "wine_count": 19,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "fresh_berry_plate",
+      "profile": "fruit",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "fresh_fruit_plate",
+      "profile": "fruit",
+      "wine_count": 6,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "vanilla_cheesecake",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "panna_cotta_berries",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "chocolate_fondant",
+      "profile": "coffee_cocoa",
+      "wine_count": 3,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "dark_chocolate_brownie",
+      "profile": "coffee_cocoa",
+      "wine_count": 3,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "vanilla_ice_cream",
+      "profile": "curd_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "creme_brulee",
+      "profile": "honey_cake",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "pavlova_berries",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "apple_strudel",
+      "profile": "fruit_dessert",
+      "wine_count": 5,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_liver_pate",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "beef_liver_onions",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_hearts_grilled",
+      "profile": "offal_general",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "spicy_butter_chicken",
+      "profile": "spicy",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "pork_sweet_sour",
+      "profile": "sweet_glaze",
+      "wine_count": 4,
+      "pages": 2,
+      "passed": true
+    },
+    {
+      "node_id": "spicy_beef_noodles",
+      "profile": "spicy_meat",
+      "wine_count": 3,
+      "pages": 1,
+      "passed": true
+    },
+    {
+      "node_id": "indigirka_whitefish",
+      "profile": "raw_fish",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "omul_light_salt",
+      "profile": "salted_fish",
+      "wine_count": 22,
+      "pages": 8,
+      "passed": true
+    },
+    {
+      "node_id": "kystyby_potato",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "ossetian_fydzhin",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "crimean_cheburek_beef",
+      "profile": "meat_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "kalakeitto_whitefish_milk",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "steamed_broccoli",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "grilled_mushrooms",
+      "profile": "mushrooms",
+      "wine_count": 20,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cauliflower_gratin",
+      "profile": "white_butter_cream",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "focaccia_olive_oil",
+      "profile": "savory_pastry",
+      "wine_count": 31,
+      "pages": 11,
+      "passed": true
+    },
+    {
+      "node_id": "sauteed_zucchini",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    },
+    {
+      "node_id": "bruschetta_tomato",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "rassolnik_beef",
+      "profile": "sour_cabbage",
+      "wine_count": 15,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "pea_soup_smoked_pork",
+      "profile": "legumes",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "pike_fish_cutlet",
+      "profile": "fish_plain",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "chicken_aspic",
+      "profile": "poultry",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "surimi_mayonnaise_salad",
+      "profile": "mayonnaise",
+      "wine_count": 12,
+      "pages": 4,
+      "passed": true
+    },
+    {
+      "node_id": "pork_potato_roast",
+      "profile": "meat_general",
+      "wine_count": 18,
+      "pages": 6,
+      "passed": true
+    },
+    {
+      "node_id": "vegetable_rice_cabbage_rolls",
+      "profile": "vegetables_tomato",
+      "wine_count": 14,
+      "pages": 5,
+      "passed": true
+    },
+    {
+      "node_id": "baked_potato_sour_cream",
+      "profile": "potato_pastry",
+      "wine_count": 21,
+      "pages": 7,
+      "passed": true
+    },
+    {
+      "node_id": "cabbage_stew",
+      "profile": "vegetables",
+      "wine_count": 25,
+      "pages": 9,
+      "passed": true
+    }
+  ],
+  "taste_validation": "Separate blind model judgment reports; these contract checks do not establish sensory quality."
+}

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.cache/
+data/embedding-cache/
+data/*.npz
+data/index.manifest.json
+data/index/
+data/index.v2/
+data/index.v3/
+data/index.v4/
+build/
+dist/

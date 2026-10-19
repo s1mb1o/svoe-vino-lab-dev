@@ -18,6 +18,20 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
   Read `mcp/ChangeLog.md` and `docs/plans/03_mcp-producer-line-maps.md`.
 - Updated F-24 and F-48 in `ASSESSMENT.md` for these changes. The other entries and the header still describe
   the check at `0621952`.
+- Corrected Dinner Lens sauce composition and later-page suitability in v3: preserve
+  chilli/glaze when cream is added, retain meat weight for sweet sauces, and enforce
+  source-linked reviewed style families before embedding continuation. Added 15
+  regression tests and a blind 42-context audit plus 12 held-out contexts.
+
+- Expanded Dinner Lens v2 to 200 dishes, 104 intermediate classes and 16 broad
+  fallback classes, with 1,270 editorial catalog links. Preserved the original
+  dataset and image benchmark, reused identical verified embedding inputs, and
+  added 348 text contracts for hierarchy, eligibility and continuation.
+- Added the standalone `dinner-lens/` food-to-wine API for #28: code-enforced
+  eligibility, editorial choices before real embedding discovery, authenticated
+  photo recognition with English prompts, and signed continuation cursors. The
+  service includes the frozen 75-dish hierarchy, behavioral tests and a ground-truth
+  HTTP benchmark runner. See `dinner-lens/README.md` for setup and catalog limits.
 - Updated `ASSESSMENT.md` to `main` at `0621952`. Added F-13 shelf pipeline with label
   evidence (port of the production matcher), F-48 read-only catalogue MCP server (#25), and
   F-86 HEIF (HEIC) photos (#24). Highlight 10 now covers WebMCP (F-77) and the MCP server
