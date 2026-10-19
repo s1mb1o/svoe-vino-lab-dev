@@ -76,6 +76,10 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
       return 'Сеанс завершён. Войдите ещё раз.'
     case 'provider_already_linked':
       return 'Этот мессенджер уже привязан. Обновите страницу.'
+    case 'too_many_tokens':
+      return 'Можно иметь не больше 5 активных токенов. Отзовите ненужный токен.'
+    case 'invalid_name':
+      return 'Назовите токен: от 1 до 64 символов.'
     case 'identity_in_use':
       return 'Этот аккаунт мессенджера уже привязан к другому дневнику.'
     case 'invalid_launch':
@@ -88,6 +92,19 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
     default:
       return 'Что-то пошло не так. Попробуйте ещё раз.'
   }
+}
+
+/** The MCP client configuration for a new application token (mcp/README.md). */
+export function mcpClientConfig(token: string): string {
+  return JSON.stringify({
+    mcpServers: {
+      'svoe-vino': {
+        command: '/absolute/path/to/node',
+        args: ['/absolute/path/to/mcp/src/cli.mjs'],
+        env: { CHTOZAVINO_ACCOUNT_TOKEN: token },
+      },
+    },
+  }, null, 2)
 }
 
 export interface IdentityRow { key: string; label: string; value: string }

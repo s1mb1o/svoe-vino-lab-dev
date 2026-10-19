@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19 — Application tokens
+
+- «Токены приложений» on `/account` (issue #65): create (name, 30/90/365 days, recent login), show once with «Скопировать токен» and the MCP client configuration, list with expiry and last use, «Отозвать».
+- `GET /api/app/v1/profile` and `GET /api/app/v1/wines` for MCP clients with `Authorization: Bearer cvpat_...`. Uniform 401, 429 with `Retry-After`, 503 `unavailable`; no cookies, no cache. The MAX mini-app host rejects these routes.
+- Public use needs the Caddy exemption of `/api/app/*` (open decision 1 of #65).
+- 19 new tests (453 in total). End-to-end on a local stack: a token from the page read the profile through the real MCP server; after «Отозвать» the next call returned `unauthorized` (16 checks).
+
 ## 2026-10-19 — MAX link and the mini app
 
 - `/max` is the diary mini app for MAX (plan 05, issue #50): the account page in MAX mode. It loads the MAX Bridge only there. In MAX the person logs in by email code and confirms «Привязать MAX-аккаунт «Имя Фамилия» к дневнику …?»; the signed `initData` goes to `POST /api/account/max/link`. Outside MAX it shows only «Откройте дневник в MAX» with the fixed link and QR code.

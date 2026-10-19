@@ -36,6 +36,13 @@ SESSION_TTL = 30 * 86400
 MAX_SESSION_TTL = 86400
 SESSION_EXTEND_AFTER = 86400
 RECENT_AUTH = 900
+# Application tokens for MCP clients (issue #65): `cvpat_` and 32 random bytes in base64url.
+APP_TOKEN_PATTERN = re.compile(r"cvpat_[A-Za-z0-9_-]{43}")
+APP_TOKEN_ID = re.compile(r"[0-9a-f]{16}")
+APP_TOKEN_LIFETIMES = (30, 90, 365)
+APP_TOKENS_PER_USER = 5
+APP_TOKEN_USE_INTERVAL = 60
+APP_TOKEN_KEEP_AFTER_END = 30 * 86400
 MAX_OPEN_FLOWS = 10_000
 LAUNCH_CLOCK_SKEW = 60
 
@@ -161,6 +168,8 @@ class AccountService:
         self.email_per_ip = SlidingWindow(20, 3600, clock)
         self.yandex_per_ip = SlidingWindow(30, 3600, clock)
         self.link_codes_per_user = SlidingWindow(10, 3600, clock)
+        self.app_token_calls = SlidingWindow(60, 60, clock)
+        self.app_token_failures = SlidingWindow(20, 60, clock)
 
     # ----------------------------------------------------------------- helpers
 
@@ -705,6 +714,125 @@ class AccountService:
             )
         return cursor.rowcount > 0
 
+    # ------------------------------------------------------- application tokens
+
+    @staticmethod
+    def _app_token_view(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "id": row["id"],
+            "name": row["name"],
+            "created_at": iso(row["created_at"]),
+            "expires_at": iso(row["expires_at"]),
+            "last_used_at": iso(row["last_used_at"]) if row["last_used_at"] else None,
+        }
+
+    def app_tokens(self, session: Session) -> list[dict[str, Any]]:
+        """The active tokens of the account, without secrets."""
+        with self.db.transaction() as db:
+            rows = db.execute(
+                "SELECT * FROM app_tokens WHERE user_id = ? AND revoked_at IS NULL "
+                "AND expires_at > ? ORDER BY created_at DESC",
+                (session.user_id, self._now()),
+            ).fetchall()
+        return [self._app_token_view(row) for row in rows]
+
+    def app_token_create(
+        self, session: Session, name: str, lifetime_days: int
+    ) -> tuple[dict[str, Any], str]:
+        """Create a token. The caller shows the secret once; the service keeps only its hash."""
+        self._require_recent(session)
+        clean = " ".join(name.split())
+        if (
+            not clean
+            or len(clean) > 64
+            or any(ord(char) < 32 or ord(char) == 127 for char in clean)
+        ):
+            raise AccountError("invalid_name", 400, "Name the token in 1 to 64 characters")
+        if lifetime_days not in APP_TOKEN_LIFETIMES:
+            raise AccountError("invalid_lifetime", 400, "Use 30, 90, or 365 days")
+        now = self._now()
+        token = "cvpat_" + new_token(32)
+        with self.db.transaction() as db:
+            active = db.execute(
+                "SELECT COUNT(*) FROM app_tokens WHERE user_id = ? AND revoked_at IS NULL "
+                "AND expires_at > ?",
+                (session.user_id, now),
+            ).fetchone()[0]
+            if active >= APP_TOKENS_PER_USER:
+                raise AccountError("too_many_tokens", 409, "Revoke a token first")
+            token_id = uuid.uuid4().hex[:16]
+            db.execute(
+                "INSERT INTO app_tokens (id, user_id, name, token_hash, created_at, expires_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    token_id,
+                    session.user_id,
+                    clean,
+                    token_hash(token),
+                    now,
+                    now + lifetime_days * 86400,
+                ),
+            )
+            row = db.execute("SELECT * FROM app_tokens WHERE id = ?", (token_id,)).fetchone()
+        LOG.info("Application token created")
+        return self._app_token_view(row), token
+
+    def app_token_revoke(self, session: Session, token_id: str) -> None:
+        with self.db.transaction() as db:
+            cursor = db.execute(
+                "UPDATE app_tokens SET revoked_at = ? WHERE id = ? AND user_id = ? "
+                "AND revoked_at IS NULL",
+                (self._now(), token_id, session.user_id),
+            )
+        if cursor.rowcount == 0:
+            raise AccountError("not_found", 404, "No such token")
+        LOG.info("Application token revoked")
+
+    def app_token_owner(self, token: str, client_ip: str) -> str:
+        """Return the user of a valid application token. Every refusal is the same 401."""
+        wait = self.app_token_failures.retry_after(client_ip)
+        if wait:
+            raise AccountError(
+                "rate_limited", 429, "Too many failed token checks", retry_after=wait
+            )
+        now = self._now()
+        row = None
+        if APP_TOKEN_PATTERN.fullmatch(token):
+            with self.db.transaction() as db:
+                row = db.execute(
+                    "SELECT * FROM app_tokens WHERE token_hash = ?", (token_hash(token),)
+                ).fetchone()
+        if row is None or row["revoked_at"] is not None or row["expires_at"] <= now:
+            self.app_token_failures.record(client_ip)
+            raise AccountError("app_token_invalid", 401, "The application token is not valid")
+        wait = take_all(((self.app_token_calls, row["id"]),))
+        if wait:
+            raise AccountError("rate_limited", 429, "Too many requests", retry_after=wait)
+        if row["last_used_at"] is None or now - row["last_used_at"] >= APP_TOKEN_USE_INTERVAL:
+            with self.db.transaction() as db:
+                db.execute("UPDATE app_tokens SET last_used_at = ? WHERE id = ?", (now, row["id"]))
+        return row["user_id"]
+
+    def app_profile(self, user_id: str) -> dict[str, Any]:
+        """Profile for an MCP client: no email, identities, sessions, or consent records."""
+        with self.db.transaction() as db:
+            user = db.execute(
+                "SELECT username, created_at FROM users WHERE id = ?", (user_id,)
+            ).fetchone()
+        if user is None:
+            raise AccountError("app_token_invalid", 401, "The application token is not valid")
+        # Preferences come with the diary part of #48; until then the field is null.
+        return {
+            "username": user["username"],
+            "created_at": iso(user["created_at"]),
+            "preferences": None,
+        }
+
+    def app_wines(self, user_id: str, cursor: str | None, limit: int) -> dict[str, Any]:
+        """Found and rated wines, newest first. The diary history of #48 does not exist yet."""
+        self.app_profile(user_id)
+        return {"items": [], "next_cursor": None}
+
     # -------------------------------------------------------------------- max
 
     def _check_launch(
@@ -765,3 +893,8 @@ class AccountService:
                 db.execute(f"DELETE FROM {table} WHERE expires_at <= ?", (now - 3600,))  # noqa: S608
             db.execute("DELETE FROM used_launches WHERE expires_at <= ?", (now,))
             db.execute("DELETE FROM sessions WHERE expires_at <= ?", (now,))
+            db.execute(
+                "DELETE FROM app_tokens "
+                "WHERE MIN(expires_at, COALESCE(revoked_at, expires_at)) <= ?",
+                (now - APP_TOKEN_KEEP_AFTER_END,),
+            )

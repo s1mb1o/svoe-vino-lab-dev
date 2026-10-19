@@ -1,5 +1,16 @@
 # MCP research log
 
+## 2026-10-19 — Account tools
+
+- Transport: stdio only (issue #65, open decision 2, option A). The token stays in the client
+  configuration. Hosted assistants need a remote MCP endpoint and usually the MCP OAuth flow; that
+  is a separate issue.
+- `chtozavino.ru` needs HTTP Basic for every path (#37). A `Bearer` token cannot pass HTTP Basic, so
+  the tools work in production only after Caddy exempts `/api/app/*` (open decision 1, option A)
+  and keeps the `Authorization` header for it. Until then use a loopback or LAN `CHTOZAVINO_ACCOUNT_URL`.
+- End-to-end check on a local stack (account service, Nuxt, this server): a token from the page
+  read the profile; after «Отозвать» the next call returned `unauthorized`; no log had the token.
+
 ## 2026-10-19
 
 ### Product-line map integration

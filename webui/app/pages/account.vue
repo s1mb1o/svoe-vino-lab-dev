@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, isMaxAppPath, safeNextPath, splitIdentities } from '#shared/account'
-import { AccountRequestError, useAccountApi, type AccountSiteConfig, type AccountUser } from '~/composables/useAccountApi'
+import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, isMaxAppPath, mcpClientConfig, safeNextPath, splitIdentities } from '#shared/account'
+import { AccountRequestError, useAccountApi, type AccountSiteConfig, type AccountUser, type AppToken } from '~/composables/useAccountApi'
 import { readMaxLaunch } from '~/utils/max-bridge'
 
 // /max is this page in MAX mode: the diary mini app on max.chtozavino.ru (plan 05).
@@ -70,11 +70,21 @@ const maxApp = computed(() => isMaxAppPath(route.path))
 const maxLaunch = ref('')
 const maxName = ref('')
 const relogin = ref(false)
+// «Токены приложений» (issue #65): read-only access to this diary for an MCP client.
+const appTokens = ref<AppToken[]>([])
+const tokenFormOpen = ref(false)
+const tokenName = ref('')
+const tokenDays = ref(90)
+const newToken = ref('')
+const tokenNotice = ref('')
+const tokenRelogin = ref(false)
+const newTokenConfig = computed(() => newToken.value ? mcpClientConfig(newToken.value) : '')
 // A server route renders the QR code of the fixed mini-app link (no code inside).
 const MAX_QR_URL = '/api/account/max/qr.svg'
 
 function show(nextPhase: Phase) {
   phase.value = nextPhase
+  if (nextPhase === 'account') loadAppTokens()
   nextTick(() => heading.value?.focus())
 }
 
@@ -201,6 +211,10 @@ async function logout() {
   closeLink()
   relogin.value = false
   linkNotice.value = ''
+  closeNewToken()
+  tokenFormOpen.value = false
+  tokenRelogin.value = false
+  appTokens.value = []
   notice.value = 'Вы вышли из дневника.'
   show('email')
 }
@@ -336,6 +350,67 @@ async function unlinkMessenger(provider: Messenger) {
     await api.unlinkMessenger(provider)
     user.value = (await api.me()).user
     linkNotice.value = `${MESSENGER_NAMES[provider]} отвязан от дневника.`
+  } catch (error) {
+    fail(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+function shortDate(iso: string | null): string {
+  return iso ? new Date(iso).toLocaleDateString('ru-RU') : ''
+}
+
+async function loadAppTokens() {
+  if (maxApp.value) return
+  try {
+    appTokens.value = (await api.appTokens()).tokens
+  } catch { /* the list is optional; the rest of the page works */ }
+}
+
+async function createAppToken() {
+  if (busy.value || !tokenName.value.trim()) return
+  message.value = ''
+  tokenNotice.value = ''
+  tokenRelogin.value = false
+  busy.value = true
+  try {
+    const result = await api.createAppToken(tokenName.value.trim(), tokenDays.value)
+    newToken.value = result.token
+    tokenFormOpen.value = false
+    tokenName.value = ''
+    await loadAppTokens()
+  } catch (error) {
+    fail(error)
+    tokenRelogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
+  } finally {
+    busy.value = false
+  }
+}
+
+async function copyText(text: string, done: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    tokenNotice.value = done
+  } catch {
+    tokenNotice.value = 'Не удалось скопировать. Выделите текст и скопируйте вручную.'
+  }
+}
+
+function closeNewToken() {
+  // The page forgets the secret: it is shown once.
+  newToken.value = ''
+  tokenNotice.value = ''
+}
+
+async function revokeAppToken(item: AppToken) {
+  if (busy.value) return
+  message.value = ''
+  busy.value = true
+  try {
+    await api.revokeAppToken(item.id)
+    tokenNotice.value = `Токен «${item.name}» отозван.`
+    await loadAppTokens()
   } catch (error) {
     fail(error)
   } finally {
@@ -527,6 +602,50 @@ onBeforeUnmount(() => {
               </template>
             </div>
           </template>
+        </template>
+        <template v-if="!maxApp">
+          <h2 class="account-subheading">Токены приложений</h2>
+          <p class="account-hint">Токен даёт MCP-клиенту (Claude, Cursor и другим) доступ только на чтение: имя пользователя, предпочтения и найденные вина. Фото, почта и способы входа недоступны.</p>
+          <ul v-if="appTokens.length" class="account-identities">
+            <li v-for="item in appTokens" :key="item.id">
+              <span>{{ item.name }}</span>
+              <span class="account-identity-state">до {{ shortDate(item.expiresAt) }}<template v-if="item.lastUsedAt"> · использован {{ shortDate(item.lastUsedAt) }}</template><button type="button" class="account-link" :disabled="busy" @click="revokeAppToken(item)">Отозвать</button></span>
+            </li>
+          </ul>
+          <p v-if="tokenNotice" class="account-notice" role="status">{{ tokenNotice }}</p>
+          <div v-if="newToken" class="account-panel" role="group" aria-labelledby="new-token-heading">
+            <h3 id="new-token-heading" class="account-subheading">Новый токен</h3>
+            <p><strong>Токен показывается один раз.</strong> Любой, у кого он есть, может читать ваш дневник. Данные увидит сервис, которому вы передадите токен.</p>
+            <label for="account-new-token" class="account-hint">Токен</label>
+            <input id="account-new-token" class="account-secret ym-disable-keys ym-hide-content" type="text" readonly :value="newToken" @focus="($event.target as HTMLInputElement).select()">
+            <label for="account-mcp-config" class="account-hint">Настройки MCP-клиента: укажите пути к node и к mcp/src/cli.mjs</label>
+            <textarea id="account-mcp-config" class="account-secret account-config ym-disable-keys ym-hide-content" readonly rows="11" :value="newTokenConfig" />
+            <div class="account-actions">
+              <button class="button primary" type="button" @click="copyText(newToken, 'Токен скопирован.')">Скопировать токен</button>
+              <button class="button secondary" type="button" @click="copyText(newTokenConfig, 'Настройки скопированы.')">Скопировать настройки</button>
+              <button class="button secondary" type="button" @click="closeNewToken">Готово</button>
+            </div>
+          </div>
+          <form v-else-if="tokenFormOpen" class="account-panel account-form" @submit.prevent="createAppToken">
+            <h3 class="account-subheading">Создать токен</h3>
+            <p>Любой, у кого есть токен, может читать ваш дневник. Данные увидит сервис, которому вы передадите токен.</p>
+            <label for="account-token-name">Название</label>
+            <input id="account-token-name" v-model="tokenName" type="text" maxlength="64" placeholder="Claude на ноутбуке" required :disabled="busy">
+            <label for="account-token-days">Срок действия</label>
+            <select id="account-token-days" v-model.number="tokenDays" class="account-select" :disabled="busy">
+              <option :value="30">30 дней</option>
+              <option :value="90">90 дней</option>
+              <option :value="365">365 дней</option>
+            </select>
+            <div class="account-actions">
+              <button class="button primary" type="submit" :disabled="busy || !tokenName.trim()">Создать</button>
+              <button v-if="tokenRelogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
+              <button class="button secondary" type="button" :disabled="busy" @click="tokenFormOpen = false; tokenRelogin = false; message = ''">Отмена</button>
+            </div>
+          </form>
+          <div v-else class="account-actions">
+            <button class="button secondary" type="button" :disabled="busy || appTokens.length >= 5" @click="tokenFormOpen = true; tokenNotice = ''">Создать токен</button>
+          </div>
         </template>
         <div class="account-actions">
           <button class="button secondary" type="button" :disabled="busy" @click="logout">Выйти</button>

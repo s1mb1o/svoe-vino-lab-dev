@@ -19,7 +19,7 @@ from contextlib import asynccontextmanager
 from typing import Annotated, Any, Literal
 
 import httpx
-from fastapi import Depends, FastAPI, Header, Request
+from fastapi import Depends, FastAPI, Header, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
@@ -91,6 +91,11 @@ class TelegramCode(Strict):
 
 class TelegramUser(Strict):
     telegram_user_id: int = Field(gt=0, lt=2**53)
+
+
+class AppTokenCreate(Strict):
+    name: str = Field(min_length=1, max_length=200)
+    lifetime_days: Literal[30, 90, 365] = 90
 
 
 def create_app(
@@ -342,6 +347,45 @@ def create_app(
     def telegram_link(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
         code, link, ttl = service.telegram_link_start(session)
         return {"code": code, "deep_link": link, "expires_in": ttl}
+
+    # ---------------------------------------------------- application tokens (#65)
+
+    @app.get("/v1/me/app-tokens", dependencies=[web])
+    def list_app_tokens(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return {"tokens": service.app_tokens(session)}
+
+    @app.post("/v1/me/app-tokens", dependencies=[web], status_code=201)
+    def create_app_token(
+        body: AppTokenCreate, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, Any]:
+        view, token = service.app_token_create(session, body.name, body.lifetime_days)
+        return {"token": token, "app_token": view}
+
+    @app.delete("/v1/me/app-tokens/{token_id}", dependencies=[web], status_code=204)
+    def revoke_app_token(
+        token_id: Annotated[str, Path(pattern=r"^[0-9a-f]{16}$")],
+        session: Annotated[Session, Depends(current_session)],
+    ) -> Response:
+        service.app_token_revoke(session, token_id)
+        return Response(status_code=204)
+
+    def app_user(
+        ip: Annotated[str, Depends(client_ip)], x_app_token: Annotated[str, Header()] = ""
+    ) -> str:
+        # The Nuxt server forwards the bearer token of the MCP client in X-App-Token.
+        return service.app_token_owner(x_app_token[:128], ip)
+
+    @app.get("/v1/app/profile", dependencies=[web])
+    def app_profile(user_id: Annotated[str, Depends(app_user)]) -> dict[str, Any]:
+        return service.app_profile(user_id)
+
+    @app.get("/v1/app/wines", dependencies=[web])
+    def app_wines(
+        user_id: Annotated[str, Depends(app_user)],
+        cursor: Annotated[str | None, Query(max_length=200, pattern=r"^[A-Za-z0-9_-]+$")] = None,
+        limit: Annotated[int, Query(ge=1, le=50)] = 20,
+    ) -> dict[str, Any]:
+        return service.app_wines(user_id, cursor, limit)
 
     # ------------------------------------------------------------------ bots
 

@@ -75,6 +75,26 @@ The browser never gets the endpoint or the token.
   current session it stops before the finish call. Follow-up: a service-side `reauth` purpose
   that checks the Yandex subject (reported by session svoe-vino-final-39).
 
+## Application tokens
+
+Issue #65. «Токены приложений» on `/account` (not in the MAX mini app).
+
+- «Создать токен»: a name and a lifetime (30, 90 by default, or 365 days). The form says before
+  creation that anyone with the token can read the diary. Creation needs a login in the last
+  15 minutes; on `reauth_required` the form offers «Войти заново».
+- The page shows the token once, with «Скопировать токен» and the MCP client configuration. «Готово»
+  removes the secret from the page. The token fields have `ym-disable-keys` and `ym-hide-content`.
+- The list shows the name, the expiry, and the last use. «Отозвать» revokes a token at once.
+- `GET /api/app/v1/profile` and `GET /api/app/v1/wines` take `Authorization: Bearer cvpat_...` and
+  pass the token on as `X-App-Token` with the client address. Nuxt keeps nothing and answers with
+  `Cache-Control: no-store`. A missing or malformed header gets 401 without a service call. Errors:
+  401 `unauthorized` with `WWW-Authenticate: Bearer` (the same for every refused token), 429
+  `rate_limited` with `Retry-After`, 400 `invalid_request`, 503 `unavailable`. These routes need no
+  `Origin`: they use no cookie.
+- Deployment (open decision 1 of #65, option A): Caddy must exempt only `/api/app/*` from HTTP Basic
+  and keep the `Authorization` header for it. The main `chtozavino.ru` block removes that header
+  today. Every other path keeps HTTP Basic. This change needs the owner approval.
+
 ## MAX link
 
 Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) stays off.
@@ -124,6 +144,11 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
 | `POST /api/account/max/link` | `POST /v1/me/identities/max` | `{status: 'linked'}`; body `{initData}` up to 9 KiB |
 | `DELETE /api/account/identities/max` | `DELETE /v1/me/identities/max` | `{status: 'unlinked'}`, also when it was not linked |
 | `GET /api/account/max/qr.svg` | — | QR code of `NUXT_ACCOUNT_MAX_APP_LINK`; 404 when it is not set |
+| `GET /api/account/app-tokens` | `GET /v1/me/app-tokens` | `{tokens: [{id, name, createdAt, expiresAt, lastUsedAt}]}` |
+| `POST /api/account/app-tokens` | `POST /v1/me/app-tokens` | `{token, appToken}`; body `{name, lifetimeDays}` |
+| `DELETE /api/account/app-tokens/[id]` | `DELETE /v1/me/app-tokens/{id}` | `{status: 'revoked'}` |
+| `GET /api/app/v1/profile` | `GET /v1/app/profile` | Bearer application token; profile |
+| `GET /api/app/v1/wines` | `GET /v1/app/wines` | Bearer application token; `{items, next_cursor}` |
 
 Errors have the form `{error, attemptsLeft?, retryAfter?}`. The page shows the Russian text of
 `accountErrorMessage` and never the input.

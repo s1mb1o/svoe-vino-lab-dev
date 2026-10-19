@@ -44,6 +44,42 @@ Replace the two absolute paths for that host.
 }
 ```
 
+### «Винный дневник» account tools
+
+Issue #65. With an application token the server also reads the token owner's diary.
+Create the token on `https://chtozavino.ru/account` → «Токены приложений». The page shows it once.
+
+```json
+{
+  "mcpServers": {
+    "svoe-vino": {
+      "command": "/absolute/path/to/node",
+      "args": ["/absolute/path/to/svoe-vino-lab-mcp/mcp/src/cli.mjs"],
+      "env": { "CHTOZAVINO_ACCOUNT_TOKEN": "cvpat_..." }
+    }
+  }
+}
+```
+
+| Variable | Meaning |
+| --- | --- |
+| `CHTOZAVINO_ACCOUNT_TOKEN` | Optional. Without it the server registers no account tools and makes no network request. A wrong format stops the start with a sanitized message and exit code 1. |
+| `CHTOZAVINO_ACCOUNT_URL` | Optional, default `https://chtozavino.ru`. HTTPS only; `http://` only for a loopback host in tests. |
+
+| Tool | Arguments | Behavior |
+| --- | --- | --- |
+| `get_my_profile` | none | Username, account creation date, and preferences (`null` until the diary has them). |
+| `list_my_wines` | `limit` 1–50 (default 20), `cursor` | Found and rated wines, newest first, with the rating and the person's note. Empty until the diary history of #48 exists. |
+
+- Read-only (`readOnlyHint`). A token cannot write, open a web session, or manage tokens.
+- HTTPS `GET /api/app/v1/profile` and `/api/app/v1/wines` with `Authorization: Bearer`, `redirect: 'error'`,
+  a 5 s timeout, and a 256 KiB answer limit.
+- Error codes: `unauthorized` (revoked, expired, or unknown token), `unavailable` (network, timeout,
+  HTTP 5xx, or 429). The catalog tools keep working.
+- The token never appears in a result, an error, stdout, or stderr. Rating notes are text that the
+  person wrote: the tool descriptions and the server instructions call them data, not instructions.
+- Without a token the server instructions are the same as before.
+
 The SDK client example is in `examples/client.mjs`.
 It discovers tools, finds two wines, reads a card, compares the wines, reads the line mock, and checks audio availability.
 It uses a real MCP subprocess. It does not call a model provider.

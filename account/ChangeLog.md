@@ -1,5 +1,18 @@
 # ChangeLog
 
+## 2026-10-19 — Application tokens (#65)
+
+- Schema `004_app_tokens.sql`. `GET/POST /v1/me/app-tokens`, `DELETE /v1/me/app-tokens/{id}` (session;
+  creation needs a login in the last 15 minutes). Format `cvpat_` + 32 random bytes; only the SHA-256
+  hash is stored. Lifetime 30, 90, or 365 days; at most 5 active tokens.
+- `GET /v1/app/profile` and `GET /v1/app/wines` for the `web` consumer with `X-App-Token` and
+  `X-Client-IP`. Every refused token gets the same 401 `app_token_invalid`. 60 requests per minute per
+  token; 20 failed checks per minute per client address, then 429 with `Retry-After`.
+  `last_used_at` is written at most once a minute. A token is never a session.
+- Preferences are `null` and wines are an empty list until the diary part of #48 exists.
+- Account deletion removes the tokens; logout keeps them. The purge removes tokens 30 days after
+  their end. 15 new tests (95 in total).
+
 ## 2026-10-19 — Telegram link review fixes
 
 Review of `ffbde5c8` (a Claude review agent; Codex was over its usage limit). Fixed:

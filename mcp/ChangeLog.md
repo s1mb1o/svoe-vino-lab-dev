@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19 — «Винный дневник» account tools (#65)
+
+- With `CHTOZAVINO_ACCOUNT_TOKEN` (and optional `CHTOZAVINO_ACCOUNT_URL`) the server adds the read-only tools `get_my_profile` and `list_my_wines`. They call `https://chtozavino.ru/api/app/v1/*` with the bearer token: HTTPS only (loopback HTTP for tests), no redirects, 5 s timeout, 256 KiB limit.
+- New error code `unauthorized` for a refused token; network errors, timeouts, 5xx, and 429 give `unavailable`. Catalog tools keep working.
+- A malformed token stops the start with a sanitized message. Without a token the tool list and the server instructions are unchanged.
+- `src/account.mjs`; 6 new tests with a loopback fake diary and a real SDK client (48 in total).
+
 ## 2026-10-19
 
 - Read the producer list from `webui/shared/data/product-line-index.json`. The Web UI now loads each map on demand, and `index.ts` holds lazy loaders.

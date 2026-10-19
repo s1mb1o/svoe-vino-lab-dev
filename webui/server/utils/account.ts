@@ -95,12 +95,13 @@ export async function callAccount<T = Record<string, unknown>>(
   config: AccountConfig,
   method: 'GET' | 'POST' | 'DELETE',
   path: string,
-  options: { body?: unknown; session?: string; clientIp?: string; timeoutMs?: number } = {},
+  options: { body?: unknown; session?: string; clientIp?: string; appToken?: string; timeoutMs?: number } = {},
 ): Promise<{ status: number; data: T }> {
   const headers: Record<string, string> = { Accept: 'application/json', Authorization: `Bearer ${config.token}` }
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'
   if (options.session) headers['X-Session-Token'] = options.session
   if (options.clientIp) headers['X-Client-IP'] = options.clientIp
+  if (options.appToken) headers['X-App-Token'] = options.appToken
   let response: Response
   try {
     response = await config.fetch(new URL(path.replace(/^\//, ''), config.endpoint), {
@@ -393,6 +394,109 @@ export function unlinkMessengerRoute(event: H3Event, source: AccountConfigSource
     }
     return { status: 'unlinked' }
   })
+}
+
+// ------------------------------------------------------------ application tokens (#65)
+
+const APP_TOKEN_ID = /^[0-9a-f]{16}$/
+const APP_TOKEN = /^cvpat_[A-Za-z0-9_-]{43}$/
+const APP_TOKEN_LIFETIMES = new Set([30, 90, 365])
+
+type AppTokenView = { id?: string; name?: string; created_at?: string; expires_at?: string; last_used_at?: string | null }
+const appTokenView = (item: AppTokenView) => ({
+  id: item.id, name: item.name, createdAt: item.created_at, expiresAt: item.expires_at, lastUsedAt: item.last_used_at ?? null,
+})
+
+function sessionOf(event: H3Event): string {
+  const session = getCookie(event, ACCOUNT_COOKIES.session)
+  if (!session) throw new AccountHttpError(401, 'session_required')
+  return session
+}
+
+/** The active application tokens of the account, without secrets. */
+export function appTokensRoute(event: H3Event, source: AccountConfigSource) {
+  return accountJson(event, source, async config => {
+    const { data } = await callAccount<{ tokens?: AppTokenView[] }>(config, 'GET', '/v1/me/app-tokens', { session: sessionOf(event) })
+    return { tokens: (data.tokens ?? []).map(appTokenView) }
+  })
+}
+
+/** Creates a token. The answer has the secret once; the server keeps nothing. */
+export function appTokenCreateRoute(event: H3Event, source: AccountConfigSource) {
+  return accountJson(event, source, async config => {
+    checkOrigin(event, config)
+    const session = sessionOf(event)
+    const body = await readJson(event)
+    const name = typeof body.name === 'string' ? body.name.trim() : ''
+    if (!name || name.length > 64) throw new AccountHttpError(400, 'invalid_name')
+    const lifetimeDays = typeof body.lifetimeDays === 'number' ? body.lifetimeDays : 90
+    if (!APP_TOKEN_LIFETIMES.has(lifetimeDays)) throw new AccountHttpError(400, 'invalid_lifetime')
+    const { data } = await callAccount<{ token?: string; app_token?: AppTokenView }>(config, 'POST', '/v1/me/app-tokens', {
+      body: { name, lifetime_days: lifetimeDays }, session,
+    })
+    if (typeof data.token !== 'string' || !APP_TOKEN.test(data.token) || !data.app_token) throw unavailable()
+    return { token: data.token, appToken: appTokenView(data.app_token) }
+  })
+}
+
+export function appTokenRevokeRoute(event: H3Event, source: AccountConfigSource, id: unknown) {
+  return accountJson(event, source, async config => {
+    checkOrigin(event, config)
+    const session = sessionOf(event)
+    if (typeof id !== 'string' || !APP_TOKEN_ID.test(id)) throw new AccountHttpError(404, 'not_found')
+    await callAccount(config, 'DELETE', `/v1/me/app-tokens/${id}`, { session })
+    return { status: 'revoked' }
+  })
+}
+
+/**
+ * Read routes for MCP clients: `Authorization: Bearer cvpat_...`. The server passes the token on as
+ * X-App-Token and keeps nothing. Errors: 401 `unauthorized` (the same for every refused token),
+ * 429 `rate_limited` with Retry-After, 400 `invalid_request`, 503 `unavailable`.
+ */
+export async function appReadRoute(event: H3Event, source: AccountConfigSource, resource: 'profile' | 'wines') {
+  setHeader(event, 'Cache-Control', 'no-store')
+  const refuse = (status: number, error: string, retryAfter?: number) => {
+    setResponseStatus(event, status)
+    if (status === 401) setHeader(event, 'WWW-Authenticate', 'Bearer')
+    if (retryAfter) setHeader(event, 'Retry-After', retryAfter)
+    return { error }
+  }
+  let config: AccountConfig | null
+  try {
+    config = source()
+  } catch {
+    return refuse(503, 'unavailable')
+  }
+  if (!config) return refuse(503, 'unavailable')
+  const match = /^Bearer (\S+)$/.exec(getHeader(event, 'authorization') ?? '')
+  if (!match || !APP_TOKEN.test(match[1]!)) return refuse(401, 'unauthorized')
+  let path = '/v1/app/profile'
+  if (resource === 'wines') {
+    const query = getQuery(event)
+    const params = new URLSearchParams()
+    if (query.limit !== undefined) {
+      const limit = Number(query.limit)
+      if (!Number.isInteger(limit) || limit < 1 || limit > 50) return refuse(400, 'invalid_request')
+      params.set('limit', String(limit))
+    }
+    if (query.cursor !== undefined) {
+      if (typeof query.cursor !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(query.cursor)) return refuse(400, 'invalid_request')
+      params.set('cursor', query.cursor)
+    }
+    path = params.size ? `/v1/app/wines?${params}` : '/v1/app/wines'
+  }
+  try {
+    const { data } = await callAccount(config, 'GET', path, { appToken: match[1], clientIp: clientIp(event) })
+    return data
+  } catch (error) {
+    if (error instanceof AccountHttpError) {
+      if (error.code === 'app_token_invalid') return refuse(401, 'unauthorized')
+      if (error.status === 429) return refuse(429, 'rate_limited', error.extra.retryAfter)
+      if (error.status === 400 || error.status === 422) return refuse(400, 'invalid_request')
+    }
+    return refuse(503, 'unavailable')
+  }
 }
 
 export function logoutRoute(event: H3Event, source: AccountConfigSource) {

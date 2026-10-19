@@ -114,6 +114,9 @@ Do not disclose local paths in public results or errors.
 
 ## Remaining work
 
+Account tools of «Винный дневник» (`get_my_profile`, `list_my_wines`) exist since 2026-10-19 (#65,
+`mcp/README.md`). `list_my_wines` stays empty until the diary history of #48 exists.
+
 Replace the six-node product-line mock after the verified product-line implementation merges.
 Retain exact membership, nullable slugs, source conflicts, and unsupported-producer states during that replacement.
 Record a separate acceptance run for that integration.

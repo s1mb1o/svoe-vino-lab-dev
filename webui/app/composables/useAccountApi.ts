@@ -10,6 +10,7 @@ export interface AccountSiteConfig {
   consentVersion?: string
   termsVersion?: string
 }
+export interface AppToken { id: string; name: string; createdAt: string; expiresAt: string; lastUsedAt: string | null }
 export type AuthResult =
   | { status: 'session'; user?: AccountUser }
   | { status: 'signup_required'; provider?: string; email?: string }
@@ -53,5 +54,8 @@ export function useAccountApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
     linkTelegram: () => request<{ deepLink: string; expiresIn: number }>('POST', '/api/account/links/telegram', {}),
     linkMax: (initData: string) => request<{ status: string }>('POST', '/api/account/max/link', { initData }),
     unlinkMessenger: (provider: 'telegram' | 'max') => request<{ status: string }>('DELETE', `/api/account/identities/${provider}`),
+    appTokens: () => request<{ tokens: AppToken[] }>('GET', '/api/account/app-tokens'),
+    createAppToken: (name: string, lifetimeDays: number) => request<{ token: string; appToken: AppToken }>('POST', '/api/account/app-tokens', { name, lifetimeDays }),
+    revokeAppToken: (id: string) => request<{ status: string }>('DELETE', `/api/account/app-tokens/${encodeURIComponent(id)}`),
   }
 }

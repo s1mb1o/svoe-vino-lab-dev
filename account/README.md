@@ -83,6 +83,17 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text. The first claimer owns the code |
 | `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user who claimed the code; a repeat answers `linked` again |
 | `POST /v1/bot/telegram/unlink` | telegram-bot | Unlink by Telegram user ID |
+| `GET /v1/me/app-tokens` | web | Active application tokens, without secrets |
+| `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only. Needs a login in the last 15 minutes |
+| `DELETE /v1/me/app-tokens/{id}` | web | Revoke a token |
+| `GET /v1/app/profile` | web + `X-App-Token` | Username, creation date, preferences (`null` until #48) |
+| `GET /v1/app/wines?cursor=&limit=` | web + `X-App-Token` | Found and rated wines, newest first, `limit` 1–50 (empty until #48) |
+
+Application tokens (#65) give an MCP client read-only access to its owner's diary. The format is
+`cvpat_` and 32 random bytes in base64url; the service stores only the SHA-256 hash. A token never
+opens a session and cannot manage tokens. Every refused token gets the same 401
+`app_token_invalid`. Limits: 5 active tokens per account, 60 requests per minute per token, and 20
+failed checks per minute per client address (HTTP 429 with `Retry-After`).
 
 The Nuxt server keeps the session token, the email challenge ID, and the Yandex flow ID in
 httpOnly cookies. The browser never sees the service.

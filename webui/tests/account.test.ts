@@ -2,11 +2,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { createServer, type IncomingMessage, type Server } from 'node:http'
 import { createApp, createRouter, eventHandler, toNodeListener } from 'h3'
 import {
-  accountConfig, accountConfigRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
+  accountConfig, accountConfigRoute, appReadRoute, appTokenCreateRoute, appTokenRevokeRoute, appTokensRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
   maxHostDecision, maxLinkRoute, maxQrRoute, meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute,
   yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
-import { accountErrorMessage, isAccountPath, isMaxAppPath, safeNextPath, splitIdentities } from '../shared/account'
+import { accountErrorMessage, isAccountPath, isMaxAppPath, mcpClientConfig, safeNextPath, splitIdentities } from '../shared/account'
 import { METRIKA_INIT_SCRIPT } from '../shared/metrika'
 
 const TOKEN = 'w'.repeat(64)
@@ -66,6 +66,11 @@ beforeAll(async () => {
     '/api/account/identities/max': (event, config) => unlinkMessengerRoute(event, config, 'max'),
     '/api/account/max/link': maxLinkRoute,
     '/api/account/max/qr.svg': maxQrRoute,
+    '/api/account/app-tokens': (event, config) => event.method === 'POST' ? appTokenCreateRoute(event, config) : appTokensRoute(event, config),
+    '/api/account/app-tokens/0123456789abcdef': (event, config) => appTokenRevokeRoute(event, config, '0123456789abcdef'),
+    '/api/account/app-tokens/bad': (event, config) => appTokenRevokeRoute(event, config, '../me'),
+    '/api/app/v1/profile': (event, config) => appReadRoute(event, config, 'profile'),
+    '/api/app/v1/wines': (event, config) => appReadRoute(event, config, 'wines'),
   }
   const router = createRouter()
   // `source` is read at request time, so a test can switch the settings.
@@ -444,6 +449,94 @@ describe('MAX link', () => {
   })
 })
 
+describe('application tokens', () => {
+  const secret = `cvpat_${'A'.repeat(43)}`
+  const view = { id: '0123456789abcdef', name: 'Claude', created_at: '2026-10-19T10:00:00Z', expires_at: '2027-01-17T10:00:00Z', last_used_at: null }
+  it('lists tokens for the session without secrets', async () => {
+    reply = () => ({ status: 200, body: { tokens: [view] } })
+    const response = await call('/api/account/app-tokens', { cookie: '__Host-cv_session=abc' })
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(await response.json()).toEqual({ tokens: [{ id: view.id, name: 'Claude', createdAt: view.created_at, expiresAt: view.expires_at, lastUsedAt: null }] })
+    expect(seen[0].headers['x-session-token']).toBe('abc')
+  })
+  it('creates a token with the site origin and returns the secret once', async () => {
+    reply = () => ({ status: 201, body: { token: secret, app_token: view } })
+    const response = await call('/api/account/app-tokens', { method: 'POST', ...json({ name: ' Claude ', lifetimeDays: 30 }), cookie: '__Host-cv_session=abc' })
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect((await response.json()).token).toBe(secret)
+    expect(JSON.parse(seen[0].body)).toEqual({ name: 'Claude', lifetime_days: 30 })
+  })
+  it('refuses a foreign origin, a bad lifetime, and passes reauth_required', async () => {
+    const foreign = await call('/api/account/app-tokens', { method: 'POST', ...json({ name: 'x' }), cookie: '__Host-cv_session=abc', headers: { origin: 'https://evil.example' } })
+    expect(foreign.status).toBe(403)
+    const days = await call('/api/account/app-tokens', { method: 'POST', ...json({ name: 'x', lifetimeDays: 7 }), cookie: '__Host-cv_session=abc' })
+    expect(await days.json()).toEqual({ error: 'invalid_lifetime' })
+    expect(seen).toHaveLength(0)
+    reply = () => ({ status: 403, body: { error: 'reauth_required' } })
+    const stale = await call('/api/account/app-tokens', { method: 'POST', ...json({ name: 'x' }), cookie: '__Host-cv_session=abc' })
+    expect(await stale.json()).toEqual({ error: 'reauth_required' })
+  })
+  it('revokes only a well-formed token ID', async () => {
+    reply = () => ({ status: 204 })
+    const ok = await call('/api/account/app-tokens/0123456789abcdef', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(await ok.json()).toEqual({ status: 'revoked' })
+    expect(seen[0]).toMatchObject({ method: 'DELETE', url: '/v1/me/app-tokens/0123456789abcdef' })
+    const bad = await call('/api/account/app-tokens/bad', { method: 'DELETE', cookie: '__Host-cv_session=abc' })
+    expect(bad.status).toBe(404)
+    expect(seen).toHaveLength(1)
+  })
+  it('passes the bearer token on as X-App-Token and keeps no cookie or cache', async () => {
+    reply = () => ({ status: 200, body: { username: 'anna', created_at: 'x', preferences: null } })
+    const response = await call('/api/app/v1/profile', { headers: { authorization: `Bearer ${secret}` } })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(response.headers.getSetCookie()).toEqual([])
+    expect(seen[0].url).toBe('/v1/app/profile')
+    expect(seen[0].headers['x-app-token']).toBe(secret)
+    expect(seen[0].headers.authorization).toBe(`Bearer ${TOKEN}`)
+    expect(seen[0].headers['x-client-ip']).toBe('127.0.0.1')
+  })
+  it.each([undefined, 'Basic abc', 'Bearer short', `Bearer ${secret} x`, `bearer ${secret}`])('refuses %s with the same 401 and no service call', async header => {
+    const response = await call('/api/app/v1/profile', { headers: header ? { authorization: header } : {} })
+    expect(response.status).toBe(401)
+    expect(response.headers.get('www-authenticate')).toBe('Bearer')
+    expect(await response.json()).toEqual({ error: 'unauthorized' })
+    expect(seen).toHaveLength(0)
+  })
+  it.each([
+    [{ status: 401, body: { error: 'app_token_invalid' } }, 401, { error: 'unauthorized' }],
+    [{ status: 429, body: { error: 'rate_limited' }, headers: { 'retry-after': '17' } }, 429, { error: 'rate_limited' }],
+    [{ status: 500, body: {} }, 503, { error: 'unavailable' }],
+    [{ status: 401, body: { error: 'unauthorized' } }, 503, { error: 'unavailable' }],
+  ])('maps the service answer %j', async (answer, status, body) => {
+    reply = () => answer
+    const response = await call('/api/app/v1/profile', { headers: { authorization: `Bearer ${secret}` } })
+    expect(response.status).toBe(status)
+    expect(await response.json()).toEqual(body)
+    if (status === 429) expect(response.headers.get('retry-after')).toBe('17')
+  })
+  it('answers unavailable within the timeout when the service hangs', async () => {
+    reply = () => ({ status: 200, hang: true })
+    const response = await call('/api/app/v1/profile', { headers: { authorization: `Bearer ${secret}` } })
+    expect(response.status).toBe(503)
+  })
+  it('validates the wines query before the service', async () => {
+    reply = () => ({ status: 200, body: { items: [], next_cursor: null } })
+    const ok = await call('/api/app/v1/wines?limit=50&cursor=abc_1', { headers: { authorization: `Bearer ${secret}` } })
+    expect(await ok.json()).toEqual({ items: [], next_cursor: null })
+    expect(seen[0].url).toBe('/v1/app/wines?limit=50&cursor=abc_1')
+    for (const query of ['limit=0', 'limit=51', 'limit=x', 'cursor=a%20b']) {
+      const bad = await call(`/api/app/v1/wines?${query}`, { headers: { authorization: `Bearer ${secret}` } })
+      expect(bad.status).toBe(400)
+    }
+    expect(seen).toHaveLength(1)
+  })
+  it('builds the MCP client configuration with the token in env', () => {
+    const config = JSON.parse(mcpClientConfig(secret))
+    expect(config.mcpServers['svoe-vino'].env).toEqual({ CHTOZAVINO_ACCOUNT_TOKEN: secret })
+  })
+})
+
 describe('MAX mini-app host', () => {
   it.each([
     ['GET', '/', 'redirect'],
@@ -458,6 +551,8 @@ describe('MAX mini-app host', () => {
     ['DELETE', '/api/account/me', 'allow'],
     ['DELETE', '/api/account/identities/max', 'allow'],
     ['GET', '/api/account/yandex/start', 'reject'],
+    ['GET', '/api/account/app-tokens', 'reject'],
+    ['GET', '/api/app/v1/profile', 'reject'],
     ['POST', '/api/account/links/telegram', 'reject'],
     ['DELETE', '/api/account/identities/telegram', 'reject'],
     ['GET', '/account', 'reject'],

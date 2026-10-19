@@ -355,7 +355,10 @@ Use of preferences:
 
 ## Application tokens and MCP (Phase 2)
 
-Phase 2 starts after open decision 5.
+Implemented on 2026-10-19: issue #65, `account/README.md` ("Application tokens"),
+`webui/docs/account.md`, and `mcp/README.md`. Profile preferences and found wines stay empty until
+the diary part of #48 exists. Public access needs the Caddy exemption of `/api/app/*` (#65, open
+decision 1).
 
 Web UI:
 
