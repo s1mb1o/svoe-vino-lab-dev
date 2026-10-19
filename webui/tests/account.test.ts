@@ -5,7 +5,7 @@ import {
   accountConfig, accountConfigRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
   meRoute, signupRoute, yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
-import { accountErrorMessage, isAccountPath, safeNextPath } from '../shared/account'
+import { accountErrorMessage, isAccountPath, safeNextPath, splitIdentities } from '../shared/account'
 import { METRIKA_INIT_SCRIPT } from '../shared/metrika'
 
 const TOKEN = 'w'.repeat(64)
@@ -95,6 +95,13 @@ describe('shared account rules', () => {
     expect(isAccountPath('/account')).toBe(true)
     expect(isAccountPath('/account/onboarding')).toBe(true)
     expect(isAccountPath('/accounting')).toBe(false)
+  })
+  it('lists only email and Yandex ID as login methods', () => {
+    const { login, linked } = splitIdentities([
+      { provider: 'yandex' }, { provider: 'email', email: 'a@example.com' }, { provider: 'telegram' }, { provider: 'max' },
+    ])
+    expect(login.map(item => item.key)).toEqual(['yandex', 'email'])
+    expect(linked.map(item => item.label)).toEqual(['Telegram', 'MAX'])
   })
   it('explains errors in Russian without the input', () => {
     expect(accountErrorMessage({ error: 'invalid_code', attemptsLeft: 2 })).toBe('Неверный код. Осталось попыток: 2.')

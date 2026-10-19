@@ -72,3 +72,22 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
       return 'Что-то пошло не так. Попробуйте ещё раз.'
   }
 }
+
+export interface IdentityRow { key: string; label: string; value: string }
+
+/**
+ * Splits the linked identities of an account. Only email and Yandex ID are login methods.
+ * Telegram and MAX are linked messengers: they save finds but never open a session
+ * (149-FZ art. 8 p. 10 for Telegram; MAX login is off, issue #50).
+ */
+export function splitIdentities(items: Array<{ provider: string; email?: string }>): { login: IdentityRow[]; linked: IdentityRow[] } {
+  const login: IdentityRow[] = []
+  const linked: IdentityRow[] = []
+  for (const item of items) {
+    if (item.provider === 'email') login.push({ key: 'email', label: 'Почта', value: item.email ?? '' })
+    else if (item.provider === 'yandex') login.push({ key: 'yandex', label: 'Яндекс ID', value: 'привязан' })
+    else if (item.provider === 'telegram') linked.push({ key: 'telegram', label: 'Telegram', value: 'привязан' })
+    else if (item.provider === 'max') linked.push({ key: 'max', label: 'MAX', value: 'привязан' })
+  }
+  return { login, linked }
+}

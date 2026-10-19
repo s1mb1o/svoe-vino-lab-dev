@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, safeNextPath } from '#shared/account'
+import { ACCOUNT_PATH, EMAIL_CODE_PATTERN, USERNAME_PATTERN, accountErrorMessage, safeNextPath, splitIdentities } from '#shared/account'
 import { AccountRequestError, useAccountApi, type AccountSiteConfig, type AccountUser } from '~/composables/useAccountApi'
 
 const title = 'Винный дневник — Что за вино?'
@@ -42,11 +42,7 @@ const accountEmail = computed(() => user.value?.identities.find(item => item.pro
 const hasYandex = computed(() => Boolean(user.value?.identities.some(item => item.provider === 'yandex')))
 const reauthYandexHref = computed(() => `/api/account/yandex/start?intent=reauth&next=${encodeURIComponent('/account?confirm=delete')}`)
 const resendIn = computed(() => Math.max(0, Math.ceil((resendAt.value - now.value) / 1000)))
-const identities = computed(() => (user.value?.identities ?? []).map(item => item.provider === 'email'
-  ? { key: 'email', label: 'Почта', value: item.email ?? '' }
-  : item.provider === 'yandex'
-    ? { key: 'yandex', label: 'Яндекс ID', value: 'привязан' }
-    : { key: item.provider, label: item.provider, value: 'привязан' }))
+const identities = computed(() => splitIdentities(user.value?.identities ?? []))
 
 function show(nextPhase: Phase) {
   phase.value = nextPhase
@@ -317,8 +313,15 @@ onBeforeUnmount(() => clock && clearInterval(clock))
         <p class="account-notice">Скоро здесь появятся история поисков, оценки вин и ваши предпочтения.</p>
         <h2 class="account-subheading">Способы входа</h2>
         <ul class="account-identities">
-          <li v-for="item in identities" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
+          <li v-for="item in identities.login" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
         </ul>
+        <template v-if="identities.linked.length">
+          <h2 class="account-subheading">Связанные мессенджеры</h2>
+          <p class="account-hint">Через них нельзя войти в дневник: они только сохраняют находки.</p>
+          <ul class="account-identities">
+            <li v-for="item in identities.linked" :key="item.key"><span>{{ item.label }}</span><span>{{ item.value }}</span></li>
+          </ul>
+        </template>
         <div class="account-actions">
           <button class="button secondary" type="button" :disabled="busy" @click="logout">Выйти</button>
           <button v-if="!confirmDelete" class="button secondary account-danger" type="button" :disabled="busy" @click="confirmDelete = true; reauthNeeded = false">Удалить аккаунт</button>

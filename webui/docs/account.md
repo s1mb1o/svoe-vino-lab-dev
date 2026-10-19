@@ -52,6 +52,10 @@ The browser never gets the endpoint or the token.
 - The Workbox page cache skips `/account*`. The pages send `X-Robots-Tag: noindex`.
 - Sign-up needs two separate unchecked boxes: the terms of use (`/terms`) and the consent to
   personal data processing (`/privacy`). The server refuses sign-up without both.
+- «Способы входа» lists only email and Yandex ID. Telegram and MAX are under «Связанные мессенджеры»
+  with «Через них нельзя войти в дневник: они только сохраняют находки» (owner rule, 2026-10-19).
+  Never call Telegram a login method in the UI or in texts. The action is «Привязать мессенджер»
+  (then Telegram, later MAX), shown in «Связанные мессенджеры» — never under «Способы входа».
 - Account deletion needs a login in the last 15 minutes (service rule). On `reauth_required` the
   confirmation stays open and offers «Подтвердить кодом из письма» for the account's email
   (then «Подтвердить и удалить») or «Подтвердить через Яндекс ID» (`intent=reauth`,

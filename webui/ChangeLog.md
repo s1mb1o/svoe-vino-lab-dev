@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Messengers are not login methods
+
+- «Способы входа» lists only email and Yandex ID. Telegram and MAX appear under «Связанные мессенджеры» with «Через них нельзя войти в дневник: они только сохраняют находки». The future link action is «Привязать мессенджер» (owner decision).
+
 ## 2026-10-19 — «Винный дневник»: Yandex reauth stays on the same account
 
 - «Подтвердить через Яндекс ID» before account deletion could switch the session to another diary when the browser used another Yandex account. The callback now accepts the new session only for the same user; otherwise it keeps the current session, ends the new one, and shows «Вход выполнен в другой аккаунт Яндекс ID. Удаление отменено…».
