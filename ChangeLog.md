@@ -3,6 +3,19 @@
 The change log of the repository. A project folder can have its own `ChangeLog.md`, for example
 `telegram-bot/`, `max-bot/`, and `im-core/`.
 
+## 2026-10-20
+
+- Updated `ASSESSMENT.md` to `main` at `db288cc9`. Added Dinner Lens and wine for a dish
+  (F-27 to F-29), the workbench research rows (F-14 to F-19), experiment tracking and run
+  comparison (F-49), the RTX 4090 cascade run (F-66), the Android 0.2.0 work (F-87 to F-93),
+  the iPhone app (F-94 to F-98), «Винный дневник» accounts (F-99 to F-103), the legal pages,
+  the site map, the Crocodile and game landings, static wine images (F-104 to F-108), and the
+  workbench catalogue tools (F-109 to F-111). Rewrote the Android rows F-80 to F-85 for the
+  p512 default and release 0.2.0. Corrected F-10 (runs moved to `workbench/runs-1/`), F-21
+  (result labels), and F-46 (operation inventory). Recorded the failing matcher CI run (F-33),
+  the open workbench port gaps, the test suites that need files outside Git, and the
+  `issue-34-review-assets-v2` branch. Removed the `android/current` row: `main` has its content.
+
 ## 2026-10-19
 
 - Added the shared legal pages `/terms`, `/privacy`, and `/contacts` to `webui/` (#37). They cover
