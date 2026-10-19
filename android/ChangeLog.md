@@ -2,6 +2,19 @@
 
 ## 2026-10-19
 
+### Rebuild and GitHub source checkpoint
+
+- Committed the main application ID, dual-GPU measurements, and offline benchmark by topic.
+- Rebuilt main debug, unsigned release, and the isolated benchmark APK.
+- Passed 183 fresh tests without a failure, error, or skipped test.
+- Passed all three lint variants with no errors. Retained existing warnings.
+- Assembled again after the implementation commits.
+- Archived all three APKs, checksums, test evidence, and mapping in a new subdirectory.
+- Preserved the old-ID release and the embedded format 6 pack.
+- Verified package IDs, FileProvider authorities, signatures, and release HTTP exclusion.
+- Left the active Pixel APK and process unchanged. Re-ranking remains disabled.
+- Recorded the source checkpoint and GitHub branch in `docs/releases/2026-10-19-rebuild.md`.
+
 ### Isolated offline retrieval benchmark implementation
 
 - Added owner-approved direct USB HTTP transport with strict framing and bounded retries.

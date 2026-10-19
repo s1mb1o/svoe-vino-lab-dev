@@ -2,6 +2,16 @@
 
 ## 2026-10-19
 
+### Rebuild verification boundary
+
+- The rebuilt benchmark has a different APK container checksum.
+  All 89 uncompressed ZIP entry payloads match the frozen v5 APK exactly.
+  Keep device results bound to the installed APK checksum. Do not infer a new
+  device validation from payload agreement alone.
+- Release DEX retains the shared callback name `setDebugHttpServerEnabled`.
+  This name is not a server class. Exact class and endpoint checks confirm that the
+  release has no NanoHTTPD implementation or debug HTTP endpoints.
+
 ### Mobile segmentation and isolated benchmark implementation
 
 - A host-only repair rejects the observed malformed status line and opens a fresh

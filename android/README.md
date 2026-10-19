@@ -244,6 +244,11 @@ Published 0.1.4 assets are in `github/android-v0.1.4/`.
 The archive preserves different builds with the same version name.
 Read [the 0.2.0 release record](docs/releases/0.2.0.md) before distribution.
 
+The new-ID rebuild is in `rebuild-20261019-com-alolalab-chtozavino/` under this archive.
+It contains main debug, unsigned release, and isolated benchmark APKs with checksums.
+Read [the rebuild checkpoint](docs/releases/2026-10-19-rebuild.md) for artifact hashes,
+fresh tests, source commits, and the unchanged active-device boundary.
+
 The APK installs the built-in pack on the first start.
 An update replaces an old format 1 through 5 pack with the built-in format 6 pack.
 The update preserves history, the 18+ choice, and accelerator preferences.

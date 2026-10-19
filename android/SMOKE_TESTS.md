@@ -1,5 +1,16 @@
 # Smoke tests
 
+## Rebuild checkpoint
+
+The October 19 new-ID rebuild passed 65 main debug, 62 main release,
+20 isolated Android, 16 model-pack, and 20 host tests.
+No test failed or was skipped. All three lint variants have no errors.
+The rebuilt APKs have the expected package IDs, SDK values, ABI, and signature states.
+The release contains no NanoHTTPD or debug HTTP endpoints.
+The original old-ID release and embedded pack hashes remain unchanged.
+The Pixel retains the same frozen benchmark APK and PID. No installation occurred.
+Read `docs/releases/2026-10-19-rebuild.md` for archive paths and hashes.
+
 ## Isolated offline retrieval benchmark
 
 1. Build `tools/offline_benchmark/device` with `tools/offline_benchmark/build_device.sh`.
