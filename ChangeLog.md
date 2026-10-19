@@ -8,7 +8,9 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 - Added plan `docs/plans/06_wine-images.md`: static wine images on chtozavino.ru at
   `/img/wines/{1600,400}/<slug>.webp` (`main_patched`, else `main`) with a SHA-256
   manifest and a blocking check at each image and matcher catalogue deploy. The plan
-  records owner decisions D1–D8 and open questions Q1 and Q4. Issue #69 tracks the
+  records owner decisions D1–D9 and has no open questions: no placeholder files on the
+  server, a web UI placeholder on image errors, and `image_url` = `null` in the matcher
+  card of a wine with no image (the current behavior). Issue #69 tracks the
   5 Active wines with no image and the wrong image of
   `vibes-vermentino-viognier-barrel-fermented-2022`. No code changes.
 

@@ -3,7 +3,7 @@
 Date: 2026-10-19.
 Branch: `feature/wine-images`.
 Base: `4360ce40` (`main`).
-Status: Draft. The open questions at the end MUST have owner answers before implementation.
+Status: Draft with no open questions. Implementation starts after the owner approves it.
 
 ## Goal
 
@@ -19,11 +19,16 @@ The published files MUST agree with the catalogue database. A deploy MUST check 
 - D3. Two sizes: a long side of at most 1600 px, and a long side of at most 400 px.
 - D4. The check runs at each deploy of images and at each deploy of the matcher catalogue.
   A failed check stops the deploy.
-- D5. An Active wine with no image gets a placeholder image at its address.
+- D5. The server has no placeholder files (Q4). An Active wine with no image has no file, and
+  its address returns HTTP 404. Each client shows its own placeholder. The web UI shows it on
+  the `error` event of `<img>`. This replaces the first form of D5 (a placeholder file at the
+  address).
 - D6. The scope includes the wine images in the Dinner Lens result cards.
-- D7. Claude draws the placeholder: a neutral grey bottle silhouette on a transparent
-  background. The owner reviews it.
+- D7. Claude draws the placeholder of the web UI: a neutral bottle silhouette. After Q4 it is
+  an inline SVG in the theme colors, not a raster file. The owner reviews it.
 - D8. The images use `max-age` of 1 hour.
+- D9. The matcher card keeps `image_url` = `null` for a wine with no image (Q1). This is the
+  current behavior (see "Current state").
 
 ## Current state
 
@@ -56,6 +61,12 @@ The published files MUST agree with the catalogue database. A deploy MUST check 
 - The `main` image of `vibes-vermentino-viognier-barrel-fermented-2022` (from vino-svoe.ru)
   shows the label «Silvaner 2022 Barrel Fermented». It is the missing image of
   `vibes-silvaner-barrel-fermented-2022`. Issue #69 also covers this error.
+- The matcher card of each of the 5 wines has `image_url` = `null`. Check of 2026-10-19:
+  `matcher.catalog._read_views` on the lab database gives 2,198 cards, and exactly these 5 have
+  `image_url` = `None`. The 5 wines have no rows in `matcher_wine_image`, so the matcher has
+  no vectors for them and cannot return them. The clients already accept `null`: the bots send
+  the photo of the user, and the shelf shows the bottle crop
+  (`ShelfScanner.vue`: `wine?.image || result?.image.preview`).
 - The table `wine_image` has no time column and no trigger. A changed patch does not change
   a date in the database. A date is therefore not a reliable sync check.
 - `copy_catalog.py --no-images` makes the prod catalogue copy for gx10. The copy holds the
@@ -72,7 +83,7 @@ The published files MUST agree with the catalogue database. A deploy MUST check 
 | `https://chtozavino.ru/img/wines/manifest.json` | Manifest | `no-cache` |
 
 - Caddy serves these paths as static files. Caddy MUST NOT send them to the portal.
-- An address of a slug that is not Active returns HTTP 404.
+- An address of a slug that is not Active, or of an Active wine with no image, returns HTTP 404.
 - A changed image keeps its address. A client sees the new image after `max-age`.
 
 ## Selection rule
@@ -81,7 +92,7 @@ For each Active wine of the view `matcher_wine`:
 
 1. Use the row of `matcher_wine_image` with `image_type` `main_patched` or `main`. The view
    already replaces `main` with `main_patched`.
-2. If the wine has no such row, use the placeholder.
+2. If the wine has no such row, the wine gets no file. The manifest records `source` = `null`.
 
 The rule reads only the fixed views. No schema change is necessary.
 
@@ -96,11 +107,12 @@ The rule reads only the fixed views. No schema change is necessary.
 
 ## Placeholder
 
-- One source file in the repository: `workbench/assets/wine-image-placeholder.svg` (D7, Q4).
-- The publish step makes the two sizes of it. It writes them at the addresses of each Active
-  wine with no image.
-- The placeholder MUST look correct on a light and on a dark background, because it is a raster
-  image in both themes.
+- The web UI has one placeholder component: an inline SVG bottle silhouette (D7).
+- It uses the theme colors through `currentColor`, so it works in the light and the dark theme.
+- It has the text «Нет изображения» for screen readers, as the line map placeholder
+  (`ProductLineMap.vue`, `plm-image-placeholder`).
+- Each `<img>` of a wine image shows it on the `error` event. This covers HTTP 404, network
+  errors, and the deploy window.
 
 ## Manifest
 
@@ -111,11 +123,10 @@ The rule reads only the fixed views. No schema change is necessary.
   "created_at": "2026-10-19T12:00:00Z",
   "catalog": {"sha256": "<sha256 of catalog.sqlite3>", "schema": 32, "active_wines": 2198},
   "sizes": [1600, 400],
-  "placeholder_sha256": "<sha256 of the placeholder source>",
   "wines": {
     "<slug>": {
-      "source": "main | main_patched | placeholder",
-      "source_sha256": "<sha256 of the original, or null for the placeholder>",
+      "source": "main | main_patched | null",
+      "source_sha256": "<sha256 of the original, or null>",
       "files": {
         "1600": {"sha256": "...", "width": 0, "height": 0, "bytes": 0},
         "400": {"sha256": "...", "width": 0, "height": 0, "bytes": 0}
@@ -125,6 +136,7 @@ The rule reads only the fixed views. No schema change is necessary.
 }
 ```
 
+- A wine with `source` = `null` has `files` = `{}`.
 - `catalog.sha256` is for information. A catalogue copy can have other bytes than the lab
   database. The check uses the fields of each wine.
 
@@ -150,8 +162,8 @@ a list of the differences.
   - The directory holds no other file.
 - `--db <catalog.sqlite3> --url https://chtozavino.ru/img/wines/ [--sample N]`: the public check.
   - It downloads `manifest.json` and applies the manifest rules above.
-  - It downloads all placeholder files and `N` random files (default 50). It checks their
-    SHA-256.
+  - It downloads `N` random files (default 50). It checks their SHA-256.
+  - It checks that the addresses of each wine with `source` = `null` return HTTP 404.
   - With `--catalog-update`, a manifest slug that is not Active in the database is a warning,
     not an error. Read "Deploy order".
 
@@ -189,7 +201,7 @@ A prod deploy MUST have the approval of the owner (rule 1 of `chtozavino-deploy`
 ## Consumer changes
 
 1. `matcher/catalog.py`: `image_url` = `https://chtozavino.ru/img/wines/1600/<slug>.webp`
-   for a wine with an image. For a wine with no image, see Q1. Read the selection from
+   for a wine with an image. For a wine with no image, `image_url` stays `null` (D9). Read the selection from
    `matcher_wine_image`, not from `main_source_name`.
 2. `workbench/pipeline/matcher_bundle.py`: the same rule for the bundle cards.
 3. `im-core/src/chto_za_vino_core/result_card.py`: the default `allowed_host` becomes
@@ -202,19 +214,23 @@ A prod deploy MUST have the approval of the owner (rule 1 of `chtozavino-deploy`
    - Fixed `width` and `height`, `loading="lazy"`, `decoding="async"`.
    - A light image tile in both themes, because the originals have light backgrounds.
    - VoiceOver and TalkBack MUST read the card as before (issue #35).
+6. `PhotoScanner.vue`, `ShelfScanner.vue`, and `DinnerScanner.vue`: each `<img>` of a wine image
+   shows the placeholder on the `error` event. `ShelfScanner.vue` keeps its fallback to the
+   bottle crop when `image_url` is `null`.
 
 Out of scope: the 12 demo wines of `/ideas` (`webui/server/data/wines.json`, local files
 `/wines/<slug>.webp`) and the producer line maps (`/product-line-maps/...`).
 
 ## Tests
 
-- `build_wine_images.py`: selection rule, `main_patched` over `main`, placeholder, size
-  limits, no enlargement, alpha, EXIF orientation, missing original, wrong SHA-256.
+- `build_wine_images.py`: selection rule, `main_patched` over `main`, a wine with no image,
+  size limits, no enlargement, alpha, EXIF orientation, missing original, wrong SHA-256.
 - `check_wine_images.py`: each difference type, `--catalog-update` warnings, extra files.
 - Matcher: card `image_url` for `main`, `main_patched`, and no image.
 - im-core: the loader accepts `chtozavino.ru` and rejects `api.vino-svoe.ru`.
 - Web UI: `/api/wines/[slug]` image address; Dinner Lens card image in light and dark themes;
-  an accessibility check of the card.
+  the placeholder after an image error in the three components; an accessibility check of the
+  card and of the placeholder.
 - `SMOKE_TESTS.md`: create it with the image smoke tests (the repository has no such file).
 
 ## Documentation
@@ -225,12 +241,4 @@ the catalogue update procedure), `infra/services/svoe-vino-webui` and
 
 ## Open questions
 
-- Q1. A wine with no image: the matcher card gets `image_url` = `null` (the bot then sends the
-  photo of the user, as now), or the placeholder address? Recommendation: `null`. The static
-  address still gives the placeholder to the components that build the address from the slug.
-- Q4. The web UI MUST show a placeholder when an image does not load (`<img>` `error` event).
-  This covers HTTP 404, network errors, and the deploy window. The web UI already does this for
-  food images (`FoodRecommendations.vue`) and line map images (`ProductLineMap.vue`). Keep the
-  placeholder files on the server (D5), or remove them and let each client show its own
-  placeholder? Today no consumer can get one of the 5 wines with no image (see "Current
-  state").
+None. The owner answered Q1 (D9) and Q4 (D5) on 2026-10-19. Q2 became D7, and Q3 became D8.
