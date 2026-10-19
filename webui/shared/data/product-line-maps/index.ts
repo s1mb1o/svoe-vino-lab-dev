@@ -6,6 +6,7 @@ export const PRODUCT_LINE_LOADERS: Readonly<Record<string, () => Promise<{ defau
   'agora': () => import('./agora.json'),
   'alma-valley': () => import('./alma-valley.json'),
   'belbek': () => import('./belbek.json'),
+  'burnier': () => import('./burnier.json'),
   'chateau-pinot': () => import('./chateau-pinot.json'),
   'derbent-vino': () => import('./derbent-vino.json'),
   'esse': () => import('./esse.json'),

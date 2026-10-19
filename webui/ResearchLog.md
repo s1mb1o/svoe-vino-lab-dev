@@ -1,5 +1,23 @@
 # Research log
 
+## Burnier product-line map, 2026-10-19
+
+The neutral band uses the UI heading «Другие коллекции». The price explanation remains in the description.
+
+The exact producer filter finds 20 `Винодельня Бюрнье` rows in the pinned catalog snapshot.
+The official catalog lists 22 wines. White and red Exponat are absent from the saved producer rows.
+The new map keeps these two additions without catalog links.
+
+The original dark labels, wax capsules and official catalog image alt text identify three Elite Series wines.
+Their official cards specify 36 months in French barriques. This supports an editorial premium cue.
+The sources do not establish the relative prices of Classic, Lyublyu, Vinisazh, Exponat and late harvest. These groups use rank 0.
+
+The Pinot Blanc snapshot row points to the Viognier image. The original label confirms the mismatch.
+The map uses the official Pinot Blanc image and retains both input hashes in the crosswalk.
+No vintage equivalence is inferred. Names, grapes, descriptions and slugs remain exactly as saved.
+The other 19 saved WebP images retain their bytes. Three official PNG images use lossless WebP encoding.
+Read `docs/product-line-maps/burnier/sources.md` for the evidence and limits.
+
 ## Producer map index and page layout, 2026-10-19
 
 The owner asked for the map pages to use the page space instead of a scroll box inside the page.

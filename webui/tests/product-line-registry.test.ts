@@ -8,6 +8,7 @@ import { PRODUCT_LINE_MAPS, resolveProductLine, findProducerLine } from './suppo
 const snapshotSha256 = 'e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961'
 // Pin the agreed snapshot coverage independently of the generated baselines.
 const expectedCatalog: Record<string, { producer: string; count: number }> = {
+  'burnier': { producer: 'Винодельня Бюрнье', count: 20 },
   'soyuz-vino': { producer: 'Союз-Вино', count: 69 },
   'agora': { producer: 'AGORA WINERY', count: 32 },
   'sober-bash': { producer: 'Собер Баш', count: 37 },
@@ -167,7 +168,7 @@ describe('producer map registry', () => {
         expect(entry.absence_check.producer, entry.product_id).toBe(expectedCatalog[line.producer.id]!.producer)
         expect(entry.absence_check.snapshot, entry.product_id).toBe(baseline.catalog_snapshot)
       }
-      if (['soyuz-vino', 'esse', 'chateau-pinot', 'valery-zakharyin', 'novy-svet', 'belbek', 'sober-bash', 'agora'].includes(line.producer.id)) {
+      if (['burnier', 'soyuz-vino', 'esse', 'chateau-pinot', 'valery-zakharyin', 'novy-svet', 'belbek', 'sober-bash', 'agora'].includes(line.producer.id)) {
         const evidence = JSON.parse(readFileSync(new URL(`../docs/product-line-maps/${line.producer.id}/source-evidence.json`, import.meta.url), 'utf8'))
         const sourceIds = new Set(line.sources.map(source => source.id))
         for (const entry of [...crosswalk.entries, ...crosswalk.official_additions]) {
@@ -178,7 +179,7 @@ describe('producer map registry', () => {
         expect(evidence.sources.map((source: { source_id: string }) => source.source_id).sort()).toEqual([...sourceIds].filter(id => id !== 'svoe-vino-2026-09-17').sort())
         for (const source of evidence.sources) {
           expect(source.sha256).toMatch(/^[a-f0-9]{64}$/)
-          expect(source.retrieved_at).toMatch(/^2026-10-1[67]/)
+          expect(source.retrieved_at).toMatch(line.producer.id === 'burnier' ? /^2026-10-19/ : /^2026-10-1[67]/)
         }
         for (const group of line.groups.filter(group => evidence.snapshot_only_groups.includes(group.id))) {
           expect(group.source_ids).toEqual(['svoe-vino-2026-09-17'])

@@ -314,6 +314,60 @@
     },
     {
       "producer": {
+        "id": "burnier",
+        "name": "Винодельня Бюрнье",
+        "aliases": [
+          "Бюрнье",
+          "Burnier",
+          "Винодельческий дом Бюрнье"
+        ],
+        "slug_prefixes": [
+          "vinodelnya-byurne-",
+          "b-yu-rne-"
+        ]
+      },
+      "summary": {
+        "products": 22,
+        "groups": 6,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+          "frame": {
+            "x": 255,
+            "y": 0,
+            "width": 1080,
+            "height": 3950,
+            "source_width": 1600,
+            "source_height": 3966
+          }
+        }
+      },
+      "slugs": {
+        "b-yu-rne-krasnostop-suhoe-krasnoe-classic": "wine-b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+        "b-yu-rne-l-yu-bl-yu-suhoe-rozovoe": "wine-b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+        "b-yu-rne-malbek-krasnoe-suhoe": "wine-b-yu-rne-malbek-krasnoe-suhoe",
+        "b-yu-rne-pino-gri-beloe-suhoe": "wine-b-yu-rne-pino-gri-beloe-suhoe",
+        "b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe": "wine-b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+        "b-yu-rne-sh-ardone-suhoe-beloe": "wine-b-yu-rne-sh-ardone-suhoe-beloe",
+        "b-yu-rne-sira-krasnoe-suhoe-classic": "wine-b-yu-rne-sira-krasnoe-suhoe-classic",
+        "b-yu-rne-vinisa-zh-suhoe-beloe": "wine-b-yu-rne-vinisa-zh-suhoe-beloe",
+        "b-yu-rne-vinisa-zh-suhoe-krasnoe": "wine-b-yu-rne-vinisa-zh-suhoe-krasnoe",
+        "b-yu-rne-vinisa-zh-suhoe-rozovoe": "wine-b-yu-rne-vinisa-zh-suhoe-rozovoe",
+        "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14": "wine-vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+        "vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135": "wine-vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+        "vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135": "wine-vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+        "vinodelnya-byurne-krasnostop-krasnoe-suhoe-145": "wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+        "vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135": "wine-vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+        "vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135": "wine-vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+        "vinodelnya-byurne-merlo-krasnoe-suhoe-14": "wine-vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+        "vinodelnya-byurne-saperavi-krasnoe-suhoe-135": "wine-vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+        "vinodelnya-byurne-sira-krasnoe-suhoe-135": "wine-vinodelnya-byurne-sira-krasnoe-suhoe-135",
+        "vinodelnya-byurne-vione-beloe-suhoe-135": "wine-vinodelnya-byurne-vione-beloe-suhoe-135"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
         "id": "derbent-vino",
         "name": "Дербент Вино",
         "aliases": [

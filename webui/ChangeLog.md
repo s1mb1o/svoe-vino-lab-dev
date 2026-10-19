@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-19 — Burnier product-line map
+
+- Use «Другие коллекции» as the neutral band heading. Keep the price explanation in its description.
+- Add `/lineup/burnier` and its lazy map loader. The map index now contains 20 producers.
+- Include all 20 exact `Винодельня Бюрнье` snapshot records and two official Exponat additions in six groups. The additions have details and bottle images, with no invented portal links.
+- Keep Classic and Elite Syrah and Krasnostop separate. Keep dry and late-harvest Pinot Gris separate. Leave unconfirmed price comparisons neutral.
+- Use the official Pinot Blanc bottle to correct the snapshot image mismatch. Preserve the source catalog metadata and all exact slugs.
+- Record source URLs, retrieval dates, source hashes, image hashes and membership evidence in `docs/product-line-maps/burnier/`.
+- Pass all 304 unit tests with the full snapshot, type checks, build, image-frame and bundle checks. Pass both browser suites and 25 Burnier-specific checks per engine in Chromium and WebKit. Read `docs/validation/burnier-product-line-map.md`.
+
 ## 2026-10-19 — Producer map index and page layout
 
 - Add `/lineup`: an index of the 19 producer maps. Each card shows a bottle, the product and group counts, and the materials date, and links to `/lineup/<producer>`.

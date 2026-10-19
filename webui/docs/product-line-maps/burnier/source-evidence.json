@@ -1,0 +1,311 @@
+{
+  "producer_id": "burnier",
+  "snapshot_only_groups": [],
+  "sources": [
+    {
+      "source_id": "portal-winery",
+      "url": "https://vino-svoe.ru/wineries/vinodelnya-byurne",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "23ec35a2c5fdbc1922263ab6c96d206127990594975a2d7156ca1d78403cbe17",
+      "section": "New collections and wines, 2026",
+      "facts": "The winery page names Vinisazh, Lyublyu and new Classic wines. Exact saved snapshot coverage is checked independently in catalog-baseline.json."
+    },
+    {
+      "source_id": "official-catalog",
+      "url": "https://burnier.vin/wines.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "41abd66541af6938667c8fdfc0387685f53a1a97d7b68e37c734eb4d73b3efd4",
+      "section": "a.js-wine-card in the catalog grid",
+      "facts": "The catalog has 22 cards. Image alt text identifies Elite Syrah, Saperavi and Krasnostop. The remaining cards identify the named blends and varietal wines."
+    },
+    {
+      "source_id": "official-exhibit-white",
+      "url": "https://burnier.vin/wines/exhibit_white.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "d228794c1e3bb42584732b846be7ec2d11572f7f76ab5191688b66e5f9930a05",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Экспонат",
+        "style_and_vintage": "Белое сухое • 2024",
+        "image_alt": "Экспонат",
+        "image_url": "https://burnier.vin/img/bottles/exhibit_white.png"
+      }
+    },
+    {
+      "source_id": "official-exhibit-red",
+      "url": "https://burnier.vin/wines/exhibit_red.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "00a94468e88f9a32720f88139e2cc02d99d279aca798ce0218c87771236d4bcc",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Экспонат",
+        "style_and_vintage": "Красное сухое • 2023",
+        "image_alt": "Экспонат",
+        "image_url": "https://burnier.vin/img/bottles/exhibit_red.png"
+      }
+    },
+    {
+      "source_id": "official-vinisage-white",
+      "url": "https://burnier.vin/wines/vinisage_white.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "a2fabe51700b10d622171dd010618c566f7594492f0602069db45af80a4148ff",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Винисаж",
+        "style_and_vintage": "Белое сухое • 2025",
+        "image_alt": "Винисаж",
+        "image_url": "https://burnier.vin/img/bottles/vinisage_white.png"
+      }
+    },
+    {
+      "source_id": "official-vinisage-rose",
+      "url": "https://burnier.vin/wines/vinisage_rose.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "9da1cbe89bff9a4cedf35c86113ec4aded55d8f1f6537f022da2b3a7d6bea17f",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Винисаж",
+        "style_and_vintage": "Розовое сухое • 2025",
+        "image_alt": "Винисаж",
+        "image_url": "https://burnier.vin/img/bottles/vinisage_rose.png"
+      }
+    },
+    {
+      "source_id": "official-vinisage-red",
+      "url": "https://burnier.vin/wines/vinisage_red.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "0a1971af7570ba0a4b000946b27e5b6115c97d8a498222586546ebd32f66e4c0",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Винисаж",
+        "style_and_vintage": "Красное сухое • 2024",
+        "image_alt": "Винисаж",
+        "image_url": "https://burnier.vin/img/bottles/vinisage_red.png"
+      }
+    },
+    {
+      "source_id": "official-love-white",
+      "url": "https://burnier.vin/wines/love_white.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "52751fa637e43e0fbbec32ee54e6c35069ff268db3641e3557d127c8436b8913",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Люблю",
+        "style_and_vintage": "Белое сухое • 2025",
+        "image_alt": "Люблю",
+        "image_url": "https://burnier.vin/img/bottles/love_white.png"
+      }
+    },
+    {
+      "source_id": "official-love-rose",
+      "url": "https://burnier.vin/wines/love_rose.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "3c137f09e6e8de17194ac0a9e30efbf4a53f8893777217cfdb77425c3c0d0ed9",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Люблю",
+        "style_and_vintage": "Розовое сухое • 2025",
+        "image_alt": "Люблю",
+        "image_url": "https://burnier.vin/img/bottles/love_rose.png"
+      }
+    },
+    {
+      "source_id": "official-love-red",
+      "url": "https://burnier.vin/wines/love_red.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "336f0e54d7e03e85de96183d82dca6104624a9bf8545e46b3a6b0a572fd3719f",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Люблю",
+        "style_and_vintage": "Красное сухое • 2024",
+        "image_alt": "Люблю",
+        "image_url": "https://burnier.vin/img/bottles/love_red.png"
+      }
+    },
+    {
+      "source_id": "official-viognier",
+      "url": "https://burnier.vin/wines/viognier.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "988899f43c3490d427561002a3d43ccbd5193b545932bff691d46be9ff2f3297",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Вионье",
+        "style_and_vintage": "Белое сухое • 2024",
+        "image_alt": "Вионье",
+        "image_url": "https://burnier.vin/img/bottles/viognier.png"
+      }
+    },
+    {
+      "source_id": "official-chardonnay",
+      "url": "https://burnier.vin/wines/chardonnay.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "6334dc6334f36eaebffd8fcf839f4ba6885aa2e7893562f2a847b8e1b04f733d",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Шардоне",
+        "style_and_vintage": "Белое сухое • 2024",
+        "image_alt": "Шардоне",
+        "image_url": "https://burnier.vin/img/bottles/chardonnay.png"
+      }
+    },
+    {
+      "source_id": "official-pinot-blanc",
+      "url": "https://burnier.vin/wines/pinot_blanc.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "a8328292dcd4ed7e9326d6df01dc68665a9ef0a47e9c099c1545792df7b97f6a",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Пино Блан",
+        "style_and_vintage": "Белое сухое • 2024",
+        "image_alt": "Пино блан",
+        "image_url": "https://burnier.vin/img/bottles/pinot_blanc.png"
+      }
+    },
+    {
+      "source_id": "official-pinot-gris",
+      "url": "https://burnier.vin/wines/pinot_gris.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "32fa26afdd375eaa279972386a2c29196c7977d1ffc4f573e65264ec0305b1bc",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Пино Гри",
+        "style_and_vintage": "Белое сухое • 2024",
+        "image_alt": "Пино гри",
+        "image_url": "https://burnier.vin/img/bottles/pinot_gris.png"
+      }
+    },
+    {
+      "source_id": "official-pinot-gris-late-harvest",
+      "url": "https://burnier.vin/wines/pinot_gris_late_harvest.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "81e7d1d94dea3d288a61f330a86c2565e97268210a44788986600df68242ad4e",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Пино Гри Поздний Сбор",
+        "style_and_vintage": "Белое сладкое • 2025",
+        "image_alt": "Пино гри поздний сбор",
+        "image_url": "https://burnier.vin/img/bottles/pinot_gris_late_harvest.png"
+      }
+    },
+    {
+      "source_id": "official-krasnostop",
+      "url": "https://burnier.vin/wines/krasnostop.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "3ecd57d94a91aaf971363e3a246f7eeea06dea3a1e15e4d309c5ca1dba54a90e",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Красностоп",
+        "style_and_vintage": "Красное сухое • 2024",
+        "image_alt": "Красностоп",
+        "image_url": "https://burnier.vin/img/bottles/krasnostop.png"
+      }
+    },
+    {
+      "source_id": "official-syrah",
+      "url": "https://burnier.vin/wines/syrah.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "2df4568231056e184e951fd9ae2f012e4828dbc243d5854dec46ceef33f99048",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Сира",
+        "style_and_vintage": "Красное сухое • 2024",
+        "image_alt": "Сира",
+        "image_url": "https://burnier.vin/img/bottles/syrah.png"
+      }
+    },
+    {
+      "source_id": "official-malbec",
+      "url": "https://burnier.vin/wines/malbec.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "dfcbcc573741d6f1cc71ebf49da84e000d8b988b1691e991e2c32b72bbba49d2",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Мальбек",
+        "style_and_vintage": "Красное сухое • 2023",
+        "image_alt": "Мальбек",
+        "image_url": "https://burnier.vin/img/bottles/malbec.png"
+      }
+    },
+    {
+      "source_id": "official-merlot",
+      "url": "https://burnier.vin/wines/merlot.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "5b10776beeb75fc0b0eb6ead16f71cfc8a37521567408738113fd79dbd3d5ae9",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Мерло",
+        "style_and_vintage": "Красное сухое • 2022",
+        "image_alt": "Мерло",
+        "image_url": "https://burnier.vin/img/bottles/merlot.png"
+      }
+    },
+    {
+      "source_id": "official-cabernet-franc",
+      "url": "https://burnier.vin/wines/cabernet_franc.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "37447103405a0681a89b32028dcad114d0d21e0ac4742f8c1f46fcbc86244270",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Каберне Фран",
+        "style_and_vintage": "Красное сухое • 2022",
+        "image_alt": "Каберне Фран",
+        "image_url": "https://burnier.vin/img/bottles/cabernet_franc.png"
+      }
+    },
+    {
+      "source_id": "official-cabernet-sauvignon",
+      "url": "https://burnier.vin/wines/cabernet_sauvignon.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "2a23189a3a01bc5378ee39b06b7e5bdf169f6d381debaaab66c2084a0791e5b6",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Каберне Совиньон",
+        "style_and_vintage": "Красное сухое • 2019",
+        "image_alt": "Каберне Совиньон",
+        "image_url": "https://burnier.vin/img/bottles/cabernet_sauvignon.png"
+      }
+    },
+    {
+      "source_id": "official-elite-syrah",
+      "url": "https://burnier.vin/wines/elite_syrah.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "c2e55d667b4fa934de657c3f476b94658b85026be8a569bb5fa6fe273b64362a",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Сира",
+        "style_and_vintage": "Красное сухое • 2019",
+        "image_alt": "Сира Элитная Серия",
+        "image_url": "https://burnier.vin/img/bottles/elite_syrah.png"
+      },
+      "quoted_source_data": "Выдержка в барриках 225 л из французского дуба"
+    },
+    {
+      "source_id": "official-elite-saperavi",
+      "url": "https://burnier.vin/wines/elite_saperavi.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "6c92895b6ecb3dae6043e0e16afbc862d9a275a19e47840631632a96c4f5be0b",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Саперави",
+        "style_and_vintage": "Красное сухое • 2020",
+        "image_alt": "Саперави Элитная Серия",
+        "image_url": "https://burnier.vin/img/bottles/elite_saperavi.png"
+      },
+      "quoted_source_data": "Выдержка в барриках 225 л из французского дуба"
+    },
+    {
+      "source_id": "official-elite-krasnostop",
+      "url": "https://burnier.vin/wines/elite_krasnostop.html",
+      "retrieved_at": "2026-10-19T16:00:38Z",
+      "sha256": "4ac6795d49ecaf1285565058ab175bc617b8c982bc3aa3f976a14bfec69c5640",
+      "section": "main: Characteristics and Production",
+      "catalog_card_facts": {
+        "name": "Красностоп",
+        "style_and_vintage": "Красное сухое • 2017",
+        "image_alt": "Красностоп Элитная Серия",
+        "image_url": "https://burnier.vin/img/bottles/elite_krasnostop.png"
+      },
+      "quoted_source_data": "Выдержка в барриках 225 л из французского дуба"
+    }
+  ]
+}

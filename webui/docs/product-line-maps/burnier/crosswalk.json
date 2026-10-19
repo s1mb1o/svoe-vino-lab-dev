@@ -1,0 +1,460 @@
+{
+  "producer_id": "burnier",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Винодельня Бюрнье",
+  "entries": [
+    {
+      "wine_slug": "b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+      "product_id": "wine-b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.КРАСНОСТОП сухое красное Classic",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Krasnostop_2024_Classic_png_4f712da54f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Krasnostop_2024_Classic_png_4f712da54f.webp",
+      "input_sha256": "f5ea9232b8c840739e3066f99f33575f68ede4087619423cba06fd2786e2a5c1",
+      "asset_sha256": "f5ea9232b8c840739e3066f99f33575f68ede4087619423cba06fd2786e2a5c1",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-krasnostop",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+      "product_id": "wine-b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+      "group_id": "love",
+      "catalog_name": "БЮРНЬЕ.ЛЮБЛЮ сухое розовое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Lyublyu_roz_2025_vint_png_d28b7dba5d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Lyublyu_roz_2025_vint_png_d28b7dba5d.webp",
+      "input_sha256": "1d9a443f639f1d8e90a9b5914168a63e0046068d4df6e31f0a3c0f97ce81b753",
+      "asset_sha256": "1d9a443f639f1d8e90a9b5914168a63e0046068d4df6e31f0a3c0f97ce81b753",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-love-rose",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-malbek-krasnoe-suhoe",
+      "product_id": "wine-b-yu-rne-malbek-krasnoe-suhoe",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.МАЛЬБЕК красное сухое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Malbek_2023_png_56930e5abf.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Malbek_2023_png_56930e5abf.webp",
+      "input_sha256": "bb7dd104a00e2f5abd21b67e6efa9acc9ca9f0aadb6ab3660a21758fcdc2b5bf",
+      "asset_sha256": "bb7dd104a00e2f5abd21b67e6efa9acc9ca9f0aadb6ab3660a21758fcdc2b5bf",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-malbec",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-pino-gri-beloe-suhoe",
+      "product_id": "wine-b-yu-rne-pino-gri-beloe-suhoe",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.ПИНО ГРИ белое сухое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Pino_Gri_2024_png_dfdc226332.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Pino_Gri_2024_png_dfdc226332.webp",
+      "input_sha256": "c84af84b3f9e11b748bd82d5b4d332128e62e5fb32de54a68ef41bdbf9bc9605",
+      "asset_sha256": "c84af84b3f9e11b748bd82d5b4d332128e62e5fb32de54a68ef41bdbf9bc9605",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-pinot-gris",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+      "product_id": "wine-b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+      "group_id": "late-harvest",
+      "catalog_name": "БЮРНЬЕ.ПИНО ГРИ Поздний сбор сладкое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Pino_Gri_2025_pozdnij_sbor_png_4dc63be6e9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Pino_Gri_2025_pozdnij_sbor_png_4dc63be6e9.webp",
+      "input_sha256": "63ada0ea15581af78426f88191694e18835c4d830e26d569b38210179a845631",
+      "asset_sha256": "63ada0ea15581af78426f88191694e18835c4d830e26d569b38210179a845631",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name identifies a separate sweet late-harvest wine. It is not merged with dry Pinot Gris.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-pinot-gris-late-harvest",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-sh-ardone-suhoe-beloe",
+      "product_id": "wine-b-yu-rne-sh-ardone-suhoe-beloe",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.ШАРДОНЕ сухое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Shardone_2024_png_1bfb0893db.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Shardone_2024_png_1bfb0893db.webp",
+      "input_sha256": "f9401d0292b81c71fff589b9296d52faff0aa3542ee20f010b99158e36897337",
+      "asset_sha256": "f9401d0292b81c71fff589b9296d52faff0aa3542ee20f010b99158e36897337",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-chardonnay",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-sira-krasnoe-suhoe-classic",
+      "product_id": "wine-b-yu-rne-sira-krasnoe-suhoe-classic",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.СИРА красное сухое Classic",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Sira_2024_Classic_png_ea46e81e69.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Sira_2024_Classic_png_ea46e81e69.webp",
+      "input_sha256": "5e810c175c9719bae576bf13df4630e95c4b9ff10b01531cd64711fa361a93f0",
+      "asset_sha256": "5e810c175c9719bae576bf13df4630e95c4b9ff10b01531cd64711fa361a93f0",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-syrah",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-beloe",
+      "product_id": "wine-b-yu-rne-vinisa-zh-suhoe-beloe",
+      "group_id": "vinisage",
+      "catalog_name": "БЮРНЬЕ.ВИНИСАЖ сухое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Vinisazh_bel_71a4e27f0b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Vinisazh_bel_71a4e27f0b.webp",
+      "input_sha256": "66de2becfb6d615fbe4021da32864f983f4183330501d54d8810cc94b0462e1b",
+      "asset_sha256": "66de2becfb6d615fbe4021da32864f983f4183330501d54d8810cc94b0462e1b",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-vinisage-white",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-krasnoe",
+      "product_id": "wine-b-yu-rne-vinisa-zh-suhoe-krasnoe",
+      "group_id": "vinisage",
+      "catalog_name": "БЮРНЬЕ.ВИНИСАЖ сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Vinisazh_krasn_dba1e92eae.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Vinisazh_krasn_dba1e92eae.webp",
+      "input_sha256": "a420e2ad3ba9d3cd11ee44c6260b5573fda6f3e705f78cf6a0f80fa1d4e3c54f",
+      "asset_sha256": "a420e2ad3ba9d3cd11ee44c6260b5573fda6f3e705f78cf6a0f80fa1d4e3c54f",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-vinisage-red",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-rozovoe",
+      "product_id": "wine-b-yu-rne-vinisa-zh-suhoe-rozovoe",
+      "group_id": "vinisage",
+      "catalog_name": "БЮРНЬЕ.ВИНИСАЖ сухое розовое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Vinisazh_roz_3d60ae3f01.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Vinisazh_roz_3d60ae3f01.webp",
+      "input_sha256": "ba889d8b9ab4cbd7bd7261780ce517be8dd1ec88de405fd4402f77a2dca35ef9",
+      "asset_sha256": "ba889d8b9ab4cbd7bd7261780ce517be8dd1ec88de405fd4402f77a2dca35ef9",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-vinisage-rose",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+      "product_id": "wine-vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.ПИНО БЛАН сухое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Vione_2023_13d6c1ebf6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Vione_2023_13d6c1ebf6.webp",
+      "input_sha256": "e811388ea864f710a37c951de289481426898577b8ba59f63c5c040411fd6308",
+      "asset_sha256": "2740763dc9048768c78d9d53de43d7052a3c7ab397346b887433543416a9c9b2",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-pinot-blanc",
+          "official-catalog"
+        ]
+      },
+      "image_correction": {
+        "reason": "The snapshot assigns the Viognier image to Pinot Blanc. The map uses the official Pinot Blanc bottle. The catalog slug, name, grapes and description remain unchanged. This image does not assert a matching vintage.",
+        "source_id": "official-pinot-blanc",
+        "source_image_url": "https://burnier.vin/img/bottles/pinot_blanc.png",
+        "input_sha256": "26f7854b6b01fa3647ffb48992b33b7f5e898e123c7a60082941fbf9dde33c82",
+        "processing": "PNG to lossless WebP. No crop, repaint, background removal or enlargement."
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.КАБЕРНЕ ФРАН сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Kab_Fran_2020_no_bg_preview_carve_photos_467c50d49a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Kab_Fran_2020_no_bg_preview_carve_photos_467c50d49a.webp",
+      "input_sha256": "82c2ff7549b2c3e574aafa39e5cd664d09ff9049dc8f3b60d806770b760cc716",
+      "asset_sha256": "82c2ff7549b2c3e574aafa39e5cd664d09ff9049dc8f3b60d806770b760cc716",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-cabernet-franc",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.КАБЕРНЕ СОВИНЬОН сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Kab_Sov_2019_no_bg_preview_carve_photos_6680889d32.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Kab_Sov_2019_no_bg_preview_carve_photos_6680889d32.webp",
+      "input_sha256": "ee7e384f1ca1be4d10243bb13f7555a670f70a8e845353a7b65b889a9fcdf742",
+      "asset_sha256": "ee7e384f1ca1be4d10243bb13f7555a670f70a8e845353a7b65b889a9fcdf742",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-cabernet-sauvignon",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+      "group_id": "elite",
+      "catalog_name": "БЮРНЬЕ.КРАСНОСТОП сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Krasnostop_surguch_59d9e248a7.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Krasnostop_surguch_59d9e248a7.webp",
+      "input_sha256": "71e9580b96b3ea4fef7d83ec16feb07289cf372592e45aba8b87184bc12d9fb5",
+      "asset_sha256": "71e9580b96b3ea4fef7d83ec16feb07289cf372592e45aba8b87184bc12d9fb5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot package has the dark label and wax capsule of the official Elite Series. Classic Syrah and Krasnostop retain their separate snapshot identities.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-elite-krasnostop",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+      "group_id": "love",
+      "catalog_name": "БЮРНЬЕ.ЛЮБЛЮ сухое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Lyublyu_bel_2025_vint_png_cb50263c81.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Lyublyu_bel_2025_vint_png_cb50263c81.webp",
+      "input_sha256": "9ae6f136bc9b446f9c17956cfcc8830b3417f8f72ff1cb3731b9c741169e242e",
+      "asset_sha256": "9ae6f136bc9b446f9c17956cfcc8830b3417f8f72ff1cb3731b9c741169e242e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-love-white",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+      "group_id": "love",
+      "catalog_name": "БЮРНЬЕ.ЛЮБЛЮ сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Lyublyu_krasn_2024_vint_png_a3e9f450b2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Lyublyu_krasn_2024_vint_png_a3e9f450b2.webp",
+      "input_sha256": "52663ba3a8fdbc2e5b993d8c546524d4ff3b79cdf5559ec21b06fc643def1beb",
+      "asset_sha256": "52663ba3a8fdbc2e5b993d8c546524d4ff3b79cdf5559ec21b06fc643def1beb",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and original bottle identify this named blend collection; the official catalog lists its matching color.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-love-red",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+      "product_id": "wine-vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.МЕРЛО сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Merlo_2022_no_bg_preview_carve_photos_36278cfc22.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Merlo_2022_no_bg_preview_carve_photos_36278cfc22.webp",
+      "input_sha256": "a8e4835cab3803b89c63de0b877996982240f273c1045e109c5c5d7fb74c2c8e",
+      "asset_sha256": "a8e4835cab3803b89c63de0b877996982240f273c1045e109c5c5d7fb74c2c8e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-merlot",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+      "group_id": "elite",
+      "catalog_name": "БЮРНЬЕ.САПЕРАВИ сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Saperavi_2020_surguch_no_bg_preview_carve_photos_9a5471d201.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Saperavi_2020_surguch_no_bg_preview_carve_photos_9a5471d201.webp",
+      "input_sha256": "bb412c746bb86c181486e6a278ef39334af1b2c99f95508a67f8de5b072cbcbf",
+      "asset_sha256": "bb412c746bb86c181486e6a278ef39334af1b2c99f95508a67f8de5b072cbcbf",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot package has the dark label and wax capsule of the official Elite Series. Classic Syrah and Krasnostop retain their separate snapshot identities.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-elite-saperavi",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-sira-krasnoe-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-sira-krasnoe-suhoe-135",
+      "group_id": "elite",
+      "catalog_name": "БЮРНЬЕ.СИРА сухое красное",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Sira_2019_surguch_528ada047c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Sira_2019_surguch_528ada047c.webp",
+      "input_sha256": "61f1f26c91f3ba09aa0809485db07e24405e0a0d1ac823de1207f7a723e18c17",
+      "asset_sha256": "61f1f26c91f3ba09aa0809485db07e24405e0a0d1ac823de1207f7a723e18c17",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot package has the dark label and wax capsule of the official Elite Series. Classic Syrah and Krasnostop retain their separate snapshot identities.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-elite-syrah",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-byurne-vione-beloe-suhoe-135",
+      "product_id": "wine-vinodelnya-byurne-vione-beloe-suhoe-135",
+      "group_id": "classic",
+      "catalog_name": "БЮРНЬЕ.ВИОНЬЕ сухое белое",
+      "catalog_producer": "Винодельня Бюрнье",
+      "source_image": "Vione_2023_13d6c1ebf6.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Vione_2023_13d6c1ebf6.webp",
+      "input_sha256": "e811388ea864f710a37c951de289481426898577b8ba59f63c5c040411fd6308",
+      "asset_sha256": "e811388ea864f710a37c951de289481426898577b8ba59f63c5c040411fd6308",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_collection",
+        "evidence": "The snapshot name and grape identify this varietal wine. The official catalog and the common white-label package support this navigation group. No shared aging method or retail price is inferred.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-viognier",
+          "official-catalog"
+        ]
+      }
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-exhibit-white",
+      "source_id": "official-exhibit-white",
+      "source_image_url": "https://burnier.vin/img/bottles/exhibit_white.png",
+      "input_sha256": "9915bfdfbaf28e035d5cf622805b54d185fd32ed7677b59afe9352ea4759ff3d",
+      "asset_sha256": "4c48c537eb8d0cb780ba779c0386947ea3f75b4ff162fc60773cdab8952c0876",
+      "processing": "PNG to lossless WebP. No crop, repaint, background removal or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Винодельня Бюрнье",
+        "matched_catalog_slugs": [],
+        "reason": "All 20 exact producer rows were checked. No Exponat name or package is present. No current portal slug is invented."
+      },
+      "group_basis": {
+        "kind": "official_named_collection",
+        "evidence": "The official catalog and individual card identify Exponat and its color. It remains separate from Vinisazh and Lyublyu.",
+        "source_ids": [
+          "official-exhibit-white",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "product_id": "official-exhibit-red",
+      "source_id": "official-exhibit-red",
+      "source_image_url": "https://burnier.vin/img/bottles/exhibit_red.png",
+      "input_sha256": "9601b7475bf40b20ca89ea4c58a671c9c244c02d7dab6b0e5fb56b6c4d3b2cae",
+      "asset_sha256": "8d62c89d792a32d69bf52803a7fefe6ec1f60cc49e4daa7da9381e25fa7d2a60",
+      "processing": "PNG to lossless WebP. No crop, repaint, background removal or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Винодельня Бюрнье",
+        "matched_catalog_slugs": [],
+        "reason": "All 20 exact producer rows were checked. No Exponat name or package is present. No current portal slug is invented."
+      },
+      "group_basis": {
+        "kind": "official_named_collection",
+        "evidence": "The official catalog and individual card identify Exponat and its color. It remains separate from Vinisazh and Lyublyu.",
+        "source_ids": [
+          "official-exhibit-red",
+          "official-catalog"
+        ]
+      }
+    }
+  ]
+}
