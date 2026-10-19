@@ -1,5 +1,28 @@
 # Change log
 
+## 2026-10-20
+
+### Release signed with the previous APK key
+
+- Verified that the local signing certificate matches the published 0.1.4 release.
+- Signed the fresh 0.2.0 release with that existing test/debug key at the owner's request.
+- Saved `chtozavino-0.2.0-release-test-signed.apk` without replacing the unsigned APK.
+- Passed signature verification for API 28 and the final 16-KiB alignment check.
+- Verified all 211 original ZIP payloads as unchanged after signing.
+- Saved certificate identity, signing evidence, and signed-artifact checksums.
+- Left production-key configuration, the device benchmark, and the website unchanged.
+
+### New-ID release rebuild for website preparation
+
+- Rebuilt the main release from committed source `492251af` with all 101 selected tasks.
+- Passed 65 debug tests, 62 release tests, 16 Python tests, and release lint.
+- Verified `com.alolalab.chtozavino`, API 28, arm64, ZIP alignment, and HTTP exclusion.
+- Saved the unsigned APK, mapping, manifest, and checksums in a new archive directory.
+- Preserved the previous releases, model pack, and active Pixel benchmark.
+- Recorded the permanent-key and production-source decisions still needed for publication.
+- Left the website and public downloads unchanged.
+- Recorded exact scope in `docs/releases/2026-10-20-rebuild.md`.
+
 ## 2026-10-19
 
 ### Rebuild and GitHub source checkpoint

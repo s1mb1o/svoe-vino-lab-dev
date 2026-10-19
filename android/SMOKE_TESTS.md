@@ -1,5 +1,21 @@
 # Smoke tests
 
+## October 20 main release rebuild
+
+The fresh main release rebuild passed 65 debug tests, 62 release tests, and 16 Python
+model-pack tests without failures, errors, or skipped tests.
+Release lint has no errors and retains 32 warnings.
+Package, API levels, arm64 ABI, release flags, 16-KiB alignment, embedded pack identity,
+and debug HTTP exclusion checks passed.
+`apksigner verify` confirms that the preserved original output remains unsigned.
+The subsequent `release-test-signed` output passed signature verification for API 28.
+Its certificate matches the published 0.1.4 test-signed release and the local key.
+All 211 unsigned APK payloads remain unchanged in the signed APK.
+The final 16-KiB alignment check passed.
+Website publication is pending, not passed.
+No device test or installation occurred in this task.
+Read `docs/releases/2026-10-20-rebuild.md` for the frozen artifact and pending inputs.
+
 ## Rebuild checkpoint
 
 The October 19 new-ID rebuild passed 65 main debug, 62 main release,
