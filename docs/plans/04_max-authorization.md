@@ -5,7 +5,9 @@ Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/50.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
 Depends on: plan `03_user-accounts.md` (issue #48). This plan adds MAX to that account service.
-Status: Owner decisions recorded on 2026-10-19 (see "Owner decisions"). No code exists.
+Status: The account service checks MAX launch data and links MAX (commit `abc49baa`). The
+mini-app pages, the bot changes, and the deployment do not exist yet. Plan 03 dropped
+passwords on 2026-10-19: the login methods are the email code and Yandex ID.
 Sketches: boards 5 and 6, and the third screen of board 1, in
 [`03_user-accounts/sketches/`](03_user-accounts/sketches/). They are sketches, not a final design.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the combined plan twice on 2026-10-19. This plan
@@ -17,10 +19,11 @@ no link cache in the bot, and pages under `/max/*`.
 
 Let a MAX user open «Винный дневник» inside MAX, and keep the wines that the MAX bot finds.
 
-1. Registration with a username and MAX. The site shows a QR code. The QR code opens the
-   diary inside MAX as a MAX mini app.
-2. Link MAX to an existing password account.
-3. Set a first password for an account that MAX created. Reset a forgotten password through MAX.
+1. Open the diary inside MAX as a MAX mini app. The site shows a fixed QR code that opens it.
+2. Link MAX to an account: the person logs in with the email code inside the mini app, then
+   confirms the link.
+3. Optional (issue #50 decides): a linked MAX user gets a session at each launch
+   (`MAX_LOGIN_ENABLED`, off by default). MAX-only registration is not implemented.
 4. Save the searches of the MAX bot to the diary of a linked user.
 
 Every existing component MUST keep its current behavior when the account service is down,
@@ -100,40 +103,33 @@ The URL rules list only Latin letters, digits, the dot, and the hyphen
 A settings change can start a new bot moderation of up to 48 working hours. Users see the
 old version during that time (`wiki/concepts/bot-registration-and-moderation.md:76-82`).
 
-Registration with MAX:
+Open the diary in MAX:
 
 1. On the site, the tab «Через MAX» shows the QR code of the deep link. A phone shows
    «Открыть в MAX» with the same link.
-2. MAX opens the mini app. The page sends `window.WebApp.initData` to the Nuxt server.
-3. The account service checks `initData` (see "Launch data checks").
-4. A MAX user without an account sees «Начать дневник»: username and the two checkboxes of
-   plan 03. The new account is linked to the MAX `user_id`. It has no password.
-5. A linked MAX user gets a session at once. Each launch creates a new session.
+2. MAX opens the mini app. With `MAX_LOGIN_ENABLED`, the page sends `window.WebApp.initData`
+   to `POST /v1/auth/max/session` and a linked person gets a session (1 day).
+3. Otherwise, or for a person without a link, the mini app shows «Войти по коду из письма».
+   The code goes by email and the person types it on our page. No code passes through MAX.
+   A new address completes the sign-up of plan 03 (username and two checkboxes).
 
-Link MAX to an existing account:
+Link MAX:
 
-- In the mini app, «У меня уже есть аккаунт» asks for the username and the password.
-  A correct password links the MAX `user_id` to that account.
-- Before the link, the page shows the MAX name from `initData`: «Привязать MAX-аккаунт
-  «Имя Фамилия» к дневнику ivan?». A person who sees a foreign name stops.
+- After the email-code login, the page shows the MAX name from `initData`: «Привязать
+  MAX-аккаунт «Имя Фамилия» к дневнику anna_wine?». A person who sees a foreign name stops.
+- «Привязать» sends `initData` to `POST /v1/me/identities/max`.
 - The site shows the same fixed QR code under «Настройки» → «Привязать MAX».
-
-Use the account on the site after a MAX registration:
-
-- In the mini app, «Задать пароль» sets the first password.
-- A forgotten password: open the mini app, use «Сбросить пароль». A recent `max` session can
-  set a new password without the old one. The reset ends all other sessions.
 
 Mini-app screens. The host holds the diary only. Photo recognition stays in the bot chat.
 
 1. Start: the 18+ gate, then the `initData` check. This shows a short loading state.
-2. Welcome, for a MAX user without an account: two sentences about the diary,
-   «Начать дневник» (username, the terms checkbox, and the consent checkbox), and
-   «У меня уже есть аккаунт» (username and password, to link).
+2. Welcome, for a MAX user without a link: two sentences about the diary and «Войти по коду
+   из письма». A new address continues to the sign-up (username, the terms checkbox, and the
+   consent checkbox). Then «Привязать MAX-аккаунт «Имя Фамилия» к дневнику …?».
 3. Onboarding: the four preference steps of plan 03. Each step has «Пропустить».
 4. «Винный дневник»: «История» (searches from the bot and the site, with photos), «Оценки»,
    «Предпочтения».
-5. «Настройки»: set, change, or reset the password; «Сохранять историю поисков с фото»;
+5. «Настройки»: «Email», «Отвязать MAX»; «Сохранять историю поисков с фото»;
    «Удалить все фото»; «Удалить аккаунт».
 6. Footer on every screen: links to `/privacy`, `/terms`, and `/contacts`, and the alcohol
    warning.
@@ -171,14 +167,14 @@ Rules:
 
 ## Account service changes
 
-Schema additions, each in a new numbered file:
+Implemented in `001_initial.sql` (commit `abc49baa`): `identities` with the provider `max`,
+`used_launches`, and the session method `max`.
+
+Later, in new schema files:
 
 | Change | Columns |
 | --- | --- |
-| New table `identities` | `user_id`, `provider` (`max`), `external_id` (unique per provider), `linked_at` |
-| New table `used_launches` | `query_id` (primary key), `expires_at` |
-| `users` | `password_hash` becomes nullable; new `photos_cleared_at` |
-| `sessions` | `auth_method` gets the value `max` |
+| `users` | new `photos_cleared_at` |
 | `searches` | new `captured_at`; `source` gets the value `max`; `source_ref` holds the bot request ID |
 
 - The service stores no MAX names or usernames. It stores the MAX `user_id` only.
@@ -193,19 +189,19 @@ Credentials:
 | Service token (max-bot) | `openssl rand -hex 32`, distinct from the web token | Server env file, mode 0600 | Until rotation |
 | MAX mini-app key | Derived from the bot token | Server env file, mode 0600 | Until bot token rotation |
 
-- An account without a password uses a recent `max` session where plan 03 asks for the
-  current password: account deletion and token creation.
-- Linking MAX to a password account requires the password of that account.
+- A `max` session takes `auth_at` from the signed `auth_date`, so it counts as a recent login
+  for 15 minutes after the launch.
+- `MAX_WEBAPP_KEY` holds the derived key. `chto-za-vino-account max-key` computes it from the
+  bot token on stdin.
 
 Routes:
 
 | Route | Consumer | Purpose |
 | --- | --- | --- |
-| `POST /v1/max/sessions` | web | Check `initData`; returns a session or "no account" |
-| `POST /v1/max/users` | web | Register with `initData` and a username |
-| `POST /v1/max/links` | web | Link `initData` to an account with username and password |
-| `PUT /v1/me/password` | web | Also sets a first password or resets it with a recent `max` session |
-| `POST /v1/bot/searches`, `PUT /v1/bot/searches/{id}/image` | max-bot | Save a bot search (`saved` or `skipped`) and its photo |
+| `POST /v1/auth/max/session` | web | Implemented. Check `initData`; a session or `not_linked` (only with `MAX_LOGIN_ENABLED`) |
+| `POST /v1/me/identities/max` | web | Implemented. Link `initData` to the logged-in account |
+| `DELETE /v1/me/identities/max` | web | Implemented. Unlink MAX |
+| `POST /v1/bot/searches`, `PUT /v1/bot/searches/{id}/image` | max-bot | Later. Save a bot search (`saved` or `skipped`) and its photo |
 
 - The service rejects a bot save with a capture time before the link time of the identity.
   It drops the photo of a save with a capture time before `photos_cleared_at`. A deleted and
@@ -244,8 +240,9 @@ Routes:
 - On the mini-app host, do not load Metrika and do not register the service worker.
   This keeps the cookie question of #41 off the mini app.
 - Exclude `/max*` from the Workbox navigation cache.
-- On the mini-app host, the Nuxt server rejects password registration and password login,
-  and accepts only sessions with `auth_method = max`.
+- On the mini-app host, the Nuxt server allows only the email-code, sign-up, MAX, and
+  account routes. It rejects the Yandex ID routes. Sessions from the main site do not reach
+  this host: the session cookie is host-only.
 - The account deletion page states that the MAX bot keeps its own operational copies of
   photos for at most 30 days.
 
@@ -267,8 +264,8 @@ Routes:
   - `/max` and `/max/*` (the mini-app pages);
   - `/_nuxt/*` (built JS and CSS; no data);
   - `/reference/*` and `/icons/*` (logo, font, background, and icons of the layout);
-  - `/api/account/max/*` and the account routes that a `max` session uses. The Nuxt server
-    keeps this list of methods and paths;
+  - `/api/account/*` routes from an explicit list of methods and paths in the Nuxt server:
+    email code, sign-up, MAX, and account routes;
   - the legal pages `/privacy`, `/terms`, and `/contacts` (#37);
   - `/robots.txt`, answered by Caddy with `Disallow: /`.
 - Test in a fresh browser without Basic credentials: the mini-app host loads and works, any
@@ -328,8 +325,9 @@ Phase 0 — checks and decisions:
 
 Phase 1 — account service (after Phase 1 of plan 03):
 
-4. Schema additions, launch data checks, used launch IDs.
-5. MAX registration, MAX link, `max` sessions, first password and password reset.
+4. Done (commit `abc49baa`): launch data checks, used launch IDs, MAX link and unlink,
+   `max` sessions behind `MAX_LOGIN_ENABLED`.
+5. Not planned: passwords (plan 03 dropped them). MAX-only registration waits for #50.
 6. Bot routes with the link-time and photo-cutoff rules.
 
 Phase 2 — Web UI:
@@ -363,11 +361,11 @@ Mini app and security:
 - The fixed QR code on a desktop and the button on a phone both open the mini app.
 - The mini-app host loads without HTTP Basic, loads no Metrika, and returns 404 for paths
   outside its list. `chtozavino.ru` still returns 401 without credentials.
-- Registration, link with a password, first password, and password reset work in the mini app.
+- The email-code login and the MAX link work in the mini app.
 - Modified `initData`, `initData` older than 5 minutes, a reused `query_id`, or a different
   client address fails. A launch URL copied to another browser gets no session.
-- On the mini-app host, password login and password registration fail. A refresh on a
-  `/max/*` page works.
+- On the mini-app host, the Yandex ID routes fail and the email-code login works. A refresh
+  on a `/max/*` page works.
 - A MAX `user_id` that is already linked cannot link a second account.
 - Logs and errors contain no `initData`.
 

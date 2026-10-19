@@ -4,10 +4,12 @@ Date: 2026-10-19.
 Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/48.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
-Status: Owner decisions recorded on 2026-10-19 (see "Owner decisions"). No code exists.
+Status: The authorization part of the service exists (`account/`, commit `abc49baa`). The diary
+data, the Web UI, and the deployment do not exist yet.
 Related plan: MAX authorization is in `04_max-authorization.md` (issue #50). It depends on this plan.
 Sketches: boards 1–4 in [`03_user-accounts/sketches/`](03_user-accounts/sketches/). The third
-screen of board 1 («Через MAX») belongs to plan 04. Rebuild the boards with
+screen of board 1 («Через MAX») belongs to plan 04. Board 1 still shows the earlier password
+login; the login screens change to «Войти по коду из письма» and «Войти с Яндекс ID». Rebuild the boards with
 `python3 docs/plans/03_user-accounts/sketches/build.py`. They are sketches, not a final design.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the combined plan twice on 2026-10-19. This plan
 and plan 04 apply the findings. The owner split the plan into these two parts on 2026-10-19.
@@ -30,23 +32,25 @@ account service is down, not deployed, or not configured.
 
 In scope:
 
-1. Registration and login with a username and a password.
-2. Change the password.
+1. Login with a one-time email code or with Yandex ID. No passwords (owner decision,
+   2026-10-19). A new identity completes sign-up with a username and two consents.
+2. Link and unlink login methods: email (address change) and Yandex ID.
 3. A new LAN-only service `account/` on gx10. The Nuxt server calls it.
 4. Saved searches from the Web UI: the photo, the found wine, and the time.
 5. Explicit taste preferences. A short onboarding asks for them after registration.
 6. Personal ratings of wines, with an optional note.
 7. Self-service deletion: one search, all photos, or the whole account.
 8. Application tokens. An MCP client uses a token to read the account data of its owner
-   (Phase 2, after open decision 4).
+   (Phase 2, after open decision 5).
 
 Out of scope for this plan:
 
-- Everything about MAX: the mini app, MAX registration and login, linking MAX, password reset
-  through MAX, and saving bot searches. See plan 04.
+- Everything about MAX: the mini app, MAX login, linking MAX, and saving bot searches.
+  See plan 04. Telegram linking: #51.
 - Catalog-wide personal recommendations. The Web UI on `main` has no full catalog. Use the
   MCP `find_wines` tool or a later issue (#31, #25).
-- Email, password reset by email, OAuth, data export, shelf-mode saves.
+- Passwords, Gosuslugi (ESIA) login, login through any foreign service, data export,
+  shelf-mode saves.
 - A learned taste model. Preferences are what the person states (#31).
 
 ## Facts that shape the design
@@ -69,6 +73,15 @@ Out of scope for this plan:
 - #45 records an owner decision: the account keeps the version of the accepted consent text.
 - Production state uses SQLite with WAL. #33 allows PostgreSQL only when many writers or hosts
   need it.
+- Russian law: 149-FZ art. 8 p. 10 lists the allowed login methods for users in Russia. Fines
+  apply since 7 July 2026 (KoAP 13.55, 199-FZ). The own login system of a Russian citizen
+  without other citizenship and Yandex ID are allowed. Login through Telegram, Google, or Apple
+  is not ([Garant, 29.06.2026](https://www.garant.ru/article/2136195/)). See the #48 comment.
+- Gosuslugi (ESIA) needs an organization account with a qualified signature and a GOST crypto
+  connection. It is not available to the self-employed owner.
+- Yandex ID: OAuth 2.0 code flow with PKCE (`https://oauth.yandex.ru/authorize`, `/token`),
+  user data from `https://login.yandex.ru/info`. An unverified app shows users a warning; the
+  owner verifies it through Gosuslugi in the Yandex OAuth cabinet.
 
 ## Architecture
 
@@ -112,18 +125,32 @@ Use the `max-bot` conventions: Python 3.12, uv with `uv.lock`, FastAPI, uvicorn,
 ShieldGemma request format, and the auth middleware pattern of `http_api.py` (CIDR allow-list,
 bearer check, rate limit before the body is read).
 
-Additional dependency: `argon2-cffi` for password hashes. Pillow is already in the stack.
+The authorization part has no `im-core` dependency. It uses `httpx` for Yandex ID and the
+standard `smtplib` for mail. The diary part adds Pillow and the `im-core` image code.
 
 ### Data model
 
 All IDs are random UUIDs. Times are UTC ISO 8601. Each schema change is a new numbered
-SQL file in `account/src/chto_za_vino_account/schema/`. Plan 04 adds its tables and columns
-in its own files.
+SQL file in `account/src/chto_za_vino_account/schema/`. Times are Unix seconds.
+
+Implemented (`001_initial.sql`), shared with plan 04:
 
 | Table | Columns |
 | --- | --- |
-| `users` | `id`, `username` (unique, normalized), `password_hash`, `created_at`, `consent_version`, `consent_at`, `terms_version`, `terms_at`, `save_history` (default on), `onboarding_done_at` |
-| `sessions` | `token_hash`, `user_id`, `auth_method` (`password`), `created_at`, `auth_at`, `expires_at` |
+| `users` | `id`, `username` (unique, normalized), `created_at`, `consent_version`, `consent_at`, `terms_version`, `terms_at` |
+| `identities` | `provider` (`email`, `yandex`, `max`, `telegram`), `subject`, `user_id`, `linked_at`; one per provider and user; a subject belongs to one user |
+| `sessions` | `token_hash`, `user_id`, `auth_method` (`email`, `yandex`, `max`), `created_at`, `auth_at`, `expires_at`, `extended_at` |
+| `email_challenges` | `id_hash`, `email`, `code_mac`, `purpose` (`login`, `link`), `user_id`, `attempts`, `created_at`, `expires_at`, `used_at` |
+| `oauth_flows` | `id_hash`, `provider` (`yandex`), `state`, `code_verifier`, `redirect_uri`, `purpose`, `user_id`, `created_at`, `expires_at`, `used_at` |
+| `signup_tickets` | `token_hash`, `provider`, `subject`, `created_at`, `expires_at`, `used_at` |
+| `link_codes` | `code_hash`, `user_id`, `provider` (`telegram`), `created_at`, `expires_at`, `used_at` |
+| `used_launches` | `query_id`, `expires_at` (MAX, plan 04) |
+
+Later (diary), in new schema files:
+
+| Table | Columns |
+| --- | --- |
+| `users` (new columns) | `save_history` (default on), `onboarding_done_at` |
 | `searches` | `id`, `user_id`, `created_at`, `source` (`web`), `source_ref`, `wine_slug`, `wine_snapshot` (JSON, at most 2 KiB), `image_path` (nullable), `image_sha256` |
 | `ratings` | `user_id`, `wine_slug`, `stars` (1–5), `note` (at most 500 characters), `wine_snapshot`, `updated_at` |
 | `preferences` | `user_id`, `schema_version`, `payload` (JSON), `updated_at` |
@@ -140,33 +167,51 @@ in its own files.
 
 | Credential | Format | Storage | Lifetime |
 | --- | --- | --- | --- |
-| Password | 8–256 characters | Argon2id hash | Until change |
-| Session | 32 random bytes | SHA-256 hash | 30 days, sliding |
+| Email code | 6 digits | HMAC with `ACCOUNT_CODE_KEY` | 10 minutes, single use, 5 tries |
+| Email challenge ID | 32 random bytes; httpOnly cookie of the requesting browser | SHA-256 hash | 10 minutes |
+| Yandex flow ID, `state`, PKCE verifier | random | flow ID as SHA-256 hash | 10 minutes, single use |
+| Sign-up ticket | 32 random bytes | SHA-256 hash | 30 minutes, single use |
+| Session | 32 random bytes | SHA-256 hash | 30 days, extended at most once a day |
 | Application token (Phase 2) | `cvpat_` + 32 random bytes, base64url | SHA-256 hash | 30, 90 (default), or 365 days |
 | Service token (web) | `openssl rand -hex 32` | Server env file, mode 0600 | Until rotation |
+| Yandex client secret, SMTP password | from the providers | Server env file, mode 0600 | Until rotation |
 
-- Compare all secrets in constant time. Never write a credential to a log, URL, page title,
-  link target, or error.
-- A "recent login" is a session whose `auth_at` is less than 15 minutes old.
-- Password change, token creation, and account deletion require the current password.
-- A password change ends all other sessions of the user.
-- Login limits: 5 failures per username per 15 minutes, 30 failures per client address per
-  15 minutes. Then HTTP 429 with `Retry-After`. Nuxt sends the client address that Caddy set.
-- This plan has no password recovery. A person who forgets the password cannot recover the
-  account. The registration form states this. Plan 04 adds a reset through MAX.
+- Compare all secrets in constant time. Never write a credential, a code, or an email address
+  to a log, URL, page title, link target, or error. Validation errors never echo the input.
+- The email code works only together with the challenge ID of the browser that asked for it.
+- The service sends the code to new and known addresses alike. A new address gets a sign-up
+  ticket after the code, so the start step reveals nothing.
+- Limits: 1 code per minute and 3 per hour for an address, 20 per hour for a client address.
+  Then HTTP 429 with `Retry-After`. Nuxt sends the client address that Caddy set.
+- A "recent login" is a session whose `auth_at` is less than 15 minutes old. Unlink, token
+  creation, and account deletion need a recent login.
+- An account keeps at least one login method: email or Yandex ID.
+- Recovery: the email code is the recovery. A person who loses the mailbox and has no Yandex
+  ID linked cannot recover the account. The settings page states this.
 
 ### Internal API
 
 Consumer: `web` (Nuxt). It has its own service token and a fixed set of routes. Nuxt adds the
 session token in `X-Session-Token` or the app token in `X-App-Token`.
 
+Implemented (see `account/README.md` for the bodies):
+
 | Route | Purpose |
 | --- | --- |
-| `GET /healthz`, `GET /readyz` | Liveness; database and disk check |
-| `POST /v1/users` | Register with a password; returns a session |
-| `POST /v1/sessions`, `DELETE /v1/sessions/current` | Log in, log out |
-| `GET /v1/me`, `PATCH /v1/me` | Account summary; `save_history` |
-| `PUT /v1/me/password` | Change the password |
+| `GET /healthz`, `GET /readyz` | Liveness; database check |
+| `GET /v1/config` | Enabled providers, current consent and terms versions |
+| `POST /v1/auth/email/start`, `POST /v1/auth/email/verify` | Email code login or email link |
+| `POST /v1/auth/yandex/start`, `POST /v1/auth/yandex/finish` | Yandex ID login or link |
+| `POST /v1/auth/signup` | Sign-up with a ticket, username, and consent and terms versions |
+| `DELETE /v1/sessions/current` | Log out |
+| `GET /v1/me`, `DELETE /v1/me` | Account view; account deletion |
+| `DELETE /v1/me/identities/{provider}` | Unlink a login method or a messenger |
+
+Later (diary):
+
+| Route | Purpose |
+| --- | --- |
+| `PATCH /v1/me` | `save_history` |
 | `GET/PUT /v1/me/preferences` | Read or replace preferences |
 | `GET/POST /v1/me/searches`, `DELETE /v1/me/searches/{id}` | History |
 | `GET /v1/me/searches/{id}/image` | One photo of the owner |
@@ -191,7 +236,7 @@ session token in `X-Session-Token` or the app token in `X-App-Token`.
 
 - Delete one search: the row and its photo.
 - Delete all photos: all photo files and `image_path` values. History and ratings stay.
-- Delete the account: all rows of the user, all photos, sessions, and tokens.
+- Delete the account: all rows of the user, all photos, sessions, identities, and tokens.
   Use `PRAGMA secure_delete=ON`. The response comes after the files are deleted.
 - Operator removal: a CLI command deletes one search, one photo, or all content of a user by
   ID. It serves complaints and authority requests about illegal user content. It logs the
@@ -203,28 +248,33 @@ session token in `X-Session-Token` or the app token in `X-App-Token`.
 
 Pages:
 
-- `/account`: tabs «Вход» and «Регистрация». Plan 04 adds «Через MAX».
+- `/account`: «Войти по коду из письма» (email field, then the code field) and
+  «Войти с Яндекс ID». Plan 04 adds «Через MAX».
+- `/account/yandex/callback`: the Yandex redirect page. It sends `code` and `state` to the
+  Nuxt server and removes them from the address bar.
 - `/account/onboarding`: preference steps.
 - `/account` after login: «История», «Оценки», «Предпочтения», «Настройки».
-- «Настройки»: change the password, «Сохранять историю поисков с фото», «Удалить все фото»,
-  «Удалить аккаунт», and application tokens (Phase 2). Plan 04 adds «Привязать MAX».
+- «Настройки»: «Email» (change), «Яндекс ID» (link or unlink), «Сохранять историю поисков
+  с фото», «Удалить все фото», «Удалить аккаунт», and application tokens (Phase 2). Plan 04
+  adds «Привязать MAX»; #51 adds «Привязать Telegram».
 - The header gets «Войти» or «Дневник» in `.header-actions` (`webui/app/app.vue:25-29`).
 
 Server routes under `/api/account/*` forward to the service. The Nuxt server:
 
 - sets the session cookie `__Host-cv_session` (httpOnly, Secure, SameSite=Lax, Path=/);
+- keeps the email challenge ID and the Yandex flow ID in short-lived httpOnly cookies;
 - checks `Origin` on every state-changing route;
 - sends `Cache-Control: no-store` on all account responses, and `private, no-store` on photos;
 - resolves the wine snapshot from the slug with the existing metadata code;
 - refuses a save when the prediction mode is `mock`.
 
-Registration:
+Sign-up (after the first email code or Yandex ID login of a new identity):
 
-1. Username, password, and two separate checkboxes that are not preset:
+1. Username and two separate checkboxes that are not preset:
    «Принимаю условия использования» (links to `/terms`) and the consent to personal data
    processing (links to `/privacy`). The service records the version and time of each.
-2. A note: a forgotten password cannot be recovered.
-3. After registration the onboarding opens. Each step has «Пропустить».
+2. After sign-up the onboarding opens. Each step has «Пропустить».
+3. Do not load Metrika on the login, callback, and sign-up pages.
 
 Saving a search:
 
@@ -242,7 +292,7 @@ Other rules:
 
 - The global 18+ gate also covers the account pages.
 - Exclude `/account*` from the Workbox navigation cache (`webui/nuxt.config.ts:129-140`).
-- Account URLs carry no secrets. Metrika `webvisor` stays off. Mark password fields with
+- Account URLs carry no secrets. Metrika `webvisor` stays off. Mark the code field with
   `ym-disable-keys`.
 - Do not add account data to the WebMCP browser tools in this plan.
 - Move the «Личный паспорт предпочтений» card from «Макеты» to «Реализовано» and rename it
@@ -287,7 +337,7 @@ Use of preferences:
 
 ## Application tokens and MCP (Phase 2)
 
-Phase 2 starts after open decision 4.
+Phase 2 starts after open decision 5.
 
 Web UI:
 
@@ -344,15 +394,17 @@ MCP (`mcp/`):
 
 ## Implementation steps
 
-Phase 0 — decisions:
+Phase 0 — decisions and owner setup:
 
-1. Done: owner decisions 1–3 (2026-10-19).
+1. Done: owner decisions 1–4 (2026-10-19).
 2. Done: issue #48 records the plan and the decisions.
+3. Owner: register the Yandex ID app, verify it through Gosuslugi, and give the client ID and
+   secret. Owner: an email provider, the sender address, SPF, DKIM, and DMARC (see #52).
 
-Phase 1 — password accounts:
+Phase 1 — accounts:
 
-3. `account/` skeleton: config, schema, health, consumer auth, tests, Dockerfile, verify script.
-4. Users, sessions, password login, limits, recent-login rule.
+4. Done (commit `abc49baa`): `account/` with config, schema, health, consumer auth, email code
+   and Yandex ID login, sign-up, sessions, linking, unlink, deletion, tests, Dockerfile.
 5. Searches with photos, moderation, limits, idempotency, deletion of searches and photos.
 6. Ratings, preferences, account deletion, operator removal CLI.
 7. Nuxt server routes, cookie, origin check, cache rules.
@@ -361,7 +413,7 @@ Phase 1 — password accounts:
 10. Docs: component README, CLAUDE.md, ChangeLog, SMOKE_TESTS; webui docs and privacy text.
 11. Deploy to dev on gx10. Run the acceptance checks. Then production after owner approval.
 
-Phase 2 — application tokens and MCP (after open decision 4):
+Phase 2 — application tokens and MCP (after open decision 5):
 
 12. Application tokens and the `/v1/app/*` routes; the token page in «Настройки».
 13. MCP account tools, conditional server instructions, and their tests.
@@ -375,14 +427,16 @@ Isolation:
 - With an empty `NUXT_ACCOUNT_ENDPOINT`, the site renders no account UI and makes no account calls.
 - A 5 s hang of the service does not delay SSR or a prediction.
 
-Accounts and security:
+Accounts and security (the service tests cover these):
 
-- Register, log out, log in, change the password. The other sessions end.
-- Limits return HTTP 429 after 5 failures for one username.
+- Sign up and log in with an email code and with Yandex ID; log out.
+- A code works once, expires after 10 minutes, and locks after 5 wrong tries.
+- Send limits return HTTP 429 with `Retry-After`.
+- A Yandex flow works once; a wrong `state` fails; the token request carries the PKCE verifier.
 - A request without the service token, from a wrong address, or with a foreign session fails.
 - One user cannot read, rate, or delete data of another user, including photos by ID.
 - A cross-origin POST to an account route fails.
-- Logs, errors, URLs, and Metrika requests contain no password, session, or token.
+- Logs, errors, URLs, and Metrika requests contain no code, session, or token.
 - Account pages are not in the Workbox cache after a visit.
 
 Data:
@@ -416,12 +470,14 @@ Recorded on 2026-10-19:
 1. Photo retention in the account: until the person deletes them.
 2. Ports: 28007 (production) and 29007 (dev).
 3. Name: «Винный дневник». Do not use «паспорт» for the account.
+4. Login: email code and Yandex ID, no passwords. Gosuslugi is not available to the
+   self-employed owner.
 
 The decisions about MAX (the mini app and the public host `max.chtozavino.ru`) are in plan 04.
 
 Open:
 
-4. MCP access. `/api/app/*` stays on `chtozavino.ru` behind HTTP Basic. HTTP Basic uses the
+5. MCP access. `/api/app/*` stays on `chtozavino.ru` behind HTTP Basic. HTTP Basic uses the
    `Authorization` header, so a `Bearer` application token cannot pass it. Until the site is
    public, MCP account tools work only if `/api/app/*` is also public, or after HTTP Basic ends.
    Phase 2 waits for this decision.

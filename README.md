@@ -84,6 +84,7 @@ matcher и model endpoint. Полная инструкция находится 
 | --- | --- |
 | `webui/` | Nuxt Web UI, evaluator route и рекомендации еды. |
 | `mcp/` | Read-only MCP tools for catalog cards, discovery, comparison, the product-line demo, and approved audio metadata. |
+| `account/` | Сервис аккаунтов «Винный дневник»: вход по коду из письма и Яндекс ID, привязка MAX и Telegram (без входа через Telegram). |
 | `telegram-bot/` | Бот [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot), moderation и очередь. |
 | `max-bot/` | Бот MAX «Что за вино?» [@se14697933_bot](https://max.ru/se14697933_bot) с той же функциональностью. |
 | `im-core/` | Общее ядро обработки обоих ботов (пакет `chto_za_vino_core`). |
