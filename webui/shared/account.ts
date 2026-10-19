@@ -59,6 +59,8 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
     case 'invalid_flow':
     case 'yandex_cancelled':
       return 'Вход с Яндекс ID не завершён. Попробуйте ещё раз.'
+    case 'reauth_mismatch':
+      return 'Вход выполнен в другой аккаунт Яндекс ID. Удаление отменено. Войдите в Яндекс ID, который привязан к этому дневнику.'
     case 'reauth_required':
       return 'Для этого действия войдите заново: нужен вход за последние 15 минут.'
     case 'session_required':

@@ -40,7 +40,7 @@ const usernameValid = computed(() => USERNAME_PATTERN.test(username.value))
 const canSignup = computed(() => usernameValid.value && acceptTerms.value && acceptConsent.value && !busy.value)
 const accountEmail = computed(() => user.value?.identities.find(item => item.provider === 'email')?.email ?? '')
 const hasYandex = computed(() => Boolean(user.value?.identities.some(item => item.provider === 'yandex')))
-const reauthYandexHref = computed(() => `/api/account/yandex/start?next=${encodeURIComponent('/account?confirm=delete')}`)
+const reauthYandexHref = computed(() => `/api/account/yandex/start?intent=reauth&next=${encodeURIComponent('/account?confirm=delete')}`)
 const resendIn = computed(() => Math.max(0, Math.ceil((resendAt.value - now.value) / 1000)))
 const identities = computed(() => (user.value?.identities ?? []).map(item => item.provider === 'email'
   ? { key: 'email', label: 'Почта', value: item.email ?? '' }
@@ -324,7 +324,7 @@ onBeforeUnmount(() => clock && clearInterval(clock))
           <button v-if="!confirmDelete" class="button secondary account-danger" type="button" :disabled="busy" @click="confirmDelete = true; reauthNeeded = false">Удалить аккаунт</button>
         </div>
         <div v-if="confirmDelete" class="account-confirm" role="group" aria-labelledby="delete-heading">
-          <h2 id="delete-heading" class="account-subheading">Удалить аккаунт и все данные?</h2>
+          <h2 id="delete-heading" class="account-subheading">Удалить аккаунт {{ user.username }} и все данные?</h2>
           <p>Удалятся имя пользователя, способы входа и все записи дневника. Это действие нельзя отменить.</p>
           <div v-if="!reauthNeeded" class="account-actions">
             <button class="button primary account-danger-fill" type="button" :disabled="busy" @click="deleteAccount">Удалить навсегда</button>

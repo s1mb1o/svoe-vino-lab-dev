@@ -54,7 +54,14 @@ The browser never gets the endpoint or the token.
   personal data processing (`/privacy`). The server refuses sign-up without both.
 - Account deletion needs a login in the last 15 minutes (service rule). On `reauth_required` the
   confirmation stays open and offers «Подтвердить кодом из письма» for the account's email
-  (then «Подтвердить и удалить») or «Подтвердить через Яндекс ID» (`next=/account?confirm=delete`).
+  (then «Подтвердить и удалить») or «Подтвердить через Яндекс ID» (`intent=reauth`,
+  `next=/account?confirm=delete`). The confirmation names the account.
+- A Yandex reauth MUST stay on the same account. The start route sets `__Host-cv_reauth`. The
+  callback reads the user of the current session (`/v1/me`), then finishes the flow. It accepts the
+  new session only for the same user ID. For another account or a Yandex identity without a diary,
+  it keeps the current session, ends the new one, and returns `reauth_mismatch`. Without a valid
+  current session it stops before the finish call. Follow-up: a service-side `reauth` purpose
+  that checks the Yandex subject (reported by session svoe-vino-final-39).
 
 ## Routes
 

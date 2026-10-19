@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-19 — «Винный дневник»: Yandex reauth stays on the same account
+
+- «Подтвердить через Яндекс ID» before account deletion could switch the session to another diary when the browser used another Yandex account. The callback now accepts the new session only for the same user; otherwise it keeps the current session, ends the new one, and shows «Вход выполнен в другой аккаунт Яндекс ID. Удаление отменено…».
+- The confirmation heading names the account: «Удалить аккаунт <имя> и все данные?».
+- 6 new tests (59 account tests; 398 in total, 20 existing skips).
+
 ## 2026-10-19 — «Винный дневник»: login and sign-up
 
 - Add the header link «Дневник» (phones: the book icon) and the `/account` page: login by email code, login with Yandex ID, sign-up with two separate consents, the logged-in view, logout, and account deletion. Spec: `docs/account.md`.

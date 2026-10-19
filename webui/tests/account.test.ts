@@ -339,6 +339,51 @@ describe('Yandex ID', () => {
     const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `__Host-cv_yandex=${'f'.repeat(32)}` })
     expect(response.headers.get('location')).toBe('/account')
   })
+  describe('reauth before account deletion', () => {
+    const flow = `__Host-cv_yandex=${'f'.repeat(32)}; __Host-cv_next=%2Faccount%3Fconfirm%3Ddelete; __Host-cv_reauth=1`
+    const session = (id: string, token: string) => ({ status: 'session', session: { token, expires_at: new Date(Date.now() + 86400e3).toISOString() }, user: { id } })
+    const serviceFor = (finish: unknown, me: { status: number; body: unknown } = { status: 200, body: { user: { id: 'A' } } }) => (request: Seen) => {
+      if (request.url === '/v1/me') return me
+      if (request.url === '/v1/auth/yandex/finish') return { status: 200, body: finish }
+      if (request.url === '/v1/sessions/current') return { status: 204 }
+      return { status: 404, body: { error: 'not_found' } }
+    }
+    it('marks the flow as a reauth', async () => {
+      reply = () => ({ status: 200, body: { authorize_url: 'https://oauth.yandex.ru/authorize?x=1', flow_id: 'f'.repeat(32), expires_in: 600 } })
+      const response = await call('/api/account/yandex/start?intent=reauth&next=%2Faccount%3Fconfirm%3Ddelete')
+      expect(cookies(response).find(item => item.startsWith('__Host-cv_reauth=1'))).toMatch(/HttpOnly/i)
+    })
+    it('accepts the same account and returns to the confirmation', async () => {
+      reply = serviceFor(session('A', 'new-a'))
+      const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `${flow}; __Host-cv_session=old-a` })
+      expect(response.headers.get('location')).toBe('/account?confirm=delete')
+      expect(cookies(response).some(item => item.startsWith('__Host-cv_session=new-a'))).toBe(true)
+      expect(seen.find(item => item.url === '/v1/me')?.headers['x-session-token']).toBe('old-a')
+    })
+    it('refuses another account, keeps the current session, and ends the new one', async () => {
+      reply = serviceFor(session('B', 'new-b'))
+      const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `${flow}; __Host-cv_session=old-a` })
+      expect(response.headers.get('location')).toBe('/account?error=reauth_mismatch')
+      expect(cookies(response).some(item => item.startsWith('__Host-cv_session='))).toBe(false)
+      const revoke = seen.find(item => item.method === 'DELETE' && item.url === '/v1/sessions/current')
+      expect(revoke?.headers['x-session-token']).toBe('new-b')
+    })
+    it('refuses a Yandex account without a diary', async () => {
+      reply = serviceFor({ status: 'signup_required', signup_ticket: 't'.repeat(32), provider: 'yandex' })
+      const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `${flow}; __Host-cv_session=old-a` })
+      expect(response.headers.get('location')).toBe('/account?error=reauth_mismatch')
+      expect(cookies(response).some(item => item.startsWith('__Host-cv_signup='))).toBe(false)
+    })
+    it.each([
+      ['no current session', '', { status: 200, body: { user: { id: 'A' } } }, '/account?error=session_required'],
+      ['an expired current session', '; __Host-cv_session=old-a', { status: 401, body: { error: 'session_invalid' } }, '/account?error=session_invalid'],
+    ])('never reaches the confirmation with %s', async (_name, extra, me, location) => {
+      reply = serviceFor(session('B', 'new-b'), me)
+      const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `${flow}${extra}` })
+      expect(response.headers.get('location')).toBe(location)
+      expect(seen.some(item => item.url === '/v1/auth/yandex/finish')).toBe(false)
+    })
+  })
   it('sends a new identity to the sign-up step', async () => {
     reply = () => ({ status: 200, body: { status: 'signup_required', signup_ticket: 't'.repeat(32), provider: 'yandex' } })
     const response = await call('/api/account/yandex/callback?code=c&state=s', { cookie: `__Host-cv_yandex=${'f'.repeat(32)}` })
