@@ -22,7 +22,7 @@ TELEGRAM_TOKEN = "tg-" + "t" * 40
 MAX_BOT_TOKEN = "maxbot-" + "m" * 40
 CODE_KEY = "key-" + "k" * 40
 MAX_TOKEN = "max-platform-bot-token-for-tests"
-REDIRECT_URI = "https://chtozavino.ru/account/yandex/callback"
+REDIRECT_URI = "https://chtozavino.ru/api/account/yandex/callback"
 CLIENT_IP = "203.0.113.7"
 START = 1_800_000_000.0
 

@@ -251,8 +251,12 @@ Pages:
 
 - `/account`: «Войти по коду из письма» (email field, then the code field) and
   «Войти с Яндекс ID». Plan 04 adds «Через MAX».
-- `/account/yandex/callback`: the Yandex redirect page. It sends `code` and `state` to the
-  Nuxt server and removes them from the address bar.
+- `/api/account/yandex/callback`: a Nuxt server route, the Redirect URI of the Yandex ID app.
+  It reads `code` and `state` from the query and the flow ID from its cookie, calls
+  `POST /v1/auth/yandex/finish`, sets the session cookie (or keeps the sign-up ticket in a
+  short-lived httpOnly cookie), and answers HTTP 302 to `/account`, `/account/onboarding`, or
+  the sign-up step. It returns no HTML, so no script (Metrika sends `location.href`) sees the
+  one-time `code`. `robots.txt` already disallows `/api/`.
 - `/account/onboarding`: preference steps.
 - `/account` after login: «История», «Оценки», «Предпочтения», «Настройки».
 - «Настройки»: «Email» (change), «Яндекс ID» (link or unlink), «Сохранять историю поисков
@@ -275,7 +279,8 @@ Sign-up (after the first email code or Yandex ID login of a new identity):
    «Принимаю условия использования» (links to `/terms`) and the consent to personal data
    processing (links to `/privacy`). The service records the version and time of each.
 2. After sign-up the onboarding opens. Each step has «Пропустить».
-3. Do not load Metrika on the login, callback, and sign-up pages.
+3. Do not load Metrika on the login and sign-up pages. The Yandex callback is a server
+   route without a page.
 
 Saving a search:
 

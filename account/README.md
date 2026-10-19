@@ -52,8 +52,8 @@ are distinct. Leave `YANDEX_CLIENT_ID`, `MAX_WEBAPP_KEY`, or `TELEGRAM_BOT_USERN
 turn that provider off. The service refuses to start with an invalid value.
 
 Yandex ID setup (owner): register an app of the type «Для авторизации пользователей» at
-<https://oauth.yandex.ru/client/new/id/>, platform «Веб-сервисы», the Redirect URIs of the
-Nuxt callback page, no extra data access. Verify the service through Gosuslugi in the Yandex
+<https://oauth.yandex.ru/client/new/id/>, platform «Веб-сервисы», Redirect URI
+`https://chtozavino.ru/api/account/yandex/callback` (a Nuxt server route), no extra data access. Verify the service through Gosuslugi in the Yandex
 OAuth cabinet; without it, Yandex shows users a warning.
 
 ## API
