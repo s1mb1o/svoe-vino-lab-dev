@@ -1,5 +1,37 @@
 # Smoke tests
 
+## Current merged map registry
+
+- Confirm that `/lineup` lists 25 maps and that the shared registry also supplies all 25 maps to MCP.
+- With the pinned full snapshot, confirm all 532 Web UI tests pass without skips.
+- Confirm the current coverage reports show 1,138 of 2,103 saved cards, 1,203 product nodes and 68 null-slug products.
+- Confirm the single intentional supported-producer exclusion remains `rozovoe-polusladkoe-2`.
+- Read `docs/validation/producer-map-merge-2026-10-19.md` for the combined validation results.
+
+## Five more producer maps
+
+1. Open `/lineup/golubitskoe-estate`, `/lineup/chateau-de-talu`, `/lineup/aya`, `/lineup/raevskoe` and `/lineup/sikory`. Confirm 34, 27, 28, 24 and 22 products respectively.
+2. Confirm all 130 exact saved slugs select their own product and show their exact portal link. Confirm that same-name records remain separate.
+3. On the Golubitskoe map, check the linked Chardonnay and Rose cards saved under `Поместье Голубицкое`. Check both Tête de Cheval families and the Petnat grape-list note.
+4. Select each official-only addition. Confirm a bottle image, local details and no portal link.
+5. Check the Southern Vertical cutout on light and dark surfaces. Confirm the original bottle silhouette and artwork and no white background rectangle.
+6. Check the five maps at 1440, 390 and 320 px in both themes. Check popup bounds, exact selection, return state, group navigation and image failures.
+7. Run the full snapshot-backed unit suite, type check, build, generated-index check, pixel/frame checker, bundle check, producer browser suite and Abrau browser regressions.
+
+The 2026-10-19 batch passes 329 unit tests and the Chromium and WebKit browser checks. Read `docs/validation/five-more-producer-maps.md` for scope and results.
+
+## Burnier product-line map
+
+1. Open `/lineup/burnier`. Confirm 22 wines in six groups, the heading «Другие коллекции», and the materials date 2026-10-19.
+2. Open each of its 20 exact snapshot slugs through the `wine` query. Confirm the selected identity and exact portal link.
+3. Confirm that Classic and Elite Syrah and Krasnostop remain separate. Confirm separate dry and sweet late-harvest Pinot Gris.
+4. Open white and red Exponat. Confirm gray styling, a local bottle image and description, and no portal link.
+5. Open Pinot Blanc. Confirm its label reads Pinot Blanc, and that it differs from the Viognier bottle. Confirm the original Pinot Blanc portal slug.
+6. Check desktop and mobile in both themes. Check the popup, return control, complete bottle outlines and page overflow.
+7. Run the full unit suite with `PRODUCT_LINE_CATALOG_SNAPSHOT`, the type check, build, image-frame checker, bundle check, and both map browser suites.
+
+The 2026-10-19 checks pass in Chromium and WebKit. Read `docs/validation/burnier-product-line-map.md` for results and scope.
+
 ## Static wine images
 
 1. Open `/dish`, find wines, and confirm one image above each producer. Check light and dark themes, 320/390-pixel phones and desktop: the bottle is whole, centred, and has no white box.
@@ -73,7 +105,7 @@ Verified locally on 2026-10-19: 40 cases passed in Chromium and WebKit, with bot
 
 ## Producer map index and page layout
 
-1. Open `/lineup`. Confirm 19 cards with a bottle, the counts, and the materials date. Check 1440, 390, and 320 px in both themes.
+1. Open `/lineup`. Confirm 25 cards with a bottle, the counts, and the materials date. Check 1440, 390, and 320 px in both themes.
 2. Confirm that `/lineup` has no `x-robots-tag` header and is in `/sitemap.xml`. Confirm `noindex` on `/lineup/abrau-durso`.
 3. Select a card. Confirm the map page. Select «Все карты производителей». Confirm the index.
 4. On `/lineup/abrau-durso?wine=abrau-dyurso-victor-dravigny-bryut`, confirm that the page scrolls to the selected wine and that the map has no inner scroll bar.

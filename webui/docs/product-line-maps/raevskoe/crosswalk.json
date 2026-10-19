@@ -1,0 +1,492 @@
+{
+  "producer_id": "raevskoe",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Раевское",
+  "catalog_producers": [
+    "Раевское"
+  ],
+  "entries": [
+    {
+      "wine_slug": "vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13",
+      "product_id": "wine-vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13",
+      "group_id": "eklego",
+      "catalog_name": "Эклего красное",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_eklego_krasnoe_tempranilo_krasnoe_suhoe_13_a79d22bf66.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_eklego_krasnoe_tempranilo_krasnoe_suhoe_13_a79d22bf66.webp",
+      "input_sha256": "ec1478ac2a672a1cf6ea465a973243b5169dc460c0c4dfbaf6c33d4c4fe68d72",
+      "asset_sha256": "ec1478ac2a672a1cf6ea465a973243b5169dc460c0c4dfbaf6c33d4c4fe68d72",
+      "group_basis": {
+        "kind": "catalog_name_and_original_package",
+        "evidence": "The exact saved name and original package define a snapshot-only navigation group. Its current collection and relative price are unconfirmed; rank stays zero.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123",
+      "product_id": "wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123",
+      "group_id": "genesis",
+      "catalog_name": "Генезис белое",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_genezis_beloe_risling_beloe_suhoe_123_e1e994dbf3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_genezis_beloe_risling_beloe_suhoe_123_e1e994dbf3.webp",
+      "input_sha256": "b302b9e306791be7318f6494a1b6e9530c0a3ae073bad384ce311d063bc6d87c",
+      "asset_sha256": "b302b9e306791be7318f6494a1b6e9530c0a3ae073bad384ce311d063bc6d87c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13",
+      "product_id": "wine-vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "genesis",
+      "catalog_name": "Генезис Красное",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_genezis_krasnoe_kaberne_sovinon_krasnoe_suhoe_13_16b96ba980.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_genezis_krasnoe_kaberne_sovinon_krasnoe_suhoe_13_16b96ba980.webp",
+      "input_sha256": "d7613572bdea9edf66bb92571b638a169d3aee2653adffa6330f4317e877f872",
+      "asset_sha256": "d7613572bdea9edf66bb92571b638a169d3aee2653adffa6330f4317e877f872",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117",
+      "product_id": "wine-vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117",
+      "group_id": "genesis",
+      "catalog_name": "Генезис розовое",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_genezis_rozovoe_tempranilo_rozovoe_suhoe_117_efc6919077.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_genezis_rozovoe_tempranilo_rozovoe_suhoe_117_efc6919077.webp",
+      "input_sha256": "a354b80c9a415e0086b126b4e0966cfd22e273f02913132b5182b6f410662254",
+      "asset_sha256": "a354b80c9a415e0086b126b4e0966cfd22e273f02913132b5182b6f410662254",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14",
+      "product_id": "wine-vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14",
+      "group_id": "glow",
+      "catalog_name": "Глоу красное",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_glou_krasnoe_merlo_krasnoe_suhoe_14_2560e6ae7b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_glou_krasnoe_merlo_krasnoe_suhoe_14_2560e6ae7b.webp",
+      "input_sha256": "7728369bee18259af104d740355704925db96fc6e596b4f05b33f73825f50b1b",
+      "asset_sha256": "7728369bee18259af104d740355704925db96fc6e596b4f05b33f73825f50b1b",
+      "group_basis": {
+        "kind": "catalog_name_and_original_package",
+        "evidence": "The exact saved name and original package define a snapshot-only navigation group. Its current collection and relative price are unconfirmed; rank stays zero.",
+        "source_ids": [
+          "svoe-vino-2026-09-17"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм Де Терруар. Бланш",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_blansh_vione_beloe_suhoe_12_da74965f85.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_blansh_vione_beloe_suhoe_12_da74965f85.webp",
+      "input_sha256": "16f8f16c217e0233fbd74a778af01aaf5c9fbf2a2e61a30702974646e2b85cb4",
+      "asset_sha256": "16f8f16c217e0233fbd74a778af01aaf5c9fbf2a2e61a30702974646e2b85cb4",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм Де Терруар. Мускат",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_muskat_muskat_zheltyy_beloe_suhoe_123_b111e93f53.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_muskat_muskat_zheltyy_beloe_suhoe_123_b111e93f53.webp",
+      "input_sha256": "73e65a4b13fd85f13b60e3c4a6239a8188ef58b4efd7174a5546969abfd57eca",
+      "asset_sha256": "73e65a4b13fd85f13b60e3c4a6239a8188ef58b4efd7174a5546969abfd57eca",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм Де Терруар. Рислинг",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_risling_beloe_suhoe_12_8823716922.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_risling_beloe_suhoe_12_8823716922.webp",
+      "input_sha256": "c6635add8cd7df412e665922bf7d2c725a35b415b46e3b17fdbc3cae9abfa232",
+      "asset_sha256": "c6635add8cd7df412e665922bf7d2c725a35b415b46e3b17fdbc3cae9abfa232",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм де Терруар. Розе",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_roze_tempranilo_rozovoe_suhoe_116_3a3a12f03a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_roze_tempranilo_rozovoe_suhoe_116_3a3a12f03a.webp",
+      "input_sha256": "5ff59ae839f32e4cd13d58c8be184cd562d103847edec8ede9fa39dd6bd7e5b6",
+      "asset_sha256": "5ff59ae839f32e4cd13d58c8be184cd562d103847edec8ede9fa39dd6bd7e5b6",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм де Терруар. Руж",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_ruzh_tempranilo_krasnoe_suhoe_13_ac22e06bac.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_ruzh_tempranilo_krasnoe_suhoe_13_ac22e06bac.webp",
+      "input_sha256": "975fc301e983cc8f5c857092ec9f639b2f86711e181c14add45a3472934ec6b5",
+      "asset_sha256": "975fc301e983cc8f5c857092ec9f639b2f86711e181c14add45a3472934ec6b5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121",
+      "product_id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121",
+      "group_id": "parfum",
+      "catalog_name": "Парфюм Де Терруар. Совиньон Блан",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_parfyum_de_terruar_sovinon_blan_beloe_suhoe_121_fb61b21cb1.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_parfyum_de_terruar_sovinon_blan_beloe_suhoe_121_fb61b21cb1.webp",
+      "input_sha256": "7c2f7c11a10acf20630302b5c9bbd5067a0bf2baac0c225f69a76dd3b564869b",
+      "asset_sha256": "7c2f7c11a10acf20630302b5c9bbd5067a0bf2baac0c225f69a76dd3b564869b",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс белое",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_beloe_shardone_beloe_suhoe_126_a8170bcee9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_beloe_shardone_beloe_suhoe_126_a8170bcee9.webp",
+      "input_sha256": "16c2df6688c00230842553660383b5a7f927bc24ed72902f76c2c84d0c302a89",
+      "asset_sha256": "16c2df6688c00230842553660383b5a7f927bc24ed72902f76c2c84d0c302a89",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Белый бленд",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_belyy_blend_risling_beloe_suhoe_121_d72a834899.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_belyy_blend_risling_beloe_suhoe_121_d72a834899.webp",
+      "input_sha256": "07a3cee640b0f326b4f7a8c9b527a5c1110b892f36516fa5c1a6d4448c6be982",
+      "asset_sha256": "07a3cee640b0f326b4f7a8c9b527a5c1110b892f36516fa5c1a6d4448c6be982",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Блауфранкиш",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_blaufrankish_krasnoe_suhoe_128_5debb8fc14.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_blaufrankish_krasnoe_suhoe_128_5debb8fc14.webp",
+      "input_sha256": "7c724ce9d4e3f74f17e9312fef1a79204ebfd370cbd9c7ec03ac6710dad17a26",
+      "asset_sha256": "7c724ce9d4e3f74f17e9312fef1a79204ebfd370cbd9c7ec03ac6710dad17a26",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Карменер",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_karmener_krasnoe_suhoe_12_690f3e8e78.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_karmener_krasnoe_suhoe_12_690f3e8e78.webp",
+      "input_sha256": "d099583aec0026e082dec73df4c15a29838bf484d9d0c88bc70b57fdf339d0ee",
+      "asset_sha256": "d099583aec0026e082dec73df4c15a29838bf484d9d0c88bc70b57fdf339d0ee",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс красное",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_krasnoe_kaberne_sovinon_krasnoe_suhoe_13_72587cf80e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_krasnoe_kaberne_sovinon_krasnoe_suhoe_13_72587cf80e.webp",
+      "input_sha256": "56242f12e48d064c0bb1827c29c01dbfacb62b65b9163b2220cdc300334c108c",
+      "asset_sha256": "56242f12e48d064c0bb1827c29c01dbfacb62b65b9163b2220cdc300334c108c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Пино Нуар",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_pino_nuar_krasnoe_suhoe_125_dfbc856fa3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_pino_nuar_krasnoe_suhoe_125_dfbc856fa3.webp",
+      "input_sha256": "96652643ba1adb136bb386c4b7e955c012e6f5f435ae2b3a5afec1b6e315d18b",
+      "asset_sha256": "96652643ba1adb136bb386c4b7e955c012e6f5f435ae2b3a5afec1b6e315d18b",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Пти Вердо",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_pti_verdo_krasnoe_suhoe_145_f62eb404c2.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_pti_verdo_krasnoe_suhoe_145_f62eb404c2.webp",
+      "input_sha256": "707d94ff7d733c90e15feff055650ff0f177fc350e01aaae36bf2bb6e1c60bf8",
+      "asset_sha256": "707d94ff7d733c90e15feff055650ff0f177fc350e01aaae36bf2bb6e1c60bf8",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Розовое",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_rozovoe_tempranilo_rozovoe_suhoe_12_a7e60be17a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_rozovoe_tempranilo_rozovoe_suhoe_12_a7e60be17a.webp",
+      "input_sha256": "deb5deabed87d9d1e943330322249b12764b6a3effb8df56abf8908a23493cad",
+      "asset_sha256": "deb5deabed87d9d1e943330322249b12764b6a3effb8df56abf8908a23493cad",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Шардоне",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_shardone_beloe_suhoe_127_39a51d919c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_shardone_beloe_suhoe_127_39a51d919c.webp",
+      "input_sha256": "82c6d2eb4497b6b421bb7f0740bdd1dec9bb79ec1b47b544eb5c7f024ccc3102",
+      "asset_sha256": "82c6d2eb4497b6b421bb7f0740bdd1dec9bb79ec1b47b544eb5c7f024ccc3102",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Шардоне",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_shardone_beloe_suhoe_128_47261bcba1.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_shardone_beloe_suhoe_128_47261bcba1.webp",
+      "input_sha256": "a37a67afd1180bcf6c6cc3e2b40a9b0af62ccc967329c62540128043c1dd7a65",
+      "asset_sha256": "a37a67afd1180bcf6c6cc3e2b40a9b0af62ccc967329c62540128043c1dd7a65",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Темпранильо",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_tempranilo_krasnoe_suhoe_135_eab54b6b7c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_tempranilo_krasnoe_suhoe_135_eab54b6b7c.webp",
+      "input_sha256": "e083c87d83aa40be608a8170e43a56021167c43912465a9d5b74ca009090a922",
+      "asset_sha256": "e083c87d83aa40be608a8170e43a56021167c43912465a9d5b74ca009090a922",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122",
+      "product_id": "wine-vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122",
+      "group_id": "renaissance",
+      "catalog_name": "Ренессанс Вионье",
+      "catalog_producer": "Раевское",
+      "source_image": "vinodelnya_raevskoe_renessans_vione_beloe_suhoe_122_8d857ddfa3.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/vinodelnya_raevskoe_renessans_vione_beloe_suhoe_122_8d857ddfa3.webp",
+      "input_sha256": "6924e0bc1dace12265f4dd4d5eca629c7076f1f6e805c8e30b71565d0d18626c",
+      "asset_sha256": "6924e0bc1dace12265f4dd4d5eca629c7076f1f6e805c8e30b71565d0d18626c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-home",
+          "official-catalog"
+        ]
+      }
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-genesis-blanc-de-blancs",
+      "source_id": "official-sparkling",
+      "source_image_url": "https://raevskoe.com/assets/images/products/1251/genes-blanc-de-blancs-22.png",
+      "input_sha256": "19b8b1a2be76bc98ee09af43a2508aa2f91ec363afa6180eeb4b4b6976e9dc3f",
+      "asset_sha256": "e2b4661d86536d3740a781e00bcbfcde4c8c312ed7fddd15358ff0853f28c478",
+      "processing": "PNG to lossless WebP. No crop, repaint or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Раевское",
+        "matched_catalog_slugs": [],
+        "reason": "All 23 exact producer rows were checked by name, collection, grape, style and original bottle. No verified equivalent card exists for this addition. No slug is invented.",
+        "producers_checked": [
+          "Раевское"
+        ]
+      },
+      "group_basis": {
+        "kind": "official_product_card",
+        "evidence": "The official product card and original bottle identify this separate wine and its named family. It is distinct from saved wines of other styles or collections.",
+        "source_ids": [
+          "official-sparkling"
+        ]
+      }
+    }
+  ]
+}

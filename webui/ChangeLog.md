@@ -1,5 +1,34 @@
 # Change log
 
+## 2026-10-19 — Map merge and catalog coverage
+
+- Merge Burnier and the five-map batch with current `main`. Keep the index and page-layout changes already present on `main`.
+- Recompute both catalog coverage reports from the full pinned snapshot: 25 maps, 1,203 products, 272 groups, 68 null-slug products, and 1,138 of 2,103 saved cards (54.1132%).
+- Keep `rozovoe-polusladkoe-2` as the only intentional unmapped card of a supported producer. Record both exact Golubitskoe source producer names.
+- Pass all 532 merged Web UI tests without skips, the type check, production build, generated-index check, all 1,203 image frames and the lazy-bundle check.
+- Pass all 105 producer cases and the Abrau regressions in each browser engine. Pass all 49 MCP tests, syntax checks and the SDK demo. Read `docs/validation/producer-map-merge-2026-10-19.md`.
+
+## 2026-10-19 — Five more producer maps
+
+- Add Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры. The index now contains 25 producer maps.
+- Include 130 saved catalog cards and five selected official additions in 34 groups. Keep the official additions selectable without invented snapshot links.
+- Include both exact Golubitskoe producer names: 31 `Golubitskoe Estate` records and two `Поместье Голубицкое` records. Retain the original producer field in each crosswalk entry. Extend provenance checks to cover this verified alias.
+- Preserve separate same-name records, grape lists, descriptions and source slugs. Keep independent styles and unconfirmed collection ranks neutral.
+- Use the original image bytes for 129 catalog cards. Remove the white background from one Southern Vertical display image with built-in imagegen and record its exact prompt and hashes.
+- Save the catalog baselines, crosswalks and source evidence under `docs/product-line-maps/` for each producer.
+- Isolate external analytics in the producer browser suite so map checks do not depend on remote analytics availability.
+- Pass 329 full-snapshot unit tests, type checks, the production build, image-frame and bundle checks. Both browser engines pass 105 producer cases, 145 targeted cases and the Abrau regressions. Read `docs/validation/five-more-producer-maps.md`.
+
+## 2026-10-19 — Burnier product-line map
+
+- Use «Другие коллекции» as the neutral band heading. Keep the price explanation in its description.
+- Add `/lineup/burnier` and its lazy map loader. The map index now contains 20 producers.
+- Include all 20 exact `Винодельня Бюрнье` snapshot records and two official Exponat additions in six groups. The additions have details and bottle images, with no invented portal links.
+- Keep Classic and Elite Syrah and Krasnostop separate. Keep dry and late-harvest Pinot Gris separate. Leave unconfirmed price comparisons neutral.
+- Use the official Pinot Blanc bottle to correct the snapshot image mismatch. Preserve the source catalog metadata and all exact slugs.
+- Record source URLs, retrieval dates, source hashes, image hashes and membership evidence in `docs/product-line-maps/burnier/`.
+- Pass all 304 unit tests with the full snapshot, type checks, build, image-frame and bundle checks. Pass both browser suites and 25 Burnier-specific checks per engine in Chromium and WebKit. Read `docs/validation/burnier-product-line-map.md`.
+
 ## 2026-10-19 — Static wine images
 
 - Plan `../docs/plans/06_wine-images.md`. `wineImageUrl(slug, size)` in `shared/catalog.ts` gives `/img/wines/<1600|400>/<slug>.webp`. Caddy serves these files on the portal origin.

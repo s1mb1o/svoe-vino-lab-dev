@@ -314,6 +314,60 @@
     },
     {
       "producer": {
+        "id": "burnier",
+        "name": "Винодельня Бюрнье",
+        "aliases": [
+          "Бюрнье",
+          "Burnier",
+          "Винодельческий дом Бюрнье"
+        ],
+        "slug_prefixes": [
+          "vinodelnya-byurne-",
+          "b-yu-rne-"
+        ]
+      },
+      "summary": {
+        "products": 22,
+        "groups": 6,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+          "frame": {
+            "x": 255,
+            "y": 0,
+            "width": 1080,
+            "height": 3950,
+            "source_width": 1600,
+            "source_height": 3966
+          }
+        }
+      },
+      "slugs": {
+        "b-yu-rne-krasnostop-suhoe-krasnoe-classic": "wine-b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+        "b-yu-rne-l-yu-bl-yu-suhoe-rozovoe": "wine-b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+        "b-yu-rne-malbek-krasnoe-suhoe": "wine-b-yu-rne-malbek-krasnoe-suhoe",
+        "b-yu-rne-pino-gri-beloe-suhoe": "wine-b-yu-rne-pino-gri-beloe-suhoe",
+        "b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe": "wine-b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+        "b-yu-rne-sh-ardone-suhoe-beloe": "wine-b-yu-rne-sh-ardone-suhoe-beloe",
+        "b-yu-rne-sira-krasnoe-suhoe-classic": "wine-b-yu-rne-sira-krasnoe-suhoe-classic",
+        "b-yu-rne-vinisa-zh-suhoe-beloe": "wine-b-yu-rne-vinisa-zh-suhoe-beloe",
+        "b-yu-rne-vinisa-zh-suhoe-krasnoe": "wine-b-yu-rne-vinisa-zh-suhoe-krasnoe",
+        "b-yu-rne-vinisa-zh-suhoe-rozovoe": "wine-b-yu-rne-vinisa-zh-suhoe-rozovoe",
+        "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14": "wine-vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+        "vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135": "wine-vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+        "vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135": "wine-vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+        "vinodelnya-byurne-krasnostop-krasnoe-suhoe-145": "wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+        "vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135": "wine-vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+        "vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135": "wine-vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+        "vinodelnya-byurne-merlo-krasnoe-suhoe-14": "wine-vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+        "vinodelnya-byurne-saperavi-krasnoe-suhoe-135": "wine-vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+        "vinodelnya-byurne-sira-krasnoe-suhoe-135": "wine-vinodelnya-byurne-sira-krasnoe-suhoe-135",
+        "vinodelnya-byurne-vione-beloe-suhoe-135": "wine-vinodelnya-byurne-vione-beloe-suhoe-135"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
         "id": "derbent-vino",
         "name": "Дербент Вино",
         "aliases": [
@@ -536,6 +590,59 @@
         "zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125": "wine-zolotaya-balka-zb-spumante-semi-dry-risling-beloe-polusuhoe-125",
         "zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115": "wine-zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115",
         "zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125": "wine-zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
+        "id": "sikory",
+        "name": "Имение Сикоры",
+        "aliases": [
+          "Сикоры",
+          "Sikory"
+        ],
+        "slug_prefixes": [
+          "imenie-sikory-"
+        ]
+      },
+      "summary": {
+        "products": 22,
+        "groups": 6,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+          "frame": {
+            "x": 874,
+            "y": 0,
+            "width": 614,
+            "height": 2362,
+            "source_width": 2362,
+            "source_height": 2362
+          }
+        }
+      },
+      "slugs": {
+        "imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14": "wine-imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14",
+        "imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14": "wine-imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14",
+        "imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13": "wine-imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13",
+        "imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13": "wine-imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13",
+        "imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14": "wine-imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14",
+        "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14",
+        "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13",
+        "imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13": "wine-imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13",
+        "imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14": "wine-imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14",
+        "imenie-sikory-merlo-sikory-krasnoe-suhoe-13": "wine-imenie-sikory-merlo-sikory-krasnoe-suhoe-13",
+        "imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14": "wine-imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14",
+        "imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14": "wine-imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14",
+        "imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13": "wine-imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13",
+        "imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13": "wine-imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13",
+        "imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13": "wine-imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13",
+        "imenie-sikory-risling-sikory-beloe-suhoe-13": "wine-imenie-sikory-risling-sikory-beloe-suhoe-13",
+        "imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14": "wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14",
+        "imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13": "wine-imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13",
+        "imenie-sikory-shardone-sikory-beloe-suhoe-13": "wine-imenie-sikory-shardone-sikory-beloe-suhoe-13",
+        "imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13": "wine-imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13",
+        "imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13": "wine-imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13"
       },
       "alias_slugs": {}
     },
@@ -1001,6 +1108,61 @@
         "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-aligote-13",
         "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11",
         "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125": "wine-novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
+        "id": "raevskoe",
+        "name": "Раевское",
+        "aliases": [
+          "Винодельня Раевское",
+          "Raevskoe"
+        ],
+        "slug_prefixes": [
+          "vinodelnya-raevskoe-"
+        ]
+      },
+      "summary": {
+        "products": 24,
+        "groups": 6,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 246,
+            "height": 1000,
+            "source_width": 246,
+            "source_height": 1000
+          }
+        }
+      },
+      "slugs": {
+        "vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13": "wine-vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13",
+        "vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123": "wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123",
+        "vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13": "wine-vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13",
+        "vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117": "wine-vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117",
+        "vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14": "wine-vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14",
+        "vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12": "wine-vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12",
+        "vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123": "wine-vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123",
+        "vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12": "wine-vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12",
+        "vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116": "wine-vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116",
+        "vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13": "wine-vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13",
+        "vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121": "wine-vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121",
+        "vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126": "wine-vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126",
+        "vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121": "wine-vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121",
+        "vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128": "wine-vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128",
+        "vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12": "wine-vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12",
+        "vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13": "wine-vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13",
+        "vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125": "wine-vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125",
+        "vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145": "wine-vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145",
+        "vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12": "wine-vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12",
+        "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127",
+        "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128",
+        "vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135": "wine-vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135",
+        "vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122": "wine-vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122"
       },
       "alias_slugs": {}
     },
@@ -1518,6 +1680,125 @@
     },
     {
       "producer": {
+        "id": "aya",
+        "name": "AYA Organic Wine & Vineyards",
+        "aliases": [
+          "AYA",
+          "АЯ"
+        ],
+        "slug_prefixes": [
+          "aya-organic-wine-vineyards-",
+          "aya-khrustaleva-"
+        ]
+      },
+      "summary": {
+        "products": 28,
+        "groups": 9,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/aya/wine-evolution-reserve-pinot-noir.webp",
+          "frame": {
+            "x": 8,
+            "y": 75,
+            "width": 266,
+            "height": 929,
+            "source_width": 281,
+            "source_height": 1080
+          }
+        }
+      },
+      "slugs": {
+        "appassimento-merlot": "wine-appassimento-merlot",
+        "aya-khrustaleva-76-merlot-organik": "wine-aya-khrustaleva-76-merlot-organik",
+        "aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135": "wine-aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135",
+        "aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135": "wine-aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135",
+        "aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132": "wine-aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132",
+        "aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129": "wine-aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129",
+        "aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124": "wine-aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124",
+        "aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125": "wine-aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125",
+        "aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11": "wine-aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11",
+        "aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134": "wine-aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134",
+        "aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146",
+        "aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132",
+        "aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13": "wine-aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13",
+        "evolution-pinot-noir": "wine-evolution-pinot-noir",
+        "evolution-pinot-noir-bryut-beloe": "wine-evolution-pinot-noir-bryut-beloe",
+        "evolution-pinot-noir-bryut-rozovoe": "wine-evolution-pinot-noir-bryut-rozovoe",
+        "evolution-reserve-pinot-noir": "wine-evolution-reserve-pinot-noir",
+        "khrustaleva-76-merlot-polusuhoe-rozovoe": "wine-khrustaleva-76-merlot-polusuhoe-rozovoe",
+        "khrustaleva-76-muscat-bryut-beloe": "wine-khrustaleva-76-muscat-bryut-beloe",
+        "khrustaleva-76-muscat-polusladkoe-beloe": "wine-khrustaleva-76-muscat-polusladkoe-beloe",
+        "marquetry-cabernet-franc": "wine-marquetry-cabernet-franc",
+        "marquetry-syrah": "wine-marquetry-syrah",
+        "marquetry-syrah-merlot-cabernet-franc": "wine-marquetry-syrah-merlot-cabernet-franc",
+        "toile-de-vin-cabernet-sauvignon": "wine-toile-de-vin-cabernet-sauvignon",
+        "toile-de-vin-chardonnay": "wine-toile-de-vin-chardonnay",
+        "toile-de-vin-merlot": "wine-toile-de-vin-merlot",
+        "toile-de-vin-pinot-blanc": "wine-toile-de-vin-pinot-blanc"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
+        "id": "chateau-de-talu",
+        "name": "Chateau de Talu",
+        "aliases": [
+          "Château de Talu",
+          "Шато де Талю"
+        ],
+        "slug_prefixes": [
+          "chateau-de-talu-",
+          "miroir-de-talu-"
+        ]
+      },
+      "summary": {
+        "products": 27,
+        "groups": 6,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 230,
+            "height": 1000,
+            "source_width": 230,
+            "source_height": 1000
+          }
+        }
+      },
+      "slugs": {
+        "chateau-de-talu-blan-semilon-beloe-suhoe-127": "wine-chateau-de-talu-blan-semilon-beloe-suhoe-127",
+        "chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15": "wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15",
+        "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13": "wine-chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+        "chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14": "wine-chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+        "chateau-de-talu-klere-sira-rozovoe-suhoe-136": "wine-chateau-de-talu-klere-sira-rozovoe-suhoe-136",
+        "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137": "wine-chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+        "chateau-de-talu-kupazh-132-kaberne-sovinon-krasnoe-suhoe-146": "wine-chateau-de-talu-kupazh-132-kaberne-sovinon-krasnoe-suhoe-146",
+        "chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14": "wine-chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14",
+        "chateau-de-talu-merlot": "wine-chateau-de-talu-merlot",
+        "chateau-de-talu-muskat-beloe-suhoe-13": "wine-chateau-de-talu-muskat-beloe-suhoe-13",
+        "chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14": "wine-chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14",
+        "chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14": "wine-chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14",
+        "chateau-de-talu-shardone-rezerv-beloe-suhoe-13": "wine-chateau-de-talu-shardone-rezerv-beloe-suhoe-13",
+        "chateau-de-talu-shiraz-rezerv-sira-krasnoe-suhoe-14": "wine-chateau-de-talu-shiraz-rezerv-sira-krasnoe-suhoe-14",
+        "chateau-de-talu-uroki-frantsuzskogo-kaberne-fran-krasnoe-suhoe-14": "wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-fran-krasnoe-suhoe-14",
+        "chateau-de-talu-uroki-frantsuzskogo-kaberne-sovinon-krasnoe-suhoe-14": "wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-sovinon-krasnoe-suhoe-14",
+        "chateau-de-talu-uroki-frantsuzskogo-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-145": "wine-chateau-de-talu-uroki-frantsuzskogo-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-145",
+        "chateau-de-talu-uroki-frantsuzskogo-merlo-krasnoe-suhoe-147": "wine-chateau-de-talu-uroki-frantsuzskogo-merlo-krasnoe-suhoe-147",
+        "chateau-de-talu-uroki-frantsuzskogo-shardone-beloe-suhoe-124": "wine-chateau-de-talu-uroki-frantsuzskogo-shardone-beloe-suhoe-124",
+        "chateau-de-talu-uroki-frantsuzskogo-sira-krasnoe-suhoe-13": "wine-chateau-de-talu-uroki-frantsuzskogo-sira-krasnoe-suhoe-13",
+        "chateau-de-talu-uroki-frantsuzskogo-sovinon-blan-beloe-suhoe-115": "wine-chateau-de-talu-uroki-frantsuzskogo-sovinon-blan-beloe-suhoe-115",
+        "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142",
+        "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-premium-krasnoe-suhoe-143": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-premium-krasnoe-suhoe-143",
+        "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146",
+        "miroir-de-talu-merlot-cabernet-sauvignon": "wine-miroir-de-talu-merlot-cabernet-sauvignon",
+        "miroir-de-talu-merlot-krasnostop": "wine-miroir-de-talu-merlot-krasnostop"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
         "id": "esse",
         "name": "ESSE",
         "aliases": [
@@ -1595,6 +1876,72 @@
         "esse-sovinon-blan-beloe-suhoe-12": "wine-esse-sovinon-blan-beloe-suhoe-12",
         "esse-sovinon-blan-fyume-beloe-suhoe-128": "wine-esse-sovinon-blan-fyume-beloe-suhoe-128",
         "esse-vione-beloe-suhoe-13": "wine-esse-vione-beloe-suhoe-13"
+      },
+      "alias_slugs": {}
+    },
+    {
+      "producer": {
+        "id": "golubitskoe-estate",
+        "name": "Golubitskoe Estate",
+        "aliases": [
+          "Поместье Голубицкое",
+          "Голубицкое"
+        ],
+        "slug_prefixes": [
+          "golubitskoe-estate-",
+          "pomeste-golubitskoe-"
+        ]
+      },
+      "summary": {
+        "products": 34,
+        "groups": 7,
+        "as_of": "2026-10-19",
+        "cover": {
+          "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125.webp",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 265,
+            "height": 1000,
+            "source_width": 265,
+            "source_height": 1000
+          }
+        }
+      },
+      "slugs": {
+        "golubitskoe-estate-chardonnay": "wine-golubitskoe-estate-chardonnay",
+        "golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137": "wine-golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137",
+        "golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133": "wine-golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133",
+        "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125": "wine-golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+        "golubitskoe-estate-merlo-krasnoe-suhoe-135": "wine-golubitskoe-estate-merlo-krasnoe-suhoe-135",
+        "golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135": "wine-golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135",
+        "golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136": "wine-golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+        "golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135": "wine-golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135",
+        "golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115": "wine-golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115",
+        "golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132": "wine-golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132",
+        "golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136": "wine-golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+        "golubitskoe-estate-risling": "wine-golubitskoe-estate-risling",
+        "golubitskoe-estate-risling-beloe-suhoe-125": "wine-golubitskoe-estate-risling-beloe-suhoe-125",
+        "golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13": "wine-golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13",
+        "golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135": "wine-golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135",
+        "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": "wine-golubitskoe-estate-shardone-rezerv-beloe-suhoe-135",
+        "golubitskoe-estate-sovinon-blan-beloe-suhoe-11": "wine-golubitskoe-estate-sovinon-blan-beloe-suhoe-11",
+        "golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12": "wine-golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+        "golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12": "wine-golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12",
+        "golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125": "wine-golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125",
+        "golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12": "wine-golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12",
+        "golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12": "wine-golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12",
+        "golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115": "wine-golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115",
+        "golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125": "wine-golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125",
+        "golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117": "wine-golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117",
+        "golubitskoe-rose": "wine-golubitskoe-rose",
+        "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143": "wine-pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+        "pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132": "wine-pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132",
+        "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132": "wine-pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132",
+        "pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12": "wine-pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+        "pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12": "wine-pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12",
+        "pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12",
+        "pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115"
       },
       "alias_slugs": {}
     }

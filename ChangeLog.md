@@ -5,6 +5,8 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Merge six additional producer maps and refresh the current coverage reports: 25 maps, 1,203 products, and 1,138 of 2,103 saved catalogue cards (54.1132%). Recheck only F-24 and F-48 in `ASSESSMENT.md`. The six-map expansion awaits deployment.
+
 - Implemented plan `docs/plans/06_wine-images.md` on `feature/wine-images` (not deployed).
   `workbench/scripts/build_wine_images.py` builds a release of static wine images
   (`/img/wines/{1600,400}/<slug>.webp` and a SHA-256 manifest), and

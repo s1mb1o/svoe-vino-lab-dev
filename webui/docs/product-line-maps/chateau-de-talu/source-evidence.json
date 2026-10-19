@@ -1,0 +1,27 @@
+{
+  "producer_id": "chateau-de-talu",
+  "snapshot_only_groups": [
+    "southern-vertical",
+    "miroir"
+  ],
+  "sources": [
+    {
+      "source_id": "official-collections",
+      "url": "https://chateaudetalu.ru/wine-collections/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "a9ab1d901461989b300b3bc13e5d479ba245920bac277edeea2daec0e1174dc7",
+      "content_type": "web-extracted-text",
+      "section": "Collection headings and wine lists",
+      "facts": "The official page names everyday French Lessons, the main Chateau de Talu family, Reserve and exclusive releases. The original snapshot labels match those families. Southern Vertical and Miroir are not established by this current page."
+    },
+    {
+      "source_id": "official-shiraz",
+      "url": "https://chateaudetalu.ru/wine-collections/chateau_de_talu/ch-teau-de-talu-shiraz/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "6650a81d5c2b6c289d7ee42b7c4ed1d8017b0dde13c149433d0df912a9123fdc",
+      "content_type": "web-extracted-text",
+      "section": "Main collection Shiraz: grape, style and production",
+      "facts": "The official product page identifies a dry red Syrah in the main family with nine months in an oak foudre. This is separate from saved Reserve Shiraz."
+    }
+  ]
+}

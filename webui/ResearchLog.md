@@ -1,5 +1,59 @@
 # Research log
 
+## Map merge and coverage, 2026-10-19
+
+GitHub `main` at `910e11d7` already contains the index and page layout as `6d0cae18` and `d9cdc6cd`.
+The local equivalents are `96a9d190` and `c61b428e`. The merge retains the existing `main` behavior and adds six producer maps.
+Log and sitemap conflicts retain the newer `main` entries. The two new producer log sections remain at the top.
+
+The full snapshot hash remains `e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961`.
+The resolver covers 1,135 exact slugs and three verified aliases. One supported card remains intentionally unplaced, and 964 cards have no producer map.
+The 25 maps cover 1,138 of 1,139 supported-producer cards. Golubitskoe includes both verified exact source names.
+The MCP bundle is a different source: it has 1,127 exact mapped Active IDs and three aliases. Its remaining 963 Active IDs return unavailable.
+
+## Five more producer maps, 2026-10-19
+
+The requested batch covers Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры.
+The exact producer subsets contain 31, 26, 27, 23 and 21 records. The independent attribution test found two more Golubitskoe cards under `Поместье Голубицкое`.
+Official sources identify both Golubitskoe names with the same winery. The map covers all 33 cards and preserves the exact producer field for every source row.
+Classic Chardonnay is one of these linked cards. The official-only Golubitskoe addition is Tête de Cheval Semi-dry.
+
+The batch adds 130 exact snapshot identities and five selected official additions. It does not claim full current producer coverage.
+The registry test now accepts an explicitly pinned set of exact producer names for a map. It checks each crosswalk producer against the independent full-catalog projection.
+The absence check for Golubitskoe must cover both producer names.
+
+Golubitskoe separates the main and reserve Tête de Cheval families. Their prices are not compared with still-wine ranks.
+The current Petnat White grape list differs from the saved card. Keep the historical grapes and mark the limitation.
+Southern Vertical and Miroir de Talu, and Раевское Eklego and Glow, use snapshot-only groups at rank 0.
+The direct Talu HTML endpoints return HTTP 502. Source hashes for these pages identify retrieved web-extracted text, not raw HTML.
+
+The Southern Vertical Cabernet Franc image has an opaque white background. Built-in imagegen creates one transparent display derivative.
+The complete contour, capsule, glass and main label artwork pass light and dark inspection. Generated fine print is not product-identity evidence.
+The original catalog image, generated image and final asset hashes and exact English prompt are in `docs/product-line-maps/chateau-de-talu/imagegen-cutouts.json`.
+All other saved bottle images retain their original WebP bytes. Official PNG additions use lossless WebP encoding.
+
+The broad WebKit producer run passed 102 cases before a network-idle timeout on the existing Zolotaya Balka mobile page. It recorded no browser errors.
+The producer browser suite now fulfills external analytics requests locally. This keeps map checks independent of remote analytics availability.
+The rerun passes all 105 WebKit producer cases. Chromium also passes all 105 cases. Both engines pass 145 targeted cases and the Abrau regressions.
+
+## Burnier product-line map, 2026-10-19
+
+The neutral band uses the UI heading «Другие коллекции». The price explanation remains in the description.
+
+The exact producer filter finds 20 `Винодельня Бюрнье` rows in the pinned catalog snapshot.
+The official catalog lists 22 wines. White and red Exponat are absent from the saved producer rows.
+The new map keeps these two additions without catalog links.
+
+The original dark labels, wax capsules and official catalog image alt text identify three Elite Series wines.
+Their official cards specify 36 months in French barriques. This supports an editorial premium cue.
+The sources do not establish the relative prices of Classic, Lyublyu, Vinisazh, Exponat and late harvest. These groups use rank 0.
+
+The Pinot Blanc snapshot row points to the Viognier image. The original label confirms the mismatch.
+The map uses the official Pinot Blanc image and retains both input hashes in the crosswalk.
+No vintage equivalence is inferred. Names, grapes, descriptions and slugs remain exactly as saved.
+The other 19 saved WebP images retain their bytes. Three official PNG images use lossless WebP encoding.
+Read `docs/product-line-maps/burnier/sources.md` for the evidence and limits.
+
 ## 2026-10-19: Wine Crocodile page evidence
 
 The owner selected a separate `/crocodile` route in the existing portal.

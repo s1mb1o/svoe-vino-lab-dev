@@ -1,5 +1,13 @@
 # MCP research log
 
+## 2026-10-19 — Six more producer maps
+
+The expanded Web registry has 25 producers and 1,203 products.
+The existing MCP loader reads all six new maps without a runtime change.
+Of 2,093 Active bundle IDs, 1,127 resolve by exact slug and three resolve by verified alias. The other 963 IDs have no map.
+The largest measured producer-line response is 50,126 bytes, below the 128 KiB limit.
+These bundle counts differ from the Web report because the two sources have different exact IDs.
+
 ## 2026-10-19 — Account tools
 
 - Transport: stdio only (issue #65, open decision 2, option A). The token stays in the client

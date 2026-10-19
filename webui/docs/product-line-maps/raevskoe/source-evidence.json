@@ -1,0 +1,36 @@
+{
+  "producer_id": "raevskoe",
+  "snapshot_only_groups": [
+    "eklego",
+    "glow"
+  ],
+  "sources": [
+    {
+      "source_id": "official-home",
+      "url": "https://raevskoe.com/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "1228ac693d251ee4705d548a0702bc1861071b1f106ac4b1a26c58ffc78b9b91",
+      "content_type": "text/html",
+      "section": "Collection sections and winery history",
+      "facts": "The producer names Parfum de Terroir, Renaissance and Genesis and describes premium and super-premium production. No common measured price order between Renaissance and Genesis is established."
+    },
+    {
+      "source_id": "official-catalog",
+      "url": "https://raevskoe.com/catalog/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "6e2a82a90bc269c3fb0cab820ec040628406c1099c7cddd7a51da6d5f0e97494",
+      "content_type": "text/html",
+      "section": "Collection filter and product cards",
+      "facts": "The catalog confirms named families and the separate Genesis Blanc de Blancs. The selected map does not claim full current coverage. Glow and Eklego remain snapshot-only navigation groups."
+    },
+    {
+      "source_id": "official-sparkling",
+      "url": "https://raevskoe.com/assortiment/genezis/genezis-blank-de-blanks",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "fcda817c9c0d7ac2955da5710a3ddeb51e7c21aec8430ea7910fa0f085bcf13d",
+      "content_type": "text/html",
+      "section": "Grape composition and production method",
+      "facts": "The official card identifies 100 percent Chardonnay and records tirage and disgorgement dates. The saved producer subset has no sparkling Genesis card. No unsupported dosage category is assigned."
+    }
+  ]
+}

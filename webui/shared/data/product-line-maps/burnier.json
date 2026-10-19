@@ -1,0 +1,1011 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "burnier",
+    "name": "Винодельня Бюрнье",
+    "aliases": [
+      "Бюрнье",
+      "Burnier",
+      "Винодельческий дом Бюрнье"
+    ],
+    "slug_prefixes": [
+      "vinodelnya-byurne-",
+      "b-yu-rne-"
+    ]
+  },
+  "scope": {
+    "label": "20 вин из снимка «Свое Вино» и 2 официальных дополнения; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "portal-winery",
+      "label": "«Свое Вино»: Винодельня Бюрнье",
+      "url": "https://vino-svoe.ru/wineries/vinodelnya-byurne"
+    },
+    {
+      "id": "official-catalog",
+      "label": "Бюрнье: официальная коллекция вин",
+      "url": "https://burnier.vin/wines.html"
+    },
+    {
+      "id": "official-exhibit-white",
+      "label": "Бюрнье: Экспонат · Белое сухое • 2024",
+      "url": "https://burnier.vin/wines/exhibit_white.html"
+    },
+    {
+      "id": "official-exhibit-red",
+      "label": "Бюрнье: Экспонат · Красное сухое • 2023",
+      "url": "https://burnier.vin/wines/exhibit_red.html"
+    },
+    {
+      "id": "official-vinisage-white",
+      "label": "Бюрнье: Винисаж · Белое сухое • 2025",
+      "url": "https://burnier.vin/wines/vinisage_white.html"
+    },
+    {
+      "id": "official-vinisage-rose",
+      "label": "Бюрнье: Винисаж · Розовое сухое • 2025",
+      "url": "https://burnier.vin/wines/vinisage_rose.html"
+    },
+    {
+      "id": "official-vinisage-red",
+      "label": "Бюрнье: Винисаж · Красное сухое • 2024",
+      "url": "https://burnier.vin/wines/vinisage_red.html"
+    },
+    {
+      "id": "official-love-white",
+      "label": "Бюрнье: Люблю · Белое сухое • 2025",
+      "url": "https://burnier.vin/wines/love_white.html"
+    },
+    {
+      "id": "official-love-rose",
+      "label": "Бюрнье: Люблю · Розовое сухое • 2025",
+      "url": "https://burnier.vin/wines/love_rose.html"
+    },
+    {
+      "id": "official-love-red",
+      "label": "Бюрнье: Люблю · Красное сухое • 2024",
+      "url": "https://burnier.vin/wines/love_red.html"
+    },
+    {
+      "id": "official-viognier",
+      "label": "Бюрнье: Вионье · Белое сухое • 2024",
+      "url": "https://burnier.vin/wines/viognier.html"
+    },
+    {
+      "id": "official-chardonnay",
+      "label": "Бюрнье: Шардоне · Белое сухое • 2024",
+      "url": "https://burnier.vin/wines/chardonnay.html"
+    },
+    {
+      "id": "official-pinot-blanc",
+      "label": "Бюрнье: Пино Блан · Белое сухое • 2024",
+      "url": "https://burnier.vin/wines/pinot_blanc.html"
+    },
+    {
+      "id": "official-pinot-gris",
+      "label": "Бюрнье: Пино Гри · Белое сухое • 2024",
+      "url": "https://burnier.vin/wines/pinot_gris.html"
+    },
+    {
+      "id": "official-pinot-gris-late-harvest",
+      "label": "Бюрнье: Пино Гри Поздний Сбор · Белое сладкое • 2025",
+      "url": "https://burnier.vin/wines/pinot_gris_late_harvest.html"
+    },
+    {
+      "id": "official-krasnostop",
+      "label": "Бюрнье: Красностоп · Красное сухое • 2024",
+      "url": "https://burnier.vin/wines/krasnostop.html"
+    },
+    {
+      "id": "official-syrah",
+      "label": "Бюрнье: Сира · Красное сухое • 2024",
+      "url": "https://burnier.vin/wines/syrah.html"
+    },
+    {
+      "id": "official-malbec",
+      "label": "Бюрнье: Мальбек · Красное сухое • 2023",
+      "url": "https://burnier.vin/wines/malbec.html"
+    },
+    {
+      "id": "official-merlot",
+      "label": "Бюрнье: Мерло · Красное сухое • 2022",
+      "url": "https://burnier.vin/wines/merlot.html"
+    },
+    {
+      "id": "official-cabernet-franc",
+      "label": "Бюрнье: Каберне Фран · Красное сухое • 2022",
+      "url": "https://burnier.vin/wines/cabernet_franc.html"
+    },
+    {
+      "id": "official-cabernet-sauvignon",
+      "label": "Бюрнье: Каберне Совиньон · Красное сухое • 2019",
+      "url": "https://burnier.vin/wines/cabernet_sauvignon.html"
+    },
+    {
+      "id": "official-elite-syrah",
+      "label": "Бюрнье: Сира · Красное сухое • 2019",
+      "url": "https://burnier.vin/wines/elite_syrah.html"
+    },
+    {
+      "id": "official-elite-saperavi",
+      "label": "Бюрнье: Саперави · Красное сухое • 2020",
+      "url": "https://burnier.vin/wines/elite_saperavi.html"
+    },
+    {
+      "id": "official-elite-krasnostop",
+      "label": "Бюрнье: Красностоп · Красное сухое • 2017",
+      "url": "https://burnier.vin/wines/elite_krasnostop.html"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Название «Элитная серия» и технология служат редакционным ориентиром премиальности, а не рейтингом качества или актуальной ценой. Для остальных коллекций ценовое соотношение не подтверждено. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "elite",
+      "label": "Элитная серия",
+      "rank": 3,
+      "description": "Премиальный ориентир по официальному названию серии и длительной выдержке. Не рейтинг качества и не текущая цена.",
+      "price_label": "Премиальный ориентир",
+      "source_ids": [
+        "official-catalog",
+        "official-elite-syrah",
+        "official-elite-saperavi",
+        "official-elite-krasnostop"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Для этих коллекций и сладкого позднего сбора относительная ценовая ступень не подтверждена.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "elite",
+      "name": "Элитная серия",
+      "tier_id": "elite",
+      "method": "Выдержка во французских барриках 36 месяцев по официальным карточкам",
+      "description": "Красностоп, Сира и Саперави в тёмном оформлении с сургучной капсулой. Это самостоятельные вина; одноимённые выпуски Classic показаны отдельно.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-elite-krasnostop",
+        "official-elite-saperavi",
+        "official-elite-syrah",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Классика · сортовые вина",
+      "tier_id": "neutral",
+      "method": "Тихие моносортовые вина; выдержка зависит от выпуска",
+      "description": "Белые и красные сортовые вина в светлом оформлении. В группе есть вина с разной выдержкой. Сладкий Пино Гри Поздний сбор вынесен отдельно.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-krasnostop",
+        "official-malbec",
+        "official-pinot-gris",
+        "official-chardonnay",
+        "official-syrah",
+        "official-pinot-blanc",
+        "official-cabernet-franc",
+        "official-cabernet-sauvignon",
+        "official-merlot",
+        "official-viognier",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "love",
+      "name": "Люблю",
+      "tier_id": "neutral",
+      "method": "Тихие сухие купажи",
+      "description": "Белое, розовое и красное вино в оформлении с рисунком рук. Состав каждого купажа сохранён из каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-love-rose",
+        "official-love-white",
+        "official-love-red",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "vinisage",
+      "name": "Винисаж",
+      "tier_id": "neutral",
+      "method": "Тихие сухие вина",
+      "description": "Белое, розовое и красное вино с живописными этикетками. Ценовое соотношение с другими купажными коллекциями не подтверждено.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vinisage-white",
+        "official-vinisage-red",
+        "official-vinisage-rose",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "exhibit",
+      "name": "Экспонат",
+      "tier_id": "neutral",
+      "method": "Тихие сухие купажи; технология зависит от цвета",
+      "description": "Белый и красный купажи с художественными этикетками из официальной коллекции. В снимке каталога от 17.09.2026 эти вина не найдены.",
+      "source_ids": [
+        "official-exhibit-white",
+        "official-catalog",
+        "official-exhibit-red",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "late-harvest",
+      "name": "Пино Гри · Поздний сбор",
+      "tier_id": "neutral",
+      "method": "Поздний сбор; белое сладкое вино",
+      "description": "Самостоятельный сладкий выпуск Пино Гри. Он не объединён с сухим Пино Гри и не получает общую ценовую ступень с сухими винами.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-pinot-gris-late-harvest",
+        "official-catalog"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+      "group_id": "elite",
+      "name": "БЮРНЬЕ.КРАСНОСТОП сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-krasnostop-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 255,
+          "y": 0,
+          "width": 1080,
+          "height": 3950,
+          "source_width": 1600,
+          "source_height": 3966
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Красностоп"
+      ],
+      "description": "\"Самобытное и многогранное вино привлекает внимание щедрым, сложным ароматом, сотканным из нот вишни, черники, дыма, пряностей и влажной земли. Вкус полный, округлый, сбалансированный с фруктово-бальзамическими оттенками, мягкими танинами и длительным ягодно-пряным послевкусием.\nВино с потенциалом к длительной выдержке.\"",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-elite-krasnostop"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+      "group_id": "elite",
+      "name": "БЮРНЬЕ.САПЕРАВИ сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-saperavi-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-saperavi-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 83,
+          "y": 0,
+          "width": 347,
+          "height": 1274,
+          "source_width": 516,
+          "source_height": 1280
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Вино с ярким характером и долгим потенциалом развития. \u000bВ сложном насыщенном аромате преобладают тона подвяленной вишни, ежевики и сливы, дополненные нюансами темного шоколада и лакрицы. Полнотелый и структурированный вкус, мягкие бархатные танины и сбалансированная кислотность. В длительном послевкусии ягодно-шоколадные оттенки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-elite-saperavi"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-sira-krasnoe-suhoe-135",
+      "group_id": "elite",
+      "name": "БЮРНЬЕ.СИРА сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-sira-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-sira-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 255,
+          "y": 0,
+          "width": 1080,
+          "height": 3950,
+          "source_width": 1600,
+          "source_height": 3966
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Элегантное и утонченное вино с прекрасным потенциалом развития. Сортовой аромат раскрывается оттенками темной лесной малины, черники и цветов, нюансами шоколада и свежевыделанной кожи. Сбалансированное во вкусе, с бархатными танинами, освежающей кислотностью, нотами молотого перца в долгом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-elite-syrah"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.КРАСНОСТОП сухое красное Classic",
+      "variant": "",
+      "wine_slug": "b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-krasnostop-suhoe-krasnoe-classic.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 73,
+          "y": 0,
+          "width": 321,
+          "height": 1264,
+          "source_width": 466,
+          "source_height": 1280
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Красностоп"
+      ],
+      "description": "Многослойная ароматика с яркими сортовыми характеристиками: чёрная вишня, чёрная слива, ежевика, нюансы специй, кожи и тёмного шоколада. Богатый объёмный вкус, сочная кислотность, зрелые бархатные танины и долгое ягодно-пряное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-krasnostop"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-malbek-krasnoe-suhoe",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.МАЛЬБЕК красное сухое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-malbek-krasnoe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-malbek-krasnoe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 73,
+          "y": 0,
+          "width": 321,
+          "height": 1264,
+          "source_width": 466,
+          "source_height": 1280
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Мальбек"
+      ],
+      "description": "Сложное и ароматное вино, ноты ежевики, чёрной сливы, фиалки, сладкого граната, бальзамические нюансы и специи. Во вкусе сбалансированное и полнотелое, с умеренным алкоголем и бархатистыми танинами, а также с продолжительным фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-malbec"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-pino-gri-beloe-suhoe",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.ПИНО ГРИ белое сухое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-pino-gri-beloe-suhoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-pino-gri-beloe-suhoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 177,
+          "y": 0,
+          "width": 1045,
+          "height": 3896,
+          "source_width": 1434,
+          "source_height": 3943
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Яркая и типичная сортовая ароматика спелых косточковых фруктов (персик, абрикос), мёда и чайной розы. Во вкусе вино объёмное, полнотелое, хорошо структурированное, с мягкой свежей кислотностью, продолжительным послевкусием с лёгкой благородной горчинкой. Очень гастрономичное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-pinot-gris"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-sh-ardone-suhoe-beloe",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.ШАРДОНЕ сухое белое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-sh-ardone-suhoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-sh-ardone-suhoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 40,
+          "y": 0,
+          "width": 236,
+          "height": 878,
+          "source_width": 324,
+          "source_height": 889
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Ароматное с приятной фруктовой доминантой и лёгкими нюансами выдержки в новом французском дубе (ваниль). Южный стиль этого вина раскрывается тонами груши Дюшес, жёлтого лимона, жёлтого яблока, белыми цветами-медоносами и деликатными нюансами сливочного крема. Умеренно-объёмный и округлый вкус с выраженной структурой, яркой сочной кислотностью, нюансами зелёного яблока и цитрусовых фруктов в длительном фруктовом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-chardonnay"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-sira-krasnoe-suhoe-classic",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.СИРА красное сухое Classic",
+      "variant": "",
+      "wine_slug": "b-yu-rne-sira-krasnoe-suhoe-classic",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-sira-krasnoe-suhoe-classic.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 73,
+          "y": 0,
+          "width": 321,
+          "height": 1264,
+          "source_width": 466,
+          "source_height": 1280
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Богатая и благородная ароматика с типичными сортовыми характеристиками: голубика, фиалка, чёрный молотый перец, лакрица и нюансы подлеска. Во вкусе вино демонстрирует отличный баланс и структуру с плотными танинами и длительным пряным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-syrah"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.ПИНО БЛАН сухое белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14.webp",
+        "source_id": "official-pinot-blanc",
+        "frame": {
+          "x": 53,
+          "y": 0,
+          "width": 319,
+          "height": 1188,
+          "source_width": 436,
+          "source_height": 1200
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Свежая, деликатная и нежная ароматика сладких белых цветов, персика и абрикоса, с нюансом сливочного крема. Во вкусе вино гармоничное и сбалансированное, с сочной кислотностью и продолжительным обволакивающим фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-pinot-blanc"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.КАБЕРНЕ ФРАН сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 51,
+          "y": 0,
+          "width": 223,
+          "height": 879,
+          "source_width": 324,
+          "source_height": 889
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Элегантное и самодостаточное вино с хорошим потенциалом развития. Многогранный аромат раскрывается тонами подвяленных тёмных ягод и зёрен граната, присыпанных пряными травами и цветами фиалки. Во вкусе гладкие, зрелые танины, баланс и долгое пряно-ягодное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cabernet-franc"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.КАБЕРНЕ СОВИНЬОН сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-kaberne-sovinon-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 51,
+          "y": 0,
+          "width": 223,
+          "height": 879,
+          "source_width": 324,
+          "source_height": 889
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Самодостаточное и породистое вино с прекрасным потенциалом развития и сортовыми характеристиками. Сложный слоистый аромат раскрывается тонами тёмных ягод, нюансами свежемолотого чёрного перца, кедра и лаврового листа. Зрелое, полнотелое во вкусе, с бархатными танинами, сочной кислотностью и ягодными оттенками в продолжительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-cabernet-sauvignon"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.МЕРЛО сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-merlo-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-merlo-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 51,
+          "y": 0,
+          "width": 223,
+          "height": 879,
+          "source_width": 324,
+          "source_height": 889
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В многослойном аромате переливаются оттенки спелой тёмной вишни, чёрной сливы, чернослива, лакрицы, дополненные нотами специй и пряностей. Сбалансированное во вкусе, гладкая текстура радует умеренными танинами и долгим ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-merlot"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-vione-beloe-suhoe-135",
+      "group_id": "classic",
+      "name": "БЮРНЬЕ.ВИОНЬЕ сухое белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-vione-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-vione-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 40,
+          "y": 0,
+          "width": 236,
+          "height": 880,
+          "source_width": 324,
+          "source_height": 889
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Яркая фруктовая ароматика с нотами зелёного яблока, абрикоса и цитрусовых фруктов, а также с нюансами минеральности. Во вкусе вино с сочной освежающей кислотностью и продолжительным послевкусием цитрусовых фруктов, отлично сбалансированное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-viognier"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+      "group_id": "love",
+      "name": "БЮРНЬЕ.ЛЮБЛЮ сухое розовое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-l-yu-bl-yu-suhoe-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-l-yu-bl-yu-suhoe-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 222,
+          "y": 0,
+          "width": 1080,
+          "height": 3794,
+          "source_width": 1548,
+          "source_height": 3811
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое сухое",
+      "grapes": [
+        "Мерло",
+        "Сира"
+      ],
+      "description": "Яркое, самодостаточное вино. В интенсивном ягодном аромате переливаются ноты барбариса, дикой малины, лесной земляники, с легким нюансом",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-love-rose"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+      "group_id": "love",
+      "name": "БЮРНЬЕ.ЛЮБЛЮ сухое белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-lyublyu-beloe-shardone-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 52,
+          "y": 0,
+          "width": 250,
+          "height": 886,
+          "source_width": 361,
+          "source_height": 889
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Вионье",
+        "Пино Блан",
+        "Пино Гри",
+        "Шардоне"
+      ],
+      "description": "Гармоничное, элегантное и утонченное вино. Аромат с цветочной доминантой жасмина, нюансами груши Вильямс, зеленого яблока, деликатной тропической нотой и оттенками заварного крема. Во вкусе сбалансированное и сочное. В длительном послевкусии красиво переплетаются лёгкие штрихи лайма, ананаса и зеленого яблока.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-love-white"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+      "group_id": "love",
+      "name": "БЮРНЬЕ.ЛЮБЛЮ сухое красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 53,
+          "y": 0,
+          "width": 250,
+          "height": 883,
+          "source_width": 361,
+          "source_height": 889
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Фран",
+        "Мерло",
+        "Сира"
+      ],
+      "description": "В элегантном аромате раскрываются оттенки фиалки, ежевики, голубики, дополненные нюансами специй, черной сливы и лакрицы. Во вкусе вино округлое, сбалансированное, с шелковистыми танинами, гибкой текстурой и фруктово-пряными нотками в длительном послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-love-red"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-vinisa-zh-suhoe-beloe",
+      "group_id": "vinisage",
+      "name": "БЮРНЬЕ.ВИНИСАЖ сухое белое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-vinisa-zh-suhoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 223,
+          "y": 0,
+          "width": 1071,
+          "height": 3781,
+          "source_width": 1548,
+          "source_height": 3811
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Мускат Белый",
+        "Пино Блан",
+        "Шардоне"
+      ],
+      "description": "Яркий и привлекательный фруктовый аромат, раскрывающийся оттенками цветения, косточковых фруктов: абрикоса и персика; ананаса, нотками спелых цитрусовых фруктов и мёда. Лёгкое, сочное, освежающее и сбалансированное во вкусе вино, с приятным длительным послевкусием тропических и цитрусовых фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vinisage-white"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-vinisa-zh-suhoe-krasnoe",
+      "group_id": "vinisage",
+      "name": "БЮРНЬЕ.ВИНИСАЖ сухое красное",
+      "variant": "",
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-krasnoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-vinisa-zh-suhoe-krasnoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 223,
+          "y": 0,
+          "width": 1078,
+          "height": 3789,
+          "source_width": 1548,
+          "source_height": 3811
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло"
+      ],
+      "description": "В притягательном фруктовом аромате собраны оттенки разнообразных тёмных ягод (чёрная смородина, чёрная вишня, чёрная рябина), дополненные нюансами специй, молотого кофе и чёрного шоколада. Во вкусе хорошо структурированное, сочное, сбалансированное, с бархатистыми округлёнными танинами и фруктово-пряными нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vinisage-red"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-vinisa-zh-suhoe-rozovoe",
+      "group_id": "vinisage",
+      "name": "БЮРНЬЕ.ВИНИСАЖ сухое розовое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-vinisa-zh-suhoe-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-vinisa-zh-suhoe-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 224,
+          "y": 0,
+          "width": 1076,
+          "height": 3783,
+          "source_width": 1664,
+          "source_height": 3933
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое сухое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Элегантное и аутентичное вино. В аромате переливаются ноты абрикоса, жёлтой груши, красной вишни и заварного крема. Лёгкое и нежное во вкусе, отлично сбалансированное, с сочной кислотностью и длительным ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-vinisage-rose"
+      ]
+    },
+    {
+      "id": "official-exhibit-white",
+      "group_id": "exhibit",
+      "name": "БЮРНЬЕ.ЭКСПОНАТ белое сухое",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/official-exhibit-white.webp",
+        "source_id": "official-exhibit-white",
+        "frame": {
+          "x": 70,
+          "y": 0,
+          "width": 341,
+          "height": 1195,
+          "source_width": 487,
+          "source_height": 1200
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Шардоне",
+        "Пино Блан",
+        "Мускат Белый"
+      ],
+      "description": "Белый сухой купаж с ароматами косточковых фруктов, белых цветов и цитрусовых. Свежий, лёгкий вкус с фруктовым послевкусием. По официальной карточке вино выдерживают на тонком дрожжевом осадке шесть месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-exhibit-white",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "official-exhibit-red",
+      "group_id": "exhibit",
+      "name": "БЮРНЬЕ.ЭКСПОНАТ красное сухое",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/official-exhibit-red.webp",
+        "source_id": "official-exhibit-red",
+        "frame": {
+          "x": 71,
+          "y": 0,
+          "width": 341,
+          "height": 1194,
+          "source_width": 487,
+          "source_height": 1200
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Каберне Фран",
+        "Каберне Совиньон",
+        "Мерло"
+      ],
+      "description": "Красный сухой купаж с оттенками тёмных ягод, пряностей и шоколада. Сочный вкус с мягкими танинами. По официальной карточке брожение проходит в бетоне, а общий срок выдержки в ёмкостях достигает двух лет.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-exhibit-red",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+      "group_id": "late-harvest",
+      "name": "БЮРНЬЕ.ПИНО ГРИ Поздний сбор сладкое белое",
+      "variant": "",
+      "wine_slug": "b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/burnier/wine-b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 177,
+          "y": 0,
+          "width": 1045,
+          "height": 3896,
+          "source_width": 1434,
+          "source_height": 3943
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сладкое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Интенсивная и сложная ароматика с нотками кураги, белого изюма, липового мёда и полевых цветов. Во вкусе вино с прекрасной сбалансированной сладостью, цитрусовой кислотностью и длительным послевкусием сухофруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-pinot-gris-late-harvest"
+      ]
+    }
+  ]
+}

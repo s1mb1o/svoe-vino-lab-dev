@@ -157,9 +157,10 @@ After a map change, run `npm run line-maps:index` in `webui/` and commit the ind
 `product_line_maps_sha256` covers the index and all map files. The catalog `version` also covers them.
 Read `../docs/plans/03_mcp-producer-line-maps.md` for the decisions.
 
-The current registry has 19 producers and 1,046 products.
-980 Active IDs are map nodes: 977 exact slugs and 3 verified aliases.
-The other 1,113 Active IDs return unavailable.
+The current registry has 25 producers and 1,203 products.
+1,130 Active IDs are map nodes: 1,127 exact slugs and 3 verified aliases.
+The other 963 Active IDs return unavailable.
+These counts use the MCP bundle and its Active records. The Web coverage report uses the separate 2,103-card catalog snapshot.
 
 Resolution follows the Web UI:
 

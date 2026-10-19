@@ -1,0 +1,686 @@
+{
+  "producer_id": "golubitskoe-estate",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Golubitskoe Estate",
+  "catalog_producers": [
+    "Golubitskoe Estate",
+    "Поместье Голубицкое"
+  ],
+  "entries": [
+    {
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137",
+      "product_id": "wine-golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137",
+      "group_id": "classic",
+      "catalog_name": "Каберне Совиньон",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_kaberne_sovinon_krasnoe_suhoe_137_b1ceb967fd.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_kaberne_sovinon_krasnoe_suhoe_137_b1ceb967fd.webp",
+      "input_sha256": "d0bc61a1a852e8553653068435608a73b7e13298bd72fd360c1194a1de50a1d0",
+      "asset_sha256": "d0bc61a1a852e8553653068435608a73b7e13298bd72fd360c1194a1de50a1d0",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133",
+      "product_id": "wine-golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133",
+      "group_id": "noble",
+      "catalog_name": "Каберне Совиньон Noble Selection",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_kaberne_sovinon_noble_selection_krasnoe_suhoe_133_f0984d4c21.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_kaberne_sovinon_noble_selection_krasnoe_suhoe_133_f0984d4c21.webp",
+      "input_sha256": "49c0cc1c49c545f16a3abc7a34d5a08adb0658aaac8fbf29d40d49432b7b2d0d",
+      "asset_sha256": "49c0cc1c49c545f16a3abc7a34d5a08adb0658aaac8fbf29d40d49432b7b2d0d",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-noble",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+      "product_id": "wine-golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+      "group_id": "reserve",
+      "catalog_name": "Каберне Совиньон Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_kaberne_sovinon_rezerv_krasnoe_suhoe_125_9afdb2e885.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_kaberne_sovinon_rezerv_krasnoe_suhoe_125_9afdb2e885.webp",
+      "input_sha256": "7a90f5be6081f2803b15cbd0096e5a6df8ca84ef1a8ec26087a8c0a558e69b88",
+      "asset_sha256": "7a90f5be6081f2803b15cbd0096e5a6df8ca84ef1a8ec26087a8c0a558e69b88",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-merlo-krasnoe-suhoe-135",
+      "product_id": "wine-golubitskoe-estate-merlo-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "catalog_name": "Мерло",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_merlo_krasnoe_suhoe_135_4cc0abb46d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_merlo_krasnoe_suhoe_135_4cc0abb46d.webp",
+      "input_sha256": "916610252913907e1e0ee063b9183c0c7714e2ce50b7483787ec655c9f16c66b",
+      "asset_sha256": "916610252913907e1e0ee063b9183c0c7714e2ce50b7483787ec655c9f16c66b",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135",
+      "product_id": "wine-golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135",
+      "group_id": "reserve",
+      "catalog_name": "Мерло Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_merlo_rezerv_krasnoe_suhoe_135_2a7849699b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_merlo_rezerv_krasnoe_suhoe_135_2a7849699b.webp",
+      "input_sha256": "bb2e047011fd8ab3e157f6f3c9df1c6112a67381134b4eb73e33ead13e2f2690",
+      "asset_sha256": "bb2e047011fd8ab3e157f6f3c9df1c6112a67381134b4eb73e33ead13e2f2690",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "product_id": "wine-golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "noble",
+      "catalog_name": "Noble Selection Red Blend",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_noble_selection_red_blend_kaberne_sovinon_krasnoe_suhoe_136_37a3acdce0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_noble_selection_red_blend_kaberne_sovinon_krasnoe_suhoe_136_37a3acdce0.webp",
+      "input_sha256": "5a35e01cbe2e746cfaec8db231bf79c0e229c97b89c8267a8726459bca726fb1",
+      "asset_sha256": "5a35e01cbe2e746cfaec8db231bf79c0e229c97b89c8267a8726459bca726fb1",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-noble",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135",
+      "product_id": "wine-golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135",
+      "group_id": "noble",
+      "catalog_name": "Noble Selection White Blend",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_noble_selection_white_blend_shardone_beloe_suhoe_135_3e16d234be.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_noble_selection_white_blend_shardone_beloe_suhoe_135_3e16d234be.webp",
+      "input_sha256": "e100809cbbb8f77916ca16cf76106af204ff1d511781e9aa406d48049c38fb77",
+      "asset_sha256": "e100809cbbb8f77916ca16cf76106af204ff1d511781e9aa406d48049c38fb77",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-noble",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115",
+      "product_id": "wine-golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115",
+      "group_id": "petnat",
+      "catalog_name": "Петнат White",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_petnat_white_risling_reynskiy_petnat_suhoy_belyy_115_e6d0ac50f9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_petnat_white_risling_reynskiy_petnat_suhoy_belyy_115_e6d0ac50f9.webp",
+      "input_sha256": "931c909c965b20042f52d0369bb131d5c4b4ad578004ad07c118e3738cff701a",
+      "asset_sha256": "931c909c965b20042f52d0369bb131d5c4b4ad578004ad07c118e3738cff701a",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-group"
+        ]
+      },
+      "source_conflict": "The current official Petnat White has a different grape list. Preserve the snapshot grapes. No current release equivalence is asserted."
+    },
+    {
+      "wine_slug": "golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132",
+      "product_id": "wine-golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132",
+      "group_id": "reserve",
+      "catalog_name": "Пино Нуар Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_pino_nuar_rezerv_krasnoe_suhoe_132_d93b15131f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_pino_nuar_rezerv_krasnoe_suhoe_132_d93b15131f.webp",
+      "input_sha256": "7ef3b09b0358c2ee49c269f59c95bffc0fa108e044fd3208d4520572faa92bf5",
+      "asset_sha256": "7ef3b09b0358c2ee49c269f59c95bffc0fa108e044fd3208d4520572faa92bf5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "product_id": "wine-golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "classic",
+      "catalog_name": "Red Blend",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_red_blend_kaberne_sovinon_krasnoe_suhoe_136_29c2847d36.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_red_blend_kaberne_sovinon_krasnoe_suhoe_136_29c2847d36.webp",
+      "input_sha256": "1c277a6afd631bc0ff488106a49cece415780d21f54f1aabd165ac7a332524ae",
+      "asset_sha256": "1c277a6afd631bc0ff488106a49cece415780d21f54f1aabd165ac7a332524ae",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-risling",
+      "product_id": "wine-golubitskoe-estate-risling",
+      "group_id": "classic",
+      "catalog_name": "Golubitskoe Estate Рислинг",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "Pomeste_Golubiczkoe_Risling_02c2e84311.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Pomeste_Golubiczkoe_Risling_02c2e84311.webp",
+      "input_sha256": "85eaadb096c99f6666ce777a7729e4092c09e40312b322327751784a13499770",
+      "asset_sha256": "85eaadb096c99f6666ce777a7729e4092c09e40312b322327751784a13499770",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-risling-beloe-suhoe-125",
+      "product_id": "wine-golubitskoe-estate-risling-beloe-suhoe-125",
+      "group_id": "classic",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_risling_beloe_suhoe_125_f232e3bdcb.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_risling_beloe_suhoe_125_f232e3bdcb.webp",
+      "input_sha256": "dc1d707fc59665ce8df0dd783063500d284692f033cf1f12ac98dc54d994e61c",
+      "asset_sha256": "dc1d707fc59665ce8df0dd783063500d284692f033cf1f12ac98dc54d994e61c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13",
+      "product_id": "wine-golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13",
+      "group_id": "classic",
+      "catalog_name": "Рислинг Оранж",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_risling_oranzh_risling_reynskiy_oranzhevoe_suhoe_13_f1f3796561.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_risling_oranzh_risling_reynskiy_oranzhevoe_suhoe_13_f1f3796561.webp",
+      "input_sha256": "5ce36ac509f5f6c6a865dc00330e44be4b347fb59996d5524c729d820bf535be",
+      "asset_sha256": "5ce36ac509f5f6c6a865dc00330e44be4b347fb59996d5524c729d820bf535be",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135",
+      "product_id": "wine-golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135",
+      "group_id": "noble",
+      "catalog_name": "Шардоне Noble Selection Barrel Touch",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_shardone_noble_selection_barrel_touch_beloe_suhoe_135_306499740f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_shardone_noble_selection_barrel_touch_beloe_suhoe_135_306499740f.webp",
+      "input_sha256": "a32a6761e86ea30d27b5f4661a5508aa0120d0fb7f49a848fe3b9512b30267fb",
+      "asset_sha256": "a32a6761e86ea30d27b5f4661a5508aa0120d0fb7f49a848fe3b9512b30267fb",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-noble",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135",
+      "product_id": "wine-golubitskoe-estate-shardone-rezerv-beloe-suhoe-135",
+      "group_id": "reserve",
+      "catalog_name": "Шардоне Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_shardone_rezerv_beloe_suhoe_135_3694507d1e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_shardone_rezerv_beloe_suhoe_135_3694507d1e.webp",
+      "input_sha256": "2c322ef443f66243c4bd8a304c19a1aad1e76e52680e4f6379cec88c2d2c9947",
+      "asset_sha256": "2c322ef443f66243c4bd8a304c19a1aad1e76e52680e4f6379cec88c2d2c9947",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-sovinon-blan-beloe-suhoe-11",
+      "product_id": "wine-golubitskoe-estate-sovinon-blan-beloe-suhoe-11",
+      "group_id": "classic",
+      "catalog_name": "Совиньон Блан",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_sovinon_blan_beloe_suhoe_11_7236a859ce.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_sovinon_blan_beloe_suhoe_11_7236a859ce.webp",
+      "input_sha256": "6a7b58c63afae7a581666a71a81eea36f12d0b59f84b9430ad230f7e59974cf8",
+      "asset_sha256": "6a7b58c63afae7a581666a71a81eea36f12d0b59f84b9430ad230f7e59974cf8",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "product_id": "wine-golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "group_id": "tete-reserve",
+      "catalog_name": "Tête de Cheval Blanc de Blancs",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_tte_de_cheval_blanc_de_blancs_shardone_igristoe_bryut_beloe_12_3e39593da4.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_tte_de_cheval_blanc_de_blancs_shardone_igristoe_bryut_beloe_12_3e39593da4.webp",
+      "input_sha256": "dc1de63c20dd1f61993f642d1d49bcd3d8d9a259ba9367d70a0b4c906ca5853e",
+      "asset_sha256": "dc1de63c20dd1f61993f642d1d49bcd3d8d9a259ba9367d70a0b4c906ca5853e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12",
+      "product_id": "wine-golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12",
+      "group_id": "tete",
+      "catalog_name": "Tête de Cheval брют",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_tte_de_cheval_bryut_risling_igristoe_bryut_beloe_12_4852fa5a2f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_tte_de_cheval_bryut_risling_igristoe_bryut_beloe_12_4852fa5a2f.webp",
+      "input_sha256": "f8be8725a38433449cd74dc02439d3ee03f58024ccfcfa1032fc4d5090a3c1ca",
+      "asset_sha256": "f8be8725a38433449cd74dc02439d3ee03f58024ccfcfa1032fc4d5090a3c1ca",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125",
+      "product_id": "wine-golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125",
+      "group_id": "tete-reserve",
+      "catalog_name": "Tête de Cheval Reserve",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_tte_de_cheval_reserve_risling_igristoe_bryut_beloe_125_35e3a92939.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_tte_de_cheval_reserve_risling_igristoe_bryut_beloe_125_35e3a92939.webp",
+      "input_sha256": "6306823a73f522d428c76c4ac7a6d4d07feba742a59b47f58009b7fe54562e41",
+      "asset_sha256": "6306823a73f522d428c76c4ac7a6d4d07feba742a59b47f58009b7fe54562e41",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12",
+      "product_id": "wine-golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12",
+      "group_id": "tete-reserve",
+      "catalog_name": "Tête de Cheval Zero Dosage Экстра брют",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_tte_de_cheval_zero_dosage_ekstra_bryut_sovinon_blan_igristoe_ekstra_bryut_beloe_12_9438066f79.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_tte_de_cheval_zero_dosage_ekstra_bryut_sovinon_blan_igristoe_ekstra_bryut_beloe_12_9438066f79.webp",
+      "input_sha256": "2d9503374104cc47f25a86bcfdbba48641408801077c29b023c0c7e395fcba76",
+      "asset_sha256": "2d9503374104cc47f25a86bcfdbba48641408801077c29b023c0c7e395fcba76",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12",
+      "product_id": "wine-golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12",
+      "group_id": "tete",
+      "catalog_name": "Tête de Chevall розе",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_tte_de_chevall_roze_pino_nuar_igristoe_bryut_rozovoe_12_6482e84b25.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_tte_de_chevall_roze_pino_nuar_igristoe_bryut_rozovoe_12_6482e84b25.webp",
+      "input_sha256": "b0564245b05e5b9c4eb3f713ad521873b73ef8d31c5463d15de166cd6f9db360",
+      "asset_sha256": "b0564245b05e5b9c4eb3f713ad521873b73ef8d31c5463d15de166cd6f9db360",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115",
+      "product_id": "wine-golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115",
+      "group_id": "winery",
+      "catalog_name": "Winery Series. Пино Нуар",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_winery_series_pino_nuar_rozovoe_suhoe_115_98c49c99e9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_winery_series_pino_nuar_rozovoe_suhoe_115_98c49c99e9.webp",
+      "input_sha256": "31889e7c627bf074e7e6c0a17415c7f2436287ae0c6371522e18178b6688c0a6",
+      "asset_sha256": "31889e7c627bf074e7e6c0a17415c7f2436287ae0c6371522e18178b6688c0a6",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125",
+      "product_id": "wine-golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125",
+      "group_id": "winery",
+      "catalog_name": "Winery Series. Рислинг Рейнский",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_winery_series_risling_reynskiy_beloe_suhoe_125_330c75ae53.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_winery_series_risling_reynskiy_beloe_suhoe_125_330c75ae53.webp",
+      "input_sha256": "5c5ed8e02c09f92177ff20fa6995c2f71d538fd00545fc8859688592e37f40ac",
+      "asset_sha256": "5c5ed8e02c09f92177ff20fa6995c2f71d538fd00545fc8859688592e37f40ac",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117",
+      "product_id": "wine-golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117",
+      "group_id": "winery",
+      "catalog_name": "Winery Series. Розе бленд",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "golubitskoe_estate_winery_series_roze_blend_kaberne_sovinon_rozovoe_suhoe_117_caa738d581.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/golubitskoe_estate_winery_series_roze_blend_kaberne_sovinon_rozovoe_suhoe_117_caa738d581.webp",
+      "input_sha256": "f4ebbdd6baa7116d0c78458ef71752c5d4a1976404e238e7edac054c8c547827",
+      "asset_sha256": "f4ebbdd6baa7116d0c78458ef71752c5d4a1976404e238e7edac054c8c547827",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+      "product_id": "wine-pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+      "group_id": "reserve",
+      "catalog_name": "Каберне Совиньон Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_kaberne_sovinon_rezerv_krasnoe_suhoe_vyderzhannoe_143_97eb57d86b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_kaberne_sovinon_rezerv_krasnoe_suhoe_vyderzhannoe_143_97eb57d86b.webp",
+      "input_sha256": "dbc2fe3a3e0ea06375e0aa1b23c0d44c949d39d3110d597caf90944f2aeb8fba",
+      "asset_sha256": "dbc2fe3a3e0ea06375e0aa1b23c0d44c949d39d3110d597caf90944f2aeb8fba",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132",
+      "product_id": "wine-pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132",
+      "group_id": "noble",
+      "catalog_name": "Noble Selection. Пино Нуар розе",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_noble_selection_pino_nuar_roze_rozovoe_suhoe_132_8c761a20cf.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_noble_selection_pino_nuar_roze_rozovoe_suhoe_132_8c761a20cf.webp",
+      "input_sha256": "bea1fac89fc54eb58b8aa4c8a818f395eb21eebe7eb54d9c35d356dc2bd90d59",
+      "asset_sha256": "bea1fac89fc54eb58b8aa4c8a818f395eb21eebe7eb54d9c35d356dc2bd90d59",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-noble",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132",
+      "product_id": "wine-pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132",
+      "group_id": "reserve",
+      "catalog_name": "Шардоне Резерв",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_shardone_rezerv_beloe_suhoe_vyderzhannoe_132_ae66b69665.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_shardone_rezerv_beloe_suhoe_vyderzhannoe_132_ae66b69665.webp",
+      "input_sha256": "8aad3a9c3eed8b1ace1f1fb65afa86204903877dc8f9d6a6e8a9abd1ae2b85af",
+      "asset_sha256": "8aad3a9c3eed8b1ace1f1fb65afa86204903877dc8f9d6a6e8a9abd1ae2b85af",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "product_id": "wine-pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "group_id": "tete-reserve",
+      "catalog_name": "Tête de Cheval Blanc de Blancs",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_tte_de_cheval_blanc_de_blancs_shardone_igristoe_bryut_beloe_12_62b407f781.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_tte_de_cheval_blanc_de_blancs_shardone_igristoe_bryut_beloe_12_62b407f781.webp",
+      "input_sha256": "9bef7f7a8ab28f3593318d1e40f925e1a9ce3490dc664ebbf7f19bcf72153986",
+      "asset_sha256": "9bef7f7a8ab28f3593318d1e40f925e1a9ce3490dc664ebbf7f19bcf72153986",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12",
+      "product_id": "wine-pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12",
+      "group_id": "tete",
+      "catalog_name": "Tête de Cheval\n брют",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_tte_de_cheval_bryut_risling_reynskiy_igristoe_bryut_beloe_12_2bf0507734.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_tte_de_cheval_bryut_risling_reynskiy_igristoe_bryut_beloe_12_2bf0507734.webp",
+      "input_sha256": "a3dc2006c9a16ca4f64b5981614781e6316bc066f0ea51079893c75fcf1a58eb",
+      "asset_sha256": "a3dc2006c9a16ca4f64b5981614781e6316bc066f0ea51079893c75fcf1a58eb",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12",
+      "product_id": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12",
+      "group_id": "tete",
+      "catalog_name": "Tête de Cheval\n сладкое",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_tte_de_cheval_sladkoe_risling_reynskiy_igristoe_sladkoe_beloe_12_1c2f312bb9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_tte_de_cheval_sladkoe_risling_reynskiy_igristoe_sladkoe_beloe_12_1c2f312bb9.webp",
+      "input_sha256": "5215546fac4a99b9deee33790f621c318221818d5b977a9d6d8af8a4653decf6",
+      "asset_sha256": "5215546fac4a99b9deee33790f621c318221818d5b977a9d6d8af8a4653decf6",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115",
+      "product_id": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115",
+      "group_id": "tete",
+      "catalog_name": "Tête de Cheval\n сладкое розе",
+      "catalog_producer": "Golubitskoe Estate",
+      "source_image": "pomeste_golubitskoe_tte_de_cheval_sladkoe_roze_pino_gri_sladkoe_rozovoe_115_f49c737b87.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/pomeste_golubitskoe_tte_de_cheval_sladkoe_roze_pino_gri_sladkoe_rozovoe_115_f49c737b87.webp",
+      "input_sha256": "bc579f842d7965954eb5647d939cf27c30be056d1d2816f08b6b28efe8f9355b",
+      "asset_sha256": "bc579f842d7965954eb5647d939cf27c30be056d1d2816f08b6b28efe8f9355b",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-tete"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-estate-chardonnay",
+      "product_id": "wine-golubitskoe-estate-chardonnay",
+      "group_id": "classic",
+      "catalog_name": "Golubitskoe Estate Chardonnay",
+      "catalog_producer": "Поместье Голубицкое",
+      "source_image": "Pomeste_Golubiczkoe_Chardonnay_fc05cb08e0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Pomeste_Golubiczkoe_Chardonnay_fc05cb08e0.webp",
+      "input_sha256": "e02baebec99e9ae93dc5a802b4ba244e13339dbe271d875c884071bfd9db1d67",
+      "asset_sha256": "e02baebec99e9ae93dc5a802b4ba244e13339dbe271d875c884071bfd9db1d67",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    },
+    {
+      "wine_slug": "golubitskoe-rose",
+      "product_id": "wine-golubitskoe-rose",
+      "group_id": "classic",
+      "catalog_name": "Golubitskoe Rose",
+      "catalog_producer": "Поместье Голубицкое",
+      "source_image": "Golubitskoe_Estate_Rose_84adcc1cea.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/Golubitskoe_Estate_Rose_84adcc1cea.webp",
+      "input_sha256": "919d2e4f79dc571e9da967523d052ab43babc76ee8e79b78508afde7fa0ee495",
+      "asset_sha256": "919d2e4f79dc571e9da967523d052ab43babc76ee8e79b78508afde7fa0ee495",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-estate",
+          "official-group"
+        ]
+      }
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-tete-semidry",
+      "source_id": "official-tete",
+      "source_image_url": "https://novabev.com/upload/iblock/73c/73c1b0add6eab3f409e5e6d00e0efa06.png",
+      "input_sha256": "86d5b8bdcf6a38eafdcbbd5083649d65aee37da126bb63a9480f1753407be6a7",
+      "asset_sha256": "23096430958c932a081e56b0d6b8b5e1356895879514fa0a850c58d41991fba2",
+      "processing": "PNG to lossless WebP. No crop, repaint or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Golubitskoe Estate",
+        "matched_catalog_slugs": [],
+        "reason": "All 33 exact producer rows were checked by name, collection, grape, style and original bottle. No verified equivalent card exists for this addition. No slug is invented.",
+        "producers_checked": [
+          "Golubitskoe Estate",
+          "Поместье Голубицкое"
+        ]
+      },
+      "group_basis": {
+        "kind": "official_product_card",
+        "evidence": "The official product card and original bottle identify this separate wine and its named family. It is distinct from saved wines of other styles or collections.",
+        "source_ids": [
+          "official-tete"
+        ]
+      }
+    }
+  ]
+}

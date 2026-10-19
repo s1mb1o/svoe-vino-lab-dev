@@ -1,0 +1,554 @@
+{
+  "producer_id": "aya",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "AYA Organic Wine & Vineyards",
+  "catalog_producers": [
+    "AYA Organic Wine & Vineyards"
+  ],
+  "entries": [
+    {
+      "wine_slug": "appassimento-merlot",
+      "product_id": "wine-appassimento-merlot",
+      "group_id": "appassimento",
+      "catalog_name": "Appassimento merlot",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_Mokap_apassimento_437849eda9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_Mokap_apassimento_437849eda9.webp",
+      "input_sha256": "29b838518a276faeef409af11fdc74eed6e8dbcd74f80b3beab4e8cf383840b2",
+      "asset_sha256": "29b838518a276faeef409af11fdc74eed6e8dbcd74f80b3beab4e8cf383840b2",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-khrustaleva-76-merlot-organik",
+      "product_id": "wine-aya-khrustaleva-76-merlot-organik",
+      "group_id": "khrustaleva",
+      "catalog_name": "Aya Khrustaleva 76 merlot Органик",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_Bjo_R8u_Zy_Sbk_V5_WTE_Jjg3_C_Ky_5_U_v_Ue_Qv_P6o_l_XGG_5q_NED_Mtd_Ztu_Uj_Etjwa_Qrt_TX_Ag_c31d9f8afc.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_Bjo_R8u_Zy_Sbk_V5_WTE_Jjg3_C_Ky_5_U_v_Ue_Qv_P6o_l_XGG_5q_NED_Mtd_Ztu_Uj_Etjwa_Qrt_TX_Ag_c31d9f8afc.webp",
+      "input_sha256": "ca9805c59dbf4e05a76a3cc1a41a4f26feff62a94d16919b8480d1b8edcf438f",
+      "asset_sha256": "ca9805c59dbf4e05a76a3cc1a41a4f26feff62a94d16919b8480d1b8edcf438f",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135",
+      "product_id": "wine-aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135",
+      "group_id": "blush",
+      "catalog_name": "Blush #1",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_blush_1_sira_petnat_ekstra_bryut_rozovyy_135_33ab300ffe.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_blush_1_sira_petnat_ekstra_bryut_rozovyy_135_33ab300ffe.webp",
+      "input_sha256": "04df5f5033eb5a60959b70001144d99261c25ddb82560dfc476e992c5b0e5a99",
+      "asset_sha256": "04df5f5033eb5a60959b70001144d99261c25ddb82560dfc476e992c5b0e5a99",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135",
+      "product_id": "wine-aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135",
+      "group_id": "blush",
+      "catalog_name": "Blush #2",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_blush_2_merlo_petnat_ekstra_bryut_rozovyy_135_ed87f553c8.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_blush_2_merlo_petnat_ekstra_bryut_rozovyy_135_ed87f553c8.webp",
+      "input_sha256": "0418e02c91b63e48007e14f3d5820877a09c95bd47390f7560f8181655f70d27",
+      "asset_sha256": "0418e02c91b63e48007e14f3d5820877a09c95bd47390f7560f8181655f70d27",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132",
+      "product_id": "wine-aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132",
+      "group_id": "blush",
+      "catalog_name": "Blush #3",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_blush_3_kaberne_fran_petnat_ekstra_bryut_rozovyy_132_a094099a22.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_blush_3_kaberne_fran_petnat_ekstra_bryut_rozovyy_132_a094099a22.webp",
+      "input_sha256": "aed03f8ac3c2ea727389dee3c0fc09f293a8cf8e6ded5ea6933a037c9d987889",
+      "asset_sha256": "aed03f8ac3c2ea727389dee3c0fc09f293a8cf8e6ded5ea6933a037c9d987889",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129",
+      "product_id": "wine-aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129",
+      "group_id": "blush",
+      "catalog_name": "Blush #4",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_blush_4_pino_nuar_petnat_ekstra_bryut_krasnyy_129_26041a124c.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_blush_4_pino_nuar_petnat_ekstra_bryut_krasnyy_129_26041a124c.webp",
+      "input_sha256": "641f0375baf7fa42c6501546085576e04d0da58214fc71e1e8354e79ff497730",
+      "asset_sha256": "641f0375baf7fa42c6501546085576e04d0da58214fc71e1e8354e79ff497730",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124",
+      "product_id": "wine-aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124",
+      "group_id": "evolution",
+      "catalog_name": "Evolution Chardonnay",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_evolution_chardonnay_shardone_beloe_suhoe_124_e03dd6e444.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_evolution_chardonnay_shardone_beloe_suhoe_124_e03dd6e444.webp",
+      "input_sha256": "82474d1a13be68d2832ce8fe90bbd129f95a26f4760c05804dc4faa6b141e8ed",
+      "asset_sha256": "82474d1a13be68d2832ce8fe90bbd129f95a26f4760c05804dc4faa6b141e8ed",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125",
+      "product_id": "wine-aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "evolution",
+      "catalog_name": "Evolution Pinot Noir",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_evolution_pinot_noir_pino_nuar_krasnoe_suhoe_125_b0f9aa751e.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_evolution_pinot_noir_pino_nuar_krasnoe_suhoe_125_b0f9aa751e.webp",
+      "input_sha256": "a0b1620781d26e8bf97bb24c3687a682e8cde281e7cabf48c732e430d555dc66",
+      "asset_sha256": "a0b1620781d26e8bf97bb24c3687a682e8cde281e7cabf48c732e430d555dc66",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11",
+      "product_id": "wine-aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11",
+      "group_id": "purity",
+      "catalog_name": "Purity in Chenin Blanc",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "PURITY_Chenin_Blanc_no_bg_preview_carve_photos_7cc1a42466.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/PURITY_Chenin_Blanc_no_bg_preview_carve_photos_7cc1a42466.webp",
+      "input_sha256": "ab5f2297014f4e1d36e4a8a0cbe8eebe6832e834f6878c20081cb79292516caa",
+      "asset_sha256": "ab5f2297014f4e1d36e4a8a0cbe8eebe6832e834f6878c20081cb79292516caa",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-balance"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134",
+      "product_id": "wine-aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134",
+      "group_id": "purity",
+      "catalog_name": "Purity in Merlot",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_purity_in_merlot_merlo_rozovoe_suhoe_134_9e5858ac67.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_purity_in_merlot_merlo_rozovoe_suhoe_134_9e5858ac67.webp",
+      "input_sha256": "d9152e2e4f2a52b8870df2c4dad1917127a17fea060cacb62eae94198e479546",
+      "asset_sha256": "d9152e2e4f2a52b8870df2c4dad1917127a17fea060cacb62eae94198e479546",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-balance"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146",
+      "product_id": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146",
+      "group_id": "purity",
+      "catalog_name": "Purity in Syrah",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_purity_in_syrah_sira_krasnoe_suhoe_146_1d4164b8db.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_purity_in_syrah_sira_krasnoe_suhoe_146_1d4164b8db.webp",
+      "input_sha256": "921019c4925d08d8365a3782387032b65c11ca586579c8ccc38f5154834db6c5",
+      "asset_sha256": "921019c4925d08d8365a3782387032b65c11ca586579c8ccc38f5154834db6c5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-balance"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132",
+      "product_id": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132",
+      "group_id": "purity",
+      "catalog_name": "Purity in Syrah",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_purity_in_syrah_sira_rozovoe_suhoe_132_56159ed421.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_purity_in_syrah_sira_rozovoe_suhoe_132_56159ed421.webp",
+      "input_sha256": "2ce330e806f846acd423e558a35504150326c6241ffce1076f5c7259e8afa16e",
+      "asset_sha256": "2ce330e806f846acd423e558a35504150326c6241ffce1076f5c7259e8afa16e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-balance"
+        ]
+      }
+    },
+    {
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13",
+      "product_id": "wine-aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13",
+      "group_id": "purity",
+      "catalog_name": "Purity in Trinity",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "aya_organic_wine_vineyards_purity_in_trinity_pino_nuar_rozovoe_suhoe_13_a16516170d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/aya_organic_wine_vineyards_purity_in_trinity_pino_nuar_rozovoe_suhoe_13_a16516170d.webp",
+      "input_sha256": "1cfa525b840ec52633a528d5ab876507d7ae5d25f469c8b27949516fae3d4086",
+      "asset_sha256": "1cfa525b840ec52633a528d5ab876507d7ae5d25f469c8b27949516fae3d4086",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-balance"
+        ]
+      }
+    },
+    {
+      "wine_slug": "evolution-pinot-noir",
+      "product_id": "wine-evolution-pinot-noir",
+      "group_id": "evolution",
+      "catalog_name": "Evolution pinot noir",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "evolution_rose_pinot_noir_2024_c3fc4a172a.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/evolution_rose_pinot_noir_2024_c3fc4a172a.webp",
+      "input_sha256": "0071aa26afd7cece8458632834d4c623e577b75dcd5f9558d36142305348ff5a",
+      "asset_sha256": "0071aa26afd7cece8458632834d4c623e577b75dcd5f9558d36142305348ff5a",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "evolution-pinot-noir-bryut-beloe",
+      "product_id": "wine-evolution-pinot-noir-bryut-beloe",
+      "group_id": "evolution-sparkling",
+      "catalog_name": "Evolution pinot noir, брют, белое",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_Mokapy_igristoe_beloe_09976d020f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_Mokapy_igristoe_beloe_09976d020f.webp",
+      "input_sha256": "a4b00a0892df2bb3458be8e109507751f28ba098f057c0511952a072726e58ea",
+      "asset_sha256": "a4b00a0892df2bb3458be8e109507751f28ba098f057c0511952a072726e58ea",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "evolution-pinot-noir-bryut-rozovoe",
+      "product_id": "wine-evolution-pinot-noir-bryut-rozovoe",
+      "group_id": "evolution-sparkling",
+      "catalog_name": "Evolution pinot noir, брют, розовое",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_Mokapy_igristoe_roze_e3c51b7973.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_Mokapy_igristoe_roze_e3c51b7973.webp",
+      "input_sha256": "5fc6fd206c738f13dc5480834c85a0f4035e63851f8a34010228ea0de952fb6a",
+      "asset_sha256": "5fc6fd206c738f13dc5480834c85a0f4035e63851f8a34010228ea0de952fb6a",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "evolution-reserve-pinot-noir",
+      "product_id": "wine-evolution-reserve-pinot-noir",
+      "group_id": "evolution-reserve",
+      "catalog_name": "Evolution reserve pinot noir",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "2023g_Aya_Evolution_Pinot_noir_b850f06043.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/2023g_Aya_Evolution_Pinot_noir_b850f06043.webp",
+      "input_sha256": "bdbc9a400f2bcecc312d1dd554bdafd34dd4cefa46de0f3057d1b2b1910fe95c",
+      "asset_sha256": "bdbc9a400f2bcecc312d1dd554bdafd34dd4cefa46de0f3057d1b2b1910fe95c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "khrustaleva-76-merlot-polusuhoe-rozovoe",
+      "product_id": "wine-khrustaleva-76-merlot-polusuhoe-rozovoe",
+      "group_id": "khrustaleva",
+      "catalog_name": "Khrustaleva 76 merlot, полусухое, розовое",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "hrustaleva_polusuhoe_merlo_049054fb87.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/hrustaleva_polusuhoe_merlo_049054fb87.webp",
+      "input_sha256": "d8f029fac2b0a32e8e2151bf72305f5dec286fc5aa9107314c4662b984e09edf",
+      "asset_sha256": "d8f029fac2b0a32e8e2151bf72305f5dec286fc5aa9107314c4662b984e09edf",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "khrustaleva-76-muscat-bryut-beloe",
+      "product_id": "wine-khrustaleva-76-muscat-bryut-beloe",
+      "group_id": "khrustaleva",
+      "catalog_name": "Khrustaleva 76 muscat, брют, белое",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "hrustaleva_bryut_muskat_314381c682.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/hrustaleva_bryut_muskat_314381c682.webp",
+      "input_sha256": "e59e6e08364be55428f0a78379eea72f1a6c12d611f4322bda6e473899488ada",
+      "asset_sha256": "e59e6e08364be55428f0a78379eea72f1a6c12d611f4322bda6e473899488ada",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "khrustaleva-76-muscat-polusladkoe-beloe",
+      "product_id": "wine-khrustaleva-76-muscat-polusladkoe-beloe",
+      "group_id": "khrustaleva",
+      "catalog_name": "Khrustaleva 76 muscat, полусладкое, белое",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "hrustaleva_semi_svit_muskat_8fa1427352.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/hrustaleva_semi_svit_muskat_8fa1427352.webp",
+      "input_sha256": "a07ecd1496ae1e12e7eddde2fcdce929afc6c3f3d24acc19a5fb48cc332a430d",
+      "asset_sha256": "a07ecd1496ae1e12e7eddde2fcdce929afc6c3f3d24acc19a5fb48cc332a430d",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "marquetry-cabernet-franc",
+      "product_id": "wine-marquetry-cabernet-franc",
+      "group_id": "marquetry",
+      "catalog_name": "Marquetry cabernet franc",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_marquetry_cabernet_franc_2023_bottle_81526424ed.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_marquetry_cabernet_franc_2023_bottle_81526424ed.webp",
+      "input_sha256": "ce3cb2600cab11ab94dabc7ef1fa3c5943438107651dd4155831da12c63ae46c",
+      "asset_sha256": "ce3cb2600cab11ab94dabc7ef1fa3c5943438107651dd4155831da12c63ae46c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "marquetry-syrah",
+      "product_id": "wine-marquetry-syrah",
+      "group_id": "marquetry",
+      "catalog_name": "Marquetry syrah",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_marquetry_syrah_2023_bottle_90a876b523.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_marquetry_syrah_2023_bottle_90a876b523.webp",
+      "input_sha256": "e245a1d49df3df9f32ace70f6d53af3b2e8c4fd28da82465b39090ef6db63bed",
+      "asset_sha256": "e245a1d49df3df9f32ace70f6d53af3b2e8c4fd28da82465b39090ef6db63bed",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "marquetry-syrah-merlot-cabernet-franc",
+      "product_id": "wine-marquetry-syrah-merlot-cabernet-franc",
+      "group_id": "marquetry",
+      "catalog_name": "Marquetry syrah, merlot, cabernet franc",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "AYA_marquetry_syrah_merlot_cabernet_franc_2023_bottle_1174396457.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/AYA_marquetry_syrah_merlot_cabernet_franc_2023_bottle_1174396457.webp",
+      "input_sha256": "2754d3aa6b0a86d8bbeee9130d60bb87966fab6b572bc3cdc717d006c7067f76",
+      "asset_sha256": "2754d3aa6b0a86d8bbeee9130d60bb87966fab6b572bc3cdc717d006c7067f76",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "toile-de-vin-cabernet-sauvignon",
+      "product_id": "wine-toile-de-vin-cabernet-sauvignon",
+      "group_id": "toile",
+      "catalog_name": "Toile de vin cabernet sauvignon",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "toile_de_vin_cabernet_sauvignon_cfd349369d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/toile_de_vin_cabernet_sauvignon_cfd349369d.webp",
+      "input_sha256": "9022676822ff11652d27d2f0230733bd14c3ac6999480e1dbc49770bfce3d834",
+      "asset_sha256": "9022676822ff11652d27d2f0230733bd14c3ac6999480e1dbc49770bfce3d834",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "toile-de-vin-chardonnay",
+      "product_id": "wine-toile-de-vin-chardonnay",
+      "group_id": "toile",
+      "catalog_name": "Toile de vin chardonnay",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "toile_de_vin_chardonnay_cc38e00e9d.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/toile_de_vin_chardonnay_cc38e00e9d.webp",
+      "input_sha256": "a220498cded9128ee710e1e926412b276b920590593dd8ee17eb7dbd99a4fa37",
+      "asset_sha256": "a220498cded9128ee710e1e926412b276b920590593dd8ee17eb7dbd99a4fa37",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "toile-de-vin-merlot",
+      "product_id": "wine-toile-de-vin-merlot",
+      "group_id": "toile",
+      "catalog_name": "Toile de vin merlot",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "toile_de_vin_merlot_3d176a2b04.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/toile_de_vin_merlot_3d176a2b04.webp",
+      "input_sha256": "c113eaea1fd7e14ef4185efcc1f290826b99b9dd690038c9f4ed15548e1acdea",
+      "asset_sha256": "c113eaea1fd7e14ef4185efcc1f290826b99b9dd690038c9f4ed15548e1acdea",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "toile-de-vin-pinot-blanc",
+      "product_id": "wine-toile-de-vin-pinot-blanc",
+      "group_id": "toile",
+      "catalog_name": "Toile de vin pinot blanc",
+      "catalog_producer": "AYA Organic Wine & Vineyards",
+      "source_image": "toile_de_vin_pinot_blanc_b7d593d929.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/toile_de_vin_pinot_blanc_b7d593d929.webp",
+      "input_sha256": "ef83a419425748f0c571aa7be77286b6aa5de6419eeeb29c7769bf831d8c2261",
+      "asset_sha256": "ef83a419425748f0c571aa7be77286b6aa5de6419eeeb29c7769bf831d8c2261",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-purity-balance",
+      "source_id": "official-balance",
+      "source_image_url": "https://www.aya-wine.ru/storage/2026/06/15/76b848281fcdaaf5b477fa885d63eb75f47b2bae.png",
+      "input_sha256": "812307f60a1f103a80ff16eef5f8f14dc6231480b85d62dc0ec50b82700dec25",
+      "asset_sha256": "8970e0ffca923df19dc1f41ac69a7c8d66ab7f2169327c5e2f8bec0852cbb26d",
+      "processing": "PNG to lossless WebP. No crop, repaint or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "AYA Organic Wine & Vineyards",
+        "matched_catalog_slugs": [],
+        "reason": "All 27 exact producer rows were checked by name, collection, grape, style and original bottle. No verified equivalent card exists for this addition. No slug is invented.",
+        "producers_checked": [
+          "AYA Organic Wine & Vineyards"
+        ]
+      },
+      "group_basis": {
+        "kind": "official_product_card",
+        "evidence": "The official product card and original bottle identify this separate wine and its named family. It is distinct from saved wines of other styles or collections.",
+        "source_ids": [
+          "official-balance"
+        ]
+      }
+    }
+  ]
+}

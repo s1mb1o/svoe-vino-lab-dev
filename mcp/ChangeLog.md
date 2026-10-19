@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19 — Six more producer maps
+
+- Serve Burnier, Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры from the shared Web registry. The registry now has 25 maps and 1,203 products.
+- Update the pinned registry and Active-ID coverage checks: 1,127 exact slugs, three verified aliases and 963 unavailable Active IDs.
+- Keep the MCP bundle count separate from coverage of the 2,103-card Web snapshot. Keep the existing Active-ID link checks and response-size checks.
+- Pass all 49 tests, the syntax checks and the SDK client demonstration on Node.js 26.4.0.
+
 ## 2026-10-19 — «Винный дневник» account tools (#65)
 
 - With `CHTOZAVINO_ACCOUNT_TOKEN` (and optional `CHTOZAVINO_ACCOUNT_URL`) the server adds the read-only tools `get_my_profile` and `list_my_wines`. They call `https://chtozavino.ru/api/app/v1/*` with the bearer token: HTTPS only (loopback HTTP for tests), no redirects, 5 s timeout, 256 KiB limit.

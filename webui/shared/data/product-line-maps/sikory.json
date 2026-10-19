@@ -1,0 +1,896 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "sikory",
+    "name": "Имение Сикоры",
+    "aliases": [
+      "Сикоры",
+      "Sikory"
+    ],
+    "slug_prefixes": [
+      "imenie-sikory-"
+    ]
+  },
+  "scope": {
+    "label": "21 карточка из снимка «Свое Вино» и 1 официальное дополнение; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-catalog",
+      "label": "Имение Сикоры: ассортимент",
+      "url": "https://sikory.ru/wine/"
+    },
+    {
+      "id": "official-heritage",
+      "label": "Имение Сикоры: Семейное Наследие",
+      "url": "https://sikory.ru/semejnoe-nasledie2020"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "Имение Сикоры: Riesling Extra Brut",
+      "url": "https://sikory.ru/riesling"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Самостоятельные стили не получают неподтверждённого ценового ранга. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "heritage",
+      "label": "Особая купажная коллекция",
+      "rank": 4,
+      "description": "Редакционный ориентир по отборным участкам и отдельному выдержанному выпуску. Это не актуальная цена.",
+      "price_label": "Особая коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-heritage"
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Резерв и особые коллекции",
+      "rank": 3,
+      "description": "Редакционный ориентир по названию коллекции и подтверждённой технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Премиальный ориентир",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "main",
+      "label": "Основная коллекция",
+      "rank": 2,
+      "description": "Редакционное позиционирование основной коллекции производителя. Это не текущая цена и не оценка качества.",
+      "price_label": "Основная коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Ценовое соотношение этих коллекций и самостоятельных стилей не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-sparkling"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "heritage",
+      "name": "Семейное Наследие",
+      "tier_id": "heritage",
+      "method": "Отборные участки; выдержка зависит от выпуска",
+      "description": "Самостоятельное купажное вино. Характеристики текущего выпуска не заменяют данные сохранённой карточки.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-heritage"
+      ]
+    },
+    {
+      "id": "family-reserve",
+      "name": "Семейный резерв",
+      "tier_id": "premium",
+      "method": "Выдержанные вина; срок зависит от выпуска",
+      "description": "Белые и красные резервные вина. Две сохранённые карточки Рислинга остаются отдельными.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "core",
+      "name": "Сикоры",
+      "tier_id": "main",
+      "method": "Тихие вина; точный стиль — в сохранённой карточке",
+      "description": "Основная коллекция и Герцъ. Разные поколения этикеток и самостоятельные записи каталога сохранены отдельно.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "terraces",
+      "name": "На террасах",
+      "tier_id": "neutral",
+      "method": "Тихие вина из Красностопа Золотовского",
+      "description": "Красный и розовый сухие выпуски из Красностопа. Поздний сбор вынесен отдельно.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "late-harvest",
+      "name": "Поздний сбор",
+      "tier_id": "neutral",
+      "method": "Поздний сбор; сладкие тихие вина",
+      "description": "Розовый Красностоп и белый Рислинг. Они не объединены с сухими и игристыми выпусками.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Игристое · Рислинг",
+      "tier_id": "neutral",
+      "method": "Игристое вино; точный метод не указан в карточке",
+      "description": "Белый экстра брют из официального ассортимента. Связь с ценовыми ступенями тихих вин не установлена.",
+      "source_ids": [
+        "official-catalog",
+        "official-sparkling"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "heritage",
+      "name": "Семейное Наследие",
+      "variant": "",
+      "wine_slug": "imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 874,
+          "y": 0,
+          "width": 614,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Сложный развитый аромат с нотами черных ягод, сливы, пряностей, кофе и тонко выделанной кожи. Вкус полный, мощный, обволакивающий. Крепкий каркас вина очерчен уверенной сочной кислотностью и шелковистыми танинами. Послевкусие теплое, с ворохом черных ягод и пряностей. Вино располагает к длительному общению под серьезные блюда из мяса и дичи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-heritage"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "name": "Каберне Совиньон. Семейный Резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 874,
+          "y": 0,
+          "width": 615,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат сочный, многослойный, с узнаваемыми сортовыми тонами черной смородины, перца и терна, сдобренными оттенками табачного листа, ванили и пряностей. Концентрированный сочный вкус с благородными зрелыми танинами, яркой живой кислотностью и рельефной структурой. Элегантное и сложное вино.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "name": "Мерло. Семейный Резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 873,
+          "y": 0,
+          "width": 617,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Красивый развитый аромат наполнен нотами черных лесных ягод, шоколада, сладких пряностей, сухотравья и лавра. Вкус цельный, объемный, сбалансированный, с приятной округлостью, живой кислотностью и зрелым барахтистым танином. Гладко, элегантно и очень гастрономично.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "name": "Пино Нуар. Семейный резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 84,
+          "y": 57,
+          "width": 1175,
+          "height": 4107,
+          "source_width": 1445,
+          "source_height": 4255
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате ягоды, ваниль и топленый молочный шоколад. Вкус сбалансированный, шелковистые танины, обволакивающая структура и длительное сочное послевкусие.перечные ноты, ягоды.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "name": "Рислинг. Семейный резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 109,
+          "y": 26,
+          "width": 975,
+          "height": 4415,
+          "source_width": 1210,
+          "source_height": 4593
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате спелые фрукты, белые цветы, петрольные оттенки. Вкус полный, гармоничный, с хорошо сбалансированной минеральностью, свежей кислотностью и длительным петрольным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "name": "Рислинг. Семейный Резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 914,
+          "y": 0,
+          "width": 539,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Аромат сочный, пышный: доминируют тона абрикоса, сочного персика, желтого грейпфрута, цукатов из апельсина с шафраном, варенья из желтой черешни с корицей, с элегантной бензольной сложностью. Вкус яркий, полный, с бодрой, но гармоничной кислотностью, идеально встроенной в структуру вина. Послевкусие мягкое, глубокое и долгое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "name": "Шардоне. Семейный резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 115,
+          "y": 35,
+          "width": 1171,
+          "height": 4129,
+          "source_width": 1407,
+          "source_height": 4249
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате элегантное вино с нежной ароматикой белых фруктов, сдобной выпечки и ванильного мороженного. Вкус полный, гармоничный, с ярко выраженными особенностями терруара и интересной игрой яблочных вкусов: от свежих яблок сорта «белый налив» до яблочного штруделя.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "name": "Совиньон Блан. Семейный резерв",
+      "variant": "",
+      "wine_slug": "imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 106,
+          "y": 55,
+          "width": 1141,
+          "height": 4020,
+          "source_width": 1394,
+          "source_height": 4154
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате тропические и цирусовые фрукты, крыжовники, корочка белого хлеба. Вкус хорошо сбалансированный и освежающий, пикантная косточковая горчинка и длительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "name": "Герцъ",
+      "variant": "",
+      "wine_slug": "imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 892,
+          "y": 0,
+          "width": 579,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Сдержанный выразительный аромат с нотами черных ягод и лакрицы в обрамлении сладких кондитерских пряностей и темного шоколада. Вкус плотный, развитый, с бархатной текстурой и заявляющими о себе шершавыми танинами. В финале пряные и ягодные ноты. Достойно и выразительно.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "name": "Герцъ Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 114,
+          "y": 58,
+          "width": 1065,
+          "height": 4124,
+          "source_width": 1370,
+          "source_height": 4255
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Красностоп Золотовский",
+        "Мерло"
+      ],
+      "description": "В аромате фрукты, красные и черные ягоды, горький шоколад, специй и пряности. Вкус фруктовый, деликатный с бархатистыми танинами и продолжительным финишем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13",
+      "group_id": "core",
+      "name": "Каберне Фран розе",
+      "variant": "",
+      "wine_slug": "imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 857,
+          "y": 0,
+          "width": 642,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Приятный фруктовый аромат наполнен нотами грейпфрута, сицилийского апельсина, барбариса, цветов вишни и ягодной карамели. Вкус легкий, свежий, с дерзкой пронзительной кислотностью, требующей гастрономического сопровождения.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13",
+      "group_id": "core",
+      "name": "Каберне Фран Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 88,
+          "y": 81,
+          "width": 1132,
+          "height": 4175,
+          "source_width": 1361,
+          "source_height": 4307
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате красные ягоды, нежные ноты розы. Вкус изящный, тонкий, с минеральной свежестью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-merlo-sikory-krasnoe-suhoe-13",
+      "group_id": "core",
+      "name": "Мерло Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-merlo-sikory-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-merlo-sikory-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 201,
+          "y": 70,
+          "width": 1140,
+          "height": 4170,
+          "source_width": 1502,
+          "source_height": 4335
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате свежие, мороженные фрукты, красные ягоды, мята. Вкус деликатный, малиновый сорбет, идеальный баланс кислотности и сладости с ментоловым финишем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14",
+      "group_id": "core",
+      "name": "Пино Нуар Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 853,
+          "y": 0,
+          "width": 656,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В стройном аромате ноты брусники, малины, сушеной вишни и толика бальзамики. Вкус легкий и симметричный, сбалансированный. Умеренная кислотность и сухощавые танины завершают портрет вина. На финише приятный тон ягод в шоколаде.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-risling-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "name": "Рислинг Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-risling-sikory-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-risling-sikory-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 97,
+          "y": 127,
+          "width": 954,
+          "height": 4253,
+          "source_width": 1168,
+          "source_height": 4474
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате цитрусы, белые цветы, лёгкие петрольные тона выдержки. Вкус минеральный, освежающая кислотность и яркий цитрусовый финал.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-shardone-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "name": "Шардоне Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-shardone-sikory-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-shardone-sikory-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 856,
+          "y": 0,
+          "width": 649,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат открывается нотками зеленого яблока, легкой дымностью и сеном, переходя в тона спелого персика, груши, яблочной пастилы и нежного лимонного мармелада. Вкус тонкий, свежий, элегантный, с приятной кислотностью и изящным нежно-сливочным послевкусием. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "name": "Совиньон Блан Сикоры",
+      "variant": "",
+      "wine_slug": "imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 853,
+          "y": 0,
+          "width": 655,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Аромат очень свежий, с нотами крыжовника, белой смородины и терпко-сладким шлейфом смородинового листа. Сочно открываются нотки грейпфрута и лимонного мармелада. Вкус яркий, свежий, с яркой цитрусовой кислотностью, стройной текстурой и сочным, свежим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14",
+      "group_id": "terraces",
+      "name": "Красностоп Золотовский. На террасах",
+      "variant": "",
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 212,
+          "y": 95,
+          "width": 1041,
+          "height": 4086,
+          "source_width": 1483,
+          "source_height": 4287
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате фиалка, горький шоколад, фруктовые ноты, черешня, тёрн, тутовник. Вкус выверенный, мощный, с округлыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13",
+      "group_id": "terraces",
+      "name": "Красностоп Золотовский. На террасах",
+      "variant": "",
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 122,
+          "y": 59,
+          "width": 1024,
+          "height": 4161,
+          "source_width": 1377,
+          "source_height": 4334
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате красные лесные ягоды, барбарис и цитрус. Вкус объемный, яркая кислотность, черные ягоды, клубника, малина с соленой минеральной ноткой на финише.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13",
+      "group_id": "late-harvest",
+      "name": "Красностоп Золотовский. Поздний сбор",
+      "variant": "",
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 162,
+          "y": 120,
+          "width": 905,
+          "height": 4128,
+          "source_width": 1376,
+          "source_height": 4334
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "В аромате малина, дикая земляника. Вкус сладкий, земляничный джем и свежая кислотность.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13",
+      "group_id": "late-harvest",
+      "name": "Рислинг. Поздний сбор",
+      "variant": "",
+      "wine_slug": "imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/wine-imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 130,
+          "y": 55,
+          "width": 867,
+          "height": 4091,
+          "source_width": 1177,
+          "source_height": 4219
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате мёд, спелые фрукты, сладкие пряности. Вкус мягкий, маслянистый, сладкий, с элегантной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "official-riesling-extra-brut",
+      "group_id": "sparkling",
+      "name": "Сикоры Riesling Extra Brut",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/sikory/official-riesling-extra-brut.webp",
+        "source_id": "official-sparkling",
+        "frame": {
+          "x": 33,
+          "y": 78,
+          "width": 1282,
+          "height": 4004,
+          "source_width": 1359,
+          "source_height": 4188
+        }
+      },
+      "category": "Белое",
+      "style": "Белое экстра брют",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Белое игристое экстра брют из Рислинга. В официальном описании отмечены цитрусовые, хлебные и минеральные оттенки. Это самостоятельное вино, отдельное от тихого Рислинга и Рислинга Поздний сбор.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-sparkling"
+      ]
+    }
+  ]
+}

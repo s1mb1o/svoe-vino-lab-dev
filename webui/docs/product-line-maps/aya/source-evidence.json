@@ -1,0 +1,24 @@
+{
+  "producer_id": "aya",
+  "snapshot_only_groups": [],
+  "sources": [
+    {
+      "source_id": "official-catalog",
+      "url": "https://www.aya-wine.ru/wine",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "d5a26a25ba3281049c2f7e98314ce89b291ab78781efd0bb4ef08a7083cdb84c",
+      "content_type": "text/html",
+      "section": "Named family sections in the wine catalog",
+      "facts": "The producer lists Evolution, Khrustaleva 76, Purity, Toile de Vin, Marquetry, Appassimento and Blush. Evolution Reserve and sparkling Evolution are listed separately. Additional current families are outside this snapshot-centered subset."
+    },
+    {
+      "source_id": "official-balance",
+      "url": "https://www.aya-wine.ru/wine/purity-in-balance/2025",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "48af82682555b8df9efb8ce7686c890e0d1be21d7ab8a45e101498c29dbff9a6",
+      "content_type": "text/html",
+      "section": "Purity in balance 2025: grape composition and production",
+      "facts": "The official card identifies a dry white blend of Chenin Blanc and Pinot Gris, distinct from the saved single-variety Purity in Chenin Blanc."
+    }
+  ]
+}

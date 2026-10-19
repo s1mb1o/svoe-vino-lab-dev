@@ -123,7 +123,7 @@ test('comparison excludes unknown traits and requires distinct known IDs', () =>
 test('serves exactly the registered Web producer maps', async () => {
   const index = JSON.parse(await readFile(join(root, PRODUCT_LINE_INDEX_PATH), 'utf8'));
   const registered = index.producers.map(entry => entry.producer.id).sort();
-  assert.equal(registered.length, 19);
+  assert.equal(registered.length, 25);
   assert.deepEqual(service.lines.map(line => line.producer.id).sort(), registered);
   assert.match(service.metadata.product_line_maps_sha256, /^[a-f0-9]{64}$/);
 });
@@ -136,7 +136,7 @@ test('every Active ID resolves to its exact map node or to unavailable', () => {
     counts[key] = (counts[key] ?? 0) + 1;
     if (result.status === 'ok') assert.equal(result.products.filter(product => product.current).length, 1);
   }
-  assert.deepEqual(counts, { placed: 977, alias: 3, unavailable: 1113 });
+  assert.deepEqual(counts, { unavailable: 963, placed: 1127, alias: 3 });
 });
 
 test('the Web index resolves every Active ID like the full maps', async () => {

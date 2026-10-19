@@ -1,16 +1,382 @@
 {
-  "date": "2026-10-16",
+  "date": "2026-10-19",
   "snapshot": "official-2026-09-17",
   "snapshot_sha256": "e915493a0a960df040b4055d33c815940e48fb1a2994a7979a819786b2c41961",
   "method": "Count unique snapshot wine_slug identities. Include verified aliases. Do not count producer-name fallback or null-slug additions as catalog coverage. Rank exact producer field values. Do not interpret card counts as production volume.",
   "catalog_cards": 2103,
-  "covered_catalog_cards": 988,
-  "catalog_coverage_percent": 46.98050404184498,
-  "supported_producers": 19,
-  "supported_producer_catalog_cards": 989,
-  "supported_producer_coverage_percent": 99.89888776541962,
-  "map_products": 1046,
-  "gray_products": 61,
+  "covered_catalog_cards": 1138,
+  "catalog_coverage_percent": 54.113171659534,
+  "supported_producers": 25,
+  "supported_producer_catalog_cards": 1139,
+  "supported_producer_coverage_percent": 99.91220368744513,
+  "map_products": 1203,
+  "gray_products": 68,
+  "map_groups": 272,
+  "exact_slug_cards": 1135,
+  "verified_alias_cards": 3,
+  "unsupported_catalog_cards": 964,
+  "unplaced_catalog_cards": 1,
+  "intentional_exclusions": [
+    {
+      "wine_slug": "rozovoe-polusladkoe-2",
+      "producer": "Абрау-Дюрсо",
+      "producer_id": "abrau-durso",
+      "reason": "Owner excluded this card until the bottle and collection are identified."
+    }
+  ],
+  "producer_coverage": [
+    {
+      "producer_id": "abrau-durso",
+      "producer": "Абрау-Дюрсо",
+      "catalog_producers": [
+        "Абрау-Дюрсо"
+      ],
+      "catalog_cards": 57,
+      "covered_catalog_cards": 56,
+      "exact_slug_cards": 53,
+      "verified_alias_cards": 3,
+      "map_products": 73,
+      "gray_products": 20,
+      "map_groups": 19
+    },
+    {
+      "producer_id": "belbek",
+      "producer": "Бельбек",
+      "catalog_producers": [
+        "Бельбек"
+      ],
+      "catalog_cards": 39,
+      "covered_catalog_cards": 39,
+      "exact_slug_cards": 39,
+      "verified_alias_cards": 0,
+      "map_products": 40,
+      "gray_products": 1,
+      "map_groups": 8
+    },
+    {
+      "producer_id": "valery-zakharyin",
+      "producer": "Валерий Захарьин",
+      "catalog_producers": [
+        "Валерий Захарьин"
+      ],
+      "catalog_cards": 46,
+      "covered_catalog_cards": 46,
+      "exact_slug_cards": 46,
+      "verified_alias_cards": 0,
+      "map_products": 47,
+      "gray_products": 1,
+      "map_groups": 14
+    },
+    {
+      "producer_id": "vedernikov",
+      "producer": "Ведерниковъ",
+      "catalog_producers": [
+        "Ведерниковъ"
+      ],
+      "catalog_cards": 43,
+      "covered_catalog_cards": 43,
+      "exact_slug_cards": 43,
+      "verified_alias_cards": 0,
+      "map_products": 45,
+      "gray_products": 2,
+      "map_groups": 10
+    },
+    {
+      "producer_id": "burnier",
+      "producer": "Винодельня Бюрнье",
+      "catalog_producers": [
+        "Винодельня Бюрнье"
+      ],
+      "catalog_cards": 20,
+      "covered_catalog_cards": 20,
+      "exact_slug_cards": 20,
+      "verified_alias_cards": 0,
+      "map_products": 22,
+      "gray_products": 2,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "derbent-vino",
+      "producer": "Дербент Вино",
+      "catalog_producers": [
+        "Дербент Вино"
+      ],
+      "catalog_cards": 63,
+      "covered_catalog_cards": 63,
+      "exact_slug_cards": 63,
+      "verified_alias_cards": 0,
+      "map_products": 67,
+      "gray_products": 4,
+      "map_groups": 8
+    },
+    {
+      "producer_id": "koktebel",
+      "producer": "ЗМВ Коктебель",
+      "catalog_producers": [
+        "ЗМВ Коктебель"
+      ],
+      "catalog_cards": 26,
+      "covered_catalog_cards": 26,
+      "exact_slug_cards": 26,
+      "verified_alias_cards": 0,
+      "map_products": 28,
+      "gray_products": 2,
+      "map_groups": 10
+    },
+    {
+      "producer_id": "zolotaya-balka",
+      "producer": "Золотая Балка",
+      "catalog_producers": [
+        "Золотая Балка"
+      ],
+      "catalog_cards": 41,
+      "covered_catalog_cards": 41,
+      "exact_slug_cards": 41,
+      "verified_alias_cards": 0,
+      "map_products": 43,
+      "gray_products": 2,
+      "map_groups": 10
+    },
+    {
+      "producer_id": "sikory",
+      "producer": "Имение Сикоры",
+      "catalog_producers": [
+        "Имение Сикоры"
+      ],
+      "catalog_cards": 21,
+      "covered_catalog_cards": 21,
+      "exact_slug_cards": 21,
+      "verified_alias_cards": 0,
+      "map_products": 22,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "inkerman",
+      "producer": "Инкерман",
+      "catalog_producers": [
+        "Инкерманский ЗМВ"
+      ],
+      "catalog_cards": 15,
+      "covered_catalog_cards": 15,
+      "exact_slug_cards": 15,
+      "verified_alias_cards": 0,
+      "map_products": 17,
+      "gray_products": 2,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "kuban-vino",
+      "producer": "Кубань-Вино",
+      "catalog_producers": [
+        "Кубань-Вино"
+      ],
+      "catalog_cards": 97,
+      "covered_catalog_cards": 97,
+      "exact_slug_cards": 97,
+      "verified_alias_cards": 0,
+      "map_products": 103,
+      "gray_products": 6,
+      "map_groups": 26
+    },
+    {
+      "producer_id": "massandra",
+      "producer": "Массандра",
+      "catalog_producers": [
+        "Массандра"
+      ],
+      "catalog_cards": 44,
+      "covered_catalog_cards": 44,
+      "exact_slug_cards": 44,
+      "verified_alias_cards": 0,
+      "map_products": 46,
+      "gray_products": 2,
+      "map_groups": 9
+    },
+    {
+      "producer_id": "myskhako",
+      "producer": "Мысхако",
+      "catalog_producers": [
+        "Мысхако"
+      ],
+      "catalog_cards": 92,
+      "covered_catalog_cards": 92,
+      "exact_slug_cards": 92,
+      "verified_alias_cards": 0,
+      "map_products": 97,
+      "gray_products": 5,
+      "map_groups": 20
+    },
+    {
+      "producer_id": "novy-svet",
+      "producer": "Новый Свет",
+      "catalog_producers": [
+        "Новый Свет. Дом шампанских вин"
+      ],
+      "catalog_cards": 44,
+      "covered_catalog_cards": 44,
+      "exact_slug_cards": 44,
+      "verified_alias_cards": 0,
+      "map_products": 45,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "raevskoe",
+      "producer": "Раевское",
+      "catalog_producers": [
+        "Раевское"
+      ],
+      "catalog_cards": 23,
+      "covered_catalog_cards": 23,
+      "exact_slug_cards": 23,
+      "verified_alias_cards": 0,
+      "map_products": 24,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "sober-bash",
+      "producer": "Собер Баш",
+      "catalog_producers": [
+        "Собер Баш"
+      ],
+      "catalog_cards": 37,
+      "covered_catalog_cards": 37,
+      "exact_slug_cards": 37,
+      "verified_alias_cards": 0,
+      "map_products": 38,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "soyuz-vino",
+      "producer": "Союз-Вино",
+      "catalog_producers": [
+        "Союз-Вино"
+      ],
+      "catalog_cards": 69,
+      "covered_catalog_cards": 69,
+      "exact_slug_cards": 69,
+      "verified_alias_cards": 0,
+      "map_products": 70,
+      "gray_products": 1,
+      "map_groups": 19
+    },
+    {
+      "producer_id": "fanagoria",
+      "producer": "Фанагория",
+      "catalog_producers": [
+        "Фанагория"
+      ],
+      "catalog_cards": 102,
+      "covered_catalog_cards": 102,
+      "exact_slug_cards": 102,
+      "verified_alias_cards": 0,
+      "map_products": 108,
+      "gray_products": 6,
+      "map_groups": 25
+    },
+    {
+      "producer_id": "chateau-pinot",
+      "producer": "Шато Пино",
+      "catalog_producers": [
+        "Шато Пино"
+      ],
+      "catalog_cards": 50,
+      "covered_catalog_cards": 50,
+      "exact_slug_cards": 50,
+      "verified_alias_cards": 0,
+      "map_products": 51,
+      "gray_products": 1,
+      "map_groups": 13
+    },
+    {
+      "producer_id": "agora",
+      "producer": "AGORA WINERY",
+      "catalog_producers": [
+        "AGORA WINERY"
+      ],
+      "catalog_cards": 32,
+      "covered_catalog_cards": 32,
+      "exact_slug_cards": 32,
+      "verified_alias_cards": 0,
+      "map_products": 33,
+      "gray_products": 1,
+      "map_groups": 9
+    },
+    {
+      "producer_id": "alma-valley",
+      "producer": "Alma Valley",
+      "catalog_producers": [
+        "Alma Valley"
+      ],
+      "catalog_cards": 39,
+      "covered_catalog_cards": 39,
+      "exact_slug_cards": 39,
+      "verified_alias_cards": 0,
+      "map_products": 41,
+      "gray_products": 2,
+      "map_groups": 8
+    },
+    {
+      "producer_id": "aya",
+      "producer": "AYA Organic Wine & Vineyards",
+      "catalog_producers": [
+        "AYA Organic Wine & Vineyards"
+      ],
+      "catalog_cards": 27,
+      "covered_catalog_cards": 27,
+      "exact_slug_cards": 27,
+      "verified_alias_cards": 0,
+      "map_products": 28,
+      "gray_products": 1,
+      "map_groups": 9
+    },
+    {
+      "producer_id": "chateau-de-talu",
+      "producer": "Chateau de Talu",
+      "catalog_producers": [
+        "Chateau de Talu"
+      ],
+      "catalog_cards": 26,
+      "covered_catalog_cards": 26,
+      "exact_slug_cards": 26,
+      "verified_alias_cards": 0,
+      "map_products": 27,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "esse",
+      "producer": "ESSE",
+      "catalog_producers": [
+        "ESSE"
+      ],
+      "catalog_cards": 53,
+      "covered_catalog_cards": 53,
+      "exact_slug_cards": 53,
+      "verified_alias_cards": 0,
+      "map_products": 54,
+      "gray_products": 1,
+      "map_groups": 6
+    },
+    {
+      "producer_id": "golubitskoe-estate",
+      "producer": "Golubitskoe Estate",
+      "catalog_producers": [
+        "Поместье Голубицкое",
+        "Golubitskoe Estate"
+      ],
+      "catalog_cards": 33,
+      "covered_catalog_cards": 33,
+      "exact_slug_cards": 33,
+      "verified_alias_cards": 0,
+      "map_products": 34,
+      "gray_products": 1,
+      "map_groups": 7
+    }
+  ],
   "unsupported_producers": [
     {
       "producer": "WINEMAFIA",
@@ -21,20 +387,8 @@
       "catalog_cards": 31
     },
     {
-      "producer": "Golubitskoe Estate",
-      "catalog_cards": 31
-    },
-    {
       "producer": "Olymp Winery",
       "catalog_cards": 29
-    },
-    {
-      "producer": "AYA Organic Wine & Vineyards",
-      "catalog_cards": 27
-    },
-    {
-      "producer": "Chateau de Talu",
-      "catalog_cards": 26
     },
     {
       "producer": "Усадьба Мезыбь",
@@ -43,10 +397,6 @@
     {
       "producer": "Château Le Grand Vostock",
       "catalog_cards": 25
-    },
-    {
-      "producer": "Раевское",
-      "catalog_cards": 23
     },
     {
       "producer": "Belmas Winery",
@@ -59,14 +409,6 @@
     {
       "producer": "Denisov Winery",
       "catalog_cards": 21
-    },
-    {
-      "producer": "Имение Сикоры",
-      "catalog_cards": 21
-    },
-    {
-      "producer": "Винодельня Бюрнье",
-      "catalog_cards": 20
     },
     {
       "producer": "Галицкий и Галицкий",
@@ -410,10 +752,6 @@
     },
     {
       "producer": "Гусевъ",
-      "catalog_cards": 2
-    },
-    {
-      "producer": "Поместье Голубицкое",
       "catalog_cards": 2
     },
     {

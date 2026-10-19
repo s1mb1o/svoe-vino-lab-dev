@@ -1,0 +1,1100 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "aya",
+    "name": "AYA Organic Wine & Vineyards",
+    "aliases": [
+      "AYA",
+      "АЯ"
+    ],
+    "slug_prefixes": [
+      "aya-organic-wine-vineyards-",
+      "aya-khrustaleva-"
+    ]
+  },
+  "scope": {
+    "label": "27 карточек из снимка «Свое Вино» и 1 официальное дополнение; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-catalog",
+      "label": "AYA: официальный каталог вин",
+      "url": "https://www.aya-wine.ru/wine"
+    },
+    {
+      "id": "official-balance",
+      "label": "AYA: Purity in balance",
+      "url": "https://www.aya-wine.ru/wine/purity-in-balance/2025"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Самостоятельные стили не получают неподтверждённого ценового ранга. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "oak",
+      "label": "Вина с выдержкой в дубе",
+      "rank": 3,
+      "description": "Редакционный ориентир по резервному выпуску и технологии в сохранённых карточках. Это не текущая цена и не рейтинг качества.",
+      "price_label": "Выдержка в дубе",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Ценовое соотношение этих коллекций и самостоятельных стилей не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "evolution-reserve",
+      "name": "Evolution Reserve",
+      "tier_id": "oak",
+      "method": "12 месяцев в дубе по сохранённой карточке",
+      "description": "Отдельный резервный Пино Нуар. Он не объединён с обычным тихим или игристым Evolution.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "marquetry",
+      "name": "Marquetry",
+      "tier_id": "oak",
+      "method": "12 месяцев в дубе по сохранённым карточкам",
+      "description": "Каберне Фран, Сира и красный купаж. Для разных вин используются разные бочки; точная технология сохранена в описаниях.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "appassimento",
+      "name": "Appassimento",
+      "tier_id": "oak",
+      "method": "Подвяливание гроздей; 12 месяцев в дубе по сохранённой карточке",
+      "description": "Мерло из подвяленного винограда. Самостоятельный выпуск, отделённый от остальных коллекций.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "evolution",
+      "name": "Evolution · тихие вина",
+      "tier_id": "neutral",
+      "method": "Тихие сортовые вина",
+      "description": "Шардоне и Пино Нуар. Красный и розовый Пино Нуар сохраняют свои отдельные каталожные идентификаторы.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "evolution-sparkling",
+      "name": "Evolution · игристые",
+      "tier_id": "neutral",
+      "method": "Игристые вина из Пино Нуар",
+      "description": "Белый и розовый брют. Их технология не переносится с тихой серии Evolution.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "purity",
+      "name": "Purity",
+      "tier_id": "neutral",
+      "method": "Тихие вина; технология зависит от выпуска",
+      "description": "Сортовые вина и купажи с цветными этикетками. Состав и цвет каждой сохранённой карточки остаются неизменными.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "khrustaleva",
+      "name": "Khrustaleva 76",
+      "tier_id": "neutral",
+      "method": "Тихие и игристые вина; точный стиль — в карточке",
+      "description": "Мускат и Мерло разных стилей. Историческая карточка без указания сладости не получает стиль другого выпуска.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "toile",
+      "name": "Toile de Vin",
+      "tier_id": "neutral",
+      "method": "Тихие сортовые вина",
+      "description": "Каберне Совиньон, Шардоне, Мерло и Пино Блан из снимка каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "blush",
+      "name": "Blush",
+      "tier_id": "neutral",
+      "method": "Петнат",
+      "description": "Четыре номерных петната из разных сортов винограда. Номер является частью имени вина, а не ценовой ступенью.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-evolution-reserve-pinot-noir",
+      "group_id": "evolution-reserve",
+      "name": "Evolution reserve pinot noir",
+      "variant": "",
+      "wine_slug": "evolution-reserve-pinot-noir",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-evolution-reserve-pinot-noir.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 75,
+          "width": 266,
+          "height": 929,
+          "source_width": 281,
+          "source_height": 1080
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус структурный, с отлично сбалансированными танинами, ягодный, пряный с продолжительным послевкусием. Аромат с нотами спелых красных ягод, сушеной земляники, клюквы, сухих листьев и сладких специй.\n\nВидна эволюция сорта после выдержки в бочке. Тонкое и элегантное вино с большим потенциалом к выдержке будет красиво взрослеть. \n\nВино органическое, подтверждено сертификатом РФ. 91 балл в рейтинг лучших российских вин по версии Simple Wine News 2025/2026. EXPERT CUP 2025, Серебро.\n\n10 дней холодной мацерации при 5 °C, после ферментация на протяжении 10 дней при 18-24 °C, в процессе которой ежедневно проводился ремонтаж и три раза делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги, фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней. Выдержка 12 месяцев в новых пятисотлитровых дубовых бочках слабого обжига.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-marquetry-cabernet-franc",
+      "group_id": "marquetry",
+      "name": "Marquetry cabernet franc",
+      "variant": "",
+      "wine_slug": "marquetry-cabernet-franc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-marquetry-cabernet-franc.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 32,
+          "y": 22,
+          "width": 870,
+          "height": 3065,
+          "source_width": 931,
+          "source_height": 3146
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Интересное прочтение молодого Каберне Фран, который любит выдержку. Концентрированный вкус с ощущением сладости, округлыми сбалансированными танинами, длительным пряным послевкусием с тонами ягод, сладких пряностей и табака. В аромате овощной тон сладкого болгарского перца и сладкой свеклы, ноты спелых чёрных ягод и пряностей.\n\nВино органическое, подтверждено сертификатом РФ.\n\n12 дней холодной мацерации при 5 °C, после ферментация на протяжении 12 дней при 18-24 °C, в процессе которой ежедневно проводились ремонтаж и 5 раз делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги, фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней. Выдержка 12 месяцев в новых дубовых бочках 225 литров.\n\nНаграды: 90 баллов. Рейтинг лучших российских вин по версии Simple Wine News 2025/2026",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-marquetry-syrah",
+      "group_id": "marquetry",
+      "name": "Marquetry syrah",
+      "variant": "",
+      "wine_slug": "marquetry-syrah",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-marquetry-syrah.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 32,
+          "y": 32,
+          "width": 870,
+          "height": 3065,
+          "source_width": 926,
+          "source_height": 3131
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Аромат спелых красных и черных ягод элегантно и плавно перетекает в мягкий вкус этого гастрономичного и дружелюбного вина.\n\nВино органическое, подтверждено сертификатом РФ.\n\n0 дней холодной мацерации при 5 °C, после ферментация на протяжении 15 дней при 18-24 °C, в процессе которой ежедневно проводились ремонтаж и 4 раза делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги, фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней. Выдержка 12 месяцев в новых дубовых бочках 225 литров.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-marquetry-syrah-merlot-cabernet-franc",
+      "group_id": "marquetry",
+      "name": "Marquetry syrah, merlot, cabernet franc",
+      "variant": "",
+      "wine_slug": "marquetry-syrah-merlot-cabernet-franc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-marquetry-syrah-merlot-cabernet-franc.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 19,
+          "y": 13,
+          "width": 870,
+          "height": 3065,
+          "source_width": 918,
+          "source_height": 3085
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "В аромате яркий оттенок шоколада с миндалем красиво сочетается со спелыми ягодами ежевики и шелковицы, вкус повторяет аромат. \n\nВино органическое, подтверждено сертификатом РФ.\n\n5 дней холодной мацерации при 5 °C, после ферментация на протяжении 15 дней при 18-24 °C, в процессе которой ежедневно проводились ремонтаж и 4 раза делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги. Фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней. Купажирование (33,3/33,3/33,3%). Выдержка 12 месяцев в новых и второго залива дубовых бочках 225 литров (50/50).",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-appassimento-merlot",
+      "group_id": "appassimento",
+      "name": "Appassimento merlot",
+      "variant": "",
+      "wine_slug": "appassimento-merlot",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-appassimento-merlot.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 181,
+          "y": 26,
+          "width": 673,
+          "height": 3832,
+          "source_width": 1069,
+          "source_height": 3858
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Увяленные чёрные ягоды в аромате создают образ брутального и самодостаточного вина. Вкус концентрированный, с ощутимым, но отлично интегрированным танином, послевкусие продолжительное с тонами специй, сливы, чернослива, карамели.\n\nВино органическое, подтверждено сертификатом РФ.\n\nСушка целых гроздей на протяжении 2 месяцев в помещении с контролируемой температурой и влажностью (18-20 °С, 60-62%). После потери 25% веса, переработка и брожение на протяжении 25 дней при 20-26 °C, в процессе которого ежедневно проводился пижаж. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги на корзиночном прессе, фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней. Выдержка 12 месяцев в новых дубовых бочках 225 литров.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124",
+      "group_id": "evolution",
+      "name": "Evolution Chardonnay",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-evolution-chardonnay-shardone-beloe-suhoe-124.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 284,
+          "height": 1000,
+          "source_width": 288,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус легкий, питкий, гармоничный, свежий, с хрустящей кислотностью, фруктово-цветочными тонами и приятным, слегка маслянистым послевкусием. Аромат комплексный с приятной свежестью зеленого яблока, цитрусовых фруктов и белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "evolution",
+      "name": "Evolution Pinot Noir",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-evolution-pinot-noir-pino-nuar-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 281,
+          "height": 1000,
+          "source_width": 281,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус с яркой сбалансированной кислотностью, сглаженными танинами и ягодным послевкусием. Аромат с тонами красных спелых фруктов и ягод, специй, листвы и кожи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-evolution-pinot-noir",
+      "group_id": "evolution",
+      "name": "Evolution pinot noir",
+      "variant": "",
+      "wine_slug": "evolution-pinot-noir",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-evolution-pinot-noir.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 8,
+          "y": 0,
+          "width": 304,
+          "height": 1066,
+          "source_width": 314,
+          "source_height": 1080
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус структурный, минеральный, с хрустящей кислотностью. Послевкусие средней продолжительности с тонами клюквы и малины. Аромат ягодный с тонами клюквы, малины, вишни.\n\nВино органическое, подтверждено сертификатом РФ. 86 баллов в рейтинге лучших российских вин по версии Simple Wine News 2025/2026.\n\nПосле двухчасовой мацерации в прессе при 10 °C, бережное прессование с разделением фракций сусла. Используются только сусло-самотек и первые прессовые фракции, стабуляж 5 дней при 5 °C, брожение в течение 15 дней в емкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑17 °C, по окончании брожения — декантация и батонаж раз в неделю на тонком дрожжевом осадке в течение трех месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-evolution-pinot-noir-bryut-beloe",
+      "group_id": "evolution-sparkling",
+      "name": "Evolution pinot noir, брют, белое",
+      "variant": "",
+      "wine_slug": "evolution-pinot-noir-bryut-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-evolution-pinot-noir-bryut-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 28,
+          "y": 68,
+          "width": 1094,
+          "height": 3885,
+          "source_width": 1152,
+          "source_height": 4099
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус сбалансированный и минеральный с тонами яблока, груши и хорошей структурной кислотностью. Аромат деликатный, тонкий с нотами зеленого яблока, белых цветов плодовых деревьев и акации. \n\nВино органическое, подтверждено сертификатом РФ. 88 баллов в рейтинге лучших российских игристых вин по версии Simple Wine News 2025/2026.\n\nПрессование винограда целыми гроздями при 10°C, стабуляж 10 дней при 5°C, брожение в течении 15 дней в ёмкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑17°C, по окончании брожения — декантация с толстого дрожжевого осадка. Вторичное брожение в течении 20 дней, с остановкой брожения холодом, при необходимых сахарах. Выдержка в акратафоре на дрожжах в течении 2,5 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-evolution-pinot-noir-bryut-rozovoe",
+      "group_id": "evolution-sparkling",
+      "name": "Evolution pinot noir, брют, розовое",
+      "variant": "",
+      "wine_slug": "evolution-pinot-noir-bryut-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-evolution-pinot-noir-bryut-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 40,
+          "y": 68,
+          "width": 1094,
+          "height": 3885,
+          "source_width": 1140,
+          "source_height": 4099
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус структурный и минеральный с хрустящей кислотностью. Послевкусие средней продолжительности с тонами клюквы и малины. В аромате ноты красного яблока, клюквы, красной смородины и мокрой гальки.\n\n1 место среди лучших розе методом шарма, 90 баллов в рейтинге лучших российских игристых вин по версии Simple Wine News 2025/2026.                                                                                                             1 место, 85 баллов. Независимая премия российских игристых вин RUSSIAN BUBBLY CHART 2025\n\nПрессование винограда при 10°C, стабуляж 7 дней при 5°C, брожение в течении 13 дней в ёмкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑17°C, по окончании брожения — декантация с толстого дрожжевого осадка. Вторичное брожение в течении 20 дней, с остановкой брожения холодом, при необходимых сахарах. Выдержка в акратафоре на дрожжах в течении 2,5 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11",
+      "group_id": "purity",
+      "name": "Purity in Chenin Blanc",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-purity-in-chenin-blanc-shenen-blan-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 12,
+          "y": 14,
+          "width": 232,
+          "height": 810,
+          "source_width": 257,
+          "source_height": 853
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шенен Блан"
+      ],
+      "description": "Аромат элегантный, с нотой зеленого яблока, изящным тоном цветущей жимолости, свежим сеном и легким имбирным акцентом. Раскрывается оттенками ромашки, айвы и свежей цитрусовой цедры. Вкус свежий, с минеральными оттенками и чистым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134",
+      "group_id": "purity",
+      "name": "Purity in Merlot",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-purity-in-merlot-merlo-rozovoe-suhoe-134.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 278,
+          "height": 1000,
+          "source_width": 278,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус сбалансированный, с пикантной грейпфрутовой горчинкой на финише. Аромат фруктово–ягодный с нотками ежевики, фейхоа и цитрусов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146",
+      "group_id": "purity",
+      "name": "Purity in Syrah",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-purity-in-syrah-sira-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 278,
+          "height": 1000,
+          "source_width": 278,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус сбалансированный, с умеренными танинами и ягодно-пряным послевкусием. Аромат насыщенный, с тонами красных темных ягод и фруктов, пряностей и кожи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132",
+      "group_id": "purity",
+      "name": "Purity in Syrah",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 278,
+          "height": 1000,
+          "source_width": 278,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус сочный, сбалансированный, с приятным долгим послевкусием. Аромат пышный ягодно-зефирный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13",
+      "group_id": "purity",
+      "name": "Purity in Trinity",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-purity-in-trinity-pino-nuar-rozovoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 278,
+          "height": 1000,
+          "source_width": 278,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус освежающий, богатый, с пряными нотами и грейпфрутовой горчинкой в послевкусии. В Аромате розовая черешня, сушеная малина, барбарис и шиповник.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog",
+        "official-balance"
+      ]
+    },
+    {
+      "id": "official-purity-balance",
+      "group_id": "purity",
+      "name": "Purity in balance",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/official-purity-balance.webp",
+        "source_id": "official-balance",
+        "frame": {
+          "x": 32,
+          "y": 2,
+          "width": 63,
+          "height": 220,
+          "source_width": 125,
+          "source_height": 223
+        }
+      },
+      "category": "Белое",
+      "style": "Белое сухое",
+      "grapes": [
+        "Шенен Блан",
+        "Пино Гри"
+      ],
+      "description": "Белое сухое вино серии Purity из Шенен Блана и Пино Гри в равных долях. В официальной карточке отмечены тропические и цитрусовые ароматы. Это самостоятельный купаж, отличный от сортового Purity in Chenin Blanc.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-balance"
+      ]
+    },
+    {
+      "id": "wine-aya-khrustaleva-76-merlot-organik",
+      "group_id": "khrustaleva",
+      "name": "Aya Khrustaleva 76 merlot Органик",
+      "variant": "",
+      "wine_slug": "aya-khrustaleva-76-merlot-organik",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-khrustaleva-76-merlot-organik.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 40,
+          "y": 8,
+          "width": 433,
+          "height": 1175,
+          "source_width": 503,
+          "source_height": 1200
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус элегантный, минеральный, с хорошей структурой, с приятным ягодным-сливочным послевкусием. Аромат сдержанный, раскрывается нотками северных ягод, клюквы, клубники, барбариса с минеральными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-khrustaleva-76-merlot-polusuhoe-rozovoe",
+      "group_id": "khrustaleva",
+      "name": "Khrustaleva 76 merlot, полусухое, розовое",
+      "variant": "",
+      "wine_slug": "khrustaleva-76-merlot-polusuhoe-rozovoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-khrustaleva-76-merlot-polusuhoe-rozovoe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 5,
+          "y": 25,
+          "width": 1437,
+          "height": 3880,
+          "source_width": 1456,
+          "source_height": 3929
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус сбалансированный, лёгкий, послевкусие средней продолжительности с тонами красной смородины, малины, красного яблока с грейпфрутовой горчинкой на финише. Аромат спелых красных ягод, имбирного печенья, грейпфрута.\n\nВино органическое, подтверждено сертификатом РФ.\n\nПрессование винограда при 10°C, стабуляж 5 дней при 5°C, брожение в течение 17 дней в ёмкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑19°C, по окончании брожения — декантация с толстого дрожжевого осадка. Вторичное брожение в течение 20 дней, с остановкой брожения холодом, при необходимых сахарах. Выдержка в акратофоре на дрожжах в течение 1 месяца.\n\nНаграды: 82 баллов. Независимая премия российских игристых вин RUSSIAN BUBBLY CHART 2025",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-khrustaleva-76-muscat-bryut-beloe",
+      "group_id": "khrustaleva",
+      "name": "Khrustaleva 76 muscat, брют, белое",
+      "variant": "",
+      "wine_slug": "khrustaleva-76-muscat-bryut-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-khrustaleva-76-muscat-bryut-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 29,
+          "y": 26,
+          "width": 1437,
+          "height": 3880,
+          "source_width": 1491,
+          "source_height": 3944
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус легкий, почти невесомый, сбалансированный, послевкусие средней продолжительности с тонами цитрусов и персика. Аромат с оттенками цветов липы, акации, розы, цитрусов и нектарина.\n\nВино органическое, подтверждено сертификатом РФ. 83 балла в независимой премии российских игристых вин RUSSIAN BUBBLY CHART 2025.\n\nПрессование винограда при 10°C, стабуляж 10 дней при 5°C, брожение в течение 15 дней в ёмкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑17°C, по окончании брожения — декантация с толстого дрожжевого осадка. Вторичное брожение в течение 20 дней, с остановкой брожения холодом, при необходимых сахарах. Выдержка в акратофоре на дрожжах в течение 1 месяца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-khrustaleva-76-muscat-polusladkoe-beloe",
+      "group_id": "khrustaleva",
+      "name": "Khrustaleva 76 muscat, полусладкое, белое",
+      "variant": "",
+      "wine_slug": "khrustaleva-76-muscat-polusladkoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-khrustaleva-76-muscat-polusladkoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 33,
+          "y": 13,
+          "width": 1437,
+          "height": 3880,
+          "source_width": 1494,
+          "source_height": 3901
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус свежий с нотами спелых тропических фруктов. В аромате манго и маракуйя. \n\nВино органическое, подтверждено сертификатом РФ. 84 балла в независимой премии российских игристых вин RUSSIAN BUBBLY CHART 2025\n\nПрессование винограда при 10°C, стабуляж 10 дней при 5°C, брожение в течение 15 дней в ёмкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑17°C, по окончании брожения — декантация с толстого дрожжевого осадка. Вторичное брожение в течение 20 дней, с остановкой брожения холодом, при необходимых сахарах. Выдержка в акратофоре на дрожжах в течение 1 месяца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-toile-de-vin-cabernet-sauvignon",
+      "group_id": "toile",
+      "name": "Toile de vin cabernet sauvignon",
+      "variant": "",
+      "wine_slug": "toile-de-vin-cabernet-sauvignon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-toile-de-vin-cabernet-sauvignon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 33,
+          "y": 32,
+          "width": 1099,
+          "height": 3840,
+          "source_width": 1165,
+          "source_height": 3933
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Классическое представление молодого легкого Каберне Совиньона. В аромате доминируют черносмородиновый джем, чернослив и черешня, во вкусе ощутимы брутальность и строгость.\n\nОрганическое вино, подтверждено сертификатом РФ и Евро знаком.\n\n5 дней холодной мацерации при 5 °C, после ферментация на протяжении 14 дней при 19-25 °C, в процессе которой ежедневно проводились ремонтаж и 4 раза делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги, фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-toile-de-vin-chardonnay",
+      "group_id": "toile",
+      "name": "Toile de vin chardonnay",
+      "variant": "",
+      "wine_slug": "toile-de-vin-chardonnay",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-toile-de-vin-chardonnay.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 11,
+          "y": 0,
+          "width": 1099,
+          "height": 3840,
+          "source_width": 1124,
+          "source_height": 3863
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Южное Шардоне, спелое и пышное с ароматом яблочного варенья и персикового джема. Во вкусе образ Шардоне освежают цитрусовые оттенки.\n\nВино органическое, подтверждено сертификатом РФ.\n\nПрессование винограда при 8 °C, стабуляж 10 дней при 5 °C, брожение в течение 14 дней в емкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑19 °C, по окончанию брожения — декантация и батонаж раз в неделю на тонком дрожжевом осадке в течение 3 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-toile-de-vin-merlot",
+      "group_id": "toile",
+      "name": "Toile de vin merlot",
+      "variant": "",
+      "wine_slug": "toile-de-vin-merlot",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-toile-de-vin-merlot.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 17,
+          "y": 11,
+          "width": 1099,
+          "height": 3840,
+          "source_width": 1124,
+          "source_height": 3886
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Классический ароматический профиль сорта раскрывается тонами красных и черных ягод – ежевика, красная слива и брусника. Послевкусие долгое – красные ягоды и черноплодная рябина.\n\nВино органическое, подтверждено сертификатом РФ и Евро знаком.\n\n5 дней холодной мацерации при 5 °C, после ферментация на протяжении 10 дней при 19-24 °C, в процессе которой ежедневно проводились ремонтаж и 4 раза делистаж с отделением и сбросом косточки. После спиртового брожения снятие самотечных фракций молодого вина и прессование стекшей мезги. Фракции объединяются. Проведение яблочно-молочного брожения в стали в течение 20 дней.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-toile-de-vin-pinot-blanc",
+      "group_id": "toile",
+      "name": "Toile de vin pinot blanc",
+      "variant": "",
+      "wine_slug": "toile-de-vin-pinot-blanc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-toile-de-vin-pinot-blanc.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 25,
+          "y": 32,
+          "width": 1099,
+          "height": 3840,
+          "source_width": 1148,
+          "source_height": 3899
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Доминирующий аромат спелых персиков гармонично сочетается с тропическими фруктами манго и маракуйи. Сдержанный, но в то же время интересный вкус привлекает внимание тонами мускатной дыни и цитрусов.\n\nВино органическое, подтверждено сертификатом РФ.\n\nПрессование винограда при 8 °C, стабуляж 7 дней при 5 °C, брожение в течение 12 дней в емкостях из нержавеющей стали с автоматическим контролем температуры брожения 14‑19 °C, по окончании брожения — декантация и батонаж раз в неделю на тонком дрожжевом осадке в течение 3 месяцев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135",
+      "group_id": "blush",
+      "name": "Blush #1",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-blush-1-sira-rozovoe-ekstra-bryut-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 340,
+          "height": 1000,
+          "source_width": 340,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус тонкий, сбалансированный, сочный, с умеренной кислотностью и пикантной грейпфрутовой горчинкой в послевкусии. Аромат пышный, выразительно ягодный, с зефирными тонами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135",
+      "group_id": "blush",
+      "name": "Blush #2",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-blush-2-merlo-rozovoe-ekstra-bryut-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 340,
+          "height": 1000,
+          "source_width": 340,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус мягкий, округлый, со сбалансированной кислотностью и приятным, сухим, ягодным послевкусием. Аромат выразительный с акцентами спелой ежевики и клубники.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132",
+      "group_id": "blush",
+      "name": "Blush #3",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-blush-3-kaberne-fran-rozovoe-ekstra-bryut-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 340,
+          "height": 1000,
+          "source_width": 340,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус питкий и гармоничный, с освежающей фруктово-ягодной кислотностью и деликатным пряным послевкусием. Аромат свежий с нотами кислых ягод: малины и клюквы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129",
+      "group_id": "blush",
+      "name": "Blush #4",
+      "variant": "",
+      "wine_slug": "aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/aya/wine-aya-organic-wine-vineyards-blush-4-pino-nuar-krasnoe-ekstra-bryut-129.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 340,
+          "height": 1000,
+          "source_width": 340,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус легкий, питкий, уточненный, выразительно-фруктовый, с мягкими танинами и нежной ягодной кислинкой. В аромате спелые красные ягоды, джем и специи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-catalog"
+      ]
+    }
+  ]
+}

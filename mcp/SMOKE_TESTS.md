@@ -19,3 +19,7 @@ Run commands from `mcp/`.
 
 The automated suite covers damaged sources, source joins, inactive records, product-line map resolution, map registry defects, and audio integrity failures.
 The automated SDK example does not replace a later interactive Qwen or external-host acceptance run.
+
+The 2026-10-19 map expansion has 25 registered producers and 1,203 products.
+The pinned Active-ID checks expect 1,127 exact map nodes, three aliases and 963 unavailable IDs.
+The loader and schema checks cover every registered map, including the six new producers.

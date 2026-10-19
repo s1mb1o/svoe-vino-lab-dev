@@ -1,0 +1,42 @@
+{
+  "producer_id": "golubitskoe-estate",
+  "snapshot_only_groups": [],
+  "sources": [
+    {
+      "source_id": "official-estate",
+      "url": "https://www.golubitskoe-estate.ru/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "8d1c26710d599e89a157d02c56ace5a79c7c3b1072e1e93283e8a1cf25d7a0c2",
+      "content_type": "text/html",
+      "section": "Classic and Reserve collection tabs and product modals",
+      "facts": "The producer separates Classic wines in neutral vessels from oak-aged Reserve wines. Its Chardonnay and Rose modals also confirm the two cards saved under the alternate producer name."
+    },
+    {
+      "source_id": "official-group",
+      "url": "https://novabev.com/brands/wine/russia/golubitskoe-estate/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "2468230410aea39dbc3366998f5e78bab1055c790c4424726a772338577f71c1",
+      "content_type": "text/html",
+      "section": "Classic, Reserve and Limited collections",
+      "facts": "The brand owner identifies the three named collection sections and the limited Winery Series project. Petnat White is a separate sparkling product. Current grape composition does not replace historical snapshot grapes."
+    },
+    {
+      "source_id": "official-noble",
+      "url": "https://novabev.com/press-room/lenta/new-wines-in-the-golubitskoe-estate-noble-selection-line/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "83e1a49ecbc0d55c491a2e7c648662810ab355f2578c899968e160860f5ae7fd",
+      "content_type": "text/html",
+      "section": "Noble Selection Cabernet Sauvignon and Red Blend",
+      "facts": "The dated official announcement confirms the historical Noble Selection family. It describes oak and bottle aging for two 2018 releases. No aging period is transferred to all five saved Noble Selection records."
+    },
+    {
+      "source_id": "official-tete",
+      "url": "https://novabev.com/brands/wine/russia/tete-de-cheval/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "fc0653e8debab67a6200736f87576eb9e4a487c7242e057a3edce4d3e29c1ee0",
+      "content_type": "text/html",
+      "section": "Main and Reserve sparkling collections",
+      "facts": "The brand owner identifies Brut, Rose Brut and sweet styles in the main family, and Blanc de Blancs, Zero Dosage and Brut Reserve in the reserve family. The wines use traditional bottle fermentation. Sparkling ranks are not compared with still-wine ranks."
+    }
+  ]
+}
