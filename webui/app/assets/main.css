@@ -100,7 +100,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .text-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 0; font-size: 13px; color: var(--accent); text-underline-offset: 4px; }
 .text-button:hover { text-decoration: underline; }
 .text-button .icon { width: 18px; height: 18px; }
-.match-panel { background: var(--card); padding: 25px 32px 24px; border-left: 1px solid var(--line); display: flex; flex-direction: column; align-items: stretch; text-align: center; position: relative; }
+.match-panel { min-width: 0; background: var(--card); padding: 25px 32px 24px; border-left: 1px solid var(--line); display: flex; flex-direction: column; align-items: stretch; text-align: center; position: relative; }
 .empty-result { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .bottle-stage { width: 260px; height: 265px; position: relative; display: grid; place-items: center; margin-top: 0; }
 .bottle-orbit { position: absolute; inset: 28px 35px 18px; border-radius: 50% 50% 46% 46%; background: #eddfc557; border: 1px solid #d4bda72b; transform: rotate(-15deg); }
@@ -147,11 +147,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .match-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--success); }
 .match-badge .icon { width: 14px; height: 14px; }
 .demo-badge { font-size: 9px; letter-spacing: .1em; padding: 5px 9px; border-radius: 20px; color: var(--accent); background: var(--tag); }
-.match-bottle { height: 205px; display: flex; align-items: center; justify-content: center; margin: 3px 0 9px; }
+.match-bottle { flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 3px 0 9px; }
 .match-bottle img { width: 250px; height: 250px; object-fit: contain; filter: drop-shadow(7px 10px 6px #7a553519); }
 .match-copy { margin: auto 0 0; }
 .result-kicker { color: var(--accent); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 9px; }
-.match-copy h2 { font-size: 28px; line-height: 1.2; max-width: 400px; margin: 0 auto 10px; letter-spacing: -.01em; }
+.match-copy h2 { font-size: 28px; line-height: 1.2; max-width: 400px; margin: 0 auto 10px; letter-spacing: -.01em; overflow-wrap: anywhere; }
 .match-copy h2:focus, .missing-result h2:focus { outline: none; }
 .match-producer { color: var(--muted); font-size: 12px; line-height: 1.65; }
 .match-kind { color: var(--muted); font-size: 12px; line-height: 1.65; margin-top: 3px; }
@@ -259,7 +259,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .selected-actions { flex-direction: row; flex-wrap: wrap; }
   .selected-actions>.button { flex: 1; padding: 12px 16px; white-space: nowrap; font-size: 12px; }
   .selected-actions>.text-button { min-height: 46px; padding: 6px 10px; }
-  .match-bottle { height: 215px; margin: 10px 0; }
+  .match-bottle { margin: 10px 0; }
   .match-bottle img { width: 245px; height: 245px; }
   .match-copy h2 { font-size: 31px; line-height: 1.22; }
   .match-producer { font-size: 13px; }

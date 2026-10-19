@@ -1,5 +1,14 @@
 # Smoke tests
 
+## Bottle result spacing (#67)
+
+Verified locally on 2026-10-19: 40 cases passed in Chromium and WebKit, with both themes, two image shapes, and all five widths below. The gap was 9 px on desktop and 10 px on mobile. No image, title, or portal link was clipped. All 469 unit tests passed; 20 optional catalog snapshot tests were skipped. Type checks, the production build, and the bundle check passed.
+
+- Open `/` and upload a bottle photo. Confirm that the full bottle is above «Лучшее совпадение» with a visible gap.
+- Repeat with a tall bottle image and a square image at 320, 390, 767, 768, and 1440 px in both themes.
+- Use a long title such as «БЮРНЬЕ.КРАСНОСТОП сухое красное». Confirm that the title wraps inside the card and that the portal link stays fully visible.
+- Confirm that the image stays below «02 / ВАШЕ ВИНО» and «Совпадение найдено». Keep the full bottle outline visible.
+
 ## Dish drag-and-drop and HEIC
 
 1. Run `npm run test:dinner-uploads` with the browser environment in `docs/dinner-lens.md`. Check the desktop dark/light layouts and 320/390-pixel mobile layouts.

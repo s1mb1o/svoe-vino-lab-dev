@@ -1,5 +1,14 @@
 # Research log
 
+## Bottle result overlap, 2026-10-19 (#67)
+
+The owner reported that a bottle covers «Лучшее совпадение» in the result for «БЮРНЬЕ.КРАСНОСТОП сухое красное».
+The desktop container was 205 px high for a 250 px image. The mobile container was 215 px high for a 245 px image.
+A local browser check reproduced a negative gap between the image box and the label: -13.5 px at 1440 px and -5 px at 390 px.
+The container now takes its height from the image and cannot shrink. The existing bottom margins give a gap of 9 px on desktop and 10 px on mobile.
+The same long title exposed clipping in the grid at narrow widths. The result panel now has `min-width: 0`, and the title can wrap inside a long word.
+Browser verification uses intercepted prediction and metadata responses with local bottle assets. It does not measure recognition quality or verify production deployment.
+
 ## Dish uploads, 2026-10-19
 
 The dish uploader previously rejected HEIC by MIME before decoding and had no drop handler. Bottle/shelf HEIF handling belongs to the matcher and cannot supply a normalized dish image without an unrelated recognition call.
