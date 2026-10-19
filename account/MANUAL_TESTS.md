@@ -108,7 +108,7 @@ second Yandex account; another computer on the home LAN; a phone with mobile dat
   `docker compose up -d --force-recreate`. `email/start` still answers in less than 1 s.
   `docker logs svoe-vino-lab-account-dev` shows "Mail delivery failed" three times and no
   address. Restore the password.
-- [ ] **2.8 Email change.** With a session younger than 15 minutes, start with
+- [ ] **2.8 Email change.** With a session, start with
   `{"email":"<new address>","purpose":"link"}` and `-H "X-Session-Token: $S"`, then verify the
   code from the new mailbox. `GET /v1/me` shows the new address. Known gap: the old address
   gets no notice yet (#52).
@@ -136,8 +136,7 @@ second Yandex account; another computer on the home LAN; a phone with mobile dat
   repeat the same finish call: `invalid_flow`.
 - [ ] **3.5 Second Yandex account.** Log out of Yandex in the browser and log in with the
   second account. The login creates a different sign-up, not the first account.
-- [ ] **3.6 Link Yandex to an email account.** With the session of 2.3 (younger than
-  15 minutes), start with `"purpose":"link"` and `-H "X-Session-Token: $S"`. Finish with the
+- [ ] **3.6 Link Yandex to an email account.** With the session of 2.3, start with `"purpose":"link"` and `-H "X-Session-Token: $S"`. Finish with the
   same session header. `GET /v1/me` lists `email` and `yandex`. A Yandex login now opens the
   email account.
 - [ ] **3.7 Access revoked at Yandex.** At <https://id.yandex.ru/> → «Безопасность» →
@@ -217,8 +216,7 @@ Run these when the parts exist. Until then, mark them `BLOCKED`.
 
 ## 9. Cleanup
 
-- [ ] **9.1 Delete the test accounts.** For each test account, log in again (the deletion needs
-  a login in the last 15 minutes), then `web -X DELETE $A/v1/me -H "X-Session-Token: $S"`
+- [ ] **9.1 Delete the test accounts.** For each test account, `web -X DELETE $A/v1/me -H "X-Session-Token: $S"`
   gives HTTP 204. `GET /v1/me` then gives `session_invalid`.
 - [ ] **9.2 Remove the debug Redirect URI** from the Yandex OAuth app if it is no longer needed.
 - [ ] **9.3 Remove the test backups** from `data/backups/`.

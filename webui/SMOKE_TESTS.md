@@ -16,14 +16,14 @@
 3. In the browser storage panel confirm `__Host-cv_session` with HttpOnly, Secure, and SameSite=Lax, and no account token in `localStorage`.
 4. Reload: the session stays. «Выйти»: the cookie is gone. Request a second code within a minute: «Слишком много попыток…». Enter a wrong code: «Неверный код. Осталось попыток: N.»
 5. «Войти с Яндекс ID»: the browser opens `oauth.yandex.ru`. After the consent the browser returns to `/account` (or the sign-up step for a new identity). The address bar never shows `code=` on a page.
-6. Wait 15 minutes after the login. «Удалить аккаунт» → «Удалить навсегда» shows «Подтвердить кодом из письма». Confirm with the code: «Аккаунт удалён».
+6. Log in, wait a day, and open `/account` again: still logged in. «Удалить аккаунт» shows «Удалить аккаунт <имя> и все данные?»; «Удалить навсегда» deletes it at once: «Аккаунт удалён». The cookie `__Host-cv_session` has an expiry of about 400 days.
 7. Stop the account service. `/` and the scanner work; `/account` shows «Дневник временно недоступен».
 8. Clear `NUXT_ACCOUNT_ENDPOINT`. The header has no link; `/api/account/config` returns `{"enabled":false,...}`.
 9. In the network panel confirm no `mc.yandex.ru` request when a visit starts on `/account`.
 10. With `TELEGRAM_BOT_USERNAME` set in the account service: «Привязать мессенджер» → «Telegram» shows «Открыть Telegram» with `https://t.me/<bot>?start=link_…`. Confirm in the bot. Back on the page, Telegram is under «Связанные мессенджеры» with «Отвязать», and «Способы входа» does not list it. «Отвязать» removes it.
 11. With `MAX_WEBAPP_KEY` in the account service and `NUXT_ACCOUNT_MAX_APP_LINK` on the site: «Привязать мессенджер» → «MAX» shows the QR code and «Открыть в MAX». Open the link on a phone. In MAX log in by email code and confirm that the page names your MAX account. «Привязать»: «MAX привязан к дневнику.» On the site MAX is under «Связанные мессенджеры».
 12. Open `https://max.chtozavino.ru/max` in an ordinary browser: only «Откройте дневник в MAX», no form. `https://max.chtozavino.ru/` redirects to `/max`; `/account`, `/shelf`, `/sw.js`, and `/api/account/yandex/start` return 404 on that host; `chtozavino.ru` still asks for HTTP Basic.
-13. «Токены приложений» → «Создать токен»: within 15 minutes of a login the page shows the token once with the MCP configuration. «Готово» hides it; a reload does not show it. `curl -H 'Authorization: Bearer <token>' https://chtozavino.ru/api/app/v1/profile` returns the username (after the Caddy exemption). «Отозвать»: the same call returns 401.
+13. «Токены приложений» → «Создать токен»: the page shows the token once with the MCP configuration. «Готово» hides it; a reload does not show it. `curl -H 'Authorization: Bearer <token>' https://chtozavino.ru/api/app/v1/profile` returns the username (after the Caddy exemption). «Отозвать»: the same call returns 401.
 
 ## Wine for a dish
 

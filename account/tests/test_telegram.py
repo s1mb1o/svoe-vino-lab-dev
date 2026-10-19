@@ -95,13 +95,12 @@ def test_site_unlink_of_a_messenger_needs_no_recent_login(harness):
     assert {i["provider"] for i in me["user"]["identities"]} == {"email"}
 
 
-def test_site_unlink_of_a_login_method_needs_a_recent_login(harness):
+def test_site_unlink_of_a_login_method_needs_no_recent_login(harness):
     token = harness.email_session("anna@example.ru")
     harness.yandex_login("777", session=token, purpose="link")
-    harness.clock.advance(15 * 60)
+    harness.clock.advance(30 * 86400)
     response = harness.web("DELETE", "/v1/me/identities/yandex", session=token)
-    assert response.status_code == 403
-    assert response.json()["error"] == "reauth_required"
+    assert response.status_code == 204
 
 
 def test_a_code_belongs_to_the_first_claimer(harness):
@@ -146,9 +145,8 @@ def test_a_used_code_does_not_answer_after_unlink(harness):
     assert response.json()["error"] == "invalid_link_code"
 
 
-def test_link_start_needs_a_recent_login(harness):
+def test_an_old_session_can_start_a_link(harness):
     token = harness.email_session("anna@example.ru")
-    harness.clock.advance(15 * 60)
+    harness.clock.advance(30 * 86400)
     response = harness.web("POST", "/v1/me/links/telegram", session=token)
-    assert response.status_code == 403
-    assert response.json()["error"] == "reauth_required"
+    assert response.status_code == 200

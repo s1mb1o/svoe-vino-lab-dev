@@ -12,12 +12,11 @@ def test_unlink_keeps_one_login_method(harness):
     assert missing.json()["error"] == "not_linked"
 
 
-def test_sensitive_actions_need_a_recent_login(harness):
+def test_an_old_session_can_delete_the_account(harness):
+    # No recent-login rule: the page asks for a confirmation instead.
     token = harness.email_session("anna@example.ru")
-    harness.clock.advance(15 * 60)
-    response = harness.web("DELETE", "/v1/me", session=token)
-    assert response.status_code == 403
-    assert response.json()["error"] == "reauth_required"
+    harness.clock.advance(30 * 86400)
+    assert harness.web("DELETE", "/v1/me", session=token).status_code == 204
 
 
 def test_account_deletion_removes_everything(harness):

@@ -32,10 +32,10 @@ EMAIL_MAX_ATTEMPTS = 5
 OAUTH_FLOW_TTL = 600
 SIGNUP_TTL = 1800
 LINK_CODE_TTL = 600
-SESSION_TTL = 30 * 86400
+# Sessions do not expire (owner, 2026-10-19): a session ends at logout or account deletion.
+SESSION_TTL = 100 * 365 * 86400
 MAX_SESSION_TTL = 86400
 SESSION_EXTEND_AFTER = 86400
-RECENT_AUTH = 900
 # Application tokens for MCP clients (issue #65): `cvpat_` and 32 random bytes in base64url.
 APP_TOKEN_PATTERN = re.compile(r"cvpat_[A-Za-z0-9_-]{43}")
 APP_TOKEN_ID = re.compile(r"[0-9a-f]{16}")
@@ -308,13 +308,6 @@ class AccountService:
             )
         LOG.info("Identity linked (%s)", provider)
 
-    def _is_recent(self, session: Session | None) -> bool:
-        return session is not None and self._now() - session.auth_at <= RECENT_AUTH
-
-    def _require_recent(self, session: Session | None) -> None:
-        if not self._is_recent(session):
-            raise AccountError("reauth_required", 403, "Log in again to confirm this action")
-
     # ------------------------------------------------------------------ views
 
     def provider_config(self) -> dict[str, Any]:
@@ -391,7 +384,6 @@ class AccountService:
         if purpose == "link":
             if session is None:
                 raise AccountError("session_required", 401, "Log in to link an email address")
-            self._require_recent(session)
         wait = take_all(
             (
                 (self.email_resend, email),
@@ -439,8 +431,6 @@ class AccountService:
                 session is None or session.user_id != row["user_id"]
             ):
                 error = AccountError("invalid_challenge", 400, "Request a new code")
-            elif row["purpose"] == "link" and not self._is_recent(session):
-                error = AccountError("reauth_required", 403, "Log in again to confirm this action")
             elif not equal(row["code_mac"], code_mac(self.settings.code_key, challenge_id, code)):
                 db.execute(
                     "UPDATE email_challenges SET attempts = attempts + 1 WHERE id_hash = ?",
@@ -477,7 +467,6 @@ class AccountService:
         if purpose == "link":
             if session is None:
                 raise AccountError("session_required", 401, "Log in to link Yandex ID")
-            self._require_recent(session)
         wait = take_all(((self.yandex_per_ip, client_ip),))
         if wait:
             raise AccountError("rate_limited", 429, "Too many login attempts", retry_after=wait)
@@ -535,10 +524,6 @@ class AccountService:
                     session is None or session.user_id != row["user_id"]
                 ):
                     error = AccountError("invalid_flow", 400, "Start the Yandex login again")
-                elif row["purpose"] == "link" and not self._is_recent(session):
-                    error = AccountError(
-                        "reauth_required", 403, "Log in again to confirm this action"
-                    )
         if error is not None:
             raise error
         try:
@@ -594,9 +579,6 @@ class AccountService:
     # ---------------------------------------------------------- account state
 
     def unlink(self, session: Session, provider: str) -> None:
-        # Unlinking a messenger only removes access, so it needs no fresh login.
-        if provider in LOGIN_METHODS:
-            self._require_recent(session)
         with self.db.transaction() as db:
             rows = db.execute(
                 "SELECT provider FROM identities WHERE user_id = ?", (session.user_id,)
@@ -616,7 +598,6 @@ class AccountService:
         LOG.info("Identity unlinked (%s)", provider)
 
     def delete_account(self, session: Session) -> None:
-        self._require_recent(session)
         with self.db.transaction() as db:
             db.execute("DELETE FROM users WHERE id = ?", (session.user_id,))
         LOG.info("Account deleted")
@@ -627,8 +608,6 @@ class AccountService:
         bot = self.settings.telegram_bot_username
         if not bot:
             raise AccountError("provider_disabled", 404, "Telegram linking is not configured")
-        # Adding access needs a fresh login; a stolen old session cannot add its own Telegram.
-        self._require_recent(session)
         wait = take_all(((self.link_codes_per_user, session.user_id),))
         if wait:
             raise AccountError("rate_limited", 429, "Too many link codes", retry_after=wait)
@@ -750,7 +729,6 @@ class AccountService:
         self, session: Session, name: str, lifetime_days: int
     ) -> tuple[dict[str, Any], str]:
         """Create a token. The caller shows the secret once; the service keeps only its hash."""
-        self._require_recent(session)
         clean = " ".join(name.split())
         if (
             not clean
@@ -892,7 +870,6 @@ class AccountService:
             )
 
     def max_link(self, session: Session, init_data: str, client_ip: str) -> None:
-        self._require_recent(session)
         now = self._now()
         with self.db.transaction() as db:
             launch = self._check_launch(db, init_data, client_ip, now)

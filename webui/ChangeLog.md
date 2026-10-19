@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19 — Confirmations instead of a re-login; endless login
+
+- Owner decision: no 15-minute re-login. «Удалить аккаунт» deletes after «Удалить навсегда»; the re-login panel («Подтвердить кодом из письма», «Подтвердить через Яндекс ID») and «Войти заново» are removed, with the Yandex `intent=reauth` flow and its cookie.
+- «Отвязать» and «Отозвать» ask a yes/no question first.
+- Sessions do not expire. The session cookie lasts 400 days (the browser maximum) and is set again at every visit.
+- Tests: 469 (the six Yandex reauth tests removed; cookie lifetime and deletion tests added). Browser check of the confirmations, deletion, and the cookie lifetime: 9 checks.
+
 ## 2026-10-19 — Review fixes for the MAX link and application tokens
 
 - The MAX Bridge, a third-party script, runs only on the mini-app host. On any other host `/max` redirects to `/account` (server middleware); `/api/account/config` reports `maxApp` only for the mini-app host, and the page also leaves `/max` without it.

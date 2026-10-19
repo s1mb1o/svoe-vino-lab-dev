@@ -191,8 +191,6 @@ Credentials:
 | Service token (max-bot) | `openssl rand -hex 32`, distinct from the web token | Server env file, mode 0600 | Until rotation |
 | MAX mini-app key | Derived from the bot token | Server env file, mode 0600 | Until bot token rotation |
 
-- A `max` session takes `auth_at` from the signed `auth_date`, so it counts as a recent login
-  for 15 minutes after the launch.
 - `MAX_WEBAPP_KEY` holds the derived key. `chto-za-vino-account max-key` computes it from the
   bot token on stdin.
 

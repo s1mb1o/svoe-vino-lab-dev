@@ -32,7 +32,7 @@ The browser never gets the endpoint or the token.
 
   | Cookie | Content | SameSite | Lifetime |
   | --- | --- | --- | --- |
-  | `__Host-cv_session` | Session token | Lax | Until the session expires (30 days, extended by the service) |
+  | `__Host-cv_session` | Session token | Lax | 400 days (the browser maximum), set again at every visit; the service session has no expiry |
   | `__Host-cv_email` | Email challenge ID | Strict | 10 minutes |
   | `__Host-cv_signup` | Sign-up ticket | Lax | 30 minutes |
   | `__Host-cv_yandex` | Yandex flow ID | Lax | 10 minutes |
@@ -61,31 +61,23 @@ The browser never gets the endpoint or the token.
   `https://t.me/<bot>?start=link_<code>`. The person confirms in the bot chat, where the bot shows the
   diary name. «Открыть Telegram» opens the link by script, so the page holds no link with the code
   and Metrika link tracking cannot see it. The page warns not to forward the link: the first Telegram user who opens it owns
-  the code. Starting a link needs a login in the last 15 minutes; on `reauth_required` the chooser
-  offers «Войти заново».
-  `DELETE /api/account/identities/telegram` unlinks it without a fresh login (service rule for
-  messengers). Login methods have no unlink route on the site.
-- Account deletion needs a login in the last 15 minutes (service rule). On `reauth_required` the
-  confirmation stays open and offers «Подтвердить кодом из письма» for the account's email
-  (then «Подтвердить и удалить») or «Подтвердить через Яндекс ID» (`intent=reauth`,
-  `next=/account?confirm=delete`). The confirmation names the account.
-- A Yandex reauth MUST stay on the same account. The start route sets `__Host-cv_reauth`. The
-  callback reads the user of the current session (`/v1/me`), then finishes the flow. It accepts the
-  new session only for the same user ID. For another account or a Yandex identity without a diary,
-  it keeps the current session, ends the new one, and returns `reauth_mismatch`. Without a valid
-  current session it stops before the finish call. Follow-up: a service-side `reauth` purpose
-  that checks the Yandex subject (reported by session svoe-vino-final-39).
+  the code. «Отвязать» asks «Отвязать Telegram от дневника?» first.
+  Login methods have no unlink route on the site.
+- No re-login (owner, 2026-10-19): dangerous actions only ask for a confirmation on the page.
+  «Удалить аккаунт» → «Удалить аккаунт <имя> и все данные?» → «Удалить навсегда». «Отвязать» and
+  «Отозвать» ask a yes/no question first. The Yandex re-login flow (`intent=reauth`) is removed.
+- Sessions do not expire: a login lasts until «Выйти» or account deletion. The cookie is set again at
+  every `/api/account/me`, because browsers keep a cookie at most 400 days.
 
 ## Application tokens
 
 Issue #65. «Токены приложений» on `/account` (not in the MAX mini app).
 
 - «Создать токен»: a name and a lifetime (30, 90 by default, or 365 days). The form says before
-  creation that anyone with the token can read the diary. Creation needs a login in the last
-  15 minutes; on `reauth_required` the form offers «Войти заново».
+  creation that anyone with the token can read the diary.
 - The page shows the token once, with «Скопировать токен» and the MCP client configuration. «Готово»
   removes the secret from the page. The token fields have `ym-disable-keys` and `ym-hide-content`.
-- The list shows the name, the expiry, and the last use. «Отозвать» revokes a token at once.
+- The list shows the name, the expiry, and the last use. «Отозвать» asks first, then revokes the token at once.
 - `GET /api/app/v1/profile` and `GET /api/app/v1/wines` take `Authorization: Bearer cvpat_...` and
   pass the token on as `X-App-Token` with the client address. Nuxt keeps nothing and answers with
   `Cache-Control: no-store`. A missing or malformed header gets 401 without a service call. Errors:
@@ -110,8 +102,7 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
   MAX-аккаунт «Имя Фамилия» к дневнику …?». The name comes from `initDataUnsafe` for display only,
   so a person can stop a foreign launch. «Привязать» sends `initData` to
   `POST /api/account/max/link`; the server adds the client address. The service checks the
-  signature, the age (5 min), the single use of `query_id`, the signed `ip`, and a login in the last
-  15 minutes. On `reauth_required` the page offers «Войти заново».
+  signature, the age (5 min), the single use of `query_id`, and the signed `ip`.
 - The site: «Привязать мессенджер» → «MAX» shows the fixed deep link
   `NUXT_ACCOUNT_MAX_APP_LINK` (`https://max.ru/<bot>?startapp=account`, no code) and its QR code
   from `GET /api/account/max/qr.svg`. The person scans it, logs in inside MAX, and links there.

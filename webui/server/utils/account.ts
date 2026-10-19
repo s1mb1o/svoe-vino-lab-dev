@@ -15,8 +15,12 @@ export const ACCOUNT_COOKIES = {
   yandex: '__Host-cv_yandex',
   signup: '__Host-cv_signup',
   next: '__Host-cv_next',
-  reauth: '__Host-cv_reauth',
 } as const
+
+// Sessions do not expire in the service (owner, 2026-10-19). Browsers keep a cookie at most 400
+// days, so every /api/account/me call sets it again: the login lasts while the person visits.
+const SESSION_COOKIE_MAX_AGE = 400 * 86400
+const sessionCookieAge = (expiresAt: unknown) => Math.min(secondsUntil(expiresAt, SESSION_COOKIE_MAX_AGE), SESSION_COOKIE_MAX_AGE)
 
 export const YANDEX_CALLBACK_PATH = '/api/account/yandex/callback'
 const MAX_RESPONSE_BYTES = 64 * 1024
@@ -225,7 +229,7 @@ type AuthAnswer = {
 /** Keeps the session or the sign-up ticket in httpOnly cookies. The browser gets neither value. */
 function applyAuthAnswer(event: H3Event, answer: AuthAnswer) {
   if (answer.status === 'session' && typeof answer.session?.token === 'string') {
-    setCookie(event, ACCOUNT_COOKIES.session, answer.session.token, cookieOptions(secondsUntil(answer.session.expires_at, 86400)))
+    setCookie(event, ACCOUNT_COOKIES.session, answer.session.token, cookieOptions(sessionCookieAge(answer.session.expires_at)))
     clearCookie(event, ACCOUNT_COOKIES.signup)
     return { status: 'session' as const, user: answer.user }
   }
@@ -291,7 +295,7 @@ export function meRoute(event: H3Event, source: AccountConfigSource) {
     if (!session) throw new AccountHttpError(401, 'session_required')
     try {
       const { data } = await callAccount<{ user?: unknown; session?: { auth_method?: string; expires_at?: string } }>(config, 'GET', '/v1/me', { session })
-      setCookie(event, ACCOUNT_COOKIES.session, session, cookieOptions(secondsUntil(data.session?.expires_at, 86400)))
+      setCookie(event, ACCOUNT_COOKIES.session, session, cookieOptions(sessionCookieAge(data.session?.expires_at)))
       return { user: data.user, session: { authMethod: data.session?.auth_method, expiresAt: data.session?.expires_at } }
     } catch (error) {
       if (error instanceof AccountHttpError && error.status === 401) clearCookie(event, ACCOUNT_COOKIES.session)
@@ -640,9 +644,6 @@ export async function yandexStartRoute(event: H3Event, source: AccountConfigSour
     const ttl = typeof data.expires_in === 'number' ? data.expires_in : 600
     setCookie(event, ACCOUNT_COOKIES.yandex, data.flow_id, cookieOptions(ttl))
     setCookie(event, ACCOUNT_COOKIES.next, safeNextPath(getQuery(event).next), cookieOptions(ttl))
-    // A fresh login for a dangerous action (account deletion) must stay on the same account.
-    if (getQuery(event).intent === 'reauth') setCookie(event, ACCOUNT_COOKIES.reauth, '1', cookieOptions(ttl))
-    else clearCookie(event, ACCOUNT_COOKIES.reauth)
     return sendRedirect(event, target.href, 302)
   } catch (error) {
     return sendRedirect(event, accountPage(error instanceof AccountHttpError ? error.code : 'account_unavailable'), 302)
@@ -659,11 +660,8 @@ export async function yandexCallbackRoute(event: H3Event, source: AccountConfigS
   const query = getQuery(event)
   const flowId = getCookie(event, ACCOUNT_COOKIES.yandex)
   const next = safeNextPath(getCookie(event, ACCOUNT_COOKIES.next))
-  const reauth = getCookie(event, ACCOUNT_COOKIES.reauth) === '1'
-  const currentSession = getCookie(event, ACCOUNT_COOKIES.session)
   clearCookie(event, ACCOUNT_COOKIES.yandex)
   clearCookie(event, ACCOUNT_COOKIES.next)
-  clearCookie(event, ACCOUNT_COOKIES.reauth)
   let config: AccountConfig | null = null
   try {
     config = source()
@@ -674,27 +672,7 @@ export async function yandexCallbackRoute(event: H3Event, source: AccountConfigS
   if (query.error || !code || !state) return sendRedirect(event, accountPage('yandex_cancelled'), 302)
   if (!flowId) return sendRedirect(event, accountPage('invalid_flow'), 302)
   try {
-    // For a reauth, read the account of the current session before the finish call.
-    let currentUserId = ''
-    if (reauth) {
-      if (!currentSession) return sendRedirect(event, accountPage('session_required'), 302)
-      const { data: me } = await callAccount<{ user?: { id?: string } }>(config, 'GET', '/v1/me', { session: currentSession })
-      currentUserId = me.user?.id ?? ''
-      if (!currentUserId) throw unavailable()
-    }
     const { data } = await callAccount<AuthAnswer>(config, 'POST', '/v1/auth/yandex/finish', { body: { flow_id: flowId, state, code }, timeoutMs: YANDEX_FINISH_TIMEOUT_MS })
-    if (reauth) {
-      const newUserId = (data.user as { id?: string } | undefined)?.id
-      if (data.status !== 'session' || newUserId !== currentUserId) {
-        // Another Yandex account: keep the current session, end the new one, and cancel the action.
-        if (data.status === 'session' && typeof data.session?.token === 'string') {
-          try {
-            await callAccount(config, 'DELETE', '/v1/sessions/current', { session: data.session.token })
-          } catch { /* the new session expires on its own */ }
-        }
-        return sendRedirect(event, accountPage('reauth_mismatch'), 302)
-      }
-    }
     const result = applyAuthAnswer(event, data)
     if (result.status === 'signup_required') return sendRedirect(event, accountPage(undefined, 'signup'), 302)
     return sendRedirect(event, next, 302)

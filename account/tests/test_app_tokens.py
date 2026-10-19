@@ -49,12 +49,10 @@ def test_a_token_reads_only_its_owner_profile(harness):
     assert wines.json() == {"items": [], "next_cursor": None}
 
 
-def test_creation_needs_a_recent_login(harness):
+def test_an_old_session_can_create_a_token(harness):
     session = harness.email_session("anna@example.ru")
-    harness.clock.advance(15 * 60)
-    response = create(harness, session)
-    assert response.status_code == 403
-    assert response.json()["error"] == "reauth_required"
+    harness.clock.advance(30 * 86400)
+    assert create(harness, session).status_code == 201
 
 
 def test_a_sixth_active_token_is_refused(harness):

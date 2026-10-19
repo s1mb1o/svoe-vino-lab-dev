@@ -173,7 +173,7 @@ Later (diary), in new schema files:
 | Email challenge ID | 32 random bytes; httpOnly cookie of the requesting browser | SHA-256 hash | 10 minutes |
 | Yandex flow ID, `state`, PKCE verifier | random | flow ID as SHA-256 hash | 10 minutes, single use |
 | Sign-up ticket | 32 random bytes | SHA-256 hash | 30 minutes, single use |
-| Session | 32 random bytes | SHA-256 hash | 30 days, extended at most once a day |
+| Session | 32 random bytes | SHA-256 hash | No expiry; ends at logout or account deletion |
 | Application token (Phase 2) | `cvpat_` + 32 random bytes, base64url | SHA-256 hash | 30, 90 (default), or 365 days |
 | Service token (web) | `openssl rand -hex 32` | Server env file, mode 0600 | Until rotation |
 | Yandex client secret, SMTP password | from the providers | Server env file, mode 0600 | Until rotation |
@@ -185,8 +185,9 @@ Later (diary), in new schema files:
   ticket after the code, so the start step reveals nothing.
 - Limits: 1 code per minute and 3 per hour for an address, 20 per hour for a client address.
   Then HTTP 429 with `Retry-After`. Nuxt sends the client address that Caddy set.
-- A "recent login" is a session whose `auth_at` is less than 15 minutes old. Unlink, token
-  creation, and account deletion need a recent login.
+- No recent-login rule (owner, 2026-10-19): unlink, linking, token creation, and account deletion
+  need only a session; the site asks for a confirmation. Sessions do not expire; a session ends at
+  logout or account deletion.
 - An account keeps at least one login method: email or Yandex ID.
 - Recovery: the email code is the recovery. A person who loses the mailbox and has no Yandex
   ID linked cannot recover the account. The settings page states this.

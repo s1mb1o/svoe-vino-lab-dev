@@ -42,31 +42,31 @@ def test_published_algorithm_vector():
     assert max_launch.verify(reordered, bytes.fromhex(VECTOR_KEY)).user_id == "67890"
 
 
-def test_stale_session_cannot_add_a_login_method(harness):
+def test_an_old_session_can_add_a_login_method(harness):
     token = harness.email_session("anna@example.ru")
-    harness.clock.advance(16 * 60)
+    harness.clock.advance(30 * 86400)
     email = harness.web(
         "POST",
         "/v1/auth/email/start",
         session=token,
-        json={"email": "evil@example.ru", "purpose": "link"},
+        json={"email": "second@example.ru", "purpose": "link"},
     )
-    assert email.json()["error"] == "reauth_required"
+    assert email.status_code == 200, email.text
     yandex = harness.web(
         "POST",
         "/v1/auth/yandex/start",
         session=token,
         json={"redirect_uri": REDIRECT_URI, "purpose": "link"},
     )
-    assert yandex.json()["error"] == "reauth_required"
+    assert yandex.status_code == 200, yandex.text
     launch = init_data(auth_date=int(harness.clock()))
     max_link = harness.web(
         "POST", "/v1/me/identities/max", session=token, json={"init_data": launch}
     )
-    assert max_link.json()["error"] == "reauth_required"
+    assert max_link.json()["status"] == "linked"
 
 
-def test_link_must_finish_while_the_login_is_recent(harness):
+def test_a_link_can_finish_any_time_while_the_code_is_valid(harness):
     token = harness.email_session("anna@example.ru")
     harness.clock.advance(13 * 60)
     challenge = harness.web(
@@ -82,7 +82,7 @@ def test_link_must_finish_while_the_login_is_recent(harness):
         session=token,
         json={"challenge_id": challenge, "code": harness.last_code()},
     )
-    assert response.json()["error"] == "reauth_required"
+    assert response.json()["status"] == "linked"
 
 
 def test_limits_are_checked_and_recorded_atomically():

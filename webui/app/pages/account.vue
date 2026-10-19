@@ -26,12 +26,8 @@ const signupEmail = ref('')
 const busy = ref(false)
 const message = ref('')
 const notice = ref('')
+// Dangerous actions ask for a confirmation on the page; there is no re-login rule (owner, 2026-10-19).
 const confirmDelete = ref(false)
-// Account deletion needs a login in the last 15 minutes (service rule). After reauth_required the
-// confirmation panel offers a fresh login by the account's own email code or Yandex ID.
-const reauthNeeded = ref(false)
-const reauthSent = ref(false)
-const reauthCode = ref('')
 const resendAt = ref(0)
 const now = ref(Date.now())
 const heading = ref<HTMLElement>()
@@ -42,9 +38,6 @@ const yandexEnabled = computed(() => Boolean(config.value?.providers?.yandex))
 const yandexHref = computed(() => `/api/account/yandex/start?next=${encodeURIComponent(next.value)}`)
 const usernameValid = computed(() => USERNAME_PATTERN.test(username.value))
 const canSignup = computed(() => usernameValid.value && acceptTerms.value && acceptConsent.value && !busy.value)
-const accountEmail = computed(() => user.value?.identities.find(item => item.provider === 'email')?.email ?? '')
-const hasYandex = computed(() => Boolean(user.value?.identities.some(item => item.provider === 'yandex')))
-const reauthYandexHref = computed(() => `/api/account/yandex/start?intent=reauth&next=${encodeURIComponent('/account?confirm=delete')}`)
 const resendIn = computed(() => Math.max(0, Math.ceil((resendAt.value - now.value) / 1000)))
 const identities = computed(() => splitIdentities(user.value?.identities ?? []))
 // «Привязать мессенджер» (issues #51, #50). A messenger never opens a session: it only saves finds.
@@ -69,7 +62,6 @@ const telegramLinkExpired = computed(() => Boolean(telegramLink.value) && now.va
 const maxApp = computed(() => isMaxAppPath(route.path))
 const maxLaunch = ref('')
 const maxName = ref('')
-const relogin = ref(false)
 // «Токены приложений» (issue #65): read-only access to this diary for an MCP client.
 const appTokens = ref<AppToken[]>([])
 const tokenFormOpen = ref(false)
@@ -77,7 +69,8 @@ const tokenName = ref('')
 const tokenDays = ref(90)
 const newToken = ref('')
 const tokenNotice = ref('')
-const tokenRelogin = ref(false)
+// One pending yes/no question for «Отвязать» or «Отозвать», shown in its own section.
+const pending = ref<{ section: 'messengers' | 'tokens'; question: string; run: () => Promise<void> } | null>(null)
 const newTokenConfig = computed(() => newToken.value ? mcpClientConfig(newToken.value) : '')
 // A server route renders the QR code of the fixed mini-app link (no code inside).
 const MAX_QR_URL = '/api/account/max/qr.svg'
@@ -128,8 +121,7 @@ async function load() {
   }
   const error = typeof route.query.error === 'string' ? route.query.error : ''
   const step = route.query.step
-  const confirmAfterLogin = route.query.confirm === 'delete'
-  if (error || step || confirmAfterLogin) await router.replace({ query: next.value === ACCOUNT_PATH ? {} : { next: next.value } })
+  if (error || step) await router.replace({ query: next.value === ACCOUNT_PATH ? {} : { next: next.value } })
   if (error) message.value = accountErrorMessage({ error })
   try {
     const me = await api.me()
@@ -138,7 +130,6 @@ async function load() {
       await navigateTo(next.value)
       return
     }
-    confirmDelete.value = confirmAfterLogin
     show('account')
   } catch (failure) {
     if (failure instanceof AccountRequestError && failure.status === 401) show(step === 'signup' ? 'signup' : 'email')
@@ -214,11 +205,10 @@ async function logout() {
   user.value = null
   cancelDelete()
   closeLink()
-  relogin.value = false
   linkNotice.value = ''
   closeNewToken()
   tokenFormOpen.value = false
-  tokenRelogin.value = false
+  pending.value = null
   appTokens.value = []
   notice.value = 'Вы вышли из дневника.'
   show('email')
@@ -231,58 +221,28 @@ async function deleteAccount() {
     await api.deleteAccount()
     user.value = null
     confirmDelete.value = false
-    reauthNeeded.value = false
     show('deleted')
   } catch (error) {
-    if (error instanceof AccountRequestError && error.body.error === 'reauth_required') {
-      reauthNeeded.value = true
-      reauthSent.value = false
-    } else {
-      fail(error)
-    }
-  } finally {
-    busy.value = false
-  }
-}
-
-async function sendReauthCode() {
-  if (busy.value || !accountEmail.value) return
-  message.value = ''
-  busy.value = true
-  try {
-    await api.emailStart(accountEmail.value)
-    reauthCode.value = ''
-    reauthSent.value = true
-    resendAt.value = Date.now() + 60_000
-  } catch (error) {
     fail(error)
   } finally {
     busy.value = false
   }
-}
-
-async function confirmAndDelete() {
-  if (busy.value || !EMAIL_CODE_PATTERN.test(reauthCode.value)) return
-  message.value = ''
-  busy.value = true
-  try {
-    const result = await api.emailVerify(reauthCode.value)
-    if (result.status !== 'session') throw new AccountRequestError(400, { error: 'invalid_challenge' })
-  } catch (error) {
-    fail(error)
-    busy.value = false
-    return
-  }
-  busy.value = false
-  reauthSent.value = false
-  await deleteAccount()
 }
 
 function cancelDelete() {
   confirmDelete.value = false
-  reauthNeeded.value = false
-  reauthSent.value = false
   message.value = ''
+}
+
+function ask(section: 'messengers' | 'tokens', question: string, run: () => Promise<void>) {
+  message.value = ''
+  pending.value = { section, question, run }
+}
+
+async function confirmPending() {
+  const action = pending.value
+  pending.value = null
+  if (action) await action.run()
 }
 
 function closeLink() {
@@ -307,7 +267,6 @@ async function startTelegramLink() {
   if (busy.value) return
   message.value = ''
   linkNotice.value = ''
-  relogin.value = false
   busy.value = true
   try {
     const result = await api.linkTelegram()
@@ -317,8 +276,6 @@ async function startTelegramLink() {
   } catch (error) {
     if (error instanceof AccountRequestError && error.body.error === 'provider_disabled') message.value = 'Привязка Telegram сейчас выключена.'
     else fail(error)
-    // Adding a messenger needs a login in the last 15 minutes (service rule).
-    relogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
   } finally {
     busy.value = false
   }
@@ -382,7 +339,6 @@ async function createAppToken() {
   if (busy.value || !tokenName.value.trim()) return
   message.value = ''
   tokenNotice.value = ''
-  tokenRelogin.value = false
   busy.value = true
   try {
     const result = await api.createAppToken(tokenName.value.trim(), tokenDays.value)
@@ -392,7 +348,6 @@ async function createAppToken() {
     await loadAppTokens()
   } catch (error) {
     fail(error)
-    tokenRelogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
   } finally {
     busy.value = false
   }
@@ -433,7 +388,6 @@ async function linkMax() {
   if (busy.value || !maxLaunch.value) return
   message.value = ''
   linkNotice.value = ''
-  relogin.value = false
   busy.value = true
   try {
     await api.linkMax(maxLaunch.value)
@@ -441,8 +395,6 @@ async function linkMax() {
     linkNotice.value = 'MAX привязан к дневнику.'
   } catch (error) {
     fail(error)
-    // The link needs a login in the last 15 minutes; inside MAX only the email code is offered.
-    relogin.value = error instanceof AccountRequestError && error.body.error === 'reauth_required'
   } finally {
     busy.value = false
   }
@@ -551,7 +503,6 @@ onBeforeUnmount(() => {
             <p>Бот MAX сможет сохранять ваши находки в этот дневник. Если имя MAX не ваше, не привязывайте.</p>
             <div class="account-actions">
               <button class="button primary" type="button" :disabled="busy" @click="linkMax">Привязать</button>
-              <button v-if="relogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
             </div>
           </template>
           <p v-else id="max-link-heading">Привязка MAX сейчас выключена.</p>
@@ -567,9 +518,16 @@ onBeforeUnmount(() => {
           <ul v-if="identities.linked.length" class="account-identities">
             <li v-for="item in identities.linked" :key="item.key">
               <span>{{ item.label }}</span>
-              <span class="account-identity-state">{{ item.value }}<button v-if="!maxApp || item.key === 'max'" type="button" class="account-link" :disabled="busy" @click="unlinkMessenger(item.key as Messenger)">Отвязать</button></span>
+              <span class="account-identity-state">{{ item.value }}<button v-if="!maxApp || item.key === 'max'" type="button" class="account-link" :disabled="busy" @click="ask('messengers', `Отвязать ${item.label} от дневника?`, () => unlinkMessenger(item.key as Messenger))">Отвязать</button></span>
             </li>
           </ul>
+          <div v-if="pending?.section === 'messengers'" class="account-confirm" role="group" aria-label="Подтверждение">
+            <p>{{ pending.question }}</p>
+            <div class="account-actions">
+              <button class="button primary account-danger-fill" type="button" :disabled="busy" @click="confirmPending">Да, отвязать</button>
+              <button class="button secondary" type="button" :disabled="busy" @click="pending = null">Отмена</button>
+            </div>
+          </div>
           <p v-if="linkNotice" class="account-notice" role="status">{{ linkNotice }}</p>
           <template v-if="canLinkMessenger">
             <div v-if="!linkOpen" class="account-actions">
@@ -591,8 +549,7 @@ onBeforeUnmount(() => {
                 <div class="account-actions">
                   <button v-if="canLinkTelegram" class="button primary" type="button" :disabled="busy" @click="startTelegramLink">Telegram</button>
                   <button v-if="canLinkMax" class="button primary" type="button" :disabled="busy" @click="chooseMax">MAX</button>
-                  <button v-if="relogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
-                  <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
+                      <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
                 </div>
               </template>
               <template v-else-if="telegramLinkExpired">
@@ -619,9 +576,16 @@ onBeforeUnmount(() => {
           <ul v-if="appTokens.length" class="account-identities">
             <li v-for="item in appTokens" :key="item.id">
               <span>{{ item.name }}</span>
-              <span class="account-identity-state">до {{ shortDate(item.expiresAt) }}<template v-if="item.lastUsedAt"> · использован {{ shortDate(item.lastUsedAt) }}</template><button type="button" class="account-link" :disabled="busy" @click="revokeAppToken(item)">Отозвать</button></span>
+              <span class="account-identity-state">до {{ shortDate(item.expiresAt) }}<template v-if="item.lastUsedAt"> · использован {{ shortDate(item.lastUsedAt) }}</template><button type="button" class="account-link" :disabled="busy" @click="ask('tokens', `Отозвать токен «${item.name}»? Приложение потеряет доступ к дневнику.`, () => revokeAppToken(item))">Отозвать</button></span>
             </li>
           </ul>
+          <div v-if="pending?.section === 'tokens'" class="account-confirm" role="group" aria-label="Подтверждение">
+            <p>{{ pending.question }}</p>
+            <div class="account-actions">
+              <button class="button primary account-danger-fill" type="button" :disabled="busy" @click="confirmPending">Да, отозвать</button>
+              <button class="button secondary" type="button" :disabled="busy" @click="pending = null">Отмена</button>
+            </div>
+          </div>
           <p v-if="tokenNotice" class="account-notice" role="status">{{ tokenNotice }}</p>
           <div v-if="newToken" class="account-panel" role="group" aria-labelledby="new-token-heading">
             <h3 id="new-token-heading" class="account-subheading">Новый токен</h3>
@@ -649,8 +613,7 @@ onBeforeUnmount(() => {
             </select>
             <div class="account-actions">
               <button class="button primary" type="submit" :disabled="busy || !tokenName.trim()">Создать</button>
-              <button v-if="tokenRelogin" class="button secondary" type="button" :disabled="busy" @click="logout">Войти заново</button>
-              <button class="button secondary" type="button" :disabled="busy" @click="tokenFormOpen = false; tokenRelogin = false; message = ''">Отмена</button>
+              <button class="button secondary" type="button" :disabled="busy" @click="tokenFormOpen = false; message = ''">Отмена</button>
             </div>
           </form>
           <div v-else class="account-actions">
@@ -659,29 +622,15 @@ onBeforeUnmount(() => {
         </template>
         <div class="account-actions">
           <button class="button secondary" type="button" :disabled="busy" @click="logout">Выйти</button>
-          <button v-if="!confirmDelete" class="button secondary account-danger" type="button" :disabled="busy" @click="confirmDelete = true; reauthNeeded = false">Удалить аккаунт</button>
+          <button v-if="!confirmDelete" class="button secondary account-danger" type="button" :disabled="busy" @click="confirmDelete = true">Удалить аккаунт</button>
         </div>
         <div v-if="confirmDelete" class="account-confirm" role="group" aria-labelledby="delete-heading">
           <h2 id="delete-heading" class="account-subheading">Удалить аккаунт {{ user.username }} и все данные?</h2>
           <p>Удалятся имя пользователя, способы входа и все записи дневника. Это действие нельзя отменить.</p>
-          <div v-if="!reauthNeeded" class="account-actions">
+          <div class="account-actions">
             <button class="button primary account-danger-fill" type="button" :disabled="busy" @click="deleteAccount">Удалить навсегда</button>
             <button class="button secondary" type="button" :disabled="busy" @click="cancelDelete">Отмена</button>
           </div>
-          <template v-else>
-            <p class="account-notice">Чтобы удалить аккаунт, подтвердите, что это вы: нужен вход не раньше чем 15 минут назад.</p>
-            <form v-if="accountEmail && reauthSent" class="account-form" @submit.prevent="confirmAndDelete">
-              <label for="account-reauth-code">Код из письма на {{ accountEmail }}</label>
-              <input id="account-reauth-code" v-model="reauthCode" class="ym-disable-keys account-code" type="text" name="one-time-code" autocomplete="one-time-code" inputmode="numeric" pattern="\d{6}" maxlength="6" required :disabled="busy">
-              <button class="button primary account-danger-fill" type="submit" :disabled="busy || reauthCode.length !== 6">Подтвердить и удалить</button>
-            </form>
-            <div class="account-actions">
-              <button v-if="accountEmail && !reauthSent" class="button primary" type="button" :disabled="busy" @click="sendReauthCode">Подтвердить кодом из письма</button>
-              <button v-if="accountEmail && reauthSent" class="button secondary" type="button" :disabled="busy || resendIn > 0" @click="sendReauthCode">{{ resendIn > 0 ? `Отправить код ещё раз через ${resendIn} с` : 'Отправить код ещё раз' }}</button>
-              <a v-if="hasYandex && !maxApp" class="button secondary account-yandex" :href="reauthYandexHref"><span class="yandex-mark" aria-hidden="true">Я</span>Подтвердить через Яндекс ID</a>
-              <button class="button secondary" type="button" :disabled="busy" @click="cancelDelete">Отмена</button>
-            </div>
-          </template>
         </div>
       </template>
 

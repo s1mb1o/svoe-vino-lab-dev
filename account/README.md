@@ -16,11 +16,11 @@ preferences, application tokens) comes later.
 | Login by Yandex ID | OAuth 2.0 authorization code flow with PKCE (`S256`) and `state`. The service keeps the Yandex user ID only and discards the access token. Limit: 30 starts per hour for a client address; at most 10,000 open flows. |
 | Same email | A login of an unknown identity joins the account that has the same email: an email identity by its address, a Yandex identity by the `default_email` that Yandex ID returns (permission «Доступ к адресу электронной почты»). Comparison after trim and lower case. No join when two accounts have the email or when the account already has an identity of this provider. The join trusts the Yandex address; Yandex ID confirms addresses of an account. |
 | Sign-up | A new email or Yandex identity gets a sign-up ticket (30 minutes). Sign-up needs a username and the current consent and terms versions. |
-| Sessions | 30 days, extended at most once a day. `max` sessions: 1 day. |
-| Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. Linking email, Yandex ID, or MAX needs a login in the last 15 minutes, at the start and at the end. One identity per provider and account. An identity belongs to one account at most. |
+| Sessions | No expiry (owner, 2026-10-19): a session ends at logout or account deletion. `max` sessions: 1 day (MAX login is off). |
+| Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. One identity per provider and account. An identity belongs to one account at most. |
 | MAX | Checks the mini-app launch data: signature, age (5 minutes by default, at most 60), single-use `query_id` kept while the launch is valid, signed `ip` against the client address. MAX login is off by default (`MAX_LOGIN_ENABLED`, issue #50). |
 | Telegram | A one-time link code (10 minutes, at most 10 per hour for an account) for `https://t.me/<bot>?start=link_<code>`. The bot reads the diary name, asks the person, then confirms. Telegram never opens a session. |
-| Deletion | Unlink and account deletion need a login in the last 15 minutes. An account keeps at least one login method: email or Yandex ID. MAX login does not count. |
+| Deletion | Unlink and account deletion need no fresh login; the site asks for a confirmation. An account keeps at least one login method: email or Yandex ID. MAX login does not count. |
 
 Russian law (149-FZ art. 8 p. 10, KoAP 13.55 since 7 July 2026) forbids login through a
 foreign service. Do not add login through Telegram, Google, or Apple. Telegram is only linked.
@@ -77,14 +77,14 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `POST /v1/auth/max/session` | web | `{init_data}` → session or `not_linked` (only with `MAX_LOGIN_ENABLED`) |
 | `DELETE /v1/sessions/current` | web | Log out |
 | `GET /v1/me`, `DELETE /v1/me` | web | Account view; delete the account |
-| `POST /v1/me/identities/max` | web | `{init_data}` → link MAX. Needs a login in the last 15 minutes |
-| `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram`. A login method needs a login in the last 15 minutes |
-| `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}`. Needs a login in the last 15 minutes; a new code ends the open one |
+| `POST /v1/me/identities/max` | web | `{init_data}` → link MAX |
+| `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram` |
+| `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}`; a new code ends the open one |
 | `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text. The first claimer owns the code |
 | `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user who claimed the code; a repeat answers `linked` again |
 | `POST /v1/bot/telegram/unlink` | telegram-bot | Unlink by Telegram user ID |
 | `GET /v1/me/app-tokens` | web | Active application tokens, without secrets |
-| `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only. Needs a login in the last 15 minutes |
+| `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only |
 | `DELETE /v1/me/app-tokens/{id}` | web | Revoke a token |
 | `GET /v1/app/profile` | web + `X-App-Token` | Username, creation date, preferences (`null` until #48) |
 | `GET /v1/app/wines?cursor=&limit=` | web + `X-App-Token` | Found and rated wines, newest first, `limit` 1–50 (empty until #48) |

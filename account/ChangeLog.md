@@ -1,5 +1,17 @@
 # ChangeLog
 
+## 2026-10-19 — No recent-login rule; sessions without expiry
+
+Owner decision: "remove 15 minutes period for account operations", "only ask confirmations",
+"keep account logged in endlessly".
+
+- Removed the 15-minute recent-login rule (`reauth_required`) from account deletion, unlink, email and
+  Yandex ID linking, Telegram link codes, MAX linking, and application token creation. The site asks
+  for a confirmation instead.
+- Web sessions have no expiry (`SESSION_TTL` of 100 years): a session ends at logout or account
+  deletion. `max` sessions keep 1 day (MAX login is off).
+- Tests rewritten for the new rules (98 in total).
+
 ## 2026-10-19 — Review fixes for application tokens
 
 Review of `99015725` and `2ada337b` (a Claude review agent) found nothing high-severity. Fixed:

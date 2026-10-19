@@ -155,9 +155,12 @@ def test_logout_and_session_lifetime(harness):
     assert gone.json()["error"] == "session_invalid"
 
 
-def test_session_expires_without_use(harness):
+def test_session_does_not_expire(harness):
+    # Owner rule of 2026-10-19: a session ends only at logout or account deletion.
     token = harness.email_session("anna@example.ru")
-    harness.clock.advance(31 * 86400)
+    harness.clock.advance(400 * 86400)
+    assert harness.web("GET", "/v1/me", session=token).status_code == 200
+    harness.web("DELETE", "/v1/sessions/current", session=token)
     assert harness.web("GET", "/v1/me", session=token).status_code == 401
 
 
