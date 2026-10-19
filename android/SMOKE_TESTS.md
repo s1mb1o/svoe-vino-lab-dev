@@ -2,13 +2,75 @@
 
 ## Automated checks
 
-1. Run `python3 -m unittest tools.test_build_catalog_pack tools.test_build_model_pack`.
+1. Run `python3 -m unittest tools.test_build_catalog_pack tools.test_build_model_pack
+   tools.test_export_siglip2_naflex_split`.
 2. Run `python3 tools/build_catalog_pack.py --replace --version <version>`.
 3. Run `./gradlew lintDebug test assembleDebug`.
 4. Confirm that the APK contains the uncompressed asset
    `assets/default_model_pack.zip`.
 5. Run `tools/verify_model_vectors.py` against a completed 768-dimensional workbench
    index and the Android SigLIP2 LiteRT file.
+
+## SigLIP2 NaFlex exact split checks
+
+1. Export the p512 split with `tools/export_siglip2_naflex_split.py`.
+2. Confirm that PyTorch split cosine is `1.0`.
+3. Confirm that LiteRT end-to-end cosine is at least `0.99999`.
+4. Build a format version 4 pack with the matching 1,152-dimensional index.
+5. Install the debug APK on the Pixel 8.
+6. Install the external format version 4 pack.
+7. Confirm that `GET /healthz` reports runtime `naflex-exact-split`.
+8. Confirm that `GET /healthz` reports vector dimension `1152`.
+9. Confirm that `GET /healthz` reports patch limit `512`.
+10. Select explicit GPU for SigLIP2.
+11. Send one image to `POST /v1/match?k=3`.
+12. Confirm that the request reports the NaFlex GPU compatibility error.
+13. Select `Auto` for SigLIP2.
+14. Confirm that the saved automatic SigLIP2 accelerator is CPU.
+15. Send the known `chin-chin-vermentino` catalogue image to `POST /v1/match?k=3`.
+16. Confirm that Top-1 is `chin-chin-vermentino`.
+17. Confirm that its score is close to `0.977004`.
+18. Confirm that the returned vector search uses the p512 split pipeline.
+
+## Focused SigLIP2 Base pilot checks
+
+1. Export Base NaFlex p256 standard.
+2. Export Base NaFlex p256 5a.
+3. Export Base NaFlex p512 standard.
+4. Confirm that each output has 768 dimensions.
+5. Confirm that each generated model stays outside Git.
+6. Run CPU/GPU vector parity on one Pixel 8 image.
+7. Reject an accelerator when cosine is below `0.99999`.
+8. Reject an accelerator when maximum error is above `0.001`.
+9. Run the same deterministic 30-image selection for each encoder.
+10. Record latency, PSS, RSS, battery temperature, thermal status, PID, and logcat.
+11. Confirm that every vector is finite and has 768 dimensions.
+12. Confirm that no process restarted.
+13. Run full `my` only for a variant that passes every gate.
+14. Confirm that an unverified NaFlex pack has `gpu_compatible: false`.
+15. Read
+    `docs/reports/2026-10-19_pixel8-siglip2-base-pilot/report.md`.
+
+The 2026-10-19 Pixel 8 pilot passed all execution and stability checks.
+It rejected all variants on the combined vector and latency gates.
+The final validation passed `lintDebug`, `testDebugUnitTest`, `assembleDebug`, eight
+Python tests, and sixteen Workbench tests.
+
+## SigLIP2 NaFlex verification on 2026-10-19
+
+- The Python split and pack-builder tests passed.
+- `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed.
+- The debug APK installed on Pixel 8 serial `41231FDJH002WZ`.
+- `GET /healthz` reported format version 4 runtime values.
+- Explicit GPU returned HTTP 502 before it could return a false match.
+- The automatic accelerator check saved CPU for SigLIP2 NaFlex.
+- The final `Auto` request used pipeline
+  `android-dis-siglip2-so400m-naflex-p512-split`.
+- The final request returned `chin-chin-vermentino` at `0.977004`.
+- The final request latency was `256081.709` ms.
+- The final debug APK installed on the Pixel 8.
+- The debug HTTP server was off after the test.
+- The ADB port forward and temporary device pack archives were removed.
 
 ## HEIC and HEIF checks
 

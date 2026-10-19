@@ -1,0 +1,204 @@
+{
+  "cosine": 0.9991356486733527,
+  "cpu": {
+    "candidates": [
+      {
+        "rank": 1,
+        "score": 0.6721745729446411,
+        "slug": "zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+        "wine": {
+          "category": "Белое",
+          "color": "Красивый янтарно-золотистый цвет с сияющим блеском.",
+          "grapes": "Ркацители",
+          "image_url": null,
+          "name": "Ркацители",
+          "page_url": "https://vino-svoe.ru/wines/zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+          "producer": "ЗМВ Коктебель",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 2,
+        "score": 0.65242600440979,
+        "slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+        "wine": {
+          "category": "Красное",
+          "color": "Блестящий рубиновый с коралловым оттенком",
+          "grapes": "Бастардо Магарачский",
+          "image_url": null,
+          "name": "Автохтонное вино Крыма от Валерия Захарьина. Бастардо – Кефесия",
+          "page_url": "https://vino-svoe.ru/wines/valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+          "producer": "Валерий Захарьин",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 3,
+        "score": 0.6457988023757935,
+        "slug": "zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+        "wine": {
+          "category": "Белое",
+          "color": "Янтарный",
+          "grapes": "Траминер",
+          "image_url": null,
+          "name": "Траминер десертное",
+          "page_url": "https://vino-svoe.ru/wines/zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+          "producer": "ЗМВ Коктебель",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 4,
+        "score": 0.6335089802742004,
+        "slug": "zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+        "wine": {
+          "category": "Белое",
+          "color": "Янтарный",
+          "grapes": "Пино Гри",
+          "image_url": null,
+          "name": "Пино гри десертное",
+          "page_url": "https://vino-svoe.ru/wines/zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+          "producer": "ЗМВ Коктебель",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 5,
+        "score": 0.6325836181640625,
+        "slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+        "wine": {
+          "category": "Красное",
+          "color": "Тёмно-рубиновый с коричневатым оттенком",
+          "grapes": "Красные сорта винограда",
+          "image_url": null,
+          "name": "Портвейн красный Алушта",
+          "page_url": "https://vino-svoe.ru/wines/massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      }
+    ],
+    "client_wall_ms": 80869.90937497467,
+    "embedding_accelerator": "CPU",
+    "embedding_dim": 768,
+    "embedding_ms": 12686,
+    "latency_ms": 80712.412433,
+    "pipeline": "android-dis-siglip2-base-224",
+    "reference_aggregation": "max",
+    "search_ms": 1306,
+    "segmentation_accelerator": "CPU",
+    "segmentation_ms": 64224
+  },
+  "gpu": {
+    "candidates": [
+      {
+        "rank": 1,
+        "score": 0.6720746159553528,
+        "slug": "zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+        "wine": {
+          "category": "Белое",
+          "color": "Красивый янтарно-золотистый цвет с сияющим блеском.",
+          "grapes": "Ркацители",
+          "image_url": null,
+          "name": "Ркацители",
+          "page_url": "https://vino-svoe.ru/wines/zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+          "producer": "ЗМВ Коктебель",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 2,
+        "score": 0.6525044441223145,
+        "slug": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+        "wine": {
+          "category": "Красное",
+          "color": "Блестящий рубиновый с коралловым оттенком",
+          "grapes": "Бастардо Магарачский",
+          "image_url": null,
+          "name": "Автохтонное вино Крыма от Валерия Захарьина. Бастардо – Кефесия",
+          "page_url": "https://vino-svoe.ru/wines/valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-bastardo-kefesiya-bastardo-magarachskiy-krasnoe-suhoe-115",
+          "producer": "Валерий Захарьин",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 3,
+        "score": 0.6444886922836304,
+        "slug": "zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+        "wine": {
+          "category": "Белое",
+          "color": "Янтарный",
+          "grapes": "Траминер",
+          "image_url": null,
+          "name": "Траминер десертное",
+          "page_url": "https://vino-svoe.ru/wines/zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+          "producer": "ЗМВ Коктебель",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 4,
+        "score": 0.6349314451217651,
+        "slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+        "wine": {
+          "category": "Красное",
+          "color": "Тёмно-рубиновый с коричневатым оттенком",
+          "grapes": "Красные сорта винограда",
+          "image_url": null,
+          "name": "Портвейн красный Алушта",
+          "page_url": "https://vino-svoe.ru/wines/massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 5,
+        "score": 0.631692111492157,
+        "slug": "massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+        "wine": {
+          "category": "Розовое",
+          "color": "Янтарно-розовый, насыщенный",
+          "grapes": "Мускат",
+          "image_url": null,
+          "name": "Мускат розовый позднего сбора",
+          "page_url": "https://vino-svoe.ru/wines/massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      }
+    ],
+    "client_wall_ms": 75827.54154200666,
+    "embedding_accelerator": "GPU",
+    "embedding_dim": 768,
+    "embedding_ms": 22212,
+    "latency_ms": 75659.037349,
+    "pipeline": "android-dis-siglip2-base-224",
+    "reference_aggregation": "max",
+    "search_ms": 914,
+    "segmentation_accelerator": "CPU",
+    "segmentation_ms": 52510
+  },
+  "image": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/data/testsets/images/c676e5a5357d1a723a8c131aae5fade626415b08a6ab4f3f064f4f1dcc118d91.webp",
+  "maximum_absolute_error": 0.0045860931277275085,
+  "passes": false
+}

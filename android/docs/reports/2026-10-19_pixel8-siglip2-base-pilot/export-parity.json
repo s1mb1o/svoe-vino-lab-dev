@@ -1,0 +1,43 @@
+{
+  "model": "google/siglip2-base-patch16-naflex",
+  "position_embeddings_bytes": 786432,
+  "position_embeddings_sha256": "3ba1ba032ad8d97e0a1afebf4513615fbfedb56f646c14dcdb83d3c228c12860",
+  "revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+  "variants": {
+    "base-naflex-p256-5a": {
+      "backbone_bytes": 171760720,
+      "backbone_sha256": "fb537a2da8b216927eb9c85685d04ab9d340e6f51c4bed031e87027790e1cf72",
+      "litert_pooling_cosine": 0.9999998807907104,
+      "litert_pooling_max_abs_error": 0.0008957386016845703,
+      "pilot_pack_sha256": "51406878d7ecb82915f0ba04491547b74067d66f04eb411cf2ab9dbd92f7aa05",
+      "pooling": "foreground-1.0-background-0.1",
+      "pooling_bytes": 13026192,
+      "pooling_sha256": "edba747a35578b5a675478b3746c4913e4379918544a4c740e49bad72c1c512c",
+      "shares_backbone_with": "base-naflex-p256-standard"
+    },
+    "base-naflex-p256-standard": {
+      "backbone_bytes": 171760720,
+      "backbone_sha256": "fb537a2da8b216927eb9c85685d04ab9d340e6f51c4bed031e87027790e1cf72",
+      "litert_end_to_end_cosine": 0.9999997615814209,
+      "litert_pooling_max_abs_error": 0.001294851303100586,
+      "pilot_pack_sha256": "7bdc5fce268b540251fe9cc228dffc0bf060aa74f32545926d4bf24db5d0b94e",
+      "pooling": "standard",
+      "pooling_bytes": 13033632,
+      "pooling_sha256": "00ef9e679b27a1713ea3d32deb4e9d028656d71d5cadbc3c75327b1fcb641b6d",
+      "pytorch_split_cosine": 0.9999999403953552,
+      "pytorch_split_max_abs_error": 0.0
+    },
+    "base-naflex-p512-standard": {
+      "backbone_bytes": 171760720,
+      "backbone_sha256": "81d46369600e33e0b39465f70060cb8bbcabb2004f1174357c1312dd572eb424",
+      "litert_end_to_end_cosine": 0.9999998807907104,
+      "litert_pooling_max_abs_error": 0.0011358261108398438,
+      "pilot_pack_sha256": "c7b6c8d8719b273c76dd7629a20314304a9102ed9ac79f1de271a109167cd048",
+      "pooling": "standard",
+      "pooling_bytes": 13035680,
+      "pooling_sha256": "7a45039dc23bed783a742dcc7c1569843469079fc94b9a29d111cb157fb83cf2",
+      "pytorch_split_cosine": 1.0,
+      "pytorch_split_max_abs_error": 0.0
+    }
+  }
+}

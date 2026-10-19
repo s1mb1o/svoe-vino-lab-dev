@@ -21,6 +21,10 @@ The application ID is `chtozavino.alolalab.com`.
 - YOLO26n-seg bottle segmentation with COCO class `bottle` on CPU.
 - White-background crop.
 - SigLIP2 Base/16 224 embedding.
+- Optional exact split runtime for `google/siglip2-so400m-patch16-naflex`.
+- Desktop-compatible 1,152-dimensional NaFlex vectors.
+- Optional exact split runtime for `google/siglip2-base-patch16-naflex`.
+- Standard and foreground-aware pooling for 768-dimensional Base NaFlex vectors.
 - Local cosine search.
 - Debug images for each preprocessing stage.
 - Built-in DIS catalogue embeddings at 72 reference angles and one catalogue image for
@@ -96,6 +100,64 @@ It writes a temporary pack first.
 It replaces the target only after validation succeeds.
 It reports each omitted wine in its JSON result.
 
+### Optional SigLIP2 NaFlex pack
+
+This section describes the experimental split exports in this repository.
+The separate `siglip2-naflex-litert` v0.2.0 library has verified GPU exports and its
+own Android benchmark app.
+Read [the implementation comparison](docs/naflex-implementations.md) before selecting
+a runtime or interpreting the split-export measurements.
+
+The application accepts model-pack formats 4 and 5.
+This format uses a LiteRT backbone and a separate LiteRT pooling model.
+The pooling model contains the original SigLIP2 attention pooling, LayerNorm, and MLP.
+The Android preprocessor supplies patches, resized position vectors, and the attention
+mask.
+The pooling model runs on CPU.
+Format 4 uses `google/siglip2-so400m-patch16-naflex` and 1,152 dimensions.
+Format 5 uses `google/siglip2-base-patch16-naflex` and 768 dimensions.
+Format 5 supports standard pooling and foreground-aware 5a pooling.
+The 5a pooling adds `log(0.1 + 0.9 * foreground)` to each patch attention logit.
+
+The current Android runtime runs an unverified NaFlex backbone on LiteRT CPU/XNNPACK.
+`Auto` selects CPU when the pack does not declare GPU compatibility.
+Explicit GPU selection reports a compatibility error in this case.
+The pack builders write `gpu_compatible: false` by default.
+
+Export the p512 split outside the repository:
+
+```text
+python3 tools/export_siglip2_naflex_split.py \
+  --max-num-patches 512 \
+  --out-dir /path/out/android-siglip2-so400m-naflex-p512-split
+```
+
+Build the matching external pack:
+
+```text
+python3 tools/build_catalog_pack.py \
+  --catalog /path/to/workbench/data/catalog \
+  --embedding gx10-siglip2-so400m-patch16-naflex-p512-rot5 \
+  --siglip-runtime naflex-exact-split \
+  --naflex-model-dir /path/out/android-siglip2-so400m-naflex-p512-split \
+  --out /path/out/android-naflex-p512-pack-v4.zip
+```
+
+The generated p512 backbone is approximately 788 MiB.
+The complete tested pack is approximately 1.72 GiB.
+Keep these generated files outside Git and outside the APK.
+The Pixel 8 CPU reference run took approximately 256 seconds for one image.
+The Pixel 8 GPU delegate compiled the full backbone but returned an incompatible vector.
+The application therefore disables GPU for this NaFlex runtime.
+Treat this runtime as an accuracy baseline until a smaller or more strongly quantized
+model meets the latency target.
+
+The focused Base NaFlex pilot tested fixed p224, p256 standard, p256 5a, and p512
+standard on one Pixel 8.
+Each variant completed 30 requests without a process restart.
+No variant passed both the exact-vector and latency gates.
+Read [the Pixel 8 Base pilot report](docs/reports/2026-10-19_pixel8-siglip2-base-pilot/report.md).
+
 ```text
 ./gradlew test assembleDebug
 ```
@@ -136,9 +198,15 @@ DIS and SigLIP2 accelerator settings.
 It serializes inference because one LiteRT model pipeline processes one image at a time.
 It reuses the LiteRT environment, compiled models, and tensor buffers across requests.
 
-- `GET /healthz` reports the pack version and wine count.
+- `GET /healthz` reports the pack version, wine count, SigLIP2 runtime, vector
+  dimension, and patch limit.
 - `POST /v1/eval/predict` accepts multipart field `image` and returns one `slug`.
 - `POST /v1/match?k=20` accepts multipart field `image` and returns ranked candidates.
+- `POST /v1/debug/embedding?k=20` also returns the normalized vector and stage latency.
+- `aggregation=max` selects the maximum reference score.
+- `aggregation=top2-mean` selects the mean of the two best reference scores.
+- `dis_accelerator=cpu|gpu` and `siglip2_accelerator=cpu|gpu` override saved settings
+  for one debug request.
 - The image limit is 20 MiB.
 - `k` MUST be from 1 through 20.
 
@@ -150,9 +218,9 @@ adb -s <serial> forward tcp:18088 tcp:18088
 curl http://127.0.0.1:18088/healthz
 ```
 
-The two Workbench pipelines are `android-device-eval-predict` and
-`android-device-match-k20`.
-Both pipelines disable barcode recognition.
+The Workbench pipelines are `android-device-eval-predict`,
+`android-device-match-k20`, and `android-device-match-k20-top2-mean`.
+These pipelines disable barcode recognition.
 
 To start a bulk test in the Workbench UI:
 
@@ -161,7 +229,7 @@ To start a bulk test in the Workbench UI:
 3. Open the application settings.
 4. Enable `HTTP-сервер для тестов`.
 5. Open the Workbench test-set page.
-6. Select `android-device-eval-predict` or `android-device-match-k20` in New Run.
+6. Select one Android device pipeline in New Run.
 7. Enter the device IPv4 address.
 8. Set the query limit for a smoke test, or leave the limit empty for a complete run.
 9. Start the run.
@@ -181,7 +249,7 @@ python3 pipeline/remote_run.py --name android-device-match-k20 \
 ```
 
 Remove `--limit 10` only when you want a complete bulk run.
-The `my` test set contained 2,232 queries during the 2026-09-29 check.
+The `my` test set contained 3,409 queries during the 2026-10-19 check.
 A complete run can take multiple hours on one phone.
 Workbench writes the run files to `../workbench/runs/` and shows the result on the Runs
 page.
@@ -189,6 +257,7 @@ Read [plan 86](../workbench/docs/plans/86_android-device-http-evaluation.md).
 
 Read [the model and vector verification results](VERIFICATION_RESULTS.md),
 [the verified Android 0.1.4 screenshot set](docs/screenshots/android-0.1.4/README.md),
+[the Pixel 8 Base pilot](docs/reports/2026-10-19_pixel8-siglip2-base-pilot/report.md),
 [the specification](docs/specification.md), and
 [the model-pack contract](docs/model-pack.md).
 

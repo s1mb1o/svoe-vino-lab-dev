@@ -1,0 +1,16 @@
+{
+  "catalogue_vs_litert_direct_control": {
+    "maximum": 0.9767982363700867,
+    "mean": 0.9373871795833111,
+    "minimum": 0.8972586393356323
+  },
+  "catalogue_vs_litert_timm_preprocessing": {
+    "maximum": 0.9999999403953552,
+    "mean": 0.9999996423721313,
+    "minimum": 0.9999990463256836
+  },
+  "index": "android-siglip2-base-224-dis-white",
+  "model_sha256": "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854",
+  "population": 3055,
+  "sample_size": 32
+}

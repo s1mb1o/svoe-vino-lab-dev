@@ -2,6 +2,25 @@
 
 ## 2026-10-19
 
+### NaFlex measurement scope
+
+- Recorded the separate `siglip2-naflex-litert` v0.2.0 library and benchmark app.
+- Linked its successful GPU measurements to distinguish them from the split exports.
+- Kept the October 19 split-export measurements as historical results.
+- Recorded the working copy paths and the pending library integration.
+
+### Pixel 8 split-export measurements
+
+- Exported p256 standard, p256 5a, and p512 standard LiteRT splits outside Git.
+- Completed 30 measured requests for all four encoder variants.
+- Recorded no process restart and no severe thermal state in 120 requests.
+- Rejected all four variants under the combined exact-vector and latency gates.
+- Kept fixed p224 as the production control.
+- Verified one SO400M p512 match on a Pixel 8 with the external format version 4 pack.
+- Matched `chin-chin-vermentino` at `0.977004` in `256.082` seconds.
+- Passed debug unit tests, Android lint, debug APK assembly, eleven Python model tests,
+  and sixteen Workbench tests before the topic commits.
+
 ### Debug HTTP and repeatable device benchmarks
 
 - Added `/v1/debug/embedding` to the debug HTTP server.

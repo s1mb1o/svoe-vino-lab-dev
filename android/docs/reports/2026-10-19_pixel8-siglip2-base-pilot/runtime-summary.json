@@ -1,0 +1,87 @@
+{
+  "device": {
+    "android": "17",
+    "application_version": "0.1.4",
+    "build_fingerprint": "google/shiba/shiba:17/CP2A.260705.006/15641320:user/release-keys",
+    "model": "Pixel 8",
+    "serial": "41231FDJH002WZ"
+  },
+  "variants": [
+    {
+      "accelerators": {"dis": "gpu", "siglip2": "cpu"},
+      "battery_after_c": 36.8,
+      "battery_before_c": 36.8,
+      "finite_768_vectors": true,
+      "http_200": 30,
+      "maximum_thermal_status": 0,
+      "pack_version": "20261003-dis-yolo26n-seg",
+      "peak_pss_kib": 1469292,
+      "pilot_runtime_pass": false,
+      "process_restarts": 0,
+      "requests": 30,
+      "server_latency_ms": {
+        "maximum": 11000.938685,
+        "median": 9274.397384,
+        "p95": 10525.581391899996
+      },
+      "variant": "base-fixed-p224-control"
+    },
+    {
+      "accelerators": {"dis": "gpu", "siglip2": "cpu"},
+      "battery_after_c": 35.4,
+      "battery_before_c": 34.3,
+      "finite_768_vectors": true,
+      "http_200": 30,
+      "maximum_thermal_status": 0,
+      "pack_version": "pixel8-pilot-base-naflex-p256-standard",
+      "peak_pss_kib": 1477980,
+      "pilot_runtime_pass": false,
+      "process_restarts": 0,
+      "requests": 30,
+      "server_latency_ms": {
+        "maximum": 36970.884946,
+        "median": 11781.5396375,
+        "p95": 13530.798881399998
+      },
+      "variant": "base-naflex-p256-standard"
+    },
+    {
+      "accelerators": {"dis": "gpu", "siglip2": "cpu"},
+      "battery_after_c": 36.3,
+      "battery_before_c": 35.6,
+      "finite_768_vectors": true,
+      "http_200": 30,
+      "maximum_thermal_status": 0,
+      "pack_version": "pixel8-pilot-base-naflex-p256-5a",
+      "peak_pss_kib": 1480138,
+      "pilot_runtime_pass": false,
+      "process_restarts": 0,
+      "requests": 30,
+      "server_latency_ms": {
+        "maximum": 45036.068951,
+        "median": 11800.1055765,
+        "p95": 13806.637754349998
+      },
+      "variant": "base-naflex-p256-5a"
+    },
+    {
+      "accelerators": {"dis": "gpu", "siglip2": "cpu"},
+      "battery_after_c": 37.0,
+      "battery_before_c": 36.4,
+      "finite_768_vectors": true,
+      "http_200": 30,
+      "maximum_thermal_status": 0,
+      "pack_version": "pixel8-pilot-base-naflex-p512-standard",
+      "peak_pss_kib": 1514782,
+      "pilot_runtime_pass": false,
+      "process_restarts": 0,
+      "requests": 30,
+      "server_latency_ms": {
+        "maximum": 46046.846661,
+        "median": 22219.217479,
+        "p95": 24148.6019015
+      },
+      "variant": "base-naflex-p512-standard"
+    }
+  ]
+}

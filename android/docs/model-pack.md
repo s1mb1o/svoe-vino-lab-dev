@@ -73,6 +73,11 @@ The application limits the extracted root payloads to 2 GiB.
 
 ## NaFlex split
 
+This contract describes this repository's experimental split runtime.
+It does not describe the separate `siglip2-naflex-litert` v0.2.0 model package.
+Read [the implementation comparison](naflex-implementations.md) for the verified
+complete-graph GPU library.
+
 The NaFlex backbone accepts normalized patches, resized position vectors, and one
 additive attention mask.
 It returns patch tokens before the final vision LayerNorm.
@@ -216,6 +221,9 @@ Write generated models and packs outside Git.
 Use `--model-id google/siglip2-base-patch16-naflex` for format version 5.
 Use `--pooling foreground-1.0-background-0.1` to export the 5a pooling head.
 Use `--reference-aggregation top2-mean` to make that aggregation the pack default.
+
+The Pixel 8 Base pilot report is in
+`reports/2026-10-19_pixel8-siglip2-base-pilot/report.md`.
 
 ## Legacy pack tool
 

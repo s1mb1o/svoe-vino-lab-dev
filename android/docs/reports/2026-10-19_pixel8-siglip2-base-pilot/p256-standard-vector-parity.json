@@ -1,0 +1,204 @@
+{
+  "cosine": 0.9589063831099265,
+  "cpu": {
+    "candidates": [
+      {
+        "rank": 1,
+        "score": 0.6566353440284729,
+        "slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+        "wine": {
+          "category": "Красное",
+          "color": "Тёмно-рубиновый с коричневатым оттенком",
+          "grapes": "Красные сорта винограда",
+          "image_url": null,
+          "name": "Портвейн красный Алушта",
+          "page_url": "https://vino-svoe.ru/wines/massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 2,
+        "score": 0.6549391746520996,
+        "slug": "usadba-perovskih-rkatsiteli-beloe-suhoe-13",
+        "wine": {
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "grapes": "Ркацители",
+          "image_url": null,
+          "name": "Ркацители",
+          "page_url": "https://vino-svoe.ru/wines/usadba-perovskih-rkatsiteli-beloe-suhoe-13",
+          "producer": "Усадьба Перовских",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 3,
+        "score": 0.64621502161026,
+        "slug": "fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+        "wine": {
+          "category": "Белое",
+          "color": "Соломенный с лимонным оттенком",
+          "grapes": "Рислинг Рейнский",
+          "image_url": null,
+          "name": "Декантер Riesling 2020",
+          "page_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+          "producer": "Фанагория",
+          "qr_urls": [],
+          "region": "Кубань",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 4,
+        "score": 0.6384772062301636,
+        "slug": "fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135",
+        "wine": {
+          "category": "Белое",
+          "color": "Соломенный с золотистым оттенком",
+          "grapes": "Шардоне",
+          "image_url": null,
+          "name": "Декантер Chardonnay 2020",
+          "page_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-chardonnay-2020-shardone-beloe-suhoe-135",
+          "producer": "Фанагория",
+          "qr_urls": [],
+          "region": "Кубань",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 5,
+        "score": 0.6382471919059753,
+        "slug": "fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
+        "wine": {
+          "category": "Белое",
+          "color": "Светло-золотистый",
+          "grapes": "Ркацители",
+          "image_url": null,
+          "name": "Декантер. Ркацители 2019",
+          "page_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-rkatsiteli-2019-beloe-suhoe-135",
+          "producer": "Фанагория",
+          "qr_urls": [],
+          "region": "Кубань",
+          "sugar": null
+        }
+      }
+    ],
+    "client_wall_ms": 80462.5776669709,
+    "embedding_accelerator": "CPU",
+    "embedding_dim": 768,
+    "embedding_ms": 18854,
+    "latency_ms": 80235.764037,
+    "pipeline": "android-dis-siglip2-base-naflex-p256-standard",
+    "reference_aggregation": "max",
+    "search_ms": 1307,
+    "segmentation_accelerator": "CPU",
+    "segmentation_ms": 57606
+  },
+  "gpu": {
+    "candidates": [
+      {
+        "rank": 1,
+        "score": 0.6503777503967285,
+        "slug": "massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+        "wine": {
+          "category": "Красное",
+          "color": "Тёмно-рубиновый с коричневатым оттенком",
+          "grapes": "Красные сорта винограда",
+          "image_url": null,
+          "name": "Портвейн красный Алушта",
+          "page_url": "https://vino-svoe.ru/wines/massandra-portveyn-krasnyy-alushta-krasnye-sorta-vinograda-krasnoe-sladkoe-17",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 2,
+        "score": 0.64499831199646,
+        "slug": "usadba-perovskih-rkatsiteli-beloe-suhoe-13",
+        "wine": {
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "grapes": "Ркацители",
+          "image_url": null,
+          "name": "Ркацители",
+          "page_url": "https://vino-svoe.ru/wines/usadba-perovskih-rkatsiteli-beloe-suhoe-13",
+          "producer": "Усадьба Перовских",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 3,
+        "score": 0.6341166496276855,
+        "slug": "massandra-kokur",
+        "wine": {
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "grapes": "Кокур Белый",
+          "image_url": null,
+          "name": "Массандра Кокур",
+          "page_url": "https://vino-svoe.ru/wines/massandra-kokur",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 4,
+        "score": 0.6316976547241211,
+        "slug": "fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+        "wine": {
+          "category": "Белое",
+          "color": "Соломенный с лимонным оттенком",
+          "grapes": "Рислинг Рейнский",
+          "image_url": null,
+          "name": "Декантер Riesling 2020",
+          "page_url": "https://vino-svoe.ru/wines/fanagoriya-dekanter-riesling-2020-risling-reynskiy-beloe-suhoe-13",
+          "producer": "Фанагория",
+          "qr_urls": [],
+          "region": "Кубань",
+          "sugar": null
+        }
+      },
+      {
+        "rank": 5,
+        "score": 0.6308665871620178,
+        "slug": "kokur-suhoe",
+        "wine": {
+          "category": "Белое",
+          "color": "Золотистый",
+          "grapes": "Кокур",
+          "image_url": null,
+          "name": "Кокур сухое",
+          "page_url": "https://vino-svoe.ru/wines/kokur-suhoe",
+          "producer": "Массандра",
+          "qr_urls": [],
+          "region": "Крым",
+          "sugar": null
+        }
+      }
+    ],
+    "client_wall_ms": 66554.09608292393,
+    "embedding_accelerator": "GPU",
+    "embedding_dim": 768,
+    "embedding_ms": 12072,
+    "latency_ms": 66229.75227,
+    "pipeline": "android-dis-siglip2-base-naflex-p256-standard",
+    "reference_aggregation": "max",
+    "search_ms": 902,
+    "segmentation_accelerator": "CPU",
+    "segmentation_ms": 53241
+  },
+  "image": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/data/testsets/images/c676e5a5357d1a723a8c131aae5fade626415b08a6ab4f3f064f4f1dcc118d91.webp",
+  "maximum_absolute_error": 0.03201315272599459,
+  "passes": false
+}

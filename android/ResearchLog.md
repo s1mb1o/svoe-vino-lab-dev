@@ -2,6 +2,122 @@
 
 ## 2026-10-19
 
+### Scope of NaFlex measurements
+
+- The October 19 measurements used the split exports in this repository.
+- The separate `siglip2-naflex-litert` repository contains a verified v0.2.0 GPU library.
+- Its October 5 and 6 tests covered sixteen profiles on Pixel 8 and realme RMX3890.
+- Its Base p512 Pixel encoder P95 was `401.5` ms in the profile sweep.
+- Its Base p512 Eval run accepted `85/99` known wines at rank 1.
+- Its Eval encode and search median was `533.7` ms.
+- These measurements use a different graph and test method from the split pilot.
+- The split pilot does not invalidate the separate library measurements.
+- The separate library is not integrated into this application.
+- Read `docs/naflex-implementations.md` for source paths and measurement scope.
+
+### Focused Pixel 8 SigLIP2 Base pilot
+
+- The device was a Google Pixel 8 with serial `41231FDJH002WZ`.
+- The device ran Android 17.
+- The application version was `0.1.4`.
+- The NaFlex source was `google/siglip2-base-patch16-naflex`.
+- The source revision was `b53b807d3a2d5e2b3911292f2d69e5341cdc064c`.
+- The pilot used one deterministic 30-image set for all variants.
+- The fixed p224 CPU run completed 30 of 30 requests.
+- Its median latency was `9274.397` ms.
+- Its p95 latency was `10525.581` ms.
+- Its peak PSS was 1,469,292 KiB.
+- The p256 standard CPU run completed 30 of 30 requests.
+- Its median latency was `11781.540` ms.
+- Its p95 latency was `13530.799` ms.
+- Its peak PSS was 1,477,980 KiB.
+- The p256 5a CPU run completed 30 of 30 requests.
+- Its median latency was `11800.106` ms.
+- Its p95 latency was `13806.638` ms.
+- Its peak PSS was 1,480,138 KiB.
+- The p512 standard CPU run completed 30 of 30 requests.
+- Its median latency was `22219.217` ms.
+- Its p95 latency was `24148.602` ms.
+- Its peak PSS was 1,514,782 KiB.
+- All 120 measured requests returned HTTP 200.
+- Every returned vector was finite and had 768 dimensions.
+- No application process restarted.
+- Android thermal status stayed at `NONE`.
+- Fixed p224 CPU/GPU cosine was `0.99913565`.
+- Fixed p224 CPU/GPU maximum error was `0.00458609`.
+- Base NaFlex p256 CPU/GPU cosine was `0.95890638`.
+- Base NaFlex p256 CPU/GPU maximum error was `0.03201315`.
+- Base NaFlex p512 CPU/GPU cosine was `0.92733709`.
+- Base NaFlex p512 CPU/GPU maximum error was `0.06663840`.
+- The p256 5a variant used the same rejected p256 backbone.
+- The p256 standard LiteRT maximum export error was `0.00129485`.
+- The p256 5a LiteRT maximum export error was `0.00089574`.
+- The p512 standard LiteRT maximum export error was `0.00113583`.
+- No encoder passed all pilot gates.
+- No new full `my` run started.
+- The current pack has one reference for each wine.
+- `top2-mean` therefore equals `max` for the current pack.
+- The report is
+  `docs/reports/2026-10-19_pixel8-siglip2-base-pilot/report.md`.
+- The final debug APK SHA-256 was
+  `49c57470bfe03dabab7278ab29b4da8e2e442305f5cf128f1b877247664f260b`.
+- The final debug APK installed on the Pixel 8.
+- The fixed-224 control pack was active after the test.
+- The debug HTTP server was off after the test.
+- The ADB forwarding rule was removed.
+- Approximately 2.6 GiB of temporary device packs and backups were removed.
+- `lintDebug`, `testDebugUnitTest`, and `assembleDebug` passed.
+- Eight Python exporter and pack-builder tests passed.
+- Sixteen Workbench remote-run tests passed.
+
+### SigLIP2 SO400M NaFlex exact split on Pixel 8
+
+- The source model was `google/siglip2-so400m-patch16-naflex`.
+- The source revision was `cc24074f717b612951c2dead130904ab9b65a81e`.
+- The selected patch limit was 512.
+- The first LiteRT model applied patch projection and the vision transformer.
+- The first LiteRT model returned 512 by 1,152 patch tokens.
+- The second LiteRT model applied the original pooling path.
+- The second LiteRT model returned one 1,152-dimensional vector.
+- PyTorch split cosine was `1.0`.
+- PyTorch split maximum absolute error was `0.0`.
+- LiteRT end-to-end cosine against PyTorch was `0.99999994`.
+- The backbone file size was 825,851,536 bytes.
+- The pooling file size was 27,870,656 bytes.
+- The source position table size was 1,179,648 bytes.
+- The external pack used version `naflex-p512-mask-v2-20261019`.
+- The external pack contained 2,201 wines and 158,472 vectors.
+- The pack contained 72 reference vectors for each included wine.
+- The pack size was 1,846,711,927 bytes.
+- The pack SHA-256 was
+  `963b33daaa4b6a52eddeda5e1929c7cdd246f409dd8d03bdb4e1764921bf6d11`.
+- The device was a Google Pixel 8 with serial `41231FDJH002WZ`.
+- The device ran Android 17.
+- The LiteRT GPU delegate compiled all 1,515 backbone operations.
+- The GPU request completed in 225.768 seconds.
+- The GPU vector produced the false Top-1 result `shardone-premium` at `0.811958`.
+- A finite-value check did not detect this compatibility failure.
+- The CPU request completed in 263.963 seconds before the safety change.
+- The CPU vector produced the expected Top-1 result `chin-chin-vermentino` at
+  `0.977004`.
+- The application now disables GPU for the NaFlex runtime.
+- `Auto` now selects LiteRT CPU/XNNPACK for the NaFlex runtime.
+- Explicit GPU selection now returns HTTP 502 with a clear compatibility error.
+- The accelerator check key now includes the runtime, patch limit, DIS hash, and
+  SigLIP2 backbone hash.
+- The final `Auto` request completed in 256.082 seconds.
+- The final request returned `chin-chin-vermentino` at `0.977004`.
+- The debug APK size was 478,043,213 bytes.
+- The debug APK SHA-256 was
+  `5862b0e138c0026764d652ded052ae8e9544a041928e7a5fb3df8037839dfbae`.
+- The final debug APK installed on the Pixel 8.
+- The final device settings used DIS `Auto` and SigLIP2 `Auto`.
+- The final automatic SigLIP2 accelerator was CPU.
+- The debug HTTP server was off after the test.
+- The ADB port forward and temporary device pack archives were removed.
+- Python split and pack-builder tests passed.
+- `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed.
+
 ### HEIC and HEIF Android input validation
 
 - The code change added `image/heic` and `image/heif` to the gallery picker allowlist.
