@@ -64,7 +64,7 @@ The owner decided on 2026-10-19 that every photo is kept for 30 days.
 This applies to the matcher request archive on gx10. `/privacy` does not mention backups: the project makes no backups during the hackathon (owner, 2026-10-19).
 Do not deploy the pages before a cleanup job enforces the 30-day period on the archive.
 The job is `gx10/matcher-retention/` of the deploy repository. It touches only the prod archive on gx10.
-Before deployment, also delete the old Telegram data on the NAS and the Telegram deployment backup of 2026-09-29, or document why they stay.
+The old Telegram data on the NAS and the Telegram deployment backup of 2026-09-29 stay. Owner decision of 2026-10-20: ignore them during the hackathon.
 
 On 2026-10-19 the Dinner Lens production config has a cloud fallback: `qwen3.8-flash` at `maas.qwencloudapi.com`.
 This host resolves to an Alibaba Cloud (Singapore) address.
