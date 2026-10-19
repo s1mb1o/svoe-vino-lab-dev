@@ -1,0 +1,956 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "raevskoe",
+    "name": "Раевское",
+    "aliases": [
+      "Винодельня Раевское",
+      "Raevskoe"
+    ],
+    "slug_prefixes": [
+      "vinodelnya-raevskoe-"
+    ]
+  },
+  "scope": {
+    "label": "23 карточки из снимка «Свое Вино» и 1 официальное дополнение; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-home",
+      "label": "Раевское: описание коллекций",
+      "url": "https://raevskoe.com/"
+    },
+    {
+      "id": "official-catalog",
+      "label": "Раевское: официальный ассортимент",
+      "url": "https://raevskoe.com/catalog/"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "Раевское: Генезис Бланк Де Бланкс",
+      "url": "https://raevskoe.com/assortiment/genezis/genezis-blank-de-blanks"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Самостоятельные стили не получают неподтверждённого ценового ранга. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Генезис и Ренессанс",
+      "rank": 3,
+      "description": "Официальные премиальные коллекции. Общий редакционный ориентир не задаёт ценовой порядок между ними.",
+      "price_label": "Премиальные коллекции",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Ценовое соотношение этих коллекций и самостоятельных стилей не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog",
+        "official-sparkling"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "genesis",
+      "name": "Генезис · тихие вина",
+      "tier_id": "premium",
+      "method": "Тихие купажи; технология зависит от выпуска",
+      "description": "Белый, красный и розовый Генезис. Игристый Blanc de Blancs показан отдельно.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "renaissance",
+      "name": "Ренессанс",
+      "tier_id": "premium",
+      "method": "Тихие сортовые вина и купажи",
+      "description": "Коллекция с разными выпусками и оформлением. Повторяющиеся названия не объединены без доказательства идентичности.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "parfum",
+      "name": "Парфюм де Терруар",
+      "tier_id": "neutral",
+      "method": "Тихие вина; технология зависит от выпуска",
+      "description": "Белые, розовое и красное вино ароматической коллекции. Сортовой состав сохранён по каждой карточке.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "genesis-sparkling",
+      "name": "Генезис · Blanc de Blancs",
+      "tier_id": "neutral",
+      "method": "Розлив тиражной смеси и дегоржаж по официальной карточке",
+      "description": "Игристое вино из Шардоне. Его ценовое соотношение с тихими коллекциями не установлено.",
+      "source_ids": [
+        "official-catalog",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "eklego",
+      "name": "Эклего",
+      "tier_id": "neutral",
+      "method": "Не указан в источнике",
+      "description": "Отдельное красное вино из сохранённого каталога. Актуальная коллекция и ценовой ранг не подтверждены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "glow",
+      "name": "Глоу",
+      "tier_id": "neutral",
+      "method": "Не указан в источнике",
+      "description": "Отдельная сохранённая карточка красного вина. Она не объединена с другими коллекциями.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123",
+      "group_id": "genesis",
+      "name": "Генезис белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 246,
+          "height": 1000,
+          "source_width": 246,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Освежающий, сочный, с шелковистой текстурой, минеральными нотками, аппетитной кислотностью и продолжительным послевкусием. Интересный, с тонами спелого персика, зеленого яблока, желтой сливы, нотками луговых цветов, фундука, фенхеля и пряно-ванильными оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "genesis",
+      "name": "Генезис Красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-krasnoe-kaberne-sovinon-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 247,
+          "height": 1000,
+          "source_width": 247,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сбалансированный, с фруктово-бальзамическим профилем, тонкими танинами и древесными штрихами в длительном послевкусии. Сложный с оттенками вишни, смородины, черники, ежевики, ванили, сладких специй, пряностей и древесины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117",
+      "group_id": "genesis",
+      "name": "Генезис розовое",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-rozovoe-tempranilo-suhoe-117.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 248,
+          "height": 1000,
+          "source_width": 248,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Сочный, нежный, с шелковистой текстурой, яркой кислотностью, деликатными тонами спелых красных ягод, вишни и апельсина. Ярким, свежий, с оттенками персика, смородинового листа, дыни, красных ягод и цитрусовых фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126",
+      "group_id": "renaissance",
+      "name": "Ренессанс белое",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-beloe-shardone-suhoe-126.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 270,
+          "height": 1000,
+          "source_width": 270,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, фруктовый, с утонченной кислинкой и приятным послевкусием. Многогранный, гармоничный с оттенками персика, лимона, яблока, минералов и трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121",
+      "group_id": "renaissance",
+      "name": "Ренессанс Белый бленд",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-belyy-blend-risling-beloe-suhoe-121.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 332,
+          "height": 1000,
+          "source_width": 332,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: С тонами цитруса, яблок, травы и меда, со средней кислотностью и коротким послевкусием. Выраженный, цитрус, яблоки, смородина, персик, сухие травы, ваниль.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128",
+      "group_id": "renaissance",
+      "name": "Ренессанс Блауфранкиш",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-blaufrankish-krasnoe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 778,
+          "y": 0,
+          "width": 806,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Блауфранкиш"
+      ],
+      "description": "Аромат постепенно раскрывается сочной ягодной нотой черной вишни и смородины, переходя к спелым сладким тонам черники и ежевики и нежной фиалки. Изящно и тонко звучат легкие минеральные оттенки и пряная нотка черного перца. Вкус округлый, сбалансированный, фруктовый, с элегантными танинами и освежающей кислотностью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12",
+      "group_id": "renaissance",
+      "name": "Ренессанс Карменер",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-karmener-krasnoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 769,
+          "y": 0,
+          "width": 813,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Карменер"
+      ],
+      "description": "Аромат яркий, сладковатый, раскрывается нотами спелой сливы, сочной черешни, чернослива с легкой копченостью, изящными нотками аниса, черного перца и табака. Вкус слаженный, фруктово-яркий, с ванильными нюансами и объемным танином в теплом послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13",
+      "group_id": "renaissance",
+      "name": "Ренессанс красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 268,
+          "height": 1000,
+          "source_width": 268,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сбалансированный, с шелковистой текстурой, фруктово-минеральными акцентами и тонкими древесными штрихами в стойком послевкусии. С оттенками спелых черных ягод и фруктов, пряностей, лакрицы, подлеска, ванили и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125",
+      "group_id": "renaissance",
+      "name": "Ренессанс Пино Нуар",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-pino-nuar-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 323,
+          "height": 1000,
+          "source_width": 323,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Сбалансированный, с фруктово-пряным профилем, мелкозернистыми танинами и стойким послевкусием. Гармоничный, щедрый, с оттенками вишни, черники, ежевики, сладких специй и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145",
+      "group_id": "renaissance",
+      "name": "Ренессанс Пти Вердо",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-pti-verdo-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 773,
+          "y": 0,
+          "width": 814,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пти Вердо"
+      ],
+      "description": "Аромат раскрывается яркими сочными нотами черной смородины, вишни и ежевики, переходя к спелой сливе и изящным оттенкам чабреца. Букет обогащают нюансы ванили, табака и сложный шлейф пряностей и сафьяна. Вкус мягкий, богатый, с отличным балансом, изящной кислотностью и ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12",
+      "group_id": "renaissance",
+      "name": "Ренессанс Розовое",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-rozovoe-tempranilo-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 323,
+          "height": 1000,
+          "source_width": 323,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, с фруктово-ягодными оттенками и утонченной кислинкой в приятном послевкусии. Гармоничный, освежающий с оттенками красных ягод и фруктов, цветов и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127",
+      "group_id": "renaissance",
+      "name": "Ренессанс Шардоне",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-127.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 775,
+          "y": 0,
+          "width": 811,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате сочные тона белых персиков, жасмина, лимонного сорго, помело, бриоши и печеных яблок в тесте. Во вкусе вино объемное и гладкое, с приятной плотностью на фоне умеренной кислотности. В послевкусии очаровательные тона цитрусового мусса.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128",
+      "group_id": "renaissance",
+      "name": "Ренессанс Шардоне",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-shardone-beloe-suhoe-128.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 323,
+          "height": 1000,
+          "source_width": 323,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Мягкий, с гладкой текстурой, фруктово-цветочным профилем и живой кислинкой в интригующем послевкусии. Свежий, элегантный, с оттенками белых косточковых фруктов, цитрусового масла, трав и полевых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135",
+      "group_id": "renaissance",
+      "name": "Ренессанс Темпранильо",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-tempranilo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 332,
+          "height": 1000,
+          "source_width": 332,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный, с нотами, повторяющими аромат, тонкими танинами и продолжительным послевкусием. Многогранный, с оттенками спелых темных фруктов и ягод, сладких специй, трав и черного перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122",
+      "group_id": "renaissance",
+      "name": "Ренессанс Вионье",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-renessans-vione-beloe-suhoe-122.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 323,
+          "height": 1000,
+          "source_width": 323,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Мягкий, с гладкой текстурой, фруктово-цитрусовым профилем и живой кислинкой в приятном послевкусии. Изящный, освежающий, сотканный из нот яблока, персика, лимона, белых цветов и трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12",
+      "group_id": "parfum",
+      "name": "Парфюм Де Терруар. Бланш",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-blansh-vione-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 275,
+          "height": 1000,
+          "source_width": 275,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Вионье"
+      ],
+      "description": "Вкус: Сбалансированный с фруктовыми, минеральными, цитрусовыми и цветочными штрихами, пикантной кислинкой и сдержанным послевкусием. Изысканный, с оттенками яблока, груши, личи, персика, лайма, розы и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123",
+      "group_id": "parfum",
+      "name": "Парфюм Де Терруар. Мускат",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-muskat-muskat-zheltyy-beloe-suhoe-123.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 275,
+          "height": 1000,
+          "source_width": 275,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Желтый"
+      ],
+      "description": "Вкус: Свежий, с нотками белых фруктов, розового масла и гвоздики, умеренной кислинкой и стойким душистым финишем. С типичными оттенками чайной йрозы и персика.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12",
+      "group_id": "parfum",
+      "name": "Парфюм Де Терруар. Рислинг",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-risling-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 274,
+          "height": 1000,
+          "source_width": 274,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Сбалансированный, с оттенками крыжовника, ревеня, лимонной травы и персика. Свежий с нотками желтых цветов, садовых фруктов, сушеных цитрусовых, минералов, зеленых и оранжевых ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116",
+      "group_id": "parfum",
+      "name": "Парфюм де Терруар. Розе",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-roze-tempranilo-rozovoe-suhoe-116.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 273,
+          "height": 1000,
+          "source_width": 273,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Легкий, питкий, освежающий, выразительно ягодный, с сочной кислотностью, приятной горчинкой, солоноватой минеральностью и долгим, ярким послевкусием. Нежный, с оттенками спелых красных фруктов, белой и красной смородины, малины, красных яблок, клубничной жевательной резинки и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13",
+      "group_id": "parfum",
+      "name": "Парфюм де Терруар. Руж",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-ruzh-tempranilo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 273,
+          "height": 1000,
+          "source_width": 273,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Интенсивный, с приятным и гармоничным балансом, яркими фруктовыми акцентами, свежей кислотностью, умеренной танинной терпкостью, долгим послевкусием с элементами вишни, смородины, трав и специй. Насыщенный, с тонами сочной вишни, ежевики, сливы, специй, пряностей и сладкой ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121",
+      "group_id": "parfum",
+      "name": "Парфюм Де Терруар. Совиньон Блан",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-parfyum-de-terruar-sovinon-blan-beloe-suhoe-121.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 275,
+          "height": 1000,
+          "source_width": 275,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Мягкий, сбалансированный с фруктовыми, минеральными, цитрусовыми и цветочными оттенками, пикантной кислинкой и сдержанным послевкусием. Изысканный, с оттенками яблока, груши, личи, персика, лайма, розы и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-home",
+        "official-catalog"
+      ]
+    },
+    {
+      "id": "official-genesis-blanc-de-blancs",
+      "group_id": "genesis-sparkling",
+      "name": "Генезис Бланк Де Бланкс",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/official-genesis-blanc-de-blancs.webp",
+        "source_id": "official-sparkling",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 335,
+          "height": 1080,
+          "source_width": 335,
+          "source_height": 1080
+        }
+      },
+      "category": "Белое",
+      "style": "Белое игристое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Белое игристое вино из Шардоне по официальной карточке «Генезис Бланк Де Бланкс». Источник указывает тиражный розлив и дегоржаж. Категория сладости не уточнена, поэтому она не назначена по аналогии с другими винами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13",
+      "group_id": "eklego",
+      "name": "Эклего красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-eklego-krasnoe-tempranilo-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 274,
+          "height": 1000,
+          "source_width": 274,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "Вкус: Легкий, питкий, с нотками спелых фруктов и землистыми оттенками. Свежий, фруктовый.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14",
+      "group_id": "glow",
+      "name": "Глоу красное",
+      "variant": "",
+      "wine_slug": "vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-glou-krasnoe-merlo-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 271,
+          "height": 1000,
+          "source_width": 271,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Гармоничный, сочный, с выразительной кислинкой, мягкими танинами, вишневыми, ванильными и перечными тонами, с пикантными нюансами лесных ягод в послевкусии. Насыщенный, с яркими акцентами смородины, джема из ежевики и десертных приправ.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ]
+}

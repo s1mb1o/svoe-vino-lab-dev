@@ -1,0 +1,1059 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "chateau-de-talu",
+    "name": "Chateau de Talu",
+    "aliases": [
+      "Château de Talu",
+      "Шато де Талю"
+    ],
+    "slug_prefixes": [
+      "chateau-de-talu-",
+      "miroir-de-talu-"
+    ]
+  },
+  "scope": {
+    "label": "26 карточек из снимка «Свое Вино» и 1 официальное дополнение; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Шато де Талю: коллекции вин",
+      "url": "https://chateaudetalu.ru/wine-collections/"
+    },
+    {
+      "id": "official-shiraz",
+      "label": "Шато де Талю: Шираз основной коллекции",
+      "url": "https://chateaudetalu.ru/wine-collections/chateau_de_talu/ch-teau-de-talu-shiraz/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Самостоятельные стили не получают неподтверждённого ценового ранга. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "exclusive",
+      "label": "Эксклюзивные коллекции",
+      "rank": 4,
+      "description": "Редакционный премиальный ориентир по официальному выделению эксклюзивных выпусков. Не текущая цена и не рейтинг качества.",
+      "price_label": "Особые выпуски",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Резерв и особые коллекции",
+      "rank": 3,
+      "description": "Редакционный ориентир по названию коллекции и подтверждённой технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Премиальный ориентир",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "main",
+      "label": "Основная коллекция",
+      "rank": 2,
+      "description": "Редакционное позиционирование основной коллекции производителя. Это не текущая цена и не оценка качества.",
+      "price_label": "Основная коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "everyday",
+      "label": "На каждый день",
+      "rank": 1,
+      "description": "Официальное описание «Уроков французского» задаёт повседневное позиционирование. Цены не указаны.",
+      "price_label": "Повседневная коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Ценовое соотношение этих коллекций и самостоятельных стилей не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "exclusive",
+      "name": "Эксклюзивные выпуски",
+      "tier_id": "exclusive",
+      "method": "Тихие вина; технология зависит от выпуска",
+      "description": "Энолог и Купаж № 132. Производитель выделяет эти вина в отдельные эксклюзивные коллекции.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "reserve",
+      "name": "Шато де Талю Резерв",
+      "tier_id": "premium",
+      "method": "Резервные вина; выдержка зависит от выпуска",
+      "description": "Сортовые резервные вина в оформлении с виноградниками. Срок выдержки одного вина не переносится на всю серию.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "chateau",
+      "name": "Шато де Талю · Небо",
+      "tier_id": "main",
+      "method": "Тихие сухие вина; технология зависит от выпуска",
+      "description": "Основная коллекция с изображением неба над шато. Шираз добавлен по официальной карточке и отделён от Шираза Резерв.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "french-lessons",
+      "name": "Уроки французского",
+      "tier_id": "everyday",
+      "method": "Тихие сортовые вина",
+      "description": "Повседневная коллекция с иллюстрированными этикетками. Официальный источник связывает её с прежним названием De Talu.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "southern-vertical",
+      "name": "Южная Вертикаль",
+      "tier_id": "neutral",
+      "method": "Не указан в источнике",
+      "description": "Три самостоятельные карточки Каберне Фран: основной выпуск, премиум и резерв. Их актуальное место в ассортименте не подтверждено.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "miroir",
+      "name": "Miroir de Talu",
+      "tier_id": "neutral",
+      "method": "Тихие сухие купажи",
+      "description": "Два купажа из сохранённого каталога. Ценовое соотношение с основными коллекциями не установлено.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15",
+      "group_id": "exclusive",
+      "name": "Энолог",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 230,
+          "height": 1000,
+          "source_width": 230,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: С мягкими, но ощутимыеми танинами, с сочной кислотностью, с долгим послевкусием джемовых черных ягод и специй. Выразительный с тонами вишневого джема, подкопчённого чернослива, темного шоколада, молотого переца, корицы и гвоздики",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-kupazh-132-kaberne-sovinon-krasnoe-suhoe-146",
+      "group_id": "exclusive",
+      "name": "Купаж 132",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-kupazh-132-kaberne-sovinon-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-kupazh-132-kaberne-sovinon-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 258,
+          "height": 1000,
+          "source_width": 258,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сбалансированный, с ощутимым танином и нотами выдержки в дубе, с тонами чернослива и продолжительным послевкусием. Богатый с тонами спелых черных ягод и красных фруктов, немного шиповника на фоне пряностей, сладкого чернослива в шоколаде, нотки ванили и орехово-древесные нюансы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Каберне Фран Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 1000,
+          "source_width": 252,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Мощный, яркий с округлыми танинами, сочной кислотностью, тонами ежевики, сливы и черной смородины. Стойкое послевкусие с оттенками жареных тостов, специй и копченостей. Выразительный, с оттенками сливы, ежевики и черной смородины, минеральными тонами, нотками гвоздики, корицы и легкой копчености.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Каберне Совиньон Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 1000,
+          "source_width": 252,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Богатый, с яркими ягодно-фруктовыми тонами, с бархатистыми танинами и оттенками шоколада и дубовой бочки в длительном послевкусии. Насыщенный, с яркими тонами черной смородины, чернослива, ежевики, черного перца, спелой вишни, ментола, шоколада и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+      "group_id": "reserve",
+      "name": "Красностоп Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 1000,
+          "source_width": 252,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Анапский"
+      ],
+      "description": "Вкус: Округлый, с немного шероховатыми танинами и пышным длительным послевкусием ягод смородины, клубники, лесной малины. Мягкий, с тонами черноплодной рябины, малины, ежевики, сливы, сладкой ванили, паприки и дыма.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Мерло Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 1000,
+          "source_width": 252,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Округлый, шелковистый с нотами вишни, клубники, сливы, кофе, кедра и тостов, с деликатными танинами и длительным послевкусием. Глубокий с оттенками сливы, ежевики и черной смородины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-shardone-rezerv-beloe-suhoe-13",
+      "group_id": "reserve",
+      "name": "Шардоне Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-shardone-rezerv-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-shardone-rezerv-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 275,
+          "height": 1000,
+          "source_width": 275,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Сбалансированный, со сливочной текстурой, раскрывающейся оттенками пломбира, сливочного масла, аккордами слоеного круассана и изысканной ванили. Сортовой, с цветочными нотами, с нюансами спелой груши, персика, меда, сливочной карамели.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-shiraz-rezerv-sira-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Шираз Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-shiraz-rezerv-sira-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-shiraz-rezerv-sira-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 1000,
+          "source_width": 252,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Мощный, богатый с шелковистой текстурой, округлыми танинами, оттенками спелой черешни и черной смородины, сочной кислотностью и вишнево-шоколадным послевкусием. Интенсивный с нотами кофе, табака, бекона, увяленных ягод, спелой малины, ежевики, сливы, черного шоколада и перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-blan-semilon-beloe-suhoe-127",
+      "group_id": "chateau",
+      "name": "Блан",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-blan-semilon-beloe-suhoe-127",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-blan-semilon-beloe-suhoe-127.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 1000,
+          "source_width": 263,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Семильон"
+      ],
+      "description": "Вкус: Чистый, мягкий с фруктово-цветочным профилем, тонкими цитрусовыми нюансами и сбалансированным послевкусием. Освежающий, гармоничный, сотканный из нот персика, лимона, крыжовника, трав и белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-klere-sira-rozovoe-suhoe-136",
+      "group_id": "chateau",
+      "name": "Клере",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-klere-sira-rozovoe-suhoe-136",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-klere-sira-rozovoe-suhoe-136.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Элегантный, свежий, гладкий, питкий, с оттенками цитрусовых фруктов и красных ягод, сбалансированной кислотностью и изящным фруктовым послевкусием Яркий, с нотами клубники, малины, барбариса и розового грейпфрута",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-merlot",
+      "group_id": "chateau",
+      "name": "Chateau de Talu Merlot",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-merlot",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-merlot.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 3,
+          "y": 8,
+          "width": 236,
+          "height": 864,
+          "source_width": 243,
+          "source_height": 877
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Аромат элегантный и глубокий, с яркими тонами вишни, чернослива, ежевики, чёрного перца, запечённой паприки, шоколада и специй. Плотное и насыщенное красное сухое вино.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-muskat-beloe-suhoe-13",
+      "group_id": "chateau",
+      "name": "Мускат",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-muskat-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-muskat-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 239,
+          "height": 1000,
+          "source_width": 239,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вкус: Чистый, питкий, сбалансированный, с фруктово-цитрусовым профилем и пикантной кислинкой в очаровательном послевкусии. Гармоничный, освежающий раскрывается оттенками цитрусовых и тропических фруктов, дыни, цветов и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14",
+      "group_id": "chateau",
+      "name": "Розе",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 241,
+          "height": 1000,
+          "source_width": 241,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Питкий, яркий, сбалансированный, с фруктово-ягодным профилем, тонкими цветочными нюансами, шелковистой текстурой и долгим послевкусием. Выразительный, с тонами спелых красных ягод: смородины, брусники, клюквы. Присутствуют оттенки спелой малины и вишни.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "chateau",
+      "name": "Руж",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 266,
+          "height": 1000,
+          "source_width": 266,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Бархатистый, с хорошей, устойчивой кислотностью и присутствием в послевкусии вишневой косточки Сложный, с тонами черных ягод, с оттенками легких специй, ванили, дымных нот.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections",
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "official-chateau-shiraz",
+      "group_id": "chateau",
+      "name": "Шато де Талю Шираз",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/official-chateau-shiraz.webp",
+        "source_id": "official-shiraz",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 164,
+          "height": 700,
+          "source_width": 164,
+          "source_height": 700
+        }
+      },
+      "category": "Красное",
+      "style": "Красное сухое",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Красное сухое вино из Сиры основной коллекции «Шато де Талю». По официальной карточке выдержка проходит девять месяцев в дубовой фудре. Этот выпуск показан отдельно от Шираза Резерв.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-shiraz"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-fran-krasnoe-suhoe-14",
+      "group_id": "french-lessons",
+      "name": "Уроки французского. Каберне Фран",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-kaberne-fran-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-fran-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Ягодный, с нюансами мяты и белого перца Выразительный, с нотами листа малины, ежевики, садовой черешни и оттенками перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "french-lessons",
+      "name": "Уроки французского. Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Бархатистый, с ощущением сочных, спелых темных ягод и слегка ментоловым оттенком, с мягкими танинами и средней кислотностью. Интенсивный, с нотами черной смородины, черники, сливы и фиалки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-145",
+      "group_id": "french-lessons",
+      "name": "Уроки французского. Красностоп",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Анапский"
+      ],
+      "description": "Вкус: Полный, чуть сладковатый, с ярким танинным послевкусием. С оттенками черных ягод, спелой сливы, черноплодной рябины, спелого инжира, крепко заваренного шиповника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-merlo-krasnoe-suhoe-147",
+      "group_id": "french-lessons",
+      "name": "Уроки французского. Мерло",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-merlo-krasnoe-suhoe-147",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-merlo-krasnoe-suhoe-147.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Мягкий, фруктово-ягодный, с бархатным танином, со средней кислотностью и аккуратно интегрированным алкоголем. Средней интенсивности, с обилием черных ягод и фруктов: смородина, спелая вишня, садовая слива.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-shardone-beloe-suhoe-124",
+      "group_id": "french-lessons",
+      "name": "Уроки французского Шардоне",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-shardone-beloe-suhoe-124",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-shardone-beloe-suhoe-124.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий, с фруктовыми нотами, с устойчивым послевкусием цитрусовых леденцов Монпансье, с умеренной кислотностью. Выразительный, с тонами зеленого яблока, садовой груши, белых цветов и лайма",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-sira-krasnoe-suhoe-13",
+      "group_id": "french-lessons",
+      "name": "Уроки французского. Сира",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-sira-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-sira-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 1000,
+          "source_width": 240,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Сира"
+      ],
+      "description": "Вкус: Сочный, хорошо отражает в себе ароматы черной сливы, ежевики, малины. Насыщенный, с нотами красных и черных ягод, перца и эвкалипта.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-uroki-frantsuzskogo-sovinon-blan-beloe-suhoe-115",
+      "group_id": "french-lessons",
+      "name": "Уроки Французского.\n Совиньон Блан",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-uroki-frantsuzskogo-sovinon-blan-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-uroki-frantsuzskogo-sovinon-blan-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 885,
+          "y": 0,
+          "width": 595,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате тона зеленого яблока, крыжовника, свежескошенной травы и лайма. Вкус чистый, свежий, весенний, с выраженной сортовой кислотностью, легким телом и цветочными нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-collections"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142",
+      "group_id": "southern-vertical",
+      "name": "Южная Вертикаль Каберне Фран",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 94,
+          "y": 0,
+          "width": 536,
+          "height": 2165,
+          "source_width": 725,
+          "source_height": 2170
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Яркий, плотный и фруктовый, с заметной сочной кислотностью, поддерживаемой мягким танином и легким оттенком перца в послевкусии. Красных фруктов с оттенками сочной вишни и красной сливы, которые интересно оттеняют нюансы лаврового листа, пряностей и черного перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-premium-krasnoe-suhoe-143",
+      "group_id": "southern-vertical",
+      "name": "Южная Вертикаль Каберне Фран премиум",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-premium-krasnoe-suhoe-143",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-premium-krasnoe-suhoe-143.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 260,
+          "height": 1000,
+          "source_width": 260,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Мощный, яркий, с уверенным танином и яркой кислотностью. Долгое послевкусие с ягодными оттенками и немного черного перца на финише. Гармоничный, сложный аромат, сотканный из нот вишни, малины, ежевики, пряностей, древесины и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146",
+      "group_id": "southern-vertical",
+      "name": "Южная Вертикаль. Каберне Фран Резерв",
+      "variant": "",
+      "wine_slug": "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 255,
+          "height": 1000,
+          "source_width": 255,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Вкус: Богатый и одновременно элегантный, хорошо сбалансирован, с выразительными ягодными тонами, хорошей гастрономичной кислотностью и мягко-терпкими танинами в послевкусии. Сдержанный, с тонами черных ягод и пряности, с оттенками черной вишни, черносмородинового джема, табачного листа и немного фиалки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-miroir-de-talu-merlot-cabernet-sauvignon",
+      "group_id": "miroir",
+      "name": "Miroir De Talu Merlot Cabernet Sauvignon",
+      "variant": "",
+      "wine_slug": "miroir-de-talu-merlot-cabernet-sauvignon",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-miroir-de-talu-merlot-cabernet-sauvignon.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 22,
+          "y": 0,
+          "width": 308,
+          "height": 1199,
+          "source_width": 338,
+          "source_height": 1200
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Красное сухое вино, созданное из благородного винограда, сортов Мерло и Каберне Совиньон, отражает щедрость и изящество природы.  Аромат яркой, сочной, спелой смородины, ежевики и чернослива, нюансы фиалки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-miroir-de-talu-merlot-krasnostop",
+      "group_id": "miroir",
+      "name": "Miroir De Talu Merlot Красностоп",
+      "variant": "",
+      "wine_slug": "miroir-de-talu-merlot-krasnostop",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/chateau-de-talu/wine-miroir-de-talu-merlot-krasnostop.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 23,
+          "y": 0,
+          "width": 304,
+          "height": 1198,
+          "source_width": 340,
+          "source_height": 1200
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Красностоп Золотовский"
+      ],
+      "description": "Красное сухое вино, созданное из благородного винограда, сортов Мерло и Красностоп, отражает щедрость и изящество природы. Аромат спелой вишни, черешни, сливы с нотами молотого перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ]
+}

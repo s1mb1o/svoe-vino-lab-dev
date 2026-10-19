@@ -1,0 +1,33 @@
+{
+  "producer_id": "sikory",
+  "snapshot_only_groups": [],
+  "sources": [
+    {
+      "source_id": "official-catalog",
+      "url": "https://sikory.ru/wine/",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "4138c4acd6d275089320a165334438e9d4b51542712eaff21ca6ea376b4c5aa6",
+      "content_type": "text/html",
+      "section": "Category filters and wine cards",
+      "facts": "The producer separates Sikory, Family Reserve, Family Heritage, On Terraces and sparkling wines. The catalog also lists late-harvest wines. Old and current label generations are not merged."
+    },
+    {
+      "source_id": "official-heritage",
+      "url": "https://sikory.ru/semejnoe-nasledie2020",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "ece56ca903cfbc5d8a23e27bf0139e8bbbe44e1c5ad1a227e98cbbd9d347d352",
+      "content_type": "text/html",
+      "section": "Creation history of Family Heritage 2020",
+      "facts": "The producer describes grapes from selected plots and three years of bottle aging for the 2020 release. This supports editorial special-collection positioning; its vintage and composition do not replace saved metadata."
+    },
+    {
+      "source_id": "official-sparkling",
+      "url": "https://sikory.ru/riesling",
+      "retrieved_at": "2026-10-19T17:05:28Z",
+      "sha256": "8d4a3f265df369eefdea133dc2ce39d01de4626ba80cc9976f540ef51ed621c8",
+      "content_type": "text/html",
+      "section": "Riesling sparkling product characteristics",
+      "facts": "The card identifies white extra brut, Riesling and the sparkling category. It remains separate from saved dry and sweet still Riesling wines."
+    }
+  ]
+}

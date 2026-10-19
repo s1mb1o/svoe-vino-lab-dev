@@ -1,5 +1,30 @@
 # Research log
 
+## Five more producer maps, 2026-10-19
+
+The requested batch covers Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры.
+The exact producer subsets contain 31, 26, 27, 23 and 21 records. The independent attribution test found two more Golubitskoe cards under `Поместье Голубицкое`.
+Official sources identify both Golubitskoe names with the same winery. The map covers all 33 cards and preserves the exact producer field for every source row.
+Classic Chardonnay is one of these linked cards. The official-only Golubitskoe addition is Tête de Cheval Semi-dry.
+
+The batch adds 130 exact snapshot identities and five selected official additions. It does not claim full current producer coverage.
+The registry test now accepts an explicitly pinned set of exact producer names for a map. It checks each crosswalk producer against the independent full-catalog projection.
+The absence check for Golubitskoe must cover both producer names.
+
+Golubitskoe separates the main and reserve Tête de Cheval families. Their prices are not compared with still-wine ranks.
+The current Petnat White grape list differs from the saved card. Keep the historical grapes and mark the limitation.
+Southern Vertical and Miroir de Talu, and Раевское Eklego and Glow, use snapshot-only groups at rank 0.
+The direct Talu HTML endpoints return HTTP 502. Source hashes for these pages identify retrieved web-extracted text, not raw HTML.
+
+The Southern Vertical Cabernet Franc image has an opaque white background. Built-in imagegen creates one transparent display derivative.
+The complete contour, capsule, glass and main label artwork pass light and dark inspection. Generated fine print is not product-identity evidence.
+The original catalog image, generated image and final asset hashes and exact English prompt are in `docs/product-line-maps/chateau-de-talu/imagegen-cutouts.json`.
+All other saved bottle images retain their original WebP bytes. Official PNG additions use lossless WebP encoding.
+
+The broad WebKit producer run passed 102 cases before a network-idle timeout on the existing Zolotaya Balka mobile page. It recorded no browser errors.
+The producer browser suite now fulfills external analytics requests locally. This keeps map checks independent of remote analytics availability.
+The rerun passes all 105 WebKit producer cases. Chromium also passes all 105 cases. Both engines pass 145 targeted cases and the Abrau regressions.
+
 ## Burnier product-line map, 2026-10-19
 
 The neutral band uses the UI heading «Другие коллекции». The price explanation remains in the description.

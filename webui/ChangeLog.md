@@ -1,5 +1,16 @@
 # Change log
 
+## 2026-10-19 — Five more producer maps
+
+- Add Golubitskoe Estate, Chateau de Talu, AYA, Раевское and Имение Сикоры. The index now contains 25 producer maps.
+- Include 130 saved catalog cards and five selected official additions in 34 groups. Keep the official additions selectable without invented snapshot links.
+- Include both exact Golubitskoe producer names: 31 `Golubitskoe Estate` records and two `Поместье Голубицкое` records. Retain the original producer field in each crosswalk entry. Extend provenance checks to cover this verified alias.
+- Preserve separate same-name records, grape lists, descriptions and source slugs. Keep independent styles and unconfirmed collection ranks neutral.
+- Use the original image bytes for 129 catalog cards. Remove the white background from one Southern Vertical display image with built-in imagegen and record its exact prompt and hashes.
+- Save the catalog baselines, crosswalks and source evidence under `docs/product-line-maps/` for each producer.
+- Isolate external analytics in the producer browser suite so map checks do not depend on remote analytics availability.
+- Pass 329 full-snapshot unit tests, type checks, the production build, image-frame and bundle checks. Both browser engines pass 105 producer cases, 145 targeted cases and the Abrau regressions. Read `docs/validation/five-more-producer-maps.md`.
+
 ## 2026-10-19 — Burnier product-line map
 
 - Use «Другие коллекции» as the neutral band heading. Keep the price explanation in its description.

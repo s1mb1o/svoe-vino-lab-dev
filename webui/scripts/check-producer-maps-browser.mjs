@@ -74,6 +74,8 @@ async function imageFailureBeforeHydration() {
   try {
     await context.addInitScript(() => localStorage.setItem('svoe-vino.age-confirmed.v1', 'yes'))
     const page = await context.newPage()
+    // Keep map checks independent of external analytics availability.
+    await page.route('**/mc.yandex.ru/**', route => route.fulfill({ status: 200, body: '' }))
     const pageErrors = []
     page.on('pageerror', error => pageErrors.push(error.message))
     await page.route('**/_nuxt/*.js', async route => { await scriptsReady; await route.continue() })
@@ -111,6 +113,7 @@ try {
         localStorage.removeItem('svoe-vino.theme.v1')
       })
       const page = await context.newPage()
+      await page.route('**/mc.yandex.ru/**', route => route.fulfill({ status: 200, body: '' }))
       page.on('pageerror', error => errors.push(`${label}: ${error.message}`))
       page.on('console', message => { if (message.type() === 'error' || /hydration/i.test(message.text())) errors.push(`${label}: ${message.text()}`) })
       await page.goto(`${origin}/lineup/${line.producer.id}?wine=${encodeURIComponent(initial.wine_slug)}`, { waitUntil: 'networkidle' })

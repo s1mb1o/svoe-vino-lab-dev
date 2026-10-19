@@ -1,0 +1,436 @@
+{
+  "producer_id": "sikory",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Имение Сикоры",
+  "catalog_producers": [
+    "Имение Сикоры"
+  ],
+  "entries": [
+    {
+      "wine_slug": "imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "catalog_name": "Герцъ",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_gerts_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_14_c875bac299.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_gerts_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_14_c875bac299.webp",
+      "input_sha256": "73f63ba2dd13243549a4411230e841da54fc5e4c0eafa9fe4928ae4c8d8b8af5",
+      "asset_sha256": "73f63ba2dd13243549a4411230e841da54fc5e4c0eafa9fe4928ae4c8d8b8af5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-gerts-sikory-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "core",
+      "catalog_name": "Герцъ Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_gerts_sikory_kaberne_sovinon_krasnoe_suhoe_14_2dc7c653fd.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_gerts_sikory_kaberne_sovinon_krasnoe_suhoe_14_2dc7c653fd.webp",
+      "input_sha256": "fc3c7b3ba7df07d08c2542130eaf9adf0e117aba7906e331aa9472f6e9f2eefe",
+      "asset_sha256": "fc3c7b3ba7df07d08c2542130eaf9adf0e117aba7906e331aa9472f6e9f2eefe",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13",
+      "product_id": "wine-imenie-sikory-kaberne-fran-roze-rozovoe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Каберне Фран розе",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_kaberne_fran_roze_rozovoe_suhoe_13_4f0044a40b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_kaberne_fran_roze_rozovoe_suhoe_13_4f0044a40b.webp",
+      "input_sha256": "c5f8fb439e644c6888177526f183d503500d73875e2afe663f3067f0952db318",
+      "asset_sha256": "c5f8fb439e644c6888177526f183d503500d73875e2afe663f3067f0952db318",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13",
+      "product_id": "wine-imenie-sikory-kaberne-fran-sikory-rozovoe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Каберне Фран Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_kaberne_fran_sikory_rozovoe_suhoe_13_734a89a002.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_kaberne_fran_sikory_rozovoe_suhoe_13_734a89a002.webp",
+      "input_sha256": "7b30ae5695c81392a498227ca739c079b2beafe075f3853c0e8741ee60f97800",
+      "asset_sha256": "7b30ae5695c81392a498227ca739c079b2beafe075f3853c0e8741ee60f97800",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-kaberne-sovinon-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "catalog_name": "Каберне Совиньон. Семейный Резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_kaberne_sovinon_semeynyy_rezerv_krasnoe_suhoe_vyderzhannoe_14_dc4aa1ddb5.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_kaberne_sovinon_semeynyy_rezerv_krasnoe_suhoe_vyderzhannoe_14_dc4aa1ddb5.webp",
+      "input_sha256": "20e5889ffa16704dd3186f0aa56dab6aa4ef63e538deef6c18b5a1ff8ec587b5",
+      "asset_sha256": "20e5889ffa16704dd3186f0aa56dab6aa4ef63e538deef6c18b5a1ff8ec587b5",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-krasnoe-suhoe-14",
+      "group_id": "terraces",
+      "catalog_name": "Красностоп Золотовский. На террасах",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_krasnostop_zolotovskiy_na_terrasah_krasnoe_suhoe_14_93b75eb2a0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_krasnostop_zolotovskiy_na_terrasah_krasnoe_suhoe_14_93b75eb2a0.webp",
+      "input_sha256": "aec02dd6285a65608077d2ccdcebda805582b123e25fe96cdb9d5df4d653b247",
+      "asset_sha256": "aec02dd6285a65608077d2ccdcebda805582b123e25fe96cdb9d5df4d653b247",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13",
+      "product_id": "wine-imenie-sikory-krasnostop-zolotovskiy-na-terrasah-rozovoe-suhoe-13",
+      "group_id": "terraces",
+      "catalog_name": "Красностоп Золотовский. На террасах",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_krasnostop_zolotovskiy_na_terrasah_rozovoe_suhoe_13_fd7deda788.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_krasnostop_zolotovskiy_na_terrasah_rozovoe_suhoe_13_fd7deda788.webp",
+      "input_sha256": "532bfc6af29e05a7cea7efc6166d0c9d15d4a598c3cda3b649118380dd8f8285",
+      "asset_sha256": "532bfc6af29e05a7cea7efc6166d0c9d15d4a598c3cda3b649118380dd8f8285",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13",
+      "product_id": "wine-imenie-sikory-krasnostop-zolotovskiy-pozdniy-sbor-rozovoe-sladkoe-13",
+      "group_id": "late-harvest",
+      "catalog_name": "Красностоп Золотовский. Поздний сбор",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_krasnostop_zolotovskiy_pozdniy_sbor_rozovoe_sladkoe_13_305f6270ac.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_krasnostop_zolotovskiy_pozdniy_sbor_rozovoe_sladkoe_13_305f6270ac.webp",
+      "input_sha256": "257d3ef59a0309f3976203ee432119306d21d0f5d50703815bf60f73c1655ba1",
+      "asset_sha256": "257d3ef59a0309f3976203ee432119306d21d0f5d50703815bf60f73c1655ba1",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-merlo-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "catalog_name": "Мерло. Семейный Резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_merlo_semeynyy_rezerv_krasnoe_suhoe_vyderzhannoe_14_ddcc4b5b79.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_merlo_semeynyy_rezerv_krasnoe_suhoe_vyderzhannoe_14_ddcc4b5b79.webp",
+      "input_sha256": "d4944c549cbff6115e6c4aa1a601f4e9ce80003c2b2cf26c53fc82e9b34c78d4",
+      "asset_sha256": "d4944c549cbff6115e6c4aa1a601f4e9ce80003c2b2cf26c53fc82e9b34c78d4",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-merlo-sikory-krasnoe-suhoe-13",
+      "product_id": "wine-imenie-sikory-merlo-sikory-krasnoe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Мерло Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_merlo_sikory_krasnoe_suhoe_13_962d1b82f9.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_merlo_sikory_krasnoe_suhoe_13_962d1b82f9.webp",
+      "input_sha256": "0b9db9418aa16f20176d688d0783f05dfc091c5b1394f7ca03651ca2a547be16",
+      "asset_sha256": "0b9db9418aa16f20176d688d0783f05dfc091c5b1394f7ca03651ca2a547be16",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-pino-nuar-semeynyy-rezerv-krasnoe-suhoe-14",
+      "group_id": "family-reserve",
+      "catalog_name": "Пино Нуар. Семейный резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_pino_nuar_semeynyy_rezerv_krasnoe_suhoe_14_e1d961aa68.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_pino_nuar_semeynyy_rezerv_krasnoe_suhoe_14_e1d961aa68.webp",
+      "input_sha256": "4df9637d73afd75e388c1eb2ea3aa54b3f116b903c5c92d5e029b257639c63a3",
+      "asset_sha256": "4df9637d73afd75e388c1eb2ea3aa54b3f116b903c5c92d5e029b257639c63a3",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-pino-nuar-sikory-krasnoe-suhoe-14",
+      "group_id": "core",
+      "catalog_name": "Пино Нуар Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_pino_nuar_sikory_krasnoe_suhoe_14_4a36d13ce1.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_pino_nuar_sikory_krasnoe_suhoe_14_4a36d13ce1.webp",
+      "input_sha256": "c28046bc53eb84f680b823e1cd8dcd9bb454582e9e4ed5f769db0834047e4b4a",
+      "asset_sha256": "c28046bc53eb84f680b823e1cd8dcd9bb454582e9e4ed5f769db0834047e4b4a",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13",
+      "product_id": "wine-imenie-sikory-risling-pozdniy-sbor-beloe-sladkoe-13",
+      "group_id": "late-harvest",
+      "catalog_name": "Рислинг. Поздний сбор",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_risling_pozdniy_sbor_beloe_sladkoe_13_e60898ab3b.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_risling_pozdniy_sbor_beloe_sladkoe_13_e60898ab3b.webp",
+      "input_sha256": "0f82dbc18dddbbb44af5813814b11ee9645300f59382081838033d471ff3e4e6",
+      "asset_sha256": "0f82dbc18dddbbb44af5813814b11ee9645300f59382081838033d471ff3e4e6",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-risling-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "catalog_name": "Рислинг. Семейный резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_risling_semeynyy_rezerv_beloe_suhoe_13_3ef1716553.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_risling_semeynyy_rezerv_beloe_suhoe_13_3ef1716553.webp",
+      "input_sha256": "5d37ad8c74972ba4154174b285752da8dbde4ceaebb48e986ff5ec832880c78e",
+      "asset_sha256": "5d37ad8c74972ba4154174b285752da8dbde4ceaebb48e986ff5ec832880c78e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "catalog_name": "Рислинг. Семейный Резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_risling_semeynyy_rezerv_risling_reynskiy_beloe_suhoe_vyderzhannoe_13_045b648555.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_risling_semeynyy_rezerv_risling_reynskiy_beloe_suhoe_vyderzhannoe_13_045b648555.webp",
+      "input_sha256": "25b45ae5f065e430bfcb86bc3486375b83aad692514395f678889ccfb6010dc8",
+      "asset_sha256": "25b45ae5f065e430bfcb86bc3486375b83aad692514395f678889ccfb6010dc8",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-risling-sikory-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-risling-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Рислинг Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_risling_sikory_beloe_suhoe_13_08744b4e75.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_risling_sikory_beloe_suhoe_13_08744b4e75.webp",
+      "input_sha256": "c4f7153e629c5a0eed6e37a63a544fe9a6a23bb06566d03e80199432944363c3",
+      "asset_sha256": "c4f7153e629c5a0eed6e37a63a544fe9a6a23bb06566d03e80199432944363c3",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "heritage",
+      "catalog_name": "Семейное Наследие",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_semeynoe_nasledie_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_14_acacce2336.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_semeynoe_nasledie_kaberne_sovinon_krasnoe_suhoe_vyderzhannoe_14_acacce2336.webp",
+      "input_sha256": "43a623654003d2b18f767284b84f52c37b05384147060b265a4cd2690db3c831",
+      "asset_sha256": "43a623654003d2b18f767284b84f52c37b05384147060b265a4cd2690db3c831",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog",
+          "official-heritage"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-shardone-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "catalog_name": "Шардоне. Семейный резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_shardone_semeynyy_rezerv_beloe_suhoe_13_35f37fda1f.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_shardone_semeynyy_rezerv_beloe_suhoe_13_35f37fda1f.webp",
+      "input_sha256": "bab8ec2c54205b03de4d803d47dfee29402673af4566c23aea179e8ba94cc40c",
+      "asset_sha256": "bab8ec2c54205b03de4d803d47dfee29402673af4566c23aea179e8ba94cc40c",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-shardone-sikory-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-shardone-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Шардоне Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_shardone_sikory_beloe_suhoe_13_5bf321c065.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_shardone_sikory_beloe_suhoe_13_5bf321c065.webp",
+      "input_sha256": "d9061c530409e07895962ab319dd31f3338dc4e1b89676cae72ff0d24bbc740d",
+      "asset_sha256": "d9061c530409e07895962ab319dd31f3338dc4e1b89676cae72ff0d24bbc740d",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-sovinon-blan-semeynyy-rezerv-beloe-suhoe-13",
+      "group_id": "family-reserve",
+      "catalog_name": "Совиньон Блан. Семейный резерв",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_sovinon_blan_semeynyy_rezerv_beloe_suhoe_13_8902a3f131.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_sovinon_blan_semeynyy_rezerv_beloe_suhoe_13_8902a3f131.webp",
+      "input_sha256": "7f71341775d8feeccf4701908f7ac7d61f48020817cf0e71c17be6ed29e26d8e",
+      "asset_sha256": "7f71341775d8feeccf4701908f7ac7d61f48020817cf0e71c17be6ed29e26d8e",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    },
+    {
+      "wine_slug": "imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13",
+      "product_id": "wine-imenie-sikory-sovinon-blan-sikory-beloe-suhoe-13",
+      "group_id": "core",
+      "catalog_name": "Совиньон Блан Сикоры",
+      "catalog_producer": "Имение Сикоры",
+      "source_image": "imenie_sikory_sovinon_blan_sikory_beloe_suhoe_13_534c3bb3a0.webp",
+      "source_image_url": "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/imenie_sikory_sovinon_blan_sikory_beloe_suhoe_13_534c3bb3a0.webp",
+      "input_sha256": "079ffca233f9b1e941bd12d5d61b9b61142ed46388827dd99f3aee453d65bdb1",
+      "asset_sha256": "079ffca233f9b1e941bd12d5d61b9b61142ed46388827dd99f3aee453d65bdb1",
+      "group_basis": {
+        "kind": "catalog_identity_and_official_family",
+        "evidence": "The exact saved name, grapes and original package support this navigation group. Each snapshot record remains separate. Current family evidence does not prove vintage or package equivalence.",
+        "source_ids": [
+          "svoe-vino-2026-09-17",
+          "official-catalog"
+        ]
+      }
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-riesling-extra-brut",
+      "source_id": "official-sparkling",
+      "source_image_url": "https://sikory.ru/%D0%9D%D0%BE%D0%B2%D1%8B%D0%B5%20%D0%B1%D1%83%D1%82%D1%8B%D0%BB%D0%BA%D0%B8/%D0%98%D0%B3%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B5%20%D0%A0%D0%B8%D1%81%D0%BB%D0%B8%D0%BD%D0%B3%202020.png",
+      "input_sha256": "54443613bf182e12e5e8ca5049cdca254380e4d6d0f4085389520643e9a94608",
+      "asset_sha256": "4dfc0e4ee753eb14578a7d6915ca5235f78e218200c9b1142af5055e543192ff",
+      "processing": "PNG to lossless WebP. No crop, repaint or enlargement.",
+      "absence_check": {
+        "snapshot": "official-2026-09-17",
+        "producer": "Имение Сикоры",
+        "matched_catalog_slugs": [],
+        "reason": "All 21 exact producer rows were checked by name, collection, grape, style and original bottle. No verified equivalent card exists for this addition. No slug is invented.",
+        "producers_checked": [
+          "Имение Сикоры"
+        ]
+      },
+      "group_basis": {
+        "kind": "official_product_card",
+        "evidence": "The official product card and original bottle identify this separate wine and its named family. It is distinct from saved wines of other styles or collections.",
+        "source_ids": [
+          "official-sparkling"
+        ]
+      }
+    }
+  ]
+}

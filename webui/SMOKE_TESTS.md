@@ -1,5 +1,17 @@
 # Smoke tests
 
+## Five more producer maps
+
+1. Open `/lineup/golubitskoe-estate`, `/lineup/chateau-de-talu`, `/lineup/aya`, `/lineup/raevskoe` and `/lineup/sikory`. Confirm 34, 27, 28, 24 and 22 products respectively.
+2. Confirm all 130 exact saved slugs select their own product and show their exact portal link. Confirm that same-name records remain separate.
+3. On the Golubitskoe map, check the linked Chardonnay and Rose cards saved under `Поместье Голубицкое`. Check both Tête de Cheval families and the Petnat grape-list note.
+4. Select each official-only addition. Confirm a bottle image, local details and no portal link.
+5. Check the Southern Vertical cutout on light and dark surfaces. Confirm the original bottle silhouette and artwork and no white background rectangle.
+6. Check the five maps at 1440, 390 and 320 px in both themes. Check popup bounds, exact selection, return state, group navigation and image failures.
+7. Run the full snapshot-backed unit suite, type check, build, generated-index check, pixel/frame checker, bundle check, producer browser suite and Abrau browser regressions.
+
+The 2026-10-19 batch passes 329 unit tests and the Chromium and WebKit browser checks. Read `docs/validation/five-more-producer-maps.md` for scope and results.
+
 ## Burnier product-line map
 
 1. Open `/lineup/burnier`. Confirm 22 wines in six groups, the heading «Другие коллекции», and the materials date 2026-10-19.
@@ -14,7 +26,7 @@ The 2026-10-19 checks pass in Chromium and WebKit. Read `docs/validation/burnier
 
 ## Producer map index and page layout
 
-1. Open `/lineup`. Confirm 20 cards with a bottle, the counts, and the materials date. Check 1440, 390, and 320 px in both themes.
+1. Open `/lineup`. Confirm 25 cards with a bottle, the counts, and the materials date. Check 1440, 390, and 320 px in both themes.
 2. Confirm that `/lineup` has no `x-robots-tag` header and is in `/sitemap.xml`. Confirm `noindex` on `/lineup/abrau-durso`.
 3. Select a card. Confirm the map page. Select «Все карты производителей». Confirm the index.
 4. On `/lineup/abrau-durso?wine=abrau-dyurso-victor-dravigny-bryut`, confirm that the page scrolls to the selected wine and that the map has no inner scroll bar.

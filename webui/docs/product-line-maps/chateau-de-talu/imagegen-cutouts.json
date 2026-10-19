@@ -1,0 +1,16 @@
+{
+  "mode": "built-in image_gen",
+  "purpose": "Display-only background extraction. Original catalog image remains product-identity evidence.",
+  "entries": [
+    {
+      "product_id": "wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142",
+      "input_sha256": "70337b0535b7f220b8585cd50b2d1bbffd23322ccc089af601a6b27eeea7a108",
+      "generated_sha256": "a35f9cda9cc9e2614255a837885471c8a0e30aac3e6e02907e6115673863be86",
+      "asset_sha256": "810227ba586d69d34b1547c465923ca2cc805ceae854dea721f83c8bd00f48fd",
+      "prompt": "Use case: background-extraction. Asset type: a bottle cutout for a wine product-line map. Input image 1 is the edit target, an original catalog bottle of Chateau de Talu Southern Vertical Cabernet Franc. Remove only the opaque white outer background and make it truly transparent. Keep the complete single bottle from the very top of its black capsule to the bottom of the glass. Preserve bottle proportions, dark burgundy glass, black capsule, white label, gray cloud illustrations, ladder and woman artwork, logo placement, and existing source label text. Do not redraw or redesign the packaging, change colors, add shadows, add a border, invent lettering, or add other objects. Center the bottle with a small transparent margin. Preserve the photographed reflections and original label appearance as closely as possible. Do not crop any part of the bottle.",
+      "processing": "Generated transparent PNG encoded as lossless WebP. No further pixel editing. Frame measurement only.",
+      "inspection": "Complete original package silhouette, black capsule, dark glass, white label, gray clouds, ladder and woman artwork checked on light and dark surfaces. Generated fine print is not identity evidence.",
+      "asset_path": "public/product-line-maps/chateau-de-talu/wine-chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-krasnoe-suhoe-142.webp"
+    }
+  ]
+}

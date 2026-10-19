@@ -1,0 +1,1327 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "golubitskoe-estate",
+    "name": "Golubitskoe Estate",
+    "aliases": [
+      "Поместье Голубицкое",
+      "Голубицкое"
+    ],
+    "slug_prefixes": [
+      "golubitskoe-estate-",
+      "pomeste-golubitskoe-"
+    ]
+  },
+  "scope": {
+    "label": "33 карточки из снимка «Свое Вино» и 1 официальное дополнение; не полный актуальный ассортимент",
+    "as_of": "2026-10-19",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-estate",
+      "label": "Поместье Голубицкое: классическая и резервная коллекции",
+      "url": "https://www.golubitskoe-estate.ru/"
+    },
+    {
+      "id": "official-group",
+      "label": "NOVABEV GROUP: Golubitskoe Estate",
+      "url": "https://novabev.com/brands/wine/russia/golubitskoe-estate/"
+    },
+    {
+      "id": "official-noble",
+      "label": "NOVABEV GROUP: Noble Selection · публикация 2022 года",
+      "url": "https://novabev.com/press-room/lenta/new-wines-in-the-golubitskoe-estate-noble-selection-line/"
+    },
+    {
+      "id": "official-tete",
+      "label": "NOVABEV GROUP: Tête de Cheval",
+      "url": "https://novabev.com/brands/wine/russia/tete-de-cheval/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Самостоятельные стили не получают неподтверждённого ценового ранга. Серые позиции не имеют карточки в снимке от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Резерв и особые коллекции",
+      "rank": 3,
+      "description": "Редакционный ориентир по названию коллекции и подтверждённой технологии. Это не актуальная цена и не рейтинг качества.",
+      "price_label": "Премиальный ориентир",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "main",
+      "label": "Основная коллекция",
+      "rank": 2,
+      "description": "Редакционное позиционирование основной коллекции производителя. Это не текущая цена и не оценка качества.",
+      "price_label": "Основная коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие коллекции",
+      "rank": 0,
+      "description": "Ценовое соотношение этих коллекций и самостоятельных стилей не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group",
+        "official-tete"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "reserve",
+      "name": "Golubitskoe Estate Reserve",
+      "tier_id": "premium",
+      "method": "Выдержка в дубе; срок зависит от выпуска",
+      "description": "Резервные сортовые вина. Одинаково названные карточки сохранены отдельно: соответствие между выпусками не установлено.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Классическая коллекция",
+      "tier_id": "main",
+      "method": "Тихие вина; нейтральные ёмкости по описанию коллекции",
+      "description": "Сортовые вина, Red Blend и розе. Две карточки под именем «Поместье Голубицкое» сохраняют исходную атрибуцию.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "noble",
+      "name": "Noble Selection",
+      "tier_id": "neutral",
+      "method": "Тихие вина; выдержка зависит от конкретного выпуска",
+      "description": "Самостоятельная коллекция с разными этикетками и выпусками. Единый срок выдержки и общая ценовая ступень не назначены.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "winery",
+      "name": "Winery Series",
+      "tier_id": "neutral",
+      "method": "Лимитированные тихие вина",
+      "description": "Отдельные вина проекта «Вина винодельни»: Рислинг, Пино Нуар и розовый купаж.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "petnat",
+      "name": "Петнат",
+      "tier_id": "neutral",
+      "method": "Петнат; самостоятельный игристый стиль",
+      "description": "Историческая карточка Petnat White. Сортовой состав сохранён из снимка и не заменён составом текущего выпуска.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "tete-reserve",
+      "name": "Tête de Cheval · резервная коллекция",
+      "tier_id": "neutral",
+      "method": "Традиционный метод; срок выдержки зависит от выпуска",
+      "description": "Blanc de Blancs, Zero Dosage и Reserve. Сохранены отдельные карточки Blanc de Blancs; цены с тихими винами не сопоставляются.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "tete",
+      "name": "Tête de Cheval · основная коллекция",
+      "tier_id": "neutral",
+      "method": "Традиционный метод; вторичное брожение в бутылке",
+      "description": "Белые и розовые игристые вина разных уровней сладости. Каждая сохранённая карточка имеет собственную ссылку.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+      "group_id": "reserve",
+      "name": "Каберне Совиньон Резерв",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: С округлыми танинами и сбалансированной кислотностью, с тонами фруктов и древесины, с долгим, сочным послевкусием с кофейно-дымными элементами. С оттенками черных ягод, чернослива и шоколада.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135",
+      "group_id": "reserve",
+      "name": "Мерло Резерв",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-merlo-rezerv-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 266,
+          "height": 1000,
+          "source_width": 266,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Сочный, сбалансированный, с минимальной терпкостью и мягкой фруктовой кислинкой, которые еще больше усиливают его питкость. Послевкусие приятное, сухое. С пряными тонами, с оттенков красных фруктов и черной смородины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132",
+      "group_id": "reserve",
+      "name": "Пино Нуар Резерв",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-pino-nuar-rezerv-krasnoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 276,
+          "height": 1000,
+          "source_width": 276,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Насыщенный, хорошо сбалансированный, с фруктово-ягодными тонами, дополненными пряными нюансами, отлично интегрированными танинами, умеренной кислотностью, бархатистой текстурой и долгим, сухим послевкусием. Щедрый, с нотами спелых красных ягод, подлеска, влажной земли и пряных специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-shardone-rezerv-beloe-suhoe-135",
+      "group_id": "reserve",
+      "name": "Шардоне Резерв",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-shardone-rezerv-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 276,
+          "height": 1000,
+          "source_width": 276,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Умеренно насыщенный, с приятной фруктовой свежестью, сливочными нотками, хорошим балансом кислотности и минеральной прохладой в послевкусии. Выразительный с манящими тонами спелых фруктов, цветущего весеннего сада, тонкими штрихами сливочного масла и специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+      "group_id": "reserve",
+      "name": "Каберне Совиньон Резерв",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 859,
+          "y": 0,
+          "width": 644,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Аромат яркий, с нотами красных фруктов, черной смородины и спелой сливы на фоне выраженных дубовых оттенков. Мягкие и яркие нотки ванили и черного перца. Вкус мощный, фруктовый, с ярким, вяжущим танином и пряным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132",
+      "group_id": "reserve",
+      "name": "Шардоне Резерв",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 849,
+          "y": 0,
+          "width": 664,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Богатый аромат собран из оттенков цитрусовых фруктов, киви, зеленого яблока, груши и белого персика в обрамлении тонких минеральных нот. Вкус мягкий, обволакивающий, с великолепной хрустящей кислотностью и продолжительным фруктовым финишем, насладившись которым, хочется налить следующий бокал.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137",
+      "group_id": "classic",
+      "name": "Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Сочный, сбалансированный, с нотками спелых красных фруктов и ягод, мягкими танинами и долгим, приятным послевкусием. Мягкий, с нотками спелой вишни, сливы, лесной фиалки и лесных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-merlo-krasnoe-suhoe-135",
+      "group_id": "classic",
+      "name": "Мерло",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-merlo-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-merlo-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Вкус: Сбалансированный, мягкий с шелковистой текстурой, фруктовым профилем и тонкими минеральными нюансами в стойком послевкусии. Гармоничный, с оттенками спелых темных фруктов, подлеска, минералов и цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "classic",
+      "name": "Red Blend",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-red-blend-kaberne-sovinon-krasnoe-suhoe-136.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 265,
+          "height": 1000,
+          "source_width": 265,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Насыщенный, округлый, хорошо сбалансированный, с доминирующими оттенками спелых фруктов, мягкими танинами и продолжительным послевкусием. Сложный, с яркими пряными и фруктовыми оттенками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-risling",
+      "group_id": "classic",
+      "name": "Golubitskoe Estate Рислинг",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-risling",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-risling.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 253,
+          "height": 1168,
+          "source_width": 253,
+          "source_height": 1168
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вино обладает чистым, мягким вкусом с гладкой текстурой, фруктово-цитрусовыми оттенками и живой кислинкой в длительном послевкусии. Вино привлекает освежающим, гармоничным ароматом, сотканным из нот персика, лимона, апельсина, минералов и трав.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-risling-beloe-suhoe-125",
+      "group_id": "classic",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-risling-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-risling-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 214,
+          "height": 1000,
+          "source_width": 214,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Легкий и освежающий, с задорной кислинкой и сухим, гармоничным послевкусием. Яркий, цитрусово-цветочный.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13",
+      "group_id": "classic",
+      "name": "Рислинг Оранж",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-risling-oranzh-risling-reynskiy-oranzhevoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 215,
+          "height": 1000,
+          "source_width": 215,
+          "source_height": 1000
+        }
+      },
+      "category": "Оранжевое",
+      "style": "Оранжевое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Гармоничный, с хорошим балансом кислотности, покалывающей минеральной солоноватостью, приятной терпкостью и запоминающимся, долгим послевкусием. Многогранный, с оттенками душистых фруктов, цветочного меда, минералов, ягод облепихи и крыжовника, цедры, легкие дрожжевые тона, нюансы специй.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-sovinon-blan-beloe-suhoe-11",
+      "group_id": "classic",
+      "name": "Совиньон Блан",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-sovinon-blan-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-sovinon-blan-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 274,
+          "height": 997,
+          "source_width": 274,
+          "source_height": 997
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Освежающий, мягкий, средней насыщенности, с гармоничной кислотностью, хорошо выраженными оттенками цитрусовых фруктов, белой смородины, личи и сбалансированным послевкусием. Яркий, свежий, с оттенками тропических фруктов, скошенных луговых цветов и трав и крыжовника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-chardonnay",
+      "group_id": "classic",
+      "name": "Golubitskoe Estate Chardonnay",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-chardonnay",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-chardonnay.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 24,
+          "y": 23,
+          "width": 245,
+          "height": 872,
+          "source_width": 292,
+          "source_height": 917
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вино демонстрирует гармоничный, свежий, лёгкий вкус фруктово-цветочными акцентами в сбалансированном послевкусии. Вино привлекает освежающим ароматом с доминирующими оттенками белых и косточковых фруктов и липового цвета. Вино светло-соломенного цвета.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-rose",
+      "group_id": "classic",
+      "name": "Golubitskoe Rose",
+      "variant": "",
+      "wine_slug": "golubitskoe-rose",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-rose.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 100,
+          "y": 18,
+          "width": 237,
+          "height": 873,
+          "source_width": 435,
+          "source_height": 904
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Гриджио",
+        "Пино Нуар"
+      ],
+      "description": "Вино имеет светлый розовый цвет. У вина привлекательный ягодный аромат. Оттенки белых цветов и минералов создают красивое обрамление основным акцентам букета. Вино может похвастаться легким, сочным и живым вкусом с освежающей кислотностью и ярким, ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-estate",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133",
+      "group_id": "noble",
+      "name": "Каберне Совиньон Noble Selection",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-kaberne-sovinon-noble-selection-krasnoe-suhoe-133.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Элегантный, гармоничный, с чуть шероховатыми танинами, с фруктовыми нотами черных ягод, вишни в шоколада. Послевкусие длительное, ягодно-фруктовое. Интенсивный, теплый, фруктовый, с оттенками конфитюров, красной черешни, вишневого сока, голубики, черной смородины и черничного джема с нотами осенней листвы.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "group_id": "noble",
+      "name": "Noble Selection Red Blend",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 263,
+          "height": 999,
+          "source_width": 263,
+          "source_height": 999
+        }
+      },
+      "category": "Красное",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Яркий, с ягодными оттенками: ежевика, тутовник, черника, кизил. Танины шероховатые. Послевкусие длительное, с оттенком горького шоколада и крем де кассис. С яркой палитрой красных фруктов: вишня, черешня, кизил, ликёр из черной смородины, деликатные пряные ноты, подлесок.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135",
+      "group_id": "noble",
+      "name": "Noble Selection White Blend",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-noble-selection-white-blend-shardone-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 264,
+          "height": 1000,
+          "source_width": 264,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Насыщенный, обволакивающий, с фруктовыми акцентами, сбалансированной цитрусовой свежестью и минеральным, аппетитно солоноватым послевкусием. Сложный, с оттенками меда, белого персика, лимонного пирога и легкими нюансами сладкой ванили.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135",
+      "group_id": "noble",
+      "name": "Шардоне Noble Selection Barrel Touch",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-shardone-noble-selection-barrel-touch-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 274,
+          "height": 1000,
+          "source_width": 274,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Полнотелое, с продолжением фруктовых, кондитерских и ореховых нот. Послевкусие длительное, фруктовое, с легким минеральным финишем. Интенсивный, с развитием от ореховых нот к цветочным тонам, спелым желтым фруктам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132",
+      "group_id": "noble",
+      "name": "Noble Selection. Пино Нуар розе",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-noble-selection-pino-nuar-roze-rozovoe-suhoe-132.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 852,
+          "y": 0,
+          "width": 658,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Нежный цветочно-ягодный аромат с тонами душистых трав, розового персика, цветущей вишни. Строгий, структурный, свежий вкус с гармоничной кислотностью. Красивое, гастрономичное розе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-noble",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115",
+      "group_id": "winery",
+      "name": "Winery Series. Пино Нуар",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 268,
+          "height": 1000,
+          "source_width": 268,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: С невесомой структурой, сбалансированной кислотностью и продолжительным, нежным послевкусием. Богатый оттенками земляники, барбариса и клубники, дополненными сливочными тонами йогурта.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125",
+      "group_id": "winery",
+      "name": "Winery Series. Рислинг Рейнский",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-winery-series-risling-reynskiy-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 212,
+          "height": 1000,
+          "source_width": 212,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Приятный, свежий с сочной кислотностью и продолжительным, ярким, сбалансированным послевкусием. Элегантный, с цветочными оттенками жасмина, тонами цитрусовых фруктов и нотками сливочного крема.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117",
+      "group_id": "winery",
+      "name": "Winery Series. Розе бленд",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 271,
+          "height": 1000,
+          "source_width": 271,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вкус: Мягкий, гармоничный, с ярко выраженным ягодным профилем, с тонами кизила и клюквы, с легкой минеральностью и нюансами сухих трав в продолжительном, немного терпком послевкусии. Легкий, гармоничный, с оттенками белой и красной смородины, крыжовника, клубничных леденцов и розы, которые дополняет пикантная нотка зеленого перца.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115",
+      "group_id": "petnat",
+      "name": "Петнат White",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-petnat-white-risling-reynskiy-beloe-suhoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 338,
+          "height": 1000,
+          "source_width": 338,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Вкус: Легкий, с освежающими цитрусовыми тонами, оттенками яблока, нюансами бриоши и бисквита, с хрустящей кислотностью и стойким, свежим послевкусием. Свежий, с акцентами лимона и лайма, сливок, миндаля, и душистой, еще теплой выпечки, присыпанной ванилью.",
+      "release_status": "catalog",
+      "badges": [
+        "Состав — по снимку каталога"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-group"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "group_id": "tete-reserve",
+      "name": "Tête de Cheval Blanc de Blancs",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 351,
+          "height": 1000,
+          "source_width": 351,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Вкус: Свежий, гармоничный с кремовой текстурой, нотами спелой груши, миндаля и сладкой выпечки, с цитрусовыми нюансами в элегантном послевкусии. Изысканный, яркий, с тонами спелых фруктов, цитрусовых, цветов и минералов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125",
+      "group_id": "tete-reserve",
+      "name": "Tête de Cheval Reserve",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-tte-de-cheval-reserve-risling-beloe-bryut-125.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 354,
+          "height": 1000,
+          "source_width": 354,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Сливочный, освежающий, с кислотностью и минеральными оттенками в послевкусии. Элегантный, с нюансами спелых фруктов, хлебных тостов, булочки Бриоши и сливочного крема.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "wine-golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12",
+      "group_id": "tete-reserve",
+      "name": "Tête de Cheval Zero Dosage Экстра брют",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-tte-de-cheval-zero-dosage-ekstra-bryut-sovinon-blan-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 352,
+          "height": 1000,
+          "source_width": 352,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "Вкус: Освежающий, яркий, с интенсивными цитрусовыми и минеральными тонами, оттенками печеного яблока и булочки Бриошь, энергичной кислотностью и долгим послевкусием с нюансами дрожжей и легкой горчинкой. Воздушный, с нотами зеленого яблока и цитрусовых, с нюансами свежей выпечки и миндаля.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "group_id": "tete-reserve",
+      "name": "Tête de Cheval Blanc de Blancs",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-tte-de-cheval-blanc-de-blancs-shardone-beloe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 778,
+          "y": 0,
+          "width": 806,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Мелкие, изящные пузырьки образуют долгую и устойчивую игру. Аромат сложный, объемный, породистый. Раскрывается нотами зрелых желтых фруктов с оттенками персика, янтарного инжира, сочной груши. Затем проявляются тона свежей выпечки с грецким орехом и цитрусовым джемом. Вкус объемный, благородный. Мягкая кислотность идеально интегрирована. Послевкусие долгое, с фруктовыми и сливочными нотами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12",
+      "group_id": "tete",
+      "name": "Tête de Cheval брют",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 351,
+          "height": 1000,
+          "source_width": 351,
+          "source_height": 1000
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вкус: Свежий, чистый, легкий и гармоничный, с кремовой текстурой, яркой кислотностью, тонами цитрусовых фруктов, зеленого яблока и минеральным послевкусием. Освежающий, с нотами цветущей липы и белой акации, украшенными цитрусовыми нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ],
+      "catalog_card_label": "Карточка каталога 1"
+    },
+    {
+      "id": "wine-golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12",
+      "group_id": "tete",
+      "name": "Tête de Chevall розе",
+      "variant": "",
+      "wine_slug": "golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-golubitskoe-estate-tte-de-chevall-roze-pino-nuar-rozovoe-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 351,
+          "height": 1000,
+          "source_width": 351,
+          "source_height": 1000
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Вкус: Мягкий, чистый с фруктово-ягодными акцентами и пикантной кислинкой в сухом послевкусии. Освежающий с фруктов-ягодными оттенками и тонкими цветочными нюансами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12",
+      "group_id": "tete",
+      "name": "Tête de Cheval\n брют",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-tte-de-cheval-bryut-risling-reynskiy-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 777,
+          "y": 0,
+          "width": 809,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "Пузырьки тонкие, изящные, образуют продолжительную устойчивую игру. Аромат многослойный и утонченный. Встречает нотами спелых фруктов и легкой сладостью пастилы, раскрывается акцентами сочного золотого крыжовника и тонами свежей выпечки с лимонной цедрой. Вкус мягкий, прекрасно сбалансированный. Приятная освежающая кислотность подчеркивает сложную ароматику и ведет к изящному, продолжительному элегантному финалу. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ],
+      "catalog_card_label": "Карточка каталога 2"
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12",
+      "group_id": "tete",
+      "name": "Tête de Cheval\n сладкое",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-risling-reynskiy-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 778,
+          "y": 0,
+          "width": 806,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Белое",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг Рейнский"
+      ],
+      "description": "В аромате мягкие нотки спелых персиков и абрикосов, айвы, киви, апельсинов и манго. Вкус подхватывает ароматическую тему и раскрывается медовыми тонами с оттенками сладких пряностей.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115",
+      "group_id": "tete",
+      "name": "Tête de Cheval\n сладкое розе",
+      "variant": "",
+      "wine_slug": "pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/wine-pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115.webp",
+        "source_id": "svoe-vino-2026-09-17",
+        "frame": {
+          "x": 780,
+          "y": 0,
+          "width": 802,
+          "height": 2362,
+          "source_width": 2362,
+          "source_height": 2362
+        }
+      },
+      "category": "Розовое",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Аромат мягкий, летний, с тонами спелых садовых фруктов, ванили и корочки яблочного пирога. Вкус полный, плотный, с умеренной кислотностью и щедрой остаточной сладостью. На финише сочные фруктовые ноты.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-tete"
+      ]
+    },
+    {
+      "id": "official-tete-semidry",
+      "group_id": "tete",
+      "name": "Tête de Cheval Semi-dry",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/golubitskoe-estate/official-tete-semidry.webp",
+        "source_id": "official-tete",
+        "frame": {
+          "x": 6,
+          "y": 12,
+          "width": 442,
+          "height": 1236,
+          "source_width": 463,
+          "source_height": 1252
+        }
+      },
+      "category": "Белое",
+      "style": "Белое игристое полусухое",
+      "grapes": [],
+      "description": "Белое полусухое игристое основной коллекции Tête de Cheval. Официальная карточка отмечает цитрусовые, цветочные и сливочные оттенки. Точный сортовой состав этого выпуска не указан.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-tete"
+      ]
+    }
+  ]
+}
