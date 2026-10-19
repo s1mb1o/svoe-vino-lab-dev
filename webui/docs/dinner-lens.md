@@ -6,8 +6,8 @@ The existing `/shelf` route and single-bottle evaluator contract stay unchanged.
 
 ## User flow
 
-1. Select a JPEG, PNG or WebP file up to 10 MiB, use the mobile camera, or enter a dish name.
-2. The browser decodes a photo with its image orientation. It rejects images above 50 million pixels. It creates a JPEG with a maximum 1,600-pixel side and removes image metadata through canvas re-encoding.
+1. Drop one dish image on the photo panel, select JPG/JPEG, HEIC/HEIF, PNG or WebP up to 10 MiB, use the mobile camera, or enter a dish name. Dropping a new image replaces the previous photo and cancels its pending work. Cancelling the file picker preserves the current photo.
+2. The browser checks file signatures, including uploads with an empty or generic MIME type. HEIC is decoded in a disposable local worker with pinned `heic-to` 1.6.6, including browsers without native HEIC support. Its metadata dimensions are bounded before pixel allocation. All formats become an upright JPEG with a maximum 1,600-pixel side and a 50-million-pixel input limit. Canvas re-encoding does not copy source EXIF/GPS; a browser can add its own technical image properties.
 3. Photo recognition proposes a dish label. It never confirms hidden ingredients. Wine cards remain hidden until the user confirms or corrects the dish.
 4. The user can select one of 16 broad categories when the exact dish is unknown. The name field offers the 200 dishes and 120 classes from the backend taxonomy.
 5. Optional controls set heat, cream, acidity, sauce sweetness, wine color, wine sweetness, still/sparkling status and an excluded producer. An unset control preserves the recipe default. An explicit negative value, such as no cream, is sent as a negative value.
@@ -16,6 +16,7 @@ The existing `/shelf` route and single-bottle evaluator contract stay unchanged.
 
 The browser does not store a photo or result in local storage. The portal does not write them to disk or logs. API responses use `Cache-Control: no-store` and are excluded from the existing service-worker API caching rules. The model provider receives the sanitized image through Dinner Lens.
 Cancellation aborts the portal fetch and suppresses stale UI results. It does not guarantee interruption of already-running model work on gx10.
+HEIC conversion has a separate 60-second bound. Cancellation, replacement, mode exit and conversion timeout terminate the decoder worker. The recognition deadline includes preparation time plus the existing upstream request budget. The large HEIC decoder is excluded from PWA precaching and loads only after a HEIC selection. Third-party license and source notices are under `public/third-party/`.
 
 ## Server boundary
 
@@ -58,3 +59,5 @@ To exercise the real service as well, configure the private portal settings and 
 Set `DINNER_TEST_IMAGE` to a local licensed dish photo to include a real VLM call through the full browser normalization and confirmation flow.
 The live suite follows every wine page for grilled ribeye, Olivier with doctor's sausage, and steamed king crab with clarified butter. It verifies discovery results beyond curation and unique IDs. `BROWSER_ARTIFACT_DIR` selects an external directory for screenshots and receipts.
 Camera attributes and mobile WebKit are automated checks. A physical phone camera still needs a device check.
+
+Run `npm run test:dinner-uploads` with the same browser environment for drag-and-drop and format coverage. It exercises actual JPEG/PNG/WebP encoding and a synthetic rotated HEIC, including empty/generic MIME types, uppercase extensions, nested drop targets, invalid files and the HEIC file picker in Chromium and WebKit. These cases intercept recognition only after real browser decoding and normalization. Set `DINNER_HEIC_LIVE_IMAGE` to a local dish HEIC to add a real-service drop/recognition/confirmation check.

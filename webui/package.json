@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "nuxt dev --host 127.0.0.1 --port 8153",
+    "predev": "node scripts/prepare-dinner-decoder.mjs",
     "build": "nuxt build",
     "start": "HOST=127.0.0.1 PORT=8153 node --env-file-if-exists=.env .output/server/index.mjs",
     "typecheck": "nuxt typecheck",
@@ -15,6 +16,8 @@
     "test:contract": "node scripts/check-contract.mjs",
     "test:pwa": "node scripts/check-pwa-browser.mjs",
     "test:dinner": "node scripts/check-dinner-browser.mjs",
+    "test:dinner-uploads": "node scripts/check-dinner-uploads.mjs",
+    "test:dinner-assets": "node scripts/check-dinner-assets.mjs",
     "dinner:taxonomy": "node scripts/generate-dinner-taxonomy.mjs",
     "test:presentation": "node scripts/check-presentation-browser.mjs",
     "postinstall": "nuxt prepare",
@@ -22,9 +25,10 @@
     "test:producer-maps": "node scripts/check-producer-maps-browser.mjs",
     "test:bundle": "node scripts/check-product-line-bundle.mjs",
     "line-maps:index": "node scripts/generate-product-line-index.mjs",
-    "prebuild": "vitest run tests/product-line-registry.test.ts tests/product-line-map.test.ts tests/product-line-index.test.ts"
+    "prebuild": "node scripts/prepare-dinner-decoder.mjs && vitest run tests/product-line-registry.test.ts tests/product-line-map.test.ts tests/product-line-index.test.ts"
   },
   "dependencies": {
+    "heic-to": "1.6.6",
     "nuxt": "4.5.2",
     "vue": "3.5.40",
     "vue-router": "5.2.0"

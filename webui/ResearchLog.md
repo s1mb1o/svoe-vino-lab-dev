@@ -1,5 +1,11 @@
 # Research log
 
+## Dish uploads, 2026-10-19
+
+The dish uploader previously rejected HEIC by MIME before decoding and had no drop handler. Bottle/shelf HEIF handling belongs to the matcher and cannot supply a normalized dish image without an unrelated recognition call.
+The dish path now checks signatures and normalizes locally. Pinned `heic-to` 1.6.6 uses libheif 1.23.6. Its CSP build runs inside a disposable outer worker so that cancellation releases its decoder work. HEIF metadata dimensions are checked before decoding. The client deadline allows the preparation budget before the existing upstream budget.
+An actual macOS-encoded synthetic HEIC with EXIF orientation 6 produces the expected 32×64 red-top/blue-bottom JPEG in Chromium and WebKit. WebKit can add technical EXIF to its canvas output; the test checks that source metadata is removed instead of rejecting all browser-generated EXIF. The decoder is loaded only for HEIC and is excluded from PWA precaching.
+
 ## «Винный дневник» web part, 2026-10-19
 
 The account service runs on gx10 in the LAN. Nuxt runs on the public edge host and reaches it only through a reverse SSH tunnel.

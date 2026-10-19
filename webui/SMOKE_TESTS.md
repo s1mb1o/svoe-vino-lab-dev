@@ -1,5 +1,14 @@
 # Smoke tests
 
+## Dish drag-and-drop and HEIC
+
+1. Run `npm run test:dinner-uploads` with the browser environment in `docs/dinner-lens.md`. Check the desktop dark/light layouts and 320/390-pixel mobile layouts.
+2. Drop JPG, JPEG, PNG, WebP, HEIC and HEIF files. Repeat with uppercase names and empty/generic MIME. Confirm one normalized JPEG recognition request per valid file and no wine cards before confirmation.
+3. Use the picker and mobile camera with the advertised formats. Confirm HEIC orientation and no source metadata copying. Physical camera capture needs a device check.
+4. Drag over nested panel content and leave the target. Confirm stable highlighting and reset after drop. Replace a photo during preparation or recognition; cancel or switch modes. The latest photo must win.
+5. Drop an invalid renamed file, a truncated HEIC, multiple files or an oversized file. Confirm a useful error and no provider request. An empty drop or cancelled picker must preserve the current photo.
+6. Confirm the decoder does not load for JPEG/PNG/WebP or first paint. Run the bundle check after building.
+
 ## «Винный дневник»
 
 1. Set `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`. Confirm «Дневник» in the header on `/`, `/shelf`, `/ideas`, and `/android`. On a 360 px phone confirm the book icon and no horizontal scroll.

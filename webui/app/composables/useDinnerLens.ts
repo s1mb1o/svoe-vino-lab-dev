@@ -1,19 +1,31 @@
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
-import { MAX_IMAGE_BYTES } from '#shared/catalog'
+import { dishImageType, DISH_HEIC_TIMEOUT_MS, DISH_MAX_PIXELS, DISH_IMAGE_SIZE_ERROR } from '#shared/dish-image'
 import { DINNER_TIMEOUT_MS, dinnerNode, parseDinnerPage, type DinnerPage, type DinnerSelection, type DinnerWine } from '#shared/dinner'
 
-export async function prepareDishPhoto(file: File): Promise<string> {
-  if (!file.size || file.size > MAX_IMAGE_BYTES) throw new Error('Выберите фотографию размером до 10 МБ.')
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Выберите JPEG, PNG или WebP. Если фото в HEIC, сохраните его как JPEG.')
-  const url = URL.createObjectURL(file)
+export async function prepareDishPhoto(file: File, signal?: AbortSignal): Promise<string> {
+  const type = await dishImageType(file)
+  signal?.throwIfAborted()
+  const url = type === 'image/heic' ? '' : URL.createObjectURL(new Blob([file], { type }))
+  let bitmap: ImageBitmap | undefined
   try {
-    const image = new Image()
-    image.src = url
-    try { await image.decode() } catch { throw new Error('Не удалось прочитать фото. Попробуйте сохранить его как JPEG.') }
-    if (!image.naturalWidth || !image.naturalHeight || image.naturalWidth * image.naturalHeight > 50_000_000) throw new Error('Снимок слишком большой. Выберите уменьшенную копию.')
-    const scale = Math.min(1, 1600 / Math.max(image.naturalWidth, image.naturalHeight))
+    let image: HTMLImageElement | ImageBitmap
+    if (type === 'image/heic') {
+      const { decodeDishHeic } = await import('../utils/dinner-heic')
+      signal?.throwIfAborted()
+      image = bitmap = await decodeDishHeic(file, signal)
+    }
+    else {
+      const decoded = new Image(); decoded.src = url
+      try { await decoded.decode() } catch { throw new Error('Не удалось прочитать фото. Попробуйте другой снимок.') }
+      image = decoded
+    }
+    signal?.throwIfAborted()
+    const width = image instanceof HTMLImageElement ? image.naturalWidth : image.width
+    const height = image instanceof HTMLImageElement ? image.naturalHeight : image.height
+    if (!width || !height || width * height > DISH_MAX_PIXELS) throw new Error(DISH_IMAGE_SIZE_ERROR)
+    const scale = Math.min(1, 1600 / Math.max(width, height))
     const canvas = document.createElement('canvas')
-    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale)); canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+    canvas.width = Math.max(1, Math.round(width * scale)); canvas.height = Math.max(1, Math.round(height * scale))
     const context = canvas.getContext('2d')
     if (!context) throw new Error('Браузер не смог подготовить фото. Попробуйте другой браузер.')
     context.fillStyle = '#fff'; context.fillRect(0, 0, canvas.width, canvas.height)
@@ -22,7 +34,7 @@ export async function prepareDishPhoto(file: File): Promise<string> {
     canvas.width = 0; canvas.height = 0
     if (normalized.length > 7_000_000 || !normalized.startsWith('data:image/jpeg;base64,')) throw new Error('Снимок слишком большой. Выберите уменьшенную копию.')
     return normalized
-  } finally { URL.revokeObjectURL(url) }
+  } finally { if (url) URL.revokeObjectURL(url); bitmap?.close() }
 }
 
 export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: typeof prepareDishPhoto; timeout?: number } = {}) {
@@ -47,7 +59,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
   function reset() { invalidate(); dish.value = ''; preview.value = ''; file.value = null; phase.value = 'idle' }
   const message = (status: number) => ({
     400: 'Не удалось прочитать запрос. Попробуйте ещё раз.', 413: 'Выберите фотографию размером до 10 МБ.',
-    415: 'Выберите JPEG, PNG или WebP.', 422: 'Проверьте название блюда и выбранные условия.',
+    415: 'Выберите JPG, JPEG, HEIC, PNG или WebP.', 422: 'Проверьте название блюда и выбранные условия.',
     429: 'Слишком много запросов. Попробуйте немного позже.', 503: 'Подбор вина временно недоступен. Попробуйте ещё раз позже.',
     504: 'Подбор занял слишком много времени. Попробуйте ещё раз.',
   } as Record<number, string>)[status] || 'Сервис не смог выполнить подбор. Попробуйте ещё раз.'
@@ -65,7 +77,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
   async function operation(mode: 'recognizing' | 'loading' | 'more', work: (active: AbortController, current: number) => Promise<void>) {
     cancel()
     const current = generation; const active = new AbortController(); controller = active; phase.value = mode
-    const timer = setTimeout(() => active.abort(), dependencies.timeout ?? DINNER_TIMEOUT_MS + 10_000)
+    const timer = setTimeout(() => active.abort(), dependencies.timeout ?? DINNER_TIMEOUT_MS + 10_000 + (mode === 'recognizing' ? DISH_HEIC_TIMEOUT_MS : 0))
     try { await work(active, current) }
     catch (failure) {
       if (current !== generation) return
@@ -79,7 +91,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
     if (!file.value) return
     page.value = null; wines.value = []; question.value = ''; dish.value = ''
     await operation('recognizing', async (active, current) => {
-      const image = preview.value || await prepare(file.value!)
+      const image = preview.value || await prepare(file.value!, active.signal)
       if (current !== generation) return
       preview.value = image
       const value = await post('recognize', { image_base64: image, limit: 3 }, active)

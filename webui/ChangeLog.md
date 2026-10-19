@@ -1,14 +1,23 @@
 # Change log
 
+## 2026-10-19 — Dish drag-and-drop and HEIC
+
+- Accept one dropped dish photo on the upload panel, with a visible drop target and photo replacement during a pending request. Keep the picker and mobile camera.
+- Support JPG/JPEG, HEIC/HEIF, PNG and WebP by content signature, including absent/generic MIME types. Reject invalid, empty, oversized and multiple files before model work.
+- Decode HEIC locally in an on-demand cancellable worker, then normalize all inputs to upright JPEG without source EXIF/GPS. Preserve the 10 MiB and 50-million-pixel limits and the backend contract.
+- Add rotated HEIC, format, metadata-bound and cancellation coverage. Publish the decoder license and source notices. Read `docs/dinner-lens.md`.
+
 ## 2026-10-19 — Messengers are not login methods
 
 - «Способы входа» lists only email and Yandex ID. Telegram and MAX appear under «Связанные мессенджеры» with «Через них нельзя войти в дневник: они только сохраняют находки». The future link action is «Привязать мессенджер» (owner decision).
+
 
 ## 2026-10-19 — «Винный дневник»: Yandex reauth stays on the same account
 
 - «Подтвердить через Яндекс ID» before account deletion could switch the session to another diary when the browser used another Yandex account. The callback now accepts the new session only for the same user; otherwise it keeps the current session, ends the new one, and shows «Вход выполнен в другой аккаунт Яндекс ID. Удаление отменено…».
 - The confirmation heading names the account: «Удалить аккаунт <имя> и все данные?».
 - 6 new tests (59 account tests; 398 in total, 20 existing skips).
+
 
 ## 2026-10-19 — «Винный дневник»: login and sign-up
 

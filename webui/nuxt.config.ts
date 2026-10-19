@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@vite-pwa/nuxt'],
   css: ['~/assets/main.css'],
+  vite: { worker: { format: 'es' } },
   runtimeConfig: {
     androidApkPath: defaultAndroidApkPath,
     predictionMode: 'mock',
@@ -126,6 +127,8 @@ export default defineNuxtConfig({
     workbox: {
       cacheId: 'svoe-vino-webui',
       cleanupOutdatedCaches: true,
+      // Load the large HEIC decoder only when a user selects HEIC, never at first visit.
+      globIgnores: ['**/dinner-heic.worker-*.js'],
       globPatterns: [
         '_nuxt/**/*.{js,css}',
         'icons/*.{png,svg}',

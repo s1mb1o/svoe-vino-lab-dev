@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { DINNER_CATEGORIES, DINNER_NODES, dinnerNode, type DinnerSelection } from '#shared/dinner'
+import { DISH_CAMERA_ACCEPT, DISH_IMAGE_ACCEPT } from '#shared/dish-image'
 
-defineProps<{ available: boolean }>()
+const props = defineProps<{ available: boolean }>()
 const scanner = useDinnerLens()
 const { dish, preview, phase, page, wines, error, question, busy, file, failedAction } = scanner
 const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<HTMLInputElement>()
@@ -10,10 +11,28 @@ const announcement = ref('')
 const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '', color: '', sweetness: '', kind: '', excludeProducer: '' })
 const resultHeading = ref<HTMLElement>()
 const category = ref('')
+const dragDepth = ref(0)
+function selectFiles(files: File[]) { category.value = ''; announcement.value = ''; void scanner.select(files) }
 function selectPhoto(event: Event) {
   const input = event.target as HTMLInputElement
-  category.value = ''; announcement.value = ''
-  const files = Array.from(input.files || []); input.value = ''; void scanner.select(files)
+  const files = Array.from(input.files || []); input.value = ''; if (files.length) selectFiles(files)
+}
+function fileDrag(event: DragEvent) { return Array.from(event.dataTransfer?.types || []).includes('Files') }
+function preventFileNavigation(event: DragEvent) {
+  if (!fileDrag(event)) return
+  const handled = event.defaultPrevented; event.preventDefault()
+  if (event.type === 'drop') dragDepth.value = 0
+  else if (!handled && event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+}
+onMounted(() => { window.addEventListener('dragover', preventFileNavigation); window.addEventListener('drop', preventFileNavigation) })
+onBeforeUnmount(() => { window.removeEventListener('dragover', preventFileNavigation); window.removeEventListener('drop', preventFileNavigation) })
+function dragEnter(event: DragEvent) { if (fileDrag(event)) { event.preventDefault(); if (props.available) dragDepth.value++ } }
+function dragOver(event: DragEvent) { if (fileDrag(event)) { event.preventDefault(); if (event.dataTransfer) event.dataTransfer.dropEffect = props.available ? 'copy' : 'none' } }
+function dragLeave(event: DragEvent) { event.preventDefault(); dragDepth.value = Math.max(0, dragDepth.value - 1) }
+function dropPhoto(event: DragEvent) {
+  event.preventDefault(); dragDepth.value = 0
+  const files = Array.from(event.dataTransfer?.files || [])
+  if (props.available && files.length) selectFiles(files)
 }
 function chooseCategory(event: Event) {
   const node = dinnerNode((event.target as HTMLSelectElement).value)
@@ -65,14 +84,15 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
     <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ statusMessage }}</p>
     <p v-if="!available" class="dinner-notice" role="status"><AppIcon name="info" />Подбор вина временно недоступен. Попробуйте позже.</p>
     <div class="dinner-entry">
-      <div class="dinner-photo-panel">
+      <div class="dinner-photo-panel" :class="{ dragging: dragDepth > 0 }" role="region" aria-label="Загрузка фото блюда" @dragenter="dragEnter" @dragover="dragOver" @dragleave="dragLeave" @drop="dropPhoto">
+        <div v-if="dragDepth > 0" class="dinner-drop-overlay" aria-hidden="true"><AppIcon name="upload" /><span>Отпустите фото блюда</span></div>
         <div v-if="preview" class="dinner-preview"><img :src="preview" alt="Выбранное фото блюда"><button class="button secondary" type="button" @click="removePhoto">Убрать фото<AppIcon name="close" /></button></div>
         <div v-else class="dinner-photo-placeholder" aria-hidden="true"><div class="dinner-plate"><AppIcon name="food" /></div></div>
         <div class="dinner-photo-copy"><p class="step-label">НАЧНИТЕ С БЛЮДА</p><h2>Ваш стол.<br> <span>Подходящее вино.</span></h2><p>Покажите блюдо, а затем подтвердите название и соус. Или сразу введите название рядом.</p></div>
         <div class="upload-actions dinner-upload-actions"><button ref="uploadButton" class="button primary" type="button" :disabled="!available" @click="upload?.click()"><AppIcon name="upload" />{{ preview ? 'Заменить фото' : 'Загрузить фото' }}</button><button class="button secondary camera-action" type="button" :disabled="!available" @click="camera?.click()"><AppIcon name="camera" />Снять блюдо</button></div>
-        <input ref="upload" class="sr-only" tabindex="-1" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Фото блюда" @change="selectPhoto">
-        <input ref="camera" class="sr-only" tabindex="-1" type="file" accept="image/jpeg,image/png" capture="environment" aria-label="Снять блюдо камерой" @change="selectPhoto">
-        <p class="upload-hint">JPEG, PNG, WebP · до 10 МБ</p>
+        <input ref="upload" class="sr-only" tabindex="-1" type="file" :accept="DISH_IMAGE_ACCEPT" :disabled="!available" aria-label="Фото блюда" @change="selectPhoto">
+        <input ref="camera" class="sr-only" tabindex="-1" type="file" :accept="DISH_CAMERA_ACCEPT" :disabled="!available" capture="environment" aria-label="Снять блюдо камерой" @change="selectPhoto">
+        <p class="upload-hint">JPG, JPEG, HEIC, PNG, WebP · до 10 МБ<span class="desktop-drop-hint"><br>Можно перетащить фото сюда</span></p>
         <button v-if="file && !busy && failedAction === 'recognizing'" class="example-button" type="button" :disabled="!available" @click="scanner.recognize()">Повторить распознавание<AppIcon name="arrow" /></button>
       </div>
       <form class="dinner-form" @submit.prevent="submit" @change="update">
@@ -121,7 +141,10 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 
 <style scoped>
 .dinner-entry { display: grid; grid-template-columns: .9fr 1.1fr; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); overflow: hidden; }
-.dinner-photo-panel { padding: 36px; text-align: center; background: var(--cream); display: flex; flex-direction: column; align-items: center; }
+.dinner-photo-panel { position: relative; padding: 36px; text-align: center; background: var(--cream); display: flex; flex-direction: column; align-items: center; }
+.dinner-photo-panel.dragging { outline: 3px dashed var(--accent); outline-offset: -10px; }
+.dinner-drop-overlay { position: absolute; inset: 12px; z-index: 2; border-radius: 14px; background: var(--paper); color: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 20px; pointer-events: none; }
+.dinner-drop-overlay .icon { width: 42px; height: 42px; }
 .dinner-photo-placeholder { display: grid; place-items: center; min-height: 170px; width: 100%; }
 .dinner-plate { width: 138px; height: 138px; display: grid; place-items: center; border: 1px solid var(--line); box-shadow: inset 0 0 0 14px var(--paper), inset 0 0 0 15px var(--line); border-radius: 50%; color: var(--accent); }
 .dinner-plate .icon { width: 48px; height: 48px; }

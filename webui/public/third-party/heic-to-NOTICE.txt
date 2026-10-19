@@ -1,0 +1,12 @@
+HEIC decoding uses heic-to 1.6.6 as a separate, unmodified, replaceable ES module:
+/third-party/heic-to-1.6.6/heic-to.js
+The application does not bundle the library into its own worker.
+An API-compatible modified library can replace this module without rebuilding the application.
+Project and corresponding source: https://github.com/hoppergee/heic-to/tree/4045b8d7607e326c2b479cc424c7a60519b42dae
+Package source: https://www.npmjs.com/package/heic-to/v/1.6.6
+License: GNU Lesser General Public License, version 3 or later.
+See heic-to-LICENSE.txt and GPL-3.0.txt in this directory.
+The package bundles libheif 1.23.6 and libde265.
+Upstream library sources and build instructions: https://github.com/hoppergee/heic-to
+libheif: https://github.com/strukturag/libheif
+libde265: https://github.com/strukturag/libde265
