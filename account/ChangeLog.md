@@ -1,5 +1,13 @@
 # ChangeLog
 
+## 2026-10-20 — MAX launch date and refusal logs
+
+The first real MAX link failed with `launch_expired` twice, also with `MAX_INITDATA_MAX_AGE_SECONDS=3600`.
+
+- `auth_date` above 10^11 is milliseconds (the MAX documentation says seconds).
+- A refused launch logs its reason (signature, expired with the age, ip missing or mismatch, reused). The log
+  never holds the launch data. 100 tests.
+
 ## 2026-10-19 — One name per consumer token
 
 Owner: `ACCOUNT_TELEGRAM_BOT_TOKEN` read like the Telegram bot token; keep one name for each token in

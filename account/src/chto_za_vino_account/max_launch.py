@@ -68,6 +68,10 @@ def verify(init_data: str, key: bytes) -> Launch:
         raise LaunchInvalid("launch data has no valid user id")
     if not query_id or len(query_id) > 128:
         raise LaunchInvalid("launch data has no valid query_id")
+    # The MAX documentation says seconds. A value above 10^11 cannot be seconds (year 5138), so it
+    # is milliseconds: the first real link on 2026-10-20 failed with launch_expired.
+    if auth_date > 10**11:
+        auth_date //= 1000
     ip = pairs.get("ip") or None
     if ip is not None:
         try:

@@ -833,14 +833,18 @@ class AccountService:
         settings = self.settings.max
         if settings is None:
             raise AccountError("provider_disabled", 404, "MAX is not configured")
+        # The refusal logs give the reason and the age only, never the launch data.
         try:
             launch = max_launch.verify(init_data, settings.webapp_key)
-        except max_launch.LaunchInvalid:
+        except max_launch.LaunchInvalid as error:
+            LOG.info("MAX launch refused: %s", error)
             raise AccountError("invalid_launch", 400, "Open the diary from MAX again") from None
         age = now - launch.auth_date
         if age > settings.max_age_seconds or age < -LAUNCH_CLOCK_SKEW:
+            LOG.info("MAX launch refused: expired, age %s s", age)
             raise AccountError("launch_expired", 400, "Open the diary from MAX again")
         if settings.require_ip_match and launch.ip != client_ip:
+            LOG.info("MAX launch refused: ip %s", "missing" if launch.ip is None else "mismatch")
             raise AccountError("launch_ip_mismatch", 403, "Open the diary from MAX again")
         # Keep the launch ID while the launch data itself is still acceptable.
         valid_until = max(now, launch.auth_date) + settings.max_age_seconds + LAUNCH_CLOCK_SKEW
@@ -850,6 +854,7 @@ class AccountService:
                 (launch.query_id, valid_until),
             )
         except sqlite3.IntegrityError:
+            LOG.info("MAX launch refused: reused, age %s s", age)
             raise AccountError("launch_reused", 400, "Open the diary from MAX again") from None
         return launch
 

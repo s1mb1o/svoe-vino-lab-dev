@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import re
 import sys
 
 import pytest
@@ -50,6 +51,21 @@ def test_launch_checks(harness):
     assert link(init_data(token="wrong"))["error"] == "invalid_launch"
     assert link(init_data())["status"] == "linked"
     assert link(init_data())["error"] == "launch_reused"
+
+
+def test_launch_date_in_milliseconds(harness, caplog):
+    token = harness.email_session("anna@example.ru")
+
+    def link(data):
+        return harness.web(
+            "POST", "/v1/me/identities/max", session=token, json={"init_data": data}
+        ).json()
+
+    with caplog.at_level("INFO", logger="chto_za_vino_account"):
+        assert link(init_data(auth_date=int(START) - 4000))["error"] == "launch_expired"
+    assert re.search(r"MAX launch refused: expired, age 40\d\d s", caplog.text)
+    assert "query-1" not in caplog.text
+    assert link(init_data(auth_date=int(START) * 1000))["status"] == "linked"
 
 
 def test_ip_check_can_be_turned_off(env):
