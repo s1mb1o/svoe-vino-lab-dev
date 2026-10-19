@@ -4,8 +4,9 @@
   chto-za-vino-account max-key         read the MAX bot token from stdin and print MAX_WEBAPP_KEY
   chto-za-vino-account backup <file>   write a consistent copy of ACCOUNT_DATABASE to <file>
   chto-za-vino-account merge --keep <username> --remove <username>
-                                       move the login methods of one account to another account
-                                       and delete the first account (operator action)
+                                       move the login methods and the diary lists of one account
+                                       to another account and delete the first account
+                                       (operator action)
 """
 
 from __future__ import annotations
@@ -110,10 +111,16 @@ def backup(database: str, target: str) -> int:
 def merge(database: str, keep: str, remove: str) -> int:
     """Join two accounts of one person: an operator action for accounts made before the email rule.
 
-    The login methods (identities) of `remove` move to `keep`, then `remove` is deleted with its
-    sessions and pending records. The command stops without a change when `keep` already has a
-    login method of the same provider: an account has at most one identity for each provider.
-    Back up the database first. Diary data does not exist yet; move it here when it does.
+    The login methods (identities) and the diary lists of `remove` move to `keep`, then `remove`
+    is deleted with its sessions and pending records. The command stops without a change when
+    `keep` already has a login method of the same provider: an account has at most one identity
+    for each provider. Back up the database first.
+
+    History: the union of the dates. For a date in both accounts, the date with the earlier
+    first time stays. A wine gets the earliest first time and the latest last time, and the
+    snapshot of `keep` (the snapshot of `remove` when `keep` has none). Saved wines: for a wine
+    in both accounts, the row with the later `updated_at` stays. The switch of `keep` stays.
+    The history and saved limits apply again at the next record or save.
     """
     path = Path(database)
     if not path.is_file():
@@ -145,6 +152,7 @@ def merge(database: str, keep: str, remove: str) -> int:
             print(f"{keep} already has: {', '.join(clash)}; nothing changed", file=sys.stderr)
             return 1
         db.execute("UPDATE identities SET user_id = ? WHERE user_id = ?", (keep_id, remove_id))
+        wines, saved = _merge_lists(db, keep_id, remove_id)
         db.execute("DELETE FROM users WHERE id = ?", (remove_id,))
         db.execute("COMMIT")
     except sqlite3.Error as error:
@@ -154,8 +162,55 @@ def merge(database: str, keep: str, remove: str) -> int:
         return 1
     finally:
         db.close()
-    print(f"Merged {remove} into {keep}: moved {', '.join(sorted(moving)) or 'nothing'}")
+    print(
+        f"Merged {remove} into {keep}: moved {', '.join(sorted(moving)) or 'nothing'}; "
+        f"history wines: {wines}, saved wines: {saved}"
+    )
     return 0
+
+
+def _merge_lists(db: sqlite3.Connection, keep_id: str, remove_id: str) -> tuple[int, int]:
+    """Copy the diary lists of `remove_id` into `keep_id`. The account deletion removes the rest.
+
+    Returns the number of history wines and saved wines of `remove_id`.
+    """
+    wines = db.execute(
+        "SELECT COUNT(*) FROM history_wines WHERE user_id = ?", (remove_id,)
+    ).fetchone()[0]
+    saved = db.execute(
+        "SELECT COUNT(*) FROM saved_wines WHERE user_id = ?", (remove_id,)
+    ).fetchone()[0]
+    db.execute(
+        "INSERT INTO history_wines (user_id, wine_slug, wine_snapshot, first_met_at, last_met_at) "
+        "SELECT ?, wine_slug, wine_snapshot, first_met_at, last_met_at FROM history_wines "
+        "WHERE user_id = ? "
+        "ON CONFLICT (user_id, wine_slug) DO UPDATE SET "
+        "wine_snapshot = COALESCE(history_wines.wine_snapshot, excluded.wine_snapshot), "
+        "first_met_at = MIN(history_wines.first_met_at, excluded.first_met_at), "
+        "last_met_at = MAX(history_wines.last_met_at, excluded.last_met_at)",
+        (keep_id, remove_id),
+    )
+    db.execute(
+        "INSERT INTO history_days (user_id, wine_slug, met_on, source, first_at) "
+        "SELECT ?, wine_slug, met_on, source, first_at FROM history_days WHERE user_id = ? "
+        "ON CONFLICT (user_id, wine_slug, met_on) DO UPDATE SET "
+        "source = excluded.source, first_at = excluded.first_at "
+        "WHERE excluded.first_at < history_days.first_at",
+        (keep_id, remove_id),
+    )
+    db.execute(
+        "INSERT INTO saved_wines (user_id, wine_slug, status, source, wine_snapshot, added_at, "
+        "updated_at) "
+        "SELECT ?, wine_slug, status, source, wine_snapshot, added_at, updated_at "
+        "FROM saved_wines WHERE user_id = ? "
+        "ON CONFLICT (user_id, wine_slug) DO UPDATE SET "
+        "status = excluded.status, source = excluded.source, "
+        "wine_snapshot = COALESCE(excluded.wine_snapshot, saved_wines.wine_snapshot), "
+        "added_at = excluded.added_at, updated_at = excluded.updated_at "
+        "WHERE excluded.updated_at > saved_wines.updated_at",
+        (keep_id, remove_id),
+    )
+    return wines, saved
 
 
 if __name__ == "__main__":

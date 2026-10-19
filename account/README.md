@@ -1,12 +1,13 @@
 # Account service of «Винный дневник»
 
 This component holds the accounts of «Винный дневник» and every login and linking path.
-Plans: [`../docs/plans/04_user-accounts.md`](../docs/plans/04_user-accounts.md) (issue #48) and
-[`../docs/plans/05_max-authorization.md`](../docs/plans/05_max-authorization.md) (issue #50).
-Telegram linking: issue #51. Email login: issue #52.
+Plans: [`../docs/plans/04_user-accounts.md`](../docs/plans/04_user-accounts.md) (issue #48),
+[`../docs/plans/05_max-authorization.md`](../docs/plans/05_max-authorization.md) (issue #50), and
+[`../docs/plans/07_diary-history-and-saved.md`](../docs/plans/07_diary-history-and-saved.md)
+(issues #71 and #64). Telegram linking: issue #51. Email login: issue #52.
 
-The first version covers authorization only. The diary data (searches, photos, ratings,
-preferences, application tokens) comes later.
+The service also keeps application tokens for MCP clients (#65) and two diary lists: the history
+of found wines and «Сохранённые». Photos, ratings, and preferences come later.
 
 ## What it does
 
@@ -20,7 +21,9 @@ preferences, application tokens) comes later.
 | Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. One identity per provider and account. An identity belongs to one account at most. |
 | MAX | Checks the mini-app launch data: signature, age (5 minutes by default, at most 60), single-use `query_id` kept while the launch is valid, signed `ip` against the client address. MAX login is off by default (`MAX_LOGIN_ENABLED`, issue #50). |
 | Telegram | A one-time link code (10 minutes, at most 10 per hour for an account) for `https://t.me/<bot>?start=link_<code>`. The bot reads the diary name, asks the person, then confirms. Telegram never opens a session. |
-| Deletion | Unlink and account deletion need no fresh login; the site asks for a confirmation. An account keeps at least one login method: email or Yandex ID. MAX login does not count. |
+| History | One date for each wine and calendar day (Europe/Moscow) with the first source of the day: `photo` or `shelf` (the site), `telegram` or `max` (a linked chat). A repeated match on the same day changes nothing. The switch `save_history` (on by default) stops new records on the site and in the chats. Limits: 2,000 wines and 366 dates for each wine; at a limit the oldest record goes. |
+| Saved | «Сохранённые»: a wine with one of four statuses (`not_tasted`, `want`, `liked`, `disliked`) and the place where the person saved it. Independent of the history. At most 500 wines. |
+| Deletion | Unlink and account deletion need no fresh login; the site asks for a confirmation. An account keeps at least one login method: email or Yandex ID. MAX login does not count. Account deletion removes both diary lists. |
 
 Russian law (149-FZ art. 8 p. 10, KoAP 13.55 since 7 July 2026) forbids login through a
 foreign service. Do not add login through Telegram, Google, or Apple. Telegram is only linked.
@@ -64,9 +67,10 @@ OAuth cabinet; without it, Yandex shows users a warning.
 
 All routes except `/healthz` and `/readyz` need a client address from
 `ACCOUNT_ALLOWED_NETWORKS` and `Authorization: Bearer <consumer token>`. The consumers are
-`web` (the Nuxt server), `max-bot`, and `telegram-bot`. The web consumer sends the session in
-`X-Session-Token` and the browser address in `X-Client-IP`. Errors have the form
-`{"error": "<code>", "detail": "..."}`. Validation errors never echo the input.
+`web` (the Nuxt server), `max-bot`, and `telegram-bot`. Both bots record the history of their
+chats. The web consumer sends the session in `X-Session-Token` and the browser address in
+`X-Client-IP`. Errors have the form `{"error": "<code>", "detail": "..."}`. Validation errors
+have the form `{"error": "invalid_request", "fields": [...]}` and never echo the input.
 
 | Route | Consumer | Purpose |
 | --- | --- | --- |
@@ -79,18 +83,31 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `POST /v1/auth/signup` | web | `{signup_ticket, username, consent_version, terms_version}` → session |
 | `POST /v1/auth/max/session` | web | `{init_data}` → session or `not_linked` (only with `MAX_LOGIN_ENABLED`) |
 | `DELETE /v1/sessions/current` | web | Log out |
-| `GET /v1/me`, `DELETE /v1/me` | web | Account view; delete the account |
+| `GET /v1/me`, `DELETE /v1/me` | web | Account view with `save_history`; delete the account |
+| `PATCH /v1/me` | web | `{save_history: bool}` → the `GET /v1/me` answer |
 | `POST /v1/me/identities/max` | web | `{init_data}` → link MAX |
 | `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram` |
 | `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}`; a new code ends the open one |
 | `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text. The first claimer owns the code |
 | `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user who claimed the code; a repeat answers `linked` again |
 | `POST /v1/bot/telegram/unlink` | telegram-bot | Unlink by Telegram user ID |
+| `GET /v1/me/history` | web | `{items: [HistoryItem], save_history}`: all wines, newest `last_met_at` first |
+| `GET /v1/me/history/{slug}` | web | `HistoryItem` with `days: [{met_on, source, first_at}]`, newest first; 404 `not_found` |
+| `POST /v1/me/history` | web | `{slug, source: photo\|shelf, wine_snapshot?}` → `{status: recorded\|already\|off, met_on?}` |
+| `DELETE /v1/me/history/{slug}/days/{met_on}` | web | Remove one date; the last date removes the wine; 404 `not_found` |
+| `DELETE /v1/me/history/{slug}` | web | Remove one wine; 404 `not_found` |
+| `DELETE /v1/me/history` | web | Clear the history |
+| `GET /v1/me/saved` | web | `{items: [SavedItem]}`, newest `updated_at` first |
+| `GET /v1/me/saved/slugs` | web | `{items: [{slug, status}]}` for the pins of a page |
+| `PUT /v1/me/saved/{slug}` | web | `{status, source, wine_snapshot?}` → `SavedItem`: 201 for a new wine, 200 for a change; 409 `saved_full` |
+| `DELETE /v1/me/saved/{slug}` | web | Remove a saved wine; 404 `not_found` |
+| `POST /v1/bot/history` | telegram-bot, max-bot | `{user_id, slug, wine_snapshot?, replaces?}` → `{status: recorded\|already\|off\|not_linked, met_on?}` |
+| `POST /v1/bot/history/undo` | telegram-bot, max-bot | `{user_id, slug}` → `{status: removed\|absent\|not_linked}` |
 | `GET /v1/me/app-tokens` | web | Active application tokens, without secrets |
 | `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only |
 | `DELETE /v1/me/app-tokens/{id}` | web | Revoke a token |
 | `GET /v1/app/profile` | web + `X-App-Token` | Username, creation date, preferences (`null` until #48) |
-| `GET /v1/app/wines?cursor=&limit=` | web + `X-App-Token` | Found and rated wines, newest first, `limit` 1–50 (empty until #48) |
+| `GET /v1/app/wines?cursor=&limit=` | web + `X-App-Token` | The history, newest first, `limit` 1–50 → `{items, next_cursor}`; 400 `invalid_cursor` |
 
 Application tokens (#65) give an MCP client read-only access to its owner's diary. The format is
 `cvpat_` and 32 random bytes in base64url; the service stores only the SHA-256 hash. A token never
@@ -100,6 +117,45 @@ failed checks per minute per client address (HTTP 429 with `Retry-After`).
 
 The Nuxt server keeps the session token, the email challenge ID, and the Yandex flow ID in
 httpOnly cookies. The browser never sees the service.
+
+## Diary lists
+
+Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.py). Schema:
+`005_diary_lists.sql`. Times in answers are ISO 8601 UTC.
+
+- Wine slug: `^[a-z0-9](?:[a-z0-9_-]{0,198}[a-z0-9])?$`, in a path and in a body. Date of a path:
+  `YYYY-MM-DD`.
+- Wine snapshot: a JSON object with the optional fields `name`, `producer`, `color`, `sugar`,
+  `region` (1–200 characters each) and `grapes` (at most 12 strings of 1–80 characters), at
+  most 2,048 bytes of compact UTF-8 JSON. Another key, a longer value, or a larger object gets
+  HTTP 422. A newer snapshot replaces the stored one. An empty object or no snapshot keeps it.
+  The service keeps the snapshot so the lists render when the catalog is not available.
+- `HistoryItem`: `slug`, `wine` (the snapshot or `null`), `first_met_at`, `last_met_at`,
+  `days_count`, `sources` (the distinct sources of the dates, in the order `photo`, `shelf`,
+  `telegram`, `max`), `saved_status` (`null` when not saved).
+- `SavedItem`: `slug`, `wine`, `status`, `source`, `added_at`, `updated_at`, `in_history`.
+- When one list has no snapshot of a wine, the answer shows the snapshot of the other list.
+- Day: the calendar day in Europe/Moscow. Without the time zone database, the service uses
+  UTC+3 (Moscow has no daylight saving time since 2014).
+- Record: a new day adds a date (`recorded`, with `met_on`). The same day keeps the first source
+  and time and changes only the snapshot (`already`, with `met_on`). The switch off: `off`, and
+  nothing is stored. A wine gets the earliest and the latest time of its dates.
+- Removal of a date updates these times. The last date removes the wine. A saved wine stays
+  when it leaves the history.
+- `PUT` of a saved wine keeps `source` and `added_at`. It changes `status`, `updated_at`, and
+  the snapshot when the body has one. Saved sources: `photo`, `shelf`, `lineup`, `dinner_lens`,
+  `history`.
+- Bots: the consumer gives the messenger (`telegram-bot` → `telegram`, `max-bot` → `max`).
+  `user_id` is the Telegram or MAX user ID of a linked identity. A chat without a linked diary
+  gets `not_linked` with HTTP 200. `undo` removes today's date. `replaces` is the wine that the
+  person rejected before they selected this one: today's date of it goes in the same
+  transaction, also when the switch is off.
+- `GET /v1/app/wines` item: `slug`, `name`, `producer`, `color`, `sugar` (from the snapshot or
+  `null`), `first_met_at`, `last_met_at`, `days` (the number of dates), `sources`,
+  `saved_status`. The cursor is opaque: it holds `last_met_at` and the slug of the last item in
+  at most 184 base64url characters.
+- The log has event names and sources only. Slugs go to the debug level. User IDs never go to
+  the log.
 
 ## Deployment
 
@@ -129,8 +185,13 @@ Duplicate accounts made before the same-email rule. Back up the database first, 
 docker exec svoe-vino-lab-account-prod chto-za-vino-account merge --keep <username> --remove <username>
 ```
 
-The command moves the login methods of `--remove` to `--keep` and deletes `--remove` with its
-sessions. It changes nothing when both accounts have a login method of the same provider.
+The command moves the login methods and the diary lists of `--remove` to `--keep` and deletes
+`--remove` with its sessions. It changes nothing when both accounts have a login method of the
+same provider. History: the union of the dates; for a date in both accounts, the date with the
+earlier time stays; each wine gets the earliest first time, the latest last time, and the
+snapshot of `--keep` (or of `--remove` when `--keep` has none). Saved wines: for a wine in both
+accounts, the row with the later `updated_at` stays. The switch of `--keep` stays. The list
+limits apply again at the next record or save.
 
 Backup. The image has no `sqlite3` program; the service has a command:
 

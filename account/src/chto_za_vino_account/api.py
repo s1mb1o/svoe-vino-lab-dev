@@ -11,21 +11,23 @@ functions that create_app defines locally.
 import asyncio
 import contextlib
 import ipaddress
+import json
 import logging
 import re
 import time
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Self
 
 import httpx
 from fastapi import Depends, FastAPI, Header, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .config import Settings
 from .db import Database
+from .diary import DAY_PATTERN, SLUG_PATTERN, SNAPSHOT_BYTES, Diary
 from .mailer import Dispatcher, Mailer, ThreadDispatcher, build_mailer
 from .service import (
     AccountError,
@@ -98,6 +100,69 @@ class AppTokenCreate(Strict):
     lifetime_days: Literal[30, 90, 365] = 90
 
 
+# ------------------------------------------------------------- diary lists (plan 07)
+
+Slug = Annotated[str, Field(pattern=SLUG_PATTERN)]
+SnapshotText = Annotated[str, Field(min_length=1, max_length=200)]
+Grape = Annotated[str, Field(min_length=1, max_length=80)]
+SlugPath = Annotated[str, Path(pattern=SLUG_PATTERN)]
+DayPath = Annotated[str, Path(pattern=DAY_PATTERN)]
+
+
+class WineSnapshot(Strict):
+    """Card data that the service keeps with a wine, so a list renders without the catalog."""
+
+    name: SnapshotText | None = None
+    producer: SnapshotText | None = None
+    color: SnapshotText | None = None
+    sugar: SnapshotText | None = None
+    region: SnapshotText | None = None
+    grapes: Annotated[list[Grape], Field(max_length=12)] | None = None
+
+    def stored(self) -> str | None:
+        """Compact JSON text, or None when the snapshot has no field."""
+        data = self.model_dump(exclude_none=True)
+        return json.dumps(data, ensure_ascii=False, separators=(",", ":")) if data else None
+
+    @model_validator(mode="after")
+    def small_enough(self) -> Self:
+        if len((self.stored() or "").encode("utf-8")) > SNAPSHOT_BYTES:
+            raise ValueError("The wine snapshot is too large")
+        return self
+
+
+def stored(snapshot: WineSnapshot | None) -> str | None:
+    return snapshot.stored() if snapshot else None
+
+
+class MeUpdate(Strict):
+    save_history: bool = Field(strict=True)
+
+
+class HistoryRecord(Strict):
+    slug: Slug
+    source: Literal["photo", "shelf"]
+    wine_snapshot: WineSnapshot | None = None
+
+
+class SavedPut(Strict):
+    status: Literal["not_tasted", "want", "liked", "disliked"]
+    source: Literal["photo", "shelf", "lineup", "dinner_lens", "history"]
+    wine_snapshot: WineSnapshot | None = None
+
+
+class BotHistory(Strict):
+    user_id: int = Field(gt=0, lt=2**53)
+    slug: Slug
+    wine_snapshot: WineSnapshot | None = None
+    replaces: Slug | None = None
+
+
+class BotHistoryUndo(Strict):
+    user_id: int = Field(gt=0, lt=2**53)
+    slug: Slug
+
+
 def create_app(
     settings: Settings,
     *,
@@ -111,6 +176,7 @@ def create_app(
     http = http or httpx.Client(follow_redirects=False)
     yandex = YandexClient(settings.yandex, http) if settings.yandex else None
     service = AccountService(settings, db, dispatcher, yandex, clock)
+    diary = Diary(db, clock)
     networks = tuple(ipaddress.ip_network(item, strict=False) for item in settings.allowed_networks)
 
     @asynccontextmanager
@@ -143,6 +209,7 @@ def create_app(
         openapi_url=None,
     )
     app.state.service = service
+    app.state.diary = diary
 
     @app.middleware("http")
     async def guard(request: Request, call_next: Callable[[Request], Any]) -> Response:
@@ -194,6 +261,8 @@ def create_app(
 
     web = Depends(only("web"))
     telegram_bot = Depends(only("telegram-bot"))
+    # Both bots record history. The consumer name gives the messenger (plan 07).
+    any_bot = only("telegram-bot", "max-bot")
 
     def session_token(x_session_token: Annotated[str, Header()] = "") -> str:
         if not x_session_token or len(x_session_token) > 128:
@@ -311,8 +380,7 @@ def create_app(
         service.logout(token)
         return Response(status_code=204)
 
-    @app.get("/v1/me", dependencies=[web])
-    def me(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+    def me_view(session: Session) -> dict[str, Any]:
         return {
             "user": service.user_view(session.user_id),
             "session": {
@@ -320,6 +388,17 @@ def create_app(
                 "expires_at": iso(session.expires_at),
             },
         }
+
+    @app.get("/v1/me", dependencies=[web])
+    def me(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return me_view(session)
+
+    @app.patch("/v1/me", dependencies=[web])
+    def update_me(
+        body: MeUpdate, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, Any]:
+        diary.set_save_history(session.user_id, body.save_history)
+        return me_view(session)
 
     @app.delete("/v1/me", dependencies=[web], status_code=204)
     def delete_me(session: Annotated[Session, Depends(current_session)]) -> Response:
@@ -347,6 +426,65 @@ def create_app(
     def telegram_link(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
         code, link, ttl = service.telegram_link_start(session)
         return {"code": code, "deep_link": link, "expires_in": ttl}
+
+    # ------------------------------------------------- diary lists (plan 07, #71, #64)
+
+    @app.get("/v1/me/history", dependencies=[web])
+    def history(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return diary.history(session.user_id)
+
+    @app.get("/v1/me/history/{slug}", dependencies=[web])
+    def history_item(
+        slug: SlugPath, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, Any]:
+        return diary.history_item(session.user_id, slug)
+
+    @app.post("/v1/me/history", dependencies=[web])
+    def history_record(
+        body: HistoryRecord, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, str]:
+        return diary.record(session.user_id, body.slug, body.source, stored(body.wine_snapshot))
+
+    @app.delete("/v1/me/history/{slug}/days/{met_on}", dependencies=[web], status_code=204)
+    def history_remove_day(
+        slug: SlugPath, met_on: DayPath, session: Annotated[Session, Depends(current_session)]
+    ) -> Response:
+        diary.remove_day(session.user_id, slug, met_on)
+        return Response(status_code=204)
+
+    @app.delete("/v1/me/history/{slug}", dependencies=[web], status_code=204)
+    def history_remove_wine(
+        slug: SlugPath, session: Annotated[Session, Depends(current_session)]
+    ) -> Response:
+        diary.remove_wine(session.user_id, slug)
+        return Response(status_code=204)
+
+    @app.delete("/v1/me/history", dependencies=[web], status_code=204)
+    def history_clear(session: Annotated[Session, Depends(current_session)]) -> Response:
+        diary.clear_history(session.user_id)
+        return Response(status_code=204)
+
+    @app.get("/v1/me/saved", dependencies=[web])
+    def saved(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return diary.saved(session.user_id)
+
+    @app.get("/v1/me/saved/slugs", dependencies=[web])
+    def saved_slugs(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return diary.saved_slugs(session.user_id)
+
+    @app.put("/v1/me/saved/{slug}", dependencies=[web])
+    def save(
+        slug: SlugPath, body: SavedPut, session: Annotated[Session, Depends(current_session)]
+    ) -> Response:
+        item, created = diary.save(
+            session.user_id, slug, body.status, body.source, stored(body.wine_snapshot)
+        )
+        return JSONResponse(item, status_code=201 if created else 200)
+
+    @app.delete("/v1/me/saved/{slug}", dependencies=[web], status_code=204)
+    def unsave(slug: SlugPath, session: Annotated[Session, Depends(current_session)]) -> Response:
+        diary.unsave(session.user_id, slug)
+        return Response(status_code=204)
 
     # ---------------------------------------------------- application tokens (#65)
 
@@ -385,7 +523,7 @@ def create_app(
         cursor: Annotated[str | None, Query(max_length=200, pattern=r"^[A-Za-z0-9_-]+$")] = None,
         limit: Annotated[int, Query(ge=1, le=50)] = 20,
     ) -> dict[str, Any]:
-        return service.app_wines(user_id, cursor, limit)
+        return diary.app_wines(user_id, cursor, limit)
 
     # ------------------------------------------------------------------ bots
 
@@ -402,6 +540,18 @@ def create_app(
     def telegram_unlink(body: TelegramUser) -> dict[str, str]:
         removed = service.telegram_unlink(body.telegram_user_id)
         return {"status": "unlinked" if removed else "not_linked"}
+
+    @app.post("/v1/bot/history")
+    def bot_history(body: BotHistory, bot: Annotated[str, Depends(any_bot)]) -> dict[str, str]:
+        return diary.bot_record(
+            bot, body.user_id, body.slug, stored(body.wine_snapshot), body.replaces
+        )
+
+    @app.post("/v1/bot/history/undo")
+    def bot_history_undo(
+        body: BotHistoryUndo, bot: Annotated[str, Depends(any_bot)]
+    ) -> dict[str, str]:
+        return diary.bot_undo(bot, body.user_id, body.slug)
 
     return app
 

@@ -17,7 +17,7 @@ Rules for secrets (`chtozavino-deploy` rules 2 and 10):
 - Do not print a secret. Load the environment file into the shell; do not `cat` it.
 - Do not paste a token, a code, or a session into a chat with an AI agent.
 - The session tokens and codes of these tests belong to test accounts. Delete the test
-  accounts at the end (test 9.1).
+  accounts at the end (test 10.1).
 
 Steps:
 
@@ -28,8 +28,8 @@ Steps:
    `.env` with `ACCOUNT_IMAGE=svoe-vino-lab-account:dev`, `config/` (mode 0700), and `data/`
    (mode 0700).
 3. Fill `config/account.env` (mode 0600) from `.env.example`:
-   - new secrets for `ACCOUNT_WEB_TOKEN`, `ACCOUNT_TELEGRAM_TOKEN`, `ACCOUNT_CODE_KEY`
-     (`openssl rand -hex 32` each);
+   - new secrets for `ACCOUNT_WEB_TOKEN`, `ACCOUNT_TELEGRAM_TOKEN`, `ACCOUNT_MAX_TOKEN`,
+     `ACCOUNT_CODE_KEY` (`openssl rand -hex 32` each);
    - the REG.RU SMTP settings (#52) and `ACCOUNT_ALLOWED_NETWORKS=172.16.0.0/12`;
    - the Compose file sets `ACCOUNT_ENVIRONMENT=production`, the database path, the host,
      and the port. Values of these keys in `config/account.env` have no effect;
@@ -214,12 +214,41 @@ Run these when the parts exist. Until then, mark them `BLOCKED`.
   press links nothing more.
 - [ ] **8.4 Accessibility** of the account pages with VoiceOver and TalkBack (#35).
 
-## 9. Cleanup
+## 9. Diary lists (plan 07)
 
-- [ ] **9.1 Delete the test accounts.** For each test account, `web -X DELETE $A/v1/me -H "X-Session-Token: $S"`
+Use the session `S` of test 2.3. `W=wine-slug-of-a-real-catalog-wine`.
+
+- [ ] **9.1 Migration.** Start the new image on the data of the previous image. The log has no
+  error. `web $A/v1/me -H "X-Session-Token: $S"` shows `"save_history":true`.
+- [ ] **9.2 Record and list.** `web $A/v1/me/history -H "X-Session-Token: $S"
+  -d "{\"slug\":\"$W\",\"source\":\"photo\"}"` gives `recorded` and today's Moscow date.
+  A second call gives `already`. `web $A/v1/me/history -H "X-Session-Token: $S"` (GET) lists the
+  wine with `days_count` 1.
+- [ ] **9.3 Moscow midnight (real time).** Record a wine at 23:58 Moscow time and again at 00:02.
+  The second call gives `recorded` with the new date. The wine has two dates.
+- [ ] **9.4 Switch.** `web -X PATCH $A/v1/me -H "X-Session-Token: $S" -d '{"save_history":false}'`
+  shows `"save_history":false`. A record gives `off`. Turn the switch on again.
+- [ ] **9.5 Saved.** `web -X PUT $A/v1/me/saved/$W -H "X-Session-Token: $S"
+  -d '{"status":"want","source":"history"}'` gives HTTP 201; the same call with `"liked"` gives
+  200 with the first `added_at`. `DELETE /v1/me/history/$W` keeps the saved wine with
+  `"in_history":false`.
+- [ ] **9.6 Telegram chat** (needs the Telegram bot with plan 07 and a linked Telegram). Send a
+  bottle photo to the bot. The history shows the wine with the source `telegram`. «❌ Не совпало»
+  removes the date of today. A selected alternative is recorded, and the rejected wine has no
+  date of today.
+- [ ] **9.7 MAX chat** (needs the MAX bot with plan 07, `ACCOUNT_MAX_TOKEN` in both
+  environments, and a MAX identity linked through the mini app). Send a bottle photo to the MAX
+  bot. The history shows the wine with the source `max`. If the bot log shows `not_linked`, the
+  mini-app user ID is not the Bot API user ID (plan 05): record it in the results.
+- [ ] **9.8 Logs.** `docker logs <container> 2>&1 | grep -c "$W"` prints `0`. The log has only
+  event names, such as "History recorded (photo)" and "Saved wine added (history)".
+
+## 10. Cleanup
+
+- [ ] **10.1 Delete the test accounts.** For each test account, `web -X DELETE $A/v1/me -H "X-Session-Token: $S"`
   gives HTTP 204. `GET /v1/me` then gives `session_invalid`.
-- [ ] **9.2 Remove the debug Redirect URI** from the Yandex OAuth app if it is no longer needed.
-- [ ] **9.3 Remove the test backups** from `data/backups/`.
+- [ ] **10.2 Remove the debug Redirect URI** from the Yandex OAuth app if it is no longer needed.
+- [ ] **10.3 Remove the test backups** from `data/backups/`.
 
 ## Results
 

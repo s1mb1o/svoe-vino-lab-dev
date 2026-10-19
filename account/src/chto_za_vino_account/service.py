@@ -339,6 +339,7 @@ class AccountService:
             "id": user["id"],
             "username": user["username"],
             "created_at": iso(user["created_at"]),
+            "save_history": bool(user["save_history"]),
             "identities": [
                 {
                     "provider": item["provider"],
@@ -819,11 +820,6 @@ class AccountService:
             "created_at": iso(user["created_at"]),
             "preferences": None,
         }
-
-    def app_wines(self, user_id: str, cursor: str | None, limit: int) -> dict[str, Any]:
-        """Found and rated wines, newest first. The diary history of #48 does not exist yet."""
-        self.app_profile(user_id)
-        return {"items": [], "next_cursor": None}
 
     # -------------------------------------------------------------------- max
 

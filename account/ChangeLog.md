@@ -1,5 +1,31 @@
 # ChangeLog
 
+## 2026-10-20 — History and saved wines (plan 07, #71, #64)
+
+Owner request: a history of every wine that a person matched on the site and in the linked chats,
+and a second list «Сохранённые» with four statuses. Plan: `../docs/plans/07_diary-history-and-saved.md`.
+
+- Schema `005_diary_lists.sql`: `users.save_history` (on by default), `history_wines`,
+  `history_days`, `saved_wines`. Account deletion removes both lists (`ON DELETE CASCADE`).
+- New module `diary.py`. Site routes (consumer `web`, session): `PATCH /v1/me` (`save_history`),
+  `GET`/`POST`/`DELETE /v1/me/history`, `GET`/`DELETE /v1/me/history/{slug}`,
+  `DELETE /v1/me/history/{slug}/days/{met_on}`, `GET /v1/me/saved`, `GET /v1/me/saved/slugs`,
+  `PUT`/`DELETE /v1/me/saved/{slug}`. `GET /v1/me` shows `save_history`.
+- One date for each wine and calendar day in Europe/Moscow. The first source and time of the day
+  stay. A repeat on the same day changes only the snapshot. Limits: 2,000 wines and 366 dates for
+  each wine (the oldest record goes), 500 saved wines (409 `saved_full`).
+- Bot routes `POST /v1/bot/history` and `POST /v1/bot/history/undo` for `telegram-bot` and
+  `max-bot`. The consumer gives the messenger. A chat without a linked diary gets `not_linked`
+  with HTTP 200. `replaces` removes today's date of the rejected wine. These are the first routes
+  of the `max-bot` consumer.
+- `GET /v1/app/wines` returns the history with an opaque cursor of at most 184 characters
+  (`last_met_at` and the slug). A bad cursor gets 400 `invalid_cursor`.
+- Wine snapshots: known keys only, strings of 1–200 characters, at most 12 grapes of 1–80
+  characters, at most 2,048 bytes of JSON; else 422 with the field name only.
+- Without the time zone database, the service uses UTC+3 for Moscow.
+- The operator command `merge` moves both lists.
+- 42 new tests (141 in total).
+
 ## 2026-10-20 — Code email in HTML
 
 Owner request: show the code as clearly as the Link (Stripe) email does.
