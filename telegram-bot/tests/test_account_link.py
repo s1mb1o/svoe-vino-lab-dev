@@ -271,9 +271,9 @@ def test_settings_read_the_account_endpoint(monkeypatch, tmp_path):
     monkeypatch.delenv("BOT_ACCOUNT_ENDPOINT", raising=False)
     assert Settings.from_env().account_endpoint == ""
     monkeypatch.setenv("BOT_ACCOUNT_ENDPOINT", "http://192.168.86.14:28008/")
-    with pytest.raises(ValueError, match="BOT_ACCOUNT_TOKEN"):
+    with pytest.raises(ValueError, match="ACCOUNT_TELEGRAM_TOKEN"):
         Settings.from_env()
-    monkeypatch.setenv("BOT_ACCOUNT_TOKEN", TOKEN)
+    monkeypatch.setenv("ACCOUNT_TELEGRAM_TOKEN", TOKEN)
     settings = Settings.from_env()
     assert (settings.account_endpoint, settings.account_token) == (
         "http://192.168.86.14:28008",

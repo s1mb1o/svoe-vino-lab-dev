@@ -332,7 +332,7 @@ def _account_settings() -> tuple[str, str]:
         raise ValueError("BOT_ACCOUNT_ENDPOINT must be an HTTP URL")
     if parts.username or parts.password or parts.query or parts.fragment:
         raise ValueError("BOT_ACCOUNT_ENDPOINT must not contain credentials, a query, or a fragment")
-    return endpoint.rstrip("/"), _required_secret("BOT_ACCOUNT_TOKEN")
+    return endpoint.rstrip("/"), _required_secret("ACCOUNT_TELEGRAM_TOKEN")
 
 
 @dataclass(frozen=True, slots=True)

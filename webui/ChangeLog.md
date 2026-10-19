@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Account token name
+
+- The server reads the account service token from `ACCOUNT_WEB_TOKEN`, the same name as in the
+  account service. The old `NUXT_ACCOUNT_TOKEN` still works when `ACCOUNT_WEB_TOKEN` is empty.
+
 ## 2026-10-19 — iPhone landing status note
 
 - Remove the TestFlight preparation note below the release facts.

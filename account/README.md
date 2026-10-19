@@ -49,7 +49,10 @@ uv run chto-za-vino-account max-key < file-with-the-bot-token
 ## Configuration
 
 See [`.env.example`](.env.example). Each secret has at least 32 characters, and all secrets
-are distinct. Leave `YANDEX_CLIENT_ID`, `MAX_WEBAPP_KEY`, or `TELEGRAM_BOT_USERNAME` empty to
+are distinct. A consumer token (`ACCOUNT_WEB_TOKEN`, `ACCOUNT_TELEGRAM_TOKEN`, `ACCOUNT_MAX_TOKEN`)
+is a random secret. The consumer reads it under the same name: the website, the Telegram bot, the
+MAX bot. It is not a bot token of Telegram or MAX. The service refuses to start when a value is set
+under the old names `ACCOUNT_TELEGRAM_BOT_TOKEN` or `ACCOUNT_MAX_BOT_TOKEN`. Leave `YANDEX_CLIENT_ID`, `MAX_WEBAPP_KEY`, or `TELEGRAM_BOT_USERNAME` empty to
 turn that provider off. The service refuses to start with an invalid value.
 
 Yandex ID setup (owner): register an app of the type «Для авторизации пользователей» at

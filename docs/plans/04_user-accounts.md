@@ -400,7 +400,7 @@ MCP (`mcp/`):
   `chtozavino-deploy` README; slot 07 belongs to dinner-lens.
   Publish on `127.0.0.1` only.
 - Claudette: a new reverse SSH tunnel to `127.0.0.1:28008`, with its own key and
-  `PermitListen` for one port. Nuxt reads `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`.
+  `PermitListen` for one port. Nuxt reads `NUXT_ACCOUNT_ENDPOINT` and `ACCOUNT_WEB_TOKEN`.
 - Access: the account pages stay behind the HTTP Basic of `chtozavino.ru` (owner decision,
   2026-10-19). Only people with the site credentials can use them until the site is public.
 - Put host files in the workspace `deploy/` directory, not in this repository.

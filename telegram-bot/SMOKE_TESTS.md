@@ -30,8 +30,8 @@
 
 ## «Винный дневник» link
 
-- Set `BOT_ACCOUNT_ENDPOINT` and `BOT_ACCOUNT_TOKEN`. Set `TELEGRAM_BOT_USERNAME` and
-  `ACCOUNT_TELEGRAM_BOT_TOKEN` in the account service.
+- Set `BOT_ACCOUNT_ENDPOINT` and `ACCOUNT_TELEGRAM_TOKEN`. Set `TELEGRAM_BOT_USERNAME` and
+  the same `ACCOUNT_TELEGRAM_TOKEN` in the account service.
 - On `/account` select «Привязать мессенджер» → «Telegram» → «Открыть Telegram».
 - Confirm that the bot names the diary and shows «Привязать» and «Отмена».
 - Select «Привязать». Confirm «Готово: Telegram привязан к дневнику …».

@@ -28,7 +28,7 @@ Steps:
    `.env` with `ACCOUNT_IMAGE=svoe-vino-lab-account:dev`, `config/` (mode 0700), and `data/`
    (mode 0700).
 3. Fill `config/account.env` (mode 0600) from `.env.example`:
-   - new secrets for `ACCOUNT_WEB_TOKEN`, `ACCOUNT_TELEGRAM_BOT_TOKEN`, `ACCOUNT_CODE_KEY`
+   - new secrets for `ACCOUNT_WEB_TOKEN`, `ACCOUNT_TELEGRAM_TOKEN`, `ACCOUNT_CODE_KEY`
      (`openssl rand -hex 32` each);
    - the REG.RU SMTP settings (#52) and `ACCOUNT_ALLOWED_NETWORKS=172.16.0.0/12`;
    - the Compose file sets `ACCOUNT_ENVIRONMENT=production`, the database path, the host,

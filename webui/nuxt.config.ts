@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     dinnerLensApiToken: '',
     // «Винный дневник». An empty endpoint turns the account feature off (no header link, no calls).
     accountEndpoint: '',
+    // Old name NUXT_ACCOUNT_TOKEN. The server reads ACCOUNT_WEB_TOKEN first (server/utils/account-runtime.ts).
     accountToken: '',
     accountPublicOrigin: 'https://chtozavino.ru',
     // MAX mini app (plan 05). The fixed deep link https://max.ru/<bot>?startapp=account, and the

@@ -267,7 +267,7 @@ The example environment uses these service endpoints for `gx10`:
 | `BOT_HTTP_API_RATE_WINDOW_SECONDS` | `3600` |
 | `BOT_HTTP_API_MAX_IN_FLIGHT` | `2` |
 | `BOT_ACCOUNT_ENDPOINT` | Empty: the diary link is off. Account service base URL, for example `http://192.168.86.14:28008`. |
-| `BOT_ACCOUNT_TOKEN` | Required with `BOT_ACCOUNT_ENDPOINT`: the `telegram-bot` consumer token of the account service, at least 32 characters. |
+| `ACCOUNT_TELEGRAM_TOKEN` | Required with `BOT_ACCOUNT_ENDPOINT`: a random secret of at least 32 characters, the same name and value as in the account service. It is not `TELEGRAM_BOT_TOKEN`. |
 
 ### «Винный дневник» link
 

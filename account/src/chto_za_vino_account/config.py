@@ -15,6 +15,12 @@ from dataclasses import dataclass, field
 MIN_SECRET_LENGTH = 32
 EMAIL_BACKENDS = ("smtp", "console", "memory")
 SMTP_SECURITY = ("ssl", "starttls")
+# Old names of the bot consumer tokens. A value under an old name stops the start, so that a
+# configuration made from old instructions does not turn a bot off without a message.
+RENAMED = {
+    "ACCOUNT_MAX_BOT_TOKEN": "ACCOUNT_MAX_TOKEN",
+    "ACCOUNT_TELEGRAM_BOT_TOKEN": "ACCOUNT_TELEGRAM_TOKEN",
+}
 
 
 @dataclass(frozen=True)
@@ -73,6 +79,10 @@ class Settings:
 
         def get(name: str, default: str = "") -> str:
             return source.get(name, default).strip()
+
+        for old, new in RENAMED.items():
+            if get(old):
+                raise ValueError(f"{old} was renamed to {new}")
 
         environment = get("ACCOUNT_ENVIRONMENT", "development")
         if environment not in ("development", "production"):
@@ -146,8 +156,8 @@ class Settings:
             port=_positive_int(get("ACCOUNT_PORT", "28008"), "ACCOUNT_PORT"),
             allowed_networks=networks,
             web_token=get("ACCOUNT_WEB_TOKEN"),
-            max_bot_token=get("ACCOUNT_MAX_BOT_TOKEN"),
-            telegram_bot_token=get("ACCOUNT_TELEGRAM_BOT_TOKEN"),
+            max_bot_token=get("ACCOUNT_MAX_TOKEN"),
+            telegram_bot_token=get("ACCOUNT_TELEGRAM_TOKEN"),
             code_key=get("ACCOUNT_CODE_KEY").encode("utf-8"),
             consent_version=_required(get("ACCOUNT_CONSENT_VERSION"), "ACCOUNT_CONSENT_VERSION"),
             terms_version=_required(get("ACCOUNT_TERMS_VERSION"), "ACCOUNT_TERMS_VERSION"),
@@ -165,8 +175,8 @@ class Settings:
     def validate(self) -> None:
         secrets = {
             "ACCOUNT_WEB_TOKEN": self.web_token,
-            "ACCOUNT_MAX_BOT_TOKEN": self.max_bot_token,
-            "ACCOUNT_TELEGRAM_BOT_TOKEN": self.telegram_bot_token,
+            "ACCOUNT_MAX_TOKEN": self.max_bot_token,
+            "ACCOUNT_TELEGRAM_TOKEN": self.telegram_bot_token,
             "ACCOUNT_CODE_KEY": self.code_key.decode("utf-8"),
         }
         for name in ("ACCOUNT_WEB_TOKEN", "ACCOUNT_CODE_KEY"):

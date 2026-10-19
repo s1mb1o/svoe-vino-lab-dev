@@ -1,5 +1,15 @@
 # ChangeLog
 
+## 2026-10-19 — One name per consumer token
+
+Owner: `ACCOUNT_TELEGRAM_BOT_TOKEN` read like the Telegram bot token; keep one name for each token in
+the service and in its consumer.
+
+- `ACCOUNT_TELEGRAM_BOT_TOKEN` → `ACCOUNT_TELEGRAM_TOKEN`, `ACCOUNT_MAX_BOT_TOKEN` → `ACCOUNT_MAX_TOKEN`.
+  `ACCOUNT_WEB_TOKEN` keeps its name. The website and the Telegram bot read the same names. A value
+  under an old name stops the start with a message that names the new one.
+- `.env.example` and `README.md` say that a consumer token is a random secret, not a bot token.
+
 ## 2026-10-19 — No recent-login rule; sessions without expiry
 
 Owner decision: "remove 15 minutes period for account operations", "only ask confirmations",

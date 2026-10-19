@@ -88,8 +88,8 @@ def base_env(tmp_path: Any) -> dict[str, str]:
     return {
         "ACCOUNT_DATABASE": str(tmp_path / "account.sqlite3"),
         "ACCOUNT_WEB_TOKEN": WEB_TOKEN,
-        "ACCOUNT_TELEGRAM_BOT_TOKEN": TELEGRAM_TOKEN,
-        "ACCOUNT_MAX_BOT_TOKEN": MAX_BOT_TOKEN,
+        "ACCOUNT_TELEGRAM_TOKEN": TELEGRAM_TOKEN,
+        "ACCOUNT_MAX_TOKEN": MAX_BOT_TOKEN,
         "ACCOUNT_CODE_KEY": CODE_KEY,
         "ACCOUNT_CONSENT_VERSION": "consent-1",
         "ACCOUNT_TERMS_VERSION": "terms-1",

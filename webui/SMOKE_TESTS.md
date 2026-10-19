@@ -162,7 +162,7 @@ Verified locally on 2026-10-19: 40 cases passed in Chromium and WebKit, with bot
 
 ## «Винный дневник»
 
-1. Set `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`. Confirm «Дневник» in the header on `/`, `/shelf`, `/ideas`, and `/android`. On a 360 px phone confirm the book icon and no horizontal scroll.
+1. Set `NUXT_ACCOUNT_ENDPOINT` and `ACCOUNT_WEB_TOKEN`. Confirm «Дневник» in the header on `/`, `/shelf`, `/ideas`, and `/android`. On a 360 px phone confirm the book icon and no horizontal scroll.
 2. Open `/account`. Request a code for a test address, enter it, choose a username, and confirm that «Создать дневник» stays disabled until both boxes are checked. Confirm «Вы вошли как …».
 3. In the browser storage panel confirm `__Host-cv_session` with HttpOnly, Secure, and SameSite=Lax, and no account token in `localStorage`.
 4. Reload: the session stays. «Выйти»: the cookie is gone. Request a second code within a minute: «Слишком много попыток…». Enter a wrong code: «Неверный код. Осталось попыток: N.»

@@ -2,6 +2,9 @@
 
 ## 2026-10-19
 
+- `BOT_ACCOUNT_TOKEN` is now `ACCOUNT_TELEGRAM_TOKEN`: the same name and value as in the account
+  service. It is not `TELEGRAM_BOT_TOKEN`.
+
 - Service rule 10: the catalogue result images come from `https://chtozavino.ru` (plan
   `../docs/plans/06_wine-images.md`, owner decision of 2026-10-19), and from
   `https://api.vino-svoe.ru` until each matcher gives the new addresses. The code is in

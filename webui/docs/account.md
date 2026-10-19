@@ -16,7 +16,7 @@ Service: [`../../account/README.md`](../../account/README.md).
 | Variable | Meaning |
 | --- | --- |
 | `NUXT_ACCOUNT_ENDPOINT` | Base URL of the account service, for example `http://127.0.0.1:28008`. Empty: the feature is off. |
-| `NUXT_ACCOUNT_TOKEN` | Bearer token of the `web` consumer of the service. At least 32 characters. |
+| `ACCOUNT_WEB_TOKEN` | Bearer token of the `web` consumer: a random secret of at least 32 characters, the same name and value as in the account service. The old name `NUXT_ACCOUNT_TOKEN` still works when `ACCOUNT_WEB_TOKEN` is empty. |
 | `NUXT_ACCOUNT_PUBLIC_ORIGIN` | Public origin of the site. Default `https://chtozavino.ru`. It builds the Yandex Redirect URI and is an allowed `Origin`. |
 
 The browser never gets the endpoint or the token.

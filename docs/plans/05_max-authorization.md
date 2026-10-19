@@ -275,7 +275,8 @@ Routes:
 - DNS: the `A` record for `max.chtozavino.ru` points to Claudette (the VDS that serves
   `chtozavino.ru`). Caddy gets the certificate.
 - gx10: the MAX bot reaches the account service on a shared Docker network. The bot reads
-  `ACCOUNT_ENDPOINT` and `ACCOUNT_TOKEN`.
+  `BOT_ACCOUNT_ENDPOINT` and `ACCOUNT_MAX_TOKEN` (the same name and value as in the account
+  service; not `MAX_BOT_TOKEN`).
 - MAX: connect `https://max.chtozavino.ru/` in the bot settings (owner action).
 - Put host files in the workspace `deploy/` directory, not in this repository.
 - Get owner approval for every production deploy and restart.
