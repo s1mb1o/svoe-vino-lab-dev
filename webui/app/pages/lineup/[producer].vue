@@ -23,11 +23,11 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
     <template v-if="line">
     <header class="lineup-heading">
       <div><p class="step-label">ПУТЕВОДИТЕЛЬ ПО ПРОИЗВОДИТЕЛЮ</p><h1>Карта линейки {{ line.producer.name }}</h1><p>{{ line.scope.label }}. Выберите линейку, затем познакомьтесь с конкретным продуктом.</p></div>
-      <NuxtLink to="/" class="button secondary">К сканеру<AppIcon name="arrow" /></NuxtLink>
+      <div class="lineup-heading-links"><NuxtLink to="/lineup" class="button secondary">Все карты производителей</NuxtLink><NuxtLink to="/" class="button secondary">К сканеру<AppIcon name="arrow" /></NuxtLink></div>
     </header>
     <form class="lineup-producer-picker" @submit.prevent="changeProducer"><label><span>Производитель</span><select v-model="selectedProducer"><option v-for="item in PRODUCT_LINE_INDEX.producers" :key="item.producer.id" :value="item.producer.id">{{ item.producer.name }}</option></select></label><button type="submit" class="button secondary">Открыть карту<AppIcon name="arrow" /></button></form>
     <p v-if="initialSlug" class="lineup-context">{{ unknownSlug ? 'Вино по этой ссылке не найдено в карте. Вы можете изучить линейки производителя.' : 'Вино выбрано по ссылке, без распознавания.' }}</p>
-    <ProductLineMap :key="`${line.producer.id}:${initialSlug || 'overview'}`" :line="line" :initial-slug="initialSlug" :recognized="false" />
+    <ProductLineMap :key="`${line.producer.id}:${initialSlug || 'overview'}`" :line="line" :initial-slug="initialSlug" :recognized="false" layout="page" />
     </template>
     <section v-else class="lineup-heading"><div><h1>Карта производителя пока не подготовлена</h1><p>Выберите доступную карту.</p><NuxtLink v-for="item in PRODUCT_LINE_INDEX.producers" :key="item.producer.id" :to="`/lineup/${item.producer.id}`" class="button secondary">{{ item.producer.name }}</NuxtLink></div></section>
   </main>
@@ -39,6 +39,7 @@ useHead(() => ({ link: [{ rel: 'canonical', href: `https://chtozavino.ru/lineup/
 .lineup-heading h1 { font-size: clamp(28px, 3.3vw, 48px); line-height: 1.15; margin: 12px 0; }
 .lineup-heading p:not(.step-label), .lineup-context { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .lineup-heading .button { flex-shrink: 0; width: auto; }
+.lineup-heading-links { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
 .lineup-context { margin: 0 0 16px; }
 .lineup-producer-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 13px; }
 .lineup-producer-picker label { display: flex; align-items: center; gap: 12px; min-width: 0; }

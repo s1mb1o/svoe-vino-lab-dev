@@ -142,7 +142,8 @@ export default defineNuxtConfig({
     devOptions: { enabled: false },
   },
   routeRules: {
-    '/lineup/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
+    // The index /lineup is public. Each producer map stays a noindex review page.
+    '/lineup/*': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/hackaton': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/hackaton/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/wines': { redirect: { to: '/', statusCode: 308 } },

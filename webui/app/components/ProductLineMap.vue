@@ -7,7 +7,9 @@ const props = withDefaults(defineProps<{
   initialSlug?: string
   recognized?: boolean
   unmatchedWine?: Wine
-}>(), { recognized: false })
+  // `canvas` is the pan and zoom map of the guide dialog. `page` uses the page space of /lineup/<producer>.
+  layout?: 'canvas' | 'page'
+}>(), { recognized: false, layout: 'canvas' })
 
 const mapId = useId()
 const CANVAS_WIDTH = 1120
@@ -15,6 +17,7 @@ const MIN_ZOOM = .6
 const MAX_ZOOM = 1.4
 const mapRoot = ref<HTMLElement>()
 const viewport = ref<HTMLElement>()
+const toolbar = ref<HTMLElement>()
 const canvas = ref<HTMLElement>()
 const detailHeading = ref<HTMLElement>()
 const detailPanel = ref<HTMLElement>()
@@ -33,11 +36,14 @@ const selectedId = ref<string | null>(null)
 const selectedUnknown = ref(false)
 const expandedGroups = ref(new Set<string>())
 const showDetails = ref(true)
-const isMobile = ref(false)
+const popupDetails = ref(false)
 const mobileDetailsOpen = ref(false)
 const mobileDetailsTrigger = ref<HTMLElement>()
 const navigationGroup = ref('')
 const isDragging = ref(false)
+const pageLayout = computed(() => props.layout === 'page')
+// In the page layout, the toolbar sticks to the window top. Targets keep a gap below it.
+function stickyInset() { return (pageLayout.value ? toolbar.value?.offsetHeight ?? 0 : 0) + 16 }
 const initialProduct = computed(() => props.initialSlug ? findLineProduct(props.line, props.initialSlug) : undefined)
 const selectedProduct = computed(() => props.line.products.find(product => product.id === selectedId.value))
 const selectedGroup = computed(() => props.line.groups.find(group => group.id === selectedProduct.value?.group_id))
@@ -71,8 +77,8 @@ const catalogSnapshotDate = computed(() => {
   const date = props.line.scope.catalog_snapshot.match(/\d{4}-\d{2}-\d{2}/)?.[0]
   return date ? date.split('-').reverse().join('.') : props.line.scope.catalog_snapshot
 })
-const surfaceStyle = computed(() => ({ width: `${CANVAS_WIDTH * zoom.value}px`, height: `${canvasHeight.value * zoom.value}px` }))
-const canvasStyle = computed(() => ({ width: `${CANVAS_WIDTH}px`, transform: `scale(${zoom.value})` }))
+const surfaceStyle = computed(() => pageLayout.value ? undefined : { width: `${CANVAS_WIDTH * zoom.value}px`, height: `${canvasHeight.value * zoom.value}px` })
+const canvasStyle = computed(() => pageLayout.value ? undefined : { width: `${CANVAS_WIDTH}px`, transform: `scale(${zoom.value})` })
 let observer: ResizeObserver | undefined
 let pointer: { id: number; x: number; y: number; left: number; top: number; moved: boolean } | null = null
 let suppressClickUntil = 0
@@ -104,7 +110,7 @@ function mobileDialog() {
 }
 function containMobileFocus(event: FocusEvent) {
   const dialog = mobileDialog()
-  if (!isMobile.value || !dialog?.open || !document.hasFocus() || (event.target instanceof Node && dialog.contains(event.target))) return
+  if (!popupDetails.value || !dialog?.open || !document.hasFocus() || (event.target instanceof Node && dialog.contains(event.target))) return
   detailHeading.value?.focus({ preventScroll: true })
   restoreScroll(mobileScroll)
   // A programmatic focus call can scroll its target after dispatching focusin.
@@ -149,7 +155,7 @@ function detailBackdrop(event: MouseEvent) {
 }
 function trapMobileTab(event: KeyboardEvent) {
   const dialog = mobileDialog()
-  if (!isMobile.value || !dialog?.open || event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return
+  if (!popupDetails.value || !dialog?.open || event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return
   const controls = Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]'))
     .filter(element => element.tabIndex >= 0 && !element.matches(':disabled, [aria-disabled="true"]') && element.getClientRects().length > 0 && getComputedStyle(element).visibility === 'visible')
   const index = controls.findIndex(element => element === document.activeElement)
@@ -163,7 +169,7 @@ async function openMobileDetails(opener?: HTMLElement) {
   const generation = ++openGeneration
   await nextTick()
   const dialog = mobileDialog()
-  if (generation !== openGeneration || !isMobile.value || !dialog?.isConnected || (!selectedProduct.value && !activeUnknown.value)) return
+  if (generation !== openGeneration || !popupDetails.value || !dialog?.isConnected || (!selectedProduct.value && !activeUnknown.value)) return
   if (!dialog.open) {
     mobileOpener = opener || mobileDetailsTrigger.value
     mobileScroll = captureScroll()
@@ -177,13 +183,14 @@ async function openMobileDetails(opener?: HTMLElement) {
   restoreScroll(mobileScroll)
 }
 async function updateMobileLayout() {
-  const next = Boolean(mobileMedia?.matches)
-  if (next === isMobile.value) return
+  // The page layout always shows details in the popup. The canvas layout uses it up to 767 px.
+  const next = pageLayout.value || Boolean(mobileMedia?.matches)
+  if (next === popupDetails.value) return
   const hadDetailFocus = Boolean(detailPanel.value?.contains(document.activeElement))
   const wasOpen = mobileDetailsOpen.value
   const scroll = mobileScroll || captureScroll()
   closeMobileDetails(false)
-  isMobile.value = next
+  popupDetails.value = next
   if (!next && wasOpen) showDetails.value = true
   await nextTick()
   if (hadDetailFocus || wasOpen) {
@@ -227,8 +234,14 @@ async function centerElement(id: string, kind: 'product' | 'group' = 'product') 
   await document.fonts.ready
   measureCanvas()
   await nextTick()
-  const frame = viewport.value
   const element = mapElement(id, kind)
+  if (pageLayout.value) {
+    if (!element) return
+    const rect = element.getBoundingClientRect()
+    window.scrollTo({ left: window.scrollX, top: window.scrollY + rect.top - (kind === 'group' ? stickyInset() : Math.max(stickyInset(), (window.innerHeight - rect.height) / 2)), behavior: 'instant' })
+    return
+  }
+  const frame = viewport.value
   if (!frame || !element || !frame.clientWidth) return
   const frameRect = frame.getBoundingClientRect()
   const nodeRect = element.getBoundingClientRect()
@@ -249,6 +262,7 @@ async function restoreAnchor(id: string, previous?: { left: number; top: number 
   measureCanvas()
   await nextTick()
   const current = anchorPosition(id)
+  if (pageLayout.value && previous && current) { window.scrollBy({ left: 0, top: current.top - previous.top, behavior: 'instant' }); return }
   if (!previous || !current || !viewport.value) return
   viewport.value.scrollLeft += current.left - previous.left
   viewport.value.scrollTop += current.top - previous.top
@@ -264,7 +278,7 @@ async function toggleGroup(group: LineGroup, fromPreview = false) {
   if (fromPreview) mapElement(group.id, 'group')?.focus({ preventScroll: true })
 }
 function visibleGroupId() {
-  const frame = viewport.value?.getBoundingClientRect()
+  const frame = pageLayout.value ? { top: toolbar.value?.offsetHeight ?? 0, bottom: window.innerHeight, left: 0, right: window.innerWidth } : viewport.value?.getBoundingClientRect()
   if (!frame) return undefined
   return Array.from(canvas.value?.querySelectorAll<HTMLElement>('[data-group-container]') || [])
     .map(element => ({ element, rect: element.getBoundingClientRect() }))
@@ -278,7 +292,7 @@ async function toggleAllGroups() {
   await restoreAnchor(anchorId, anchor)
 }
 async function fitWidth() {
-  if (!viewport.value) return
+  if (!viewport.value || pageLayout.value) return
   const fit = Math.floor(viewport.value.clientWidth / CANVAS_WIDTH * 100) / 100
   await changeZoom(fit - zoom.value)
   viewport.value.scrollLeft = 0
@@ -296,7 +310,7 @@ async function selectProduct(product: LineProduct, event: MouseEvent) {
   selectedUnknown.value = false
   showDetails.value = true
   navigationGroup.value = product.group_id
-  if (isMobile.value) await openMobileDetails(opener)
+  if (popupDetails.value) await openMobileDetails(opener)
   else {
     await nextTick()
     detailHeading.value?.focus({ preventScroll: true })
@@ -305,7 +319,7 @@ async function selectProduct(product: LineProduct, event: MouseEvent) {
 async function reopenDetails(event: MouseEvent) {
   const opener = event.currentTarget as HTMLElement
   showDetails.value = true
-  if (isMobile.value) await openMobileDetails(opener)
+  if (popupDetails.value) await openMobileDetails(opener)
   else {
     await nextTick()
     detailHeading.value?.focus({ preventScroll: true })
@@ -324,7 +338,7 @@ async function centerInitial() {
     selectedId.value = null
     selectedUnknown.value = true
     showDetails.value = true
-    viewport.value?.scrollTo({ top: 0, left: 0 })
+    if (!pageLayout.value) viewport.value?.scrollTo({ top: 0, left: 0 })
   } else if (selectedProduct.value) {
     expandGroup(selectedProduct.value.group_id)
     await centerElement(selectedProduct.value.id)
@@ -332,7 +346,7 @@ async function centerInitial() {
 }
 async function changeZoom(change: number) {
   const frame = viewport.value
-  if (!frame) return
+  if (!frame || pageLayout.value) return
   const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round((zoom.value + change) * 100) / 100))
   const x = (frame.scrollLeft + frame.clientWidth / 2) / zoom.value
   const y = (frame.scrollTop + frame.clientHeight / 2) / zoom.value
@@ -341,14 +355,14 @@ async function changeZoom(change: number) {
   frame.scrollTo({ left: x * next - frame.clientWidth / 2, top: y * next - frame.clientHeight / 2 })
 }
 async function returnToMap() {
-  if (isMobile.value) { closeMobileDetails(); return }
+  if (popupDetails.value) { closeMobileDetails(); return }
   showDetails.value = false
   await nextTick()
   const target = selectedProduct.value && mapElement(selectedProduct.value.id)
   ;(target && target.offsetParent !== null ? target : viewport.value)?.focus({ preventScroll: true })
 }
 function pointerDown(event: PointerEvent) {
-  if (event.pointerType !== 'mouse' || event.button !== 0 || !viewport.value) return
+  if (pageLayout.value || event.pointerType !== 'mouse' || event.button !== 0 || !viewport.value) return
   pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, left: viewport.value.scrollLeft, top: viewport.value.scrollTop, moved: false }
 }
 function pointerMove(event: PointerEvent) {
@@ -377,7 +391,7 @@ function suppressDraggedClick(event: MouseEvent) {
   event.stopPropagation()
 }
 function keyboardPan(event: KeyboardEvent) {
-  if (event.target !== viewport.value) return
+  if (pageLayout.value || event.target !== viewport.value) return
   const offsets: Record<string, [number, number]> = { ArrowLeft: [-120, 0], ArrowRight: [120, 0], ArrowUp: [0, -120], ArrowDown: [0, 120] }
   const offset = offsets[event.key]
   if (!offset) return
@@ -409,7 +423,7 @@ onMounted(async () => {
   observer = new ResizeObserver(measureCanvas)
   if (canvas.value) observer.observe(canvas.value)
   measureCanvas()
-  if (!initialProduct.value && !props.unmatchedWine && viewport.value && viewport.value.clientWidth >= 600) {
+  if (!pageLayout.value && !initialProduct.value && !props.unmatchedWine && viewport.value && viewport.value.clientWidth >= 600) {
     zoom.value = Math.min(1, Math.max(.75, Math.floor(viewport.value.clientWidth / CANVAS_WIDTH * 100) / 100))
   }
   await centerInitial()
@@ -423,7 +437,7 @@ defineExpose({ centerInitial })
 </script>
 
 <template>
-  <section ref="mapRoot" class="plm product-line-map" :data-producer-id="line.producer.id" aria-label="Путеводитель по линейке производителя">
+  <section ref="mapRoot" class="plm product-line-map" :class="{ 'plm-page': pageLayout }" :data-producer-id="line.producer.id" :data-map-layout="layout" aria-label="Путеводитель по линейке производителя">
     <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ selectedName ? `Выбрано: ${selectedName}${selectedProduct && isUnavailable(selectedProduct) ? '. Нет карточки на Свое Вино' : ''}` : 'Выберите группу и вино на карте' }}</p>
     <div class="plm-intro">
       <div><p class="plm-kicker">{{ groupCountLabel(line.groups.length).toLocaleUpperCase('ru') }} · {{ productCountLabel(line.products.length).toLocaleUpperCase('ru') }}</p><p class="plm-intro-copy">От особого случая до повседневного знакомства.</p></div>
@@ -432,18 +446,20 @@ defineExpose({ centerInitial })
 
     <div class="plm-workspace" :class="{ 'plm-details-collapsed': !showDetails }">
       <div class="plm-map-column">
-        <div class="plm-toolbar">
+        <div ref="toolbar" class="plm-toolbar">
           <label class="plm-group-picker"><span class="sr-only">Перейти к группе</span><select :value="navigationGroup" aria-label="Перейти к группе" @change="jumpToGroup"><option disabled value="">Выберите группу</option><optgroup v-for="tier in tiers" :key="tier.id" :label="tier.label"><option v-for="group in groupsForTier(tier.id)" :key="group.id" :value="group.id">{{ group.name }}</option></optgroup></select><AppIcon name="chevron" /></label>
-          <div class="plm-controls" role="group" aria-label="Масштаб и положение карты">
+          <div class="plm-controls" role="group" :aria-label="pageLayout ? 'Положение на карте' : 'Масштаб и положение карты'">
+            <template v-if="!pageLayout">
             <button type="button" aria-label="Уменьшить карту" :disabled="zoom <= MIN_ZOOM" @click="changeZoom(-.1)"><AppIcon name="minus" /></button>
             <output class="plm-zoom" aria-label="Масштаб карты">{{ Math.round(zoom * 100) }}%</output>
             <button type="button" aria-label="Увеличить карту" :disabled="zoom >= MAX_ZOOM" @click="changeZoom(.1)"><AppIcon name="plus" /></button>
+            </template>
             <button type="button" class="plm-locate" :aria-label="recognized ? 'Показать ваше вино' : 'Показать исходное вино'" :title="recognized ? 'Ваше вино' : 'Начальный выбор'" :disabled="!initialProduct && !unmatchedWine" @click="centerInitial"><AppIcon name="navigation" /></button>
           </div>
         </div>
-        <button v-if="isMobile" ref="mobileDetailsTrigger" type="button" class="plm-mobile-details-trigger" :disabled="!selectedProduct && !activeUnknown" aria-haspopup="dialog" :aria-expanded="mobileDetailsOpen" :aria-controls="`${mapId}-details`" @click="reopenDetails">О выбранном вине<AppIcon name="arrow" /></button>
-        <p :id="`${mapId}-navigation-help`" class="plm-navigation-help"><span><AppIcon name="map" />Перемещайте карту · откройте группу</span><span class="plm-overview-controls"><button type="button" :aria-expanded="allGroupsOpen" :aria-controls="`${mapId}-canvas`" @click="toggleAllGroups">{{ allGroupsOpen ? 'Свернуть все' : 'Открыть все' }}</button><button type="button" class="plm-fit" aria-label="Обзор карты" title="Обзор карты в читаемом масштабе" @click="fitWidth"><AppIcon name="fullscreen" /><span>Обзор</span></button></span></p>
-        <div ref="viewport" data-map-viewport class="plm-viewport" :class="{ 'is-dragging': isDragging }" tabindex="0" role="region" aria-label="Холст с группами и винами" :aria-describedby="`${mapId}-navigation-help`" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd" @click.capture="suppressDraggedClick" @keydown="keyboardPan" @dragstart.prevent>
+        <button v-if="popupDetails" ref="mobileDetailsTrigger" type="button" class="plm-mobile-details-trigger" :disabled="!selectedProduct && !activeUnknown" aria-haspopup="dialog" :aria-expanded="mobileDetailsOpen" :aria-controls="`${mapId}-details`" @click="reopenDetails">О выбранном вине<AppIcon name="arrow" /></button>
+        <p :id="`${mapId}-navigation-help`" class="plm-navigation-help"><span><AppIcon name="map" />{{ pageLayout ? 'Откройте группу и выберите вино' : 'Перемещайте карту · откройте группу' }}</span><span class="plm-overview-controls"><button type="button" :aria-expanded="allGroupsOpen" :aria-controls="`${mapId}-canvas`" @click="toggleAllGroups">{{ allGroupsOpen ? 'Свернуть все' : 'Открыть все' }}</button><button v-if="!pageLayout" type="button" class="plm-fit" aria-label="Обзор карты" title="Обзор карты в читаемом масштабе" @click="fitWidth"><AppIcon name="fullscreen" /><span>Обзор</span></button></span></p>
+        <div ref="viewport" data-map-viewport class="plm-viewport" :class="{ 'is-dragging': isDragging }" :tabindex="pageLayout ? undefined : 0" :role="pageLayout ? undefined : 'region'" :aria-label="pageLayout ? undefined : 'Холст с группами и винами'" :aria-describedby="pageLayout ? undefined : `${mapId}-navigation-help`" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd" @click.capture="suppressDraggedClick" @keydown="keyboardPan" @dragstart.prevent>
           <div class="plm-surface" :style="surfaceStyle">
             <div ref="canvas" :id="`${mapId}-canvas`" data-map-canvas class="plm-canvas" :style="canvasStyle">
               <section v-for="tier in tiers" :key="tier.id" class="plm-tier" :class="{ 'plm-tier-neutral': tier.rank === 0 }" :data-tier-id="tier.id">
@@ -470,9 +486,9 @@ defineExpose({ centerInitial })
         <p class="plm-position-note"><AppIcon name="info" /><span>{{ line.price_positioning.disclaimer }} Ступени относятся только к производителю {{ line.producer.name }}.</span></p>
       </div>
 
-      <component :is="isMobile ? 'dialog' : 'aside'" :id="`${mapId}-details`" ref="detailPanel" class="plm-details" data-product-detail :data-product-dialog="isMobile || undefined" :data-selected-product="selectedProduct?.id || (activeUnknown ? 'unmatched' : '')" :class="{ 'is-compact': !isMobile && !showDetails, 'plm-mobile-dialog': isMobile }" aria-label="Выбранное вино" :aria-labelledby="isMobile && selectedName ? `${mapId}-detail-title` : undefined" @cancel.prevent.stop="closeMobileDetails()" @close.stop="mobileClosed" @click.stop="detailBackdrop" @keydown="trapMobileTab">
-        <template v-if="(isMobile || showDetails) && (selectedProduct || activeUnknown)">
-          <div v-if="isMobile" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
+      <component :is="popupDetails ? 'dialog' : 'aside'" :id="`${mapId}-details`" ref="detailPanel" class="plm-details" data-product-detail :data-product-dialog="popupDetails || undefined" :data-selected-product="selectedProduct?.id || (activeUnknown ? 'unmatched' : '')" :class="{ 'is-compact': !popupDetails && !showDetails, 'plm-mobile-dialog': popupDetails }" aria-label="Выбранное вино" :aria-labelledby="popupDetails && selectedName ? `${mapId}-detail-title` : undefined" @cancel.prevent.stop="closeMobileDetails()" @close.stop="mobileClosed" @click.stop="detailBackdrop" @keydown="trapMobileTab">
+        <template v-if="(popupDetails || showDetails) && (selectedProduct || activeUnknown)">
+          <div v-if="popupDetails" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
           <div class="plm-detail-scroll">
           <div class="plm-detail-summary"><div class="plm-detail-image"><ProductLineImage v-if="selectedImage" :src="selectedImage" :frame="selectedFrame" :data-map-image="selectedImage" @error="imageFailed(selectedImage)" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async" /><span v-else class="plm-image-placeholder"><AppIcon name="image" /><span>Нет изображения</span></span></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
           <div class="plm-detail-content">
@@ -654,6 +670,28 @@ defineExpose({ centerInitial })
 @media (max-height: 800px) {
   .plm-details { max-height: none; overflow: visible; }
   .plm-detail-content { overflow: visible; }
+}
+/* Page layout: the map is a normal page section. The page scrolls, not the map. */
+.plm-page .plm-workspace { display: block; }
+.plm-page .plm-toolbar { position: sticky; top: 0; z-index: 4; padding: 8px 0; border-bottom: 1px solid var(--line); background: var(--paper); }
+:global(html:has(.plm-page)) { scroll-padding-top: 76px; }
+.plm-page .plm-viewport { height: auto; overflow: visible; border: 0; border-radius: 0; background: none; cursor: auto; touch-action: auto; overscroll-behavior: auto; }
+.plm-page .plm-surface { width: auto; height: auto; }
+.plm-page .plm-canvas { position: static; width: auto; padding: 0; transform: none; }
+.plm-page .plm-groups { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.plm-page .plm-products, .plm-page .plm-group:only-child.is-expanded .plm-products { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.plm-page .plm-mobile-details-trigger { width: auto; min-width: min(100%, 320px); }
+@media (max-width: 767px) {
+  .plm-page .plm-viewport { height: auto; }
+  .plm-page .plm-tier { padding: 16px; }
+  .plm-page .plm-mobile-details-trigger { width: 100%; }
+}
+/* A short window keeps the popup heading visible with the compact summary of the phone layout. */
+@media (max-height: 700px) {
+  .plm-mobile-dialog .plm-detail-summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
+  .plm-mobile-dialog .plm-detail-image { --plm-image-height: 108px; --plm-image-width: 68px; height: 112px; margin: 0; }
+  .plm-mobile-dialog .plm-detail-image > img { height: 108px; max-width: 68px; }
+  .plm-mobile-dialog .plm-detail-heading h3 { font-size: 23px; margin: 6px 0; }
 }
 .plm-mobile-dialog { position: fixed; inset: 0; width: min(440px, calc(100% - 28px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; overscroll-behavior: contain; color: var(--ink); border-radius: 20px; box-shadow: 0 24px 80px #00000040; }
 .plm-mobile-dialog:not([open]) { display: none; }

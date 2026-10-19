@@ -72,9 +72,13 @@ Only verified equivalent slugs MAY share one product node.
 Do not merge kosher variants or distinct packages.
 Do not infer numeric prices from premium tiers or slug suffixes.
 The preview route MUST NOT claim that its selection came from recognition.
+`/lineup` is the public index of the maps. It reads only the generated index. Keep it in `public/sitemap.xml`.
+On `/lineup/<producer>`, use `ProductLineMap` with `layout="page"`: the map uses the page space and the details open in the popup at every width. Do not add a scroll box inside the page.
+The guide dialog uses the default `layout="canvas"` with pan and zoom.
+In the page layout, only the first toolbar row is sticky. Keep scroll targets and focus below it (`stickyInset`, `scroll-padding-top`).
 Center the map after the native dialog is visible.
 Use viewport-specific scrolling when locating a product.
-At widths up to 767 px, open product details in a native modal popup after a product tap.
+In the canvas layout, at widths up to 767 px, open product details in a native modal popup after a product tap.
 Keep the initial product selected without opening the popup on map entry.
 Keep the «О выбранном вине» control available for the current selection.
 Closing the popup MUST preserve the map position and restore its opener.

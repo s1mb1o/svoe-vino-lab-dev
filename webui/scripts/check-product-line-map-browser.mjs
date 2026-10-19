@@ -14,6 +14,8 @@ const initialId = 'victor-dravigny-brut'
 const grayId = 'victor-dravigny-zero-dosage'
 const initialProduct = graph.products.find(product => product.id === initialId)
 const uploadPath = resolve(`public${initialProduct.image.src}`)
+// The index holds the first image as a cover. The last image exists only in the map chunk.
+const lastImageSrc = graph.products.filter(product => product.image).at(-1).image.src
 const browser = await ({ chromium, webkit })[browserName].launch({ headless: true })
 const errors = []
 const checks = []
@@ -86,6 +88,26 @@ async function selection(map, id) {
 }
 
 async function assertCentered(map, id) {
+  if (await map.getAttribute('data-map-layout') === 'page') {
+    // The page layout centers the selected product in the window.
+    await map.evaluate((root, productId) => new Promise((resolve, reject) => {
+      const start = performance.now()
+      const check = () => {
+        const node = root.querySelector(`[data-product-id="${productId}"]`)
+        if (!node) return reject(new Error(`Missing selected node ${productId}`))
+        const n = node.getBoundingClientRect()
+        const inset = (root.querySelector('.plm-toolbar')?.offsetHeight ?? 0) + 16
+        const expectedTop = Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, scrollY + n.top - Math.max(inset, (innerHeight - n.height) / 2)))
+        const centered = Math.abs(scrollY - expectedTop) <= 4
+        const visible = n.top >= -2 && n.bottom <= innerHeight + 2
+        if (centered && visible) return resolve(true)
+        if (performance.now() - start > 3000) return reject(new Error(`Selected node is not centered in the page: ${JSON.stringify({ productId, scrollY, expectedTop, visible })}`))
+        requestAnimationFrame(check)
+      }
+      check()
+    }), id)
+    return
+  }
   await map.locator('[data-map-viewport]').evaluate((frame, productId) => new Promise((resolve, reject) => {
     const start = performance.now()
     const check = () => {
@@ -108,12 +130,34 @@ async function assertCentered(map, id) {
 async function canvasState(map) {
   return map.evaluate(root => {
     const frame = root.querySelector('[data-map-viewport]')
-    return { left: frame.scrollLeft, top: frame.scrollTop, zoom: root.querySelector('.plm-zoom').textContent, selected: root.querySelector('[data-product-detail]').dataset.selectedProduct }
+    return { left: frame.scrollLeft, top: frame.scrollTop, zoom: root.querySelector('.plm-zoom')?.textContent ?? null, selected: root.querySelector('[data-product-detail]').dataset.selectedProduct }
   })
 }
 
 function infoPopup(map) { return map.locator('dialog[data-product-detail]') }
 function infoTrigger(map) { return map.getByRole('button', { name: 'О выбранном вине', exact: true }) }
+// The page layout shows details in the popup at every width. The canvas layout uses it up to 767 px.
+async function popupMode(map) { return map.evaluate(root => root.dataset.mapLayout === 'page' || innerWidth <= 767) }
+function locateButton(map, recognized) { return map.getByRole('button', { name: recognized ? 'Показать ваше вино' : 'Показать исходное вино', exact: true }) }
+
+// The guide dialog of a recognized wine keeps the pan and zoom canvas.
+async function openDialogMap(page) {
+  const fixture = wineFixture()
+  await page.route('**/api/config', route => route.fulfill({ json: { apiAvailable: true, predictionMode: 'upstream', shelfAvailable: true } }))
+  await page.route('**/api/predict', route => route.fulfill({ headers: { 'X-Prediction-Mode': 'upstream' }, json: { slug: fixture.slug } }))
+  await page.route('**/api/wines/*', route => route.fulfill({ json: fixture }))
+  // Client navigation makes the test-only config fixture independent of server configuration.
+  await page.goto(`${origin}/lineup/abrau-durso`, { waitUntil: 'networkidle' })
+  await page.getByRole('link', { name: 'К сканеру', exact: true }).click()
+  await page.waitForURL(`${origin}/`)
+  await page.getByLabel('Выбрать фотографию этикетки', { exact: true }).setInputFiles(uploadPath)
+  const opener = page.getByRole('button', { name: /Путеводитель по линейке/ })
+  await opener.waitFor()
+  await opener.click()
+  const map = page.locator('dialog.product-line-dialog[open] .product-line-map')
+  await selection(map, initialId)
+  return map
+}
 
 async function mapAndPageState(map) {
   return {
@@ -192,7 +236,7 @@ async function assertInfoFocusTrap(map) {
 }
 
 async function chooseProduct(map, groupId, productId) {
-  const mobile = await map.evaluate(() => innerWidth <= 767)
+  const mobile = await popupMode(map)
   if (mobile && await infoPopup(map).isVisible()) await closeMobileInfo(map)
   await map.getByRole('combobox', { name: 'Перейти к группе' }).selectOption(groupId)
   assert.equal(await map.locator(`[data-group-id="${groupId}"]`).getAttribute('aria-expanded'), 'true')
@@ -234,29 +278,40 @@ async function delayedFontCentering() {
 }
 
 async function screenshotsAndResponsiveStates() {
+  for (const layout of ['page', 'dialog']) {
   for (const theme of ['light', 'dark']) {
     for (const [width, height] of [[1440, 1000], [390, 844], [320, 740]]) {
       const context = await newContext(width, height, theme)
       const page = await context.newPage()
-      const label = `${width}-${theme}`
+      const label = `${layout}-${width}-${theme}`
       observe(page, label)
-      await page.goto(`${origin}/lineup/abrau-durso?wine=${alias}`, { waitUntil: 'networkidle' })
+      let map = page.locator('.product-line-map')
+      if (layout === 'page') await page.goto(`${origin}/lineup/abrau-durso?wine=${alias}`, { waitUntil: 'networkidle' })
+      else map = await openDialogMap(page)
       await settle(page)
-      const map = page.locator('.product-line-map')
+      const recognized = layout === 'dialog'
+      const popup = layout === 'page' || width < 768
       await selection(map, initialId)
       await assertCentered(map, initialId)
-      assert.equal(await map.locator('[data-recognized="true"]').count(), 0, 'A deep link must not claim recognition')
-      assert.equal(await map.locator('.plm-current-marker').count(), 0)
+      if (recognized) assert.equal(await map.locator('[data-recognized="true"]').count(), 1, 'A recognized wine must be marked')
+      else {
+        assert.equal(await map.locator('[data-recognized="true"]').count(), 0, 'A deep link must not claim recognition')
+        assert.equal(await map.locator('.plm-current-marker').count(), 0)
+      }
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme, 'The system theme must be respected')
-      if (width < 768) {
-        assert.equal(await infoPopup(map).isVisible(), false, 'Mobile initial selection must leave its information popup closed')
-        assert.equal(await map.locator('aside[data-product-detail]').count(), 0, 'Mobile details must not remain as a bottom card')
+      if (layout === 'page') {
+        assert(await map.locator('[data-map-viewport]').evaluate(element => getComputedStyle(element).overflowY === 'visible' && element.scrollHeight <= element.clientHeight + 1), `${label}: the page map must not scroll inside the page`)
+        assert.equal(await map.getByRole('button', { name: 'Увеличить карту', exact: true }).count(), 0, `${label}: the page map has no zoom buttons`)
+      }
+      if (popup) {
+        assert.equal(await infoPopup(map).isVisible(), false, 'The initial selection must leave its information popup closed')
+        assert.equal(await map.locator('aside[data-product-detail]').count(), 0, 'Popup details must not remain as a side or bottom card')
         await openMobileInfo(map)
         await assertInfoFocusTrap(map)
       }
       assert.equal(await map.locator('.plm-portal-link').getAttribute('href'), `https://vino-svoe.ru/wines/${initialProduct.wine_slug}`)
       assert.equal(await map.locator('.plm-portal-link').getAttribute('target'), '_blank')
-      if (width >= 768) {
+      if (!popup) {
         assert(await map.evaluate(root => root.querySelector('[data-product-detail]').getBoundingClientRect().left > root.querySelector('[data-map-viewport]').getBoundingClientRect().right), `${label}: desktop card must sit beside map`)
       } else await closeMobileInfo(map, 'close')
       await overflowAndImages(page, label)
@@ -286,11 +341,13 @@ async function screenshotsAndResponsiveStates() {
       assert.match(await map.locator('.plm-detail-description').innerText(), /2020.*2024/s)
       assert.match(await map.locator('.plm-availability').innerText(), /не означает/i)
       await overflowAndImages(page, `${label}-gray`)
-      if (width < 768) {
+      if (popup) {
         await screenshot(page, `${label}-gray-popup`, false)
         await closeMobileInfo(map)
-        await map.getByRole('button', { name: 'Увеличить карту', exact: true }).click()
-        await settle(page)
+        if (layout === 'dialog') {
+          await map.getByRole('button', { name: 'Увеличить карту', exact: true }).click()
+          await settle(page)
+        }
         for (const method of ['return', 'escape', 'backdrop']) {
           await openMobileInfo(map)
           assert.equal(await infoPopup(map).getAttribute('data-selected-product'), grayId)
@@ -304,11 +361,11 @@ async function screenshotsAndResponsiveStates() {
         await map.getByRole('button', { name: 'Показать карточку', exact: true }).click()
         assert.equal(await map.locator('[data-product-detail]').getAttribute('data-selected-product'), grayId)
       }
-      await map.getByRole('button', { name: 'Показать исходное вино', exact: true }).click()
+      await locateButton(map, recognized).click()
       await selection(map, initialId)
       await assertCentered(map, initialId)
 
-      if (browserName === 'chromium' && width === 390 && theme === 'light') {
+      if (layout === 'dialog' && browserName === 'chromium' && width === 390 && theme === 'light') {
         const viewport = map.locator('[data-map-viewport]')
         await viewport.scrollIntoViewIfNeeded()
         const box = await viewport.boundingBox()
@@ -330,13 +387,14 @@ async function screenshotsAndResponsiveStates() {
       await context.close()
     }
   }
-  checks.push('Six viewport/theme layouts, alias selection/centering, mobile modal details/focus trap/all close actions, gray details, portal links, preserved scroll state, locate')
+  }
+  checks.push('Page and dialog layouts at six viewport/theme combinations: alias selection/centering, no inner scroll on the page, popup details/focus trap/all close actions, gray details, portal links, preserved scroll state, locate; dialog touch pan')
 }
 
-async function overviewAndKeyboard() {
+async function overviewPage() {
   const context = await newContext()
   const page = await context.newPage()
-  observe(page, 'overview-keyboard')
+  observe(page, 'overview-page')
   await page.goto(`${origin}/lineup/abrau-durso`, { waitUntil: 'networkidle' })
   const map = page.locator('.product-line-map')
   assert.equal(await map.locator('[data-product-detail]').getAttribute('data-selected-product'), '')
@@ -374,6 +432,78 @@ async function overviewAndKeyboard() {
   await product.focus()
   await page.keyboard.press('Enter')
   await selection(map, initialId)
+  await infoPopup(map).waitFor({ state: 'visible' })
+  assert(await map.locator('.plm-detail-heading h3').evaluate(element => element === document.activeElement), 'Selection must focus the detail heading')
+  await infoPopup(map).getByRole('button', { name: 'Вернуться к карте', exact: true }).click()
+  await infoPopup(map).waitFor({ state: 'hidden' })
+  assert(await product.evaluate(element => element === document.activeElement), 'Closing the popup must return focus to the product')
+  await infoTrigger(map).focus()
+  await page.keyboard.press('Enter')
+  await infoPopup(map).waitFor({ state: 'visible' })
+  await settle(page)
+  assert(await map.locator('.plm-detail-heading h3').evaluate(element => element === document.activeElement), 'Reopening details by keyboard must focus the detail heading')
+  await page.keyboard.press('Escape')
+  await infoPopup(map).waitFor({ state: 'hidden' })
+
+  // The page scrolls. Expand all keeps the first visible group at the same window position.
+  await map.locator('[data-group-container="fizz"]').evaluate(group => window.scrollTo({ top: window.scrollY + group.getBoundingClientRect().top - 16, left: 0, behavior: 'instant' }))
+  await settle(page)
+  const visibleAnchor = await map.evaluate(root => {
+    const groups = [...root.querySelectorAll('[data-group-container]')]
+      .map(element => ({ element, rect: element.getBoundingClientRect() }))
+      .filter(({ rect }) => rect.bottom > 0 && rect.top < innerHeight)
+      .sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left)
+    const group = groups[0].element
+    const heading = group.querySelector('[data-group-id]').getBoundingClientRect()
+    return { id: group.dataset.groupContainer, top: heading.top, left: heading.left }
+  })
+  assert.equal(graph.groups.find(group => group.id === visibleAnchor.id)?.tier_id, 'formats', 'Page scrolling must reach the formats tier')
+  // A click would first scroll the button at the top of the map into view. Activate it without a scroll.
+  await map.getByRole('button', { name: 'Открыть все', exact: true }).evaluate(button => button.focus({ preventScroll: true }))
+  await page.keyboard.press('Enter')
+  await settle(page)
+  assert.equal(await map.locator('[data-group-id][aria-expanded="true"]').count(), graph.groups.length)
+  const afterExpand = await map.evaluate((root, id) => {
+    const heading = root.querySelector(`[data-group-id="${id}"]`).getBoundingClientRect()
+    return { top: heading.top, left: heading.left }
+  }, visibleAnchor.id)
+  assert(Math.abs(afterExpand.top - visibleAnchor.top) <= 2, 'Expand all must keep the visible group at its window position')
+  assert(Math.abs(afterExpand.left - visibleAnchor.left) <= 2, 'Expand all must keep the visible group at its horizontal position')
+
+  // The first toolbar row sticks to the window top inside the map and stops before the footer.
+  const toolbar = map.locator('.plm-toolbar')
+  assert(Math.abs(await toolbar.evaluate(element => element.getBoundingClientRect().top)) <= 1, 'The toolbar must stick to the window top while the map scrolls')
+  await map.getByRole('combobox', { name: 'Перейти к группе' }).selectOption('reserve')
+  await settle(page)
+  const jump = await map.evaluate(root => ({ toolbar: root.querySelector('.plm-toolbar').getBoundingClientRect().bottom, group: root.querySelector('[data-group-container="reserve"]').getBoundingClientRect().top }))
+  assert(jump.group >= jump.toolbar + 8 && jump.group <= jump.toolbar + 40, `A group jump must land below the sticky toolbar: ${JSON.stringify(jump)}`)
+  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, left: 0, behavior: 'instant' }))
+  await settle(page)
+  const end = await page.evaluate(() => ({ toolbar: document.querySelector('.plm-toolbar').getBoundingClientRect().bottom, footer: document.querySelector('footer')?.getBoundingClientRect().top ?? Infinity }))
+  assert(end.toolbar <= end.footer + 1, `The sticky toolbar must not cover the footer: ${JSON.stringify(end)}`)
+  await overflowAndImages(page, 'overview-page')
+
+  const assets = await Promise.all(graph.products.map(async product => {
+    const response = await context.request.get(`${origin}${product.image.src}`)
+    assert.equal(response.status(), 200, `Missing asset ${product.id}`)
+    assert.match(response.headers()['content-type'], /^image\/webp/)
+    return product.id
+  }))
+  assert.equal(new Set(assets).size, graph.products.length)
+  await context.close()
+  checks.push('Page overview, preview/reopen focus, native picker keyboard focus, keyboard selection with popup details, expand-all anchor in the page scroll, sticky toolbar with group jumps below it, all registered Abrau asset responses')
+}
+
+async function canvasKeyboardAndPan() {
+  const context = await newContext()
+  const page = await context.newPage()
+  observe(page, 'dialog-keyboard-pan')
+  const map = await openDialogMap(page)
+  await assertCentered(map, initialId)
+  const product = map.locator(`[data-product-id="${initialId}"]`)
+  await product.focus()
+  await page.keyboard.press('Enter')
+  await selection(map, initialId)
   assert(await map.locator('.plm-detail-heading h3').evaluate(element => element === document.activeElement), 'Selection must focus the detail heading')
   await map.getByRole('button', { name: 'Вернуться к карте', exact: true }).click()
   await map.getByRole('button', { name: 'Показать карточку', exact: true }).focus()
@@ -390,7 +520,7 @@ async function overviewAndKeyboard() {
   await page.keyboard.press('ArrowDown')
   await page.waitForFunction(before => document.querySelector('[data-map-viewport]').scrollTop >= before + 100, beforeArrow)
 
-  await page.goto(`${origin}/lineup/abrau-durso?wine=${alias}`, { waitUntil: 'networkidle' })
+  await locateButton(map, true).click()
   await assertCentered(map, initialId)
   const dragTarget = map.locator('[data-product-id="victor-dravigny-extra-brut"]')
   await dragTarget.scrollIntoViewIfNeeded()
@@ -438,15 +568,8 @@ async function overviewAndKeyboard() {
   assert(Math.abs(afterExpand.top - visibleAnchor.top) <= 2, 'Expand all must preserve the visible group vertical position after manual pan')
   assert(Math.abs(afterExpand.left - visibleAnchor.left) <= 2, 'Expand all must preserve the visible group horizontal position after manual pan')
 
-  const assets = await Promise.all(graph.products.map(async product => {
-    const response = await context.request.get(`${origin}${product.image.src}`)
-    assert.equal(response.status(), 200, `Missing asset ${product.id}`)
-    assert.match(response.headers()['content-type'], /^image\/webp/)
-    return product.id
-  }))
-  assert.equal(new Set(assets).size, graph.products.length)
   await context.close()
-  checks.push('Overview, preview/reopen focus, native picker keyboard focus, keyboard selection/pan/zoom, mouse drag suppression, visible expand-all anchor, all registered Abrau asset responses')
+  checks.push('Dialog canvas: side-card return/reopen focus, keyboard zoom and pan, mouse drag suppression, visible expand-all anchor')
 }
 
 const wineFixture = (slug = alias, overrides = {}) => ({
@@ -526,8 +649,8 @@ async function scannerAndShelf() {
   await opener.click()
   assert.equal(await dialog.locator('.product-line-map').count(), 0)
   assert.match(await dialog.locator('.line-unavailable').innerText(), /пока не подготовлена/)
-  const previewLink = dialog.getByRole('link', { name: 'Посмотреть карту Абрау-Дюрсо', exact: true })
-  assert.equal(await previewLink.getAttribute('href'), '/lineup/abrau-durso')
+  const previewLink = dialog.getByRole('link', { name: 'Все карты производителей', exact: true })
+  assert.equal(await previewLink.getAttribute('href'), '/lineup')
   assert.equal(await previewLink.getAttribute('target'), '_blank', 'The preview link must preserve the scanner tab')
   assert.match(await previewLink.getAttribute('rel'), /noopener/)
   await page.keyboard.press('Escape')
@@ -629,11 +752,11 @@ async function mapLoadRetry() {
   let blockedRequests = 0
   let release
   const held = new Promise(resolve => { release = resolve })
-  // Only the map chunk of a producer holds the image paths of that producer.
+  // Only the map chunk holds the last image path of the producer.
   await page.route('**/_nuxt/*.js', async route => {
     const response = await route.fetch()
     const body = await response.text()
-    if (body.includes(`/product-line-maps/${graph.producer.id}/`)) {
+    if (body.includes(lastImageSrc)) {
       if (blocked) { blockedRequests++; return route.abort('internetdisconnected') }
       await held
     }
@@ -685,7 +808,8 @@ async function shortHeightAndBoundary() {
     await assertControlVisible(map.getByRole('button', { name: 'Вернуться к карте', exact: true }), `${label} standalone return action`, false)
     await overflowAndImages(page, `${label} standalone`)
     if (width === 800 || (width === 1440 && height === 720)) await giftBoxDetails(page, map, `${label}-standalone`)
-    if (width < 768) await closeMobileInfo(map)
+    // The standalone page shows details in the popup at every width.
+    await closeMobileInfo(map)
 
     await page.getByRole('link', { name: 'К сканеру', exact: true }).click()
     await page.getByLabel('Выбрать фотографию этикетки', { exact: true }).setInputFiles(uploadPath)
@@ -749,8 +873,8 @@ async function popupBreakpointTransition() {
   const context = await newContext(767, 900)
   const page = await context.newPage()
   observe(page, 'popup-breakpoint-transition')
-  await page.goto(`${origin}/lineup/abrau-durso?wine=${alias}`, { waitUntil: 'networkidle' })
-  const map = page.locator('.product-line-map')
+  // Only the canvas layout of the guide dialog switches between the side card and the popup.
+  const map = await openDialogMap(page)
   await selection(map, initialId)
   await assertCentered(map, initialId)
   assert.equal(await infoPopup(map).isVisible(), false)
@@ -763,7 +887,7 @@ async function popupBreakpointTransition() {
   await settle(page)
   assert.equal(await infoPopup(map).count(), 0, 'Crossing to desktop must remove the mobile native dialog')
   assert.deepEqual(await canvasState(map), beforeResize, 'Desktop transition must retain map selection, zoom, and scroll')
-  assert(await page.evaluate(() => !document.querySelector('dialog:modal') && getComputedStyle(document.body).overflowY !== 'hidden'), 'Desktop transition must release the standalone modal scroll lock')
+  assert(await page.evaluate(() => !document.querySelector('dialog[data-product-detail]:modal') && !document.querySelector('.plm-mobile-dialog[open]')), 'Desktop transition must close the information popup and release its scroll lock')
   assert(await map.locator('.plm-detail-description').isVisible(), 'Desktop transition must show the selected wine in the side panel')
   await page.setViewportSize({ width: 767, height: 900 })
   await infoPopup(map).waitFor({ state: 'attached' })
@@ -800,10 +924,49 @@ async function popupReadingPosition() {
   checks.push('Popup reading position resets after reopening or selecting a different wine without moving the underlying map')
 }
 
+async function lineupIndexPage() {
+  const index = JSON.parse(await readFile('shared/data/product-line-index.json', 'utf8'))
+  for (const [width, height, theme] of [[1440, 1000, 'light'], [390, 844, 'dark'], [320, 740, 'light']]) {
+    const context = await newContext(width, height, theme)
+    const page = await context.newPage()
+    const label = `lineup-index-${width}-${theme}`
+    observe(page, label)
+    const response = await page.goto(`${origin}/lineup`, { waitUntil: 'networkidle' })
+    assert.equal(response.status(), 200)
+    assert.equal(response.headers()['x-robots-tag'], undefined, 'The index /lineup must be indexable')
+    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://chtozavino.ru/lineup')
+    const cards = page.locator('[data-producer-card]')
+    assert.equal(await cards.count(), index.producers.length)
+    for (const [position, entry] of index.producers.entries()) {
+      const card = cards.nth(position)
+      assert.equal(await card.getAttribute('href'), `/lineup/${entry.producer.id}`)
+      assert((await card.innerText()).includes(entry.producer.name), `${label}: card ${position} must name ${entry.producer.name}`)
+    }
+    await overflowAndImages(page, label)
+    await screenshot(page, label)
+    if (width === 1440) {
+      for (const entry of index.producers) {
+        const cover = await context.request.get(`${origin}${entry.summary.cover.src}`)
+        assert.equal(cover.status(), 200, `Missing cover ${entry.producer.id}`)
+      }
+      await cards.first().click()
+      await page.waitForURL(`**/lineup/${index.producers[0].producer.id}`)
+      await page.getByRole('link', { name: 'Все карты производителей', exact: true }).click()
+      await page.waitForURL(`${origin}/lineup`)
+      const map = await context.request.get(`${origin}/lineup/abrau-durso`)
+      assert.equal(map.headers()['x-robots-tag'], 'noindex, nofollow, noarchive', 'A producer map must stay noindex')
+    }
+    await context.close()
+  }
+  checks.push('Index /lineup: one card per producer with name and link, cover images, canonical URL, no noindex header, no overflow at 1440, 390, and 320 px, card and back-link navigation')
+}
+
 try {
+  await lineupIndexPage()
   await delayedFontCentering()
   await screenshotsAndResponsiveStates()
-  await overviewAndKeyboard()
+  await overviewPage()
+  await canvasKeyboardAndPan()
   await scannerAndShelf()
   await mapLoadRetry()
   await shortHeightAndBoundary()

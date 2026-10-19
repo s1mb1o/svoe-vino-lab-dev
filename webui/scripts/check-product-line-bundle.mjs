@@ -13,13 +13,15 @@ const source = name => readFileSync(`${chunks}/${name}`, 'utf8')
 const gzip = names => [...names].reduce((total, name) => total + gzipSync(readFileSync(`${chunks}/${name}`)).length, 0)
 const kb = bytes => `${(bytes / 1024).toFixed(1)} KB gzip`
 
-// An image path of a producer exists only in the map data of that producer.
+// The last product image of a producer exists only in the map data of that producer.
+// The index holds the first image as the cover, so the first image cannot identify a map chunk.
 const directory = 'shared/data/product-line-maps'
 const maps = readdirSync(directory).filter(name => name.endsWith('.json')).map(name => JSON.parse(readFileSync(`${directory}/${name}`, 'utf8')))
 const mapChunks = new Map()
 for (const map of maps) {
-  const marker = map.products.find(product => product.image)?.image.src
-  assert(marker, `${map.producer.id}: no product image to identify its chunk`)
+  const images = map.products.filter(product => product.image).map(product => product.image.src)
+  assert(images.length >= 2, `${map.producer.id}: two product images are needed to identify its chunk`)
+  const marker = images.at(-1)
   const found = files.filter(name => source(name).includes(marker))
   assert.equal(found.length, 1, `${map.producer.id}: expected one chunk with ${marker}, found ${found.length}`)
   mapChunks.set(found[0], map.producer.id)
@@ -60,7 +62,7 @@ try {
   console.log(`Producer map chunks: ${mapChunks.size}, ${kb(Math.min(...sizes))} to ${kb(Math.max(...sizes))}`)
 
   const page = await (await fetch(`${origin}/lineup/abrau-durso`)).text()
-  assert(page.includes('class="plm product-line-map"'), '/lineup/abrau-durso does not render the map on the server')
+  assert(/class="plm product-line-map[^"]*"/.test(page), '/lineup/abrau-durso does not render the map on the server')
   const escaped = text => text.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character])
   assert(page.includes(escaped(maps.find(map => map.producer.id === 'abrau-durso').products[0].name)), '/lineup/abrau-durso does not render its products on the server')
   console.log('/lineup/abrau-durso: the server renders the map.')

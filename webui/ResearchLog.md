@@ -1,5 +1,15 @@
 # Research log
 
+## Producer map index and page layout, 2026-10-19
+
+The owner asked for the map pages to use the page space instead of a scroll box inside the page.
+The canvas content already reflows: tiers hold groups in a CSS grid, and groups hold products in a grid. Only the fixed 1120 px canvas width, the scale transform, and the fixed viewport height made it a scroll box.
+The page layout removes those three and uses `auto-fill` grids. At 1440 px the groups use 3 columns. At 390 px they use 1 column.
+The page map then scrolls the window. Centering, «Перейти к группе», and the expand-all anchor use window coordinates.
+After the change, the first-load JavaScript of `/` is 135 KB gzip. The index summary adds about 1 KB.
+The index holds the first image of each map as its cover. A chunk marker in the tests must therefore use another image of the map.
+`/lineup` returns no `x-robots-tag`. `/lineup/abrau-durso` returns `noindex, nofollow, noarchive` with the rule `/lineup/*`.
+
 ## Producer map loading, 2026-10-19
 
 The scanner page chunk imported `shared/product-line-map.ts` statically. That module imported all 19 map JSON files.

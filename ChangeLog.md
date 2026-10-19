@@ -5,6 +5,9 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Added the public index `/lineup` of the producer maps and moved `/lineup/<producer>` to a page layout
+  without an inner scroll box. Read `webui/docs/plans/05_lineup-index-and-page-layout.md`. Updated F-24 in
+  `ASSESSMENT.md`: the maps are deployed since release `7d8e80ea`.
 - Added local-first Dinner Lens recognition on gx10 Qwen3.5-9B-NVFP4 with Qwen3.8-Flash
   fallback. YAML selects protocols, exact response model aliases, optional credentials
   and per-provider limits. Fallback covers provider failures and invalid output; valid

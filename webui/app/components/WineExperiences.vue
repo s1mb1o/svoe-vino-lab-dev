@@ -128,7 +128,7 @@ onBeforeUnmount(() => dialog.value?.close())
           <AppIcon name="map" />
           <h3>Карта этого производителя пока не подготовлена</h3>
           <p>{{ wine.producer || 'Производитель не указан в карточке' }}. Для этого вина пока нет проверенной карты линейки.</p>
-          <NuxtLink to="/lineup/abrau-durso" target="_blank" rel="noopener noreferrer" class="button secondary" @click="close">Посмотреть карту Абрау-Дюрсо<AppIcon name="arrow" /></NuxtLink>
+          <NuxtLink to="/lineup" target="_blank" rel="noopener noreferrer" class="button secondary" @click="close">Все карты производителей<AppIcon name="arrow" /></NuxtLink>
         </div>
       </template>
     </dialog>
