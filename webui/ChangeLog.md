@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-19 — Live producer-map expansion
+
+- Deploy GitHub main `772a396e` at 18:20:46 UTC. The live index has 25 maps, 1,203 products and 272 groups.
+- Pass 532 Linux tests with the full pinned snapshot and no skips, type checking, the production build, index freshness and lazy-bundle checks.
+- Pass 193 staging and 193 live HTTP/asset checks. Verify every map route and all 157 added bottle assets against their committed bytes.
+- Pass 15 staging and 15 live browser cases per engine. Check the index, exact selection, null-slug products, desktop/mobile popups, return state, focus and overflow. Inspect the live screenshots.
+- Verify the static wine-image dependency with the site login. Preserve the presentation bytes and dates. Record deployment procedures and evidence in the private deployment repository.
+
 ## 2026-10-19 — Map merge and catalog coverage
 
 - Merge Burnier and the five-map batch with current `main`. Keep the index and page-layout changes already present on `main`.

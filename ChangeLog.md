@@ -5,6 +5,8 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Deployed the 25-map Web UI release `772a396e`. Verified all 25 live map routes and the exact bytes of 157 added bottle assets. Passed 15 staging and 15 live browser cases in each engine, 193 HTTP/asset checks in each phase, and seven edge/presentation checks. Updated only the deployment status of F-24 in `ASSESSMENT.md`.
+
 - Merge six additional producer maps and refresh the current coverage reports: 25 maps, 1,203 products, and 1,138 of 2,103 saved catalogue cards (54.1132%). Recheck only F-24 and F-48 in `ASSESSMENT.md`. The six-map expansion awaits deployment.
 
 - Implemented plan `docs/plans/06_wine-images.md` on `feature/wine-images` (not deployed).

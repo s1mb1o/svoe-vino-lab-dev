@@ -1,5 +1,14 @@
 # Smoke tests
 
+## Live 25-map release, 2026-10-19
+
+Release `772a396e` is live with all 25 producer cards on `/lineup`.
+The release passes 193 HTTP/asset checks and 15 browser cases per engine on staging and on production.
+The checks include all 25 map routes and the exact committed bytes of all 157 added bottle assets.
+Seven access-boundary and presentation-date checks pass. The Linux build passes all 532 tests without skips.
+The private deployment repository holds the release record, exact verification scripts, results and screenshots.
+Physical-phone testing remains unperformed.
+
 ## Current merged map registry
 
 - Confirm that `/lineup` lists 25 maps and that the shared registry also supplies all 25 maps to MCP.

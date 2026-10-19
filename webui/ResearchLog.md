@@ -1,5 +1,15 @@
 # Research log
 
+## Live producer-map validation, 2026-10-19
+
+The committed Linux release `772a396e` is active at 18:20:46 UTC. All 25 map routes render the expected product counts.
+All 157 added bottle images match the source bytes. Chromium and WebKit each pass 15 staging and 15 live checks.
+The first live WebKit harness run logged deferred Nuxt manifest errors during rapid hard navigations.
+A focused check returned HTTP 200 with automatic and explicit same-origin Basic authentication.
+The final harness waits for the deferred response before replacing a page and passes its strict console-error check. No application code changed for this check.
+The private deployment evidence preserves the first result and the final script.
+All 532 Linux tests pass with the full pinned snapshot. Browser checks still use emulated viewports; physical-phone testing remains unperformed.
+
 ## Map merge and coverage, 2026-10-19
 
 GitHub `main` at `910e11d7` already contains the index and page layout as `6d0cae18` and `d9cdc6cd`.
