@@ -1,6 +1,6 @@
-"""Build the interface sketches of plan 03 («Винный дневник»).
+"""Build the interface sketches of plan 04 («Винный дневник»).
 
-Run: python3 docs/plans/03_user-accounts/sketches/build.py
+Run: python3 docs/plans/04_user-accounts/sketches/build.py
 The script writes one HTML file and one PNG file per board next to itself.
 It needs Google Chrome for the PNG files. The sketches use the Web UI fonts, logo, and
 wine images from webui/public. They are sketches, not a final design.

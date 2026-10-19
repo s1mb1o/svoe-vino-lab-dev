@@ -4,12 +4,12 @@ Date: 2026-10-19.
 Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/50.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
-Depends on: plan `03_user-accounts.md` (issue #48). This plan adds MAX to that account service.
-Status: The account service checks MAX launch data and links MAX (commit `abc49baa`). The
-mini-app pages, the bot changes, and the deployment do not exist yet. Plan 03 dropped
+Depends on: plan `04_user-accounts.md` (issue #48). This plan adds MAX to that account service.
+Status: The account service checks MAX launch data and links MAX (commit `64545eb5`). The
+mini-app pages, the bot changes, and the deployment do not exist yet. Plan 04 dropped
 passwords on 2026-10-19: the login methods are the email code and Yandex ID.
 Sketches: boards 5 and 6, and the third screen of board 1, in
-[`03_user-accounts/sketches/`](03_user-accounts/sketches/). They are sketches, not a final design.
+[`04_user-accounts/sketches/`](04_user-accounts/sketches/). They are sketches, not a final design.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the combined plan twice on 2026-10-19. This plan
 applies the MAX findings: no one-time login codes, no account calls in bot handlers, launch
 data relay and replay checks, a route list for the public host, an advisory outbox enqueue,
@@ -111,7 +111,7 @@ Open the diary in MAX:
    to `POST /v1/auth/max/session` and a linked person gets a session (1 day).
 3. Otherwise, or for a person without a link, the mini app shows «Войти по коду из письма».
    The code goes by email and the person types it on our page. No code passes through MAX.
-   A new address completes the sign-up of plan 03 (username and two checkboxes).
+   A new address completes the sign-up of plan 04 (username and two checkboxes).
 
 Link MAX:
 
@@ -126,7 +126,7 @@ Mini-app screens. The host holds the diary only. Photo recognition stays in the 
 2. Welcome, for a MAX user without a link: two sentences about the diary and «Войти по коду
    из письма». A new address continues to the sign-up (username, the terms checkbox, and the
    consent checkbox). Then «Привязать MAX-аккаунт «Имя Фамилия» к дневнику …?».
-3. Onboarding: the four preference steps of plan 03. Each step has «Пропустить».
+3. Onboarding: the four preference steps of plan 04. Each step has «Пропустить».
 4. «Винный дневник»: «История» (searches from the bot and the site, with photos), «Оценки»,
    «Предпочтения».
 5. «Настройки»: «Email», «Отвязать MAX»; «Сохранять историю поисков с фото»;
@@ -167,7 +167,7 @@ Rules:
 
 ## Account service changes
 
-Implemented in `001_initial.sql` (commit `abc49baa`): `identities` with the provider `max`,
+Implemented in `001_initial.sql` (commit `64545eb5`): `identities` with the provider `max`,
 `used_launches`, and the session method `max`.
 
 Later, in new schema files:
@@ -235,7 +235,7 @@ Routes:
 - `/account`: the new tab «Через MAX» with the fixed QR code and «Открыть в MAX».
 - «Настройки»: «Привязать MAX» with the same QR code.
 - `/max/*`: the mini-app pages (`/max`, `/max/onboarding`, `/max/settings`, and others).
-  They reuse the account components of plan 03. Their navigation stays under `/max/*`.
+  They reuse the account components of plan 04. Their navigation stays under `/max/*`.
   They use a small header of their own without the site links: the route list of the mini-app
   host does not allow `/android`, `/ideas`, and the other site pages.
 - The global 18+ gate also covers `/max/*`.
@@ -307,7 +307,7 @@ Before the review, the page at `https://max.chtozavino.ru/` MUST:
 ## Legal and texts
 
 - The account also stores the MAX `user_id`. Add it to `/privacy` (#37).
-- The operator removal CLI of plan 03 serves requirement 3.1 б: removal of illegal user content
+- The operator removal CLI of plan 04 serves requirement 3.1 б: removal of illegal user content
   on a complaint or an authority request.
 - Add the MAX texts to the lawyer review (#45).
 
@@ -326,11 +326,11 @@ Phase 0 — checks and decisions:
    - the signed `ip` is present and equals the client address of the page request;
    - the URL fragment survives the HTTP 302 from `/` to `/max`.
 
-Phase 1 — account service (after Phase 1 of plan 03):
+Phase 1 — account service (after Phase 1 of plan 04):
 
-4. Done (commit `abc49baa`): launch data checks, used launch IDs, MAX link and unlink,
+4. Done (commit `64545eb5`): launch data checks, used launch IDs, MAX link and unlink,
    `max` sessions behind `MAX_LOGIN_ENABLED`.
-5. Not planned: passwords (plan 03 dropped them). MAX-only registration waits for #50.
+5. Not planned: passwords (plan 04 dropped them). MAX-only registration waits for #50.
 6. Bot routes with the link-time and photo-cutoff rules.
 
 Phase 2 — Web UI:

@@ -1,8 +1,8 @@
 # Account service of «Винный дневник»
 
 This component holds the accounts of «Винный дневник» and every login and linking path.
-Plans: [`../docs/plans/03_user-accounts.md`](../docs/plans/03_user-accounts.md) (issue #48) and
-[`../docs/plans/04_max-authorization.md`](../docs/plans/04_max-authorization.md) (issue #50).
+Plans: [`../docs/plans/04_user-accounts.md`](../docs/plans/04_user-accounts.md) (issue #48) and
+[`../docs/plans/05_max-authorization.md`](../docs/plans/05_max-authorization.md) (issue #50).
 Telegram linking: issue #51. Email login: issue #52.
 
 The first version covers authorization only. The diary data (searches, photos, ratings,
@@ -119,6 +119,6 @@ find <root>/prod/account/data/backups -type f \
 
 The command uses the SQLite online backup API. It writes a unique temporary file with mode
 0600, publishes it with a hard link, and removes the temporary file in every case. It never
-overwrites a file, also when two backups run at the same time. Keep backups 7 days (plan 03):
+overwrites a file, also when two backups run at the same time. Keep backups 7 days (plan 04):
 `-mmin +10080` is exactly 7 days (`-mtime +7` would keep files up to 9 days). Run the cleanup
 at least once a day. Deleted accounts then leave the backups within 8 days at most.

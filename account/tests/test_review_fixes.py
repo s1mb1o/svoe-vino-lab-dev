@@ -1,4 +1,4 @@
-"""Regressions for the Codex review of commit abc49baa."""
+"""Regressions for the Codex review of commit 64545eb5."""
 
 from __future__ import annotations
 

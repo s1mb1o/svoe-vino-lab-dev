@@ -2,7 +2,7 @@
 
 ## 2026-10-19 — Second review fixes, manual tests
 
-Codex reviewed `abc49baa..5416b5d1`. Fixed:
+Codex reviewed `64545eb5..330a5c2d`. Fixed:
 
 - The Compose example sets `ACCOUNT_ENVIRONMENT`, `ACCOUNT_DATABASE`, `ACCOUNT_HOST`, and
   `ACCOUNT_PORT` in `environment`. Before, values copied from `.env.example` into
@@ -38,7 +38,7 @@ Also:
 
 ## 2026-10-19 — Review fixes
 
-Codex reviewed commit `abc49baa`. Fixed and covered by tests (`tests/test_review_fixes.py`):
+Codex reviewed commit `64545eb5`. Fixed and covered by tests (`tests/test_review_fixes.py`):
 
 - Linking email, Yandex ID, or MAX needs a recent login at the start and the end. Before, an
   old session could replace the email and then log in through it to delete the account.

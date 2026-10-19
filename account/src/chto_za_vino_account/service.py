@@ -1,6 +1,6 @@
 """Account operations without HTTP: login, sign-up, sessions, linking, and deletion.
 
-Login methods: an email code and Yandex ID (plans 03 and 04, issue #48). MAX and Telegram
+Login methods: an email code and Yandex ID (plans 04 and 05, issue #48). MAX and Telegram
 are linked identities. A MAX launch can open a session only when MAX_LOGIN_ENABLED is true
 (issue #50 decides this).
 """

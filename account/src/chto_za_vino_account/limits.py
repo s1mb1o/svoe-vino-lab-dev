@@ -1,6 +1,6 @@
 """In-process sliding-window limits.
 
-The service runs as one process (plan 03), so memory is enough. A restart clears the windows.
+The service runs as one process (plan 04), so memory is enough. A restart clears the windows.
 """
 
 from __future__ import annotations

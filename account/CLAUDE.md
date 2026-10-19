@@ -1,7 +1,7 @@
 # Context chto-za-vino-account
 
 This component is the account service of «Винный дневник».
-Read `README.md`, `../docs/plans/03_user-accounts.md`, and `../docs/plans/04_max-authorization.md`
+Read `README.md`, `../docs/plans/04_user-accounts.md`, and `../docs/plans/05_max-authorization.md`
 before a change. Write technical documents in STE-style English. Keep user-visible text in Russian.
 
 ## Rules

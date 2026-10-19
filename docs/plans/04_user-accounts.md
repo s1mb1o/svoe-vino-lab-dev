@@ -4,15 +4,15 @@ Date: 2026-10-19.
 Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/48.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
-Status: The authorization part of the service exists (`account/`, commit `abc49baa`). The diary
+Status: The authorization part of the service exists (`account/`, commit `64545eb5`). The diary
 data, the Web UI, and the deployment do not exist yet.
-Related plan: MAX authorization is in `04_max-authorization.md` (issue #50). It depends on this plan.
-Sketches: boards 1–4 in [`03_user-accounts/sketches/`](03_user-accounts/sketches/). The third
-screen of board 1 («Через MAX») belongs to plan 04. Board 1 still shows the earlier password
+Related plan: MAX authorization is in `05_max-authorization.md` (issue #50). It depends on this plan.
+Sketches: boards 1–4 in [`04_user-accounts/sketches/`](04_user-accounts/sketches/). The third
+screen of board 1 («Через MAX») belongs to plan 05. Board 1 still shows the earlier password
 login; the login screens change to «Войти по коду из письма» and «Войти с Яндекс ID». Rebuild the boards with
-`python3 docs/plans/03_user-accounts/sketches/build.py`. They are sketches, not a final design.
+`python3 docs/plans/04_user-accounts/sketches/build.py`. They are sketches, not a final design.
 Review: Codex (`gpt-6.1-sol`, xhigh) reviewed the combined plan twice on 2026-10-19. This plan
-and plan 04 apply the findings. The owner split the plan into these two parts on 2026-10-19.
+and plan 05 apply the findings. The owner split the plan into these two parts on 2026-10-19.
 
 ## Goal
 
@@ -46,7 +46,7 @@ In scope:
 Out of scope for this plan:
 
 - Everything about MAX: the mini app, MAX login, linking MAX, and saving bot searches.
-  See plan 04. Telegram linking: #51.
+  See plan 05. Telegram linking: #51.
 - Catalog-wide personal recommendations. The Web UI on `main` has no full catalog. Use the
   MCP `find_wines` tool or a later issue (#31, #25).
 - Passwords, Gosuslugi (ESIA) login, login through any foreign service, data export,
@@ -99,7 +99,7 @@ flowchart LR
 - All public traffic goes through the Nuxt server. The browser never sees the service URL.
 - The MCP client calls a public Nuxt route with an application token. Nuxt forwards the token.
 - The service does not call the matcher. The matcher and the bots do not need it.
-- Plan 04 adds the MAX bot as a second consumer.
+- Plan 05 adds the MAX bot as a second consumer.
 
 ## Failure isolation
 
@@ -134,7 +134,7 @@ standard `smtplib` for mail. The diary part adds Pillow and the `im-core` image 
 All IDs are random UUIDs. Times are UTC ISO 8601. Each schema change is a new numbered
 SQL file in `account/src/chto_za_vino_account/schema/`. Times are Unix seconds.
 
-Implemented (`001_initial.sql`), shared with plan 04:
+Implemented (`001_initial.sql`), shared with plan 05:
 
 | Table | Columns |
 | --- | --- |
@@ -145,7 +145,7 @@ Implemented (`001_initial.sql`), shared with plan 04:
 | `oauth_flows` | `id_hash`, `provider` (`yandex`), `state`, `code_verifier`, `redirect_uri`, `purpose`, `user_id`, `created_at`, `expires_at`, `used_at` |
 | `signup_tickets` | `token_hash`, `provider`, `subject`, `created_at`, `expires_at`, `used_at` |
 | `link_codes` | `code_hash`, `user_id`, `provider` (`telegram`), `created_at`, `expires_at`, `used_at` |
-| `used_launches` | `query_id`, `expires_at` (MAX, plan 04) |
+| `used_launches` | `query_id`, `expires_at` (MAX, plan 05) |
 
 Later (diary), in new schema files:
 
@@ -250,7 +250,7 @@ Later (diary):
 Pages:
 
 - `/account`: «Войти по коду из письма» (email field, then the code field) and
-  «Войти с Яндекс ID». Plan 04 adds «Через MAX».
+  «Войти с Яндекс ID». Plan 05 adds «Через MAX».
 - `/api/account/yandex/callback`: a Nuxt server route, the Redirect URI of the Yandex ID app.
   It reads `code` and `state` from the query and the flow ID from its cookie, calls
   `POST /v1/auth/yandex/finish`, sets the session cookie (or keeps the sign-up ticket in a
@@ -260,7 +260,7 @@ Pages:
 - `/account/onboarding`: preference steps.
 - `/account` after login: «История», «Оценки», «Предпочтения», «Настройки».
 - «Настройки»: «Email» (change), «Яндекс ID» (link or unlink), «Сохранять историю поисков
-  с фото», «Удалить все фото», «Удалить аккаунт», and application tokens (Phase 2). Plan 04
+  с фото», «Удалить все фото», «Удалить аккаунт», and application tokens (Phase 2). Plan 05
   adds «Привязать MAX»; #51 adds «Привязать Telegram».
 - Header entry on every page (owner requirement, 2026-10-19): «Дневник» in `.header-actions`
   (`webui/app/app.vue:25-29`). `app.vue` renders the header on `/`, `/shelf`, `/ideas`,
@@ -421,7 +421,7 @@ Phase 0 — decisions and owner setup:
 
 Phase 1 — accounts:
 
-4. Done (commit `abc49baa`): `account/` with config, schema, health, consumer auth, email code
+4. Done (commit `64545eb5`): `account/` with config, schema, health, consumer auth, email code
    and Yandex ID login, sign-up, sessions, linking, unlink, deletion, tests, Dockerfile.
 5. Searches with photos, moderation, limits, idempotency, deletion of searches and photos.
 6. Ratings, preferences, account deletion, operator removal CLI.
@@ -492,7 +492,7 @@ Recorded on 2026-10-19:
 4. Login: email code and Yandex ID, no passwords. Gosuslugi is not available to the
    self-employed owner.
 
-The decisions about MAX (the mini app and the public host `max.chtozavino.ru`) are in plan 04.
+The decisions about MAX (the mini app and the public host `max.chtozavino.ru`) are in plan 05.
 
 Open:
 
