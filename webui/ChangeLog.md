@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — /privacy: no backup mentions
+
+- Removed the iOS sentence «Если на устройстве включено резервное копирование, iOS может включить историю в резервную копию.» `/privacy` no longer mentions backups. A test keeps it so.
+
 ## 2026-10-19 — /privacy: no backup periods for «Винный дневник»
 
 - Removed «В резервных копиях эти данные хранятся не дольше 8 дней» and the table entry «в резервных копиях — не дольше 8 дней после удаления». The diary data is kept until the person deletes the diary. No backups during the hackathon (owner decision).
