@@ -65,7 +65,7 @@ export function validDinnerRequest(action: DinnerAction, body: unknown): body is
   if (body.confirmed_attributes !== undefined) {
     if (!object(body.confirmed_attributes)) return false
     for (const [key, value] of Object.entries(body.confirmed_attributes)) {
-      if (!attributes[key]?.includes(value as string | boolean)) return false
+      if (!Object.hasOwn(attributes, key) || !attributes[key]!.includes(value as string | boolean)) return false
     }
   }
   return true

@@ -2,7 +2,7 @@
 
 ## Wine for a dish
 
-Verified locally on 2026-10-19: 313 unit tests passed, 20 existing optional catalog snapshot tests skipped; type check, production build and bundle check passed. Five browser configurations passed in Chromium and WebKit with dark/light palettes and 320/390/1440-pixel viewports. Real gx10 checks exhausted all pages for ribeye (8 wines), Olivier (12) and king crab (12), and completed one photo recognition with confirmation. Physical camera capture remains a manual device check.
+Verified locally on 2026-10-19: 319 unit tests passed, 20 existing optional catalog snapshot tests skipped; type check, production build and bundle check passed. Five browser configurations passed in Chromium and WebKit with dark/light palettes and 320/390/1440-pixel viewports. Real gx10 checks exhausted all pages for ribeye (8 wines), Olivier (12) and king crab (12), and completed one photo recognition with confirmation. Physical camera capture remains a manual device check.
 
 1. At desktop widths and at 320/390-pixel mobile widths, confirm three visible mode links: «Одна бутылка», «Вся полка», «Вино к блюду». Confirm touch targets and no horizontal scrolling.
 2. Open `/dish`. Enter a dish or select the mobile camera/file input. Confirm that a photo proposes a label but shows no wine cards before confirmation.
@@ -12,6 +12,7 @@ Verified locally on 2026-10-19: 313 unit tests passed, 20 existing optional cata
 6. Disconnect the service and retry. Confirm a useful error, no mock result, and preserved cards when only a continuation fails.
 7. Check the browser HTML, `/api/config`, and API responses for absence of the private endpoint, token, model receipts and diagnostics.
 8. Run `npm run test:dinner` with Playwright and the documented live-check options. Check an actual phone camera separately.
+9. Type an unknown dish with no photo. Confirm visible clarification and focus on the category. Confirm that a typed correction clears the old category, that a failed selection keeps a corrected photo label, and that recognition retry appears only for a failed recognition. After the last discovery page, focus must reach its first new wine heading.
 
 ## Producer map loading
 

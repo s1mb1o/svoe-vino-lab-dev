@@ -13,6 +13,7 @@ describe('Dinner Lens request and response contracts', () => {
     expect(DINNER_CATEGORIES).toHaveLength(16)
     expect(DINNER_NODES.filter(node => node.kind === 'dish')).toHaveLength(200)
     expect(DINNER_NODES.every(node => !('curated' in node))).toBe(true)
+    expect(new Set(DINNER_NODES.map(node => node.label.toLocaleLowerCase('ru'))).size).toBe(DINNER_NODES.length)
   })
   it('accepts confirmed names or exact nodes and explicit sauce/negation constraints', () => {
     expect(validDinnerRequest('recommendations', { node_id: 'ribeye_grilled', limit: 3,
@@ -25,6 +26,10 @@ describe('Dinner Lens request and response contracts', () => {
     { node_id: 'ribeye_grilled', user_constraints: { stock: true } }, { node_id: 'ribeye_grilled', limit: 10 },
     { node_id: 'ribeye_grilled', confirmed_attributes: { fatty_cream_sauce: 'false' } },
   ])('rejects unknown fields and invalid dish/constraint values: %j', body => {
+    expect(validDinnerRequest('recommendations', body)).toBe(false)
+  })
+  it.each(['constructor', 'toString', 'hasOwnProperty', '__proto__'])('rejects inherited attribute keys without throwing: %s', key => {
+    const body = JSON.parse(`{"node_id":"ribeye_grilled","confirmed_attributes":{"${key}":true}}`)
     expect(validDinnerRequest('recommendations', body)).toBe(false)
   })
   it('does not accept remote photos or changed continuation filters', () => {

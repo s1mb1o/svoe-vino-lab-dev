@@ -29,6 +29,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
   const request = dependencies.fetch || globalThis.fetch
   const prepare = dependencies.prepare || prepareDishPhoto
   const dish = ref(''); const preview = ref(''); const error = ref(''); const question = ref('')
+  const failedAction = ref<'recognizing' | 'loading' | 'more' | null>(null)
   const phase = ref<'idle' | 'recognizing' | 'confirm' | 'loading' | 'more' | 'ready'>('idle')
   const wines = shallowRef<DinnerWine[]>([])
   const page = shallowRef<DinnerPage | null>(null)
@@ -39,6 +40,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
   function cancel() {
     generation++; controller?.abort(); controller = undefined
     error.value = ''
+    failedAction.value = null
     phase.value = page.value ? 'ready' : dish.value || preview.value ? 'confirm' : 'idle'
   }
   function invalidate() { cancel(); page.value = null; wines.value = []; question.value = ''; phase.value = dish.value || preview.value ? 'confirm' : 'idle' }
@@ -54,7 +56,9 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
     const response = await request('/api/dinner/' + path, { method: 'POST', body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' }, signal: active.signal })
     if (!response.ok) throw new Error(message(response.status))
-    const value = parseDinnerPage(await response.json())
+    let raw: unknown
+    try { raw = await response.json() } catch { throw new Error('Пришёл неполный результат. Попробуйте ещё раз.') }
+    const value = parseDinnerPage(raw)
     if (!value) throw new Error('Пришёл неполный результат. Попробуйте ещё раз.')
     return value
   }
@@ -65,6 +69,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
     try { await work(active, current) }
     catch (failure) {
       if (current !== generation) return
+      failedAction.value = mode
       error.value = active.signal.aborted ? 'Время ожидания истекло. Попробуйте ещё раз.'
         : failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Нет связи с сервисом. Проверьте соединение.'
       phase.value = page.value ? 'ready' : dish.value || preview.value ? 'confirm' : 'idle'
@@ -114,5 +119,5 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
     })
   }
   onScopeDispose(cancel)
-  return { dish, preview, error, question, phase, page, wines, busy, file, recognize, select, recommend, more, cancel, invalidate, reset }
+  return { dish, preview, error, question, phase, page, wines, busy, file, failedAction, recognize, select, recommend, more, cancel, invalidate, reset }
 }

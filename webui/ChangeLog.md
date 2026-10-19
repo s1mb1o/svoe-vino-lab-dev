@@ -7,8 +7,9 @@
 - Add photo normalization, explicit dish confirmation, manual/category input, sauce and wine constraints, exact source-linked wine cards and signed-cursor continuation.
 - Preserve cancellation, replacement and retry. Clear stale wine cards and cursors after a dish/filter change. Keep existing cards when a continuation fails.
 - Export only the 320 taxonomy labels; all wine selection stays in Dinner Lens. Read `docs/dinner-lens.md`.
-- Pass 313 unit tests (20 existing optional snapshot tests skipped), the type check, the production build and the bundle check. Pass desktop Chromium, 320-pixel mobile Chromium and 390-pixel mobile WebKit checks, including light and dark themes.
+- Pass 319 unit tests (20 existing optional snapshot tests skipped), the type check, the production build and the bundle check. Pass desktop Chromium, 320-pixel mobile Chromium and 390-pixel mobile WebKit checks, including light and dark themes.
 - Verify the real gx10 service through the portal proxy: ribeye 8 wines across 3 pages, Olivier 12 across 4, and king crab 12 across 4. Verify one real photo recognition followed by explicit confirmation without a second vision call.
+- Apply the Opus review fixes: show manual unknown-dish clarification and focus its category control; restore focus after photo removal, cancellation and discovery pages; preserve corrected names on recommendation failures; reject inherited attribute keys and localize malformed responses.
 
 ## 2026-10-19 — Map load retry
 

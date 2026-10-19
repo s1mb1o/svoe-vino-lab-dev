@@ -3,22 +3,41 @@ import { DINNER_CATEGORIES, DINNER_NODES, dinnerNode, type DinnerSelection } fro
 
 defineProps<{ available: boolean }>()
 const scanner = useDinnerLens()
-const { dish, preview, phase, page, wines, error, question, busy, file } = scanner
+const { dish, preview, phase, page, wines, error, question, busy, file, failedAction } = scanner
 const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<HTMLInputElement>()
+const uploadButton = ref<HTMLButtonElement>(); const categoryInput = ref<HTMLSelectElement>(); const resultRegion = ref<HTMLElement>()
+const announcement = ref('')
 const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '', color: '', sweetness: '', kind: '', excludeProducer: '' })
 const resultHeading = ref<HTMLElement>()
 const category = ref('')
 function selectPhoto(event: Event) {
   const input = event.target as HTMLInputElement
+  category.value = ''; announcement.value = ''
   const files = Array.from(input.files || []); input.value = ''; void scanner.select(files)
 }
 function chooseCategory(event: Event) {
   const node = dinnerNode((event.target as HTMLSelectElement).value)
   if (node) { dish.value = node.label; scanner.invalidate(); dishInput.value?.focus() }
 }
-function update() { if (phase.value !== 'recognizing') scanner.invalidate() }
+function update() { announcement.value = ''; if (phase.value !== 'recognizing') scanner.invalidate() }
+function editDish() { category.value = ''; update() }
+async function removePhoto() { scanner.reset(); category.value = ''; announcement.value = ''; await nextTick(); uploadButton.value?.focus() }
+async function cancel() { scanner.cancel(); await nextTick(); dishInput.value?.focus() }
+const progressMessage = computed(() => phase.value === 'recognizing' ? 'Рассматриваем блюдо. Название можно будет исправить.' : phase.value === 'more' ? 'Ищем следующие подходящие вина.' : 'Подбираем вино с учётом блюда и соуса.')
+const statusMessage = computed(() => busy.value ? progressMessage.value : announcement.value || (question.value ? (preview.value && dish.value ? `Похоже на: ${dish.value}. ` : '') + question.value : ''))
+watch(phase, async (value, previous) => { if (previous === 'recognizing' && ['confirm', 'idle'].includes(value)) { await nextTick(); (error.value ? uploadButton.value : dishInput.value)?.focus() } })
+async function showMore() {
+  if (busy.value) return
+  const before = wines.value.length
+  await scanner.more()
+  if (wines.value.length > before) {
+    announcement.value = `Добавлено вин: ${wines.value.length - before}. Всего показано: ${wines.value.length}.`
+    await nextTick(); resultRegion.value?.querySelectorAll<HTMLElement>('.dinner-wine h3')[before]?.focus({ preventScroll: true })
+  }
+}
 async function submit() {
   if (!dish.value.trim()) { dishInput.value?.focus(); return }
+  announcement.value = ''
   const attributes: Record<string, string | boolean> = {}
   if (settings.heat) attributes.heat = settings.heat
   if (settings.acidity) attributes.acidity = settings.acidity
@@ -29,10 +48,12 @@ async function submit() {
   if (settings.sweetness) constraints.sweetness = settings.sweetness
   if (settings.kind) constraints.wine_kind = settings.kind
   if (settings.excludeProducer.trim()) constraints.exclude_producer = settings.excludeProducer.trim()
-  const exact = DINNER_NODES.find(node => node.label.toLocaleLowerCase('ru') === dish.value.trim().toLocaleLowerCase('ru'))
+  const categoryNode = dinnerNode(category.value)
+  const exact = categoryNode?.label === dish.value ? categoryNode : DINNER_NODES.find(node => node.label.toLocaleLowerCase('ru') === dish.value.trim().toLocaleLowerCase('ru'))
   const selection: DinnerSelection = { ...(exact ? { node_id: exact.id } : { confirmed_dish: dish.value.trim() }),
     confirmed_attributes: attributes, user_constraints: constraints }
   await scanner.recommend(selection)
+  if (page.value?.status === 'needs_category') { await nextTick(); categoryInput.value?.focus(); return }
   if (phase.value === 'ready') { await nextTick(); resultHeading.value?.focus({ preventScroll: true }); resultHeading.value?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }) }
 }
 const labels: Record<string, string> = { red: 'Красное', white: 'Белое', rose: 'Розовое', orange: 'Оранжевое', dry: 'Сухое', semi_dry: 'Полусухое', semi_sweet: 'Полусладкое', sweet: 'Сладкое', brut: 'Брют', extra_brut: 'Экстра-брют', brut_nature: 'Брют натюр', still: 'Тихое', sparkling: 'Игристое' }
@@ -41,28 +62,29 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 
 <template>
   <section class="dinner-scanner" aria-label="Вино к блюду">
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ statusMessage }}</p>
     <p v-if="!available" class="dinner-notice" role="status"><AppIcon name="info" />Подбор вина временно недоступен. Попробуйте позже.</p>
     <div class="dinner-entry">
       <div class="dinner-photo-panel">
-        <div v-if="preview" class="dinner-preview"><img :src="preview" alt="Выбранное фото блюда"><button class="button secondary" type="button" @click="scanner.reset(); category = ''">Убрать фото<AppIcon name="close" /></button></div>
+        <div v-if="preview" class="dinner-preview"><img :src="preview" alt="Выбранное фото блюда"><button class="button secondary" type="button" @click="removePhoto">Убрать фото<AppIcon name="close" /></button></div>
         <div v-else class="dinner-photo-placeholder" aria-hidden="true"><div class="dinner-plate"><AppIcon name="food" /></div></div>
         <div class="dinner-photo-copy"><p class="step-label">НАЧНИТЕ С БЛЮДА</p><h2>Ваш стол.<br> <span>Подходящее вино.</span></h2><p>Покажите блюдо, а затем подтвердите название и соус. Или сразу введите название рядом.</p></div>
-        <div class="upload-actions dinner-upload-actions"><button class="button primary" type="button" :disabled="!available" @click="upload?.click()"><AppIcon name="upload" />{{ preview ? 'Заменить фото' : 'Загрузить фото' }}</button><button class="button secondary camera-action" type="button" :disabled="!available" @click="camera?.click()"><AppIcon name="camera" />Снять блюдо</button></div>
+        <div class="upload-actions dinner-upload-actions"><button ref="uploadButton" class="button primary" type="button" :disabled="!available" @click="upload?.click()"><AppIcon name="upload" />{{ preview ? 'Заменить фото' : 'Загрузить фото' }}</button><button class="button secondary camera-action" type="button" :disabled="!available" @click="camera?.click()"><AppIcon name="camera" />Снять блюдо</button></div>
         <input ref="upload" class="sr-only" tabindex="-1" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Фото блюда" @change="selectPhoto">
         <input ref="camera" class="sr-only" tabindex="-1" type="file" accept="image/jpeg,image/png" capture="environment" aria-label="Снять блюдо камерой" @change="selectPhoto">
         <p class="upload-hint">JPEG, PNG, WebP · до 10 МБ</p>
-        <button v-if="file && !busy && (error || !dish.trim())" class="example-button" type="button" :disabled="!available" @click="scanner.recognize()">Повторить распознавание<AppIcon name="arrow" /></button>
+        <button v-if="file && !busy && failedAction === 'recognizing'" class="example-button" type="button" :disabled="!available" @click="scanner.recognize()">Повторить распознавание<AppIcon name="arrow" /></button>
       </div>
       <form class="dinner-form" @submit.prevent="submit" @change="update">
         <p class="step-label">{{ preview ? 'ПРОВЕРЬТЕ БЛЮДО И СОУС' : 'ИЛИ НАЗОВИТЕ БЛЮДО' }}</p>
         <h2>{{ preview ? 'Всё верно?' : 'Что сегодня на столе?' }}</h2>
-        <p v-if="question" class="dinner-question" role="status">{{ question }}</p>
+        <p v-if="question" class="dinner-question">{{ question }}</p>
         <label for="dinner-dish">Название блюда</label>
-        <input id="dinner-dish" ref="dishInput" v-model="dish" list="dinner-dishes" type="search" maxlength="500" placeholder="Например, стейк рибай на гриле" :disabled="!available || phase === 'recognizing'" required autocomplete="off" @input="update">
+        <input id="dinner-dish" ref="dishInput" v-model="dish" list="dinner-dishes" type="search" maxlength="500" placeholder="Например, стейк рибай на гриле" :disabled="!available || phase === 'recognizing'" required autocomplete="off" @input="editDish">
         <datalist id="dinner-dishes"><option v-for="node in DINNER_NODES" :key="node.id" :value="node.label" /></datalist>
         <p class="dinner-field-hint">Фотография не раскрывает состав блюда. Уточните название, прежде чем выбирать вино.</p>
         <label for="dinner-category">Можно выбрать общую категорию</label>
-        <select id="dinner-category" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
+        <select id="dinner-category" ref="categoryInput" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
         <details class="dinner-options"><summary>Уточнить соус и вино<AppIcon name="filter" /></summary><div class="dinner-options-grid">
           <label>Острота<select aria-label="Острота" v-model="settings.heat" :disabled="!available"><option value="">Как в рецепте</option><option value="none">Неострое</option><option value="low">Слегка острое</option><option value="medium">Умеренно острое</option><option value="high">Острое</option></select></label>
           <label>Сливочный соус<select aria-label="Сливочный соус" v-model="settings.cream" :disabled="!available"><option value="">Как в рецепте</option><option value="yes">Со сливочным соусом</option><option value="no">Без сливочного соуса</option></select></label>
@@ -77,20 +99,20 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <p class="dinner-field-hint">Рецепт, соус и острота влияют на сочетание. Выбор можно изменить.</p>
       </form>
     </div>
-    <div v-if="busy" class="dinner-progress" role="status" aria-live="polite"><span class="spinner" /><p>{{ phase === 'recognizing' ? 'Рассматриваем блюдо. Название можно будет исправить.' : phase === 'more' ? 'Ищем следующие подходящие вина.' : 'Подбираем вино с учётом блюда и соуса.' }}</p><button class="button secondary" type="button" @click="scanner.cancel()">Отменить</button></div>
+    <div v-if="busy" class="dinner-progress"><span class="spinner" /><p>{{ progressMessage }}</p><button class="button secondary" type="button" @click="cancel">Отменить</button></div>
     <p v-if="error" class="dinner-error" role="alert">{{ error }}</p>
-    <section v-if="phase === 'ready' || wines.length" class="dinner-results" aria-label="Подобранные вина">
+    <section v-if="phase === 'ready' || wines.length" ref="resultRegion" class="dinner-results" aria-label="Подобранные вина">
       <p class="step-label">К ВАШЕМУ СТОЛУ</p><h2 ref="resultHeading" tabindex="-1">Вино к вашему блюду</h2><p class="dinner-result-context">{{ selectedLabel }}</p>
       <p v-if="page?.status === 'no_results'" class="dinner-notice" role="status">Подтверждённых сочетаний с этими условиями пока нет. Попробуйте уточнить блюдо или изменить ограничения.</p>
       <p v-else-if="page?.needs_clarification && question" class="dinner-field-hint">{{ question }}</p>
       <div class="dinner-wines"><article v-for="wine in wines" :key="wine.wine_slug" class="dinner-wine">
         <div class="dinner-wine-top"><AppIcon name="taste" /><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span></div>
-        <p class="dinner-producer">{{ wine.producer }}</p><h3>{{ wine.name }}</h3>
+        <p class="dinner-producer">{{ wine.producer }}</p><h3 tabindex="-1">{{ wine.name }}</h3>
         <p class="dinner-wine-facts">{{ labels[wine.facts.color] }} · {{ labels[wine.facts.sweetness] }} · {{ labels[wine.facts.wine_kind] }}<template v-if="wine.facts.alcohol_percent !== null"> · {{ wine.facts.alcohol_percent }}%</template></p>
         <p v-if="wine.facts.reported_grapes.length" class="dinner-grapes">{{ wine.facts.reported_grapes.join(', ') }}</p>
-        <p class="dinner-reason">{{ wine.reason }}</p><a :href="wine.source_url" class="button secondary" target="_blank" rel="noopener noreferrer">Карточка вина<AppIcon name="arrow-up-right" /></a>
+        <p class="dinner-reason">{{ wine.reason }}</p><a :href="wine.source_url" class="button secondary" :aria-label="`Карточка вина: ${wine.name} (откроется в новой вкладке)`" target="_blank" rel="noopener noreferrer">Карточка вина<AppIcon name="arrow-up-right" /></a>
       </article></div>
-      <button v-if="page?.next_cursor" class="button secondary dinner-more" type="button" :disabled="busy" @click="scanner.more()">Показать ещё<AppIcon name="arrow" /></button>
+      <button v-if="page?.next_cursor" class="button secondary dinner-more" type="button" :aria-disabled="busy" @click="showMore">Показать ещё<AppIcon name="arrow" /></button>
       <p v-else-if="wines.length" class="dinner-field-hint dinner-end">Все подходящие варианты из текущей подборки показаны.</p>
       <p v-if="wines.length" class="dinner-field-hint dinner-end">Сочетания основаны на данных карточек и правилах подбора. Наличие и цены уточняйте отдельно.</p>
     </section>

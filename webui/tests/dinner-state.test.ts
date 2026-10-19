@@ -80,6 +80,21 @@ describe('dish confirmation and wine pagination', () => {
     await lens.recommend({ node_id: 'ribeye_grilled' })
     expect(lens.wines.value).toEqual([]); expect(lens.error.value).toContain('недоступен')
   })
+  it('distinguishes selection failures from recognition failures and keeps a corrected dish', async () => {
+    const request = vi.fn().mockResolvedValueOnce(reply()).mockResolvedValueOnce(new Response('', { status: 503 }))
+    const { lens } = setup(request)
+    await lens.select([photo()]); lens.dish.value = 'User-corrected dish'
+    await lens.recommend({ confirmed_dish: lens.dish.value })
+    expect(lens.failedAction.value).toBe('loading')
+    expect(lens.dish.value).toBe('User-corrected dish')
+    expect(request).toHaveBeenCalledTimes(2)
+  })
+  it('localizes malformed successful responses without exposing a parser error', async () => {
+    const { lens } = setup(vi.fn().mockResolvedValue(new Response('<html>Proxy failure</html>')))
+    await lens.recommend({ node_id: 'ribeye_grilled' })
+    expect(lens.error.value).toBe('Пришёл неполный результат. Попробуйте ещё раз.')
+    expect(lens.wines.value).toEqual([])
+  })
   it('rejects unsupported images before browser decode or provider work', async () => {
     await expect(prepareDishPhoto(new File(['fixture'], 'food.svg', { type: 'image/svg+xml' }))).rejects.toThrow('JPEG')
     await expect(prepareDishPhoto(new File([], 'empty.jpg', { type: 'image/jpeg' }))).rejects.toThrow('10 МБ')
