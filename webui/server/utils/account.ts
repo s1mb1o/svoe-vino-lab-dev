@@ -175,12 +175,23 @@ export function checkOrigin(event: H3Event, config: AccountConfig): void {
   if (origin !== config.publicOrigin && origin !== own) throw new AccountHttpError(403, 'origin_rejected')
 }
 
-function cookieOptions(maxAge: number, sameSite: 'lax' | 'strict' = 'lax') {
-  return { httpOnly: true, secure: true, sameSite, path: '/', maxAge: Math.max(0, Math.floor(maxAge)) }
+// MAX runs the mini app in a frame of its own site. There the browser drops a SameSite=Lax or
+// Strict cookie, so the email code fails with invalid_challenge (owner report, 2026-10-20). On the
+// mini-app host (marked by maxHostGuard) the cookies are SameSite=None and Partitioned: the browser
+// keeps them per top-level site, and checkOrigin still refuses a cross-site state change.
+function embedded(event: H3Event): boolean {
+  return event.context.accountEmbedded === true
+}
+
+function cookieOptions(event: H3Event, maxAge: number, sameSite: 'lax' | 'strict' = 'lax') {
+  const base = { httpOnly: true, secure: true, path: '/', maxAge: Math.max(0, Math.floor(maxAge)) }
+  return embedded(event) ? { ...base, sameSite: 'none' as const, partitioned: true } : { ...base, sameSite }
 }
 
 function clearCookie(event: H3Event, name: string) {
-  deleteCookie(event, name, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' })
+  deleteCookie(event, name, embedded(event)
+    ? { httpOnly: true, secure: true, sameSite: 'none', partitioned: true, path: '/' }
+    : { httpOnly: true, secure: true, sameSite: 'lax', path: '/' })
 }
 
 function secondsUntil(iso: unknown, fallback: number): number {
@@ -229,12 +240,12 @@ type AuthAnswer = {
 /** Keeps the session or the sign-up ticket in httpOnly cookies. The browser gets neither value. */
 function applyAuthAnswer(event: H3Event, answer: AuthAnswer) {
   if (answer.status === 'session' && typeof answer.session?.token === 'string') {
-    setCookie(event, ACCOUNT_COOKIES.session, answer.session.token, cookieOptions(sessionCookieAge(answer.session.expires_at)))
+    setCookie(event, ACCOUNT_COOKIES.session, answer.session.token, cookieOptions(event, sessionCookieAge(answer.session.expires_at)))
     clearCookie(event, ACCOUNT_COOKIES.signup)
     return { status: 'session' as const, user: answer.user }
   }
   if (answer.status === 'signup_required' && typeof answer.signup_ticket === 'string') {
-    setCookie(event, ACCOUNT_COOKIES.signup, answer.signup_ticket, cookieOptions(SIGNUP_TTL_SECONDS))
+    setCookie(event, ACCOUNT_COOKIES.signup, answer.signup_ticket, cookieOptions(event, SIGNUP_TTL_SECONDS))
     return { status: 'signup_required' as const, provider: answer.provider, email: answer.email }
   }
   if (answer.status === 'linked') return { status: 'linked' as const, user: answer.user }
@@ -295,7 +306,7 @@ export function meRoute(event: H3Event, source: AccountConfigSource) {
     if (!session) throw new AccountHttpError(401, 'session_required')
     try {
       const { data } = await callAccount<{ user?: unknown; session?: { auth_method?: string; expires_at?: string } }>(config, 'GET', '/v1/me', { session })
-      setCookie(event, ACCOUNT_COOKIES.session, session, cookieOptions(sessionCookieAge(data.session?.expires_at)))
+      setCookie(event, ACCOUNT_COOKIES.session, session, cookieOptions(event, sessionCookieAge(data.session?.expires_at)))
       return { user: data.user, session: { authMethod: data.session?.auth_method, expiresAt: data.session?.expires_at } }
     } catch (error) {
       if (error instanceof AccountHttpError && error.status === 401) clearCookie(event, ACCOUNT_COOKIES.session)
@@ -415,6 +426,7 @@ export function maxHostGuard(event: H3Event, maxHost: string) {
     if (isMaxAppPath(path)) return sendRedirect(event, '/account', 302)
     return
   }
+  event.context.accountEmbedded = true
   const raw = (event.node.req.url ?? '/').split('?')[0] ?? '/'
   const decision = UNSAFE_PATH.test(raw) ? 'reject' : maxHostDecision(event.method, path)
   if (decision === 'redirect') return sendRedirect(event, '/max', 302)
@@ -572,7 +584,7 @@ export function emailStartRoute(event: H3Event, source: AccountConfigSource) {
     )
     if (typeof data.challenge_id !== 'string') throw unavailable()
     const expiresIn = typeof data.expires_in === 'number' ? data.expires_in : 600
-    setCookie(event, ACCOUNT_COOKIES.email, data.challenge_id, cookieOptions(expiresIn, 'strict'))
+    setCookie(event, ACCOUNT_COOKIES.email, data.challenge_id, cookieOptions(event, expiresIn, 'strict'))
     return { expiresIn }
   })
 }
@@ -642,8 +654,8 @@ export async function yandexStartRoute(event: H3Event, source: AccountConfigSour
     const target = typeof data.authorize_url === 'string' ? new URL(data.authorize_url) : null
     if (!target || target.protocol !== 'https:' || target.hostname !== 'oauth.yandex.ru' || typeof data.flow_id !== 'string') throw unavailable()
     const ttl = typeof data.expires_in === 'number' ? data.expires_in : 600
-    setCookie(event, ACCOUNT_COOKIES.yandex, data.flow_id, cookieOptions(ttl))
-    setCookie(event, ACCOUNT_COOKIES.next, safeNextPath(getQuery(event).next), cookieOptions(ttl))
+    setCookie(event, ACCOUNT_COOKIES.yandex, data.flow_id, cookieOptions(event, ttl))
+    setCookie(event, ACCOUNT_COOKIES.next, safeNextPath(getQuery(event).next), cookieOptions(event, ttl))
     return sendRedirect(event, target.href, 302)
   } catch (error) {
     return sendRedirect(event, accountPage(error instanceof AccountHttpError ? error.code : 'account_unavailable'), 302)

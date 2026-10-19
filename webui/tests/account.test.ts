@@ -589,6 +589,45 @@ describe('MAX mini-app host', () => {
   })
 })
 
+describe('cookies on the MAX mini-app host', () => {
+  // MAX runs the mini app in a frame of its own site: the cookies must be SameSite=None and Partitioned.
+  let app: Server
+  let url = ''
+  beforeAll(async () => {
+    const h3 = createApp()
+    const maxSource: AccountConfigSource = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru', maxHost: '127.0.0.1' }, { timeoutMs: 300 })
+    h3.use(eventHandler(event => maxHostGuard(event, '127.0.0.1')))
+    const router = createRouter()
+    router.post('/api/account/email/start', eventHandler(event => emailStartRoute(event, maxSource)))
+    router.post('/api/account/email/verify', eventHandler(event => emailVerifyRoute(event, maxSource)))
+    h3.use(router)
+    app = createServer(toNodeListener(h3))
+    url = await listen(app)
+  })
+  afterAll(async () => {
+    app.closeAllConnections()
+    await new Promise<void>(resolve => app.close(() => resolve()))
+  })
+  it('sets and clears the email and session cookies with SameSite=None and Partitioned', async () => {
+    const origin = new URL(url).origin
+    reply = () => ({ status: 200, body: { challenge_id: 'c'.repeat(32), expires_in: 600 } })
+    const start = await fetch(`${url}/api/account/email/start`, { method: 'POST', body: '{"email":"a@example.com"}', headers: { 'content-type': 'application/json', origin } })
+    expect(start.status).toBe(200)
+    const challenge = cookies(start).find(item => item.startsWith('__Host-cv_email='))!
+    expect(challenge).toMatch(/SameSite=None/i)
+    expect(challenge).toMatch(/Partitioned/i)
+    expect(challenge).toMatch(/Secure/i)
+    reply = () => ({ status: 200, body: { status: 'session', session: { token: 's'.repeat(43), expires_at: new Date(Date.now() + 86400e3).toISOString(), auth_method: 'email' }, user: { id: 'u', username: 'anna', identities: [] } } })
+    const verify = await fetch(`${url}/api/account/email/verify`, { method: 'POST', body: '{"code":"123456"}', headers: { 'content-type': 'application/json', origin, cookie: `__Host-cv_email=${'c'.repeat(32)}` } })
+    expect(verify.status).toBe(200)
+    const session = cookies(verify).find(item => item.startsWith('__Host-cv_session='))!
+    expect(session).toMatch(/SameSite=None/i)
+    expect(session).toMatch(/Partitioned/i)
+    const cleared = cookies(verify).find(item => item.startsWith('__Host-cv_email=;'))!
+    expect(cleared).toMatch(/Partitioned/i)
+  })
+})
+
 describe('MAX host guard as middleware', () => {
   let guarded: Server
   let guardedPort = 0

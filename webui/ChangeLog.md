@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-20 — Email login inside the MAX mini app
+
+- MAX runs the mini app in a frame of its own site, and the browser dropped the SameSite=Strict challenge cookie: the code always gave «Этот код больше не действует» (owner report; access log: no Cookie on `/api/account/email/verify`). On the mini-app host the account cookies are now `SameSite=None; Partitioned`. The main site keeps Lax and Strict. `checkOrigin` still refuses cross-site state changes. 140 account tests, typecheck.
+
 ## 2026-10-20 — Centered MAX QR code
 
 - The QR code of the MAX mini-app link is centered in the card: on `/max` outside MAX and in «Привязать мессенджер» → «MAX» (owner report).
