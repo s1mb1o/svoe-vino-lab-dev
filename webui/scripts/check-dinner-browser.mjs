@@ -44,6 +44,13 @@ async function modeLayout(page, width) {
   for (const button of await page.locator('.dinner-choice').all()) {
     const box = await button.boundingBox()
     assert(box && box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width + 1, 'Each preference must fit and have a 44px touch target')
+    assert(await button.locator('span').evaluate(span => span.scrollWidth <= span.clientWidth + 1), 'Preference labels must fit inside their button')
+  }
+  if (await page.locator('.dinner-preferences').count()) {
+    assert(await page.locator('.dinner-preferences').evaluate(element => {
+      const dark = document.documentElement.dataset.theme === 'dark'
+      return getComputedStyle(element).getPropertyValue('--wine-red').trim() === (dark ? '#e48393' : '#ae4253')
+    }), 'Wine swatches must use the current theme')
   }
 }
 
@@ -125,11 +132,22 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await choose(sugar, 'Брют').click()
     assert.equal(await choose(kinds, 'Игристое').getAttribute('aria-pressed'), 'true')
     await recommend(combined, { color: 'white', wine_kind: 'sparkling', sweetness: 'brut' })
+    await choose(kinds, 'Игристое').click()
+    assert.equal(await choose(sugar, 'Брют').getAttribute('aria-pressed'), 'false')
+    await recommend(combined, { color: 'white' })
+    await choose(sugar, 'Брют').click()
     await choose(kinds, 'Тихое').click()
     assert.equal(await choose(sugar, 'Брют').getAttribute('aria-pressed'), 'false')
     await recommend(combined, { color: 'white', wine_kind: 'still' })
     await choose(colors, 'Белое').click(); await choose(kinds, 'Тихое').click()
     await recommend(combined)
+    if (name === 'desktop-chromium') {
+      await page.emulateMedia({ forcedColors: 'active' })
+      const pressed = choose(taste, 'Сливочный')
+      await pressed.focus()
+      assert.equal(await pressed.evaluate(button => getComputedStyle(button).outlineOffset), '4px', 'High-contrast focus must remain separate from the pressed indicator')
+      await page.emulateMedia({ forcedColors: 'none' })
+    }
     await modeLayout(page, viewport.width)
     await page.screenshot({ path: resolve(output, name + '-dish.png'), fullPage: true })
     await page.locator('.dinner-form').screenshot({ path: resolve(output, name + '-preferences.png') })

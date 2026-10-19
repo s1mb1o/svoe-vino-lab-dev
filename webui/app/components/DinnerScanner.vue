@@ -28,7 +28,7 @@ function toggleWine(key: 'color' | 'kind' | 'sweetness', value: string) {
   settings[key] = settings[key] === value ? '' : value
   // Brut categories describe sparkling wine. Keep explicit preferences compatible.
   if (key === 'sweetness' && ['brut', 'extra_brut', 'brut_nature'].includes(settings.sweetness)) settings.kind = 'sparkling'
-  if (key === 'kind' && settings.kind === 'still' && ['brut', 'extra_brut', 'brut_nature'].includes(settings.sweetness)) settings.sweetness = ''
+  if (key === 'kind' && settings.kind !== 'sparkling' && ['brut', 'extra_brut', 'brut_nature'].includes(settings.sweetness)) settings.sweetness = ''
   update()
 }
 const resultHeading = ref<HTMLElement>()
@@ -127,7 +127,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
         <label for="dinner-category">Можно выбрать общую категорию</label>
         <select id="dinner-category" ref="categoryInput" v-model="category" :disabled="!available || phase === 'recognizing'" @change="chooseCategory"><option value="">Выберите, если точное блюдо неизвестно</option><option v-for="node in DINNER_CATEGORIES" :key="node.id" :value="node.id">{{ node.label }}</option></select>
         <div class="dinner-preferences" lang="ru">
-          <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint">
+          <fieldset class="dinner-preference-row" aria-describedby="dinner-taste-hint dinner-wine-hint">
             <legend>Вкус и соус</legend>
             <div class="dinner-choices">
               <button v-for="preset in tastePresets" :key="preset.label" class="dinner-choice" type="button" :aria-pressed="settings[preset.key] === preset.value" :disabled="!available" @click="toggleTaste(preset)"><AppIcon :name="preset.icon" /><span>{{ preset.label }}</span></button>
@@ -200,16 +200,16 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-field-hint { color: var(--muted); font-size: 12px; line-height: 1.65; margin-top: 10px; }
 .dinner-question { color: var(--accent); line-height: 1.6; font-size: 14px; }
 .dinner-preferences { margin-top: 28px; --wine-red: #ae4253; --wine-white: #a4801f; --wine-rose: #c4687f; --wine-orange: #bd672b; }
-:global([data-theme='dark']) .dinner-preferences { --wine-red: #e48393; --wine-white: #dfc16f; --wine-rose: #e9a0b2; --wine-orange: #eba968; }
+:global([data-theme='dark'] .dinner-preferences) { --wine-red: #e48393; --wine-white: #dfc16f; --wine-rose: #e9a0b2; --wine-orange: #eba968; }
 .dinner-preference-row { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
 .dinner-preference-row legend { padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
 .dinner-choices { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
 .dinner-choice { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 86px; padding: 12px 3px 9px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 11px; line-height: 1.35; text-align: center; }
-.dinner-choice span { hyphens: auto; overflow-wrap: break-word; }
+.dinner-choice span { max-width: 100%; hyphens: auto; overflow-wrap: break-word; }
 .dinner-choice .icon { width: 25px; height: 25px; color: var(--accent); }
 .dinner-choice[aria-pressed="true"] { border-color: var(--accent); background: var(--cream); box-shadow: inset 0 0 0 1px var(--accent); }
 .dinner-choice[aria-pressed="true"]::after { content: ''; position: absolute; top: 5px; right: 6px; width: 4px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg); }
-@media (forced-colors: active) { .dinner-choice[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; } .dinner-choice[aria-pressed="true"]::after { border-color: Highlight; } }
+@media (forced-colors: active) { .dinner-choice[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; } .dinner-choice[aria-pressed="true"]:focus-visible { outline: 2px solid CanvasText; outline-offset: 4px; } .dinner-choice[aria-pressed="true"]::after { border-color: Highlight; } }
 @media (hover: hover) { .dinner-choice:hover:not(:disabled) { border-color: var(--accent); background: var(--cream); } }
 .dinner-wine-choices { display: grid; grid-template-columns: 4fr 2fr; gap: 18px; }
 .dinner-color-choices, .dinner-kind-choices { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
