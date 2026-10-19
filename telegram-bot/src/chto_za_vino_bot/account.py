@@ -28,6 +28,12 @@ CONFIRM_PREFIX = "lk:y:"
 CANCEL_DATA = "lk:n"
 ACCOUNT_TIMEOUT_SECONDS = 2.0
 MAX_RESPONSE_BYTES = 16 * 1024
+# Refusals that a person can act on. Any other answer is a fault of the service or the settings.
+KNOWN_REFUSALS = frozenset(
+    {"invalid_link_code", "identity_in_use", "provider_already_linked", "provider_disabled"}
+)
+# Account calls that run at the same time. They share the HTTP pool with the photo pipeline.
+MAX_ACCOUNT_TASKS = 8
 
 LINK_CONFIRM_TEXT = (
     "Привязать этот Telegram к дневнику «<b>{username}</b>»?\n\n"
@@ -44,6 +50,9 @@ LINK_INVALID_TEXT = (
 )
 LINK_IN_USE_TEXT = (
     "Этот Telegram уже привязан к другому дневнику. Сначала отвяжите его командой /unlink."
+)
+LINK_TAKEN_TEXT = (
+    "К этому дневнику уже привязан другой Telegram. Отвяжите его на странице дневника: " + DIARY_URL
 )
 LINK_UNAVAILABLE_TEXT = (
     "Дневник временно недоступен. Попробуйте позже. Распознавание вина по фото работает."
@@ -108,7 +117,9 @@ class AccountClient:
         if response.status_code == 422:
             raise AccountRejected("invalid_link_code")
         if response.status_code >= 400:
-            raise AccountRejected(code or "request_rejected")
+            if code in KNOWN_REFUSALS:
+                raise AccountRejected(code)
+            raise AccountUnavailable(f"HTTP {response.status_code} {code}".strip())
         return data
 
     async def claim(self, code: str, telegram_user_id: int) -> str:
@@ -157,6 +168,8 @@ def confirm_keyboard(code: str) -> InlineKeyboardMarkup:
 def _rejection_text(code: str) -> str:
     if code == "identity_in_use":
         return LINK_IN_USE_TEXT
+    if code == "provider_already_linked":
+        return LINK_TAKEN_TEXT
     if code == "provider_disabled":
         return LINK_OFF_TEXT
     return LINK_INVALID_TEXT
@@ -259,17 +272,18 @@ async def handle_unlink_command(message: Message, account: AccountClient | None)
 class BackgroundTasks:
     """Runs account calls outside the update dispatcher, which handles one update at a time."""
 
-    def __init__(self) -> None:
+    def __init__(self, limit: int = MAX_ACCOUNT_TASKS) -> None:
         self._tasks: set[asyncio.Task[None]] = set()
+        self._slots = asyncio.Semaphore(limit)
 
     def spawn(self, work: Coroutine[Any, Any, None]) -> None:
         task = asyncio.create_task(self._guarded(work))
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)
 
-    @staticmethod
-    async def _guarded(work: Coroutine[Any, Any, None]) -> None:
-        try:
-            await work
-        except Exception:
-            LOG.exception("Diary link handler failed")
+    async def _guarded(self, work: Coroutine[Any, Any, None]) -> None:
+        async with self._slots:
+            try:
+                await work
+            except Exception:
+                LOG.exception("Diary link handler failed")

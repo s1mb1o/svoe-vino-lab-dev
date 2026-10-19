@@ -608,6 +608,8 @@ class AccountService:
         bot = self.settings.telegram_bot_username
         if not bot:
             raise AccountError("provider_disabled", 404, "Telegram linking is not configured")
+        # Adding access needs a fresh login; a stolen old session cannot add its own Telegram.
+        self._require_recent(session)
         wait = take_all(((self.link_codes_per_user, session.user_id),))
         if wait:
             raise AccountError("rate_limited", 429, "Too many link codes", retry_after=wait)
@@ -620,6 +622,12 @@ class AccountService:
             ).fetchone()
             if linked is not None:
                 raise AccountError("provider_already_linked", 409, "Unlink Telegram first")
+            # Only the newest code of an account works.
+            db.execute(
+                "DELETE FROM link_codes WHERE user_id = ? AND provider = 'telegram' "
+                "AND used_at IS NULL",
+                (session.user_id,),
+            )
             db.execute(
                 "INSERT INTO link_codes (code_hash, user_id, provider, created_at, expires_at) "
                 "VALUES (?, ?, 'telegram', ?, ?)",
@@ -627,32 +635,62 @@ class AccountService:
             )
         return code, f"https://t.me/{bot}?start=link_{code}", LINK_CODE_TTL
 
-    def _link_code(self, db: sqlite3.Connection, code: str, now: int) -> sqlite3.Row:
+    def _link_code(
+        self, db: sqlite3.Connection, code: str, telegram_user_id: int, now: int
+    ) -> sqlite3.Row:
+        """Returns a valid code for this Telegram user. Another user gets the same refusal."""
         row = db.execute(
             "SELECT link_codes.*, users.username FROM link_codes "
             "JOIN users ON users.id = link_codes.user_id WHERE code_hash = ?",
             (token_hash(code),),
         ).fetchone()
-        if row is None or row["used_at"] is not None or row["expires_at"] <= now:
-            raise AccountError("invalid_link_code", 400, "Create a new link on the site")
+        invalid = AccountError("invalid_link_code", 400, "Create a new link on the site")
+        if row is None or row["expires_at"] <= now:
+            raise invalid
+        if row["claimed_by"] is not None and row["claimed_by"] != str(telegram_user_id):
+            raise invalid
+        if row["used_at"] is not None and not self._telegram_linked_to(
+            db, row["user_id"], telegram_user_id
+        ):
+            raise invalid
         return row
+
+    @staticmethod
+    def _telegram_linked_to(db: sqlite3.Connection, user_id: str, telegram_user_id: int) -> bool:
+        return (
+            db.execute(
+                "SELECT 1 FROM identities WHERE user_id = ? AND provider = 'telegram' "
+                "AND subject = ?",
+                (user_id, str(telegram_user_id)),
+            ).fetchone()
+            is not None
+        )
 
     def telegram_claim(self, code: str, telegram_user_id: int) -> str:
         now = self._now()
         with self.db.transaction() as db:
-            row = self._link_code(db, code, now)
+            row = self._link_code(db, code, telegram_user_id, now)
             owner = db.execute(
                 "SELECT user_id FROM identities WHERE provider = 'telegram' AND subject = ?",
                 (str(telegram_user_id),),
             ).fetchone()
             if owner is not None and owner["user_id"] != row["user_id"]:
                 raise AccountError("identity_in_use", 409, "Telegram is linked to another diary")
+            db.execute(
+                "UPDATE link_codes SET claimed_by = ? WHERE code_hash = ? AND claimed_by IS NULL",
+                (str(telegram_user_id), row["code_hash"]),
+            )
         return row["username"]
 
     def telegram_confirm(self, code: str, telegram_user_id: int) -> str:
         now = self._now()
         with self.db.transaction() as db:
-            row = self._link_code(db, code, now)
+            row = self._link_code(db, code, telegram_user_id, now)
+            # The bot claims before it shows «Привязать»; a confirm without a claim is refused.
+            if row["claimed_by"] != str(telegram_user_id):
+                raise AccountError("invalid_link_code", 400, "Create a new link on the site")
+            if row["used_at"] is not None:
+                return row["username"]
             self._link(db, row["user_id"], "telegram", str(telegram_user_id), now)
             db.execute(
                 "UPDATE link_codes SET used_at = ? WHERE code_hash = ?", (now, row["code_hash"])

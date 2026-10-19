@@ -13,6 +13,7 @@ from chto_za_vino_bot.account import (
     LINK_INVALID_TEXT,
     LINK_OFF_TEXT,
     LINK_PRIVATE_TEXT,
+    LINK_TAKEN_TEXT,
     LINK_UNAVAILABLE_TEXT,
     UNLINK_DONE_TEXT,
     UNLINK_NONE_TEXT,
@@ -111,7 +112,8 @@ async def test_start_link_asks_for_confirmation(service):
 
 
 async def test_confirm_links_the_sender(service):
-    message = FakeMessage()
+    # In Telegram the message under the buttons comes from the bot, not from the person.
+    message = FakeMessage(user_id=1)
     callback = FakeCallback(f"{CONFIRM_PREFIX}{CODE}", message, user_id=501)
     await handle_link_callback(callback, service.client)
     assert service.calls[0][0] == "/v1/bot/telegram/links/confirm"
@@ -133,11 +135,14 @@ async def test_cancel_makes_no_service_call(service):
     [
         ("invalid_link_code", LINK_INVALID_TEXT),
         ("identity_in_use", LINK_IN_USE_TEXT),
+        ("provider_already_linked", LINK_TAKEN_TEXT),
         ("provider_disabled", LINK_OFF_TEXT),
     ],
 )
 async def test_claim_refusals(service, error, text):
-    status = 409 if error == "identity_in_use" else 400
+    status = {"identity_in_use": 409, "provider_already_linked": 409, "provider_disabled": 404}.get(
+        error, 400
+    )
     service.answers["/v1/bot/telegram/links/claim"] = httpx.Response(status, json={"error": error})
     message = FakeMessage()
     await handle_link_start(message, CODE, service.client)
@@ -158,6 +163,8 @@ async def test_an_outage_keeps_the_buttons(service):
     [
         httpx.Response(503, json={"error": "unavailable"}),
         httpx.Response(401, json={"error": "unauthorized"}),
+        httpx.Response(404, json={"detail": "Not Found"}),
+        httpx.Response(400, json={"error": "something_new"}),
         httpx.Response(200, text="not json"),
         httpx.ReadTimeout("slow"),
     ],
@@ -215,8 +222,32 @@ async def test_background_tasks_free_the_dispatcher():
     tasks.spawn(broken())
     await asyncio.wait_for(started.wait(), 1)
     release.set()
-    await asyncio.sleep(0)
-    await asyncio.sleep(0)
+    for _ in range(5):
+        await asyncio.sleep(0)
+    assert not tasks._tasks
+
+
+async def test_background_tasks_have_a_limit():
+    running = 0
+    peak = 0
+    release = asyncio.Event()
+
+    async def work() -> None:
+        nonlocal running, peak
+        running += 1
+        peak = max(peak, running)
+        await release.wait()
+        running -= 1
+
+    tasks = BackgroundTasks(limit=2)
+    for _ in range(5):
+        tasks.spawn(work())
+    for _ in range(5):
+        await asyncio.sleep(0)
+    assert peak == 2
+    release.set()
+    for _ in range(20):
+        await asyncio.sleep(0)
     assert not tasks._tasks
 
 

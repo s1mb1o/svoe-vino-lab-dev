@@ -8,6 +8,9 @@
   does not hold the update dispatcher. New settings `BOT_ACCOUNT_ENDPOINT` and `BOT_ACCOUNT_TOKEN`
   (empty endpoint: off). The log redaction also covers the account token. `PRIVACY.ru.md` names
   the link. Module `account.py`, 18 new tests.
+- Review fixes: only the refusals `invalid_link_code`, `identity_in_use`, `provider_already_linked`
+  (own text), and `provider_disabled` reach the person; any other answer counts as an outage and is
+  logged. At most 8 account calls run at the same time. 4 more tests (22 in total).
 
 ## 2026-10-18
 

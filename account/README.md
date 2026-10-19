@@ -77,11 +77,11 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `POST /v1/auth/max/session` | web | `{init_data}` → session or `not_linked` (only with `MAX_LOGIN_ENABLED`) |
 | `DELETE /v1/sessions/current` | web | Log out |
 | `GET /v1/me`, `DELETE /v1/me` | web | Account view; delete the account |
-| `POST /v1/me/identities/max` | web | `{init_data}` → link MAX |
+| `POST /v1/me/identities/max` | web | `{init_data}` → link MAX. Needs a login in the last 15 minutes |
 | `DELETE /v1/me/identities/{provider}` | web | Unlink `email`, `yandex`, `max`, or `telegram`. A login method needs a login in the last 15 minutes |
-| `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}` |
-| `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text |
-| `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user |
+| `POST /v1/me/links/telegram` | web | → `{code, deep_link, expires_in}`. Needs a login in the last 15 minutes; a new code ends the open one |
+| `POST /v1/bot/telegram/links/claim` | telegram-bot | `{code, telegram_user_id}` → `{username}` for the confirmation text. The first claimer owns the code |
+| `POST /v1/bot/telegram/links/confirm` | telegram-bot | Link the Telegram user who claimed the code; a repeat answers `linked` again |
 | `POST /v1/bot/telegram/unlink` | telegram-bot | Unlink by Telegram user ID |
 
 The Nuxt server keeps the session token, the email challenge ID, and the Yandex flow ID in

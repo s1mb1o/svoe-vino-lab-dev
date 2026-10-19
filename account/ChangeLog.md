@@ -1,5 +1,17 @@
 # ChangeLog
 
+## 2026-10-19 — Telegram link review fixes
+
+Review of `ffbde5c8` (a Claude review agent; Codex was over its usage limit). Fixed:
+
+- A link code belongs to the first Telegram user who claims it (schema `003_link_claim.sql`,
+  `link_codes.claimed_by`). Another user gets `invalid_link_code` for claim and confirm. A confirm
+  without a claim is refused. A repeated confirm by the same user answers `linked` again while the
+  link exists, so a double tap does not show an error.
+- `POST /v1/me/links/telegram` needs a login in the last 15 minutes. A stolen old session can no
+  longer replace the owner's Telegram with its own. A new code deletes the open codes of the account.
+- 5 new tests (80 in total).
+
 ## 2026-10-19 — Messenger unlink without a fresh login
 
 - `DELETE /v1/me/identities/{provider}` needs a login in the last 15 minutes only for a login
