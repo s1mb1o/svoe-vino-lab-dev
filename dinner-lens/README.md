@@ -69,10 +69,13 @@ reference datasets, schemas, validation reports, English prompts and default pub
 `/docs` and all `/v1/` routes require bearer authorization. `/health` and `/readyz` are public.
 Readiness confirms successful artifact/configuration loading. It does not call or certify cloud availability.
 Responses use `Cache-Control: no-store`. Defaults preserve the previous limits: 8 MiB JSON body,
-5 MiB inline JPEG/PNG, 20 million pixels, 2,048-pixel long side, four concurrent recognition calls,
+5 MiB inline JPEG/PNG/HEIC/HEIF/WebP, 20 million pixels, 2,048-pixel long side, four concurrent recognition calls,
 one-second capacity wait, 20-second sockets, 50-second provider retry/read budget and 1 MiB responses.
 A blocking socket operation can exceed the budget by its socket timeout. Images are oriented,
-metadata-stripped and re-encoded. Remote image URLs are not fetched. The English image prompt
+metadata-stripped and re-encoded as JPEG, or PNG for PNG inputs and images with transparency.
+HEIC/HEIF uses the primary image; animated WebP and MPO use the first frame.
+The decoder identifies the actual file format rather than trusting a declared MIME type.
+Remote image URLs are not fetched. The English image prompt
 matches the current inference registry `planning/dinner-lens-eval-20261018/prompt-registry.json`.
 Historical recognition runners and results remain unchanged.
 
@@ -98,7 +101,7 @@ the model service uses the GPU. QwenCloud performs fallback recognition. The CPU
 }
 ```
 
-`POST /v1/recognize-and-recommend` accepts `image_base64` (raw base64 or an inline JPEG/PNG data URL), `user_constraints`, `confirmed_attributes`, `limit`. It returns the wine page together with the raw `recognition` and model receipt `llm`. It does not require an API key in the client request.
+`POST /v1/recognize-and-recommend` accepts `image_base64` (raw base64 or an inline `image/jpeg`, `image/png`, `image/heic`, `image/heif` or `image/webp` data URL), `user_constraints`, `confirmed_attributes`, `limit`. It returns the wine page together with the raw `recognition` and model receipt `llm`. It does not require a model-provider API key in the client request; the service bearer token is required.
 
 `POST /v1/recommendations/more` accepts `{"cursor":"<next_cursor>"}`. Optional `user_constraints` and `confirmed_attributes` must equal the original context; use a new recommendation request to change them.
 

@@ -124,8 +124,8 @@ def create_app(engine: Engine, recognizer: QwenRecognizer, *, api_token: str, li
         validate_attributes(body.confirmed_attributes)
         encoded = body.image_base64
         if encoded.startswith("data:"):
-            if not re.match(r"^data:image/(?:jpeg|png);base64,", encoded):
-                raise PipelineError("invalid_image", "Only inline JPEG and PNG data URLs are supported")
+            if not re.match(r"^data:image/(?:jpeg|png|webp|heic|heif);base64,", encoded):
+                raise PipelineError("invalid_image", "Only inline JPEG, PNG, HEIC/HEIF and WebP data URLs are supported")
             encoded = encoded.split(",", 1)[1]
         try:
             image = base64.b64decode(encoded, validate=True)

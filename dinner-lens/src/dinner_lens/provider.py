@@ -13,6 +13,7 @@ import urllib.request
 from pathlib import Path
 
 from PIL import Image, ImageOps, UnidentifiedImageError
+from pillow_heif import register_heif_opener
 
 from .data import Knowledge, canonical
 from .engine import PipelineError
@@ -25,6 +26,10 @@ MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_IMAGE_PIXELS = 20_000_000
 PROVIDER_BUDGET_SECONDS = 50
 MAX_RESPONSE_BYTES = 1024 * 1024
+IMAGE_FORMATS = ("JPEG", "PNG", "WEBP", "HEIF")
+
+# Decode only the main photograph; libheif's security limits stay enabled.
+register_heif_opener(thumbnails=False, depth_images=False, aux_images=False, decode_threads=1)
 
 
 def sanitize_image(image: bytes, settings: ImageSettings | None = None) -> tuple[bytes, str]:
@@ -34,15 +39,21 @@ def sanitize_image(image: bytes, settings: ImageSettings | None = None) -> tuple
         raise PipelineError("invalid_image", "Image exceeds the configured byte limit or is empty")
     try:
         # MPO is returned by Pillow's JPEG factory; it has no standalone opener.
-        with Image.open(io.BytesIO(image), formats=("JPEG", "PNG")) as opened:
-            format_name = "JPEG" if opened.format == "MPO" else opened.format
-            if format_name not in {"JPEG", "PNG"} or opened.width * opened.height > settings.max_pixels:
-                raise PipelineError("invalid_image", "Only bounded JPEG and PNG images are supported")
+        with Image.open(io.BytesIO(image), formats=IMAGE_FORMATS) as opened:
+            source_format = "JPEG" if opened.format == "MPO" else opened.format
+            if source_format not in IMAGE_FORMATS or opened.width * opened.height > settings.max_pixels:
+                raise PipelineError("invalid_image", "Only bounded JPEG, PNG, HEIC/HEIF and WebP images are supported")
             opened.verify()
-        with Image.open(io.BytesIO(image), formats=("JPEG", "PNG")) as opened:
-            opened.seek(0)
+        with Image.open(io.BytesIO(image), formats=IMAGE_FORMATS) as opened:
+            # The HEIF opener selects the primary image, which need not be frame 0.
+            # Other containers use their first frame, including animated WebP and MPO.
+            if source_format != "HEIF":
+                opened.seek(0)
             oriented = ImageOps.exif_transpose(opened)
+            if oriented.width * oriented.height > settings.max_pixels:
+                raise PipelineError("invalid_image", "Decoded image exceeds the configured pixel limit")
             alpha = "A" in oriented.getbands() or "transparency" in oriented.info
+            format_name = "PNG" if source_format == "PNG" or alpha else "JPEG"
             mode = "RGBA" if format_name == "PNG" and alpha else "RGB"
             clean = Image.new(mode, oriented.size)
             clean.paste(oriented.convert(mode))
@@ -63,7 +74,7 @@ def sanitize_image(image: bytes, settings: ImageSettings | None = None) -> tuple
         return sanitized, "image/jpeg" if format_name == "JPEG" else "image/png"
     except PipelineError:
         raise
-    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, ValueError, SyntaxError, struct.error, EOFError):
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, ValueError, SyntaxError, struct.error, EOFError, RuntimeError):
         raise PipelineError("invalid_image", "Invalid or oversized image") from None
 
 

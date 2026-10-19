@@ -5,6 +5,11 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Dinner Lens 0.7.0 accepts direct HEIC/HEIF and WebP uploads as raw base64 or
+  inline data URLs. It selects the HEIF primary image, preserves orientation and
+  transparency, strips metadata, and keeps the existing byte and pixel limits.
+  All 125 package tests pass, including API requests and malformed image rejection.
+
 - Deployed the 25-map Web UI release `772a396e`. Verified all 25 live map routes and the exact bytes of 157 added bottle assets. Passed 15 staging and 15 live browser cases in each engine, 193 HTTP/asset checks in each phase, and seven edge/presentation checks. Updated only the deployment status of F-24 in `ASSESSMENT.md`.
 
 - Merge six additional producer maps and refresh the current coverage reports: 25 maps, 1,203 products, and 1,138 of 2,103 saved catalogue cards (54.1132%). Recheck only F-24 and F-48 in `ASSESSMENT.md`. The six-map expansion awaits deployment.
@@ -30,6 +35,7 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
   card of a wine with no image (the current behavior). Issue #69 tracks the
   5 Active wines with no image and the wrong image of
   `vibes-vermentino-viognier-barrel-fermented-2022`. No code changes.
+
 
 - Dinner Lens now explains the alcohol choice for spicy food with the actual wine
   strength. Russian copy formats whole percentages without decimals and fractional
