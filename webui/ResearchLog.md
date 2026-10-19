@@ -1,5 +1,11 @@
 # Research log
 
+## iPhone landing status note, 2026-10-19
+
+The owner removed the TestFlight preparation note below the release facts.
+The WebApp action and the GitHub issue 36 release-status action remain available.
+The page does not add another replacement notice.
+
 ## iPhone landing page, 2026-10-19
 
 The native iPhone application supports iOS 17.2 and later.

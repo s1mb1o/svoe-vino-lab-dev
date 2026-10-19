@@ -5,7 +5,7 @@
 1. Open `/iphone` in a new browser profile. Confirm that the 18+ gate blocks interaction.
 2. Accept the age confirmation. Confirm one visible H1.
 3. Confirm the main and Settings screenshots load.
-4. Confirm that the page states `iOS 17.2+`, `2 093 вина`, and `TestFlight готовится`.
+4. Confirm that the page states `iOS 17.2+` and `2 093 вина`. Confirm that the removed TestFlight preparation note is absent.
 5. Confirm that the page has no direct application-download action.
 6. Follow `Открыть веб-сканер`. Confirm that `/` opens.
 7. Follow `Следить за TestFlight`. Confirm GitHub issue 36 opens in a new tab.

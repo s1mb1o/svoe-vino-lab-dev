@@ -76,7 +76,6 @@ const accessibilityFeatures = [
           <li>2 093 вина</li>
           <li>Бесплатно</li>
         </ul>
-        <p class="iphone-status"><AppIcon name="info" /><span><strong>TestFlight готовится.</strong> Публичной ссылки на установку пока нет. Веб-сканер уже доступен.</span></p>
       </div>
 
       <div class="iphone-hero-visual" aria-label="Главный экран приложения на iPhone">
@@ -183,9 +182,6 @@ const accessibilityFeatures = [
 .iphone-actions .button { width: auto; min-height: 54px; padding-inline: 24px; }
 .iphone-release-facts { display: flex; flex-wrap: wrap; gap: 7px; margin: 21px 0 0; padding: 0; list-style: none; }
 .iphone-release-facts li { padding: 7px 10px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); color: var(--muted); font-size: 10px; }
-.iphone-status { display: flex; align-items: flex-start; gap: 8px; max-width: 530px; margin-top: 18px; color: var(--muted); font-size: 10px; line-height: 1.55; }
-.iphone-status strong { color: var(--ink); font-weight: 600; }
-.iphone-status .icon { width: 16px; height: 16px; margin-top: 1px; color: var(--accent); }
 .iphone-hero-visual { min-height: 590px; position: relative; display: grid; place-items: center; }
 .iphone-device { position: relative; overflow: hidden; border: 8px solid #1f1d1c; border-radius: 48px; background: #fff; box-shadow: 0 30px 60px #3d251c2d; }
 .iphone-device img { width: 100%; height: 100%; object-fit: cover; object-position: top; }

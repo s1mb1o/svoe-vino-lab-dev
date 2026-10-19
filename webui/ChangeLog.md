@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-19 — iPhone landing status note
+
+- Remove the TestFlight preparation note below the release facts.
+- Keep the WebApp action and the GitHub issue 36 release-status action.
+- Add a regression check that keeps the removed text out of the page.
+
 ## 2026-10-19 — Format error on «Вино к блюду» without «JPG»
 
 - The format error on `/dish` is «Выберите JPEG, HEIC, PNG или WebP.», the same list as the upload hint. It shows when the browser refuses a file and when the server returns 415. The accepted files do not change: `.jpg` files are accepted as before.

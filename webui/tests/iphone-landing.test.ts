@@ -6,7 +6,7 @@ const projectFile = (path: string) => fileURLToPath(new URL(`../${path}`, import
 const source = (path: string) => readFile(projectFile(path), 'utf8')
 
 describe('iPhone landing page', () => {
-  it('publishes verified iPhone capabilities and an honest release status', async () => {
+  it('publishes verified iPhone capabilities and the release-status link', async () => {
     const page = await source('app/pages/iphone.vue')
     for (const text of [
       'iOS 17.2+',
@@ -16,10 +16,11 @@ describe('iPhone landing page', () => {
       'DIS или YOLO26n-seg',
       'VoiceOver',
       'Dynamic Type',
-      'TestFlight готовится',
-      'Публичной ссылки на установку пока нет',
     ]) expect(page).toContain(text)
     expect(page).toContain('https://github.com/s1mb1o/svoe-vino-lab-dev/issues/36')
+    expect(page).not.toContain('TestFlight готовится')
+    expect(page).not.toContain('Публичной ссылки на установку пока нет')
+    expect(page).not.toContain('Веб-сканер уже доступен')
     expect(page).not.toContain('downloadUrl:')
   })
 
