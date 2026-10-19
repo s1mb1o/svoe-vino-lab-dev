@@ -2,6 +2,117 @@
 
 ## 2026-10-19
 
+### Isolated offline retrieval benchmark implementation
+
+- Added owner-approved direct USB HTTP transport with strict framing and bounded retries.
+- Added attempt logs and same-process, idle-worker, user, and service guards.
+- Added audited continuation into a new directory with exact saved prediction prefixes.
+- Preserved model errors and recorded separate process segments for continuation.
+- Passed 20 host tests, including binary-prefix injection and UI cleanup timeout.
+- Kept the installed v5 APK, model pack, all recipes, and disabled re-ranking unchanged.
+- Passed the q-000045 Pixel smoke and its ten-recipe independent audit.
+- Resumed full v3 from assignment 45. Verified the first 47 records independently.
+- Confirmed exact source preservation and identical q-000045 smoke/cohort candidates.
+- Recorded the full v2 transport interruption after 44 of 668 responses.
+- Preserved all ten partial prediction files and the independently verified partial audit.
+- Confirmed successful automatic HTTP, process, forwarding, and power cleanup.
+- Left complete-cohort quality pending. The status request did not restart inference.
+- Preserved 29 successful full-run responses before cached-process freezing and LOW_MEMORY.
+- Added an owner-approved foreground service only to the isolated benchmark APK.
+- Added an explicit HTTP notification, stop action, and CPU wake-lock cleanup.
+- Kept HTTP off at fresh process start and disabled automatic service restart.
+- Added service-state guards and background telemetry to the benchmark runner.
+- Added a separate thirty-image background gate without changing inference recipes.
+- Passed 20 Android tests, seven host tests, and the 102-check v5 numerical gate.
+- Verified visible notification startup, both stop actions, default-off behavior,
+  and worker-ordered cleanup after actual GPU/CPU inference on Pixel 8.
+- Started the thirty-image background gate before the full v2 cohort.
+- Completed all 30 background requests and independently verified 300 recipe predictions.
+- Matched all Top-1, Top-20 orders, and candidate scores with the v4 independent pilot.
+- Recorded importance 125 in all 68 background samples and maximum heat MODERATE.
+- Started a fresh full v2 cohort with automatic audit, report, and isolated-app cleanup.
+- Preserved the second pilot's zero-response foreground `LOW_MEMORY` failure.
+- Added a separate constant-tensor-sharing candidate without changing FP32 or weights.
+- Explicitly disabled GPU source quantization and added two runtime-policy tests.
+- Passed 18 local tests, lint, and all 102 repeated numerical checks for this candidate.
+- Started the third independent pilot without changing model or reference bytes.
+- Completed the 300-request independent pilot in PID 13687 without errors or fallback.
+- Independently verified all ten 30-record prediction files and every pilot metric.
+- Measured 4.09-13.74 second medians and 2173.36 MiB peak sampled pilot PSS.
+- Recorded `SEVERE` sustained heat. This is not a production heat acceptance.
+- Started the full 668-assignment `my-failed-2` run after cooldown to `MODERATE`.
+- Complete hard-set quality measurements remain pending.
+- Added a separate `com.alolalab.chtozavino.offlinebench` application.
+- Kept the main application source, installed data, and reference pack unchanged.
+- Added mobile bottle/label segmentation, weighted SO400M p512, and bounded FP32 search.
+- Preserved the ten frozen desktop recipe IDs, reference ownership, and fusion weights.
+- Added independent variant requests and shared-work complete-cohort requests.
+- Disabled barcode recognition and re-ranking in the isolated application.
+- Added private model-pack transfer with per-file checksums and no broad file modes.
+- Added raw tensor captures and desktop/device numerical verification.
+- Passed 16 isolated unit tests and debug lint with no errors.
+- Repaired legacy BOX endpoint and 22-bit coefficient rounding before quality tests.
+- Passed exact-pooling and repaired all-recipe desktop/device numerical checks.
+- Froze the validation-selected epoch-8 checkpoint after the ten-epoch training pilot.
+- Preserved the zero-request failed external-pack preflight as evidence.
+- Fixed the ten-epoch pilot stopping policy before adapted retrieval evaluation.
+- Passed all 102 final-pack numerical checks after the owner restored Android user 0.
+- Verified that the installed lifecycle candidate retains HTTP across Activity recreation.
+- Started the independent thirty-image pilot for each of the ten adapted recipes.
+- Preserved 57 successful pilot responses and a missing request after a background
+  `LOW_MEMORY` process exit. The camera was foreground. No own native crash was recorded.
+- Saved the process-exit audit and cleanup verification. The pilot is incomplete.
+- Complete adapted hard-set quality measurements remain pending.
+- Preserved the interrupted final-pack run and its Android profile/exit audit.
+- Separated partial numerical diagnostics from a complete passed gate.
+- Kept the benchmark server across Activity recreation and ordered HTTP model cleanup.
+- Preserved failure metadata when USB cleanup cannot reach the device.
+- Added an Android-user guard before device UI, pack transfer, and evaluation.
+- Left Android user 10 unchanged and requested the owner's profile decision.
+
+### Ten-variant Android evaluation preflight
+
+- Located the frozen SO400M pooling, geometry, and fusion experiment definitions.
+- Confirmed the 668-assignment `my-failed-2` cohort and connected Pixel 8.
+- Recorded the model and segmentation difference from the Base p512 application.
+- Added plan 06 with explicit re-ranking exclusion and a measurement-boundary gate.
+- Requested a choice between exact retrieval reproduction and an offline adaptation.
+- Started no image inference, model export, or application installation in preflight.
+
+### Offline adaptation preparation and device control
+
+- Recorded the owner's complete-offline selection in plan 06.
+- Completed all 668 frozen `my-failed-2` control requests on Pixel 8 without errors.
+- Measured Top-1 41.02%, Top-5 77.84%, and Top-10 84.58% with Base p512 on GPU.
+- Saved predictions, vectors, raw responses, process checks, thermal samples, and logs.
+- Disabled control HTTP and removed forwarding after measurement.
+- Recorded 42 catalogue-uncovered assignments without changing the denominator.
+- Matched all 660 overlapping assignment predictions with the earlier full control.
+- Prepared 2,031 catalogue training images and 228 wine-group validation images.
+- Verified zero training overlap with 3,039 frozen evaluation-image hashes.
+- Started isolated local-MPS bottle/label segmentation training with bounded memory.
+- Preserved failed training setup v1 and rejected graph v1 as evidence.
+- Added pooling log weights without changing the 448 external model-weight buffers.
+- Passed desktop zero-bias equivalence, native agreement, and padding-exclusion gates.
+- Froze all ten exact desktop recipe identities, gallery counts, and fusion weights.
+- The later isolated implementation and device gates are recorded above.
+
+### Main application ID
+
+- Changed the main debug and release application ID to `com.alolalab.chtozavino`.
+- Kept the existing Kotlin namespace and Russian launcher name.
+- Retained the application-derived FileProvider authority for camera capture.
+- Updated the Pixel 8 pilot runner to inspect the new package.
+- Added a shared unit test for the debug and release application ID.
+- Documented the separate installation and the absence of automatic data migration.
+- Preserved historical reports, archived APKs, and the isolated dual-GPU application.
+- Left installed applications unchanged.
+- Passed 65 debug tests and 62 release tests, including both application-ID checks.
+- Passed debug and release lint with no errors and 31 and 32 warnings respectively.
+- Built both APKs and verified the new package, launcher, and FileProvider authority.
+- Verified the unchanged embedded pack and the frozen old-ID release checksum.
+- Kept the new release unsigned and outside the frozen release archive.
+
 ### Isolated DIS GPU and p512 GPU experiment
 
 - Built `chtozavino.alolalab.com.dualgpu` from a separate Android source snapshot.
@@ -33,22 +144,6 @@
   simultaneous-GPU-model explanation.
 - Recorded that the complete p512 plus DIS dual-GPU combination remains unverified.
 - Left the application and the debug HTTP setting unchanged.
-
-### Main application ID
-
-- Changed the main debug and release application ID to `com.alolalab.chtozavino`.
-- Kept the existing Kotlin namespace and Russian launcher name.
-- Retained the application-derived FileProvider authority for camera capture.
-- Updated the Pixel 8 pilot runner to inspect the new package.
-- Added a shared unit test for the debug and release application ID.
-- Documented the separate installation and the absence of automatic data migration.
-- Preserved historical reports, archived APKs, and the isolated dual-GPU application.
-- Left installed applications unchanged.
-- Passed 65 debug tests and 62 release tests, including both application-ID checks.
-- Passed debug and release lint with no errors and 31 and 32 warnings respectively.
-- Built both APKs and verified the new package, launcher, and FileProvider authority.
-- Verified the unchanged embedded pack and the frozen old-ID release checksum.
-- Kept the new release unsigned and outside the frozen release archive.
 
 ### Local 0.2.0 release archive
 

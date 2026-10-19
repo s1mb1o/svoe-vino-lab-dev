@@ -1,5 +1,47 @@
 # Smoke tests
 
+## Isolated offline retrieval benchmark
+
+1. Build `tools/offline_benchmark/device` with `tools/offline_benchmark/build_device.sh`.
+2. Require all isolated unit tests and debug lint to pass.
+3. Verify package `com.alolalab.chtozavino.offlinebench` and minimum SDK 28.
+4. Confirm that the main application's package, data, and installed pack are unchanged.
+5. Confirm that the benchmark HTTP switch is off after a fresh process start.
+6. Transfer only the verified benchmark pack into app-private `files/bench`.
+7. Reject a changed checksum, wrong encoder dimension, or mismatched revision.
+8. Enable HTTP through the observed UI switch. Confirm `/healthz` on port 18088.
+9. Confirm that every response reports barcode and re-ranking as disabled.
+10. Run grouped GPU, CPU, and GPU checks on held-out catalogue images.
+11. Require desktop/device cosine of at least 0.99999 and component error at most 0.001.
+12. Check complete bottle scores against the same frozen FP32 reference gallery.
+13. Run 30 independent images per variant before the complete cohort.
+14. Reject a native abort, process restart, silent CPU fallback, or critical thermal state.
+15. Keep segmentation failures in predictions and the quality denominator.
+16. Distinguish shared-work full-run timings from independent variant latency.
+17. Save predictions, raw responses, hashes, traces, and thermal samples.
+18. Disable HTTP after saving the final result. Remove only test-created forwarding.
+19. Recreate the benchmark Activity. Confirm that enabled HTTP and loaded models remain.
+20. Confirm that the device tools reject another active Android user before any write.
+21. Disconnect USB during a disposable run. Require saved incomplete status and cleanup
+    errors. Do not call this disposable run complete.
+22. For the constant-sharing candidate, require FP32 BUFFER execution and disabled
+    source quantization. Repeat numerical checks before quality measurement.
+23. Verify that fresh process startup has no foreground service, notification, or lock.
+24. Enable HTTP. Require a visible Russian notification and a private `specialUse` service.
+25. Move the Activity to the background. Require importance at most 125 and continued
+    HTTP access. Repeat 30 original images without a PID change or critical heat.
+26. Disable HTTP. Require no listener, service, notification, or own wake lock after cleanup.
+27. Repeat startup and notification stop-action checks. Require default-off after a kill.
+28. Run all host tests in `tools/offline_benchmark`. Inject a binary status prefix and
+    a truncated body. Require strict rejection, fresh sockets, and at most two retries.
+29. Require a changed PID to prevent a second POST. Do not retry a model error.
+30. Continue only into a new directory with the same APK, query, and pack hashes.
+    Require an independent source audit and exact response and prediction prefix hashes.
+31. Keep saved no-bottle errors. Check the first missing image on the phone before
+    continuation. Verify both process segments and every variant prediction count.
+32. Make UI cleanup time out in a host test. Require an isolated-app force-stop and
+    recorded cleanup failure. Do not stop the main application.
+
 ## Automated checks
 
 1. Run `python3 -m unittest tools.test_build_catalog_pack tools.test_build_model_pack
@@ -11,11 +53,55 @@
    `assets/default_model_pack.zip`.
 5. Compare every packaged reference row with the matching released p512 index row.
 
+## Isolated offline retrieval adaptation
+
+1. Verify the frozen `my-failed-2` manifest hash and accepted alternative slugs.
+2. Run the current installed application as a separate Base p512 control.
+3. Confirm that no answer or query mask enters a device request.
+4. Preserve every raw response and append each prediction immediately.
+5. Confirm that re-ranking and barcode recognition remain disabled.
+6. Check every vector, actual accelerator, and application PID.
+7. Record catalogue-uncovered assignments in the complete scoring denominator.
+8. Exclude evaluation-image hashes from the mobile segmentation training split.
+9. Check source-coordinate cut boxes and catalogue annotation checksums.
+10. Freeze exact reference and query pooling, geometry, views, and fusion recipes.
+11. Preserve and verify external LiteRT weight buffers after a graph modification.
+12. Require zero-bias, native-vector, and padding-exclusion checks before deployment.
+13. Require Android CPU/GPU agreement and a short stability run before full variants.
+14. Distinguish planned variants from completed device measurements.
+15. Disable test HTTP and remove only test-created forwarding after measurement.
+
+The October 19 Base p512 control passed all 668 requests.
+Read `docs/reports/2026-10-19_pixel8-my-failed2-offline-control.md`.
+The offline-adaptation dataset isolation and desktop pooling gates passed.
+The catalogue-only segmentation pilot completed ten epochs.
+The final frozen-pack gate passed all 102 numerical checks on Pixel 8.
+Explicit Activity recreation retained HTTP and the loaded model state.
+The independent quality pilot stopped after 57 responses when Android killed the
+cached process after the camera became foreground. The pilot is incomplete.
+Candidate v4 passed all 102 repeated numerical checks and all 300 independent pilot requests.
+No request error, process restart, or CPU fallback occurred in that complete pilot.
+Maximum thermal status was `SEVERE`. The declared stop threshold is `CRITICAL`.
+All ten thirty-record prediction files and metrics passed independent verification.
+The first complete-cohort attempt stopped after 29 assignments with background LOW_MEMORY.
+Its partial predictions remain separate. Complete adapted quality is not final.
+Candidate v5 passed 20 Android tests, seven host tests, and all 102 numerical checks.
+Default-off, notification startup, both stop actions, and warm-model cleanup passed.
+The background gate completed all 30 requests in PID 20524 with importance 125.
+All 300 predictions and Top-20 scores match the independent v4 pilot exactly.
+Maximum sampled background-gate heat was MODERATE.
+The v2 cohort stopped after 44 responses with a malformed HTTP status line.
+The host-only transport and continuation repair passed 20 host tests.
+The q-000045 phone smoke passed all ten variants on its first attempt.
+Full v3 resumed from assignment 45. The first 47 records pass independent audit.
+The 44 inherited records and all source v2 files remain byte-for-byte unchanged.
+Both q-000045 runs have identical candidates. Full quality is not final.
+
 ## Release archive checks
 
 1. Rebuild release from the committed Android source.
 2. Run debug and release unit tests, model-pack Python tests, and release lint.
-3. Verify application ID `chtozavino.alolalab.com`, version `0.2.0`, and version code 6.
+3. Verify application ID `com.alolalab.chtozavino`, version `0.2.0`, and version code 6.
 4. Verify minimum API 28, target API 36, and only the `arm64-v8a` ABI.
 5. Confirm that the release is not debuggable.
 6. Confirm that NanoHTTPD and the debug HTTP endpoint implementation are absent.
@@ -27,6 +113,7 @@
 12. Save archive manifests with byte lengths, hashes, versions, and source paths.
 
 The October 19 local 0.2.0 release checks passed.
+That frozen archive predates the ID change and uses `chtozavino.alolalab.com`.
 The owner selected unsigned output.
 There were no unit-test failures or errors in 64 debug and 61 release tests.
 All 16 model-pack Python tests passed.
@@ -34,7 +121,49 @@ The new APK contains the same verified pack as the measured p512 application.
 The new release was not installed on the phone in this archive task.
 Read [the release record](docs/releases/0.2.0.md).
 
+## Main application ID
+
+1. Run debug and release unit tests, lint, and assembly.
+2. Confirm that `ApplicationIdentityTest` passes for both build types.
+3. Inspect both APK manifests for package `com.alolalab.chtozavino`.
+4. Confirm FileProvider authority `com.alolalab.chtozavino.files` in both manifests.
+5. Confirm launcher activity `com.alolalab.chtozavino.MainActivity`.
+6. Confirm that the launcher label remains `Что за вино?`.
+7. Confirm that the Pixel 8 pilot runner targets the new package.
+8. Do not overwrite the old-ID archived release or the dual-GPU experiment.
+
+The October 19 rename validation passed for both APKs.
+Debug unit tests: 65 passed. Release unit tests: 62 passed.
+No unit test failed, produced an error, or was skipped.
+Both application-ID tests passed.
+Both lint tasks passed with no errors.
+Debug lint reported 31 warnings. Release lint reported 32 warnings.
+Both APK manifests contain the new package and FileProvider authority.
+Both APKs keep version `0.2.0`, version code 6, API 28 minimum, and API 36 target.
+Both APKs keep the original Russian launcher label and the verified format 6 pack.
+The debug APK signature verifies. The release APK remains unsigned and not debuggable.
+The Pixel 8 pilot module imports and targets `com.alolalab.chtozavino`.
+The old-ID archive SHA-256 remains
+`f6dbfe72e5d2bff1de98cee3ac8948c3b3f9553d1a477575be6425c1feb4ccb6`.
+
+New-ID build outputs:
+
+- `app/build/outputs/apk/friendly/chtozavino-0.2.0-debug.apk`:
+  447,547,504 bytes. SHA-256:
+  `37db77a393eab210f238431a1dc0613c9161dc1e2be73f6a8819e4885d2b2a14`.
+- `app/build/outputs/apk/release/app-release-unsigned.apk`:
+  414,916,338 bytes. SHA-256:
+  `1575957fd4c4dbfd356d8e21adba9cd6864c44298205512af74fed9614ef3eb8`.
+
+Installation, camera capture, and new-ID first-start device checks need a separate
+device installation.
+Do not treat the new ID as an update of the old package.
+
 ## Complete Base NaFlex p512 default
+
+The following migration check describes the pre-rename package.
+Use an old-ID APK to reproduce that update over version 0.1.4.
+The new ID starts with separate application data.
 
 1. Install the debug APK as an update over version 0.1.4.
 2. Confirm that the old pack upgrades to format 6.
@@ -72,6 +201,38 @@ The exact reference returned `Пино Нуар` at 100-percent similarity.
 The new history row remained visible after a deliberate cold restart.
 The HTTP server remained off after that restart.
 The test-created device files and ADB forwarding rule were removed.
+
+## Isolated DIS GPU and p512 GPU experiment
+
+1. Copy the committed Android source into an isolated experiment directory.
+2. Set a separate application ID and launcher label before building.
+3. Keep the main application source, APKs, installed package, and private data unchanged.
+4. Bypass the DIS GPU to p512 CPU override only in the copied source.
+5. Disable CPU fallback for explicit debug accelerator requests in the experiment.
+6. Include actual accelerator fields in every successful debug response.
+7. Run debug unit tests, lint, and assembly in the copied source.
+8. Run the frozen thirty-image pilot and verify vectors, accelerators, PID, and logs.
+9. Run full `my` only after the stability gate passes.
+10. Keep segmentation failures in the scored result set.
+11. Stop on native abort, process change, invalid output, or CPU fallback.
+12. Stop the experimental process at Android thermal status `CRITICAL` or higher.
+13. Compare frozen-query results with the complete p512 no-segmentation baseline.
+14. After the full run, compare p512 CPU/GPU vectors with DIS still on GPU.
+15. Disable HTTP, remove forwarding, restore power settings, and verify main APK hashes.
+
+The October 19 experiment passed 64 debug unit tests and debug lint.
+All 30 pilot requests returned HTTP 200 with GPU + GPU.
+All 3,409 full assignments completed in one process.
+There were 3,404 HTTP 200 responses and five explicit DIS no-object errors.
+No native abort, process restart, or model-level CPU fallback occurred.
+Positive Top-1 was 72.29%, Top-5 was 88.18%, and Top-10 was 90.34%.
+Client median was 1,319 ms. P95 was 2,343 ms.
+Full-run peak sampled PSS was 1,434.2 MiB. Maximum thermal status was `MODERATE`.
+All three post-run p512 GPU/CPU vector comparisons passed.
+Closing both GPU models left the experimental process alive.
+HTTP shutdown, forwarding removal, power restoration, and main APK preservation passed.
+The main application source and guard were not changed.
+Read [the full experiment report](docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md).
 
 ## Full my device matching benchmark
 

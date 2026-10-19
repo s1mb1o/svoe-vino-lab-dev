@@ -2,6 +2,189 @@
 
 ## 2026-10-19
 
+### Mobile segmentation and isolated benchmark implementation
+
+- A host-only repair rejects the observed malformed status line and opens a fresh
+  plain HTTP socket for a bounded retry. It never removes bytes from a response.
+  Fault injection reproduces `BadStatusLine` and verifies exact request-byte recovery.
+  Twenty host tests pass. Tests also reject a changed process and changed pack.
+  The host has no current proxy entries. The original binary-prefix source remains
+  unknown. Do not claim that a proxy caused the interruption.
+  Continuation audits and copies the saved prefix into a new directory.
+  Explicit process segments allow the original and new PIDs without hiding restarts.
+  The source no-bottle error remains a failure. Re-ranking stays disabled.
+  The q-000045 original-byte smoke passed all ten recipes in PID 9424 without a retry.
+  Full v3 resumed at assignment 45. Its first three new records passed independent audit.
+  The 44 inherited records pass exact prefix hashes. Source v2 files remain unchanged.
+  Q-000045 smoke and cohort candidates match exactly. Complete quality remains pending.
+- The v5 full repeat stopped at 44 of 668 responses with `BadStatusLine` on q-000045.
+  The client received a binary prefix before an HTTP 200 status line.
+  The transport root cause is not established. Do not attribute it to model failure.
+  PID 20524 remained unchanged until explicit cleanup. No own native crash was recorded.
+  Q-000040 returned an expected no-bottle error. The other 43 saved responses succeeded.
+  All ten 44-row prediction files passed partial audit. Complete accuracy is unavailable.
+  The finite coordinator successfully disabled HTTP and stopped only the isolated app.
+  The owner's status check made no model, application, or transport change.
+- The first full cohort stopped after 29 of 668 requests.
+  Android cached and froze PID 13687 after the Activity stopped at 20:24:11 MSK.
+  The LOW_MEMORY record has importance 400. No own native crash was recorded.
+  A foreground service is appropriate for the owner-started, visible bulk computation.
+  [Android service types](https://developer.android.com/develop/background-work/services/fgs/service-types#special-use)
+  document `specialUse` and its manifest explanation.
+  [Service startup](https://developer.android.com/develop/background-work/services/fgs/launch)
+  requires prompt foreground promotion and a notification.
+  [Wake locks](https://developer.android.com/develop/background-work/background-tasks/awake/wakelock/)
+  support explicit CPU-awake lifetime. Release the lock when HTTP shutdown completes.
+  These mechanisms do not guarantee protection from OOM.
+- Candidate v5 passed all 102 repeated numerical checks.
+  Its 30-image background gate completed in 18.49 minutes without errors or restart.
+  All 300 recipe predictions and complete Top-20 scores match the v4 pilot exactly.
+  All 68 background telemetry samples have importance 125 and active service protection.
+  Maximum sampled heat is MODERATE. Peak sampled PSS is 2451.03 MiB, including startup.
+  This gate uses shared query work. Do not compare its timings directly with the
+  independent v4 per-recipe latency table.
+- The repeated pilot stopped during its first cold request with `LOW_MEMORY`.
+  Android recorded foreground importance 100 and about 2.4 GB RSS for PID 2123.
+  The owner kept the benchmark visible. This is not the earlier background-only case.
+  Before a new device run, test constant-tensor sharing with FP32 and no source
+  quantization. The model bytes and recipes remain fixed.
+  [LiteRT 2.2.0 GPU options](https://github.com/google-ai-edge/LiteRT/blob/v2.2.0/litert/c/options/litert_gpu_options.h)
+  define constant sharing across subgraphs. The memory benefit is not yet measured.
+- Candidate v4 completed the repeated numerical gate in one process without errors.
+  All 102 checks passed. Minimum cosine was 0.9999999993.
+  Maximum encoder component error was 0.00000425. Peak sampled PSS was 2,961.25 MiB.
+  Do not interpret this as a controlled memory A/B result. Device state differed.
+  Independent pilot `pilot-30-v3/` uses this candidate and the unchanged frozen pack.
+- The independent pilot completed all 300 requests in one process with zero errors.
+  Every GPU trace reports constant sharing and disabled source quantization.
+  All ten prediction files contain exactly 30 distinct query records.
+  The 57 requests shared with the original candidate retain identical Top-1 slugs.
+  The largest shared Top-1 score difference is 0.00000138.
+  Median complete-pipeline latency ranges from 4.09 to 13.74 seconds.
+  Peak sampled PSS is 2173.36 MiB. Sustained thermal status reached `SEVERE`.
+  Separate process stability from production latency and heat acceptance.
+- The original v3 independent pilot stopped after 57 successful responses.
+  The camera became foreground at 19:01:12 MSK. Android killed the cached benchmark
+  process at 19:01:26 with `LOW_MEMORY` and importance 400.
+  The active user remained 0. No own native crash was recorded.
+  Activity-recreation support does not protect a background process from memory pressure.
+  That original candidate had no foreground service.
+  The later v5 candidate adds owner-approved foreground execution.
+  Preserve the incomplete pilot instead of calculating a complete quality result.
+- The repeated frozen-pack gate passed all 102 checks in PID 21034.
+  Minimum encoder cosine was 0.9999999993. Maximum component error was 0.00000441.
+  Complete bottle-score error stayed below 0.000000244.
+  Segmenter raw tensors and legacy log weights matched exactly.
+  Explicit Activity recreation preserved the same process and the loaded HTTP server.
+  Evidence: `device-frozen-all-parity-v2/` in the isolated artifact root.
+- The repaired all-recipe gate passed 102 numerical checks.
+  Minimum encoder cosine was 0.9999999990.
+  Maximum component error was 0.00000416.
+  Legacy log weights matched without numerical error on the held-out control image.
+  The final ten-epoch pilot selected epoch 8 by combined validation fitness 1.79737.
+  Its catalogue-validation mask mAP50-95 was 0.93199.
+  This is not wine-retrieval Top-1.
+- The final frozen-pack gate received GPU and CPU responses before USB transport reset.
+  The third response was not received. The run is incomplete.
+  The original PID initially survived. The phone did not reboot.
+  A later exit record identifies `LOW_MEMORY` with background importance 400.
+  The active Android user was then 10, not the original user 0.
+  No native crash of the benchmark application was recorded.
+  Do not attribute an unrelated application's crash-buffer entry to this benchmark.
+- The benchmark server originally belonged to the Activity lifetime.
+  Keep the server at process lifetime. Order HTTP cleanup and model creation on one
+  shared worker. Keep HTTP off at each fresh process start.
+- The runner's first cleanup exception could prevent the final failure record.
+  Catch cleanup errors individually. Always save the incomplete-run metadata.
+  Reject a changed Android user before any new query or UI action.
+  Do not switch a user profile without explicit owner approval.
+
+- The three-image device exact-pooling gate passed all captured calculations.
+  Minimum encoder cosine was 0.9999999858. Maximum component error was 0.0000192.
+  Complete bottle-score error stayed below 0.000000208.
+  The nine requests used grouped GPU, CPU, and GPU execution in one process.
+- The all-recipe gate detected a legacy mask-weight mismatch before quality testing.
+  The cause was BOX endpoint inclusion and coefficient rounding.
+  [Pillow 11.3 source](https://github.com/python-pillow/Pillow/blob/11.3.0/src/libImaging/Resample.c)
+  uses an open lower endpoint, a closed upper endpoint, and 22-bit integer coefficients
+  for L-image resizing. Plain double averages do not reproduce that rounding.
+  Added two fixed fixtures before repeating the device gate.
+- Removed the unused 4.82 GB external device-pack copy after the private pack loaded.
+  The complete host copy and the working private pack remain available.
+
+- Independent instance masks are required for nested bottle and label targets.
+  The Ultralytics overlap-map target removes label pixels from the bottle target.
+  Training v2 was stopped and rejected after its first epoch.
+  Training v3 uses `overlap_mask=False` and preserves both targets.
+- The development epoch-zero mobile export passed three held-out catalogue checks.
+  The largest detection-coordinate error was 0.00290 pixels.
+  The largest prototype error was 0.0000263.
+  These checks compare PyTorch and desktop LiteRT CPU raw outputs.
+  They do not establish device agreement or retrieval quality.
+- Seven exact FP32 reference galleries require 3,953,092,784 bytes including owners.
+  The development device pack requires about 4.82 GB with models and metadata.
+  This is an isolated measurement pack. It is not the main application's pack.
+- Fourteen isolated unit tests cover score aggregation, full-score fusion, mask
+  coverage, padding policy, source mapping, cardinal guards, and neck direction.
+- The first device preflight sent zero images because the application could not
+  access an ADB-created external pack directory.
+  Use app-private storage through debug `run-as`. Do not use world-writable modes.
+- The pilot checkpoint policy uses the best catalogue-validation fitness within the
+  first ten complete epochs. The original cosine schedule remains a 30-epoch schedule.
+  The stopping policy was fixed before adapted `my-failed-2` inference.
+  No evaluation image, mask, accepted answer, or retrieval result selects the model.
+- Runtime masks use CPU YOLO11n-seg with bottle and label classes.
+  RGB rendering, float mask sampling, prototype-grid geometry, and the original-view
+  margin are declared mobile adaptations. The exact desktop scores do not transfer.
+
+### Retrieval table and Android measurement boundary
+
+- Located the supplied table's desktop campaign under
+  `svoe-vino-lab/internal/my-failed2-six-variants-20261017/` in the T7 workspace.
+- Its extension protocol pins `google/siglip2-so400m-patch16-naflex` at revision
+  `cc24074f717b612951c2dead130904ab9b65a81e`.
+- Its masks come from saved package and label segmentation, including SAM3 labels.
+- Its frozen `my-failed-2` set has 668 assignments on 627 distinct images.
+- The current main application instead uses Base p512 and has no separate label
+  segmenter. Reusing its vectors would not reproduce the requested configurations.
+- Exact retrieval reproduction can use frozen masks, but that measurement excludes
+  on-device segmentation. A complete offline adaptation needs a different segmentation
+  path and must report that change.
+- Pixel 8 remains connected and authorized. The new main ID is not installed.
+- No benchmark inference, APK installation, or export ran during this preflight.
+- Plan `docs/plans/06_android-retrieval-variants.md` waits for the measurement choice.
+
+### Offline selection and initial measured control
+
+- The owner selected the complete offline adaptation after the initial preflight.
+- The current installed Base p512 control completed 668 `my-failed-2` assignments.
+  Top-1/5/10 were 41.02 / 77.84 / 84.58 percent. All vectors came from GPU.
+- The default catalogue lacks every accepted slug for 42 assignments.
+  Encoder, catalogue coverage, reference gallery, and segmentation all differ from the
+  requested desktop variants. A future delta is not a segmentation-only result.
+- All 660 assignment predictions on shared images equal the previous full control.
+- Main-reference catalogue masks provide 2,259 valid bottle/label training examples.
+  The wine-group split has 2,031 training images and 228 validation images.
+  Excluding the union of both evaluation cohorts removes six catalogue sources.
+  The verified training overlap with 3,039 evaluation-image hashes is empty.
+- Ultralytics 8.4.40 treats the literal run name `model` as a special value.
+  It replaced that name with a source-model path. Setup v1 stopped before training.
+  Use the explicit name `bottle-label` and check output-directory containment.
+- The released SO400M LiteRT file stores 448 buffers after its FlatBuffer header.
+  `ModelT.Pack` alone omits that external payload. Candidate v1 was rejected.
+  Candidate v2 relocates external offsets and preserves the full payload SHA-256.
+- Candidate v2 adds one log-weight input to the 16 pooling softmax heads only.
+  It does not change the transformer valid-patch mask.
+  Zero log weights give zero component error against the original LiteRT graph on two
+  synthetic fixtures. Native checkpoint cosine exceeds 0.9999997.
+  Perturbing padded-position logits by 100 does not change either checked vector.
+- Variants 1 through 4, 7, and 9 use `always-mean75`: bottle weight 0.75 and label
+  weight 0.25. Variant 10 uses `always-mean50`.
+  All label-space variants use `l-7f-rot5`, with aligned reference labels and no query
+  bottle or query label rotation in label space.
+- These are preparation and control results. Android GPU validation and the ten
+  adapted retrieval runs remain required.
+
 ### Measured complete p512 and DIS dual-GPU combination
 
 - The separate `chtozavino.alolalab.com.dualgpu` debug APK completed the thirty-image

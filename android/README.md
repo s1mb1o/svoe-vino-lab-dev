@@ -103,6 +103,13 @@ for the measured segmentation tradeoff on the same full query set.
 That experiment uses a separate debug application ID.
 It does not enable dual-GPU execution in this main application or replace its guard.
 
+Read [the offline ten-variant benchmark preparation report](docs/reports/2026-10-19_pixel8-offline-variant-preparation.md)
+for mobile bottle/label segmentation, weighted SO400M p512, and numerical checks.
+The [isolated benchmark tools](tools/offline_benchmark/README.md) use a separate
+application and a separate pack. They do not change the main defaults.
+Read [the measured offline retrieval pilot and full-cohort status](docs/reports/2026-10-19_pixel8-my-failed2-offline-variants.md)
+for independent latency, sustained heat, and the current `my-failed-2` evaluation.
+
 ### Legacy catalogue exporter
 
 Use this tool only for fixed Base/224 or experimental split packs:
