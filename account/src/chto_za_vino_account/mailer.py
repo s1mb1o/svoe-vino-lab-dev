@@ -13,7 +13,7 @@ import ssl
 import sys
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from email.message import EmailMessage
 from typing import Protocol
 
@@ -25,9 +25,9 @@ RETRY_DELAYS = (0, 5, 30)
 
 @dataclass(frozen=True)
 class Mail:
-    to: str
+    to: str = field(repr=False)
     subject: str
-    text: str
+    text: str = field(repr=False)
 
 
 class Mailer(Protocol):

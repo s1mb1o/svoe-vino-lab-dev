@@ -1,3 +1,5 @@
+# The root .gitignore ignores *.lock. The Docker build needs uv.lock from git archive.
+!uv.lock
 .venv/
 .uv-cache/
 .pytest_cache/

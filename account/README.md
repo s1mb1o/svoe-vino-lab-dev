@@ -13,13 +13,13 @@ preferences, application tokens) comes later.
 | Area | Behavior |
 | --- | --- |
 | Login by email code | A 6-digit code, valid 10 minutes, at most 5 tries. The code works only with the challenge ID that the requesting browser holds. Limits: 1 code per minute and 3 per hour for an address, 20 per hour for a client address. |
-| Login by Yandex ID | OAuth 2.0 authorization code flow with PKCE (`S256`) and `state`. The service keeps the Yandex user ID only and discards the access token. |
+| Login by Yandex ID | OAuth 2.0 authorization code flow with PKCE (`S256`) and `state`. The service keeps the Yandex user ID only and discards the access token. Limit: 30 starts per hour for a client address; at most 10,000 open flows. |
 | Sign-up | A new email or Yandex identity gets a sign-up ticket (30 minutes). Sign-up needs a username and the current consent and terms versions. |
 | Sessions | 30 days, extended at most once a day. `max` sessions: 1 day. |
-| Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. One identity per provider and account. An identity belongs to one account at most. |
-| MAX | Checks the mini-app launch data: signature, age (5 minutes), single-use `query_id`, signed `ip` against the client address. MAX login is off by default (`MAX_LOGIN_ENABLED`, issue #50). |
-| Telegram | A one-time link code (10 minutes) for `https://t.me/<bot>?start=link_<code>`. The bot reads the diary name, asks the person, then confirms. Telegram never opens a session. |
-| Deletion | Unlink and account deletion need a login in the last 15 minutes. An account keeps at least one login method (email or Yandex ID). |
+| Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. Linking email, Yandex ID, or MAX needs a login in the last 15 minutes, at the start and at the end. One identity per provider and account. An identity belongs to one account at most. |
+| MAX | Checks the mini-app launch data: signature, age (5 minutes by default, at most 60), single-use `query_id` kept while the launch is valid, signed `ip` against the client address. MAX login is off by default (`MAX_LOGIN_ENABLED`, issue #50). |
+| Telegram | A one-time link code (10 minutes, at most 10 per hour for an account) for `https://t.me/<bot>?start=link_<code>`. The bot reads the diary name, asks the person, then confirms. Telegram never opens a session. |
+| Deletion | Unlink and account deletion need a login in the last 15 minutes. An account keeps at least one login method: email or Yandex ID. MAX login does not count. |
 
 Russian law (149-FZ art. 8 p. 10, KoAP 13.55 since 7 July 2026) forbids login through a
 foreign service. Do not add login through Telegram, Google, or Apple. Telegram is only linked.
@@ -70,7 +70,7 @@ All routes except `/healthz` and `/readyz` need a client address from
 | `GET /v1/config` | web | Enabled providers, current consent and terms versions |
 | `POST /v1/auth/email/start` | web | `{email, purpose: login\|link}` → `{challenge_id, expires_in}` |
 | `POST /v1/auth/email/verify` | web | `{challenge_id, code}` → session, sign-up ticket, or linked |
-| `POST /v1/auth/yandex/start` | web | `{redirect_uri, purpose}` → `{authorize_url, flow_id, expires_in}` |
+| `POST /v1/auth/yandex/start` | web | `{redirect_uri, purpose}` and `X-Client-IP` → `{authorize_url, flow_id, expires_in}` |
 | `POST /v1/auth/yandex/finish` | web | `{flow_id, state, code}` → session, sign-up ticket, or linked |
 | `POST /v1/auth/signup` | web | `{signup_ticket, username, consent_version, terms_version}` → session |
 | `POST /v1/auth/max/session` | web | `{init_data}` → session or `not_linked` (only with `MAX_LOGIN_ENABLED`) |

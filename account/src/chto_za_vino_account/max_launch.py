@@ -48,7 +48,10 @@ def verify(init_data: str, key: bytes) -> Launch:
         name, separator, value = part.partition("=")
         if not separator or not name or name in pairs:
             raise LaunchInvalid("malformed launch data")
-        pairs[name] = unquote(value, errors="strict")
+        try:
+            pairs[name] = unquote(value, errors="strict")
+        except UnicodeDecodeError:
+            raise LaunchInvalid("malformed launch data encoding") from None
     supplied = pairs.pop("hash", "")
     if not supplied:
         raise LaunchInvalid("launch data has no hash")

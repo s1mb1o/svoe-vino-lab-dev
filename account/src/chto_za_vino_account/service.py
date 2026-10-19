@@ -13,14 +13,14 @@ import re
 import sqlite3
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
 from . import max_launch
 from .config import Settings
 from .db import Database
-from .limits import SlidingWindow
+from .limits import SlidingWindow, take_all
 from .mailer import Dispatcher, code_mail
 from .tokens import code_mac, equal, new_email_code, new_token, pkce_pair, token_hash
 from .yandex import ProviderRejected, ProviderUnavailable, YandexClient
@@ -36,8 +36,11 @@ SESSION_TTL = 30 * 86400
 MAX_SESSION_TTL = 86400
 SESSION_EXTEND_AFTER = 86400
 RECENT_AUTH = 900
-LAUNCH_ID_TTL = 3600
+MAX_OPEN_FLOWS = 10_000
 LAUNCH_CLOCK_SKEW = 60
+
+# An account keeps at least one of these. MAX login (MAX_LOGIN_ENABLED) does not count.
+LOGIN_METHODS = frozenset({"email", "yandex"})
 
 EMAIL_RE = re.compile(r"[^@\s]{1,64}@[^@\s]+\.[^@\s]+")
 USERNAME_RE = re.compile(r"[a-z0-9][a-z0-9_.-]{1,30}[a-z0-9]")
@@ -77,7 +80,7 @@ class Session:
 
 @dataclass(frozen=True)
 class SessionIssued:
-    token: str
+    token: str = field(repr=False)
     expires_at: int
     auth_method: str
     user_id: str
@@ -85,9 +88,9 @@ class SessionIssued:
 
 @dataclass(frozen=True)
 class SignupRequired:
-    ticket: str
+    ticket: str = field(repr=False)
     provider: str
-    email: str | None
+    email: str | None = field(repr=False)
 
 
 @dataclass(frozen=True)
@@ -146,18 +149,13 @@ class AccountService:
         self.email_resend = SlidingWindow(1, 60, clock)
         self.email_hourly = SlidingWindow(3, 3600, clock)
         self.email_per_ip = SlidingWindow(20, 3600, clock)
+        self.yandex_per_ip = SlidingWindow(30, 3600, clock)
+        self.link_codes_per_user = SlidingWindow(10, 3600, clock)
 
     # ----------------------------------------------------------------- helpers
 
     def _now(self) -> int:
         return int(self.clock())
-
-    @property
-    def login_providers(self) -> tuple[str, ...]:
-        providers = ["email", "yandex"]
-        if self.settings.max is not None and self.settings.max.login_enabled:
-            providers.append("max")
-        return tuple(providers)
 
     def _create_session(
         self,
@@ -240,8 +238,11 @@ class AccountService:
             )
         LOG.info("Identity linked (%s)", provider)
 
-    def _require_recent(self, session: Session) -> None:
-        if self._now() - session.auth_at > RECENT_AUTH:
+    def _is_recent(self, session: Session | None) -> bool:
+        return session is not None and self._now() - session.auth_at <= RECENT_AUTH
+
+    def _require_recent(self, session: Session | None) -> None:
+        if not self._is_recent(session):
             raise AccountError("reauth_required", 403, "Log in again to confirm this action")
 
     # ------------------------------------------------------------------ views
@@ -317,18 +318,19 @@ class AccountService:
         self, email: str, purpose: str, client_ip: str, session: Session | None
     ) -> tuple[str, int]:
         email = normalize_email(email)
-        if purpose == "link" and session is None:
-            raise AccountError("session_required", 401, "Log in to link an email address")
-        checks = (
-            (self.email_resend, email),
-            (self.email_hourly, email),
-            (self.email_per_ip, client_ip),
+        if purpose == "link":
+            if session is None:
+                raise AccountError("session_required", 401, "Log in to link an email address")
+            self._require_recent(session)
+        wait = take_all(
+            (
+                (self.email_resend, email),
+                (self.email_hourly, email),
+                (self.email_per_ip, client_ip),
+            )
         )
-        wait = max(limiter.retry_after(key) for limiter, key in checks)
         if wait:
             raise AccountError("rate_limited", 429, "Too many codes", retry_after=wait)
-        for limiter, key in checks:
-            limiter.record(key)
         challenge_id = new_token()
         code = new_email_code()
         now = self._now()
@@ -367,6 +369,8 @@ class AccountService:
                 session is None or session.user_id != row["user_id"]
             ):
                 error = AccountError("invalid_challenge", 400, "Request a new code")
+            elif row["purpose"] == "link" and not self._is_recent(session):
+                error = AccountError("reauth_required", 403, "Log in again to confirm this action")
             elif not equal(row["code_mac"], code_mac(self.settings.code_key, challenge_id, code)):
                 db.execute(
                     "UPDATE email_challenges SET attempts = attempts + 1 WHERE id_hash = ?",
@@ -392,19 +396,30 @@ class AccountService:
     # ----------------------------------------------------------------- yandex
 
     def yandex_start(
-        self, redirect_uri: str, purpose: str, session: Session | None
+        self, redirect_uri: str, purpose: str, client_ip: str, session: Session | None
     ) -> tuple[str, str, int]:
         if self.yandex is None or self.settings.yandex is None:
             raise AccountError("provider_disabled", 404, "Yandex ID is not configured")
         if redirect_uri not in self.settings.yandex.redirect_uris:
             raise AccountError("invalid_redirect_uri", 400, "The redirect URI is not registered")
-        if purpose == "link" and session is None:
-            raise AccountError("session_required", 401, "Log in to link Yandex ID")
+        if purpose == "link":
+            if session is None:
+                raise AccountError("session_required", 401, "Log in to link Yandex ID")
+            self._require_recent(session)
+        wait = take_all(((self.yandex_per_ip, client_ip),))
+        if wait:
+            raise AccountError("rate_limited", 429, "Too many login attempts", retry_after=wait)
         flow_id = new_token()
         state = new_token()
         verifier, challenge = pkce_pair()
         now = self._now()
         with self.db.transaction() as db:
+            open_flows = db.execute(
+                "SELECT COUNT(*) FROM oauth_flows WHERE used_at IS NULL AND expires_at > ?",
+                (now,),
+            ).fetchone()[0]
+            if open_flows >= MAX_OPEN_FLOWS:
+                raise AccountError("busy", 503, "Try again later", retry_after=60)
             db.execute(
                 "INSERT INTO oauth_flows (id_hash, provider, state, code_verifier, redirect_uri, "
                 "purpose, user_id, created_at, expires_at) "
@@ -448,6 +463,10 @@ class AccountService:
                     session is None or session.user_id != row["user_id"]
                 ):
                     error = AccountError("invalid_flow", 400, "Start the Yandex login again")
+                elif row["purpose"] == "link" and not self._is_recent(session):
+                    error = AccountError(
+                        "reauth_required", 403, "Log in again to confirm this action"
+                    )
         if error is not None:
             raise error
         try:
@@ -510,8 +529,8 @@ class AccountService:
             providers = {row["provider"] for row in rows}
             if provider not in providers:
                 raise AccountError("not_linked", 404, f"No {provider} identity is linked")
-            remaining_logins = (providers - {provider}) & set(self.login_providers)
-            if provider in self.login_providers and not remaining_logins:
+            remaining_logins = (providers - {provider}) & LOGIN_METHODS
+            if provider in LOGIN_METHODS and not remaining_logins:
                 raise AccountError(
                     "last_login_method", 409, "Link another login method before this unlink"
                 )
@@ -533,6 +552,9 @@ class AccountService:
         bot = self.settings.telegram_bot_username
         if not bot:
             raise AccountError("provider_disabled", 404, "Telegram linking is not configured")
+        wait = take_all(((self.link_codes_per_user, session.user_id),))
+        if wait:
+            raise AccountError("rate_limited", 429, "Too many link codes", retry_after=wait)
         code = new_token(16)
         now = self._now()
         with self.db.transaction() as db:
@@ -606,10 +628,12 @@ class AccountService:
             raise AccountError("launch_expired", 400, "Open the diary from MAX again")
         if settings.require_ip_match and launch.ip != client_ip:
             raise AccountError("launch_ip_mismatch", 403, "Open the diary from MAX again")
+        # Keep the launch ID while the launch data itself is still acceptable.
+        valid_until = max(now, launch.auth_date) + settings.max_age_seconds + LAUNCH_CLOCK_SKEW
         try:
             db.execute(
                 "INSERT INTO used_launches (query_id, expires_at) VALUES (?, ?)",
-                (launch.query_id, now + LAUNCH_ID_TTL),
+                (launch.query_id, valid_until),
             )
         except sqlite3.IntegrityError:
             raise AccountError("launch_reused", 400, "Open the diary from MAX again") from None
@@ -632,6 +656,7 @@ class AccountService:
             )
 
     def max_link(self, session: Session, init_data: str, client_ip: str) -> None:
+        self._require_recent(session)
         now = self._now()
         with self.db.transaction() as db:
             launch = self._check_launch(db, init_data, client_ip, now)

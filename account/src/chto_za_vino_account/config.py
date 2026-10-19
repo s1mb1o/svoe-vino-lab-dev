@@ -117,6 +117,11 @@ class Settings:
             )
 
         max_settings = None
+        max_age = _positive_int(
+            get("MAX_INITDATA_MAX_AGE_SECONDS", "300"), "MAX_INITDATA_MAX_AGE_SECONDS"
+        )
+        if max_age > 3600:
+            raise ValueError("MAX_INITDATA_MAX_AGE_SECONDS must not exceed 3600")
         if get("MAX_WEBAPP_KEY"):
             key_hex = get("MAX_WEBAPP_KEY")
             if not re.fullmatch(r"[0-9a-fA-F]{64}", key_hex):
@@ -127,9 +132,7 @@ class Settings:
                 require_ip_match=_bool(
                     get("MAX_REQUIRE_IP_MATCH", "true"), "MAX_REQUIRE_IP_MATCH"
                 ),
-                max_age_seconds=_positive_int(
-                    get("MAX_INITDATA_MAX_AGE_SECONDS", "300"), "MAX_INITDATA_MAX_AGE_SECONDS"
-                ),
+                max_age_seconds=max_age,
             )
 
         telegram_bot_username = get("TELEGRAM_BOT_USERNAME")

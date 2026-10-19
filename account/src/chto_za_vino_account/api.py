@@ -12,6 +12,7 @@ import asyncio
 import contextlib
 import ipaddress
 import logging
+import re
 import time
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -44,6 +45,7 @@ LOG = logging.getLogger("chto_za_vino_account")
 MAX_BODY_BYTES = 16 * 1024
 PURGE_INTERVAL = 600
 OPEN_PATHS = frozenset({"/healthz", "/readyz"})
+SAFE_FIELD = re.compile(r"[a-z_]{1,40}(\.[a-z_]{1,40})?")
 
 
 class Strict(BaseModel):
@@ -51,13 +53,13 @@ class Strict(BaseModel):
 
 
 class EmailStart(Strict):
-    email: str = Field(min_length=3, max_length=254)
+    email: str = Field(min_length=3, max_length=254, repr=False)
     purpose: Literal["login", "link"] = "login"
 
 
 class EmailVerify(Strict):
-    challenge_id: str = Field(min_length=20, max_length=128)
-    code: str = Field(pattern=r"^\d{6}$")
+    challenge_id: str = Field(min_length=20, max_length=128, repr=False)
+    code: str = Field(pattern=r"^\d{6}$", repr=False)
 
 
 class YandexStart(Strict):
@@ -66,24 +68,24 @@ class YandexStart(Strict):
 
 
 class YandexFinish(Strict):
-    flow_id: str = Field(min_length=20, max_length=128)
-    state: str = Field(min_length=1, max_length=1024)
-    code: str = Field(min_length=1, max_length=512)
+    flow_id: str = Field(min_length=20, max_length=128, repr=False)
+    state: str = Field(min_length=1, max_length=1024, repr=False)
+    code: str = Field(min_length=1, max_length=512, repr=False)
 
 
 class Signup(Strict):
-    signup_ticket: str = Field(min_length=20, max_length=128)
+    signup_ticket: str = Field(min_length=20, max_length=128, repr=False)
     username: str = Field(min_length=1, max_length=64)
     consent_version: str = Field(min_length=1, max_length=64)
     terms_version: str = Field(min_length=1, max_length=64)
 
 
 class MaxLaunch(Strict):
-    init_data: str = Field(min_length=1, max_length=8192)
+    init_data: str = Field(min_length=1, max_length=8192, repr=False)
 
 
 class TelegramCode(Strict):
-    code: str = Field(pattern=r"^[A-Za-z0-9_-]{16,64}$")
+    code: str = Field(pattern=r"^[A-Za-z0-9_-]{16,64}$", repr=False)
     telegram_user_id: int = Field(gt=0, lt=2**53)
 
 
@@ -162,9 +164,7 @@ def create_app(
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_: Request, error: RequestValidationError) -> Response:
-        fields = sorted(
-            {".".join(str(part) for part in item["loc"][1:]) for item in error.errors()}
-        )
+        fields = sorted({_field_label(item) for item in error.errors()})
         return JSONResponse({"error": "invalid_request", "fields": fields}, status_code=422)
 
     # --------------------------------------------------------- dependencies
@@ -269,9 +269,11 @@ def create_app(
 
     @app.post("/v1/auth/yandex/start", dependencies=[web])
     def yandex_start(
-        body: YandexStart, session: Annotated[Session | None, Depends(optional_session)]
+        body: YandexStart,
+        ip: Annotated[str, Depends(client_ip)],
+        session: Annotated[Session | None, Depends(optional_session)],
     ) -> dict[str, Any]:
-        url, flow_id, ttl = service.yandex_start(body.redirect_uri, body.purpose, session)
+        url, flow_id, ttl = service.yandex_start(body.redirect_uri, body.purpose, ip, session)
         return {"authorize_url": url, "flow_id": flow_id, "expires_in": ttl}
 
     @app.post("/v1/auth/yandex/finish", dependencies=[web])
@@ -356,6 +358,15 @@ def create_app(
         return {"status": "unlinked" if removed else "not_linked"}
 
     return app
+
+
+def _field_label(item: Any) -> str:
+    """A field name from our schema, never a key or value that the client sent."""
+    if item.get("type") == "extra_forbidden":
+        return "unknown_field"
+    parts = [str(part) for part in item.get("loc", ())[1:]]
+    label = ".".join(parts)
+    return label if SAFE_FIELD.fullmatch(label) else "invalid_field"
 
 
 def _error(error: AccountError) -> Response:

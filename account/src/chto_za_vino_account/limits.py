@@ -8,7 +8,9 @@ from __future__ import annotations
 import math
 import threading
 from collections import deque
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
+
+_TAKE_LOCK = threading.Lock()
 
 
 class SlidingWindow:
@@ -42,3 +44,13 @@ class SlidingWindow:
     def _prune(self, now: float) -> None:
         for key in [k for k, v in self._events.items() if not v or v[-1] <= now - self._window]:
             del self._events[key]
+
+
+def take_all(checks: Sequence[tuple[SlidingWindow, str]]) -> int:
+    """Check every limit and record all of them, or none. Return the seconds to wait or 0."""
+    with _TAKE_LOCK:
+        wait = max((window.retry_after(key) for window, key in checks), default=0)
+        if wait == 0:
+            for window, key in checks:
+                window.record(key)
+        return wait
