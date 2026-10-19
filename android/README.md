@@ -98,6 +98,10 @@ Do not reuse the fixed Base/224 rotation vectors with this encoder.
 Read [the integration validation report](docs/reports/2026-10-19_base-p512-default.md).
 Read [the full Pixel 8 my benchmark](docs/reports/2026-10-19_pixel8-base-p512-full-my.md)
 for retrieval quality, whole-pipeline latency, negative cases, and sustained heat.
+Read [the isolated DIS GPU + p512 GPU experiment](docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md)
+for the measured segmentation tradeoff on the same full query set.
+That experiment uses a separate debug application ID.
+It does not enable dual-GPU execution in this main application or replace its guard.
 
 ### Legacy catalogue exporter
 

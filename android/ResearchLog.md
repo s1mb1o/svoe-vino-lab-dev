@@ -2,6 +2,66 @@
 
 ## 2026-10-19
 
+### Measured complete p512 and DIS dual-GPU combination
+
+- The separate `chtozavino.alolalab.com.dualgpu` debug APK completed the thirty-image
+  pilot and all 3,409 full `my` assignments on Pixel 8.
+- Both model accelerators were GPU for every successful request.
+  CPU fallback was disabled for explicit debug requests.
+- PID `19651` remained unchanged through the pilot, full run, post-run probes, and
+  closure of both GPU models.
+- No native abort or fatal application exception was observed.
+- Five positive assignments failed because DIS found no main object.
+  These failures are not GPU crashes and remain in the positive quality denominator.
+- DIS improved Top-1 by 95 hits, from 2,052 to 2,147 of 2,970 positives.
+  This is a 3.20-percentage-point increase, with 262 gains and 167 losses.
+- Top-5 increased from 87.10% to 88.18%. Top-10 increased from 90.03% to 90.34%.
+- Catalogue-covered Top-1 is 76.68%. The pack still cannot answer 170 positives.
+- Negative forbidden Top-1 matches decreased from 73 to 69 of 430.
+  Another predicted slug does not establish correct recognition for a negative query.
+- All 9 no-match queries still returned a nearest wine.
+- Client median latency increased from 924 to 1,319 ms.
+  P95 increased from 1,479 to 2,343 ms.
+  These are HTTP pipeline times, not isolated encoder times.
+- Full-run sampled PSS peaked at 1,434.2 MiB. The cold pilot peak was 1,565.0 MiB.
+  PSS does not measure the complete GPU allocation peak.
+- The full run reached `MODERATE`, not `SEVERE` or `CRITICAL`.
+  Per-request ADB checks increased idle intervals outside the HTTP timer.
+  This timing difference prevents a controlled power or thermal comparison.
+- The 97.04-minute bulk wall time contains 858.781 seconds outside HTTP call timers.
+  The baseline contains only 13.178 seconds of that host overhead.
+- Three explicit post-run p512 GPU/CPU comparisons passed while DIS remained on GPU.
+  Minimum cosine was `0.9999999999044907`.
+  Maximum component error was `0.000003159046173095703`.
+  These explicit CPU requests were not fallback or part of the full-run metrics.
+- All 271 repeated-image groups kept a consistent Top-1 prediction.
+- The result establishes measured stability for this Pixel 8, graph, and worker runtime.
+  It does not establish dual-GPU compatibility for another phone or a legacy graph.
+  It does not isolate the cause of the historical model-creation abort.
+- The main source and APK hashes are unchanged. The main guard remains active.
+- Read `docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md` for the exact scope.
+
+### Scope of the inherited dual-GPU guard
+
+- The owner asked why the application moves SigLIP2 to CPU when DIS uses GPU.
+- `ImageRecognition.kt` applies this decision unconditionally when both requested
+  accelerators are GPU and DIS actually runs on GPU.
+- This decision is application code, not a detected Android hardware restriction.
+- The historical query-57 crash occurred in `libLiteRtClGlAccelerator.so` during GPU
+  `CompiledModel` creation with the fixed Base/224 pipeline.
+- The old code created and closed DIS before creating and closing SigLIP2 on each
+  request. The code did not retain both GPU models together in that path.
+- Commit `9fe721dc` introduced model reuse and the conservative dual-GPU guard together.
+- Later stable runs therefore do not isolate which change prevented the native abort.
+- The crash evidence does not establish that simultaneous GPU model residency caused
+  the old failure or is impossible for the complete p512 graph.
+- The complete p512 runtime now keeps GPU lifecycle operations on one dedicated thread.
+  Its GPU verification used no query segmentation.
+- Complete p512 plus DIS with both models on GPU remains unverified.
+- A DIS CPU plus p512 GPU benchmark can use the current application without bypassing
+  the guard. The guard must not be presented as a proven platform limitation.
+- This investigation did not change the application or start a benchmark.
+
 ### Complete Base p512 full my findings
 
 - The full run used the same 3,409 frozen assignments as the fixed Base/224 plus DIS

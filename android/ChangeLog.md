@@ -2,6 +2,38 @@
 
 ## 2026-10-19
 
+### Isolated DIS GPU and p512 GPU experiment
+
+- Built `chtozavino.alolalab.com.dualgpu` from a separate Android source snapshot.
+- Kept the main application source, installed APK, debug APK, and release APK unchanged.
+- Disabled the inherited dual-GPU override only in the experimental copy.
+- Disabled explicit-request CPU fallback and reported actual accelerators in responses.
+- Passed 64 isolated debug unit tests and debug lint before installation.
+- Passed all thirty pilot requests with GPU + GPU and valid 768-dimensional vectors.
+- Completed all 3,409 frozen `my` assignments in one process without a native abort,
+  process restart, or model-level CPU fallback.
+- Recorded five DIS no-object errors on positive assignments without replacing them.
+- Improved Top-1 from 69.09% to 72.29%, Top-5 from 87.10% to 88.18%, and Top-10 from
+  90.03% to 90.34% against the no-segmentation p512 baseline.
+- Recorded 262 paired Top-1 gains and 167 losses.
+- Measured 1,319 ms client median, 2,343 ms P95, and 1,434.2 MiB peak sampled full-run PSS.
+- Recorded maximum thermal status `MODERATE` and maximum battery temperature 43.0 C.
+- Passed three post-run GPU/CPU vector comparisons while DIS remained on GPU.
+- Verified consistent Top-1 results across all 271 repeated-image groups.
+- Saved predictions, exact source patch, raw responses, telemetry, logs, and comparison
+  in `docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md` and its linked artifacts.
+- Disabled experimental HTTP, removed forwarding, restored power settings, and reopened
+  the unchanged main application.
+- Left the main dual-GPU guard unchanged.
+
+### DIS and p512 GPU guard investigation
+
+- Traced the inherited CPU override to commit `9fe721dc`.
+- Distinguished the observed repeated-model-creation abort from the unproven
+  simultaneous-GPU-model explanation.
+- Recorded that the complete p512 plus DIS dual-GPU combination remains unverified.
+- Left the application and the debug HTTP setting unchanged.
+
 ### Main application ID
 
 - Changed the main debug and release application ID to `com.alolalab.chtozavino`.
