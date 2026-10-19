@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-19 — Three rows of Dinner Lens preferences
+
+- Replace eight settings fields with three visible icon groups: seven composable sauce/taste presets, wine color and still/sparkling, and sweetness. Keep text labels, keyboard activation and pressed states. Wrap choices for narrow phones with 44-pixel targets.
+- Preserve recipe defaults when a preset is unset. Support explicit no-cream and no-heat choices. Clear old results and pagination when a choice changes. Keep brut categories compatible with sparkling wine.
+- Extend browser checks for every preset, combinations, toggling, request payloads, keyboard activation, and desktop/tablet/mobile layouts in both themes. Keep the Dinner Lens backend and API contract unchanged.
+
 ## 2026-10-19 — Application tokens
 
 - «Токены приложений» on `/account` (issue #65): create (name, 30/90/365 days, recent login), show once with «Скопировать токен» and the MCP client configuration, list with expiry and last use, «Отозвать».

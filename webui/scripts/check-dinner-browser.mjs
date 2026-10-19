@@ -41,10 +41,16 @@ async function modeLayout(page, width) {
     return buttons.map(button => { const style = getComputedStyle(button); const a = light(style.color); const b = light(style.backgroundColor); return (Math.max(a, b) + .05) / (Math.min(a, b) + .05) })
   })
   assert(contrasts.every(ratio => ratio >= 4.5), 'Upload actions must keep readable text in the current theme')
+  for (const button of await page.locator('.dinner-choice').all()) {
+    const box = await button.boundingBox()
+    assert(box && box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width + 1, 'Each preference must fit and have a 44px touch target')
+  }
 }
 
 for (const [name, engine, viewport, mobile, colorScheme] of [
   ['desktop-chromium', chromium, { width: 1440, height: 1000 }, false, 'dark'],
+  ['desktop-chromium-1024', chromium, { width: 1024, height: 1000 }, false, 'dark'],
+  ['tablet-chromium-820', chromium, { width: 820, height: 1000 }, true, 'light'],
   ['mobile-chromium-320', chromium, { width: 320, height: 740 }, true, 'dark'],
   ['mobile-webkit-390', webkit, { width: 390, height: 844 }, true, 'dark'],
   ['desktop-chromium-light', chromium, { width: 1440, height: 1000 }, false, 'light'],
@@ -75,19 +81,64 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.waitForFunction(() => document.activeElement === document.querySelectorAll('.dinner-wine h3')[3])
     assert.deepEqual(calls.at(-1), { action: 'more', body: { cursor: 'fixture-cursor' } })
     assert.equal(await page.getByRole('button', { name: 'Показать ещё', exact: true }).count(), 0)
-    await page.locator('.dinner-options summary').click()
-    await page.getByLabel('Сливочный соус', { exact: true }).selectOption('yes')
+    assert.equal(await page.locator('.dinner-preference-row').count(), 3)
+    const taste = page.getByRole('group', { name: 'Вкус и соус', exact: true })
+    assert.equal(await taste.getByRole('button').count(), 7)
+    assert.equal(await page.locator('.dinner-choice[aria-pressed="true"]').count(), 0)
+    assert.deepEqual(calls.find(call => call.action === 'recommendations').body.confirmed_attributes, {})
+    assert.deepEqual(calls.find(call => call.action === 'recommendations').body.user_constraints, {})
+    const choose = (group, label) => group.getByRole('button', { name: label, exact: true })
+    const recommend = async (attributes, constraints = {}) => {
+      await page.getByRole('button', { name: 'Подобрать вино', exact: true }).click()
+      await page.locator('.dinner-wine').first().waitFor()
+      assert.deepEqual(calls.at(-1).body.confirmed_attributes, attributes)
+      assert.deepEqual(calls.at(-1).body.user_constraints, constraints)
+    }
+    for (const [label, attributes] of [
+      ['Неострое', { heat: 'none' }], ['Острое', { heat: 'high' }],
+      ['Сливочный', { fatty_cream_sauce: true }], ['Без сливок', { fatty_cream_sauce: false }],
+      ['С кислинкой', { acidity: 'high' }], ['Сладкий соус', { sauce_sweetness: 'high' }], ['Несладкий', { sauce_sweetness: 'none' }],
+    ]) {
+      const button = choose(taste, label)
+      await button.click()
+      assert.equal(await button.getAttribute('aria-pressed'), 'true')
+      assert.equal(await page.locator('.dinner-wine').count(), 0, 'Changed preset discards the previous context')
+      await recommend(attributes)
+      await button.click()
+      assert.equal(await button.getAttribute('aria-pressed'), 'false')
+      await recommend({})
+    }
+    await choose(taste, 'Сливочный').focus(); await page.keyboard.press('Space')
     assert.equal(await page.locator('.dinner-wine').count(), 0, 'Changed sauce must discard the previous context')
-    await page.getByRole('button', { name: 'Подобрать вино', exact: true }).click()
-    await page.locator('.dinner-wine').first().waitFor()
-    assert.equal(calls.at(-1).body.confirmed_attributes.fatty_cream_sauce, true)
+    await choose(taste, 'Острое').click(); await choose(taste, 'Неострое').click()
+    assert.equal(await choose(taste, 'Острое').getAttribute('aria-pressed'), 'false')
+    await choose(taste, 'Острое').click(); await choose(taste, 'С кислинкой').click(); await choose(taste, 'Сладкий соус').click()
+    const combined = { heat: 'high', acidity: 'high', sauce_sweetness: 'high', fatty_cream_sauce: true }
+    await recommend(combined)
+    const colors = page.getByRole('group', { name: 'Цвет вина', exact: true })
+    const kinds = page.getByRole('group', { name: 'Тихое или игристое', exact: true })
+    const sugar = page.getByRole('group', { name: 'Сладость вина', exact: true })
+    await choose(colors, 'Красное').click(); await choose(colors, 'Белое').click()
+    assert.equal(await choose(colors, 'Красное').getAttribute('aria-pressed'), 'false')
+    await choose(kinds, 'Тихое').click(); await choose(sugar, 'Полусухое').click()
+    await recommend(combined, { color: 'white', wine_kind: 'still', sweetness: 'semi_dry' })
+    await choose(sugar, 'Брют').click()
+    assert.equal(await choose(kinds, 'Игристое').getAttribute('aria-pressed'), 'true')
+    await recommend(combined, { color: 'white', wine_kind: 'sparkling', sweetness: 'brut' })
+    await choose(kinds, 'Тихое').click()
+    assert.equal(await choose(sugar, 'Брют').getAttribute('aria-pressed'), 'false')
+    await recommend(combined, { color: 'white', wine_kind: 'still' })
+    await choose(colors, 'Белое').click(); await choose(kinds, 'Тихое').click()
+    await recommend(combined)
     await modeLayout(page, viewport.width)
     await page.screenshot({ path: resolve(output, name + '-dish.png'), fullPage: true })
+    await page.locator('.dinner-form').screenshot({ path: resolve(output, name + '-preferences.png') })
     await page.getByRole('link', { name: 'Одна бутылка', exact: true }).click()
     await page.getByRole('link', { name: 'Вино к блюду', exact: true }).click()
     await page.locator('#dinner-dish').waitFor()
     assert.equal(await page.locator('#dinner-dish').inputValue(), '')
     assert.equal(await page.locator('.dinner-wine').count(), 0)
+    assert.equal(await page.locator('.dinner-choice[aria-pressed="true"]').count(), 0, 'Mode exit resets all preferences')
     await context.route('**/api/dinner/recommendations', route => route.fulfill({ json: {
       status: 'needs_category', resolved_node_id: null, results: [], next_cursor: null,
       shown_count: 0, total_eligible: 0, needs_clarification: true,
@@ -116,7 +167,7 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
     await page.getByRole('button', { name: 'Убрать фото', exact: true }).click()
     await page.waitForFunction(() => document.activeElement?.textContent?.includes('Загрузить фото'))
     assert.deepEqual(errors, [])
-    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
+    receipts.push({ browser: name, viewport, colorScheme, passed: true, checks: ['three preference rows', 'seven taste presets and explicit negatives', 'composable sauce modifiers', 'exclusive and toggleable preferences', 'compatible brut and wine kind', 'keyboard activation', '44px preference targets', 'three touch-accessible modes', 'route reset', 'sauce context invalidation', 'full continuation', 'unknown dish clarification', 'upstream failure', 'readable upload actions', 'no horizontal overflow', 'no browser errors'] })
   } finally { await context.close(); await browser.close() }
 }
 
