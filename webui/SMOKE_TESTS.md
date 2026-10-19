@@ -1,5 +1,18 @@
 # Smoke tests
 
+## Automatic Dinner Lens recommendations
+
+1. Open `/dish` on desktop and mobile. Confirm that there is no primary pairing or confirmation button.
+2. Choose a category or dish. Wine cards must appear automatically. Keep focus on the dish control.
+3. Type a name. Pause for 450 ms, or press Enter. Rapid edits must use only the latest name.
+4. Change each heat and sauce preset, including explicit negatives. Check the attributes in the latest request and the refreshed cards.
+5. Upload a recognizable image. Recommendations must appear automatically with the current heat and sauce. Correct its name without another image request.
+6. Change sauce while recognition is pending. Keep recognition running, then request wines with the latest sauce.
+7. Clear the name, replace the photo, cancel, or leave the mode during pending work. Late results must not restore stale wines.
+8. Check unknown-dish clarification, the error-only retry action, and continuation for the current selection.
+9. Run `test:dinner`, `test:dinner-uploads`, and `scripts/check-dinner-picker.mjs` with the configured local Playwright module.
+
+
 ## Game link in the former quiz position
 
 1. On `/ideas`, find Wine&Dine Merge in the final card grid. Confirm the game image, working-prototype badge, and «Подробнее об игре» link.

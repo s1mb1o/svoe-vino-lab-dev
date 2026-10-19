@@ -1,5 +1,17 @@
 # Research log
 
+## Automatic Dinner Lens updates, 2026-10-19
+
+The owner removed the explicit confirmation step for dish-to-wine recommendations.
+Decision: refresh after a recognized image, explicit dish choice, and heat or sauce change.
+Debounce typed names for 450 ms. Cancel previous requests and ignore their late results.
+Taste changes during image recognition must preserve the recognition request and apply after it resolves.
+Keep the editing focus. Announce the latest results without moving to the wine cards.
+An unresolved image must retain clarification. A failed recommendation has a contextual retry action.
+Seven scheduler regressions cover rapid text edits, explicit choice, stale responses, recognition settings,
+empty names, cancellation, route disposal and availability. Desktop/mobile browser checks cover the same entry paths.
+
+
 ## Game card replacement, 2026-10-19
 
 The owner identified the blind-style quiz mock in a screenshot and requested a link to the game landing page in that position.
