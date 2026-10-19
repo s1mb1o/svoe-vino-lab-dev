@@ -20,6 +20,7 @@ class SlidingWindow:
         self._clock = clock
         self._events: dict[str, deque[float]] = {}
         self._lock = threading.Lock()
+        self._next_prune = 0.0
 
     def retry_after(self, key: str) -> int:
         """Return the seconds to wait, or 0 when the limit allows one more event."""
@@ -38,8 +39,10 @@ class SlidingWindow:
         now = self._clock()
         with self._lock:
             self._events.setdefault(key, deque()).append(now)
-            if len(self._events) > 50_000:
+            # Prune at most once a window: a scan on every event would cost O(keys) each time.
+            if len(self._events) > 50_000 and now >= self._next_prune:
                 self._prune(now)
+                self._next_prune = now + self._window
 
     def _prune(self, now: float) -> None:
         for key in [k for k, v in self._events.items() if not v or v[-1] <= now - self._window]:

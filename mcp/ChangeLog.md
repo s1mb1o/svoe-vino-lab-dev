@@ -6,6 +6,7 @@
 - New error code `unauthorized` for a refused token; network errors, timeouts, 5xx, and 429 give `unavailable`. Catalog tools keep working.
 - A malformed token stops the start with a sanitized message. Without a token the tool list and the server instructions are unchanged.
 - `src/account.mjs`; 6 new tests with a loopback fake diary and a real SDK client (48 in total).
+- Review fix: the 256 KiB answer limit applies while the body streams (and to `Content-Length`), so a large answer never reaches memory in full. 1 new test (49 in total).
 
 ## 2026-10-19
 

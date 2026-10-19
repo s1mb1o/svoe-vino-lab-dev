@@ -59,7 +59,8 @@ The browser never gets the endpoint or the token.
 - Telegram link (issue #51): `POST /api/account/links/telegram` (session, `Origin`) returns only the
   bot deep link and its lifetime. The server refuses any link other than
   `https://t.me/<bot>?start=link_<code>`. The person confirms in the bot chat, where the bot shows the
-  diary name. The page warns not to forward the link: the first Telegram user who opens it owns
+  diary name. «Открыть Telegram» opens the link by script, so the page holds no link with the code
+  and Metrika link tracking cannot see it. The page warns not to forward the link: the first Telegram user who opens it owns
   the code. Starting a link needs a login in the last 15 minutes; on `reauth_required` the chooser
   offers «Войти заново».
   `DELETE /api/account/identities/telegram` unlinks it without a fresh login (service rule for
@@ -118,10 +119,14 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
   site has a valid `NUXT_ACCOUNT_MAX_APP_LINK`.
 - `/max` has its own header and footer without links to other site pages. Metrika does not start
   there, and the Workbox page cache skips it.
-- Host guard (`server/middleware/max-host.ts`): when the `Host` header equals
-  `NUXT_ACCOUNT_MAX_HOST`, Nuxt answers `/` with 302 to `/max` and serves only `/max`, the layout
-  assets, the legal pages, and the email, sign-up, session, deletion, and MAX routes. Other pages,
-  Yandex ID, and the Telegram routes get 404. Nitro serves `public/` files (`/sw.js`,
+- Host guard (`server/middleware/max-host.ts`, `maxHostGuard`): when the `Host` header equals
+  `NUXT_ACCOUNT_MAX_HOST` (case, port, and a trailing dot ignored), Nuxt answers `/` with 302 to
+  `/max` and serves only `/max`, the layout assets, the legal pages, and the email, sign-up,
+  session, deletion, and MAX routes. Other pages, Yandex ID, the Telegram routes, and the token
+  routes get 404. The guard decides on the router path (`event.path`) and refuses dot segments,
+  encoded dots or slashes, backslashes, and empty segments. On any other host `/max` redirects to
+  `/account`: the MAX Bridge, a third-party script, never runs on the main site (and
+  `/api/account/config` reports `maxApp: true` only on the mini-app host). Nitro serves `public/` files (`/sw.js`,
   `/manifest.webmanifest`) before any middleware, so the Caddy block of the mini-app host MUST
   filter the paths too (plan 05, "Deployment"). Without `/sw.js` the mini app registers no service
   worker.

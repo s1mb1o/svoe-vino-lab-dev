@@ -10,6 +10,7 @@ export function runtimeAccountConfig(event: H3Event): AccountConfigSource {
       token: config.accountToken,
       publicOrigin: config.accountPublicOrigin,
       maxAppLink: config.accountMaxAppLink,
+      maxHost: config.accountMaxHost,
     })
   }
 }

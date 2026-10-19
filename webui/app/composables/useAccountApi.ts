@@ -7,6 +7,8 @@ export interface AccountSiteConfig {
   available: boolean
   providers?: { email: boolean; yandex: boolean; telegram?: boolean; max?: boolean }
   maxAppLink?: string
+  // True only on the MAX mini-app host.
+  maxApp?: boolean
   consentVersion?: string
   termsVersion?: string
 }

@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { createServer, type IncomingMessage, type Server } from 'node:http'
+import { createServer, request as httpRequest, type IncomingMessage, type Server } from 'node:http'
 import { createApp, createRouter, eventHandler, toNodeListener } from 'h3'
 import {
   accountConfig, accountConfigRoute, appReadRoute, appTokenCreateRoute, appTokenRevokeRoute, appTokensRoute, callAccount, deleteMeRoute, emailStartRoute, emailVerifyRoute, logoutRoute,
-  maxHostDecision, maxLinkRoute, maxQrRoute, meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute,
+  maxHostDecision, maxHostGuard, maxLinkRoute, maxQrRoute, normalizeHost, meRoute, signupRoute, telegramLinkRoute, unlinkMessengerRoute,
   yandexCallbackRoute, yandexStartRoute, type AccountConfigSource,
 } from '../server/utils/account'
 import { accountErrorMessage, isAccountPath, isMaxAppPath, mcpClientConfig, safeNextPath, splitIdentities } from '../shared/account'
@@ -90,8 +90,8 @@ beforeEach(() => {
   reply = () => ({ status: 200, body: {} })
   source = baseSource
 })
-const withMaxLink = () => {
-  source = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru', maxAppLink: MAX_APP_LINK }, { timeoutMs: 300 })
+const withMaxLink = (maxHost = '') => {
+  source = () => accountConfig({ endpoint: serviceUrl, token: TOKEN, publicOrigin: 'https://chtozavino.ru', maxAppLink: MAX_APP_LINK, maxHost }, { timeoutMs: 300 })
 }
 
 function call(path: string, init: RequestInit & { cookie?: string } = {}) {
@@ -185,7 +185,7 @@ describe('account configuration', () => {
     reply = () => ({ status: 200, body: { providers: { email: true, yandex: true, max_login: true, telegram_link: true }, consent_version: 'c1', terms_version: 't1' } })
     const response = await call('/api/account/config')
     expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true, telegram: true, max: false }, consentVersion: 'c1', termsVersion: 't1' })
+    expect(await response.json()).toEqual({ enabled: true, available: true, providers: { email: true, yandex: true, telegram: true, max: false }, maxApp: false, consentVersion: 'c1', termsVersion: 't1' })
     expect(seen[0].headers.authorization).toBe(`Bearer ${TOKEN}`)
   })
   it('reports an unavailable service instead of failing the page', async () => {
@@ -396,6 +396,13 @@ describe('MAX link', () => {
     expect(off.providers.max).toBe(false)
     expect(off.maxAppLink).toBeUndefined()
   })
+  it('reports the mini app only on the mini-app host', async () => {
+    reply = () => ({ status: 200, body: { providers: { email: true, max_link: true } } })
+    withMaxLink('127.0.0.1')
+    expect((await (await call('/api/account/config')).json()).maxApp).toBe(true)
+    withMaxLink('max.chtozavino.ru')
+    expect((await (await call('/api/account/config')).json()).maxApp).toBe(false)
+  })
   it.each(['https://evil.example/bot?startapp=account', 'https://max.ru/bot?startapp=link_abc', 'javascript:alert(1)'])('ignores an unsafe mini-app link: %s', link => {
     expect(accountConfig({ endpoint: 'http://host/', token: TOKEN, maxAppLink: link })?.maxAppLink).toBe('')
   })
@@ -562,8 +569,60 @@ describe('MAX mini-app host', () => {
     ['POST', '/v1/match', 'reject'],
     ['POST', '/max', 'reject'],
     ['GET', '/max/../account', 'reject'],
+    ['GET', '/_nuxt/../account', 'reject'],
+    ['GET', '/_nuxt//x.js', 'reject'],
   ])('%s %s: %s', (method, path, decision) => {
     expect(maxHostDecision(method, path)).toBe(decision)
+  })
+  it.each([
+    ['max.example.test', 'max.example.test'], ['MAX.Example.Test:443', 'max.example.test'],
+    ['max.example.test.', 'max.example.test'], ['max.example.test.:8443', 'max.example.test'], ['[::1]:8153', '[::1]'],
+  ])('normalizes the host %s', (value, expected) => {
+    expect(normalizeHost(value)).toBe(expected)
+  })
+})
+
+describe('MAX host guard as middleware', () => {
+  let guarded: Server
+  let guardedPort = 0
+  beforeAll(async () => {
+    const app = createApp()
+    app.use(eventHandler(event => maxHostGuard(event, 'max.example.test')))
+    app.use(eventHandler(event => ({ served: event.path })))
+    guarded = createServer(toNodeListener(app))
+    guardedPort = Number(new URL(await listen(guarded)).port)
+  })
+  afterAll(async () => {
+    guarded.closeAllConnections()
+    await new Promise<void>(resolve => guarded.close(() => resolve()))
+  })
+  // A raw request: fetch would normalize the path and fix the Host header.
+  const raw = (method: string, path: string, host: string) => new Promise<{ status: number; location?: string }>((resolve, reject) => {
+    const req = httpRequest({ host: '127.0.0.1', port: guardedPort, method, path, headers: { host } }, (res) => {
+      res.resume()
+      res.on('end', () => resolve({ status: res.statusCode ?? 0, location: res.headers.location }))
+    })
+    req.on('error', reject)
+    req.end()
+  })
+  it.each([
+    ['GET', '/', 'max.example.test', 302, '/max'],
+    ['GET', '/max', 'max.example.test:443', 200, undefined],
+    ['GET', '/max', 'max.example.test.', 200, undefined],
+    ['GET', '/account', 'MAX.example.test', 404, undefined],
+    ['GET', '/account', 'max.example.test.', 404, undefined],
+    ['POST', '/api/account/links/telegram/%2e%2e/%2e%2e/max/link', 'max.example.test', 404, undefined],
+    ['POST', '/api/account/max/link/..%2f..%2flinks/telegram', 'max.example.test', 404, undefined],
+    ['GET', '/_nuxt/../account', 'max.example.test', 404, undefined],
+    ['GET', '/_nuxt/%2e%2e/account', 'max.example.test', 404, undefined],
+    ['GET', '/_nuxt/entry.js', 'max.example.test', 200, undefined],
+    ['GET', '/max', 'chtozavino.ru', 302, '/account'],
+    ['GET', '/max/', 'chtozavino.ru', 302, '/account'],
+    ['GET', '/account', 'chtozavino.ru', 200, undefined],
+  ])('%s %s with Host %s: %i', async (method, path, host, status, location) => {
+    const response = await raw(method, path, host)
+    expect(response.status).toBe(status)
+    if (location) expect(response.location).toBe(location)
   })
 })
 

@@ -1,5 +1,14 @@
 # ChangeLog
 
+## 2026-10-19 — Review fixes for application tokens
+
+Review of `99015725` and `2ada337b` (a Claude review agent) found nothing high-severity. Fixed:
+
+- The failed-token limit groups IPv6 clients by /64, and a budget of 600 failed checks per minute for
+  all clients stops address rotation from making unlimited lookups.
+- `SlidingWindow` prunes old keys at most once a window instead of on every event above 50,000 keys.
+- 3 new tests (98 in total).
+
 ## 2026-10-19 — Application tokens (#65)
 
 - Schema `004_app_tokens.sql`. `GET/POST /v1/me/app-tokens`, `DELETE /v1/me/app-tokens/{id}` (session;

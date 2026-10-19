@@ -7,7 +7,7 @@ import {
   setCookie, setHeader, setResponseStatus, type H3Event,
 } from 'h3'
 import { renderSVG } from 'uqr'
-import { EMAIL_CODE_PATTERN, MAX_APP_LINK_PATTERN, USERNAME_PATTERN, safeNextPath, type AccountErrorBody } from '#shared/account'
+import { EMAIL_CODE_PATTERN, MAX_APP_LINK_PATTERN, USERNAME_PATTERN, isMaxAppPath, safeNextPath, type AccountErrorBody } from '#shared/account'
 
 export const ACCOUNT_COOKIES = {
   session: '__Host-cv_session',
@@ -35,6 +35,8 @@ export interface AccountConfig {
   publicOrigin: string
   // The fixed MAX mini-app deep link, or '' when the site does not offer the MAX link.
   maxAppLink: string
+  // The host of the MAX mini app (normalized), or '' when the mini app is off.
+  maxHost: string
   timeoutMs: number
   fetch: typeof fetch
 }
@@ -64,7 +66,7 @@ export type AccountConfigSource = () => AccountConfig | null
  * feature is off. A set but invalid endpoint or token makes the service unavailable.
  */
 export function accountConfig(
-  settings: { endpoint?: unknown; token?: unknown; publicOrigin?: unknown; maxAppLink?: unknown },
+  settings: { endpoint?: unknown; token?: unknown; publicOrigin?: unknown; maxAppLink?: unknown; maxHost?: unknown },
   options: { fetch?: typeof fetch; timeoutMs?: number } = {},
 ): AccountConfig | null {
   if (typeof settings.endpoint !== 'string' || !settings.endpoint.trim()) return null
@@ -87,7 +89,8 @@ export function accountConfig(
     throw unavailable()
   }
   const maxAppLink = typeof settings.maxAppLink === 'string' && MAX_APP_LINK_PATTERN.test(settings.maxAppLink.trim()) ? settings.maxAppLink.trim() : ''
-  return { endpoint, token, publicOrigin, maxAppLink, timeoutMs: options.timeoutMs ?? 2000, fetch: options.fetch ?? fetch }
+  const maxHost = normalizeHost(typeof settings.maxHost === 'string' ? settings.maxHost : '')
+  return { endpoint, token, publicOrigin, maxAppLink, maxHost, timeoutMs: options.timeoutMs ?? 2000, fetch: options.fetch ?? fetch }
 }
 
 /** Calls the account service. Throws AccountHttpError for a refused request or an outage. */
@@ -271,6 +274,8 @@ export async function accountConfigRoute(event: H3Event, source: AccountConfigSo
         telegram: Boolean(data.providers?.telegram_link),
         max: Boolean(data.providers?.max_link) && Boolean(config.maxAppLink),
       },
+      // The page runs the mini app (and loads the MAX Bridge) only on the mini-app host.
+      maxApp: isMaxHost(event, config.maxHost),
       ...(data.providers?.max_link && config.maxAppLink ? { maxAppLink: config.maxAppLink } : {}),
       consentVersion: data.consent_version ?? '',
       termsVersion: data.terms_version ?? '',
@@ -373,8 +378,47 @@ const MAX_HOST_ROUTES: Array<[RegExp, string[]]> = [
 
 /** What the mini-app host does with a request: serve it, redirect `/` to the mini app, or 404. */
 export function maxHostDecision(method: string, pathname: string): 'allow' | 'redirect' | 'reject' {
+  if (UNSAFE_PATH.test(pathname)) return 'reject'
   if (pathname === '/' && (method === 'GET' || method === 'HEAD')) return 'redirect'
   return MAX_HOST_ROUTES.some(([pattern, methods]) => pattern.test(pathname) && methods.includes(method)) ? 'allow' : 'reject'
+}
+
+// Dot segments, encoded dots or slashes, backslashes, and empty segments: the router and the URL
+// parser can read such a path differently, so the mini-app host refuses it.
+const UNSAFE_PATH = /\.\.|%2e|%2f|%5c|\\|\/\//i
+
+/** Lower case, without a port and without a trailing dot: `MAX.chtozavino.ru.:443` → `max.chtozavino.ru`. */
+export function normalizeHost(value: string): string {
+  const host = value.trim().toLowerCase()
+  const bare = host.startsWith('[') ? host.slice(0, host.indexOf(']') + 1) : host.replace(/:\d*$/, '')
+  return bare.replace(/\.$/, '')
+}
+
+/** True when the request came through the mini-app host. Caddy keeps the original Host header. */
+export function isMaxHost(event: H3Event, maxHost: string): boolean {
+  const want = normalizeHost(maxHost)
+  return Boolean(want) && normalizeHost(getHeader(event, 'host') ?? '') === want
+}
+
+/**
+ * The host guard (server middleware). On the mini-app host it serves only the diary routes; on any
+ * other host `/max` goes to `/account`, so the MAX Bridge never runs on the main site. It decides on
+ * the path that the router uses (`event.path`) and also checks the raw request line.
+ */
+export function maxHostGuard(event: H3Event, maxHost: string) {
+  const path = (event.path || '/').split('?')[0] || '/'
+  if (!isMaxHost(event, maxHost)) {
+    if (isMaxAppPath(path)) return sendRedirect(event, '/account', 302)
+    return
+  }
+  const raw = (event.node.req.url ?? '/').split('?')[0] ?? '/'
+  const decision = UNSAFE_PATH.test(raw) ? 'reject' : maxHostDecision(event.method, path)
+  if (decision === 'redirect') return sendRedirect(event, '/max', 302)
+  if (decision === 'reject') {
+    setResponseStatus(event, 404)
+    setHeader(event, 'Cache-Control', 'no-store')
+    return 'Not found'
+  }
 }
 
 const MESSENGERS = new Set(['telegram', 'max'])

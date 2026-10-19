@@ -116,6 +116,28 @@ test('a refused token gives unauthorized; an outage gives unavailable; the catal
   } finally { await client.close(); }
 });
 
+test('a large answer is refused while it streams', { timeout: 10000 }, async () => {
+  let sent = 0;
+  const server = createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const chunk = Buffer.alloc(64 * 1024, 32);
+    const pump = () => {
+      while (sent < 50 * 1024 * 1024) {
+        sent += chunk.length;
+        if (!res.write(chunk)) return res.once('drain', pump);
+      }
+      res.end();
+    };
+    pump();
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const account = AccountClient.fromEnv({ CHTOZAVINO_ACCOUNT_TOKEN: TOKEN, CHTOZAVINO_ACCOUNT_URL: `http://127.0.0.1:${server.address().port}` });
+  try {
+    await assert.rejects(account.profile(), error => error.code === 'unavailable');
+    assert(sent < 10 * 1024 * 1024, `the client read ${sent} bytes`);
+  } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+});
+
 test('without a token the server has the five catalog tools and the old instructions', { timeout: 20000 }, async () => {
   const env = { ...process.env };
   delete env.CHTOZAVINO_ACCOUNT_TOKEN;

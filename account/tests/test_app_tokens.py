@@ -179,3 +179,21 @@ def test_no_token_in_the_logs(harness, caplog):
     app(harness, "/v1/app/profile", token[:-1] + "x")
     assert token not in caplog.text
     assert token[6:] not in caplog.text
+
+
+def test_ipv6_clients_share_the_limit_of_their_64(harness):
+    for number in range(20):
+        response = app(harness, "/v1/app/profile", "cvpat_wrong", ip=f"2001:db8:1:2::{number + 1}")
+        assert response.status_code == 401
+    same_network = app(harness, "/v1/app/profile", "cvpat_wrong", ip="2001:db8:1:2::ffff")
+    assert same_network.status_code == 429
+    assert app(harness, "/v1/app/profile", "cvpat_wrong", ip="2001:db8:1:3::1").status_code == 401
+
+
+def test_a_global_budget_limits_failures_from_many_addresses(harness):
+    for number in range(600):
+        ip = f"198.51.{number // 250}.{number % 250 + 1}"
+        assert app(harness, "/v1/app/profile", "cvpat_wrong", ip=ip).status_code == 401
+    assert app(harness, "/v1/app/profile", "cvpat_wrong", ip="203.0.113.200").status_code == 429
+    harness.clock.advance(61)
+    assert app(harness, "/v1/app/profile", "cvpat_wrong", ip="203.0.113.200").status_code == 401

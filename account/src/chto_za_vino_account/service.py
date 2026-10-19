@@ -149,6 +149,14 @@ def normalize_ip(value: str) -> str:
         raise AccountError("client_ip_required", detail="X-Client-IP is not valid") from error
 
 
+def client_key(ip: str) -> str:
+    """The limit key of a client: the address, or its /64 network for IPv6."""
+    address = ipaddress.ip_address(ip)
+    if address.version == 6:
+        return str(ipaddress.ip_network(f"{address}/64", strict=False))
+    return str(address)
+
+
 class AccountService:
     def __init__(
         self,
@@ -170,6 +178,8 @@ class AccountService:
         self.link_codes_per_user = SlidingWindow(10, 3600, clock)
         self.app_token_calls = SlidingWindow(60, 60, clock)
         self.app_token_failures = SlidingWindow(20, 60, clock)
+        # A budget for all clients: rotating addresses cannot make unlimited failed lookups.
+        self.app_token_failures_all = SlidingWindow(600, 60, clock)
 
     # ----------------------------------------------------------------- helpers
 
@@ -790,7 +800,10 @@ class AccountService:
 
     def app_token_owner(self, token: str, client_ip: str) -> str:
         """Return the user of a valid application token. Every refusal is the same 401."""
-        wait = self.app_token_failures.retry_after(client_ip)
+        key = client_key(client_ip)
+        wait = max(
+            self.app_token_failures.retry_after(key), self.app_token_failures_all.retry_after("*")
+        )
         if wait:
             raise AccountError(
                 "rate_limited", 429, "Too many failed token checks", retry_after=wait
@@ -803,7 +816,8 @@ class AccountService:
                     "SELECT * FROM app_tokens WHERE token_hash = ?", (token_hash(token),)
                 ).fetchone()
         if row is None or row["revoked_at"] is not None or row["expires_at"] <= now:
-            self.app_token_failures.record(client_ip)
+            self.app_token_failures.record(key)
+            self.app_token_failures_all.record("*")
             raise AccountError("app_token_invalid", 401, "The application token is not valid")
         wait = take_all(((self.app_token_calls, row["id"]),))
         if wait:

@@ -115,6 +115,11 @@ async function load() {
   if (!config.value.enabled) return show('disabled')
   if (!config.value.available) return show('unavailable')
   if (maxApp.value) {
+    // The MAX Bridge is a third-party script: it runs only on the mini-app host, never on the main site.
+    if (!config.value.maxApp) {
+      await navigateTo(ACCOUNT_PATH, { replace: true })
+      return
+    }
     const launch = await readMaxLaunch()
     maxLaunch.value = launch.initData
     maxName.value = launch.name
@@ -285,6 +290,11 @@ function closeLink() {
   linkTarget.value = ''
   telegramLink.value = ''
   message.value = ''
+}
+
+// A script opens the one-time link: Metrika link tracking (after an in-site navigation) sees no URL.
+function openTelegram() {
+  if (telegramLink.value) window.open(telegramLink.value, '_blank', 'noopener,noreferrer')
 }
 
 function chooseMax() {
@@ -595,7 +605,7 @@ onBeforeUnmount(() => {
               <template v-else>
                 <p>Откройте Telegram и нажмите «Привязать» в чате с ботом. Ссылка действует 10 минут и работает один раз. Не пересылайте её: по ней можно привязать чужой Telegram к вашему дневнику.</p>
                 <div class="account-actions">
-                  <a class="button primary" :href="telegramLink" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>
+                  <button class="button primary" type="button" @click="openTelegram">Открыть Telegram</button>
                   <button class="button secondary" type="button" :disabled="busy" @click="refreshLinks()">Я привязал</button>
                   <button class="button secondary" type="button" :disabled="busy" @click="closeLink">Отмена</button>
                 </div>

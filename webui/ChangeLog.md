@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-19 — Review fixes for the MAX link and application tokens
+
+- The MAX Bridge, a third-party script, runs only on the mini-app host. On any other host `/max` redirects to `/account` (server middleware); `/api/account/config` reports `maxApp` only for the mini-app host, and the page also leaves `/max` without it.
+- The host guard decides on the path that the router uses (`event.path`) and refuses dot segments, encoded dots and slashes, backslashes, and empty segments. The host compare ignores case, the port, and a trailing dot (`NUXT_ACCOUNT_MAX_HOST`).
+- «Открыть Telegram» opens the one-time link by script: after an in-site navigation Metrika link tracking (`trackLinks`) cannot see the code, and the page holds no link with it.
+- 21 new tests, including the guard as middleware with raw Host headers and paths (474 in total). Browser checks: Telegram 26, MAX 24 (mini app on its own host), tokens 16.
+
 ## 2026-10-19 — Three rows of Dinner Lens preferences
 
 - Replace eight settings fields with three visible icon groups: seven composable sauce/taste presets, wine color and still/sparkling, and sweetness. Keep text labels, keyboard activation and pressed states. Wrap choices for narrow phones with 44-pixel targets.
