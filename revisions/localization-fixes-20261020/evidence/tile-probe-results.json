@@ -1,0 +1,8 @@
+{
+  "target_best_mask_iou": 0.0,
+  "selected_gt": 1485829,
+  "correct": false,
+  "reason": "fallback_nearest_center",
+  "detections": 37,
+  "selected": "d36"
+}

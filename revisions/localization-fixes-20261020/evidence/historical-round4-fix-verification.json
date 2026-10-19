@@ -1,0 +1,93 @@
+{
+  "before": {
+    "source_sha256": "d522f23c0b024a6b18ff9e63121c64ad5658cf6980462ebce7cb82326df44fd0",
+    "rows": [
+      {
+        "id": "weak-wrap-strong-grip",
+        "selected": "d1",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "multiple-grips-unheld-foreground",
+        "selected": "d2",
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "owner-and-uncertain-background",
+        "selected": "d3",
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "held-neck-dominant-paper",
+        "selected": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": false
+      },
+      {
+        "id": "held-neck-pending-logo",
+        "selected": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": false
+      }
+    ]
+  },
+  "after": {
+    "source_sha256": "28dc77a2972a07af0b674ade3a31a00592035fdaa621191fb285d0da5a8032a9",
+    "rows": [
+      {
+        "id": "weak-wrap-strong-grip",
+        "selected": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "multiple-grips-unheld-foreground",
+        "selected": "d1",
+        "reason": "fallback_nearest_center",
+        "mode": "fallback",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "owner-and-uncertain-background",
+        "selected": "d2",
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "scope": "subject_region",
+        "preserved": true
+      },
+      {
+        "id": "held-neck-dominant-paper",
+        "selected": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "context_frame",
+        "preserved": true
+      },
+      {
+        "id": "held-neck-pending-logo",
+        "selected": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident",
+        "scope": "context_frame",
+        "preserved": true
+      }
+    ]
+  },
+  "declared_targets_unchanged": true
+}

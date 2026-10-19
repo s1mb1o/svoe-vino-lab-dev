@@ -1,0 +1,1212 @@
+{
+  "revision": "2026-10-20-neck-axis-and-small-object-localization",
+  "rows": [
+    {
+      "case_id": "real-117719",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          306,
+          132,
+          326,
+          173
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d96",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          310,
+          192,
+          330,
+          216
+        ],
+        "label_boxes": []
+      },
+      "category": "incomplete_annotation_candidate_set",
+      "explanation": "Real closer bottles are absent from the frozen COCO polygons. Exact fallback chooses a legitimate unannotated candidate. Dropping candidates by GT membership would violate the requested input contract.",
+      "target_detection_ids": [
+        "d37"
+      ],
+      "independent_detector_fallback": "d96",
+      "annotated_subset_winner": {
+        "id": "d37",
+        "box": [
+          307,
+          90,
+          322,
+          128
+        ],
+        "contains_center": false,
+        "distance_squared_x4": 42970,
+        "mapped_gt_id": 1492244,
+        "assignment_iou": 0.7631578947368421,
+        "order": [
+          true,
+          42970,
+          629,
+          218,
+          37
+        ]
+      },
+      "detector_geometry": [
+        {
+          "id": "d93",
+          "box": [
+            319,
+            186,
+            341,
+            215
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 976,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            976,
+            660,
+            401,
+            93
+          ]
+        },
+        {
+          "id": "d90",
+          "box": [
+            282,
+            178,
+            316,
+            214
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 2853,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            2853,
+            598,
+            392,
+            90
+          ]
+        },
+        {
+          "id": "d96",
+          "box": [
+            312,
+            194,
+            328,
+            214
+          ],
+          "contains_center": true,
+          "distance_squared_x4": 289,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            false,
+            289,
+            640,
+            408,
+            96
+          ]
+        },
+        {
+          "id": "d85",
+          "box": [
+            344,
+            190,
+            373,
+            216
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 6290,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            6290,
+            717,
+            406,
+            85
+          ]
+        },
+        {
+          "id": "d71",
+          "box": [
+            346,
+            197,
+            373,
+            216
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 6385,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            6385,
+            719,
+            413,
+            71
+          ]
+        },
+        {
+          "id": "d97",
+          "box": [
+            318,
+            234,
+            329,
+            251
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 3649,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            3649,
+            647,
+            485,
+            97
+          ]
+        },
+        {
+          "id": "d73",
+          "box": [
+            265,
+            182,
+            284,
+            212
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 9242,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            9242,
+            549,
+            394,
+            73
+          ]
+        },
+        {
+          "id": "d95",
+          "box": [
+            303,
+            234,
+            320,
+            251
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 3889,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            3889,
+            623,
+            485,
+            95
+          ]
+        },
+        {
+          "id": "d87",
+          "box": [
+            287,
+            235,
+            304,
+            251
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 6122,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            6122,
+            591,
+            486,
+            87
+          ]
+        },
+        {
+          "id": "d89",
+          "box": [
+            326,
+            234,
+            340,
+            252
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 4397,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            4397,
+            666,
+            486,
+            89
+          ]
+        },
+        {
+          "id": "d91",
+          "box": [
+            272,
+            235,
+            290,
+            250
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 9684,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            9684,
+            562,
+            485,
+            91
+          ]
+        },
+        {
+          "id": "d92",
+          "box": [
+            249,
+            184,
+            267,
+            211
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 16276,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            16276,
+            516,
+            395,
+            92
+          ]
+        },
+        {
+          "id": "d94",
+          "box": [
+            341,
+            236,
+            357,
+            253
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 7460,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            7460,
+            698,
+            489,
+            94
+          ]
+        },
+        {
+          "id": "d24",
+          "box": [
+            330,
+            136,
+            345,
+            173
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 14681,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            14681,
+            675,
+            309,
+            24
+          ]
+        },
+        {
+          "id": "d75",
+          "box": [
+            249,
+            229,
+            260,
+            249
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 19970,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            19970,
+            509,
+            478,
+            75
+          ]
+        },
+        {
+          "id": "d84",
+          "box": [
+            258,
+            234,
+            274,
+            250
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 15145,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            15145,
+            532,
+            484,
+            84
+          ]
+        },
+        {
+          "id": "d7",
+          "box": [
+            308,
+            134,
+            324,
+            171
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 14464,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            14464,
+            632,
+            305,
+            7
+          ]
+        },
+        {
+          "id": "d27",
+          "box": [
+            281,
+            131,
+            298,
+            168
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 19597,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            19597,
+            579,
+            299,
+            27
+          ]
+        },
+        {
+          "id": "d2",
+          "box": [
+            344,
+            138,
+            358,
+            173
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 16840,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            16840,
+            702,
+            311,
+            2
+          ]
+        },
+        {
+          "id": "d35",
+          "box": [
+            220,
+            192,
+            238,
+            248
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 33349,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            33349,
+            458,
+            440,
+            35
+          ]
+        },
+        {
+          "id": "d13",
+          "box": [
+            293,
+            134,
+            310,
+            170
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 16010,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            16010,
+            603,
+            304,
+            13
+          ]
+        },
+        {
+          "id": "d12",
+          "box": [
+            202,
+            178,
+            221,
+            248
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 47090,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            47090,
+            423,
+            426,
+            12
+          ]
+        },
+        {
+          "id": "d22",
+          "box": [
+            184,
+            181,
+            203,
+            247
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 64018,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            64018,
+            387,
+            428,
+            22
+          ]
+        },
+        {
+          "id": "d11",
+          "box": [
+            167,
+            188,
+            187,
+            248
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 81917,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            81917,
+            354,
+            436,
+            11
+          ]
+        },
+        {
+          "id": "d4",
+          "box": [
+            220,
+            98,
+            238,
+            165
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 59368,
+          "mapped_gt_id": 1868519,
+          "assignment_iou": 0.7817391304347826,
+          "order": [
+            true,
+            59368,
+            458,
+            263,
+            4
+          ]
+        },
+        {
+          "id": "d18",
+          "box": [
+            331,
+            94,
+            347,
+            130
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 41845,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            41845,
+            678,
+            224,
+            18
+          ]
+        },
+        {
+          "id": "d20",
+          "box": [
+            201,
+            99,
+            220,
+            164
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 74205,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.044687189672293945,
+          "order": [
+            true,
+            74205,
+            421,
+            263,
+            20
+          ]
+        },
+        {
+          "id": "d39",
+          "box": [
+            344,
+            93,
+            360,
+            131
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 44497,
+          "mapped_gt_id": 1494012,
+          "assignment_iou": 0.6040723981900452,
+          "order": [
+            true,
+            44497,
+            704,
+            224,
+            39
+          ]
+        },
+        {
+          "id": "d28",
+          "box": [
+            320,
+            92,
+            335,
+            130
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 41434,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            41434,
+            655,
+            222,
+            28
+          ]
+        },
+        {
+          "id": "d14",
+          "box": [
+            147,
+            189,
+            167,
+            245
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 106357,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            106357,
+            314,
+            434,
+            14
+          ]
+        },
+        {
+          "id": "d19",
+          "box": [
+            184,
+            102,
+            204,
+            162
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 89425,
+          "mapped_gt_id": 1494776,
+          "assignment_iou": 0.8270089285714286,
+          "order": [
+            true,
+            89425,
+            388,
+            264,
+            19
+          ]
+        },
+        {
+          "id": "d37",
+          "box": [
+            307,
+            90,
+            322,
+            128
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 42970,
+          "mapped_gt_id": 1492244,
+          "assignment_iou": 0.7631578947368421,
+          "order": [
+            true,
+            42970,
+            629,
+            218,
+            37
+          ]
+        },
+        {
+          "id": "d6",
+          "box": [
+            370,
+            97,
+            384,
+            132
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 51412,
+          "mapped_gt_id": 1494215,
+          "assignment_iou": 0.7480719794344473,
+          "order": [
+            true,
+            51412,
+            754,
+            229,
+            6
+          ]
+        },
+        {
+          "id": "d0",
+          "box": [
+            359,
+            96,
+            372,
+            131
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 47485,
+          "mapped_gt_id": 1494157,
+          "assignment_iou": 0.817283950617284,
+          "order": [
+            true,
+            47485,
+            731,
+            227,
+            0
+          ]
+        },
+        {
+          "id": "d5",
+          "box": [
+            282,
+            89,
+            298,
+            125
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 48121,
+          "mapped_gt_id": 1490892,
+          "assignment_iou": 0.814663951120163,
+          "order": [
+            true,
+            48121,
+            580,
+            214,
+            5
+          ]
+        },
+        {
+          "id": "d36",
+          "box": [
+            296,
+            90,
+            309,
+            127
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 44489,
+          "mapped_gt_id": 1491282,
+          "assignment_iou": 0.8382022471910112,
+          "order": [
+            true,
+            44489,
+            605,
+            217,
+            36
+          ]
+        },
+        {
+          "id": "d34",
+          "box": [
+            189,
+            263,
+            205,
+            339
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 91845,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            91845,
+            394,
+            602,
+            34
+          ]
+        },
+        {
+          "id": "d1",
+          "box": [
+            167,
+            261,
+            191,
+            341
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 110853,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            110853,
+            358,
+            602,
+            1
+          ]
+        },
+        {
+          "id": "d29",
+          "box": [
+            164,
+            99,
+            187,
+            161
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 110746,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.02175805047867711,
+          "order": [
+            true,
+            110746,
+            351,
+            260,
+            29
+          ]
+        },
+        {
+          "id": "d41",
+          "box": [
+            268,
+            87,
+            284,
+            124
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 53540,
+          "mapped_gt_id": 1488635,
+          "assignment_iou": 0.5786516853932584,
+          "order": [
+            true,
+            53540,
+            552,
+            211,
+            41
+          ]
+        },
+        {
+          "id": "d17",
+          "box": [
+            149,
+            263,
+            173,
+            341
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 133165,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            133165,
+            322,
+            604,
+            17
+          ]
+        },
+        {
+          "id": "d40",
+          "box": [
+            258,
+            87,
+            271,
+            122
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 58977,
+          "mapped_gt_id": 1483681,
+          "assignment_iou": 0.7848699763593381,
+          "order": [
+            true,
+            58977,
+            529,
+            209,
+            40
+          ]
+        },
+        {
+          "id": "d26",
+          "box": [
+            125,
+            191,
+            142,
+            245
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 139250,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            139250,
+            267,
+            436,
+            26
+          ]
+        },
+        {
+          "id": "d23",
+          "box": [
+            103,
+            195,
+            127,
+            245
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 168325,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            168325,
+            230,
+            440,
+            23
+          ]
+        },
+        {
+          "id": "d8",
+          "box": [
+            138,
+            102,
+            166,
+            161
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 139140,
+          "mapped_gt_id": 1494627,
+          "assignment_iou": 0.8649851632047477,
+          "order": [
+            true,
+            139140,
+            304,
+            263,
+            8
+          ]
+        },
+        {
+          "id": "d31",
+          "box": [
+            439,
+            103,
+            454,
+            139
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 97498,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            97498,
+            893,
+            242,
+            31
+          ]
+        },
+        {
+          "id": "d15",
+          "box": [
+            113,
+            108,
+            140,
+            158
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 175050,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            175050,
+            253,
+            266,
+            15
+          ]
+        },
+        {
+          "id": "d32",
+          "box": [
+            85,
+            197,
+            104,
+            245
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 203690,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.016824395373291272,
+          "order": [
+            true,
+            203690,
+            189,
+            442,
+            32
+          ]
+        },
+        {
+          "id": "d10",
+          "box": [
+            67,
+            177,
+            87,
+            244
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 236212,
+          "mapped_gt_id": 1493799,
+          "assignment_iou": 0.7762408462164361,
+          "order": [
+            true,
+            236212,
+            154,
+            421,
+            10
+          ]
+        },
+        {
+          "id": "d21",
+          "box": [
+            91,
+            84,
+            113,
+            156
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 224321,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            224321,
+            204,
+            240,
+            21
+          ]
+        },
+        {
+          "id": "d9",
+          "box": [
+            51,
+            190,
+            68,
+            244
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 271522,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.026466009340944473,
+          "order": [
+            true,
+            271522,
+            119,
+            434,
+            9
+          ]
+        },
+        {
+          "id": "d33",
+          "box": [
+            71,
+            87,
+            91,
+            155
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 261973,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            261973,
+            162,
+            242,
+            33
+          ]
+        },
+        {
+          "id": "d25",
+          "box": [
+            53,
+            80,
+            72,
+            152
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 302474,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            302474,
+            125,
+            232,
+            25
+          ]
+        },
+        {
+          "id": "d30",
+          "box": [
+            5,
+            187,
+            31,
+            244
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 364852,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            364852,
+            36,
+            431,
+            30
+          ]
+        },
+        {
+          "id": "d38",
+          "box": [
+            20,
+            270,
+            42,
+            342
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 369053,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.0,
+          "order": [
+            true,
+            369053,
+            62,
+            612,
+            38
+          ]
+        },
+        {
+          "id": "d16",
+          "box": [
+            17,
+            91,
+            39,
+            150
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 374912,
+          "mapped_gt_id": null,
+          "assignment_iou": 0.011698880976602238,
+          "order": [
+            true,
+            374912,
+            56,
+            241,
+            16
+          ]
+        },
+        {
+          "id": "d3",
+          "box": [
+            0,
+            93,
+            19,
+            148
+          ],
+          "contains_center": false,
+          "distance_squared_x4": 419497,
+          "mapped_gt_id": 2093792,
+          "assignment_iou": 0.8714733542319749,
+          "order": [
+            true,
+            419497,
+            19,
+            241,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

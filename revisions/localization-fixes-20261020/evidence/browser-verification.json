@@ -1,0 +1,10 @@
+{
+  "checked": true,
+  "browser": "Chrome",
+  "summary_layout_and_metrics": true,
+  "seven_corrected_cards_marked_policy_pass": true,
+  "residual_bar_card_marked_policy_fail": true,
+  "recovered_tiny_bottle_crop_visually_reviewed": true,
+  "real_crop_images_loaded": true,
+  "scope": "Summary screenshot and DOM checks of all eight affected cards; real-photo crops loaded and remaining failure marker verified. Offline verifier checks all assets and filter scopes."
+}

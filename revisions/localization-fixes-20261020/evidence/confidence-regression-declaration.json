@@ -1,0 +1,199 @@
+[
+  {
+    "id": "point-contact-near-center-bottle",
+    "title": "Unverified side contact cannot outrank a central bottle",
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          15,
+          20,
+          85,
+          230
+        ],
+        "mask_box": [
+          15,
+          20,
+          85,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          105,
+          20,
+          155,
+          230
+        ],
+        "mask_box": [
+          105,
+          20,
+          155,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          85,
+          90,
+          92,
+          160
+        ],
+        "mask_box": [
+          85,
+          90,
+          92,
+          160
+        ],
+        "score": 0.9
+      }
+    ],
+    "winner": 1,
+    "reason": "fallback_center_contains",
+    "mode": "fallback"
+  },
+  {
+    "id": "opposed-background-midbody",
+    "title": "Opposed background skin without front or terminal evidence is not a grip",
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          70,
+          20,
+          140,
+          230
+        ],
+        "mask_box": [
+          70,
+          20,
+          140,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          180,
+          20,
+          230,
+          230
+        ],
+        "mask_box": [
+          180,
+          20,
+          230,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          50,
+          80,
+          160,
+          140
+        ],
+        "mask_box": [
+          50,
+          80,
+          160,
+          140
+        ],
+        "score": 0.9,
+        "holes": [
+          [
+            70,
+            80,
+            140,
+            140
+          ]
+        ]
+      }
+    ],
+    "winner": 0,
+    "reason": "fallback_center_contains",
+    "mode": "fallback"
+  },
+  {
+    "id": "enclosing-label-panel",
+    "title": "A complete panel encloses bottle artwork; preserve the panel context",
+    "items": [
+      {
+        "label": "wine label",
+        "box": [
+          40,
+          10,
+          200,
+          230
+        ],
+        "mask_box": [
+          40,
+          10,
+          200,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          90,
+          45,
+          150,
+          190
+        ],
+        "mask_box": [
+          90,
+          45,
+          150,
+          190
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine label",
+        "box": [
+          100,
+          120,
+          140,
+          160
+        ],
+        "mask_box": [
+          100,
+          120,
+          140,
+          160
+        ],
+        "score": 0.9
+      }
+    ],
+    "source_patches": [
+      [
+        [
+          40,
+          10,
+          200,
+          230
+        ],
+        "#eedabb"
+      ]
+    ],
+    "preserve_points": [
+      [
+        55,
+        200
+      ]
+    ],
+    "winner": 0,
+    "reason": "fallback_center_contains",
+    "mode": "fallback",
+    "scope": "context_frame"
+  }
+]

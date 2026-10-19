@@ -1,0 +1,21 @@
+{
+  "base_commit": "05000460eac75994ae63c7cdeb881e8c4d489fab",
+  "patch_sha256": "6f07d1fc1325ea3d4ef85ce5b933838c58b265ffb135e1c6144df52ddef93890",
+  "patch_applies_to_base": true,
+  "reconstructed_files_match_tested_source": true,
+  "files": {
+    "matcher/experiments/main_selector/audit_additional_coverage.py": "d7778070cbef543fdc2ee7fbcfa33facf49437a1f106dd3a891f544f68347e65",
+    "matcher/experiments/main_selector/benchmark.py": "cf0d48f4ee3616a72d7f3d4ecac68869a819f541fd16f1bc94df4cb7c27a34d1",
+    "matcher/experiments/main_selector/fallback_suite.py": "1e30991fdc1e6846335151cf9ac965b08e1d602c4693fe785d8c8e22b608848e",
+    "matcher/experiments/main_selector/report.py": "7ac41bc5f224027c5ed298285185e3fac62f8047a067881b09c37a4b93997a8b",
+    "matcher/experiments/main_selector/report_template.html": "f4855cfbac0622558050e7b3b8475c073283fe4dc15a89fc15217d4e75cb051a",
+    "matcher/experiments/main_selector/verify_report.py": "a04ad6ce9fb19603e47de3d3026b76505f03eb41555f1396db1477b674d72f01",
+    "matcher/semantic_selector.py": "5999f79f76884541fa1231c2fa016a8d7fff3118e0c0043923eb6f987214baf5",
+    "matcher/selector_detection.py": "9e6075cb6258856bd58c64245dfb7b4c2c3e9852ad29afe8ac51913665793d9e",
+    "matcher/tests/data/semantic-v2-localization-regressions-20261020.json": "e524ce28930102cd446b8de9b9523e9012f80404823b13082d3953d48402680d",
+    "matcher/tests/data/semantic-v2-regressions-20261019.json": "2bc5496f61ebbe1a69b93c285f9f167353f28f730c58902886ec38975c6bc8fe",
+    "matcher/tests/test_detector_recovery.py": "5f542048a86e2dff485adb3e82545897044129994a446f05690bb3300bd25e88",
+    "matcher/tests/test_selector_localization.py": "897a793dd2e6212b14a11767304cd7f934f24ee06aa1d8f523a6dba1bc281f98",
+    "matcher/tests/test_selector_regressions.py": "3ee1c2b7e2b58692b24906751e73a6dd7f4237fab458c74f7debf0f1b89f50de"
+  }
+}

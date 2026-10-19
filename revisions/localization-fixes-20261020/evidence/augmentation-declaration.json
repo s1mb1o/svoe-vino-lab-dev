@@ -1,0 +1,321 @@
+{
+  "jobs": [
+    {
+      "case_id": "hc-009",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-010",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-011",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-012",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-025",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-035",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-039",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-041",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-056",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-060",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-081",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-094",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-142",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-144",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-145",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "hc-146",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-180751",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-25394",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-22705",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-117719",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-397354",
+      "profile": "mirror",
+      "nouns": [
+        "wine bottle"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        0,
+        240,
+        240
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        0,
+        360,
+        240
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        0,
+        480,
+        240
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        133,
+        240,
+        373
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        133,
+        360,
+        373
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        133,
+        480,
+        373
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        267,
+        240,
+        507
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        267,
+        360,
+        507
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        267,
+        480,
+        507
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        400,
+        240,
+        640
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        400,
+        360,
+        640
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        400,
+        480,
+        640
+      ],
+      "profile": "small-grid-wine-held",
+      "nouns": [
+        "wine bottle",
+        "bottle held in hand"
+      ]
+    }
+  ],
+  "trigger": "all close live fallback bottle contests; fixed complete-image grid for tiny bottles",
+  "ground_truth_supplied": false
+}

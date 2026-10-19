@@ -1,0 +1,696 @@
+{
+  "cases": [
+    {
+      "id": "hc-033",
+      "group": "grip-ownership",
+      "name": "carton_behind_hand",
+      "operation": "ex_carton_behind_hand",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "carton_behind_hand",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-034",
+      "group": "grip-ownership",
+      "name": "body_grip_enclosed",
+      "operation": "ex_body_grip_enclosed",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "body_grip_enclosed",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-035",
+      "group": "multiple-grips",
+      "name": "two_bottles_unequal_grips",
+      "operation": "ex_two_bottles_unequal_grips",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_bottles_unequal_grips",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-036",
+      "group": "multiple-grips",
+      "name": "two_hands_one_bottle",
+      "operation": "ex_two_hands_one_bottle",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "two_hands_one_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-037",
+      "group": "tools",
+      "name": "horizontal_pouring_bottle",
+      "operation": "ex_horizontal_pouring_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "horizontal_pouring_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-038",
+      "group": "tools",
+      "name": "sampling_tool_beside_bottle",
+      "operation": "ex_sampling_tool_beside_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "sampling_tool_beside_bottle",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-039",
+      "group": "touch-grip",
+      "name": "pointing_at_label",
+      "operation": "ex_pointing_at_label",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "pointing_at_label",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-040",
+      "group": "touch-grip",
+      "name": "wrapped_body_grip",
+      "operation": "ex_wrapped_body_grip",
+      "extension": true,
+      "source_series": "eval-held-003",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-003/scene.blend",
+      "source_scene_sha256": "6d40829d101edf343231c7afa37adca1364573941d2c478fd32a1e8f13c02f80",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "wrapped_body_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-041",
+      "group": "depth-contact",
+      "name": "background_hand_projection",
+      "operation": "ex_background_hand_projection",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "background_hand_projection",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-042",
+      "group": "depth-contact",
+      "name": "physical_neck_grip",
+      "operation": "ex_physical_neck_grip",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "physical_neck_grip",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-043",
+      "group": "gift-box",
+      "name": "real_bottle_open_gift_box",
+      "operation": "ex_real_bottle_open_gift_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "real_bottle_open_gift_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-044",
+      "group": "gift-box",
+      "name": "printed_bottle_closed_carton",
+      "operation": "ex_printed_bottle_closed_carton",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 200,
+      "acceptable_instance_ids": [
+        200
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "printed_bottle_closed_carton",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-045",
+      "group": "clear-packaging",
+      "name": "clear_window_gift_bag",
+      "operation": "ex_clear_window_gift_bag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "clear_window_gift_bag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-046",
+      "group": "clear-packaging",
+      "name": "reflective_wrapping",
+      "operation": "ex_reflective_wrapping",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "reflective_wrapping",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-047",
+      "group": "depictions",
+      "name": "large_bottle_poster",
+      "operation": "ex_large_bottle_poster",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "large_bottle_poster",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-048",
+      "group": "depictions",
+      "name": "mirror_duplicate",
+      "operation": "ex_mirror_duplicate",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "mirror_duplicate",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-049",
+      "group": "open-label-gaps",
+      "name": "missing_secondary_edge",
+      "operation": "ex_missing_secondary_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_secondary_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-050",
+      "group": "open-label-gaps",
+      "name": "missing_main_label_edge",
+      "operation": "ex_missing_main_label_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "missing_main_label_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-051",
+      "group": "extended-labels",
+      "name": "hanging_neck_tag",
+      "operation": "ex_hanging_neck_tag",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "hanging_neck_tag",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-052",
+      "group": "extended-labels",
+      "name": "peeling_label_flap",
+      "operation": "ex_peeling_label_flap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "peeling_label_flap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-053",
+      "group": "label-ownership",
+      "name": "touching_labels",
+      "operation": "ex_touching_labels",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "touching_labels",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-054",
+      "group": "label-ownership",
+      "name": "rear_label_in_front_box",
+      "operation": "ex_rear_label_in_front_box",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "rear_label_in_front_box",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-055",
+      "group": "signage",
+      "name": "vintage_label_price_card",
+      "operation": "ex_vintage_label_price_card",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "vintage_label_price_card",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-056",
+      "group": "signage",
+      "name": "promotional_bridge",
+      "operation": "ex_promotional_bridge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "promotional_bridge",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-057",
+      "group": "center-occlusion",
+      "name": "center_glass_occlusion",
+      "operation": "ex_center_glass_occlusion",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_glass_occlusion",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-058",
+      "group": "center-occlusion",
+      "name": "center_visible_bottle",
+      "operation": "ex_center_visible_bottle",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "center_visible_bottle",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-059",
+      "group": "tap-conflicts",
+      "name": "tap_background_while_foreground_held",
+      "operation": "ex_tap_background_while_foreground_held",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_background_while_foreground_held",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-060",
+      "group": "tap-conflicts",
+      "name": "tap_white_label_gap",
+      "operation": "ex_tap_white_label_gap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "tap_white_label_gap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-061",
+      "group": "foreground-three",
+      "name": "three_foreground_offcenter",
+      "operation": "ex_three_foreground_offcenter",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_offcenter",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-062",
+      "group": "foreground-three",
+      "name": "three_foreground_overlap",
+      "operation": "ex_three_foreground_overlap",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_overlap",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-063",
+      "group": "foreground-three",
+      "name": "three_foreground_at_edge",
+      "operation": "ex_three_foreground_at_edge",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_at_edge",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    },
+    {
+      "id": "hc-064",
+      "group": "foreground-three",
+      "name": "three_weak_depth",
+      "operation": "ex_three_weak_depth",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_weak_depth",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-065",
+      "group": "foreground-three",
+      "name": "three_background_magnum",
+      "operation": "ex_three_background_magnum",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "ambiguous",
+      "target_instance_id": null,
+      "acceptable_instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_background_magnum",
+      "target_explanation": "No unique intent is stipulated. Crop target is derived from visible GT photo-center geometry before evaluation."
+    },
+    {
+      "id": "hc-066",
+      "group": "foreground-three",
+      "name": "three_tap_background",
+      "operation": "ex_three_tap_background",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 2,
+      "acceptable_instance_ids": [
+        2
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_tap_background",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    }
+  ],
+  "protocol_sha256": "37c47030e9808fae98d96b464c5d9bcf5e287087da885c97f4b4afed7baa23ca"
+}

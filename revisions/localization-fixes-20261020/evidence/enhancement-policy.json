@@ -1,0 +1,10 @@
+{
+  "revision": "2026-10-20-neck-axis-and-small-object-localization",
+  "axis_fit": "Upright bottle: height >=80px, width >=20px, aspect 2.5..6; stable narrow upper profile and broad body support. Expand horizontal bbox around median doubled neck axis by at most max(2px,5% width). Never shrink or consult image center/other candidates.",
+  "small_scene": "Semantic fallback with at least one eligible bottle, every eligible bottle height <=20% image long side.",
+  "tracker": "Only the nearest two eligible bottle centers within 5px of equal distance: detector-mask seed at y-quantiles .1,.5,.9; RGB ROI plus20% long-side context. Filter masks for IoU>=.5 and <=max(4px,10% short side) per-edge displacement before choosing highest model score. Preserve original RGB rectangle for crop.",
+  "central": "One fixed centered 160px PNG crop, with English wine bottle / bottle / bottle held in hand nouns. Reject detections lacking max(2px,5% crop side) context at an interior crop edge. Project complete masks back to original coordinates.",
+  "budget": "At most two localizations plus one central scan, shared monotonic deadline. Optional failures/exhaustion preserve valid primary output. Supplied detections never start inference.",
+  "ground_truth_supplied": false,
+  "fallback_ordering_changed": false
+}

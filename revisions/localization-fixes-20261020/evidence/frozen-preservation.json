@@ -1,0 +1,9 @@
+{
+  "verified_unchanged_files": {
+    "main-selector-hardcases-v2": 6423,
+    "main-selector-hardcases-v2-selector-fixes-20261019": 5806,
+    "main-selector-hardcases-v2-detector-fixes-20261020": 5818
+  },
+  "primary_detector_caches_unchanged": 319,
+  "annotations_and_targets_unchanged": true
+}

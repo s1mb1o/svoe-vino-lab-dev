@@ -1,0 +1,422 @@
+[
+  {
+    "id": "weak-wrap-strong-grip",
+    "title": "Weak incidental front wrap cannot steal a stronger grip",
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          15,
+          20,
+          85,
+          230
+        ],
+        "mask_box": [
+          15,
+          20,
+          85,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          125,
+          90,
+          145,
+          125
+        ],
+        "mask_box": [
+          125,
+          90,
+          145,
+          125
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          85,
+          80,
+          155,
+          190
+        ],
+        "mask_box": [
+          85,
+          80,
+          155,
+          190
+        ],
+        "score": 0.9,
+        "holes": [
+          [
+            100,
+            80,
+            155,
+            100
+          ],
+          [
+            100,
+            102,
+            155,
+            190
+          ]
+        ]
+      }
+    ],
+    "winner": 0,
+    "reason": "unique_visible_hand_contact"
+  },
+  {
+    "id": "multiple-grips-unheld-foreground",
+    "title": "Two confirmed grips block an unrelated unheld foreground bottle",
+    "size": [
+      640,
+      480
+    ],
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          100,
+          100,
+          160,
+          300
+        ],
+        "mask_box": [
+          100,
+          100,
+          160,
+          300
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          220,
+          100,
+          280,
+          300
+        ],
+        "mask_box": [
+          220,
+          100,
+          280,
+          300
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          400,
+          150,
+          520,
+          470
+        ],
+        "mask_box": [
+          400,
+          150,
+          520,
+          470
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          160,
+          130,
+          180,
+          260
+        ],
+        "mask_box": [
+          160,
+          130,
+          180,
+          260
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          280,
+          130,
+          300,
+          260
+        ],
+        "mask_box": [
+          280,
+          130,
+          300,
+          260
+        ],
+        "score": 0.9
+      }
+    ],
+    "winner": 1,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback"
+  },
+  {
+    "id": "owner-and-uncertain-background",
+    "title": "A confirmed grip plus another uncertain hand cannot promote an unheld bottle",
+    "size": [
+      640,
+      480
+    ],
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          100,
+          100,
+          160,
+          300
+        ],
+        "mask_box": [
+          100,
+          100,
+          160,
+          300
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          220,
+          100,
+          280,
+          300
+        ],
+        "mask_box": [
+          220,
+          100,
+          280,
+          300
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          300,
+          100,
+          360,
+          300
+        ],
+        "mask_box": [
+          300,
+          100,
+          360,
+          300
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine bottle",
+        "box": [
+          470,
+          150,
+          590,
+          470
+        ],
+        "mask_box": [
+          470,
+          150,
+          590,
+          470
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          80,
+          140,
+          100,
+          260
+        ],
+        "mask_box": [
+          80,
+          140,
+          100,
+          260
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          280,
+          140,
+          300,
+          260
+        ],
+        "mask_box": [
+          280,
+          140,
+          300,
+          260
+        ],
+        "score": 0.9
+      }
+    ],
+    "winner": 2,
+    "reason": "fallback_center_contains",
+    "mode": "fallback"
+  },
+  {
+    "id": "held-neck-dominant-paper",
+    "title": "A held neck cannot discard an unowned complete label",
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          60,
+          10,
+          100,
+          100
+        ],
+        "mask_box": [
+          60,
+          10,
+          100,
+          100
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine label",
+        "box": [
+          10,
+          100,
+          160,
+          230
+        ],
+        "mask_box": [
+          10,
+          100,
+          160,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          100,
+          20,
+          125,
+          90
+        ],
+        "mask_box": [
+          100,
+          20,
+          125,
+          90
+        ],
+        "score": 0.9
+      }
+    ],
+    "source_patches": [
+      [
+        [
+          10,
+          100,
+          160,
+          230
+        ],
+        "#f4e7c9"
+      ]
+    ],
+    "preserve_points": [
+      [
+        80,
+        180
+      ]
+    ],
+    "winner": 0,
+    "reason": "unique_visible_hand_contact",
+    "scope": "context_frame"
+  },
+  {
+    "id": "held-neck-pending-logo",
+    "title": "A held subject retains pending full paper even if its mask is only a logo",
+    "items": [
+      {
+        "label": "wine bottle",
+        "box": [
+          180,
+          30,
+          230,
+          230
+        ],
+        "mask_box": [
+          180,
+          30,
+          230,
+          230
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "wine label",
+        "box": [
+          0,
+          0,
+          170,
+          240
+        ],
+        "mask_box": [
+          0,
+          0,
+          20,
+          40
+        ],
+        "score": 0.9
+      },
+      {
+        "label": "hand",
+        "box": [
+          165,
+          70,
+          180,
+          190
+        ],
+        "mask_box": [
+          165,
+          70,
+          180,
+          190
+        ],
+        "score": 0.9
+      }
+    ],
+    "source_patches": [
+      [
+        [
+          0,
+          0,
+          170,
+          240
+        ],
+        "#f4e7c9"
+      ]
+    ],
+    "preserve_points": [
+      [
+        100,
+        180
+      ]
+    ],
+    "winner": 0,
+    "reason": "unique_visible_hand_contact",
+    "scope": "context_frame"
+  }
+]

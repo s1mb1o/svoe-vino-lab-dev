@@ -1,0 +1,70 @@
+{
+  "title": "semantic-v2 localization and small-bottle recovery \u00b7 20 October 2026",
+  "legacy_heading": "scene-v1 with shared enhanced inputs",
+  "revision": "2026-10-20-neck-axis-and-small-object-localization",
+  "selector_sha256": "5999f79f76884541fa1231c2fa016a8d7fff3118e0c0043923eb6f987214baf5",
+  "explanation": "Same 216 cases and 319 original primary detector caches. Eight small-bottle fallback scenes receive separately frozen image-only enhancement inputs, shared by both algorithms. No target, GT mask, fallback ordering or assignment scorer changed. This is a new development revision, not an independent accuracy estimate.",
+  "crop_contract": "369/369 results return crops",
+  "label_contract": "298/298 selected-subject label checks retain 100% of pixels",
+  "metrics": [
+    {
+      "scope": "controlled / passive_intent",
+      "before": "104/104",
+      "after": "104/104",
+      "legacy": "88/104"
+    },
+    {
+      "scope": "controlled / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "5/14"
+    },
+    {
+      "scope": "controlled / policy_targets",
+      "before": "33/33",
+      "after": "33/33",
+      "legacy": "20/33"
+    },
+    {
+      "scope": "controlled / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "live / passive_intent",
+      "before": "112/112",
+      "after": "112/112",
+      "legacy": "98/112"
+    },
+    {
+      "scope": "live / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "6/14"
+    },
+    {
+      "scope": "live / policy_targets",
+      "before": "30/38",
+      "after": "37/38",
+      "legacy": "20/38"
+    },
+    {
+      "scope": "live / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "fallback / rule_conformance",
+      "before": "50/50",
+      "after": "50/50",
+      "legacy": "not scored"
+    }
+  ],
+  "residual_explanation": "Seven of eight failures resolved; zero new joint-contract regressions. real-117719 remains a failure: actual nearer bottles are missing from the frozen annotation set. No GT-based candidate filtering or tie tolerance was introduced.",
+  "files_sha256": {
+    "revision-diff.json": "552c00997c72c67072cb3cb34fbf1427f83cbcb3dd439d7b61e572f312895368",
+    "residual-failures.json": "aa59e3a96ac8b134064b8079f91c0a5653d372833a7c910ab704108999b7c290"
+  }
+}

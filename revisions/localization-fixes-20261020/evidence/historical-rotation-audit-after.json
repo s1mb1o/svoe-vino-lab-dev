@@ -1,0 +1,326 @@
+[
+  {
+    "case_id": "hc-049",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-049",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-049",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-049",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-049",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-049",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-051",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-052",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "only_credible_subject",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-061",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-062",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "controlled",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "controlled",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "controlled",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "live",
+    "rotation": 90,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "live",
+    "rotation": 180,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  },
+  {
+    "case_id": "hc-063",
+    "mode": "live",
+    "rotation": 270,
+    "target": 1,
+    "expected": 1,
+    "reason": "foreground_scale_and_lower_base",
+    "label_retention": 1.0
+  }
+]

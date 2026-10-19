@@ -1,0 +1,414 @@
+{
+  "purpose": "Improve localization and tiny-object recall using only source RGB and detector seeds",
+  "jobs": [
+    {
+      "case_id": "hc-025",
+      "source_index": 0,
+      "roi": [
+        380,
+        338,
+        557,
+        707
+      ],
+      "box_prompt": [
+        53,
+        53,
+        124,
+        316
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-025",
+      "source_index": 1,
+      "roi": [
+        211,
+        338,
+        387,
+        707
+      ],
+      "box_prompt": [
+        53,
+        53,
+        123,
+        316
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-035",
+      "source_index": 0,
+      "roi": [
+        395,
+        365,
+        550,
+        708
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-035",
+      "source_index": 1,
+      "roi": [
+        216,
+        364,
+        372,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        107,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-039",
+      "source_index": 0,
+      "roi": [
+        395,
+        364,
+        551,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        107,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-039",
+      "source_index": 1,
+      "roi": [
+        217,
+        364,
+        372,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-041",
+      "source_index": 0,
+      "roi": [
+        395,
+        365,
+        550,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        293
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-041",
+      "source_index": 1,
+      "roi": [
+        217,
+        364,
+        372,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-056",
+      "source_index": 0,
+      "roi": [
+        396,
+        364,
+        550,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        105,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-056",
+      "source_index": 1,
+      "roi": [
+        217,
+        364,
+        372,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-145",
+      "source_index": 1,
+      "roi": [
+        217,
+        364,
+        372,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-145",
+      "source_index": 0,
+      "roi": [
+        396,
+        365,
+        551,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        293
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-146",
+      "source_index": 1,
+      "roi": [
+        218,
+        364,
+        374,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        107,
+        294
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "hc-146",
+      "source_index": 0,
+      "roi": [
+        395,
+        365,
+        550,
+        707
+      ],
+      "box_prompt": [
+        49,
+        49,
+        106,
+        293
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "real-397354",
+      "source_index": 6,
+      "roi": [
+        227,
+        234,
+        250,
+        276
+      ],
+      "box_prompt": [
+        6,
+        6,
+        17,
+        36
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "real-397354",
+      "source_index": 7,
+      "roi": [
+        279,
+        264,
+        333,
+        381
+      ],
+      "box_prompt": [
+        17,
+        17,
+        37,
+        100
+      ],
+      "profile": "box-roi"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        0,
+        240,
+        240
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        0,
+        360,
+        240
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        0,
+        480,
+        240
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        133,
+        240,
+        373
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        133,
+        360,
+        373
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        133,
+        480,
+        373
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        267,
+        240,
+        507
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        267,
+        360,
+        507
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        267,
+        480,
+        507
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        0,
+        400,
+        240,
+        640
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        120,
+        400,
+        360,
+        640
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        240,
+        400,
+        480,
+        640
+      ],
+      "box_prompt": null,
+      "profile": "small-grid"
+    }
+  ],
+  "encoding": "PNG",
+  "text": "bottle",
+  "threshold": 0.4,
+  "mask_threshold": 0.5,
+  "ground_truth_supplied": false
+}

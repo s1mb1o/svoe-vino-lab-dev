@@ -1,0 +1,36 @@
+{
+  "new_raw_request_counts": {
+    "raw": 28,
+    "augmented": 33,
+    "tracker": 30,
+    "central": 8
+  },
+  "total_new_requests": 99,
+  "adopted_runtime_responses": 16,
+  "enhanced_cases": [
+    "hc-028",
+    "hc-097",
+    "hc-143",
+    "real-25394",
+    "real-22705",
+    "real-166918",
+    "real-117719",
+    "real-397354"
+  ],
+  "ground_truth_supplied": false,
+  "adopted": [
+    "Mask-only neck-axis extent fitting",
+    "High-resolution central small-bottle scan",
+    "Detector-seeded tracker localization with validity filtering before ranking"
+  ],
+  "rejected": [
+    "Box-prompt refinement",
+    "General RGB edge fitting",
+    "Flip-union masks",
+    "Large fixed-grid generic and interaction-aware scans"
+  ],
+  "reason_for_rejection": "The generic proposals did not resolve the target or introduced regressions. All raw responses remain retained; no failed trials were removed from the investigation.",
+  "residual": "real-117719 has actual nearer bottles absent from the frozen COCO annotation subset. d96 covers the photo center but has no GT polygon; d37 is the annotated-subset winner. Both remain eligible. The exact policy must choose d96 on these independent detections.",
+  "service": "Existing private-LAN project SAM3 service; no service source deployment",
+  "checkpoint_revision": "Not disclosed by service"
+}

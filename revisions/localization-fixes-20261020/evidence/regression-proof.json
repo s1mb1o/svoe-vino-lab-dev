@@ -1,0 +1,86 @@
+{
+  "prior_source_sha256": "313cfe1ec0f14395a4fe857a77bea9019cabad7ba4343eabb179ddc693a9a36f",
+  "interpretation": "Prior selector with original primary inputs vs new selector with declared image-only enhanced inputs. No GT was provided during enhancement. Diagnostic frozen target IDs are used by this scorer only.",
+  "rows": [
+    {
+      "case_id": "hc-025",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d0",
+      "after_selected": "d1",
+      "before_owner": 2,
+      "after_owner": 1,
+      "after_crop": true
+    },
+    {
+      "case_id": "hc-035",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d0",
+      "after_selected": "d1",
+      "before_owner": 2,
+      "after_owner": 1,
+      "after_crop": true
+    },
+    {
+      "case_id": "hc-039",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d0",
+      "after_selected": "d1",
+      "before_owner": 2,
+      "after_owner": 1,
+      "after_crop": true
+    },
+    {
+      "case_id": "hc-041",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d0",
+      "after_selected": "d1",
+      "before_owner": 2,
+      "after_owner": 1,
+      "after_crop": true
+    },
+    {
+      "case_id": "hc-056",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d0",
+      "after_selected": "d1",
+      "before_owner": 2,
+      "after_owner": 1,
+      "after_crop": true
+    },
+    {
+      "case_id": "real-166918",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d4",
+      "after_selected": "d23",
+      "before_owner": null,
+      "after_owner": 1865335,
+      "after_crop": true
+    },
+    {
+      "case_id": "real-397354",
+      "before_pass": false,
+      "after_pass": true,
+      "before_selected": "d6",
+      "after_selected": "d7",
+      "before_owner": 1482897,
+      "after_owner": 82049,
+      "after_crop": true
+    },
+    {
+      "case_id": "real-117719",
+      "before_pass": false,
+      "after_pass": false,
+      "before_selected": "d7",
+      "after_selected": "d96",
+      "before_owner": null,
+      "after_owner": null,
+      "after_crop": true
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Held wine bottle in a busy market",
+    "url": "https://www.pexels.com/photo/a-person-s-hands-holding-a-wine-bottle-11256796/",
+    "author": "Yelena from Pexels",
+    "groups": [
+      "hands",
+      "framing"
+    ],
+    "status": "found; not downloaded or scored; needs independent bottle/label masks",
+    "license_url": "https://www.pexels.com/license/"
+  },
+  {
+    "title": "Supermarket wine sections",
+    "url": "https://commons.wikimedia.org/wiki/Category:Supermarket_wine_sections",
+    "groups": [
+      "ambiguity",
+      "context"
+    ],
+    "status": "source collection found; individual-file licenses and target annotations needed"
+  },
+  {
+    "title": "WineSensed / Learning to Taste",
+    "url": "https://arxiv.org/abs/2308.16900",
+    "groups": [
+      "hierarchy",
+      "closeup"
+    ],
+    "status": "research dataset found; verify image access and label masks before inclusion"
+  },
+  {
+    "title": "COCO 2017 instance-segmentation source",
+    "url": "https://cocodataset.org/dataset/detection-2017.htm",
+    "groups": [
+      "hands",
+      "framing",
+      "context",
+      "ambiguity",
+      "readability",
+      "center-occlusion"
+    ],
+    "status": "Eight additional real photos imported with official bottle polygons. Original RGB bytes preserved; individual photo/license links are shown on cards. No label masks fabricated."
+  }
+]

@@ -1,0 +1,1214 @@
+{
+  "before/hc-025-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/hc-025-live-semantic-v2.png",
+    "sha256": "4ad8dd5eb72c13acb8cc78e22bc5a69c5914440e88f29a6b86862314ad0c6ca6"
+  },
+  "detector-masks/hc-025/effective-d0.png": {
+    "sha256": "2b8a04ceff1fe55e2cffec69dd6bc4ac9101732a09f2e8238167b5061593c57e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-025/primary-d0.png": {
+    "sha256": "2b8a04ceff1fe55e2cffec69dd6bc4ac9101732a09f2e8238167b5061593c57e",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-025/effective-d1.png": {
+    "sha256": "deae74d4762409e18e7618bbd0672ad10c7523a5493ffdf83c86057d7319de88",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-025/primary-d1.png": {
+    "sha256": "deae74d4762409e18e7618bbd0672ad10c7523a5493ffdf83c86057d7319de88",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-025/effective-d2.png": {
+    "sha256": "8044ec69d0c093daf7242941776b39e2b6c40651640e783b21d429b52fceeabe",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-025/primary-d2.png": {
+    "sha256": "8044ec69d0c093daf7242941776b39e2b6c40651640e783b21d429b52fceeabe",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-025/effective-d3.png": {
+    "sha256": "b51789e07c98832e1efc3b5ff3475d96e5e1a4bfb1d3286d5f820f2c7dc19795",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-025/primary-d3.png": {
+    "sha256": "b51789e07c98832e1efc3b5ff3475d96e5e1a4bfb1d3286d5f820f2c7dc19795",
+    "kind": "primary_detector_mask"
+  },
+  "before/hc-035-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/hc-035-live-semantic-v2.png",
+    "sha256": "7aeb757c63962e33cd4896fea132c3cb1bbec3a626f75923dd02bcbb30e3099b"
+  },
+  "detector-masks/hc-035/effective-d0.png": {
+    "sha256": "4443154e631bcd77e0c93bf7c71c39cc8e76b28803aff92be8c9123e100e1c0c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d0.png": {
+    "sha256": "4443154e631bcd77e0c93bf7c71c39cc8e76b28803aff92be8c9123e100e1c0c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-035/effective-d1.png": {
+    "sha256": "a15983ba9d3f8f38433ac3d86bf9e3b936dfb81fb1fe6094b6e4eade0aa0913b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d1.png": {
+    "sha256": "a15983ba9d3f8f38433ac3d86bf9e3b936dfb81fb1fe6094b6e4eade0aa0913b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-035/effective-d2.png": {
+    "sha256": "b5d83a09707324d9bff4a882981c5c7de996bb04c9f610969e986403c1a7789c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d2.png": {
+    "sha256": "b5d83a09707324d9bff4a882981c5c7de996bb04c9f610969e986403c1a7789c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-035/effective-d3.png": {
+    "sha256": "2ae87014ac268bab50023877a0187842dd3b0f3a2bbc6e74ca32ff52accda403",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d3.png": {
+    "sha256": "2ae87014ac268bab50023877a0187842dd3b0f3a2bbc6e74ca32ff52accda403",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-035/effective-d4.png": {
+    "sha256": "06962675c39f1e47dbee12f242967cab0f9e9a9b7d7a5eec49ed5d5f0f664e84",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d4.png": {
+    "sha256": "06962675c39f1e47dbee12f242967cab0f9e9a9b7d7a5eec49ed5d5f0f664e84",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-035/effective-d5.png": {
+    "sha256": "2d2e2b26bd0f92ed7ce5ed346caaf4b44497f84df599a280d0863227010fc1c1",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-035/primary-d5.png": {
+    "sha256": "2d2e2b26bd0f92ed7ce5ed346caaf4b44497f84df599a280d0863227010fc1c1",
+    "kind": "primary_detector_mask"
+  },
+  "before/hc-039-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/hc-039-live-semantic-v2.png",
+    "sha256": "35669cfd6cad58084aadc253fd42bd664e5655c931f9cd3775dafa6699e70449"
+  },
+  "detector-masks/hc-039/effective-d0.png": {
+    "sha256": "cb28266be800c31ff0d8abc95b80b5eddf0590a6edd184c62735fcf9687df527",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-039/primary-d0.png": {
+    "sha256": "cb28266be800c31ff0d8abc95b80b5eddf0590a6edd184c62735fcf9687df527",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-039/effective-d1.png": {
+    "sha256": "ccb1f6073bf3638fd5fac3ecc477feede02b7f81f3ad7f986fbeac2dc533590d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-039/primary-d1.png": {
+    "sha256": "ccb1f6073bf3638fd5fac3ecc477feede02b7f81f3ad7f986fbeac2dc533590d",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-039/effective-d2.png": {
+    "sha256": "07c912aaf24301f00dc85dee760bc56e9216bf5c908e82d018e49af8f5072744",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-039/primary-d2.png": {
+    "sha256": "07c912aaf24301f00dc85dee760bc56e9216bf5c908e82d018e49af8f5072744",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-039/effective-d3.png": {
+    "sha256": "09d10a5a4768c0b08c84c167e6bab4e8916416029ae0f65f5585ae060c84b731",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-039/primary-d3.png": {
+    "sha256": "09d10a5a4768c0b08c84c167e6bab4e8916416029ae0f65f5585ae060c84b731",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-039/effective-d4.png": {
+    "sha256": "94b61b3c010ceb3daa809f0a88c28e46528b59151e60c8642d0c58db6fd3cb60",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-039/primary-d4.png": {
+    "sha256": "94b61b3c010ceb3daa809f0a88c28e46528b59151e60c8642d0c58db6fd3cb60",
+    "kind": "primary_detector_mask"
+  },
+  "before/hc-041-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/hc-041-live-semantic-v2.png",
+    "sha256": "23aa3ad7427c6c33da045a447675ab8d0f18b856a41aa6d08f40da06845a9aef"
+  },
+  "detector-masks/hc-041/effective-d0.png": {
+    "sha256": "9b06a0d499920887345416dfdfc014a7544d9aa8ee85e195e5efa0d407ec0484",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d0.png": {
+    "sha256": "9b06a0d499920887345416dfdfc014a7544d9aa8ee85e195e5efa0d407ec0484",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-041/effective-d1.png": {
+    "sha256": "feff6e9fda5a275ea61ad459efb7db80c6f27ec73912e26a04ac401dfced6a54",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d1.png": {
+    "sha256": "feff6e9fda5a275ea61ad459efb7db80c6f27ec73912e26a04ac401dfced6a54",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-041/effective-d2.png": {
+    "sha256": "c8085b2955a9ab15010f3028130efe38d0056767a920e1bc1ac73af847a177f9",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d2.png": {
+    "sha256": "c8085b2955a9ab15010f3028130efe38d0056767a920e1bc1ac73af847a177f9",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-041/effective-d3.png": {
+    "sha256": "2d1e35a007e5a10b7b726bc10a6f06fa3822365edbeef60acaa31af0e8fc10ed",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d3.png": {
+    "sha256": "2d1e35a007e5a10b7b726bc10a6f06fa3822365edbeef60acaa31af0e8fc10ed",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-041/effective-d4.png": {
+    "sha256": "1ed322fe6b83a42b46ce02d230c16d7d0d2ea1bc073dc8aa45361e15257abb5e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d4.png": {
+    "sha256": "1ed322fe6b83a42b46ce02d230c16d7d0d2ea1bc073dc8aa45361e15257abb5e",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-041/effective-d5.png": {
+    "sha256": "e67aa727c225486208c7038fd41f53bf35b2f51449389d97e88c5fef37bb10b0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-041/primary-d5.png": {
+    "sha256": "e67aa727c225486208c7038fd41f53bf35b2f51449389d97e88c5fef37bb10b0",
+    "kind": "primary_detector_mask"
+  },
+  "before/hc-056-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/hc-056-live-semantic-v2.png",
+    "sha256": "8a6a48cfd0219fc892dc3627fd22a1733b29e29b12686fb15cc68ed763a9d565"
+  },
+  "detector-masks/hc-056/effective-d0.png": {
+    "sha256": "693a04f9c27fd7d94d02d084fd749ccbc95928537da2d6a4be91920247bf0086",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-056/primary-d0.png": {
+    "sha256": "693a04f9c27fd7d94d02d084fd749ccbc95928537da2d6a4be91920247bf0086",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-056/effective-d1.png": {
+    "sha256": "762fe0bd7dfa1eab3327cc48f3699d0e818cc331ab3d8e7c269004e9d4d872cd",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-056/primary-d1.png": {
+    "sha256": "762fe0bd7dfa1eab3327cc48f3699d0e818cc331ab3d8e7c269004e9d4d872cd",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-056/effective-d2.png": {
+    "sha256": "82c793af629d59657d2d9ef3cf84bb8ef81e2992eb1a9fa3a3d980fd681abe6a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-056/primary-d2.png": {
+    "sha256": "82c793af629d59657d2d9ef3cf84bb8ef81e2992eb1a9fa3a3d980fd681abe6a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/hc-056/effective-d3.png": {
+    "sha256": "ea5618938ad372c9facb6ec0897f578c549d201a6901241083d75822127c97f2",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/hc-056/primary-d3.png": {
+    "sha256": "ea5618938ad372c9facb6ec0897f578c549d201a6901241083d75822127c97f2",
+    "kind": "primary_detector_mask"
+  },
+  "before/real-166918-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/real-166918-live-semantic-v2.png",
+    "sha256": "4f2b8d7920cb4aeb3f99ddf34b14a8fe460899dfe67467257dfa7cd7653e9823"
+  },
+  "detector-masks/real-166918/effective-d0.png": {
+    "sha256": "a0b8b8920cb114088969d0556f8131de73e960b3a403d898943e9ffda023ac94",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d0.png": {
+    "sha256": "a0b8b8920cb114088969d0556f8131de73e960b3a403d898943e9ffda023ac94",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d1.png": {
+    "sha256": "6b93442cbdd7bbaa3c57d4656767cff29bc9984acd8571da74be7664bc11760b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d1.png": {
+    "sha256": "6b93442cbdd7bbaa3c57d4656767cff29bc9984acd8571da74be7664bc11760b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d2.png": {
+    "sha256": "3fd82c5f48179cac9337381563b8228be9b5429249aa4d40cd0610eb3b0de5a4",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d2.png": {
+    "sha256": "3fd82c5f48179cac9337381563b8228be9b5429249aa4d40cd0610eb3b0de5a4",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d3.png": {
+    "sha256": "b6acfc44000ec399e19734e681abc51f27c7064cddec3f91da2449f6f5dd8915",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d3.png": {
+    "sha256": "b6acfc44000ec399e19734e681abc51f27c7064cddec3f91da2449f6f5dd8915",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d4.png": {
+    "sha256": "e295b6247360ccfeeecacc7a9989b6352a9a6b5c8b3c7674e7a93e8a76850ccc",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d4.png": {
+    "sha256": "e295b6247360ccfeeecacc7a9989b6352a9a6b5c8b3c7674e7a93e8a76850ccc",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d5.png": {
+    "sha256": "1ede9d56e64aeda292dc6d7298ef81453b3ed7641af50a485dc1ca5a8f98d103",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d5.png": {
+    "sha256": "1ede9d56e64aeda292dc6d7298ef81453b3ed7641af50a485dc1ca5a8f98d103",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d6.png": {
+    "sha256": "37afdee39e1c5167cba5199308126cec96884e92f426a90b14e6d6bb87d91f3a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d6.png": {
+    "sha256": "37afdee39e1c5167cba5199308126cec96884e92f426a90b14e6d6bb87d91f3a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d7.png": {
+    "sha256": "f49b9cbba58711f0e25100a62e01582fd30e0b469f33999a9741607baadf3d10",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d7.png": {
+    "sha256": "f49b9cbba58711f0e25100a62e01582fd30e0b469f33999a9741607baadf3d10",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d8.png": {
+    "sha256": "61438d937a36af255ec47a887119044a70fed9bd1589a7512622179999a8f132",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d8.png": {
+    "sha256": "61438d937a36af255ec47a887119044a70fed9bd1589a7512622179999a8f132",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d9.png": {
+    "sha256": "3d9aaec88b125daf0403a6c91ce57068700798379c8a4dffd5f384580381c17e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d9.png": {
+    "sha256": "3d9aaec88b125daf0403a6c91ce57068700798379c8a4dffd5f384580381c17e",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d10.png": {
+    "sha256": "ccc40362ce1a3cff13844eeae2c739e504c4f7f3910427c31ea51c740ef5082b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d10.png": {
+    "sha256": "ccc40362ce1a3cff13844eeae2c739e504c4f7f3910427c31ea51c740ef5082b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d11.png": {
+    "sha256": "0ae5466dd7a7de1bafdf1180a681033b680725a39f8be6ed1e73b665f142739a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d11.png": {
+    "sha256": "0ae5466dd7a7de1bafdf1180a681033b680725a39f8be6ed1e73b665f142739a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d12.png": {
+    "sha256": "db3cd733749386dd56b768c5dac52978deb6bdbf8642b40274e7cc65ac5fcec1",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/primary-d12.png": {
+    "sha256": "db3cd733749386dd56b768c5dac52978deb6bdbf8642b40274e7cc65ac5fcec1",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d13.png": {
+    "sha256": "5ab45f13b0d2a7016cd0a022bbdfb5e79e130f40d6593e651375aa60a2c3719a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d14.png": {
+    "sha256": "137ab0053fe0159adb04b7fc6c542dcd09049c1a432446f964153335a8f0bc8c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d15.png": {
+    "sha256": "a5dce18a2175a22a7ddb290cdb43e359f786d1bfb4e84c4e1fa53f744762bb97",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d16.png": {
+    "sha256": "24c2a2e979081e0f5583d17b1a7421e3938c70a098b5640c489bb0e1f9d108bf",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d17.png": {
+    "sha256": "2e525d10e7e4aa62a9adaa5941f61e28d4fa4342d3684bad5329bc486afa88d0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d18.png": {
+    "sha256": "ffd76c5d893cb01511c838bc016f01cb22fb533be1e7d82633d7856f9424ab8d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d19.png": {
+    "sha256": "8e45d345b5b6283bb42636142891457978a6474938b952f7406442c2419ed6fa",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d20.png": {
+    "sha256": "e5fadf4f9b248c71dd794272c02395ebc0ae47c2313bb31e9c835fbdf447c0c1",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d21.png": {
+    "sha256": "0027ec26df7c88ca16228f806d39ea77bcc5aad4c84b4a7770d05568fa55a1de",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d22.png": {
+    "sha256": "2e525d10e7e4aa62a9adaa5941f61e28d4fa4342d3684bad5329bc486afa88d0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d23.png": {
+    "sha256": "93c75d6620357cac005a44c4a0ff8c4f1995fcb0f36e7444bf20f41c8ce71e57",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-166918/effective-d24.png": {
+    "sha256": "22b11e0de3d54da9fed1635d5588b003c66ac06361636a37098d9d1f891ca053",
+    "kind": "effective_detector_mask"
+  },
+  "before/real-397354-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/real-397354-live-semantic-v2.png",
+    "sha256": "06629c6734880e241e2580ad40bb80236934311cf63cca2fed7b424c1134ae7f"
+  },
+  "detector-masks/real-397354/effective-d0.png": {
+    "sha256": "ca11fa6498488f49883603cc74feda00a91a1798f7d15c217af84e78a29a6863",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d0.png": {
+    "sha256": "ca11fa6498488f49883603cc74feda00a91a1798f7d15c217af84e78a29a6863",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d1.png": {
+    "sha256": "baba1c334f82f6cfc9ccc05070e320502b0f38828dbeccff5a966c8329dd6e0d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d1.png": {
+    "sha256": "baba1c334f82f6cfc9ccc05070e320502b0f38828dbeccff5a966c8329dd6e0d",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d2.png": {
+    "sha256": "7e5a6d7c40aca60c371669e74ea06ff662ce3178ac70f54a93048f4a28784d94",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d2.png": {
+    "sha256": "7e5a6d7c40aca60c371669e74ea06ff662ce3178ac70f54a93048f4a28784d94",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d3.png": {
+    "sha256": "2dbcb728c377ec2e2b2cdb74b44d031707cb0681ff2ba7af88a4130839069a1d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d3.png": {
+    "sha256": "2dbcb728c377ec2e2b2cdb74b44d031707cb0681ff2ba7af88a4130839069a1d",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d4.png": {
+    "sha256": "e7c4fc85c7f220b0e238a49030f5bcb469a4a42bf8afe372c7b9b02f4186020b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d4.png": {
+    "sha256": "e7c4fc85c7f220b0e238a49030f5bcb469a4a42bf8afe372c7b9b02f4186020b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d5.png": {
+    "sha256": "bacebb23578b333850120ee5432032df16df8b03ddd6380865a656143e5646ee",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d5.png": {
+    "sha256": "bacebb23578b333850120ee5432032df16df8b03ddd6380865a656143e5646ee",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d6.png": {
+    "sha256": "2bdaa3bcbef887f934a1f1aba1dc6228e605af75d43748c56daa692d2eafcb0b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d6.png": {
+    "sha256": "6d7d58caf3f44177232ed163695b19361c5f02877c2a13d66cf270d8d6399076",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d7.png": {
+    "sha256": "d14b7b8988092137543a11e7e755ae34172e08f6eea5dbc76b2d3ec5f799599e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d7.png": {
+    "sha256": "b49349ecf139d322956eb149c48e3f5a8c89ab92a095d258c2c54069cf959c55",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d8.png": {
+    "sha256": "993540aa84ca26d963411948e047525d2ede430fba58d957ba7a067d0dd82516",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d8.png": {
+    "sha256": "993540aa84ca26d963411948e047525d2ede430fba58d957ba7a067d0dd82516",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d9.png": {
+    "sha256": "4e6f42c4b2f1bb7ed42081b7313714358fb542aa9b3ceacecd621eaf70260a1c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d9.png": {
+    "sha256": "4e6f42c4b2f1bb7ed42081b7313714358fb542aa9b3ceacecd621eaf70260a1c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d10.png": {
+    "sha256": "354892383c81d7d59d66f58af3b56da09f70a6464fb6d000fa80fdf36781a09d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d10.png": {
+    "sha256": "354892383c81d7d59d66f58af3b56da09f70a6464fb6d000fa80fdf36781a09d",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d11.png": {
+    "sha256": "2cd1a148551c516dd4eced913d991244550f3b69d17d48a4f59ffd25890db997",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d11.png": {
+    "sha256": "2cd1a148551c516dd4eced913d991244550f3b69d17d48a4f59ffd25890db997",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d12.png": {
+    "sha256": "63a0019b96dc57ece668b209d339b6d6e253489305bc6e1307245653629766df",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d12.png": {
+    "sha256": "63a0019b96dc57ece668b209d339b6d6e253489305bc6e1307245653629766df",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d13.png": {
+    "sha256": "8a3aedd4d2ded46d917004949b5fe463f3f21666aa80a23937afa8a8cd520a0c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d13.png": {
+    "sha256": "8a3aedd4d2ded46d917004949b5fe463f3f21666aa80a23937afa8a8cd520a0c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d14.png": {
+    "sha256": "facaebd6ea1c2f809c9e063644a48542b1192d85930ff7ac3870a09529652d26",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d14.png": {
+    "sha256": "facaebd6ea1c2f809c9e063644a48542b1192d85930ff7ac3870a09529652d26",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d15.png": {
+    "sha256": "210eb81d9ebb18610ed8b123af2c265c6df5fa42a3d6b2c44532cdd9708c46fe",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d15.png": {
+    "sha256": "210eb81d9ebb18610ed8b123af2c265c6df5fa42a3d6b2c44532cdd9708c46fe",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d16.png": {
+    "sha256": "e5bc653fd9d783d00085b3fc0049f68a21c206f253eab882696145758abb3fff",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d16.png": {
+    "sha256": "e5bc653fd9d783d00085b3fc0049f68a21c206f253eab882696145758abb3fff",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-397354/effective-d17.png": {
+    "sha256": "537afbbb4d4a9af94636c6d1b5f5869682adee8fec840a97b7f7f55bf3dc6784",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-397354/primary-d17.png": {
+    "sha256": "537afbbb4d4a9af94636c6d1b5f5869682adee8fec840a97b7f7f55bf3dc6784",
+    "kind": "primary_detector_mask"
+  },
+  "before/real-117719-semantic-v2.png": {
+    "source_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+    "source_path": "crops/real-117719-live-semantic-v2.png",
+    "sha256": "c3a3e0226078a171f3e7001a96d1b773c1c4782e8043ecddbd5222009543b106"
+  },
+  "detector-masks/real-117719/effective-d0.png": {
+    "sha256": "eefdc7a48f80af36032c9e9c0ddd63ec0552461e70282081f5e156a45a200039",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d0.png": {
+    "sha256": "eefdc7a48f80af36032c9e9c0ddd63ec0552461e70282081f5e156a45a200039",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d1.png": {
+    "sha256": "bdc554af17bd85c844cebaac652630b856397a3c8eb40c440e5eaed8151fb57c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d1.png": {
+    "sha256": "bdc554af17bd85c844cebaac652630b856397a3c8eb40c440e5eaed8151fb57c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d2.png": {
+    "sha256": "5b45bc3429741c6aa2382c011eaea7a738db43b91e109a16ee18a6a1ba01004e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d2.png": {
+    "sha256": "5b45bc3429741c6aa2382c011eaea7a738db43b91e109a16ee18a6a1ba01004e",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d3.png": {
+    "sha256": "adf305300d3a23dd8238adc669a0765403bdfee8690cac4b35247fb181c0ecb9",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d3.png": {
+    "sha256": "adf305300d3a23dd8238adc669a0765403bdfee8690cac4b35247fb181c0ecb9",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d4.png": {
+    "sha256": "d8e6be2b3d976b4ec3ab486248860ae965c8b85a638b6904a0c0907a775b8431",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d4.png": {
+    "sha256": "d8e6be2b3d976b4ec3ab486248860ae965c8b85a638b6904a0c0907a775b8431",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d5.png": {
+    "sha256": "8efffb4f184a6aa092c8fc55a4234bcdcb57f705b9dfac1221cf3ea0f1b654bb",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d5.png": {
+    "sha256": "8efffb4f184a6aa092c8fc55a4234bcdcb57f705b9dfac1221cf3ea0f1b654bb",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d6.png": {
+    "sha256": "9d4198fcbeb0338327f587cf8963b158e08d09f79ebc7a0c2b2bfa3030b11c19",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d6.png": {
+    "sha256": "9d4198fcbeb0338327f587cf8963b158e08d09f79ebc7a0c2b2bfa3030b11c19",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d7.png": {
+    "sha256": "23276f4558eae6b4098abc1d95248ed488bc3ef4db6150a0f9d65bf5bdf47693",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d7.png": {
+    "sha256": "23276f4558eae6b4098abc1d95248ed488bc3ef4db6150a0f9d65bf5bdf47693",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d8.png": {
+    "sha256": "0f4d94242a999eeecb2bafd2bcf7bff1efb0b0581822151f6da1181cc95b28ae",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d8.png": {
+    "sha256": "0f4d94242a999eeecb2bafd2bcf7bff1efb0b0581822151f6da1181cc95b28ae",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d9.png": {
+    "sha256": "22965372350d445defc0df9048eb2673ed218fb6c5a63cb7f7f014fbef89cfa2",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d9.png": {
+    "sha256": "22965372350d445defc0df9048eb2673ed218fb6c5a63cb7f7f014fbef89cfa2",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d10.png": {
+    "sha256": "f2ecf9c0989a370a5ae851cb41dacc27912d3168aa35c7f04c9fd81da3aa99ce",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d10.png": {
+    "sha256": "f2ecf9c0989a370a5ae851cb41dacc27912d3168aa35c7f04c9fd81da3aa99ce",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d11.png": {
+    "sha256": "cd93206fd48b65422398c97dba63ea4ffa14f807fb33ce2f9870be64eb18908b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d11.png": {
+    "sha256": "cd93206fd48b65422398c97dba63ea4ffa14f807fb33ce2f9870be64eb18908b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d12.png": {
+    "sha256": "723288331fcc0f99aadf35c4c25209dc1af3e935232ae69bf768eec7a567169c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d12.png": {
+    "sha256": "723288331fcc0f99aadf35c4c25209dc1af3e935232ae69bf768eec7a567169c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d13.png": {
+    "sha256": "d6ffcdc7d9453ad91d300223c32fc3f3794d5fd48ae4ebc057119be62e5b0cf9",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d13.png": {
+    "sha256": "d6ffcdc7d9453ad91d300223c32fc3f3794d5fd48ae4ebc057119be62e5b0cf9",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d14.png": {
+    "sha256": "a02d3afcec8a12fe7aee6401b3e05015163355b67aea0b43e3881ce47c302655",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d14.png": {
+    "sha256": "a02d3afcec8a12fe7aee6401b3e05015163355b67aea0b43e3881ce47c302655",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d15.png": {
+    "sha256": "bacf47a99cddb4165760d2e78b5ef5394a5b07b59522314ec4cd3ead9bda02b3",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d15.png": {
+    "sha256": "bacf47a99cddb4165760d2e78b5ef5394a5b07b59522314ec4cd3ead9bda02b3",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d16.png": {
+    "sha256": "fccca74403eb5ffe6b6de6c656d3a0854483804293769fb1e576487caf8830ca",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d16.png": {
+    "sha256": "fccca74403eb5ffe6b6de6c656d3a0854483804293769fb1e576487caf8830ca",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d17.png": {
+    "sha256": "ec3174becbe1d6fb5f0958531df48ae6dcb5446dac4eb76392bcfd35bdcf9179",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d17.png": {
+    "sha256": "ec3174becbe1d6fb5f0958531df48ae6dcb5446dac4eb76392bcfd35bdcf9179",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d18.png": {
+    "sha256": "e6a785d6101330285b6cbc71bc32587fbc2f27cee48c80a22fe7e1b8f9e1ef21",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d18.png": {
+    "sha256": "e6a785d6101330285b6cbc71bc32587fbc2f27cee48c80a22fe7e1b8f9e1ef21",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d19.png": {
+    "sha256": "5ad195e2d4363bb93db5d32e82f49331d058fa06f2778b8be4b6d0091dfd93e2",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d19.png": {
+    "sha256": "5ad195e2d4363bb93db5d32e82f49331d058fa06f2778b8be4b6d0091dfd93e2",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d20.png": {
+    "sha256": "b6907dc818025808f43d74a36392e80d1bc40f218d2af894771b454cf90ce0cf",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d20.png": {
+    "sha256": "b6907dc818025808f43d74a36392e80d1bc40f218d2af894771b454cf90ce0cf",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d21.png": {
+    "sha256": "9eac16c1e85252c9794fabf48d85a3c6e2d661e40d7ed08a0330c5dddb1c0dcb",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d21.png": {
+    "sha256": "9eac16c1e85252c9794fabf48d85a3c6e2d661e40d7ed08a0330c5dddb1c0dcb",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d22.png": {
+    "sha256": "17333b8680ca7e510d6c4334858e4a4d294a4ac74de9bbca26b3750a9ce64d47",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d22.png": {
+    "sha256": "17333b8680ca7e510d6c4334858e4a4d294a4ac74de9bbca26b3750a9ce64d47",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d23.png": {
+    "sha256": "d164bdfd4a77bb4396f53b925a7036164144a12b484dc531c64b7ed4f0b50510",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d23.png": {
+    "sha256": "d164bdfd4a77bb4396f53b925a7036164144a12b484dc531c64b7ed4f0b50510",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d24.png": {
+    "sha256": "b175af40d1fe23a9c043976f37ba8996e8b82ce4f8c775fbf095ff9224190fb5",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d24.png": {
+    "sha256": "b175af40d1fe23a9c043976f37ba8996e8b82ce4f8c775fbf095ff9224190fb5",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d25.png": {
+    "sha256": "8d51b9dead1a2c6709449285caab55bce58e28fd416be3c46017675bfc12c485",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d25.png": {
+    "sha256": "8d51b9dead1a2c6709449285caab55bce58e28fd416be3c46017675bfc12c485",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d26.png": {
+    "sha256": "611df0f068381c5bc4a13787cdd1002001066c6bef279ed6dc71349bf11c77ff",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d26.png": {
+    "sha256": "611df0f068381c5bc4a13787cdd1002001066c6bef279ed6dc71349bf11c77ff",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d27.png": {
+    "sha256": "4f5133293894b56e25e70461142115c185abc752eb1323d250398ce380c66bdd",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d27.png": {
+    "sha256": "4f5133293894b56e25e70461142115c185abc752eb1323d250398ce380c66bdd",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d28.png": {
+    "sha256": "c14d546f0aa4ed9927559597a87cceeae6dfccf18aeadeebd3e9434058353846",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d28.png": {
+    "sha256": "c14d546f0aa4ed9927559597a87cceeae6dfccf18aeadeebd3e9434058353846",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d29.png": {
+    "sha256": "2b5526fe9987c633644bebc2a170f4b306e5d369e0dbea1eb17c60041794b620",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d29.png": {
+    "sha256": "2b5526fe9987c633644bebc2a170f4b306e5d369e0dbea1eb17c60041794b620",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d30.png": {
+    "sha256": "d27e89a899b45078ba39dc5704d06515fde1786a24e57ad6e3bbaaceb6a48e7d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d30.png": {
+    "sha256": "d27e89a899b45078ba39dc5704d06515fde1786a24e57ad6e3bbaaceb6a48e7d",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d31.png": {
+    "sha256": "8b54da03f4028012689b39d8760702c3b22d639453aa7137765b9df81aab759f",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d31.png": {
+    "sha256": "8b54da03f4028012689b39d8760702c3b22d639453aa7137765b9df81aab759f",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d32.png": {
+    "sha256": "ecda54d76be3de2eea489bebfe95140f262637d45e42c5b47b7c1494e0e53a91",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d32.png": {
+    "sha256": "ecda54d76be3de2eea489bebfe95140f262637d45e42c5b47b7c1494e0e53a91",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d33.png": {
+    "sha256": "6b105dfb488d7e4b8ba3ae2b7dbfc1a58a508895d7cf9813d8669d2c3169dd7f",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d33.png": {
+    "sha256": "6b105dfb488d7e4b8ba3ae2b7dbfc1a58a508895d7cf9813d8669d2c3169dd7f",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d34.png": {
+    "sha256": "29429aba456d7c456c55375f0555b361721444b8f12471c1e3e206d68135e4e3",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d34.png": {
+    "sha256": "29429aba456d7c456c55375f0555b361721444b8f12471c1e3e206d68135e4e3",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d35.png": {
+    "sha256": "7d7e4f10a3d75b7c93ec996dc97e804cff0b1c23cd75597e7a9f957d74db2c21",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d35.png": {
+    "sha256": "7d7e4f10a3d75b7c93ec996dc97e804cff0b1c23cd75597e7a9f957d74db2c21",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d36.png": {
+    "sha256": "7f142992b151fd1ce1ae351c5e602ff145d736f1bd30a9f2fc49e7399b4b600c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d36.png": {
+    "sha256": "7f142992b151fd1ce1ae351c5e602ff145d736f1bd30a9f2fc49e7399b4b600c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d37.png": {
+    "sha256": "03ff01d050e98126339c2678ebf2159cf051a81c9d1daeafa35a6ccf0b798d75",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d37.png": {
+    "sha256": "03ff01d050e98126339c2678ebf2159cf051a81c9d1daeafa35a6ccf0b798d75",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d38.png": {
+    "sha256": "e6983a0585cdc01c9386f8b2bfa4115eb3ac0298fecdb709b27bf02f764730af",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d38.png": {
+    "sha256": "e6983a0585cdc01c9386f8b2bfa4115eb3ac0298fecdb709b27bf02f764730af",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d39.png": {
+    "sha256": "fbebb3312c6c8b9dae51b3104d93ae98e1746a7523cde50f80f041baec8876a0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d39.png": {
+    "sha256": "fbebb3312c6c8b9dae51b3104d93ae98e1746a7523cde50f80f041baec8876a0",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d40.png": {
+    "sha256": "15ffccbcf6a0833890ce7a2acf5e6166aaa9983e6f8bee8b46a1b731b665e4d0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d40.png": {
+    "sha256": "15ffccbcf6a0833890ce7a2acf5e6166aaa9983e6f8bee8b46a1b731b665e4d0",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d41.png": {
+    "sha256": "b813d1323084f131e5bd8cb6c9c58aa22f79af9a9c8550abb287b09c20b0252c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d41.png": {
+    "sha256": "b813d1323084f131e5bd8cb6c9c58aa22f79af9a9c8550abb287b09c20b0252c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d42.png": {
+    "sha256": "09d0cad4022421bed883d6419df035eebb9d3b3ea54f6297b4af5d4ccf31e6d4",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d42.png": {
+    "sha256": "09d0cad4022421bed883d6419df035eebb9d3b3ea54f6297b4af5d4ccf31e6d4",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d43.png": {
+    "sha256": "bd2c86d4afb43595ccc251557acb98541cd35abf02964b85e5782de6ebe85416",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d43.png": {
+    "sha256": "bd2c86d4afb43595ccc251557acb98541cd35abf02964b85e5782de6ebe85416",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d44.png": {
+    "sha256": "e290a20223fd6fbc56845dd143cec25bc12b73a55a8b0b219f6ff263d5a399c4",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d44.png": {
+    "sha256": "e290a20223fd6fbc56845dd143cec25bc12b73a55a8b0b219f6ff263d5a399c4",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d45.png": {
+    "sha256": "f018825afc77ed3e3c734262f4b93a1ebde10f678f2799cee18162a0efa1b816",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d45.png": {
+    "sha256": "f018825afc77ed3e3c734262f4b93a1ebde10f678f2799cee18162a0efa1b816",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d46.png": {
+    "sha256": "c776468165f1f5f877fe796f3dd5f186fd9f68a19e703c86b3c738031f8ec2b6",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d46.png": {
+    "sha256": "c776468165f1f5f877fe796f3dd5f186fd9f68a19e703c86b3c738031f8ec2b6",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d47.png": {
+    "sha256": "2a7093aec330e5fbc704aa47ed80962e02f36fbe457ae34c51326573843bbda6",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d47.png": {
+    "sha256": "2a7093aec330e5fbc704aa47ed80962e02f36fbe457ae34c51326573843bbda6",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d48.png": {
+    "sha256": "b9bdad3066f5caff1a5ec7b783e2e01493da790b641d6f285d06fe503149bce5",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d48.png": {
+    "sha256": "b9bdad3066f5caff1a5ec7b783e2e01493da790b641d6f285d06fe503149bce5",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d49.png": {
+    "sha256": "f35582afe5293daf3b2e764418fe8579d0b8e1c8b94a0c45939c511980c39298",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d49.png": {
+    "sha256": "f35582afe5293daf3b2e764418fe8579d0b8e1c8b94a0c45939c511980c39298",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d50.png": {
+    "sha256": "92f89036f8c0217f1c0008d8710df9893a8829de8c8c5c63daab26ab85f67fd3",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d50.png": {
+    "sha256": "92f89036f8c0217f1c0008d8710df9893a8829de8c8c5c63daab26ab85f67fd3",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d51.png": {
+    "sha256": "c014132a2342f44a88f61f2b5bd97a140a554e117f9453585945d16578e61d7a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d51.png": {
+    "sha256": "c014132a2342f44a88f61f2b5bd97a140a554e117f9453585945d16578e61d7a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d52.png": {
+    "sha256": "43df2bae6b645a9d69313bc8b720c77298b35d95d47400859a60a70f7b117827",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d52.png": {
+    "sha256": "43df2bae6b645a9d69313bc8b720c77298b35d95d47400859a60a70f7b117827",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d53.png": {
+    "sha256": "2d06ef7092e0366f45b6d5e1b36fe8abc9e3181e3130f24dd05ea51b4c2cbb92",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d53.png": {
+    "sha256": "2d06ef7092e0366f45b6d5e1b36fe8abc9e3181e3130f24dd05ea51b4c2cbb92",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d54.png": {
+    "sha256": "156936ffb8d305932301d541bb59f5152568fe241fce0725e403468a5ceb737e",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d54.png": {
+    "sha256": "156936ffb8d305932301d541bb59f5152568fe241fce0725e403468a5ceb737e",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d55.png": {
+    "sha256": "ceb73b597508fd5350a0cc53096a151713ab7f9281882bcf1242240ba914888c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d55.png": {
+    "sha256": "ceb73b597508fd5350a0cc53096a151713ab7f9281882bcf1242240ba914888c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d56.png": {
+    "sha256": "81ee2598abb54ef1af690f15ccec2a746d891868748d17ebeba953ac0349c646",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d56.png": {
+    "sha256": "81ee2598abb54ef1af690f15ccec2a746d891868748d17ebeba953ac0349c646",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d57.png": {
+    "sha256": "fb83de00b0d64c60f0842f60e8e353b8b7d9557a834c5f85a806b6ea5a812ffd",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d57.png": {
+    "sha256": "fb83de00b0d64c60f0842f60e8e353b8b7d9557a834c5f85a806b6ea5a812ffd",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d58.png": {
+    "sha256": "662149a27abb4ddfddf2ffb1d98472f55c03620304c245e05c2a5009364a5f0a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d58.png": {
+    "sha256": "662149a27abb4ddfddf2ffb1d98472f55c03620304c245e05c2a5009364a5f0a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d59.png": {
+    "sha256": "b0a3d1a1946c31aba8cdd173d117d3a01c00aa189aa4239e2834c5d451a22703",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d59.png": {
+    "sha256": "b0a3d1a1946c31aba8cdd173d117d3a01c00aa189aa4239e2834c5d451a22703",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d60.png": {
+    "sha256": "8191c4469bc843924e3de18baac04744a4df8eff7a72db855314e2133359d845",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d60.png": {
+    "sha256": "8191c4469bc843924e3de18baac04744a4df8eff7a72db855314e2133359d845",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d61.png": {
+    "sha256": "beb9ac7be3f2a9e6d0232692f1662f41fa9bc85a51da72117454e07171b21cd0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d61.png": {
+    "sha256": "beb9ac7be3f2a9e6d0232692f1662f41fa9bc85a51da72117454e07171b21cd0",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d62.png": {
+    "sha256": "3736ec941d5afca2bbb8badadf59f4bd7b5c207b62fbc5efb2bd15510c37092a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d62.png": {
+    "sha256": "3736ec941d5afca2bbb8badadf59f4bd7b5c207b62fbc5efb2bd15510c37092a",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d63.png": {
+    "sha256": "2b3cb6755836e3614cbcf6b3b36f2e88559ae667ae37540b201a4cb18c6abdde",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d63.png": {
+    "sha256": "2b3cb6755836e3614cbcf6b3b36f2e88559ae667ae37540b201a4cb18c6abdde",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d64.png": {
+    "sha256": "906bc9e46907eefdce9b5242aab69fb69afd2c23a708ce9de5ff1db8afa1f81b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d64.png": {
+    "sha256": "906bc9e46907eefdce9b5242aab69fb69afd2c23a708ce9de5ff1db8afa1f81b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d65.png": {
+    "sha256": "ba82b8ae3b32cf1cc4bcc58f0b6659b36cf8da91d5d6f576a98a2146cd49b836",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d65.png": {
+    "sha256": "ba82b8ae3b32cf1cc4bcc58f0b6659b36cf8da91d5d6f576a98a2146cd49b836",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d66.png": {
+    "sha256": "aa1818a1c16dfdfcf517a0cdc6a47d70c7ba4feb4887072dcb292dbc5f27cb6c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d66.png": {
+    "sha256": "aa1818a1c16dfdfcf517a0cdc6a47d70c7ba4feb4887072dcb292dbc5f27cb6c",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d67.png": {
+    "sha256": "09d2ce1a1820de45fc5fe14aea18c613e6d976117e213fd8fc6e6f088ab178f1",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d67.png": {
+    "sha256": "09d2ce1a1820de45fc5fe14aea18c613e6d976117e213fd8fc6e6f088ab178f1",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d68.png": {
+    "sha256": "dbbc61a2b332951f1cc4540ff499912d885bea0c9801b4def203b751f7b69c27",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d68.png": {
+    "sha256": "dbbc61a2b332951f1cc4540ff499912d885bea0c9801b4def203b751f7b69c27",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d69.png": {
+    "sha256": "e736bd4eee0ef2aaf98e26d2d33edfca25dc1c6b4f7db58bef1eb2693db4294b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d69.png": {
+    "sha256": "e736bd4eee0ef2aaf98e26d2d33edfca25dc1c6b4f7db58bef1eb2693db4294b",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d70.png": {
+    "sha256": "315784ffc91ed6c24d0d54002f0dd78d0f522f2ad44240523ccbb9f00756c465",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/primary-d70.png": {
+    "sha256": "315784ffc91ed6c24d0d54002f0dd78d0f522f2ad44240523ccbb9f00756c465",
+    "kind": "primary_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d71.png": {
+    "sha256": "36ef292e8118aba19309c70fc622c59729da6d52513325b573ba2467e5933076",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d72.png": {
+    "sha256": "957a0c477ede22908ee05f1f2576c4b8592bf1e1e8f0ef8a373050178a06e732",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d73.png": {
+    "sha256": "c6e28b96cb460d41a56ced108bd996cfb15da59a61fb2e875bb209e6c4261502",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d74.png": {
+    "sha256": "a4ba83123e59a82d27edb81e94884accb19caaf6cbf6dc451c214fe13c34d3f5",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d75.png": {
+    "sha256": "714d2f4e405017a5659462564deced1db14f90a8c0df0b51ddf5da629b71b4c1",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d76.png": {
+    "sha256": "7bca66338ec45c98ef86f15331db09ade6d4858def00f3ca42f2e7e4794ccf58",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d77.png": {
+    "sha256": "6c29aa8a24c181ad26d2b35cad1a404091ade70b7a691e2909b2bba5b0462d13",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d78.png": {
+    "sha256": "f7d2433582548e914182b60d29b71da6b79d4882482467971da66fe04648d37d",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d79.png": {
+    "sha256": "4e1513185e180020675325c60295df23544fe6eb48660cac0235d206034a73c7",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d80.png": {
+    "sha256": "34ded2cd503dc0a8d0edd8a2b4ecd05d6dc2349480cbda51f99b88bce9b7d3bb",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d81.png": {
+    "sha256": "3c54ff93bd4396b8a550fe743dad69c6fcfdb5073530c5171850dc3819d8eb46",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d82.png": {
+    "sha256": "478dfe4c827e04cd9b44bdaf304a1edc232cb87cd65098d9c77010c9acaa387a",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d83.png": {
+    "sha256": "c158dacec5a14e3463862ad0e2fc16487363ce6a4709c9efdcd2ddd81b935378",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d84.png": {
+    "sha256": "8f73e107ee453cadbf998023d4c7c7aea5829f9cb6caa79357b02b94199c31ff",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d85.png": {
+    "sha256": "637674d3b629c58f51b5798f874a6a86913c1b14c2c3f0ccd1cf197a40936628",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d86.png": {
+    "sha256": "cefd07f87a8d3d5297a3a1d7e698ddf3d88fd221529a9c7191a71e8940da9f54",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d87.png": {
+    "sha256": "c9b39e8443e20a8c2847458ac31c7dcfcb73009c4eb40576afdc9be7ded31ad3",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d88.png": {
+    "sha256": "38e42a1e0cf49f0f2057675c12638f3c1eac9c7f512725582146085540e9c501",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d89.png": {
+    "sha256": "3991a2477e94518a205cc4269a88a652bada37d6275b9bf16141da6475cba454",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d90.png": {
+    "sha256": "f52eb9fefb50e23ebe97a875c211e1e234b378170dba07b8d8b03a0cae28326c",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d91.png": {
+    "sha256": "bb16bc4155837107d0b99ee84c96bd6d35da8472fbbe72886cb65307bd785f7b",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d92.png": {
+    "sha256": "3442bc7512b4614de0a43d6d10707c00fd4b3d42720aaa4cbe2deabd11c0d5b4",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d93.png": {
+    "sha256": "1329d9e56a522b77a2c43662dc32f9830491e0958831af1f722008fc385f5093",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d94.png": {
+    "sha256": "6a51a09c64d85d1a584652775e5d019ce245ac50f9a39aeb81f53159b54b4da0",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d95.png": {
+    "sha256": "127e64171f9210cdcfc28bdb7ed7c345216e8268b744fd8879352d19787abfa6",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d96.png": {
+    "sha256": "68e02988732fc513edab31afd4f509974554784c89b83c5c8545a85aaf63337f",
+    "kind": "effective_detector_mask"
+  },
+  "detector-masks/real-117719/effective-d97.png": {
+    "sha256": "320482d989b7b6fbab3000a75b02992bc5be2e092fd1e2f46b46843b6b0d1629",
+    "kind": "effective_detector_mask"
+  }
+}

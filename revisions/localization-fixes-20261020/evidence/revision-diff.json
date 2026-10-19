@@ -1,0 +1,4265 @@
+{
+  "revision": "2026-10-20-neck-axis-and-small-object-localization",
+  "baseline_directory": "main-selector-hardcases-v2-detector-fixes-20261020",
+  "current_directory": "main-selector-hardcases-v2-localization-fixes-20261020",
+  "annotations_and_primary_caches_unchanged": true,
+  "scorer_unchanged": true,
+  "changed_rows": [
+    {
+      "case_id": "hc-002",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          494,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            481,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          498,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            481,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-002",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          274,
+          0,
+          491,
+          1024
+        ],
+        "label_boxes": [
+          [
+            284,
+            494,
+            480,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          274,
+          0,
+          494,
+          1024
+        ],
+        "label_boxes": [
+          [
+            284,
+            494,
+            480,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-009",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          430,
+          380,
+          507,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            504,
+            600
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          430,
+          380,
+          509,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            504,
+            600
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "controlled",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          259,
+          358,
+          339,
+          660
+        ],
+        "label_boxes": [
+          [
+            263,
+            482,
+            332,
+            589
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          358,
+          339,
+          660
+        ],
+        "label_boxes": [
+          [
+            263,
+            482,
+            332,
+            589
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          359,
+          338,
+          658
+        ],
+        "label_boxes": [
+          [
+            262,
+            481,
+            332,
+            589
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          359,
+          339,
+          658
+        ],
+        "label_boxes": [
+          [
+            262,
+            481,
+            332,
+            589
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-011",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_capture_reticle",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          430,
+          380,
+          507,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            504,
+            601
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_capture_reticle",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          430,
+          380,
+          509,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            504,
+            601
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "controlled",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          259,
+          358,
+          339,
+          660
+        ],
+        "label_boxes": [
+          [
+            263,
+            482,
+            332,
+            589
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          358,
+          339,
+          660
+        ],
+        "label_boxes": [
+          [
+            263,
+            482,
+            332,
+            589
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          359,
+          338,
+          658
+        ],
+        "label_boxes": [
+          [
+            263,
+            481,
+            332,
+            590
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          359,
+          339,
+          658
+        ],
+        "label_boxes": [
+          [
+            263,
+            481,
+            332,
+            590
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          386,
+          0,
+          610,
+          1024
+        ],
+        "label_boxes": [
+          [
+            401,
+            494,
+            596,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          386,
+          0,
+          612,
+          1024
+        ],
+        "label_boxes": [
+          [
+            401,
+            494,
+            596,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          390,
+          0,
+          607,
+          1024
+        ],
+        "label_boxes": [
+          [
+            399,
+            494,
+            596,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          390,
+          0,
+          609,
+          1024
+        ],
+        "label_boxes": [
+          [
+            399,
+            494,
+            596,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          494,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            481,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          498,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            481,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          275,
+          0,
+          491,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            480,
+            864
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          275,
+          0,
+          493,
+          1024
+        ],
+        "label_boxes": [
+          [
+            285,
+            494,
+            480,
+            864
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          188,
+          0,
+          602,
+          1024
+        ],
+        "label_boxes": [
+          [
+            218,
+            432,
+            549,
+            899
+          ],
+          [
+            189,
+            0,
+            571,
+            1024
+          ],
+          [
+            189,
+            0,
+            571,
+            1024
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          124,
+          0,
+          605,
+          1024
+        ],
+        "label_boxes": [
+          [
+            218,
+            432,
+            549,
+            899
+          ],
+          [
+            174,
+            0,
+            572,
+            1024
+          ],
+          [
+            174,
+            0,
+            572,
+            1024
+          ],
+          [
+            174,
+            0,
+            572,
+            1024
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d5",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          191,
+          0,
+          602,
+          1024
+        ],
+        "label_boxes": [
+          [
+            218,
+            439,
+            547,
+            898
+          ],
+          [
+            215,
+            793,
+            601,
+            880
+          ],
+          [
+            192,
+            0,
+            569,
+            1024
+          ],
+          [
+            192,
+            0,
+            569,
+            1024
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d5",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          123,
+          0,
+          605,
+          1024
+        ],
+        "label_boxes": [
+          [
+            218,
+            439,
+            547,
+            898
+          ],
+          [
+            177,
+            0,
+            570,
+            1024
+          ],
+          [
+            215,
+            793,
+            601,
+            880
+          ],
+          [
+            177,
+            0,
+            570,
+            1024
+          ],
+          [
+            177,
+            0,
+            570,
+            1024
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-025",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          430,
+          380,
+          507,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            505,
+            601
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          380,
+          337,
+          665
+        ],
+        "label_boxes": [
+          [
+            263,
+            497,
+            332,
+            600
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-026",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          354,
+          392,
+          413,
+          626
+        ],
+        "label_boxes": [
+          [
+            356,
+            487,
+            411,
+            571
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          354,
+          392,
+          414,
+          626
+        ],
+        "label_boxes": [
+          [
+            356,
+            487,
+            411,
+            571
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-027",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          423,
+          347,
+          515,
+          705
+        ],
+        "label_boxes": [
+          [
+            431,
+            495,
+            510,
+            624
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          422,
+          347,
+          518,
+          705
+        ],
+        "label_boxes": [
+          [
+            431,
+            495,
+            510,
+            624
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-028",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          338,
+          425,
+          391,
+          613
+        ],
+        "label_boxes": [
+          [
+            342,
+            503,
+            387,
+            569
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          337,
+          425,
+          391,
+          613
+        ],
+        "label_boxes": [
+          [
+            342,
+            503,
+            387,
+            569
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          494,
+          1024
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          0,
+          498,
+          1024
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d6",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          274,
+          0,
+          492,
+          1024
+        ],
+        "label_boxes": [
+          [
+            292,
+            504,
+            474,
+            860
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d6",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          274,
+          0,
+          494,
+          1024
+        ],
+        "label_boxes": [
+          [
+            292,
+            504,
+            474,
+            860
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          404,
+          325,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            515,
+            322,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          404,
+          327,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            515,
+            322,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-034",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          261,
+          355,
+          330,
+          672
+        ],
+        "label_boxes": [
+          [
+            266,
+            487,
+            322,
+            598
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          355,
+          330,
+          672
+        ],
+        "label_boxes": [
+          [
+            266,
+            487,
+            322,
+            598
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          404,
+          503,
+          669
+        ],
+        "label_boxes": [
+          [
+            445,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          403,
+          327,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          403,
+          504,
+          668
+        ],
+        "label_boxes": [
+          [
+            445,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            323,
+            583
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-040",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          261,
+          355,
+          330,
+          672
+        ],
+        "label_boxes": [
+          [
+            266,
+            487,
+            322,
+            598
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          355,
+          330,
+          672
+        ],
+        "label_boxes": [
+          [
+            266,
+            487,
+            322,
+            598
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          404,
+          503,
+          668
+        ],
+        "label_boxes": [
+          [
+            446,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-042",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-043",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          353,
+          403,
+          415,
+          661
+        ],
+        "label_boxes": [
+          [
+            356,
+            513,
+            411,
+            609
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          352,
+          403,
+          415,
+          661
+        ],
+        "label_boxes": [
+          [
+            356,
+            513,
+            411,
+            609
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-046",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          353,
+          403,
+          415,
+          661
+        ],
+        "label_boxes": [
+          [
+            356,
+            513,
+            412,
+            609
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          352,
+          403,
+          415,
+          661
+        ],
+        "label_boxes": [
+          [
+            356,
+            513,
+            412,
+            609
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          330,
+          683
+        ],
+        "label_boxes": [
+          [
+            265,
+            520,
+            323,
+            619
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          405,
+          330,
+          683
+        ],
+        "label_boxes": [
+          [
+            265,
+            520,
+            323,
+            619
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          262,
+          405,
+          327,
+          682
+        ],
+        "label_boxes": [
+          [
+            264,
+            519,
+            324,
+            619
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          262,
+          405,
+          328,
+          682
+        ],
+        "label_boxes": [
+          [
+            264,
+            519,
+            324,
+            619
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          330,
+          683
+        ],
+        "label_boxes": [
+          [
+            265,
+            520,
+            323,
+            619
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          258,
+          405,
+          330,
+          683
+        ],
+        "label_boxes": [
+          [
+            265,
+            520,
+            323,
+            619
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          262,
+          403,
+          327,
+          682
+        ],
+        "label_boxes": [
+          [
+            264,
+            518,
+            323,
+            619
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          262,
+          403,
+          328,
+          682
+        ],
+        "label_boxes": [
+          [
+            264,
+            518,
+            323,
+            619
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "only_credible_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          331,
+          405,
+          395,
+          670
+        ],
+        "label_boxes": [
+          [
+            335,
+            515,
+            364,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "only_credible_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          330,
+          405,
+          395,
+          670
+        ],
+        "label_boxes": [
+          [
+            335,
+            515,
+            364,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "only_credible_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          332,
+          403,
+          394,
+          668
+        ],
+        "label_boxes": [
+          [
+            333,
+            515,
+            391,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "only_credible_subject",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          331,
+          403,
+          394,
+          668
+        ],
+        "label_boxes": [
+          [
+            333,
+            515,
+            391,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-053",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          301,
+          404,
+          377,
+          720
+        ],
+        "label_boxes": [
+          [
+            305,
+            534,
+            371,
+            646
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          300,
+          404,
+          377,
+          720
+        ],
+        "label_boxes": [
+          [
+            305,
+            534,
+            371,
+            646
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-054",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          301,
+          404,
+          377,
+          720
+        ],
+        "label_boxes": [
+          [
+            305,
+            534,
+            371,
+            646
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          300,
+          404,
+          377,
+          720
+        ],
+        "label_boxes": [
+          [
+            305,
+            534,
+            371,
+            646
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          443,
+          403,
+          503,
+          668
+        ],
+        "label_boxes": [
+          [
+            445,
+            513,
+            502,
+            609
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            323,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "controlled",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          440,
+          405,
+          505,
+          670
+        ],
+        "label_boxes": [
+          [
+            447,
+            515,
+            501,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          439,
+          405,
+          508,
+          670
+        ],
+        "label_boxes": [
+          [
+            447,
+            515,
+            501,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          442,
+          404,
+          503,
+          668
+        ],
+        "label_boxes": [
+          [
+            446,
+            513,
+            502,
+            609
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          442,
+          404,
+          505,
+          668
+        ],
+        "label_boxes": [
+          [
+            446,
+            513,
+            502,
+            609
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "controlled",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          325,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            515,
+            322,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            515,
+            322,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          191,
+          403,
+          287,
+          784
+        ],
+        "label_boxes": [
+          [
+            196,
+            560,
+            276,
+            696
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          187,
+          403,
+          287,
+          784
+        ],
+        "label_boxes": [
+          [
+            196,
+            560,
+            276,
+            696
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          192,
+          402,
+          284,
+          783
+        ],
+        "label_boxes": [
+          [
+            195,
+            560,
+            275,
+            695
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          189,
+          402,
+          285,
+          783
+        ],
+        "label_boxes": [
+          [
+            195,
+            560,
+            275,
+            695
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          353,
+          405,
+          414,
+          664
+        ],
+        "label_boxes": [
+          [
+            355,
+            513,
+            412,
+            605
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          353,
+          405,
+          415,
+          664
+        ],
+        "label_boxes": [
+          [
+            355,
+            513,
+            412,
+            605
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          354,
+          326,
+          428,
+          641
+        ],
+        "label_boxes": [
+          [
+            359,
+            456,
+            424,
+            568
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          354,
+          326,
+          429,
+          641
+        ],
+        "label_boxes": [
+          [
+            359,
+            456,
+            424,
+            568
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "controlled",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          339,
+          406,
+          393,
+          625
+        ],
+        "label_boxes": [
+          [
+            343,
+            496,
+            389,
+            574
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          339,
+          406,
+          394,
+          625
+        ],
+        "label_boxes": [
+          [
+            343,
+            496,
+            389,
+            574
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "live",
+      "cohort": "interaction",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          340,
+          404,
+          392,
+          623
+        ],
+        "label_boxes": [
+          [
+            342,
+            495,
+            391,
+            575
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "confident",
+        "reason": "explicit_tap",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          340,
+          404,
+          393,
+          623
+        ],
+        "label_boxes": [
+          [
+            342,
+            495,
+            391,
+            575
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-139",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          347,
+          265,
+          435,
+          643
+        ],
+        "label_boxes": [
+          [
+            351,
+            421,
+            432,
+            556
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          347,
+          265,
+          436,
+          643
+        ],
+        "label_boxes": [
+          [
+            351,
+            421,
+            432,
+            556
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-140",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          349,
+          204,
+          432,
+          559
+        ],
+        "label_boxes": [
+          [
+            353,
+            348,
+            428,
+            475
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          349,
+          204,
+          433,
+          559
+        ],
+        "label_boxes": [
+          [
+            353,
+            348,
+            428,
+            475
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-141",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          270,
+          431,
+          321,
+          667
+        ],
+        "label_boxes": [
+          [
+            273,
+            529,
+            316,
+            612
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "unique_visible_hand_contact",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          269,
+          431,
+          321,
+          667
+        ],
+        "label_boxes": [
+          [
+            273,
+            529,
+            316,
+            612
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          348,
+          330,
+          391,
+          512
+        ],
+        "label_boxes": [
+          [
+            349,
+            405,
+            389,
+            468
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          348,
+          330,
+          393,
+          512
+        ],
+        "label_boxes": [
+          [
+            349,
+            405,
+            389,
+            468
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-144",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          359,
+          312,
+          410,
+          527
+        ],
+        "label_boxes": [
+          [
+            360,
+            399,
+            407,
+            478
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          358,
+          312,
+          410,
+          527
+        ],
+        "label_boxes": [
+          [
+            360,
+            399,
+            407,
+            478
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "controlled",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          405,
+          328,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          405,
+          329,
+          670
+        ],
+        "label_boxes": [
+          [
+            267,
+            515,
+            321,
+            608
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          265,
+          403,
+          327,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          403,
+          327,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-151",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          130,
+          403,
+          226,
+          784
+        ],
+        "label_boxes": [
+          [
+            134,
+            560,
+            214,
+            696
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          126,
+          403,
+          226,
+          784
+        ],
+        "label_boxes": [
+          [
+            134,
+            560,
+            214,
+            696
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          130,
+          403,
+          226,
+          784
+        ],
+        "label_boxes": [
+          [
+            134,
+            560,
+            214,
+            696
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          126,
+          403,
+          226,
+          784
+        ],
+        "label_boxes": [
+          [
+            134,
+            560,
+            214,
+            696
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "controlled",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          190,
+          402,
+          282,
+          776
+        ],
+        "label_boxes": [
+          [
+            194,
+            557,
+            272,
+            690
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          185,
+          402,
+          283,
+          776
+        ],
+        "label_boxes": [
+          [
+            194,
+            557,
+            272,
+            690
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          190,
+          402,
+          280,
+          776
+        ],
+        "label_boxes": [
+          [
+            193,
+            557,
+            272,
+            690
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 1,
+        "selection_mode": "confident",
+        "reason": "foreground_scale_and_lower_base",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": 1.0,
+        "crop_box": [
+          188,
+          402,
+          280,
+          776
+        ],
+        "label_boxes": [
+          [
+            193,
+            557,
+            272,
+            690
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "real-180751",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 1487557,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          298,
+          106,
+          358,
+          426
+        ],
+        "label_boxes": [
+          [
+            330,
+            264,
+            355,
+            370
+          ],
+          [
+            298,
+            106,
+            358,
+            426
+          ],
+          [
+            298,
+            106,
+            358,
+            426
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d0",
+        "matched_instance_id": 1487557,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          296,
+          106,
+          358,
+          426
+        ],
+        "label_boxes": [
+          [
+            330,
+            264,
+            355,
+            370
+          ],
+          [
+            296,
+            106,
+            358,
+            426
+          ],
+          [
+            296,
+            106,
+            358,
+            426
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "real-25394",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d16",
+        "matched_instance_id": 1491202,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          213,
+          371,
+          257,
+          431
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d16",
+        "matched_instance_id": 1491202,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          213,
+          372,
+          257,
+          432
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-22705",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 81398,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          80,
+          208,
+          106,
+          283
+        ],
+        "label_boxes": [
+          [
+            80,
+            252,
+            104,
+            277
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 81398,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          79,
+          208,
+          106,
+          283
+        ],
+        "label_boxes": [
+          [
+            80,
+            252,
+            104,
+            277
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "real-166918",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d4",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          263,
+          247,
+          275,
+          278
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d23",
+        "matched_instance_id": 1865335,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          216,
+          307,
+          224,
+          328
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-117719",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          306,
+          132,
+          326,
+          173
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d96",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_center_contains",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          310,
+          192,
+          330,
+          216
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-397354",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d6",
+        "matched_instance_id": 1482897,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          231,
+          238,
+          246,
+          272
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 82049,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          293,
+          277,
+          317,
+          367
+        ],
+        "label_boxes": []
+      }
+    }
+  ],
+  "joint_failures_fixed": [
+    {
+      "case_id": "hc-025",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          430,
+          380,
+          507,
+          665
+        ],
+        "label_boxes": [
+          [
+            435,
+            497,
+            505,
+            601
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          260,
+          380,
+          337,
+          665
+        ],
+        "label_boxes": [
+          [
+            263,
+            497,
+            332,
+            600
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          404,
+          503,
+          669
+        ],
+        "label_boxes": [
+          [
+            445,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          263,
+          403,
+          327,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          403,
+          504,
+          668
+        ],
+        "label_boxes": [
+          [
+            445,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            323,
+            583
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          442,
+          404,
+          503,
+          668
+        ],
+        "label_boxes": [
+          [
+            446,
+            514,
+            502,
+            607
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            322,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d0",
+        "matched_instance_id": 2,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": 0.0,
+        "crop_box": [
+          443,
+          403,
+          503,
+          668
+        ],
+        "label_boxes": [
+          [
+            445,
+            513,
+            502,
+            609
+          ]
+        ]
+      },
+      "after": {
+        "selected_id": "d1",
+        "matched_instance_id": 1,
+        "selection_mode": "fallback",
+        "reason": "fallback_leftmost",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": 1.0,
+        "crop_box": [
+          264,
+          403,
+          326,
+          668
+        ],
+        "label_boxes": [
+          [
+            265,
+            514,
+            323,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "case_id": "real-166918",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d4",
+        "matched_instance_id": null,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          263,
+          247,
+          275,
+          278
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d23",
+        "matched_instance_id": 1865335,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          216,
+          307,
+          224,
+          328
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-397354",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d6",
+        "matched_instance_id": 1482897,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": false,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          231,
+          238,
+          246,
+          272
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 82049,
+        "selection_mode": "fallback",
+        "reason": "fallback_nearest_center",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": true,
+        "label_retention": null,
+        "crop_box": [
+          293,
+          277,
+          317,
+          367
+        ],
+        "label_boxes": []
+      }
+    }
+  ],
+  "joint_regressions": [],
+  "scene_v1_shared_input_changes": [
+    {
+      "case_id": "real-25394",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d16",
+        "matched_instance_id": 1491202,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          215,
+          374,
+          255,
+          430
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d16",
+        "matched_instance_id": 1491202,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          217,
+          374,
+          255,
+          428
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-22705",
+      "mode": "live",
+      "cohort": "passive_intent",
+      "before": {
+        "selected_id": "d2",
+        "matched_instance_id": 81398,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          81,
+          211,
+          103,
+          280
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d2",
+        "matched_instance_id": 81398,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          82,
+          212,
+          104,
+          278
+        ],
+        "label_boxes": []
+      }
+    },
+    {
+      "case_id": "real-397354",
+      "mode": "live",
+      "cohort": "policy_targets",
+      "before": {
+        "selected_id": "d7",
+        "matched_instance_id": 82049,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          295,
+          280,
+          315,
+          364
+        ],
+        "label_boxes": []
+      },
+      "after": {
+        "selected_id": "d7",
+        "matched_instance_id": 82049,
+        "selection_mode": "legacy",
+        "reason": "existing_scene_v1_rank",
+        "crop_scope": "subject_region",
+        "correct": true,
+        "expected_mode_match": null,
+        "label_retention": null,
+        "crop_box": [
+          296,
+          281,
+          315,
+          362
+        ],
+        "label_boxes": []
+      }
+    }
+  ],
+  "before_joint_failures": 8,
+  "after_joint_failures": 1
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "case_id": "hc-028",
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "selection_mode": "fallback",
+    "added": 0
+  },
+  {
+    "case_id": "hc-097",
+    "correct": true,
+    "owner": 3,
+    "selected": "d0",
+    "selection_mode": "fallback",
+    "added": 0
+  },
+  {
+    "case_id": "hc-143",
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "selection_mode": "fallback",
+    "added": 0
+  },
+  {
+    "case_id": "real-25394",
+    "correct": true,
+    "owner": 1491202,
+    "selected": "d16",
+    "selection_mode": "fallback",
+    "added": 0
+  },
+  {
+    "case_id": "real-22705",
+    "correct": true,
+    "owner": 81398,
+    "selected": "d2",
+    "selection_mode": "fallback",
+    "added": 0
+  },
+  {
+    "case_id": "real-166918",
+    "correct": true,
+    "owner": 1865335,
+    "selected": "d23",
+    "selection_mode": "fallback",
+    "added": 12
+  },
+  {
+    "case_id": "real-117719",
+    "correct": false,
+    "owner": null,
+    "selected": "d96",
+    "selection_mode": "fallback",
+    "added": 27
+  },
+  {
+    "case_id": "real-397354",
+    "correct": true,
+    "owner": 82049,
+    "selected": "d7",
+    "selection_mode": "fallback",
+    "added": 0
+  }
+]

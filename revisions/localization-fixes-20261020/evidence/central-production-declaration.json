@@ -1,0 +1,85 @@
+{
+  "jobs": [
+    {
+      "case_id": "hc-028",
+      "roi": [
+        304,
+        432,
+        464,
+        592
+      ]
+    },
+    {
+      "case_id": "hc-097",
+      "roi": [
+        304,
+        432,
+        464,
+        592
+      ]
+    },
+    {
+      "case_id": "hc-143",
+      "roi": [
+        304,
+        432,
+        464,
+        592
+      ]
+    },
+    {
+      "case_id": "real-25394",
+      "roi": [
+        160,
+        240,
+        320,
+        400
+      ]
+    },
+    {
+      "case_id": "real-22705",
+      "roi": [
+        161,
+        240,
+        321,
+        400
+      ]
+    },
+    {
+      "case_id": "real-166918",
+      "roi": [
+        160,
+        240,
+        320,
+        400
+      ]
+    },
+    {
+      "case_id": "real-117719",
+      "roi": [
+        240,
+        132,
+        400,
+        292
+      ]
+    },
+    {
+      "case_id": "real-397354",
+      "roi": [
+        240,
+        160,
+        400,
+        320
+      ]
+    }
+  ],
+  "trigger": "semantic fallback; every eligible bottle height <=20% photo long side",
+  "size": 160,
+  "nouns": [
+    "wine bottle",
+    "bottle",
+    "bottle held in hand"
+  ],
+  "reject": "any returned tight mask within 2 pixels of an interior ROI edge; truncated geometry is not a new candidate",
+  "ground_truth_supplied": false
+}

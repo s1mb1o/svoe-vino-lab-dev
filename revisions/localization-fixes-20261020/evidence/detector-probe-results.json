@@ -1,0 +1,222 @@
+[
+  {
+    "case_id": "hc-025",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 4
+  },
+  {
+    "case_id": "hc-035",
+    "profile": "lossless_generic",
+    "correct": true,
+    "selected": "d1",
+    "matched": 1,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 6
+  },
+  {
+    "case_id": "hc-039",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-041",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-056",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 4
+  },
+  {
+    "case_id": "hc-145",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-146",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "real-117719",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d37",
+    "matched": null,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 81
+  },
+  {
+    "case_id": "real-166918",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d4",
+    "matched": 1485829,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 14
+  },
+  {
+    "case_id": "real-397354",
+    "profile": "lossless_generic",
+    "correct": false,
+    "selected": "d5",
+    "matched": null,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 26
+  },
+  {
+    "case_id": "real-520871",
+    "profile": "lossless_generic",
+    "correct": true,
+    "selected": "d0",
+    "matched": 1864895,
+    "reason": "only_credible_subject",
+    "mode": "confident",
+    "count": 1
+  },
+  {
+    "case_id": "hc-025",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 4
+  },
+  {
+    "case_id": "hc-035",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 6
+  },
+  {
+    "case_id": "hc-039",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-041",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-056",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 4
+  },
+  {
+    "case_id": "hc-145",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "hc-146",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d0",
+    "matched": 2,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 5
+  },
+  {
+    "case_id": "real-117719",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d8",
+    "matched": null,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 64
+  },
+  {
+    "case_id": "real-166918",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d4",
+    "matched": null,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 13
+  },
+  {
+    "case_id": "real-397354",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": "d6",
+    "matched": 1482897,
+    "reason": "fallback_nearest_center",
+    "mode": "fallback",
+    "count": 21
+  },
+  {
+    "case_id": "real-520871",
+    "profile": "lossless_wine",
+    "correct": false,
+    "selected": null,
+    "matched": null,
+    "reason": "fallback_original_frame",
+    "mode": "fallback",
+    "count": 0
+  }
+]

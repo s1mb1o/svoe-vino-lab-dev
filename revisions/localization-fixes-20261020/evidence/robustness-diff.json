@@ -1,0 +1,8 @@
+{
+  "probe_rows": 1424,
+  "crops": 1424,
+  "selected_label_trials": 1424,
+  "selected_label_min": 1.0,
+  "new_intent_or_label_regressions": [],
+  "scope": "89 native extension scenes, 8 perturbations, controlled/live. Real-photo recovery is checked separately."
+}

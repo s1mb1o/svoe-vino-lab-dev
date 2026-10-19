@@ -1,0 +1,24 @@
+{
+  "interpretation": "Independent execution of the suggested negative occlusion gate on an unchanged real positive control. Absence of front pixels does not prove absence of a grip; this rule was rejected.",
+  "source_sha256": "9f6e341c2cdf880207eee5fe3912a803df685a8d1c0f2c22fcf294091477997d",
+  "before": {
+    "selected_id": "d2",
+    "assigned_gt": 78994,
+    "correct": true,
+    "reason": "unique_visible_hand_contact"
+  },
+  "hypothetical_gate": {
+    "selected_id": "d10",
+    "assigned_gt": null,
+    "correct": false,
+    "reason": "unique_visible_hand_contact"
+  },
+  "rejected_contacts": [
+    {
+      "candidate": "d2",
+      "hand": "d8",
+      "front_pixels": 0,
+      "original_support": 3.744578861249402
+    }
+  ]
+}

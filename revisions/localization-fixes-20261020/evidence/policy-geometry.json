@@ -1,0 +1,406 @@
+{
+  "hc-025": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 85.77441343431035,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-026": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 3.0,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-027": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 86.14522621712709,
+    "runner_distance_margin_px": 0.1681562910332559,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-028": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 20.71834935510066,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-035": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-039": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-041": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-048": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 94.57801012920498,
+    "runner_distance_margin_px": 6.946617424901319,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-056": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-057": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 25.5,
+    "runner_distance_margin_px": 124.68072446222916,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-058": {
+    "winner_instance_id": 1,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      1
+    ],
+    "candidate_count": 2,
+    "distance_px": 25.5,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-064": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 23.5,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-065": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 29.47032405658275,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-094": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 84.2748479678249,
+    "runner_distance_margin_px": 1.2485406460507846,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-095": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 21.5,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-096": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 74.94664769020693,
+    "runner_distance_margin_px": 21.65821761170217,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-097": {
+    "winner_instance_id": 3,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 3,
+    "distance_px": 44.432533126077786,
+    "runner_distance_margin_px": 17.08575683715185,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-104": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 71.33372274037013,
+    "runner_distance_margin_px": 41.41821737597553,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-108": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 71.33372274037013,
+    "runner_distance_margin_px": 41.41821737597553,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-110": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 71.33372274037013,
+    "runner_distance_margin_px": 41.41821737597553,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-117": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 89.67719888578144,
+    "runner_distance_margin_px": 9.827826112959201,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-125": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 81.88559091806079,
+    "runner_distance_margin_px": 19.69319623752598,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-126": {
+    "winner_instance_id": 1,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 33.24154027718932,
+    "runner_distance_margin_px": 138.88123567067876,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-127": {
+    "winner_instance_id": 1,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      1
+    ],
+    "candidate_count": 2,
+    "distance_px": 31.81980515339464,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-133": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 31.56342820417326,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-134": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 3,
+    "distance_px": 50.44799302251776,
+    "runner_distance_margin_px": 87.7050018780634,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-139": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 57.4913036902104,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-140": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 131.18688958886096,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-142": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 92.0,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-143": {
+    "winner_instance_id": 2,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 3,
+    "distance_px": 92.14797881668376,
+    "runner_distance_margin_px": 9.593114159556677,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-144": {
+    "winner_instance_id": 2,
+    "reason": "fallback_center_contains",
+    "center_contains_ids": [
+      2
+    ],
+    "candidate_count": 3,
+    "distance_px": 92.0,
+    "runner_distance_margin_px": null,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-145": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "hc-146": {
+    "winner_instance_id": 1,
+    "reason": "fallback_leftmost",
+    "center_contains_ids": [],
+    "candidate_count": 2,
+    "distance_px": 92.10048859805251,
+    "runner_distance_margin_px": 0.0,
+    "exact_distance_tie": true,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "real-166426": {
+    "winner_instance_id": 83858,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 3,
+    "distance_px": 202.4753071364506,
+    "runner_distance_margin_px": 17.529238271138667,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "real-116208": {
+    "winner_instance_id": 94456,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 4,
+    "distance_px": 183.00341526867743,
+    "runner_distance_margin_px": 8.40517910472056,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "real-166918": {
+    "winner_instance_id": 1865335,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 5,
+    "distance_px": 21.360009363293827,
+    "runner_distance_margin_px": 10.459795790100813,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "real-117719": {
+    "winner_instance_id": 1492244,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 13,
+    "distance_px": 103.1746092796091,
+    "runner_distance_margin_px": 1.1805535059474153,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  },
+  "real-397354": {
+    "winner_instance_id": 82049,
+    "reason": "fallback_nearest_center",
+    "center_contains_ids": [],
+    "candidate_count": 8,
+    "distance_px": 82.11729415902596,
+    "runner_distance_margin_px": 0.9384100400234843,
+    "exact_distance_tie": false,
+    "source": "unchanged visible GT geometry; diagnostic, not a new intent annotation"
+  }
+}

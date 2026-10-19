@@ -1,0 +1,989 @@
+{
+  "live": {
+    "passive_intent": {
+      "scene-v1": {
+        "cases": 112,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 98,
+        "decision_trials": 112,
+        "crops_returned": 112,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.8208699756868331,
+        "distractor_retention_mean": 0.10091493370907165,
+        "label_retention_mean": 0.86176359712036,
+        "foreign_label_retention_mean": 0.11745799911086177,
+        "representation_retention_mean": 0.0,
+        "price_tag_retention_mean": 1.8339807285305047e-06,
+        "label_cases": 102,
+        "label_crops_ge98": 70,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 112,
+            "decision_matches": 98,
+            "decision_trials": 112
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 112,
+            "decision_matches": 98,
+            "decision_trials": 112
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 112,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 112,
+        "decision_trials": 112,
+        "crops_returned": 112,
+        "fallback_count": 12,
+        "full_frame_context_count": 3,
+        "target_coverage_mean": 0.9932715728223462,
+        "distractor_retention_mean": 0.14947707877276176,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.14083079026394626,
+        "representation_retention_mean": 0.019300622680909374,
+        "price_tag_retention_mean": 0.17951611559123867,
+        "label_cases": 102,
+        "label_crops_ge98": 102,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "confident": {
+            "cases": 100,
+            "decision_matches": 100,
+            "decision_trials": 100
+          },
+          "fallback": {
+            "cases": 12,
+            "decision_matches": 12,
+            "decision_trials": 12
+          }
+        },
+        "decisions_by_crop_scope": {
+          "context_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          },
+          "subject_region": {
+            "cases": 110,
+            "decision_matches": 110,
+            "decision_trials": 110
+          }
+        }
+      }
+    },
+    "interaction": {
+      "scene-v1": {
+        "cases": 14,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 6,
+        "decision_trials": 14,
+        "crops_returned": 14,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.4064880182362319,
+        "distractor_retention_mean": 0.5064094511985975,
+        "label_retention_mean": 0.42857142857142855,
+        "foreign_label_retention_mean": 0.5375298121973754,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 14,
+        "label_crops_ge98": 6,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 14,
+            "decision_matches": 6,
+            "decision_trials": 14
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 14,
+            "decision_matches": 6,
+            "decision_trials": 14
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 14,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 14,
+        "decision_trials": 14,
+        "crops_returned": 14,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.989992088732685,
+        "distractor_retention_mean": 0.0,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.0,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 14,
+        "label_crops_ge98": 14,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "confident": {
+            "cases": 14,
+            "decision_matches": 14,
+            "decision_trials": 14
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 14,
+            "decision_matches": 14,
+            "decision_trials": 14
+          }
+        }
+      }
+    },
+    "policy_targets": {
+      "scene-v1": {
+        "cases": 38,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 20,
+        "decision_trials": 38,
+        "crops_returned": 38,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.4930792151495001,
+        "distractor_retention_mean": 0.35984453845416053,
+        "label_retention_mean": 0.5141514983213579,
+        "foreign_label_retention_mean": 0.41624537134204753,
+        "representation_retention_mean": 0.0020379926707052576,
+        "price_tag_retention_mean": 0.0017742309576674901,
+        "label_cases": 33,
+        "label_crops_ge98": 16,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 38,
+            "decision_matches": 20,
+            "decision_trials": 38
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 38,
+            "decision_matches": 20,
+            "decision_trials": 38
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 38,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 37,
+        "decision_trials": 38,
+        "crops_returned": 38,
+        "fallback_count": 38,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.9554872134547449,
+        "distractor_retention_mean": 0.0014594621551928984,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.0,
+        "representation_retention_mean": 0.09053560559951308,
+        "price_tag_retention_mean": 0.24854061773566416,
+        "label_cases": 33,
+        "label_crops_ge98": 33,
+        "expected_mode_matches": 38,
+        "expected_mode_trials": 38,
+        "policy_fallback_matches": 37,
+        "policy_fallback_trials": 38,
+        "decisions_by_selection_mode": {
+          "fallback": {
+            "cases": 38,
+            "decision_matches": 37,
+            "decision_trials": 38
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 38,
+            "decision_matches": 37,
+            "decision_trials": 38
+          }
+        }
+      }
+    },
+    "no_target": {
+      "scene-v1": {
+        "cases": 2,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 2,
+        "decision_trials": 2,
+        "crops_returned": 2,
+        "fallback_count": 0,
+        "full_frame_context_count": 2,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 2,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 2,
+        "decision_trials": 2,
+        "crops_returned": 2,
+        "fallback_count": 2,
+        "full_frame_context_count": 2,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "fallback": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        }
+      }
+    },
+    "rule_conformance": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    }
+  },
+  "controlled": {
+    "passive_intent": {
+      "scene-v1": {
+        "cases": 104,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 88,
+        "decision_trials": 104,
+        "crops_returned": 104,
+        "fallback_count": 0,
+        "full_frame_context_count": 4,
+        "target_coverage_mean": 0.8727165409697938,
+        "distractor_retention_mean": 0.1297492358143541,
+        "label_retention_mean": 0.863642853923849,
+        "foreign_label_retention_mean": 0.09018023676297057,
+        "representation_retention_mean": 0.0,
+        "price_tag_retention_mean": 0.0,
+        "label_cases": 102,
+        "label_crops_ge98": 85,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 104,
+            "decision_matches": 88,
+            "decision_trials": 104
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 4,
+            "decision_matches": 0,
+            "decision_trials": 4
+          },
+          "subject_region": {
+            "cases": 100,
+            "decision_matches": 88,
+            "decision_trials": 100
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 104,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 104,
+        "decision_trials": 104,
+        "crops_returned": 104,
+        "fallback_count": 9,
+        "full_frame_context_count": 9,
+        "target_coverage_mean": 0.9997035793118118,
+        "distractor_retention_mean": 0.1947475890248347,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.13890574143884427,
+        "representation_retention_mean": 0.147822691328562,
+        "price_tag_retention_mean": 0.19035086326433048,
+        "label_cases": 102,
+        "label_crops_ge98": 102,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "confident": {
+            "cases": 95,
+            "decision_matches": 95,
+            "decision_trials": 95
+          },
+          "fallback": {
+            "cases": 9,
+            "decision_matches": 9,
+            "decision_trials": 9
+          }
+        },
+        "decisions_by_crop_scope": {
+          "context_frame": {
+            "cases": 9,
+            "decision_matches": 9,
+            "decision_trials": 9
+          },
+          "subject_region": {
+            "cases": 95,
+            "decision_matches": 95,
+            "decision_trials": 95
+          }
+        }
+      }
+    },
+    "interaction": {
+      "scene-v1": {
+        "cases": 14,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 5,
+        "decision_trials": 14,
+        "crops_returned": 14,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.35714285714285715,
+        "distractor_retention_mean": 0.6090291602325104,
+        "label_retention_mean": 0.35714285714285715,
+        "foreign_label_retention_mean": 0.6089583836259468,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 14,
+        "label_crops_ge98": 5,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 14,
+            "decision_matches": 5,
+            "decision_trials": 14
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 14,
+            "decision_matches": 5,
+            "decision_trials": 14
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 14,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 14,
+        "decision_trials": 14,
+        "crops_returned": 14,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 1.0,
+        "distractor_retention_mean": 0.0,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.0,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 14,
+        "label_crops_ge98": 14,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "confident": {
+            "cases": 14,
+            "decision_matches": 14,
+            "decision_trials": 14
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 14,
+            "decision_matches": 14,
+            "decision_trials": 14
+          }
+        }
+      }
+    },
+    "policy_targets": {
+      "scene-v1": {
+        "cases": 33,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 20,
+        "decision_trials": 33,
+        "crops_returned": 33,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 0.6060606060606061,
+        "distractor_retention_mean": 0.34124052891071144,
+        "label_retention_mean": 0.6060606060606061,
+        "foreign_label_retention_mean": 0.34126258897290157,
+        "representation_retention_mean": 0.0,
+        "price_tag_retention_mean": 0.0,
+        "label_cases": 33,
+        "label_crops_ge98": 20,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 33,
+            "decision_matches": 20,
+            "decision_trials": 33
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 33,
+            "decision_matches": 20,
+            "decision_trials": 33
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 33,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 33,
+        "decision_trials": 33,
+        "crops_returned": 33,
+        "fallback_count": 33,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": 1.0,
+        "distractor_retention_mean": 0.0,
+        "label_retention_mean": 1.0,
+        "foreign_label_retention_mean": 0.0,
+        "representation_retention_mean": 0.11191418137553256,
+        "price_tag_retention_mean": 0.2576153693800753,
+        "label_cases": 33,
+        "label_crops_ge98": 33,
+        "expected_mode_matches": 33,
+        "expected_mode_trials": 33,
+        "policy_fallback_matches": 33,
+        "policy_fallback_trials": 33,
+        "decisions_by_selection_mode": {
+          "fallback": {
+            "cases": 33,
+            "decision_matches": 33,
+            "decision_trials": 33
+          }
+        },
+        "decisions_by_crop_scope": {
+          "subject_region": {
+            "cases": 33,
+            "decision_matches": 33,
+            "decision_trials": 33
+          }
+        }
+      }
+    },
+    "no_target": {
+      "scene-v1": {
+        "cases": 2,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 2,
+        "decision_trials": 2,
+        "crops_returned": 2,
+        "fallback_count": 0,
+        "full_frame_context_count": 2,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 2,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 2,
+        "decision_trials": 2,
+        "crops_returned": 2,
+        "fallback_count": 2,
+        "full_frame_context_count": 2,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "fallback": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          }
+        }
+      }
+    },
+    "rule_conformance": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    }
+  },
+  "fallback": {
+    "passive_intent": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    },
+    "interaction": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "intent_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    },
+    "policy_targets": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "policy_target_match",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    },
+    "no_target": {
+      "scene-v1": {
+        "cases": 0,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      },
+      "semantic-v2": {
+        "cases": 0,
+        "decision_metric": "no_target_correct",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 0,
+        "fallback_count": 0,
+        "full_frame_context_count": 0,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {},
+        "decisions_by_crop_scope": {}
+      }
+    },
+    "rule_conformance": {
+      "scene-v1": {
+        "cases": 50,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 0,
+        "decision_trials": 0,
+        "crops_returned": 50,
+        "fallback_count": 0,
+        "full_frame_context_count": 2,
+        "target_coverage_mean": null,
+        "distractor_retention_mean": null,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": null,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 0,
+        "expected_mode_trials": 0,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "legacy": {
+            "cases": 50,
+            "decision_matches": 0,
+            "decision_trials": 0
+          }
+        },
+        "decisions_by_crop_scope": {
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 0,
+            "decision_trials": 0
+          },
+          "subject_region": {
+            "cases": 48,
+            "decision_matches": 0,
+            "decision_trials": 0
+          }
+        }
+      },
+      "semantic-v2": {
+        "cases": 50,
+        "decision_metric": "conformance_pass",
+        "decision_matches": 50,
+        "decision_trials": 50,
+        "crops_returned": 50,
+        "fallback_count": 33,
+        "full_frame_context_count": 11,
+        "target_coverage_mean": 1.0,
+        "distractor_retention_mean": 0.15,
+        "label_retention_mean": null,
+        "foreign_label_retention_mean": 0.8,
+        "representation_retention_mean": null,
+        "price_tag_retention_mean": null,
+        "label_cases": 0,
+        "label_crops_ge98": 0,
+        "expected_mode_matches": 50,
+        "expected_mode_trials": 50,
+        "policy_fallback_matches": 0,
+        "policy_fallback_trials": 0,
+        "decisions_by_selection_mode": {
+          "confident": {
+            "cases": 17,
+            "decision_matches": 17,
+            "decision_trials": 17
+          },
+          "fallback": {
+            "cases": 33,
+            "decision_matches": 33,
+            "decision_trials": 33
+          }
+        },
+        "decisions_by_crop_scope": {
+          "context_frame": {
+            "cases": 9,
+            "decision_matches": 9,
+            "decision_trials": 9
+          },
+          "original_frame": {
+            "cases": 2,
+            "decision_matches": 2,
+            "decision_trials": 2
+          },
+          "subject_region": {
+            "cases": 39,
+            "decision_matches": 39,
+            "decision_trials": 39
+          }
+        }
+      }
+    }
+  }
+}

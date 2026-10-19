@@ -1,0 +1,36 @@
+{
+  "revision": "2026-10-19-positive-grip-and-panel",
+  "rationale": "Unique contact establishes a contact owner, not a grip. These six rectangle fixtures do not supply positive grip geometry; current policy follows the unchanged geometric fallback. Historical expectations stay archived and are recorded beside the revised policy expectations. No photo GT changes.",
+  "overrides": {
+    "tiny-hand-distractor": {
+      "winner": 3,
+      "reason": "fallback_nearest_center",
+      "mode": "fallback"
+    },
+    "box-around-hand": {
+      "winner": 0,
+      "reason": "fallback_center_contains",
+      "mode": "fallback"
+    },
+    "two-hands-one-subject": {
+      "winner": 0,
+      "reason": "fallback_leftmost",
+      "mode": "fallback"
+    },
+    "weak-wrap-strong-grip": {
+      "winner": 1,
+      "reason": "fallback_nearest_center",
+      "mode": "fallback"
+    },
+    "held-neck-dominant-paper": {
+      "winner": 1,
+      "reason": "fallback_center_contains",
+      "mode": "fallback"
+    },
+    "held-neck-pending-logo": {
+      "winner": 0,
+      "reason": "fallback_nearest_center",
+      "mode": "fallback"
+    }
+  }
+}

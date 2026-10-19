@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "id": "hc-069",
+      "group": "foreground-three",
+      "name": "three_foreground_lying",
+      "operation": "ex_three_foreground_lying",
+      "extension": true,
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "provenance": "new_native_render",
+      "expected_status": "selected",
+      "target_instance_id": 1,
+      "acceptable_instance_ids": [
+        1
+      ],
+      "interaction": null,
+      "controlled_detection_profile": "three_foreground_lying",
+      "target_explanation": "Staged intended subject declared in the scene recipe before rendering and before selector predictions."
+    }
+  ],
+  "annotation_phase": "new lying-foreground control declared before rendering and its first detector request"
+}

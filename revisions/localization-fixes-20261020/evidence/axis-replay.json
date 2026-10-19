@@ -1,0 +1,2954 @@
+[
+  {
+    "id": "hc-001",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-001",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-002",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-002",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-003",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-003",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-004",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-004",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-005",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-005",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-006",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-006",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-007",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-007",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-008",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-008",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-009",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-009",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-010",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-010",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-011",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_capture_reticle",
+    "selected": 2
+  },
+  {
+    "id": "hc-011",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_capture_reticle",
+    "selected": 2
+  },
+  {
+    "id": "hc-012",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-012",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-013",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-013",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-014",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-014",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-015",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-015",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-016",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-016",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-017",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-017",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-018",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-018",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-019",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-019",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-020",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-020",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-021",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-021",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-022",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-022",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-023",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-023",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-024",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-024",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-025",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-025",
+    "mode": "live",
+    "before": false,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-026",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-026",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-027",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-027",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-028",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-028",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-029",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-029",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-030",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-030",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-031",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-031",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 200
+  },
+  {
+    "id": "hc-032",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "hc-032",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "hc-033",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-033",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-034",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-034",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-035",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-035",
+    "mode": "live",
+    "before": false,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-036",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-036",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-037",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-037",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-038",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-038",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-039",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-039",
+    "mode": "live",
+    "before": false,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-040",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-040",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-041",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-041",
+    "mode": "live",
+    "before": false,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-042",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-042",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-043",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-043",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-044",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-044",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-045",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-045",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-046",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-046",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-047",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-047",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-048",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-048",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-049",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-049",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-050",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-050",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-051",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-051",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-052",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-052",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-053",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-053",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-054",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-054",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-055",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-055",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-056",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-056",
+    "mode": "live",
+    "before": false,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-057",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-057",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-058",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-058",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-059",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-059",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-060",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-060",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-061",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-061",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-062",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-062",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-063",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-063",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-064",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-064",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-065",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-065",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-066",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-066",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-067",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-067",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-068",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-068",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-069",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-069",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-070",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-070",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-071",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-071",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-072",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-072",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-073",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-073",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-074",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-074",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-075",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-075",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-076",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-076",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-077",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-077",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-078",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-078",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-079",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-079",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-080",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_capture_reticle",
+    "selected": 2
+  },
+  {
+    "id": "hc-080",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_capture_reticle",
+    "selected": 2
+  },
+  {
+    "id": "hc-081",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-081",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-082",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-082",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-083",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-083",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-084",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-084",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-085",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-085",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-086",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-086",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-087",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-087",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-088",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-088",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-089",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-089",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-090",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-090",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-091",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-091",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-092",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-092",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-093",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "dominant_edge_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-093",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "dominant_edge_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-094",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-094",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-095",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-095",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-096",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-096",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-097",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 3
+  },
+  {
+    "id": "hc-097",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 3
+  },
+  {
+    "id": "hc-098",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-098",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-099",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-099",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-100",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-100",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 200
+  },
+  {
+    "id": "hc-101",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "hc-101",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "hc-102",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-102",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-103",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-103",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-104",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-104",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-105",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-105",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-106",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-106",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-107",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-107",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-108",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-108",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-109",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-109",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-110",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-110",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-111",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-111",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-112",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-112",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-113",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-113",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 200
+  },
+  {
+    "id": "hc-114",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-114",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-115",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-115",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-116",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-116",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-117",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-117",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-118",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-118",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-119",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-119",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-120",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-120",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-121",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-121",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-122",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-122",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-123",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-123",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-124",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-124",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "hc-125",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-125",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-126",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-126",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-127",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-127",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "hc-128",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-128",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-129",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-129",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "hc-130",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-130",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-131",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-131",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-132",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-132",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-133",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-133",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-134",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-134",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-135",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-135",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "hc-136",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-136",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-137",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-137",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-138",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-138",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-139",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-139",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-140",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-140",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-141",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-141",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-142",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-142",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-143",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-143",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "hc-144",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-144",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "hc-145",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-145",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-146",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "hc-146",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "hc-147",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-147",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-148",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-148",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-149",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-149",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-150",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-150",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "hc-151",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-151",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-152",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-152",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-153",
+    "mode": "controlled",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "hc-153",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "real-180751",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1487557
+  },
+  {
+    "id": "real-417632",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 91643
+  },
+  {
+    "id": "real-541773",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 78994
+  },
+  {
+    "id": "real-166426",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 83858
+  },
+  {
+    "id": "real-116208",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 94456
+  },
+  {
+    "id": "real-25394",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1491202
+  },
+  {
+    "id": "real-312192",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "dominant_edge_subject",
+    "selected": 80226
+  },
+  {
+    "id": "real-402720",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 82557
+  },
+  {
+    "id": "real-520871",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1864895
+  },
+  {
+    "id": "real-22705",
+    "mode": "live",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 81398
+  },
+  {
+    "id": "real-166918",
+    "mode": "live",
+    "before": false,
+    "after": false,
+    "reason": "fallback_nearest_center",
+    "selected": null
+  },
+  {
+    "id": "real-117719",
+    "mode": "live",
+    "before": false,
+    "after": false,
+    "reason": "fallback_nearest_center",
+    "selected": null
+  },
+  {
+    "id": "real-397354",
+    "mode": "live",
+    "before": false,
+    "after": false,
+    "reason": "fallback_nearest_center",
+    "selected": 1482897
+  },
+  {
+    "id": "fb-center-mask",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-nearest",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "fb-left",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 2
+  },
+  {
+    "id": "fb-upper",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_uppermost",
+    "selected": 2
+  },
+  {
+    "id": "fb-overlap",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "fb-stable-id",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_stable_id",
+    "selected": 1
+  },
+  {
+    "id": "fb-pixel-distance",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "fb-no-candidates",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "fb-low-confidence",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_original_frame",
+    "selected": null
+  },
+  {
+    "id": "fb-tap-miss",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 2
+  },
+  {
+    "id": "fb-reticle-unresolved",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "fb-missed-tap-hand",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "fb-missed-tap-single",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "fb-missed-tap-reticle",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "explicit_capture_reticle",
+    "selected": 2
+  },
+  {
+    "id": "fb-mask-tap-over-label-box",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 3
+  },
+  {
+    "id": "fb-multi-hit-pool",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-tiny-hand-distractor",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 4
+  },
+  {
+    "id": "fb-secondary-label-hole",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "fb-label-context",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "fb-unequal-two-grips",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "fb-box-around-hand",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-body-grip-enclosure",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "fb-different-hands-unequal",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "fb-two-hands-one-subject",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_leftmost",
+    "selected": 1
+  },
+  {
+    "id": "fb-unlabeled-strip-conflict",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-exterior-label-strip",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "only_credible_subject",
+    "selected": 1
+  },
+  {
+    "id": "fb-label-gap-tap",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 1
+  },
+  {
+    "id": "fb-three-foreground",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "fb-three-weak-depth",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "fb-background-magnum",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "fb-three-tap-background",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "fb-held-carton-only",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 1
+  },
+  {
+    "id": "fb-orphan-label-beside-bottle",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "fb-centered-label-closeup-with-bottle",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "dominant_foreground_subject",
+    "selected": 1
+  },
+  {
+    "id": "fb-tap-orphan-label",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "explicit_tap",
+    "selected": 2
+  },
+  {
+    "id": "fb-dominant-label-price-conflict",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-separate-shelf-levels",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 3
+  },
+  {
+    "id": "fb-truncated-background-peer",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "fb-bystander-hand-three",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "fb-held-unlabelled-carton",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "unique_visible_hand_contact",
+    "selected": 3
+  },
+  {
+    "id": "fb-lying-foreground-three",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "foreground_scale_and_lower_base",
+    "selected": 1
+  },
+  {
+    "id": "fb-unowned-label-logo-mask",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "fb-weak-wrap-strong-grip",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "fb-multiple-grips-unheld-foreground",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 2
+  },
+  {
+    "id": "fb-owner-and-uncertain-background",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 3
+  },
+  {
+    "id": "fb-held-neck-dominant-paper",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "fb-held-neck-pending-logo",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_nearest_center",
+    "selected": 1
+  },
+  {
+    "id": "fb-point-contact-near-center-bottle",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 2
+  },
+  {
+    "id": "fb-opposed-background-midbody",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  },
+  {
+    "id": "fb-enclosing-label-panel",
+    "mode": "fallback",
+    "before": true,
+    "after": true,
+    "reason": "fallback_center_contains",
+    "selected": 1
+  }
+]

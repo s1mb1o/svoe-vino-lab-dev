@@ -1,0 +1,39 @@
+{
+  "jobs": [
+    {
+      "case_id": "real-166918",
+      "roi": [
+        160,
+        240,
+        320,
+        400
+      ]
+    },
+    {
+      "case_id": "real-117719",
+      "roi": [
+        240,
+        132,
+        400,
+        292
+      ]
+    },
+    {
+      "case_id": "real-397354",
+      "roi": [
+        240,
+        160,
+        400,
+        320
+      ]
+    }
+  ],
+  "nouns": [
+    "wine bottle",
+    "bottle",
+    "bottle held in hand"
+  ],
+  "geometry": "fixed 160px square centered in the photo, independent of target/detections",
+  "encoding": "PNG",
+  "ground_truth_supplied": false
+}

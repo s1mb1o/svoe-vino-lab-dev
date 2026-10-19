@@ -1,0 +1,28 @@
+{
+  "photo_result_rows": 286,
+  "metric_fields_checked": [
+    "status",
+    "matched_instance_id",
+    "correct",
+    "reason",
+    "selection_mode",
+    "crop_scope",
+    "crop_box",
+    "label_boxes",
+    "expected_mode_match",
+    "label_retention",
+    "crop_target_coverage",
+    "crop_distractor_retention",
+    "foreign_label_retention",
+    "representation_retention",
+    "price_tag_retention",
+    "policy_fallback_pass"
+  ],
+  "emitted_image_files_identical": 785,
+  "differences": [],
+  "all_photo_outcomes_unchanged": true,
+  "known_open_expected_mode_cases": [
+    "hc-039",
+    "hc-041"
+  ]
+}

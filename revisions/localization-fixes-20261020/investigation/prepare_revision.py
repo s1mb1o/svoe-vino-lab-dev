@@ -1,0 +1,6 @@
+from pathlib import Path
+import shutil,json,hashlib
+R=Path('/Volumes/Storage/svoe-vino-final');P=R/'datasets/main-selector-hardcases-v2-detector-fixes-20261020';N=R/'datasets/main-selector-hardcases-v2-localization-fixes-20261020';W=Path(__file__).parent
+skip={'crops','results','report.html','summary.json','README.md','implementation.patch','receipt.json','bundle-manifest.json','patch-verification.json','evaluation-revision.json','revision-diff.json','residual-failures.json','robustness-diff.json','perturbations.json','additional-findings.json','assignment-audit.json','report-verification.json','browser-verification.json','regression-proof.json','frozen-preservation.json','validation.json','tested-source-hashes.json','unchanged-contract-source.json','detector-investigation.json','regression-proof.json'}
+assert not N.exists();shutil.copytree(P,N,ignore=lambda path,names:skip.intersection(names) if Path(path)==P else set())
+shutil.copyfile(W/'detector-enhancement.json',N/'detector-enhancement.json');m=json.loads((N/'prediction-inputs.json').read_text());m['enhancement_inputs_sha256']=hashlib.sha256((N/'detector-enhancement.json').read_bytes()).hexdigest();(N/'prediction-inputs.json').write_text(json.dumps(m,indent=2)+'\n');print(N)

@@ -1,0 +1,4646 @@
+{
+  "interpretation": "Old selections rescored on their original effective inputs including the separately frozen carafe recovery. Zero assignment/scorer corrections. New selector behavior and new effective detections are shown separately in revision-diff.json.",
+  "scorer_body_unchanged": true,
+  "scorer_sha256": "cf0d48f4ee3616a72d7f3d4ecac68869a819f541fd16f1bc94df4cb7c27a34d1",
+  "selector_sha256": "5999f79f76884541fa1231c2fa016a8d7fff3118e0c0043923eb6f987214baf5",
+  "prediction_inputs_sha256": "62c61c362d0c4d0c4e453493ed2d988071f653db29206e71bed39c2921514138",
+  "summary": {
+    "controlled/original/passive_intent/scene-v1": {
+      "cases": 46,
+      "before_reported": 38,
+      "before_rescored": 38,
+      "after": 38
+    },
+    "controlled/original/passive_intent/semantic-v2": {
+      "cases": 46,
+      "before_reported": 46,
+      "before_rescored": 46,
+      "after": 46
+    },
+    "live/original/passive_intent/scene-v1": {
+      "cases": 54,
+      "before_reported": 52,
+      "before_rescored": 52,
+      "after": 52
+    },
+    "live/original/passive_intent/semantic-v2": {
+      "cases": 54,
+      "before_reported": 54,
+      "before_rescored": 54,
+      "after": 54
+    },
+    "controlled/original/interaction/scene-v1": {
+      "cases": 8,
+      "before_reported": 5,
+      "before_rescored": 5,
+      "after": 5
+    },
+    "controlled/original/interaction/semantic-v2": {
+      "cases": 8,
+      "before_reported": 8,
+      "before_rescored": 8,
+      "after": 8
+    },
+    "live/original/interaction/scene-v1": {
+      "cases": 8,
+      "before_reported": 6,
+      "before_rescored": 6,
+      "after": 6
+    },
+    "live/original/interaction/semantic-v2": {
+      "cases": 8,
+      "before_reported": 8,
+      "before_rescored": 8,
+      "after": 8
+    },
+    "controlled/original/policy_targets/scene-v1": {
+      "cases": 8,
+      "before_reported": 5,
+      "before_rescored": 5,
+      "after": 5
+    },
+    "controlled/original/policy_targets/semantic-v2": {
+      "cases": 8,
+      "before_reported": 8,
+      "before_rescored": 8,
+      "after": 8
+    },
+    "live/original/policy_targets/scene-v1": {
+      "cases": 13,
+      "before_reported": 8,
+      "before_rescored": 8,
+      "after": 8
+    },
+    "live/original/policy_targets/semantic-v2": {
+      "cases": 13,
+      "before_reported": 9,
+      "before_rescored": 9,
+      "after": 12
+    },
+    "controlled/original/no_target/scene-v1": {
+      "cases": 2,
+      "before_reported": 2,
+      "before_rescored": 2,
+      "after": 2
+    },
+    "controlled/original/no_target/semantic-v2": {
+      "cases": 2,
+      "before_reported": 2,
+      "before_rescored": 2,
+      "after": 2
+    },
+    "live/original/no_target/scene-v1": {
+      "cases": 2,
+      "before_reported": 2,
+      "before_rescored": 2,
+      "after": 2
+    },
+    "live/original/no_target/semantic-v2": {
+      "cases": 2,
+      "before_reported": 2,
+      "before_rescored": 2,
+      "after": 2
+    },
+    "controlled/expansion/passive_intent/scene-v1": {
+      "cases": 58,
+      "before_reported": 50,
+      "before_rescored": 50,
+      "after": 50
+    },
+    "controlled/expansion/passive_intent/semantic-v2": {
+      "cases": 58,
+      "before_reported": 58,
+      "before_rescored": 58,
+      "after": 58
+    },
+    "live/expansion/passive_intent/scene-v1": {
+      "cases": 58,
+      "before_reported": 46,
+      "before_rescored": 46,
+      "after": 46
+    },
+    "live/expansion/passive_intent/semantic-v2": {
+      "cases": 58,
+      "before_reported": 58,
+      "before_rescored": 58,
+      "after": 58
+    },
+    "controlled/expansion/policy_targets/scene-v1": {
+      "cases": 25,
+      "before_reported": 15,
+      "before_rescored": 15,
+      "after": 15
+    },
+    "controlled/expansion/policy_targets/semantic-v2": {
+      "cases": 25,
+      "before_reported": 25,
+      "before_rescored": 25,
+      "after": 25
+    },
+    "live/expansion/policy_targets/scene-v1": {
+      "cases": 25,
+      "before_reported": 12,
+      "before_rescored": 12,
+      "after": 12
+    },
+    "live/expansion/policy_targets/semantic-v2": {
+      "cases": 25,
+      "before_reported": 21,
+      "before_rescored": 21,
+      "after": 25
+    },
+    "controlled/expansion/interaction/scene-v1": {
+      "cases": 6,
+      "before_reported": 0,
+      "before_rescored": 0,
+      "after": 0
+    },
+    "controlled/expansion/interaction/semantic-v2": {
+      "cases": 6,
+      "before_reported": 6,
+      "before_rescored": 6,
+      "after": 6
+    },
+    "live/expansion/interaction/scene-v1": {
+      "cases": 6,
+      "before_reported": 0,
+      "before_rescored": 0,
+      "after": 0
+    },
+    "live/expansion/interaction/semantic-v2": {
+      "cases": 6,
+      "before_reported": 6,
+      "before_rescored": 6,
+      "after": 6
+    }
+  },
+  "assignment_changes": [],
+  "rows": [
+    {
+      "case_id": "hc-001",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-001",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-001",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-001",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-002",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-002",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-002",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-002",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-003",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-003",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-003",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-003",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-004",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-004",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-004",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-004",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-005",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-005",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-005",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-005",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-006",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-006",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-006",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-006",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-007",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 101,
+      "same_crop_rescored_id": 101
+    },
+    {
+      "case_id": "hc-007",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-007",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-007",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-008",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 101,
+      "same_crop_rescored_id": 101
+    },
+    {
+      "case_id": "hc-008",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-008",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-008",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-009",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-009",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-009",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-009",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-010",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-011",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-011",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-011",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-011",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-012",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-013",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-013",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-013",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-013",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-014",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-015",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-015",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-015",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-015",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-016",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-016",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-016",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-016",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-017",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-017",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-017",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-017",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-018",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-018",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-018",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-018",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-019",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-019",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-019",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-019",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-020",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-020",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-020",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-020",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-021",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-021",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-021",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-021",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-022",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-022",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-022",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-022",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-023",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-024",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-025",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-025",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-025",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-025",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-026",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-026",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-026",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-026",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-027",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-027",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-027",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-027",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-028",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-028",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-028",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-028",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-029",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-029",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-029",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-029",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-030",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-031",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-031",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-031",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-031",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-032",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-032",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-032",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-032",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-033",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-034",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-034",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-034",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-034",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-035",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-036",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-036",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-036",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-036",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-037",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-037",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-037",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-037",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-038",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-038",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-038",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-038",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-039",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-040",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-040",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-040",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-040",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-041",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-042",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-042",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-042",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-042",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-043",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-043",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-043",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-043",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-044",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-044",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-044",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-044",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-045",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-045",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-045",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-045",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-046",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-046",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-046",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-046",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-047",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-048",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-050",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-053",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-053",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-053",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-053",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-054",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-054",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-054",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-054",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-055",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-055",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-055",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-055",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-056",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-057",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-057",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-057",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-057",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-058",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-058",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-058",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-058",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-059",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-060",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-067",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-067",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-067",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-067",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-068",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-068",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-068",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-068",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-070",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-070",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-070",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-070",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-071",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-071",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-071",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-071",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-072",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-072",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-072",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-072",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-073",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-073",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-073",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-073",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-074",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-074",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-074",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-074",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-075",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-075",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-075",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-075",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-076",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 101,
+      "same_crop_rescored_id": 101
+    },
+    {
+      "case_id": "hc-076",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-076",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-076",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-077",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 103,
+      "same_crop_rescored_id": 103
+    },
+    {
+      "case_id": "hc-077",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-077",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-077",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-078",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-078",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-078",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-078",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-079",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-079",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-079",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-079",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-080",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-080",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-080",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-080",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-081",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-081",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-081",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-081",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-082",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-082",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-082",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-082",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-083",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-083",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-083",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-083",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-084",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-084",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-084",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-084",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-085",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-086",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-086",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-086",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-086",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-087",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-087",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-087",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-087",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-088",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-088",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-088",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-088",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-089",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-089",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-089",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-089",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-090",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-090",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-090",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-090",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-091",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-091",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-091",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-091",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-092",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-092",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-092",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-092",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-093",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-094",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-094",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-094",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-094",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-095",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-095",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-095",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-095",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-096",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-096",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-096",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-096",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-097",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-097",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-097",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-097",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-098",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-098",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-098",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-098",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-099",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-099",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-099",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-099",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-100",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-100",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-100",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-100",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-101",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-101",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-101",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-101",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-102",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-102",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-102",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-102",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-103",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-103",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-103",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-103",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-104",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-104",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-104",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-104",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-105",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-105",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-105",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-105",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-106",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-106",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-106",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-106",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-107",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-108",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-108",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-108",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-108",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-109",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-109",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-109",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-109",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-110",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-110",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-110",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-110",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-111",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-111",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-111",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-111",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-112",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-112",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-112",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-112",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-113",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-113",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-113",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "hc-113",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 200,
+      "same_crop_rescored_id": 200
+    },
+    {
+      "case_id": "hc-114",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-114",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-114",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-114",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-115",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-115",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-115",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-115",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-116",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-116",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-116",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-116",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-117",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-117",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-117",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-117",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-118",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-118",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-118",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-118",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-119",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-119",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-119",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-119",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-120",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-120",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-120",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-120",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-121",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-121",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-121",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-121",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-122",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-122",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-122",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-122",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-123",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-123",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-123",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-123",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-124",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-124",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-124",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-124",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-125",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-125",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-125",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-125",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-126",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-126",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-126",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-126",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-127",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-127",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-127",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-127",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-128",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-128",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-128",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-128",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-129",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-129",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-129",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-129",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-130",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-130",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-130",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-130",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-131",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-131",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-131",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-131",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-132",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-132",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-132",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-132",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-133",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-133",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-133",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-133",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-134",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-134",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-134",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 3,
+      "same_crop_rescored_id": 3
+    },
+    {
+      "case_id": "hc-134",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-135",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-135",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-135",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-135",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-136",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-136",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-136",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-136",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-137",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-137",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-137",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-137",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-138",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-138",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-138",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-138",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-139",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-139",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-139",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-139",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-140",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-140",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-140",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-140",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-141",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-141",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-141",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-141",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-142",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-142",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-142",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-142",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-143",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-144",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-144",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-144",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-144",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-145",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-146",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-147",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-147",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-147",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 2,
+      "same_crop_rescored_id": 2
+    },
+    {
+      "case_id": "hc-147",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-148",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-148",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-148",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-148",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-149",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-149",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-149",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-149",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-150",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-150",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-150",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-150",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-151",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-151",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-151",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-151",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-152",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "controlled",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "controlled",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "hc-153",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1,
+      "same_crop_rescored_id": 1
+    },
+    {
+      "case_id": "real-180751",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1487557,
+      "same_crop_rescored_id": 1487557
+    },
+    {
+      "case_id": "real-180751",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1487557,
+      "same_crop_rescored_id": 1487557
+    },
+    {
+      "case_id": "real-417632",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 91643,
+      "same_crop_rescored_id": 91643
+    },
+    {
+      "case_id": "real-417632",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 91643,
+      "same_crop_rescored_id": 91643
+    },
+    {
+      "case_id": "real-541773",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 78994,
+      "same_crop_rescored_id": 78994
+    },
+    {
+      "case_id": "real-541773",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 78994,
+      "same_crop_rescored_id": 78994
+    },
+    {
+      "case_id": "real-166426",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 83858,
+      "same_crop_rescored_id": 83858
+    },
+    {
+      "case_id": "real-166426",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 83858,
+      "same_crop_rescored_id": 83858
+    },
+    {
+      "case_id": "real-116208",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 94456,
+      "same_crop_rescored_id": 94456
+    },
+    {
+      "case_id": "real-116208",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 94456,
+      "same_crop_rescored_id": 94456
+    },
+    {
+      "case_id": "real-25394",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1491202,
+      "same_crop_rescored_id": 1491202
+    },
+    {
+      "case_id": "real-25394",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1491202,
+      "same_crop_rescored_id": 1491202
+    },
+    {
+      "case_id": "real-312192",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 80226,
+      "same_crop_rescored_id": 80226
+    },
+    {
+      "case_id": "real-312192",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 80226,
+      "same_crop_rescored_id": 80226
+    },
+    {
+      "case_id": "real-402720",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 82557,
+      "same_crop_rescored_id": 82557
+    },
+    {
+      "case_id": "real-402720",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 82557,
+      "same_crop_rescored_id": 82557
+    },
+    {
+      "case_id": "real-520871",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1864895,
+      "same_crop_rescored_id": 1864895
+    },
+    {
+      "case_id": "real-520871",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1864895,
+      "same_crop_rescored_id": 1864895
+    },
+    {
+      "case_id": "real-22705",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 81398,
+      "same_crop_rescored_id": 81398
+    },
+    {
+      "case_id": "real-22705",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 81398,
+      "same_crop_rescored_id": 81398
+    },
+    {
+      "case_id": "real-166918",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1482938,
+      "same_crop_rescored_id": 1482938
+    },
+    {
+      "case_id": "real-166918",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "real-117719",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 1494627,
+      "same_crop_rescored_id": 1494627
+    },
+    {
+      "case_id": "real-117719",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": null,
+      "same_crop_rescored_id": null
+    },
+    {
+      "case_id": "real-397354",
+      "mode": "live",
+      "variant": "scene-v1",
+      "reported_id": 82049,
+      "same_crop_rescored_id": 82049
+    },
+    {
+      "case_id": "real-397354",
+      "mode": "live",
+      "variant": "semantic-v2",
+      "reported_id": 1482897,
+      "same_crop_rescored_id": 1482897
+    }
+  ]
+}

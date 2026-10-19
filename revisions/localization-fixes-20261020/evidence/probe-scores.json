@@ -1,0 +1,534 @@
+[
+  {
+    "job": 0,
+    "case_id": "hc-025",
+    "source_index": 0,
+    "roi": [
+      380,
+      338,
+      557,
+      707
+    ],
+    "box_prompt": [
+      53,
+      53,
+      124,
+      316
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 1,
+    "case_id": "hc-025",
+    "source_index": 1,
+    "roi": [
+      211,
+      338,
+      387,
+      707
+    ],
+    "box_prompt": [
+      53,
+      53,
+      123,
+      316
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9237121025388217
+  },
+  {
+    "job": 2,
+    "case_id": "hc-035",
+    "source_index": 0,
+    "roi": [
+      395,
+      365,
+      550,
+      708
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 3,
+    "case_id": "hc-035",
+    "source_index": 1,
+    "roi": [
+      216,
+      364,
+      372,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      107,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9025593061814472
+  },
+  {
+    "job": 4,
+    "case_id": "hc-039",
+    "source_index": 0,
+    "roi": [
+      395,
+      364,
+      551,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      107,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 5,
+    "case_id": "hc-039",
+    "source_index": 1,
+    "roi": [
+      217,
+      364,
+      372,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9154717853839038
+  },
+  {
+    "job": 6,
+    "case_id": "hc-041",
+    "source_index": 0,
+    "roi": [
+      395,
+      365,
+      550,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      293
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 7,
+    "case_id": "hc-041",
+    "source_index": 1,
+    "roi": [
+      217,
+      364,
+      372,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9267170555372988
+  },
+  {
+    "job": 8,
+    "case_id": "hc-056",
+    "source_index": 0,
+    "roi": [
+      396,
+      364,
+      550,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      105,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 9,
+    "case_id": "hc-056",
+    "source_index": 1,
+    "roi": [
+      217,
+      364,
+      372,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9161829808165273
+  },
+  {
+    "job": 10,
+    "case_id": "hc-145",
+    "source_index": 1,
+    "roi": [
+      217,
+      364,
+      372,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9137435307648074
+  },
+  {
+    "job": 11,
+    "case_id": "hc-145",
+    "source_index": 0,
+    "roi": [
+      396,
+      365,
+      551,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      293
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 12,
+    "case_id": "hc-146",
+    "source_index": 1,
+    "roi": [
+      218,
+      364,
+      374,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      107,
+      294
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [
+      0
+    ],
+    "max_target_iou": 0.9536162876611116
+  },
+  {
+    "job": 13,
+    "case_id": "hc-146",
+    "source_index": 0,
+    "roi": [
+      395,
+      365,
+      550,
+      707
+    ],
+    "box_prompt": [
+      49,
+      49,
+      106,
+      293
+    ],
+    "profile": "box-roi",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 14,
+    "case_id": "real-397354",
+    "source_index": 6,
+    "roi": [
+      227,
+      234,
+      250,
+      276
+    ],
+    "box_prompt": [
+      6,
+      6,
+      17,
+      36
+    ],
+    "profile": "box-roi",
+    "detections": 3,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 15,
+    "case_id": "real-397354",
+    "source_index": 7,
+    "roi": [
+      279,
+      264,
+      333,
+      381
+    ],
+    "box_prompt": [
+      17,
+      17,
+      37,
+      100
+    ],
+    "profile": "box-roi",
+    "detections": 3,
+    "target_matches": [
+      1
+    ],
+    "max_target_iou": 0.8082644628099174
+  },
+  {
+    "job": 16,
+    "case_id": "real-166918",
+    "roi": [
+      0,
+      0,
+      240,
+      240
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 0,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 17,
+    "case_id": "real-166918",
+    "roi": [
+      120,
+      0,
+      360,
+      240
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 0,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 18,
+    "case_id": "real-166918",
+    "roi": [
+      240,
+      0,
+      480,
+      240
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 0,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 19,
+    "case_id": "real-166918",
+    "roi": [
+      0,
+      133,
+      240,
+      373
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 20,
+    "case_id": "real-166918",
+    "roi": [
+      120,
+      133,
+      360,
+      373
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 6,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 21,
+    "case_id": "real-166918",
+    "roi": [
+      240,
+      133,
+      480,
+      373
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 8,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 22,
+    "case_id": "real-166918",
+    "roi": [
+      0,
+      267,
+      240,
+      507
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 1,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 23,
+    "case_id": "real-166918",
+    "roi": [
+      120,
+      267,
+      360,
+      507
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 6,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 24,
+    "case_id": "real-166918",
+    "roi": [
+      240,
+      267,
+      480,
+      507
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 7,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 25,
+    "case_id": "real-166918",
+    "roi": [
+      0,
+      400,
+      240,
+      640
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 3,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 26,
+    "case_id": "real-166918",
+    "roi": [
+      120,
+      400,
+      360,
+      640
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 3,
+    "target_matches": [],
+    "max_target_iou": 0
+  },
+  {
+    "job": 27,
+    "case_id": "real-166918",
+    "roi": [
+      240,
+      400,
+      480,
+      640
+    ],
+    "box_prompt": null,
+    "profile": "small-grid",
+    "detections": 0,
+    "target_matches": [],
+    "max_target_iou": 0
+  }
+]

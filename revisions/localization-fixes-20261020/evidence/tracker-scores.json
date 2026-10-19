@@ -1,0 +1,1328 @@
+[
+  {
+    "case_id": "hc-025",
+    "union": true,
+    "correct": true,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.981381612737545,
+          "box": [
+            433,
+            390,
+            505,
+            656
+          ],
+          "old": [
+            433,
+            391,
+            504,
+            654
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9795931463774626,
+          "box": [
+            263,
+            390,
+            335,
+            655
+          ],
+          "old": [
+            264,
+            391,
+            334,
+            654
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-035",
+    "union": true,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9485020386456302,
+          "box": [
+            444,
+            414,
+            502,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            659
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9557126241388566,
+          "box": [
+            265,
+            413,
+            324,
+            659
+          ],
+          "old": [
+            265,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-039",
+    "union": true,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9713798977853493,
+          "box": [
+            443,
+            413,
+            503,
+            659
+          ],
+          "old": [
+            444,
+            413,
+            502,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9453695938660597,
+          "box": [
+            265,
+            413,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-041",
+    "union": true,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9753022896835606,
+          "box": [
+            444,
+            414,
+            502,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9708479807939638,
+          "box": [
+            265,
+            413,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-056",
+    "union": true,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9490901656103047,
+          "box": [
+            444,
+            413,
+            502,
+            659
+          ],
+          "old": [
+            445,
+            413,
+            501,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9455339904481251,
+          "box": [
+            265,
+            413,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-094",
+    "union": true,
+    "correct": true,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9759919130654536,
+          "box": [
+            417,
+            405,
+            512,
+            672
+          ],
+          "old": [
+            417,
+            405,
+            512,
+            672
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9769567204125595,
+          "box": [
+            253,
+            377,
+            344,
+            642
+          ],
+          "old": [
+            253,
+            377,
+            344,
+            640
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-142",
+    "union": true,
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.9588151227751072,
+          "box": [
+            361,
+            320,
+            407,
+            519
+          ],
+          "old": [
+            361,
+            320,
+            406,
+            519
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9709603566694782,
+          "box": [
+            266,
+            432,
+            316,
+            639
+          ],
+          "old": [
+            267,
+            433,
+            316,
+            639
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-144",
+    "union": true,
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.952423698384201,
+          "box": [
+            360,
+            320,
+            408,
+            519
+          ],
+          "old": [
+            361,
+            320,
+            408,
+            519
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.963033627474362,
+          "box": [
+            266,
+            432,
+            316,
+            639
+          ],
+          "old": [
+            267,
+            433,
+            315,
+            638
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-145",
+    "union": true,
+    "correct": true,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9651559039018572,
+          "box": [
+            265,
+            413,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9731468771448181,
+          "box": [
+            444,
+            414,
+            503,
+            659
+          ],
+          "old": [
+            445,
+            414,
+            502,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-146",
+    "union": true,
+    "correct": false,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "unique_visible_hand_contact",
+    "audit": [
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9654940811015028,
+          "box": [
+            265,
+            413,
+            325,
+            659
+          ],
+          "old": [
+            267,
+            413,
+            325,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9700342465753424,
+          "box": [
+            444,
+            414,
+            503,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-180751",
+    "union": true,
+    "correct": true,
+    "owner": 1487557,
+    "selected": "d0",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9616116751269036,
+          "box": [
+            300,
+            118,
+            356,
+            414
+          ],
+          "old": [
+            300,
+            118,
+            356,
+            414
+          ]
+        }
+      },
+      {
+        "source_index": 7,
+        "refinement": {
+          "iou": 0.9251295336787565,
+          "box": [
+            171,
+            238,
+            432,
+            287
+          ],
+          "old": [
+            171,
+            238,
+            432,
+            287
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-25394",
+    "union": true,
+    "correct": true,
+    "owner": 1491202,
+    "selected": "d16",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 16,
+        "refinement": {
+          "iou": 0.9486813970064149,
+          "box": [
+            215,
+            373,
+            255,
+            429
+          ],
+          "old": [
+            215,
+            373,
+            255,
+            429
+          ]
+        }
+      },
+      {
+        "source_index": 29,
+        "refinement": {
+          "iou": 0.8355795148247979,
+          "box": [
+            240,
+            220,
+            253,
+            257
+          ],
+          "old": [
+            240,
+            220,
+            253,
+            256
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-22705",
+    "union": true,
+    "correct": true,
+    "owner": 81398,
+    "selected": "d2",
+    "reason": "foreground_scale_and_lower_base",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.8652988403211418,
+          "box": [
+            82,
+            211,
+            104,
+            280
+          ],
+          "old": [
+            82,
+            211,
+            104,
+            280
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.8409090909090909,
+          "box": [
+            119,
+            187,
+            130,
+            212
+          ],
+          "old": [
+            119,
+            187,
+            129,
+            211
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-117719",
+    "union": true,
+    "correct": false,
+    "owner": null,
+    "selected": "d7",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 7,
+        "refinement": null
+      },
+      {
+        "source_index": 24,
+        "refinement": null
+      }
+    ]
+  },
+  {
+    "case_id": "real-397354",
+    "union": true,
+    "correct": false,
+    "owner": 1482897,
+    "selected": "d6",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 6,
+        "refinement": {
+          "iou": 0.8109243697478992,
+          "box": [
+            233,
+            240,
+            244,
+            270
+          ],
+          "old": [
+            233,
+            240,
+            244,
+            270
+          ]
+        }
+      },
+      {
+        "source_index": 7,
+        "refinement": {
+          "rejected": true,
+          "iou": 0.8721109399075501,
+          "box": [
+            296,
+            281,
+            315,
+            371
+          ],
+          "old": [
+            296,
+            281,
+            316,
+            364
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-025",
+    "union": false,
+    "correct": true,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.981381612737545,
+          "box": [
+            433,
+            390,
+            505,
+            656
+          ],
+          "old": [
+            433,
+            391,
+            504,
+            654
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9795931463774626,
+          "box": [
+            263,
+            390,
+            335,
+            655
+          ],
+          "old": [
+            264,
+            391,
+            334,
+            654
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-035",
+    "union": false,
+    "correct": true,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "fallback_leftmost",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9485020386456302,
+          "box": [
+            444,
+            415,
+            502,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            659
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9557126241388566,
+          "box": [
+            266,
+            415,
+            324,
+            659
+          ],
+          "old": [
+            265,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-039",
+    "union": false,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9713798977853493,
+          "box": [
+            443,
+            415,
+            503,
+            659
+          ],
+          "old": [
+            444,
+            413,
+            502,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9453695938660597,
+          "box": [
+            265,
+            415,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-041",
+    "union": false,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9753022896835606,
+          "box": [
+            444,
+            415,
+            502,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9708479807939638,
+          "box": [
+            265,
+            415,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-056",
+    "union": false,
+    "correct": false,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9490901656103047,
+          "box": [
+            444,
+            414,
+            502,
+            659
+          ],
+          "old": [
+            445,
+            413,
+            501,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9455339904481251,
+          "box": [
+            265,
+            414,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-094",
+    "union": false,
+    "correct": true,
+    "owner": 2,
+    "selected": "d0",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9759919130654536,
+          "box": [
+            417,
+            405,
+            512,
+            672
+          ],
+          "old": [
+            417,
+            405,
+            512,
+            672
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9769567204125595,
+          "box": [
+            253,
+            378,
+            343,
+            642
+          ],
+          "old": [
+            253,
+            377,
+            344,
+            640
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-142",
+    "union": false,
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.9588151227751072,
+          "box": [
+            361,
+            320,
+            407,
+            519
+          ],
+          "old": [
+            361,
+            320,
+            406,
+            519
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9709603566694782,
+          "box": [
+            266,
+            432,
+            316,
+            638
+          ],
+          "old": [
+            267,
+            433,
+            316,
+            639
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-144",
+    "union": false,
+    "correct": true,
+    "owner": 2,
+    "selected": "d2",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.952423698384201,
+          "box": [
+            360,
+            320,
+            408,
+            518
+          ],
+          "old": [
+            361,
+            320,
+            408,
+            519
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.963033627474362,
+          "box": [
+            266,
+            432,
+            316,
+            639
+          ],
+          "old": [
+            267,
+            433,
+            315,
+            638
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-145",
+    "union": false,
+    "correct": true,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "fallback_leftmost",
+    "audit": [
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9651559039018572,
+          "box": [
+            265,
+            415,
+            324,
+            659
+          ],
+          "old": [
+            266,
+            413,
+            323,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9731468771448181,
+          "box": [
+            444,
+            415,
+            503,
+            659
+          ],
+          "old": [
+            445,
+            414,
+            502,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "hc-146",
+    "union": false,
+    "correct": false,
+    "owner": 1,
+    "selected": "d1",
+    "reason": "unique_visible_hand_contact",
+    "audit": [
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.9654940811015028,
+          "box": [
+            265,
+            415,
+            325,
+            659
+          ],
+          "old": [
+            267,
+            413,
+            325,
+            658
+          ]
+        }
+      },
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9700342465753424,
+          "box": [
+            444,
+            415,
+            503,
+            659
+          ],
+          "old": [
+            444,
+            414,
+            501,
+            658
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-180751",
+    "union": false,
+    "correct": true,
+    "owner": 1487557,
+    "selected": "d0",
+    "reason": "fallback_center_contains",
+    "audit": [
+      {
+        "source_index": 0,
+        "refinement": {
+          "iou": 0.9616116751269036,
+          "box": [
+            300,
+            118,
+            356,
+            414
+          ],
+          "old": [
+            300,
+            118,
+            356,
+            414
+          ]
+        }
+      },
+      {
+        "source_index": 7,
+        "refinement": {
+          "iou": 0.9251295336787565,
+          "box": [
+            172,
+            238,
+            429,
+            287
+          ],
+          "old": [
+            171,
+            238,
+            432,
+            287
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-25394",
+    "union": false,
+    "correct": true,
+    "owner": 1491202,
+    "selected": "d16",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 16,
+        "refinement": {
+          "iou": 0.9486813970064149,
+          "box": [
+            217,
+            374,
+            255,
+            428
+          ],
+          "old": [
+            215,
+            373,
+            255,
+            429
+          ]
+        }
+      },
+      {
+        "source_index": 29,
+        "refinement": {
+          "iou": 0.8355795148247979,
+          "box": [
+            240,
+            220,
+            252,
+            257
+          ],
+          "old": [
+            240,
+            220,
+            253,
+            256
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-22705",
+    "union": false,
+    "correct": true,
+    "owner": 81398,
+    "selected": "d2",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 2,
+        "refinement": {
+          "iou": 0.8652988403211418,
+          "box": [
+            82,
+            212,
+            104,
+            278
+          ],
+          "old": [
+            82,
+            211,
+            104,
+            280
+          ]
+        }
+      },
+      {
+        "source_index": 1,
+        "refinement": {
+          "iou": 0.8409090909090909,
+          "box": [
+            119,
+            188,
+            130,
+            212
+          ],
+          "old": [
+            119,
+            187,
+            129,
+            211
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "real-117719",
+    "union": false,
+    "correct": false,
+    "owner": null,
+    "selected": "d7",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 7,
+        "refinement": null
+      },
+      {
+        "source_index": 24,
+        "refinement": null
+      }
+    ]
+  },
+  {
+    "case_id": "real-397354",
+    "union": false,
+    "correct": false,
+    "owner": 1482897,
+    "selected": "d6",
+    "reason": "fallback_nearest_center",
+    "audit": [
+      {
+        "source_index": 6,
+        "refinement": {
+          "iou": 0.8109243697478992,
+          "box": [
+            234,
+            240,
+            244,
+            270
+          ],
+          "old": [
+            233,
+            240,
+            244,
+            270
+          ]
+        }
+      },
+      {
+        "source_index": 7,
+        "refinement": {
+          "rejected": true,
+          "iou": 0.8721109399075501,
+          "box": [
+            296,
+            281,
+            315,
+            371
+          ],
+          "old": [
+            296,
+            281,
+            316,
+            364
+          ]
+        }
+      }
+    ]
+  }
+]

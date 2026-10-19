@@ -1,0 +1,428 @@
+{
+  "prior_source_sha256": "8a1c6f9c3445cf5193f048f40650503e18fd9546026ec402529d98aca3374b96",
+  "current_source_sha256": "28dc77a2972a07af0b674ade3a31a00592035fdaa621191fb285d0da5a8032a9",
+  "interpretation": "development before/after replays on identical frozen detections, not independent accuracy",
+  "rows": [
+    {
+      "fixture": "box-around-hand",
+      "before": {
+        "selected_id": "d1",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident"
+      },
+      "after": {
+        "selected_id": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident"
+      }
+    },
+    {
+      "fixture": "different-hands-unequal",
+      "before": {
+        "selected_id": "d0",
+        "reason": "unique_visible_hand_contact",
+        "mode": "confident"
+      },
+      "after": {
+        "selected_id": "d0",
+        "reason": "fallback_leftmost",
+        "mode": "fallback"
+      }
+    },
+    {
+      "fixture": "exterior-label-strip",
+      "before": {
+        "selected_id": "d0",
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "source_points_retained": false
+      },
+      "after": {
+        "selected_id": "d0",
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "source_points_retained": true
+      }
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-049",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 0.5805763073639274,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-051",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 0.580042689434365,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-052",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 0.6558628637280323,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "only_credible_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-061",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-062",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-063",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "controlled",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-064",
+      "mode": "live",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "controlled",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "dominant_foreground_subject",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-065",
+      "mode": "live",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "controlled",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "explicit_tap",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "explicit_tap",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-066",
+      "mode": "live",
+      "target": 2,
+      "before": {
+        "chosen": 2,
+        "reason": "explicit_tap",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      },
+      "after": {
+        "chosen": 2,
+        "reason": "explicit_tap",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "controlled",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    },
+    {
+      "case_id": "hc-069",
+      "mode": "live",
+      "target": 1,
+      "before": {
+        "chosen": 2,
+        "reason": "fallback_center_contains",
+        "mode": "fallback",
+        "label_retention": 0.0,
+        "target_match": false
+      },
+      "after": {
+        "chosen": 1,
+        "reason": "foreground_scale_and_lower_base",
+        "mode": "confident",
+        "label_retention": 1.0,
+        "target_match": true
+      }
+    }
+  ]
+}
