@@ -1,5 +1,22 @@
 # Research log
 
+## Public site map, 2026-10-19
+
+The Web UI had `public/sitemap.xml` and a sitemap reference in `public/robots.txt`, but no HTML site map.
+The `/sitemap` page comes from `feature/im-bot` commit `a82c96c8`. That version reused the application guide links of commit `b087d387`.
+The guides are not on `main`. Their `/max` guide page would take the path of the MAX mini app (`isMaxAppPath` in `shared/account.ts`).
+The port to `main` therefore lists the existing pages directly: 10 product and project pages and the 3 legal pages from `app/data/legal.ts`.
+The `/hackaton` page stays excluded. The account pages `/account` and `/max` are `noindex` and stay excluded.
+The page uses the shared age gate and theme variables.
+The original page used `--muted` for the lead, the eyebrow, and the card descriptions. That color has a contrast ratio of 3.93:1 on `--paper` in the light theme. The port uses `--ink`.
+The footer row links also used `--muted` and were 14 pixels high. They now use `--ink` and are at least 44 pixels high.
+The review document of the original version stays on `feature/im-bot` (`a82c96c8`, `docs/reviews/2026-10-19_sitemap-claude-code.md`). It does not describe the port, so `main` does not include it.
+
+A separate Claude agent reviewed the port on 2026-10-19. It found no runtime defect. It reported a misleading copied review document, weak test checks, low contrast and small targets in the footer and eyebrow, and documentation gaps. All of them are fixed.
+It also reported an existing problem: on the MAX mini app host, the legal pages show the full site header and footer. Their links lead to pages that this host does not serve. This needs a host-based footer decision and is not part of the port.
+
+Verification on 2026-10-19: type checks, all tests, and the production build passed. Chromium checked `/sitemap` at 320, 390, 768, and 1440 CSS pixels in both themes: 13 cards, 6 groups, all destinations HTTP 200, no overflow, the age gate, and WCAG AA text contrast.
+
 ## Legal pages: features on main, 2026-10-19
 
 The legal pages were rebased onto `origin/main` at `7911e52f`. This entry is the evidence for the new sections.

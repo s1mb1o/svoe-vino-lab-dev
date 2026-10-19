@@ -42,6 +42,7 @@ useHead({ link: [{ rel: 'canonical', href: canonical }] })
 <style>
 .legal-page { width: calc(100% - 80px); max-width: 820px; margin: 0 auto; padding: 60px 0 24px; color: var(--ink); }
 .legal-heading { margin-bottom: 36px; }
+.legal-heading .eyebrow { color: var(--ink); }
 .legal-heading h1 { margin: 18px 0; font-size: clamp(36px, 5vw, 56px); line-height: 1.12; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .legal-heading>p:not(.eyebrow) { color: var(--ink); font-size: 16px; line-height: 1.75; }
 .legal-heading .legal-revision { margin-top: 12px; font-size: 13px; }

@@ -1,5 +1,16 @@
 # Change log
 
+## 2026-10-19 — Public site map
+
+- Port `/sitemap` from `feature/im-bot` (`a82c96c8`) to `main`. Leave out the PWA, Telegram, and MAX guides of `b087d387`: their `/max` page conflicts with the MAX mini app path on `main`.
+- Group the links into «Поиск вина», «Каталог», «Приложения», «Игры», «О проекте», and «Правовая информация».
+- Add the shared footer link «Карта сайта», page metadata, CollectionPage data, and the XML sitemap entry.
+- Add tests: the HTML index and the XML sitemap list the same existing pages, no noindex page is listed, and every icon exists.
+- Keep the page list in `app/data/sitemap.ts`. The page and `tests/sitemap.test.ts` read it.
+- Use the main text color for the page lead, the eyebrow, the card descriptions, and the footer row links. The muted color has a contrast ratio below 4.5:1 in the light theme.
+- Make the footer row links at least 44 pixels high. Use the main text color for the legal page eyebrow.
+- Review the port with a separate Claude agent. Fix its findings: test coverage, contrast, target size, and documentation.
+
 ## 2026-10-19 — Legal pages: wine images from chtozavino.ru
 
 - Update `/privacy#site`: wine images load from `chtozavino.ru` (plan 06). Remove the portal from the recipients.

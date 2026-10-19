@@ -126,6 +126,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .site-footer .legal-navigation a[aria-current] { color: var(--accent); }
 .site-footer>div { display: flex; align-items: center; gap: 20px; justify-content: space-between; font-size: 11px; }
 .site-footer a { display: inline-flex; gap: 6px; align-items: center; }
+.site-footer>div>a { min-height: 44px; color: var(--ink); }
 .site-footer a .icon { width: 14px; height: 14px; }
 .site-footer a:hover { color: var(--accent); }
 .site-footer>p { text-align: center; font-size: 12px; font-weight: 300; letter-spacing: .03em; margin-top: 20px; }

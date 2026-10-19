@@ -1,5 +1,20 @@
 # Smoke tests
 
+## Public site map
+
+- Open `/sitemap` in a new profile. Confirm the age gate. Confirm the page after age confirmation.
+- Confirm one H1 «Карта сайта», one canonical URL, and the page title «Карта сайта — Что за вино?».
+- Confirm the groups «Поиск вина», «Каталог», «Приложения», «Игры», «О проекте», and «Правовая информация».
+- Follow each of the 13 page links. Confirm that each destination opens.
+- Follow «Карта сайта» in the shared footer. Confirm client navigation to `/sitemap` and updated page metadata.
+- Confirm that `/sitemap/` opens with the canonical URL `https://chtozavino.ru/sitemap`.
+- Open the XML link. Confirm the `/sitemap` entry and the same 13 destinations.
+- Confirm that the HTML site map and XML sitemap omit `/hackaton`, `/account`, and `/max`.
+- Check 320, 390, 768, and 1440 pixel widths in both system themes. Confirm no horizontal overflow.
+- Use Tab to reach the page links. Confirm the visible focus indicator.
+- With VoiceOver on iPhone and TalkBack on Android, swipe through the cards. Confirm that each card is read as one link with its title and description.
+- Open `/max` (the MAX mini app). Confirm that its footer has no «Карта сайта» link.
+
 ## Legal pages
 
 - Open `/terms`, `/privacy`, and `/contacts` in a new profile. Confirm that no age gate appears.

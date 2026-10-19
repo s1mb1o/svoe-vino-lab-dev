@@ -82,7 +82,7 @@ Claudette is a Selectel VDS in Moscow.
 
 The shared footer links to all three pages.
 `/sitemap.xml` includes the three paths.
-When the HTML site map `/sitemap` reaches `main`, add the section «Правовая информация» with the three pages.
+`/sitemap` lists the pages in the section «Правовая информация». It reads them from `app/data/legal.ts`.
 Each page has a canonical URL and social metadata.
 
 ## Layout and accessibility

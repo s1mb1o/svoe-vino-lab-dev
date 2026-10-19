@@ -138,6 +138,17 @@ A cached page contains the server-rendered `/api/config` payload. An offline sta
 A new version does not reload an open page. It becomes active after all app pages close.
 Development mode does not register the service worker.
 
+## Site map
+
+Open `/sitemap` for the public page index with the UI title «Карта сайта».
+The shared footer links to `/sitemap`.
+The page groups links into wine search, catalog, applications, games, project information, and legal information.
+The legal links come from `app/data/legal.ts`.
+The XML sitemap remains at `/sitemap.xml`. It includes `/sitemap`.
+The HTML index and the XML sitemap list the same pages. A test checks this.
+The HTML index and XML sitemap omit the direct-access `/hackaton` page and all `noindex` pages: `/account`, `/max`, and each producer map under `/lineup/`.
+The page list is in `app/data/sitemap.ts`.
+
 ## Legal pages
 
 Open `/terms` for «Условия использования», `/privacy` for «Политика обработки персональных данных»,
