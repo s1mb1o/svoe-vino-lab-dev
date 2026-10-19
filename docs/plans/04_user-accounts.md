@@ -4,8 +4,9 @@ Date: 2026-10-19.
 Issue: https://github.com/s1mb1o/svoe-vino-lab-dev/issues/48.
 Branch: `feature/account`.
 Base: `0621952f` (`main`).
-Status: The authorization part of the service exists (`account/`, commit `64545eb5`). The diary
-data, the Web UI, and the deployment do not exist yet.
+Status: The authorization part of the service exists (`account/`, commit `64545eb5`) and runs on
+gx10 since 2026-10-19 (LAN only). The Web UI login, sign-up, logout, and deletion exist
+(`webui/docs/account.md`). The diary data, onboarding, and the public route do not exist yet.
 Related plan: MAX authorization is in `05_max-authorization.md` (issue #50). It depends on this plan.
 Sketches: boards 1–4 in [`04_user-accounts/sketches/`](04_user-accounts/sketches/). The third
 screen of board 1 («Через MAX») belongs to plan 05. Board 1 still shows the earlier password

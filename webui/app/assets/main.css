@@ -744,3 +744,40 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Keep the page fixed while a result experience dialog is open. */
 body:has(.experience-dialog[open]) { overflow: hidden; }
+
+/* «Винный дневник» account page */
+.account-page { max-width: 560px; padding: 48px 0 72px; }
+.account-card { display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); box-shadow: 0 10px 36px #56382005; }
+.account-card h1 { font-size: 32px; line-height: 1.2; outline: none; }
+.account-subheading { font-size: 20px; margin-top: 8px; }
+.account-lead { color: var(--muted); font-size: 15px; line-height: 1.6; }
+.account-loading { display: flex; align-items: center; gap: 10px; }
+.account-lead strong { color: var(--ink); }
+.account-notice { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 13px; line-height: 1.6; }
+.account-form { display: flex; flex-direction: column; gap: 10px; }
+.account-form label:not(.account-check) { font-size: 13px; color: var(--muted); }
+.account-form input[type=email], .account-form input[type=text] { min-height: 48px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 16px; }
+.account-form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.account-code { letter-spacing: .3em; font-variant-numeric: tabular-nums; }
+.account-hint { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.account-check { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.account-check input { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--accent); }
+.account-check a, .account-link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.account-links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; }
+.account-link { padding: 0; min-height: 44px; }
+.account-divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
+.account-divider:before, .account-divider:after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.account-yandex { gap: 10px; }
+.yandex-mark { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #fc3f1d; color: #fff; font-weight: 700; font-size: 14px; }
+.account-identities { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.account-identities li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; overflow-wrap: anywhere; }
+.account-identities li span:first-child { color: var(--muted); }
+.account-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.account-danger { color: var(--danger); }
+.account-danger-fill { background: var(--danger); color: #fff; }
+.account-confirm { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #9c312a33; border-radius: 16px; background: #9c312a08; font-size: 14px; line-height: 1.6; }
+@media (max-width: 767px) {
+  .account-page { padding: 24px 0 48px; }
+  .account-card { padding: 22px 18px; border-radius: 20px; }
+  .account-card h1 { font-size: 26px; }
+}

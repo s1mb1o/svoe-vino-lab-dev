@@ -1,0 +1,72 @@
+// Shared rules of the «Винный дневник» account pages and the /api/account/* server routes.
+
+export const ACCOUNT_PATH = '/account'
+
+// The account service accepts 3 to 32 characters: lower-case Latin letters, digits, ".", "_", "-".
+// The first and the last character are a letter or a digit.
+export const USERNAME_PATTERN = /^[a-z0-9][a-z0-9_.-]{1,30}[a-z0-9]$/
+
+export const EMAIL_CODE_PATTERN = /^\d{6}$/
+
+/** Returns a same-site path for a redirect after login, or the account page. */
+export function safeNextPath(value: unknown): string {
+  if (typeof value !== 'string') return ACCOUNT_PATH
+  if (value.length > 512 || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return ACCOUNT_PATH
+  if (/[\u0000-\u001f\u007f\\]/.test(value)) return ACCOUNT_PATH
+  if (value === '/api' || value.startsWith('/api/') || value.startsWith('/v1/')) return ACCOUNT_PATH
+  return value
+}
+
+/** True for the account pages. Metrika and the Workbox page cache skip these paths. */
+export function isAccountPath(pathname: string): boolean {
+  return pathname === ACCOUNT_PATH || pathname.startsWith(`${ACCOUNT_PATH}/`)
+}
+
+export interface AccountErrorBody {
+  error: string
+  attemptsLeft?: number
+  retryAfter?: number
+}
+
+export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined): string {
+  const minutes = body?.retryAfter ? Math.max(1, Math.ceil(body.retryAfter / 60)) : 0
+  switch (body?.error) {
+    case 'invalid_email':
+      return 'Проверьте адрес почты.'
+    case 'rate_limited':
+      return minutes ? `Слишком много попыток. Попробуйте через ${minutes} мин.` : 'Слишком много попыток. Попробуйте позже.'
+    case 'invalid_code':
+      return typeof body.attemptsLeft === 'number' ? `Неверный код. Осталось попыток: ${body.attemptsLeft}.` : 'Неверный код.'
+    case 'invalid_challenge':
+    case 'too_many_attempts':
+      return 'Этот код больше не действует. Запросите новый.'
+    case 'invalid_username':
+      return 'Имя: от 3 до 32 символов — строчные латинские буквы, цифры, точка, дефис или подчёркивание. Первый и последний символ — буква или цифра.'
+    case 'username_taken':
+      return 'Это имя уже занято.'
+    case 'username_reserved':
+      return 'Это имя зарезервировано. Выберите другое.'
+    case 'invalid_ticket':
+      return 'Время на регистрацию истекло. Войдите ещё раз.'
+    case 'consent_outdated':
+    case 'terms_outdated':
+      return 'Тексты условий обновились. Обновите страницу и примите их ещё раз.'
+    case 'consent_required':
+      return 'Отметьте оба пункта, чтобы создать дневник.'
+    case 'provider_disabled':
+    case 'provider_unavailable':
+    case 'provider_rejected':
+    case 'invalid_flow':
+    case 'yandex_cancelled':
+      return 'Вход с Яндекс ID не завершён. Попробуйте ещё раз.'
+    case 'reauth_required':
+      return 'Для этого действия войдите заново: нужен вход за последние 15 минут.'
+    case 'session_required':
+    case 'session_invalid':
+      return 'Сеанс завершён. Войдите ещё раз.'
+    case 'account_unavailable':
+      return 'Дневник временно недоступен. Поиск вина по фото работает.'
+    default:
+      return 'Что-то пошло не так. Попробуйте ещё раз.'
+  }
+}

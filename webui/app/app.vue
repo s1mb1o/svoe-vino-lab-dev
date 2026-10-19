@@ -9,6 +9,8 @@ const isHackatonPage = computed(() => route.path === '/hackaton' || route.path =
 const isIdeasPage = computed(() => route.path === '/ideas' || route.path === '/ideas/')
 const isPresentationPage = computed(() => route.path === '/presentation' || route.path === '/presentation/')
 const ageGateOpen = computed(() => !ageChecked.value || !ageConfirmed.value)
+// «Винный дневник»: the server decides from NUXT_ACCOUNT_ENDPOINT; the page makes no account call.
+const accountEnabled = useState('account-enabled', () => import.meta.server && Boolean(String(useRuntimeConfig().accountEndpoint || '').trim()))
 onMounted(() => {
   ageConfirmed.value = hasAgeConfirmation(localStorage)
   ageChecked.value = true
@@ -23,6 +25,7 @@ onMounted(() => {
       <NuxtLink to="/" class="logo" aria-label="Что за вино? — поиск по фото"><ProductBrand /></NuxtLink>
       <span class="header-section"><AppIcon :name="isIdeasPage ? 'book' : isAndroidPage ? 'android' : 'scan'" />{{ isIdeasPage ? 'Больше, чем фото' : isHackatonPage ? 'Все приложения' : isAndroidPage ? 'Android-приложение' : 'Сканер вина' }}</span>
       <div class="header-actions">
+        <NuxtLink v-if="accountEnabled" class="product-navigation account-navigation" to="/account" aria-label="Винный дневник"><span>Дневник</span><AppIcon name="book" /></NuxtLink>
         <NuxtLink class="product-navigation" :to="isAndroidPage ? '/' : '/android'" :aria-label="isAndroidPage ? 'Открыть веб-сканер' : 'Открыть страницу Android-приложения'"><span>{{ isAndroidPage ? 'Веб-сканер' : 'Android' }}</span><AppIcon :name="isAndroidPage ? 'scan' : 'android'" /></NuxtLink>
         <ThemeSwitcher />
         <a class="portal-navigation" href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer"><span>На портал «Свое Вино»</span><AppIcon name="arrow-up-right" /></a>

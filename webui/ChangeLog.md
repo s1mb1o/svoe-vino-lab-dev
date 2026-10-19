@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-19 — «Винный дневник»: login and sign-up
+
+- Add the header link «Дневник» (phones: the book icon) and the `/account` page: login by email code, login with Yandex ID, sign-up with two separate consents, the logged-in view, logout, and account deletion. Spec: `docs/account.md`.
+- Add the `/api/account/*` server routes to the account service (issue #48): httpOnly `__Host-` cookies, an `Origin` check on state changes, `Cache-Control: no-store`, 2 s timeout, and a uniform error body. The Yandex callback answers only with HTTP 302.
+- Account deletion after the 15-minute window offers a fresh login by email code or Yandex ID in the confirmation panel.
+- Metrika does not start on `/account` and sends no hit for it. The Workbox page cache skips `/account*`.
+- `NUXT_ACCOUNT_ENDPOINT`, `NUXT_ACCOUNT_TOKEN`, `NUXT_ACCOUNT_PUBLIC_ORIGIN`. An empty endpoint hides the link and turns the routes off.
+- Checks: 45 new unit tests (343 in total: 323 passed, 20 existing skips), `nuxt typecheck`, production build, and a 24-step Chrome run against a local account service: sign-up, cookie flags, reload, logout, limit message, wrong code, login, deletion with reauth, Yandex start with PKCE, forged callback, phone header without overflow. Service down: the home page and the scanner work; the page shows «Дневник временно недоступен».
+
 ## 2026-10-19 — Wine for a dish
 
 - Add «Вино к блюду» as the third scanner mode at `/dish`. Keep three visible touch-accessible links on phones.

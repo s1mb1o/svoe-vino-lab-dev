@@ -20,6 +20,10 @@ export default defineNuxtConfig({
     predictionEndpoint: '',
     dinnerLensEndpoint: '',
     dinnerLensApiToken: '',
+    // «Винный дневник». An empty endpoint turns the account feature off (no header link, no calls).
+    accountEndpoint: '',
+    accountToken: '',
+    accountPublicOrigin: 'https://chtozavino.ru',
     public: {
       androidApkUrl: DEFAULT_ANDROID_APK_URL,
     },
@@ -131,7 +135,8 @@ export default defineNuxtConfig({
       runtimeCaching: [{
         urlPattern: ({ request, url }) => request.mode === 'navigate'
           && !url.pathname.startsWith('/api/')
-          && !url.pathname.startsWith('/v1/'),
+          && !url.pathname.startsWith('/v1/')
+          && url.pathname !== '/account' && !url.pathname.startsWith('/account/'),
         handler: 'NetworkFirst',
         options: {
           cacheName: 'svoe-vino-pages',
@@ -146,6 +151,8 @@ export default defineNuxtConfig({
   routeRules: {
     '/lineup/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/hackaton': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
+    '/account': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
+    '/account/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive', 'cache-control': 'no-store' } },
     '/hackaton/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/wines': { redirect: { to: '/', statusCode: 308 } },
     '/wines/': { redirect: { to: '/', statusCode: 308 } },

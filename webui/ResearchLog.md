@@ -1,5 +1,18 @@
 # Research log
 
+## «Винный дневник» web part, 2026-10-19
+
+The account service runs on gx10 in the LAN. Nuxt runs on the public edge host and reaches it only through a reverse SSH tunnel.
+So the browser talks only to same-site `/api/account/*` routes. The routes hold the service token and keep every service secret in httpOnly `__Host-` cookies.
+The header link must not call the service on every page. Nuxt decides it during SSR from `NUXT_ACCOUNT_ENDPOINT` and serializes the flag with `useState`.
+Decision: the session cookie is SameSite=Lax. The Yandex flow cookie must be Lax too: the Yandex callback is a top-level GET navigation from `oauth.yandex.ru`.
+The Yandex callback is a server route that answers only with HTTP 302. Metrika sends `location.href`, so a page callback would leak the one-time code to analytics.
+Decision: the Metrika init script skips `/account*`. A visit that starts on another page still loads Metrika; the plugin then sends no hit for `/account*`.
+Caddy is the only proxy in front of Nuxt. The last `X-Forwarded-For` entry is the client address only when the socket is loopback.
+Playwright route interception does not see the target of a redirect after a navigation. The end-to-end check reads the 302 of the start route with `maxRedirects: 0`.
+The service allows one email code per minute for an address. The end-to-end run checks the limit message, then waits for the window.
+The service deletes an account only after a login in the last 15 minutes. Without a reauth control the person met a dead end. The confirmation panel now offers a fresh login (reported by session svoe-vino-final-39).
+
 ## Dinner Lens mode, 2026-10-19
 
 The existing mode selector uses separate `/` and `/shelf` pages. A third route preserves navigation and unmount cancellation semantics. The 320-node label export is separate from wine rules and curation.

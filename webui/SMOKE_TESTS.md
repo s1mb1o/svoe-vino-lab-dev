@@ -1,5 +1,17 @@
 # Smoke tests
 
+## «Винный дневник»
+
+1. Set `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`. Confirm «Дневник» in the header on `/`, `/shelf`, `/ideas`, and `/android`. On a 360 px phone confirm the book icon and no horizontal scroll.
+2. Open `/account`. Request a code for a test address, enter it, choose a username, and confirm that «Создать дневник» stays disabled until both boxes are checked. Confirm «Вы вошли как …».
+3. In the browser storage panel confirm `__Host-cv_session` with HttpOnly, Secure, and SameSite=Lax, and no account token in `localStorage`.
+4. Reload: the session stays. «Выйти»: the cookie is gone. Request a second code within a minute: «Слишком много попыток…». Enter a wrong code: «Неверный код. Осталось попыток: N.»
+5. «Войти с Яндекс ID»: the browser opens `oauth.yandex.ru`. After the consent the browser returns to `/account` (or the sign-up step for a new identity). The address bar never shows `code=` on a page.
+6. Wait 15 minutes after the login. «Удалить аккаунт» → «Удалить навсегда» shows «Подтвердить кодом из письма». Confirm with the code: «Аккаунт удалён».
+7. Stop the account service. `/` and the scanner work; `/account` shows «Дневник временно недоступен».
+8. Clear `NUXT_ACCOUNT_ENDPOINT`. The header has no link; `/api/account/config` returns `{"enabled":false,...}`.
+9. In the network panel confirm no `mc.yandex.ru` request when a visit starts on `/account`.
+
 ## Wine for a dish
 
 Verified locally on 2026-10-19: 319 unit tests passed, 20 existing optional catalog snapshot tests skipped; type check, production build and bundle check passed. Five browser configurations passed in Chromium and WebKit with dark/light palettes and 320/390/1440-pixel viewports. Real gx10 checks exhausted all pages for ribeye (8 wines), Olivier (12) and king crab (12), and completed one photo recognition with confirmation. Physical camera capture remains a manual device check.

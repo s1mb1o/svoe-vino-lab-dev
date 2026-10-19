@@ -46,6 +46,11 @@ The browser stores age confirmation and the selected theme in `localStorage`.
 The PWA uses a service worker cache for offline access.
 These storage mechanisms do not use cookies.
 
+«Винный дневник» (`/account`, [docs/account.md](docs/account.md)) uses httpOnly cookies after a
+login: the session, and short-lived cookies for the email challenge, the sign-up ticket, and the
+Yandex ID flow. The pages under `/account` do not start Metrika and are not in the page cache.
+An empty `NUXT_ACCOUNT_ENDPOINT` turns the feature off.
+
 ## Run locally
 
 Use Node.js 22.19+, Node.js 24.11+, or Node.js 26+.
