@@ -5,6 +5,13 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-19
 
+- Added plan `docs/plans/06_wine-images.md`: static wine images on chtozavino.ru at
+  `/img/wines/{1600,400}/<slug>.webp` (`main_patched`, else `main`) with a SHA-256
+  manifest and a blocking check at each image and matcher catalogue deploy. The plan
+  records owner decisions D1–D8 and open questions Q1 and Q4. Issue #69 tracks the
+  5 Active wines with no image and the wrong image of
+  `vibes-vermentino-viognier-barrel-fermented-2022`. No code changes.
+
 - Dinner Lens now explains the alcohol choice for spicy food with the actual wine
   strength. Russian copy formats whole percentages without decimals and fractional
   percentages with a comma. All 114 package tests pass, including continuation pages,
