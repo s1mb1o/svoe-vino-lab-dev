@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Dinner Lens on the ideas page
+
+- Replace the grocery mock with a Dinner Lens card in the implemented section. Describe photo or name entry, sauce and heat choices, and explanations for wine pairings. Link directly to `/dish`.
+- Update section counts and balance the four implemented cards in two desktop columns.
+
 ## 2026-10-19 — Wine&Dine Merge landing
 
 - Added `/game` with original game illustrations, a three-step introduction, selectable regional scenes, separate pouring practice, and a native FAQ.
@@ -9,6 +14,7 @@
 - Documented content evidence, artwork provenance, prototype limits, and browser verification.
 - Passed type checks, the production build, 94 required build checks, and the first-load bundle check. Twenty existing optional catalog checks were skipped.
 - Passed all 16 production browser layouts in Chromium and WebKit, including route navigation, region keyboard focus, FAQ disclosure, image loading, and exact game links.
+
 
 ## 2026-10-19 — One searchable dish picker
 
