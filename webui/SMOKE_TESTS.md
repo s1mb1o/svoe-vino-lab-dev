@@ -1,5 +1,12 @@
 # Smoke tests
 
+## Game link in the former quiz position
+
+1. On `/ideas`, find Wine&Dine Merge in the final card grid. Confirm the game image, working-prototype badge, and «Подробнее об игре» link.
+2. Confirm that the blind-style quiz title, quiz tags, and unavailable quiz explanation are absent.
+3. Follow the card link to `/game`. Confirm the landing heading and the existing game entry URLs.
+4. Check the card at desktop, 390-pixel, and 320-pixel widths in both themes. Keep the remaining mock cards labeled as mockups.
+
 ## Wine&Dine Merge landing
 
 Verified locally on 2026-10-19: type checks, the production build, 94 required build checks, and the first-load bundle check passed. Twenty existing optional catalog checks were skipped. All 16 production browser layouts passed in Chromium and WebKit. Physical-device verification was not performed.

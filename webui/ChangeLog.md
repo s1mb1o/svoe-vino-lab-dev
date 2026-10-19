@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-19 — Replace the blind quiz mock with the game link
+
+- Replace the pictured blind-style quiz card on `/ideas` with Wine&Dine Merge, original game artwork, a working-prototype badge, and a link to `/game`.
+- Keep the existing wide game invitation. Describe the final section as mockups and a game so that the working link is not labeled unavailable.
+
 ## 2026-10-19 — Account-enabled phone header
 
 - Keep all header actions inside 320- and 360-pixel viewports when the Diary link is enabled. Use the existing brand icon without its wordmark below 380 pixels.

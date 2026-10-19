@@ -24,14 +24,14 @@ const mockups = [
   { id: 'audio', icon: 'story', title: 'История, которую можно услышать', description: 'Короткий аудиорассказ о месте, винодельне и людях за этикеткой.', limit: 'Макет аудиокарточки. Записи и воспроизведения пока нет.', tags: [] },
   { id: 'discovery', icon: 'search', title: 'Искать по вкусу', description: 'Описать желаемый стиль и найти похожие российские вина, в том числе у других производителей.', limit: 'Пример запроса. Поиск по вкусу и рекомендации по всему каталогу пока не работают.', tags: ['Свежее', 'Цитрусовое', 'Без дуба'] },
   { id: 'personal', icon: 'taste', title: 'Личный паспорт предпочтений', description: 'Собирать впечатления о винах, замечать любимые стили и получать персональные рекомендации.', limit: 'Пример профиля. Предпочтения не сохраняются, персонализация не подключена.', tags: ['Свежесть', 'Фруктовость', 'Мягкость'] },
-  { id: 'blind', icon: 'book', title: 'Угадать стиль вслепую', description: 'Небольшая игра: узнать сорт или регион по описанию, а затем открыть объяснение.', limit: 'Пример вопроса. Игровой сценарий и подсчёт результата пока не реализованы.', tags: ['Сорт', 'Регион', 'Разгадка'] },
+  { id: 'game', icon: 'game', title: 'Wine&Dine Merge', description: 'Собирайте блюда, подбирайте винные пары и подавайте заказы гостям своего маленького бистро.', limit: 'Работающий учебный прототип в браузере. Сочетания и правила подачи упрощены.', tags: [] },
   { id: 'shelf', icon: 'shelf', title: 'Полка как система', description: 'Сравнить фактическую выкладку с планом, увидеть пропуски и проследить изменения во времени.', limit: 'Макет планограммы. Распознавание полки уже есть; планы, контроль выкладки и история — пока идея.', tags: [] },
 ]
 
 const stages = [
   { id: 'implemented', number: '01', name: 'Реализовано', count: implemented.length, description: 'Готовые сценарии в приложениях' },
   { id: 'demo', number: '02', name: 'Демо', count: demos.length, description: 'Можно попробовать на примере' },
-  { id: 'mock', number: '03', name: 'Макеты', count: mockups.length, description: 'Так могут выглядеть следующие шаги' },
+  { id: 'mock', number: '03', name: 'Макеты и игра', count: mockups.length, description: 'Идеи на будущее и игра в браузере' },
 ]
 
 const { data: examples, status, refresh } = await useFetch<Wine[]>('/api/wines', { key: 'ideas-example-wines' })
@@ -118,19 +118,20 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
 
     <section id="mock" class="ideas-section" aria-labelledby="mock-title" data-stage="mock">
       <div class="section-heading">
-        <div><p class="section-kicker"><span>03</span> МАКЕТЫ И ИДЕИ</p><h2 id="mock-title">Куда пойти дальше.</h2></div>
-        <p>Эскизы следующих возможностей. Они показывают замысел: сервисы за этими макетами пока не работают.</p>
+        <div><p class="section-kicker"><span>03</span> МАКЕТЫ И ИГРА</p><h2 id="mock-title">Куда пойти дальше.</h2></div>
+        <p>Эскизы будущих возможностей и Wine&Dine Merge — игра, которую уже можно попробовать.</p>
       </div>
       <div class="mock-grid">
         <article v-for="idea in mockups" :id="`idea-${idea.id}`" :key="idea.id" class="mock-card">
           <div class="mock-preview" :class="`preview-${idea.id}`" aria-hidden="true">
-            <span class="mock-preview-label">ЭСКИЗ ИНТЕРФЕЙСА</span>
-            <template v-if="idea.id === 'audio'"><div class="audio-sketch"><AppIcon name="story" /><div class="waveform"><i v-for="(height, index) in [14, 26, 38, 20, 44, 30, 18, 36, 46, 24, 14, 32, 42, 22, 12]" :key="index" :style="{ height: `${height}px` }" /></div></div><span class="preview-caption">Голос места. История винодельни.</span></template>
+            <span class="mock-preview-label">{{ idea.id === 'game' ? 'ИГРА В БРАУЗЕРЕ' : 'ЭСКИЗ ИНТЕРФЕЙСА' }}</span>
+            <template v-if="idea.id === 'game'"><img src="/game-art/hero.svg" width="960" height="820" alt="" loading="lazy"></template>
+            <template v-else-if="idea.id === 'audio'"><div class="audio-sketch"><AppIcon name="story" /><div class="waveform"><i v-for="(height, index) in [14, 26, 38, 20, 44, 30, 18, 36, 46, 24, 14, 32, 42, 22, 12]" :key="index" :style="{ height: `${height}px` }" /></div></div><span class="preview-caption">Голос места. История винодельни.</span></template>
             <template v-else-if="idea.id === 'shelf'"><div class="shelf-sketch"><span v-for="slot in 7" :key="slot" :class="{ 'empty-slot': slot === 4 }"><AppIcon :name="slot === 4 ? 'plus' : 'taste'" /></span></div><span class="preview-caption">План → фотография → отличия</span></template>
             <template v-else-if="idea.id === 'personal'"><div class="profile-sketch"><div v-for="(tag, index) in idea.tags" :key="tag"><span>{{ tag }}</span><i><b :style="{ width: `${[80, 65, 45][index]}%` }" /></i></div></div></template>
-            <template v-else><AppIcon :name="idea.icon" /><p class="sketch-title">{{ idea.id === 'discovery' ? '«Хочется чего-то…»' : 'Что скрывает этикетка?' }}</p><div class="sketch-tags"><span v-for="tag in idea.tags" :key="tag">{{ tag }}</span></div></template>
+            <template v-else><AppIcon :name="idea.icon" /><p class="sketch-title">«Хочется чего-то…»</p><div class="sketch-tags"><span v-for="tag in idea.tags" :key="tag">{{ tag }}</span></div></template>
           </div>
-          <div class="mock-copy"><span class="status-badge mock">Макет · не подключено</span><h3>{{ idea.title }}</h3><p class="card-description">{{ idea.description }}</p><p class="card-detail">{{ idea.limit }}</p></div>
+          <div class="mock-copy"><span class="status-badge" :class="idea.id === 'game' ? 'demo' : 'mock'">{{ idea.id === 'game' ? 'Игра · можно попробовать' : 'Макет · не подключено' }}</span><h3>{{ idea.title }}</h3><p class="card-description">{{ idea.description }}</p><p class="card-detail">{{ idea.limit }}</p><NuxtLink v-if="idea.id === 'game'" to="/game" class="idea-link game-card-link" data-testid="ideas-game-card-link">Подробнее об игре<AppIcon name="arrow-up-right" /></NuxtLink></div>
         </article>
       </div>
     </section>
@@ -141,6 +142,7 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
 
 <style scoped>
 .ideas-page { --ideas-muted: color-mix(in srgb, var(--ink) 72%, var(--paper)); width: calc(100% - 80px); max-width: 1240px; margin: 0 auto; }
+.preview-game>img{width:auto;height:100%;object-fit:contain}.mock-copy .game-card-link{margin-top:16px}
 .ideas-game{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center;padding:25px 55px 30px 25px;margin-top:70px;border:1px solid var(--line);border-radius:24px;background:var(--cream)}.ideas-game>img{width:100%;height:auto}.ideas-game .status-badge .icon{width:14px;height:14px}.ideas-game .section-kicker{margin-top:20px}.ideas-game h2{font-size:clamp(29px,3.3vw,44px);line-height:1.25;letter-spacing:-.035em;margin:12px 0 18px}.ideas-game h2 em{font-style:normal;color:var(--accent)}.ideas-game>div>p:not(.section-kicker){font-size:13px;line-height:1.9;color:var(--ideas-muted);max-width:440px}.ideas-game .button{margin-top:24px}.ideas-game small{display:block;margin-top:14px;font-size:10px;line-height:1.8;color:var(--ideas-muted)}
 @media(max-width:767px){.ideas-game{grid-template-columns:1fr;gap:5px;padding:20px 28px 30px;margin-top:50px}.ideas-game>img{max-width:320px;margin:auto}.ideas-game h2{font-size:31px}.ideas-game h2>br{display:none}}
 .ideas-hero { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 24px; padding: 68px 32px 52px; }

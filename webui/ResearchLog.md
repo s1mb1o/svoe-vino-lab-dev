@@ -1,5 +1,11 @@
 # Research log
 
+## Game card replacement, 2026-10-19
+
+The owner identified the blind-style quiz mock in a screenshot and requested a link to the game landing page in that position.
+Decision: replace that card with the existing Wine&Dine Merge artwork and a `/game` link.
+Use a working-prototype badge and accurate merge-game copy. Do not imply that the merge game implements the former quiz.
+
 ## Game landing evidence, 2026-10-19
 
 The game is a separate public PWA at `game.chtozavino.ru`.
