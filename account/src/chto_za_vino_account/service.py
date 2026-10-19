@@ -112,6 +112,16 @@ def normalize_email(value: str) -> str:
     return email
 
 
+def optional_email(value: str | None) -> str | None:
+    """Normalize an email from a provider. An invalid or missing value gives None."""
+    if value is None:
+        return None
+    try:
+        return normalize_email(value)
+    except AccountError:
+        return None
+
+
 def normalize_username(value: str) -> str:
     username = value.strip().lower()
     if not USERNAME_RE.fullmatch(username):
@@ -178,7 +188,13 @@ class AccountService:
         return SessionIssued(token, expires_at, auth_method, user_id)
 
     def _login_or_signup(
-        self, provider: str, subject: str, *, auth_at: int | None = None, ttl: int = SESSION_TTL
+        self,
+        provider: str,
+        subject: str,
+        *,
+        email: str | None = None,
+        auth_at: int | None = None,
+        ttl: int = SESSION_TTL,
     ) -> AuthResult:
         now = self._now()
         with self.db.transaction() as db:
@@ -187,16 +203,50 @@ class AccountService:
                 (provider, subject),
             ).fetchone()
             if row is not None:
+                if email is not None and provider != "email":
+                    db.execute(
+                        "UPDATE identities SET email = ? WHERE provider = ? AND subject = ?",
+                        (email, provider, subject),
+                    )
                 return self._create_session(
                     db, row["user_id"], provider, now, auth_at=auth_at, ttl=ttl
                 )
+            owner = self._email_owner(db, email, provider)
+            if owner is not None:
+                db.execute(
+                    "INSERT INTO identities (provider, subject, user_id, linked_at, email) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (provider, subject, owner, now, email),
+                )
+                LOG.info("Identity joined an account by email (%s)", provider)
+                return self._create_session(db, owner, provider, now, auth_at=auth_at, ttl=ttl)
             ticket = new_token()
             db.execute(
                 "INSERT INTO signup_tickets (token_hash, provider, subject, created_at, "
-                "expires_at) VALUES (?, ?, ?, ?, ?)",
-                (token_hash(ticket), provider, subject, now, now + SIGNUP_TTL),
+                "expires_at, email) VALUES (?, ?, ?, ?, ?, ?)",
+                (token_hash(ticket), provider, subject, now, now + SIGNUP_TTL, email),
             )
         return SignupRequired(ticket, provider, subject if provider == "email" else None)
+
+    @staticmethod
+    def _email_owner(db: sqlite3.Connection, email: str | None, provider: str) -> str | None:
+        """The one account with this email and no identity of this provider, or None.
+
+        Two accounts with the same email (made before the join rule) are ambiguous: no join.
+        """
+        if email is None:
+            return None
+        owners = {
+            row["user_id"]
+            for row in db.execute("SELECT user_id FROM identities WHERE email = ?", (email,))
+        }
+        if len(owners) != 1:
+            return None
+        owner = owners.pop()
+        taken = db.execute(
+            "SELECT 1 FROM identities WHERE user_id = ? AND provider = ?", (owner, provider)
+        ).fetchone()
+        return None if taken is not None else owner
 
     @staticmethod
     def _link(
@@ -207,6 +257,7 @@ class AccountService:
         now: int,
         *,
         replace: bool = False,
+        email: str | None = None,
     ) -> None:
         owner = db.execute(
             "SELECT user_id FROM identities WHERE provider = ? AND subject = ?",
@@ -226,15 +277,15 @@ class AccountService:
                     "provider_already_linked", 409, f"Unlink the current {provider} first"
                 )
             db.execute(
-                "UPDATE identities SET subject = ?, linked_at = ? "
+                "UPDATE identities SET subject = ?, linked_at = ?, email = ? "
                 "WHERE user_id = ? AND provider = ?",
-                (subject, now, user_id, provider),
+                (subject, now, email, user_id, provider),
             )
         else:
             db.execute(
-                "INSERT INTO identities (provider, subject, user_id, linked_at) "
-                "VALUES (?, ?, ?, ?)",
-                (provider, subject, user_id, now),
+                "INSERT INTO identities (provider, subject, user_id, linked_at, email) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (provider, subject, user_id, now, email),
             )
         LOG.info("Identity linked (%s)", provider)
 
@@ -388,9 +439,11 @@ class AccountService:
         if error is not None:
             raise error
         if row["purpose"] == "login":
-            return self._login_or_signup("email", row["email"])
+            return self._login_or_signup("email", row["email"], email=row["email"])
         with self.db.transaction() as db:
-            self._link(db, row["user_id"], "email", row["email"], now, replace=True)
+            self._link(
+                db, row["user_id"], "email", row["email"], now, replace=True, email=row["email"]
+            )
         return Linked(row["user_id"])
 
     # ----------------------------------------------------------------- yandex
@@ -470,17 +523,18 @@ class AccountService:
         if error is not None:
             raise error
         try:
-            yandex_id = self.yandex.user_id(code=code, code_verifier=row["code_verifier"])
+            yandex_id, raw_email = self.yandex.user(code=code, code_verifier=row["code_verifier"])
         except ProviderUnavailable as failure:
             LOG.warning("Yandex ID unavailable: %s", failure)
             raise AccountError("provider_unavailable", 502, "Yandex ID did not answer") from None
         except ProviderRejected as failure:
             LOG.info("Yandex ID rejected the login: %s", failure)
             raise AccountError("provider_rejected", 400, "Yandex ID rejected the login") from None
+        yandex_email = optional_email(raw_email)
         if row["purpose"] == "login":
-            return self._login_or_signup("yandex", yandex_id)
+            return self._login_or_signup("yandex", yandex_id, email=yandex_email)
         with self.db.transaction() as db:
-            self._link(db, row["user_id"], "yandex", yandex_id, self._now())
+            self._link(db, row["user_id"], "yandex", yandex_id, self._now(), email=yandex_email)
         return Linked(row["user_id"])
 
     # ---------------------------------------------------------------- sign-up
@@ -509,7 +563,7 @@ class AccountService:
                 "terms_version, terms_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (user_id, username, now, consent_version, now, terms_version, now),
             )
-            self._link(db, user_id, row["provider"], row["subject"], now)
+            self._link(db, user_id, row["provider"], row["subject"], now, email=row["email"])
             db.execute(
                 "UPDATE signup_tickets SET used_at = ? WHERE token_hash = ?",
                 (now, row["token_hash"]),

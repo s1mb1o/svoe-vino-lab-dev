@@ -46,6 +46,10 @@ class YandexClient:
         return f"{AUTHORIZE_URL}?{query}"
 
     def user_id(self, *, code: str, code_verifier: str) -> str:
+        return self.user(code=code, code_verifier=code_verifier)[0]
+
+    def user(self, *, code: str, code_verifier: str) -> tuple[str, str | None]:
+        """Return the Yandex user ID and the default email (None without the email permission)."""
         token = self._exchange(code, code_verifier)
         try:
             response = self._http.get(
@@ -61,12 +65,14 @@ class YandexClient:
         if response.status_code != 200:
             raise ProviderRejected(f"user info status {response.status_code}")
         try:
-            user_id = str(response.json()["id"])
+            info = response.json()
+            user_id = str(info["id"])
         except (ValueError, KeyError, TypeError) as error:
             raise ProviderRejected("user info has no id") from error
         if not user_id.isdigit():
             raise ProviderRejected("user info id is not numeric")
-        return user_id
+        email = info.get("default_email") if isinstance(info, dict) else None
+        return user_id, email if isinstance(email, str) and email else None
 
     def _exchange(self, code: str, code_verifier: str) -> str:
         try:

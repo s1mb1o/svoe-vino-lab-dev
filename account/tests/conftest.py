@@ -46,6 +46,8 @@ class FakeYandex:
         self.tokens: dict[str, str] = {}
         self.fail_with: int | None = None
         self.requests: list[httpx.Request] = []
+        # default_email by Yandex user ID, as login.yandex.ru returns it with login:email.
+        self.emails: dict[str, str] = {}
 
     def authorize(self, authorize_url: str, yandex_id: str, code: str = "yandex-code") -> str:
         query = parse_qs(urlparse(authorize_url).query)
@@ -75,7 +77,10 @@ class FakeYandex:
             token = request.headers.get("authorization", "").removeprefix("OAuth ")
             if token not in self.tokens:
                 return httpx.Response(401, json={"error": "invalid_token"})
-            return httpx.Response(200, json={"id": self.tokens[token], "login": "someone"})
+            info = {"id": self.tokens[token], "login": "someone"}
+            if self.tokens[token] in self.emails:
+                info["default_email"] = self.emails[self.tokens[token]]
+            return httpx.Response(200, json=info)
         return httpx.Response(404)
 
 

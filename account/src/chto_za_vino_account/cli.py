@@ -3,6 +3,9 @@
   chto-za-vino-account                 run the service
   chto-za-vino-account max-key         read the MAX bot token from stdin and print MAX_WEBAPP_KEY
   chto-za-vino-account backup <file>   write a consistent copy of ACCOUNT_DATABASE to <file>
+  chto-za-vino-account merge --keep <username> --remove <username>
+                                       move the login methods of one account to another account
+                                       and delete the first account (operator action)
 """
 
 from __future__ import annotations
@@ -33,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if len(args) == 2 and args[0] == "backup":
         return backup(os.environ.get("ACCOUNT_DATABASE", "data/account.sqlite3"), args[1])
+    if len(args) == 5 and args[0] == "merge" and args[1] == "--keep" and args[3] == "--remove":
+        return merge(os.environ.get("ACCOUNT_DATABASE", "data/account.sqlite3"), args[2], args[4])
     if args:
         print(__doc__, file=sys.stderr)
         return 2
@@ -98,6 +103,58 @@ def backup(database: str, target: str) -> int:
         with contextlib.suppress(FileNotFoundError):
             temp_path.unlink()
     print(target_path)
+    return 0
+
+
+
+def merge(database: str, keep: str, remove: str) -> int:
+    """Join two accounts of one person: an operator action for accounts made before the email rule.
+
+    The login methods (identities) of `remove` move to `keep`, then `remove` is deleted with its
+    sessions and pending records. The command stops without a change when `keep` already has a
+    login method of the same provider: an account has at most one identity for each provider.
+    Back up the database first. Diary data does not exist yet; move it here when it does.
+    """
+    path = Path(database)
+    if not path.is_file():
+        print(f"No database at {path}", file=sys.stderr)
+        return 1
+    db = sqlite3.connect(path, isolation_level=None)
+    db.row_factory = sqlite3.Row
+    try:
+        db.execute("PRAGMA foreign_keys = ON")
+        db.execute("BEGIN IMMEDIATE")
+        users = {
+            row["username"]: row["id"]
+            for row in db.execute(
+                "SELECT id, username FROM users WHERE username IN (?, ?)", (keep, remove)
+            )
+        }
+        if keep == remove or keep not in users or remove not in users:
+            db.execute("ROLLBACK")
+            print("Give two different existing usernames", file=sys.stderr)
+            return 1
+        keep_id, remove_id = users[keep], users[remove]
+        kept = {row["provider"] for row in db.execute(
+            "SELECT provider FROM identities WHERE user_id = ?", (keep_id,))}
+        moving = [row["provider"] for row in db.execute(
+            "SELECT provider FROM identities WHERE user_id = ?", (remove_id,))]
+        clash = sorted(kept.intersection(moving))
+        if clash:
+            db.execute("ROLLBACK")
+            print(f"{keep} already has: {', '.join(clash)}; nothing changed", file=sys.stderr)
+            return 1
+        db.execute("UPDATE identities SET user_id = ? WHERE user_id = ?", (keep_id, remove_id))
+        db.execute("DELETE FROM users WHERE id = ?", (remove_id,))
+        db.execute("COMMIT")
+    except sqlite3.Error as error:
+        if db.in_transaction:
+            db.execute("ROLLBACK")
+        print(f"Merge failed: {type(error).__name__}", file=sys.stderr)
+        return 1
+    finally:
+        db.close()
+    print(f"Merged {remove} into {keep}: moved {', '.join(sorted(moving)) or 'nothing'}")
     return 0
 
 

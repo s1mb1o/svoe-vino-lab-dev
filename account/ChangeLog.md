@@ -1,5 +1,12 @@
 # ChangeLog
 
+## 2026-10-19 — Accounts with the same email join
+
+- A login of an unknown identity joins the one account with the same email instead of a new sign-up: Yandex ID by its `default_email`, an email code by the address of a Yandex identity (owner request; the owner had two accounts for one address).
+- Schema `002_identity_email.sql`: `identities.email` (filled for email identities), an index, and `signup_tickets.email`.
+- New operator command `chto-za-vino-account merge --keep <username> --remove <username>` for duplicates made before this rule.
+- 8 new tests (73 in total).
+
 ## 2026-10-19 — Second review fixes, manual tests
 
 Codex reviewed `64545eb5..330a5c2d`. Fixed:

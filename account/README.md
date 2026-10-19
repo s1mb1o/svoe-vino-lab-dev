@@ -14,6 +14,7 @@ preferences, application tokens) comes later.
 | --- | --- |
 | Login by email code | A 6-digit code, valid 10 minutes, at most 5 tries. The code works only with the challenge ID that the requesting browser holds. Limits: 1 code per minute and 3 per hour for an address, 20 per hour for a client address. |
 | Login by Yandex ID | OAuth 2.0 authorization code flow with PKCE (`S256`) and `state`. The service keeps the Yandex user ID only and discards the access token. Limit: 30 starts per hour for a client address; at most 10,000 open flows. |
+| Same email | A login of an unknown identity joins the account that has the same email: an email identity by its address, a Yandex identity by the `default_email` that Yandex ID returns (permission «Доступ к адресу электронной почты»). Comparison after trim and lower case. No join when two accounts have the email or when the account already has an identity of this provider. The join trusts the Yandex address; Yandex ID confirms addresses of an account. |
 | Sign-up | A new email or Yandex identity gets a sign-up ticket (30 minutes). Sign-up needs a username and the current consent and terms versions. |
 | Sessions | 30 days, extended at most once a day. `max` sessions: 1 day. |
 | Linking | A session can link an email (this changes the address), Yandex ID, MAX, and Telegram. Linking email, Yandex ID, or MAX needs a login in the last 15 minutes, at the start and at the end. One identity per provider and account. An identity belongs to one account at most. |
@@ -107,6 +108,15 @@ deployment repository, not here.
   install). The service logs the address of each refused caller, so a wrong list shows up
   in `docker logs`.
 - Health: the image checks `GET /readyz`. Liveness is `GET /healthz`.
+
+Duplicate accounts made before the same-email rule. Back up the database first, then:
+
+```sh
+docker exec svoe-vino-lab-account-prod chto-za-vino-account merge --keep <username> --remove <username>
+```
+
+The command moves the login methods of `--remove` to `--keep` and deletes `--remove` with its
+sessions. It changes nothing when both accounts have a login method of the same provider.
 
 Backup. The image has no `sqlite3` program; the service has a command:
 
