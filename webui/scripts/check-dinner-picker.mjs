@@ -32,20 +32,29 @@ for (const [name, width, engine, colorScheme] of cases) {
       })
     }
     const page = await context.newPage()
-    const errors = []
+    const errors = []; const responses = []; let consumed = 0
+    page.on('response', response => { if (response.url().endsWith('/api/dinner/recommendations')) responses.push(response) })
     page.on('pageerror', error => errors.push(error.message))
     await page.goto(origin + '/dish', { waitUntil: 'networkidle' })
     const input = page.getByRole('combobox', { name: 'Название блюда', exact: true })
     assert.equal(await page.locator('.dinner-form input:not([type=file])').count(), 1)
-    assert.equal(await page.locator('.dinner-form select, .dinner-form datalist').count(), 0)
+    assert.equal(await page.locator('.dinner-form select, .dinner-form datalist, .dinner-form button[type=submit]').count(), 0)
     const categories = page.getByRole('button', { name: 'Показать категории блюд', exact: true })
     const option = id => page.locator('#dinner-option-' + id)
     const expand = id => option(id).locator('.dish-picker-expand').click()
     const choose = id => option(id).locator('.dish-picker-copy').click()
-    async function submit(expected) {
-      const pending = page.waitForResponse(response => response.url().endsWith('/api/dinner/recommendations'))
-      await page.getByRole('button', { name: 'Подобрать вино', exact: true }).click()
-      const response = await pending
+    async function awaitAutoResult(expected) {
+      let response
+      for (let attempt = 0; attempt < 1000; attempt++) {
+        response = responses.slice(consumed).find(value => {
+          const body = value.request().postDataJSON()
+          return body.node_id === expected.node_id && body.confirmed_dish === expected.confirmed_dish
+        })
+        if (response) break
+        await new Promise(resolve => setTimeout(resolve, 30))
+      }
+      assert(response, 'An edit must automatically request the latest selection')
+      consumed = responses.length
       assert.equal(response.status(), 200)
       const body = response.request().postDataJSON()
       assert.equal(body.node_id, expected.node_id)
@@ -64,11 +73,11 @@ for (const [name, width, engine, colorScheme] of cases) {
     assert.equal(await input.getAttribute('aria-expanded'), 'false')
     const liveRequests = ['desktop', 'mobile'].includes(name)
     if (liveRequests) {
-      assert.equal((await submit({ node_id: 'ribeye_grilled' })).status, 'ok')
+      assert.equal((await awaitAutoResult({ node_id: 'ribeye_grilled' })).status, 'ok')
       await page.locator('.dinner-wine').first().waitFor()
       await input.fill('Стейк из мяса')
       await choose('meat_steak')
-      assert.equal((await submit({ node_id: 'meat_steak' })).resolved_node_id, 'meat_steak')
+      assert.equal((await awaitAutoResult({ node_id: 'meat_steak' })).resolved_node_id, 'meat_steak')
       await page.locator('.dinner-wine').first().waitFor()
     }
     await categories.click()
@@ -86,7 +95,7 @@ for (const [name, width, engine, colorScheme] of cases) {
     assert.equal(await input.getAttribute('aria-expanded'), 'false')
     assert(await input.inputValue())
     if (liveRequests) {
-      const result = await submit({ node_id: firstId })
+      const result = await awaitAutoResult({ node_id: firstId })
       assert.equal(result.resolved_node_id, firstId)
       await page.locator('.dinner-wine').first().waitFor()
     }
@@ -106,14 +115,15 @@ for (const [name, width, engine, colorScheme] of cases) {
     assert.equal(await input.getAttribute('aria-expanded'), 'false', 'An outside click closes the popup')
     if (liveRequests) {
       await input.fill('Неизвестное блюдо xyz')
-      const result = await submit({ confirmed_dish: 'Неизвестное блюдо xyz' })
+      const result = await awaitAutoResult({ confirmed_dish: 'Неизвестное блюдо xyz' })
       assert.equal(result.status, 'needs_category')
-      await page.waitForFunction(() => document.activeElement?.id === 'dinner-dish' && document.querySelectorAll('[role=treeitem]').length === 16)
+      await page.waitForFunction(() => document.activeElement?.id === 'dinner-dish' && document.querySelector('.dinner-question'))
       assert.equal(await input.inputValue(), 'Неизвестное блюдо xyz')
+      await categories.click()
       await choose('meat')
       assert.equal(await input.inputValue(), 'Мясо')
       await input.fill('Своё блюдо xyz')
-      assert.equal((await submit({ confirmed_dish: 'Своё блюдо xyz' })).status, 'needs_category')
+      assert.equal((await awaitAutoResult({ confirmed_dish: 'Своё блюдо xyz' })).status, 'needs_category')
     }
     for (const row of await page.getByRole('treeitem').all()) {
       assert(Number(await row.getAttribute('aria-level')) <= 3)

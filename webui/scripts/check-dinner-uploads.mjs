@@ -90,7 +90,7 @@ for (const [name, engine, viewport, mobile, colorScheme] of [
       assert.equal(calls.length, before + 1)
       assert(calls.at(-1).image_base64.startsWith('data:image/jpeg;base64,'))
       assert(!Buffer.from(calls.at(-1).image_base64.split(',')[1], 'base64').includes(Buffer.from(privateMarker)), 'Source metadata must not be copied; browser-generated image properties are allowed')
-      assert.equal(await page.locator('.dinner-wine').count(), 0, 'No wine can appear before explicit confirmation')
+      assert.equal(await page.locator('.dinner-wine').count(), 0, 'An unresolved photograph must not invent wines')
       assert.equal(await page.locator('.dinner-error').count(), 0)
       if (/heic|heif/i.test(fixture.name)) {
         const pixels = await page.evaluate(async () => {
@@ -156,11 +156,10 @@ if (process.env.DINNER_HEIC_LIVE_IMAGE) {
     const response = page.waitForResponse(response => response.url().endsWith('/api/dinner/recognize'), { timeout: 200_000 })
     await drop(page, [{ name: 'dish.heic', type: 'image/heic', bytes: [...await readFile(process.env.DINNER_HEIC_LIVE_IMAGE)] }])
     assert.equal((await response).status(), 200); await idle(page)
-    assert.equal(await page.locator('.dinner-wine').count(), 0)
-    await page.locator('#dinner-dish').fill('Стейк рибай на гриле')
-    await page.getByRole('button', { name: 'Подтвердить и подобрать вино', exact: true }).click()
     await page.locator('.dinner-wine').first().waitFor()
-    receipts.push({ name: 'real-service-heic-drop', passed: true, recognitionAndConfirmation: true })
+    await page.locator('#dinner-dish').fill('Стейк рибай на гриле')
+    await page.locator('.dinner-wine').first().waitFor()
+    receipts.push({ name: 'real-service-heic-drop', passed: true, automaticRecognitionAndCorrection: true })
   } finally { await context.close(); await browser.close() }
 }
 await writeFile(resolve(output, 'results.json'), JSON.stringify({ origin, receipts }, null, 2) + '\n')

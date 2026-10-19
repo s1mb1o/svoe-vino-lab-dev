@@ -1,9 +1,15 @@
 # Change log
 
+## 2026-10-19 — Automatic Dinner Lens recommendations
+
+- Remove the primary pairing button. Refresh wine recommendations after recognition, manual dish selection, or taste/sauce changes. Debounce typed names for 450 ms.
+- Cancel superseded requests and pending input timers. Use the latest taste settings after photo recognition, keep editing focus and scroll position, and retain pagination for the current selection. Provide an error-only retry action.
+
 ## 2026-10-19 — Replace the blind quiz mock with the game link
 
 - Replace the pictured blind-style quiz card on `/ideas` with Wine&Dine Merge, original game artwork, a working-prototype badge, and a link to `/game`.
 - Keep the existing wide game invitation. Describe the final section as mockups and a game so that the working link is not labeled unavailable.
+
 
 ## 2026-10-19 — Account-enabled phone header
 

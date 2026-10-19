@@ -98,7 +98,7 @@ export function useDinnerLens(dependencies: { fetch?: typeof fetch; prepare?: ty
       if (current !== generation) return
       dish.value = dinnerNode(value.resolved_node_id)?.label || ''
       question.value = value.clarification_question || 'Проверьте название блюда и уточните соус.'
-      // A photograph is a hypothesis. Wine cards remain hidden until explicit confirmation.
+      // Keep recognition separate so the view can request wines with the latest dish and taste settings.
       phase.value = 'confirm'
     })
   }

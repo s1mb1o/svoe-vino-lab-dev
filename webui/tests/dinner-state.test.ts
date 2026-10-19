@@ -13,8 +13,8 @@ function setup(request: ReturnType<typeof vi.fn>, timeout = 2000) {
 }
 afterEach(() => scopes.splice(0).forEach(scope => scope.stop()))
 
-describe('dish confirmation and wine pagination', () => {
-  it('hides photo wines until the user confirms and never repeats vision on confirmation', async () => {
+describe('dish recognition and wine pagination', () => {
+  it('separates recognition from recommendations without repeating vision', async () => {
     const request = vi.fn().mockResolvedValueOnce(reply()).mockResolvedValueOnce(reply())
     const { lens, prepare } = setup(request)
     await lens.select([photo()])
