@@ -25,10 +25,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val packManager = ModelPackManager(application)
     private val historyStore = HistoryStore(application)
     private var installedPack: InstalledModelPack? = packManager.current()
+    private val needsBuiltInPack = installedPack?.needsBuiltInUpgrade() != false
     private var engine: RecognitionEngine? = null
     private var acceleratorCheckRunning = false
 
-    private var segmenterMode = SegmenterMode.fromPreference(
+    private var segmenterMode = if (needsBuiltInPack) SegmenterMode.NONE else SegmenterMode.fromPreference(
         preferences.getString(KEY_SEGMENTER_MODE, null),
     )
 
@@ -46,10 +47,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     )
     private val currentAcceleratorCheckKey = installedPack?.acceleratorCheckKey()
     private val needsInitialAcceleratorCheck =
-        preferences.getInt(KEY_ACCELERATOR_CHECK_VERSION, 0) != ACCELERATOR_CHECK_VERSION ||
+        needsBuiltInPack ||
+            preferences.getInt(KEY_ACCELERATOR_CHECK_VERSION, 0) != ACCELERATOR_CHECK_VERSION ||
             preferences.getString(KEY_ACCELERATOR_CHECK_PACK, null) != currentAcceleratorCheckKey ||
             automaticDisAccelerator == null || automaticSigLip2Accelerator == null
-    private val needsBuiltInPack = installedPack?.hasYolo() != true
 
     private val mutableState = MutableStateFlow(
         UiState(
@@ -76,13 +77,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            val pack = installedPack?.takeIf(InstalledModelPack::hasYolo) ?: runCatching {
+            val pack = installedPack?.takeUnless(InstalledModelPack::needsBuiltInUpgrade) ?: runCatching {
                 withContext(Dispatchers.IO) { packManager.installBuiltIn() }
             }.getOrElse {
                 showError("Встроенный каталог не установлен: ${friendlyMessage(it)}.")
                 return@launch
             }.also {
                 installedPack = it
+                preferences.edit().putString(KEY_SEGMENTER_MODE, segmenterMode.name).apply()
                 replaceEngine(null)
                 mutableState.update { state -> state.copy(modelPack = it.info) }
             }
@@ -92,6 +94,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 mutableState.update {
                     it.copy(isBusy = false, progressText = null)
                 }
+            }
+            if (BuildConfig.DEBUG && mutableState.value.debugHttpServerEnabled) {
+                setDebugHttpServerEnabled(true)
             }
         }
     }
@@ -124,9 +129,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setDebugHttpServerEnabled(enabled: Boolean) {
         if (!BuildConfig.DEBUG) return
+        if (mutableState.value.isBusy) return
         val application = getApplication<Application>()
         val control = application as? DebugHttpServerControl ?: return
-        runCatching { control.setDebugHttpServerEnabled(enabled) }
+        runCatching {
+            // Do not keep a UI GPU model alive beside the bulk-test GPU model.
+            if (enabled) replaceEngine(null)
+            control.setDebugHttpServerEnabled(enabled)
+        }
             .onSuccess {
                 saveDebugHttpServerEnabled(application, enabled)
                 mutableState.update {
@@ -147,6 +157,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun redetectAccelerators() {
         val pack = installedPack ?: return
         if (acceleratorCheckRunning) return
+        if (mutableState.value.debugHttpServerEnabled) {
+            showError("Перед проверкой GPU выключите HTTP-сервер для тестов.")
+            return
+        }
         viewModelScope.launch { runAcceleratorCheck(pack) }
     }
 
@@ -183,7 +197,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             runCatching {
                 withContext(Dispatchers.IO) {
                     acceptedUris.mapNotNull { uri ->
-                        runCatching { BitmapLoader.decode(getApplication(), uri) }.getOrNull()
+                        runCatching {
+                            BitmapLoader.decode(
+                                getApplication(), uri,
+                                fullResolution = installedPack?.isCompleteNaFlex() == true,
+                            )
+                        }.getOrNull()
                     }
                 }
             }.onSuccess { bitmaps ->
@@ -278,6 +297,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun recognize() {
+        if (mutableState.value.debugHttpServerEnabled) {
+            showError("Для распознавания в приложении выключите HTTP-сервер для тестов.")
+            return
+        }
         val bitmaps = mutableState.value.selectedImages.toList()
         if (bitmaps.isEmpty()) return
         val pack = installedPack ?: run {
@@ -367,9 +390,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                                 append("Успешно: ${recognizedShots.size}. ")
                             }
                             append("Лучший результат: фото ${bestShot.originalIndex + 1}. ")
-                            append("${bestShot.output.segmenterName}: ")
-                            append("${recognizedShots.sumOf { shot -> shot.output.segmentationMs }} мс ")
-                            append("(${bestShot.output.segmentationAccelerator}). ")
+                            if (bestShot.output.segmenterName == SegmenterMode.NONE.name) {
+                                append("Полный кадр без сегментации. ")
+                            } else {
+                                append("${bestShot.output.segmenterName}: ")
+                                append("${recognizedShots.sumOf { shot -> shot.output.segmentationMs }} мс ")
+                                append("(${bestShot.output.segmentationAccelerator}). ")
+                            }
                             append("SigLIP2: ")
                             append("${recognizedShots.sumOf { shot -> shot.output.embeddingMs }} мс ")
                             append("(${bestShot.output.embeddingAccelerator}). ")
@@ -464,6 +491,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun runAcceleratorCheck(pack: InstalledModelPack) {
         if (acceleratorCheckRunning) return
+        replaceEngine(null)
         acceleratorCheckRunning = true
         mutableState.update {
             it.copy(
@@ -582,7 +610,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 private fun InstalledModelPack.acceleratorCheckKey(): String {
-    val sigLipFile = if (isNaFlex()) NAFLEX_BACKBONE_FILE else LEGACY_SIGLIP_MODEL_FILE
+    val sigLipFile = when {
+        isCompleteNaFlex() -> COMPLETE_NAFLEX_MODEL_FILE
+        isNaFlex() -> NAFLEX_BACKBONE_FILE
+        else -> LEGACY_SIGLIP_MODEL_FILE
+    }
     return listOf(
         manifest.sigLip2Runtime,
         manifest.maxNumPatches ?: 0,

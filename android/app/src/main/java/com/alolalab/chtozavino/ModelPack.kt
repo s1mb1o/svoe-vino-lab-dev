@@ -15,9 +15,24 @@ private const val PACK_VERSION_WITH_IMAGES = 2
 private const val PACK_VERSION_WITH_YOLO = 3
 private const val PACK_VERSION_WITH_NAFLEX = 4
 private const val PACK_VERSION_WITH_BASE_NAFLEX = 5
-private val SUPPORTED_PACK_VERSIONS = 1..PACK_VERSION_WITH_BASE_NAFLEX
+internal const val PACK_VERSION_WITH_COMPLETE_NAFLEX = 6
+private val SUPPORTED_PACK_VERSIONS = 1..PACK_VERSION_WITH_COMPLETE_NAFLEX
 internal const val LEGACY_SIGLIP_RUNTIME = "fixed-224"
 internal const val NAFLEX_SIGLIP_RUNTIME = "naflex-exact-split"
+internal const val COMPLETE_NAFLEX_RUNTIME = "naflex-complete"
+internal const val COMPLETE_NAFLEX_PIPELINE = "raw-native-naflex-base-p512-v1"
+internal const val COMPLETE_NAFLEX_MODEL_FILE = "base-p512-gpu-fp16.tflite"
+internal const val COMPLETE_NAFLEX_MANIFEST_FILE = "base-p512-gpu-fp16.manifest.json"
+internal const val COMPLETE_NAFLEX_POSITIONS_FILE = "position_table.bin"
+internal const val COMPLETE_NAFLEX_MODEL_SHA256 =
+    "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005"
+internal const val COMPLETE_NAFLEX_PROFILE_SHA256 =
+    "1ac1a7a3a88074c04fc1559c9d0ae350820a8f681bc84f6176ef2aaed786683c"
+internal const val COMPLETE_NAFLEX_POSITIONS_SHA256 =
+    "3ba1ba032ad8d97e0a1afebf4513615fbfedb56f646c14dcdb83d3c228c12860"
+internal const val COMPLETE_NAFLEX_MANIFEST_SHA256 =
+    "8a45409f227794572e8fea98bbfc39266d558f0d759ba1e5774219340d4c36ec"
+internal const val COMPLETE_NAFLEX_REVISION = "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
 internal const val LEGACY_PIPELINE_ID = "dis-white-square-timm-crop090-v2"
 internal const val NAFLEX_PIPELINE_ID = "foreground-white-native-naflex-v1"
 internal const val LEGACY_SIGLIP_MODEL = "vit_base_patch16_siglip_224.v2_webli"
@@ -54,11 +69,16 @@ private val NAFLEX_SIGLIP_PAYLOADS = setOf(
     NAFLEX_POOLING_FILE,
     NAFLEX_POSITIONS_FILE,
 )
+private val COMPLETE_NAFLEX_PAYLOADS = setOf(
+    COMPLETE_NAFLEX_MODEL_FILE,
+    COMPLETE_NAFLEX_MANIFEST_FILE,
+    COMPLETE_NAFLEX_POSITIONS_FILE,
+)
 private const val YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
 private const val IMAGE_ARCHIVE = "images.zip"
 private const val BUILT_IN_PACK = "default_model_pack.zip"
 private val ALLOWED_ENTRIES = COMMON_PAYLOADS + LEGACY_SIGLIP_PAYLOADS +
-    NAFLEX_SIGLIP_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
+    NAFLEX_SIGLIP_PAYLOADS + COMPLETE_NAFLEX_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
 private const val MAX_PACK_BYTES = 2L * 1024L * 1024L * 1024L
 private const val MAX_IMAGE_BYTES = 512L * 1024L * 1024L
 private const val MAX_IMAGE_COUNT = 5_000
@@ -87,13 +107,22 @@ internal fun parseModelPackContract(json: JSONObject): ModelPackContract {
     }
     val isNaFlex = formatVersion >= PACK_VERSION_WITH_NAFLEX
     val isBaseNaFlex = formatVersion >= PACK_VERSION_WITH_BASE_NAFLEX
-    val expectedPipeline = if (isNaFlex) NAFLEX_PIPELINE_ID else LEGACY_PIPELINE_ID
+    val isComplete = formatVersion == PACK_VERSION_WITH_COMPLETE_NAFLEX
+    val expectedPipeline = when {
+        isComplete -> COMPLETE_NAFLEX_PIPELINE
+        isNaFlex -> NAFLEX_PIPELINE_ID
+        else -> LEGACY_PIPELINE_ID
+    }
     val expectedModel = when {
         isBaseNaFlex -> BASE_NAFLEX_SIGLIP_MODEL
         isNaFlex -> NAFLEX_SIGLIP_MODEL
         else -> LEGACY_SIGLIP_MODEL
     }
-    val expectedRuntime = if (isNaFlex) NAFLEX_SIGLIP_RUNTIME else LEGACY_SIGLIP_RUNTIME
+    val expectedRuntime = when {
+        isComplete -> COMPLETE_NAFLEX_RUNTIME
+        isNaFlex -> NAFLEX_SIGLIP_RUNTIME
+        else -> LEGACY_SIGLIP_RUNTIME
+    }
     val expectedDimension = when {
         isBaseNaFlex -> BASE_NAFLEX_VECTOR_DIMENSION
         isNaFlex -> NAFLEX_VECTOR_DIMENSION
@@ -129,11 +158,19 @@ internal fun parseModelPackContract(json: JSONObject): ModelPackContract {
     if (isNaFlex && positionEmbeddingGrid != 16) {
         throw ModelPackException("Сетка позиционных векторов SigLIP2 NaFlex должна быть 16.")
     }
+    if (isComplete && (
+            maxNumPatches != 512 ||
+                json.optString("model_revision") != COMPLETE_NAFLEX_REVISION ||
+                json.optString("profile_sha256") != COMPLETE_NAFLEX_PROFILE_SHA256
+            )
+    ) {
+        throw ModelPackException("Пакет должен использовать проверенный SigLIP2 Base NaFlex p512.")
+    }
     val poolingMode = json.optString("pooling_mode", STANDARD_POOLING_MODE)
     if (poolingMode !in setOf(STANDARD_POOLING_MODE, FOREGROUND_POOLING_MODE)) {
         throw ModelPackException("Пакет использует неизвестный pooling SigLIP2 NaFlex.")
     }
-    if (!isBaseNaFlex && poolingMode != STANDARD_POOLING_MODE) {
+    if ((!isBaseNaFlex || isComplete) && poolingMode != STANDARD_POOLING_MODE) {
         throw ModelPackException("Foreground pooling доступен только в пакете Base NaFlex.")
     }
     val referenceAggregation = json.optString(
@@ -193,6 +230,9 @@ data class InstalledModelPack(
             vectorCount = manifest.vectorCount,
             wineCount = manifest.wineCount,
             installedAt = manifest.installedAt,
+            sigLip2Runtime = manifest.sigLip2Runtime,
+            vectorDimension = manifest.vectorDimension,
+            maxNumPatches = manifest.maxNumPatches,
         )
 
     fun file(name: String): File = File(directory, name)
@@ -201,6 +241,11 @@ data class InstalledModelPack(
         file(YOLO_MODEL_FILE).isFile
 
     fun isNaFlex(): Boolean = manifest.sigLip2Runtime == NAFLEX_SIGLIP_RUNTIME
+
+    fun isCompleteNaFlex(): Boolean = manifest.sigLip2Runtime == COMPLETE_NAFLEX_RUNTIME
+
+    fun needsBuiltInUpgrade(): Boolean = !hasYolo() ||
+        manifest.formatVersion < PACK_VERSION_WITH_COMPLETE_NAFLEX
 
     fun allowsNaFlexGpuPilot(): Boolean = manifest.gpuCompatible
 }
@@ -316,10 +361,11 @@ class ModelPackManager(private val context: Context) {
 
         val fileJson = json.optJSONObject("files")
             ?: throw ModelPackException("В manifest.json нет объекта files.")
-        val requiredPayloads = COMMON_PAYLOADS + if (isNaFlex) {
-            NAFLEX_SIGLIP_PAYLOADS
-        } else {
-            LEGACY_SIGLIP_PAYLOADS
+        val complete = sigLip2Runtime == COMPLETE_NAFLEX_RUNTIME
+        val requiredPayloads = COMMON_PAYLOADS + when {
+            complete -> COMPLETE_NAFLEX_PAYLOADS
+            isNaFlex -> NAFLEX_SIGLIP_PAYLOADS
+            else -> LEGACY_SIGLIP_PAYLOADS
         } + if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
             setOf(IMAGE_ARCHIVE)
         } else {
@@ -362,7 +408,25 @@ class ModelPackManager(private val context: Context) {
         if (!isNaFlex && files.getValue(LEGACY_SIGLIP_MODEL_FILE).sha256 != SIGLIP_MODEL_SHA256) {
             throw ModelPackException("Пакет содержит другую модель SigLIP2.")
         }
-        if (isNaFlex) {
+        if (complete) {
+            if (
+                files.getValue(COMPLETE_NAFLEX_MODEL_FILE).sha256 != COMPLETE_NAFLEX_MODEL_SHA256 ||
+                files.getValue(COMPLETE_NAFLEX_MANIFEST_FILE).sha256 != COMPLETE_NAFLEX_MANIFEST_SHA256 ||
+                files.getValue(COMPLETE_NAFLEX_POSITIONS_FILE).sha256 != COMPLETE_NAFLEX_POSITIONS_SHA256 ||
+                files.getValue(COMPLETE_NAFLEX_POSITIONS_FILE).bytes != 786432L
+            ) {
+                throw ModelPackException("Пакет содержит другую модель или таблицу Base NaFlex p512.")
+            }
+            val model = JSONObject(File(directory, COMPLETE_NAFLEX_MANIFEST_FILE).readText())
+            if (
+                model.optString("model_file") != COMPLETE_NAFLEX_MODEL_FILE ||
+                model.optString("model_sha256") != COMPLETE_NAFLEX_MODEL_SHA256 ||
+                model.optString("profile_sha256") != COMPLETE_NAFLEX_PROFILE_SHA256 ||
+                model.getJSONObject("position_table").optString("file") != COMPLETE_NAFLEX_POSITIONS_FILE
+            ) {
+                throw ModelPackException("Manifest Base NaFlex p512 не совпадает с пакетом.")
+            }
+        } else if (isNaFlex) {
             val positionBytes = positionEmbeddingGrid!!.toLong() * positionEmbeddingGrid *
                 vectorDimension * Float.SIZE_BYTES
             if (files.getValue(NAFLEX_POSITIONS_FILE).bytes != positionBytes) {

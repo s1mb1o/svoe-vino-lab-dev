@@ -9,6 +9,39 @@ import org.junit.Test
 
 class ModelPackContractTest {
     @Test
+    fun `version six accepts the verified complete Base p512 runtime`() {
+        val contract = parseModelPackContract(completeManifest())
+        assertEquals(COMPLETE_NAFLEX_RUNTIME, contract.sigLip2Runtime)
+        assertEquals(768, contract.vectorDimension)
+        assertEquals(512, contract.maxNumPatches)
+        assertTrue(contract.gpuCompatible)
+    }
+
+    @Test
+    fun `version six rejects mismatched model revision pooling patch limit and pipeline`() {
+        mapOf(
+            "model_revision" to "other", "profile_sha256" to "other",
+            "pooling_mode" to FOREGROUND_POOLING_MODE, "max_num_patches" to 256,
+            "vector_dim" to 1152, "pipeline" to LEGACY_PIPELINE_ID,
+            "siglip2_runtime" to NAFLEX_SIGLIP_RUNTIME,
+        ).forEach { (key, value) ->
+            assertThrows(ModelPackException::class.java) {
+                parseModelPackContract(completeManifest().put(key, value))
+            }
+        }
+    }
+
+    private fun completeManifest(): JSONObject = baseNaFlexManifest()
+        .put("format_version", 6)
+        .put("pipeline", COMPLETE_NAFLEX_PIPELINE)
+        .put("siglip2_runtime", COMPLETE_NAFLEX_RUNTIME)
+        .put("max_num_patches", 512)
+        .put("pooling_mode", STANDARD_POOLING_MODE)
+        .put("profile_sha256", COMPLETE_NAFLEX_PROFILE_SHA256)
+        .put("model_revision", COMPLETE_NAFLEX_REVISION)
+        .put("gpu_compatible", true)
+
+    @Test
     fun `legacy contract keeps the fixed 768 dimensional runtime`() {
         val contract = parseModelPackContract(
             JSONObject()

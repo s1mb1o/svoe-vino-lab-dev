@@ -272,7 +272,7 @@ private class YoloBottleSegmenter(
     override fun close() = runner.close()
 }
 
-private interface SigLipImageEncoder : AutoCloseable {
+internal interface SigLipImageEncoder : AutoCloseable {
     val accelerator: String
     fun encode(bitmap: Bitmap, foregroundMask: NaFlexForegroundMask? = null): FloatArray
 }
@@ -473,6 +473,9 @@ private fun createEncoder(
     allowCpuFallback: Boolean,
     environment: Environment?,
 ): SigLipImageEncoder {
+    if (pack.isCompleteNaFlex()) {
+        return VerifiedNaFlexEncoder(pack, accelerator, allowCpuFallback, environment)
+    }
     if (!pack.isNaFlex()) {
         return FixedSigLip2Encoder(
             modelPath = pack.file(LEGACY_SIGLIP_MODEL_FILE).absolutePath,
@@ -567,7 +570,10 @@ object AcceleratorDetector {
             ModelAccelerator.CPU
         } else {
             try {
-                probeSigLip2(pack, ModelAccelerator.GPU)
+                val gpu = probeSigLip2(pack, ModelAccelerator.GPU)
+                if (pack.isCompleteNaFlex()) {
+                    validateNaFlexAcceleratorAgreement(gpu, probeSigLip2(pack, ModelAccelerator.CPU))
+                }
                 ModelAccelerator.GPU
             } catch (error: Exception) {
                 sigLip2GpuFailure = probeMessage(error)
@@ -583,11 +589,16 @@ object AcceleratorDetector {
         )
     }
 
-    private fun probeSigLip2(pack: InstalledModelPack, accelerator: ModelAccelerator) {
+    private fun probeSigLip2(pack: InstalledModelPack, accelerator: ModelAccelerator): FloatArray {
         val bitmap = Bitmap.createBitmap(64, 128, Bitmap.Config.ARGB_8888)
-        bitmap.eraseColor(Color.WHITE)
+        val pixels = IntArray(64 * 128) { index ->
+            val x = index % 64
+            val y = index / 64
+            Color.rgb(x * 255 / 63, y * 255 / 127, (x + y) * 255 / 190)
+        }
+        bitmap.setPixels(pixels, 0, 64, 0, 0, 64, 128)
         try {
-            createEncoder(
+            return createEncoder(
                 pack = pack,
                 accelerator = accelerator,
                 allowCpuFallback = false,
@@ -747,7 +758,9 @@ private object ForegroundImageProcessor {
 
 class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
     private val index = CatalogueIndex.load(pack)
-    private val environment = Environment.create()
+    private val worker = InferenceWorker()
+    private val environmentDelegate = lazy { Environment.create() }
+    private val environment by environmentDelegate
     private var disSegmenter: DisSegmenter? = null
     private var disAccelerator: ModelAccelerator? = null
     private var disAllowsFallback: Boolean? = null
@@ -762,11 +775,60 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
     fun recognize(
         bitmap: Bitmap,
         accelerators: RecognitionAccelerators,
-        segmenterMode: SegmenterMode = SegmenterMode.DIS,
+        segmenterMode: SegmenterMode = SegmenterMode.NONE,
         limit: Int = 5,
         referenceAggregation: ReferenceAggregation? = null,
+    ): RecognitionOutput = worker.call {
+        recognizeOnWorker(bitmap, accelerators, segmenterMode, limit, referenceAggregation)
+    }
+
+    private fun recognizeOnWorker(
+        bitmap: Bitmap,
+        accelerators: RecognitionAccelerators,
+        segmenterMode: SegmenterMode,
+        limit: Int,
+        referenceAggregation: ReferenceAggregation?,
     ): RecognitionOutput {
         require(limit in 1..20)
+        if (segmenterMode == SegmenterMode.NONE) {
+            closeDisSegmenter()
+            closeYoloSegmenter()
+            val start = System.nanoTime()
+            val activeEncoder = getEncoder(accelerators.sigLip2, accelerators.allowSigLip2CpuFallback)
+            val embedding = activeEncoder.encode(bitmap)
+            val embeddingMs = elapsedMs(start)
+            val searchStart = System.nanoTime()
+            val matches = index.search(
+                embedding,
+                limit,
+                referenceAggregation ?: ReferenceAggregation.fromId(pack.manifest.referenceAggregation),
+            )
+            val searchMs = elapsedMs(searchStart)
+            val preview = Bitmap.createScaledBitmap(
+                bitmap,
+                max(1, (bitmap.width * minOf(1f, 1024f / max(bitmap.width, bitmap.height))).roundToInt()),
+                max(1, (bitmap.height * minOf(1f, 1024f / max(bitmap.width, bitmap.height))).roundToInt()),
+                true,
+            )
+            val debug = DebugImages(
+                preview.copy(Bitmap.Config.ARGB_8888, false),
+                preview.copy(Bitmap.Config.ARGB_8888, false),
+                preview.copy(Bitmap.Config.ARGB_8888, false),
+                SegmenterMode.NONE.name,
+            )
+            if (preview !== bitmap) preview.recycle()
+            return RecognitionOutput(
+                matches = matches,
+                embedding = embedding,
+                debugImages = debug,
+                segmentationMs = 0,
+                embeddingMs = embeddingMs,
+                searchMs = searchMs,
+                segmenterName = SegmenterMode.NONE.name,
+                segmentationAccelerator = "NONE",
+                embeddingAccelerator = activeEncoder.accelerator,
+            )
+        }
         val segmentationStart = System.nanoTime()
         val mask: SegmentationMask
         val segmenterName: String
@@ -809,7 +871,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
             accelerator = effectiveEmbeddingAccelerator,
             allowCpuFallback = accelerators.allowSigLip2CpuFallback,
         )
-        val modelInput = if (pack.isNaFlex()) {
+        val modelInput = if (pack.isNaFlex() || pack.isCompleteNaFlex()) {
             prepared.nativeModelInput
         } else {
             prepared.squareModelInput
@@ -911,29 +973,42 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
 
     @Synchronized
     override fun close() {
-        closeDisSegmenter()
-        closeYoloSegmenter()
-        closeEncoder()
-        environment.close()
+        try {
+            worker.call {
+                closeDisSegmenter()
+                closeYoloSegmenter()
+                closeEncoder()
+                if (environmentDelegate.isInitialized()) environment.close()
+            }
+        } finally {
+            worker.close()
+        }
     }
 
     private fun elapsedMs(start: Long): Long = (System.nanoTime() - start) / 1_000_000L
 }
 
 object BitmapLoader {
-    fun decode(context: Context, uri: Uri): Bitmap {
-        return decode(ImageDecoder.createSource(context.contentResolver, uri))
+    fun decode(context: Context, uri: Uri, fullResolution: Boolean = false): Bitmap {
+        return decode(ImageDecoder.createSource(context.contentResolver, uri), fullResolution)
     }
 
-    fun decode(file: File): Bitmap = decode(ImageDecoder.createSource(file))
+    fun decode(file: File, fullResolution: Boolean = false): Bitmap =
+        decode(ImageDecoder.createSource(file), fullResolution)
 
-    private fun decode(source: ImageDecoder.Source): Bitmap {
+    private fun decode(source: ImageDecoder.Source, fullResolution: Boolean): Bitmap {
         val decoded = ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
             decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+            if (fullResolution) {
+                // The released preprocessor reads RGB bytes and ignores alpha.
+                decoder.isUnpremultipliedRequired = true
+                decoder.isMutableRequired = true
+                info.colorSpace?.let(decoder::setTargetColorSpace)
+            }
             val width = info.size.width
             val height = info.size.height
             val longest = max(width, height)
-            if (longest > MAX_SOURCE_SIDE) {
+            if (!fullResolution && longest > MAX_SOURCE_SIDE) {
                 val scale = MAX_SOURCE_SIDE.toFloat() / longest
                 decoder.setTargetSize(
                     max(1, (width * scale).roundToInt()),
@@ -941,9 +1016,23 @@ object BitmapLoader {
                 )
             }
         }
-        return if (decoded.config == Bitmap.Config.ARGB_8888) decoded else decoded.copy(
+        val bitmap = if (decoded.config == Bitmap.Config.ARGB_8888) decoded else decoded.copy(
             Bitmap.Config.ARGB_8888,
-            false,
+            fullResolution,
         ).also { decoded.recycle() }
+        if (fullResolution && bitmap.hasAlpha()) {
+            // Match RGB conversion without compositing alpha. Keep the UI bitmap drawable.
+            val buffer = ByteBuffer.allocate(bitmap.byteCount)
+            bitmap.copyPixelsToBuffer(buffer)
+            val bytes = buffer.array()
+            for (y in 0 until bitmap.height) for (x in 0 until bitmap.width) {
+                bytes[y * bitmap.rowBytes + x * 4 + 3] = 0xff.toByte()
+            }
+            buffer.rewind()
+            bitmap.copyPixelsFromBuffer(buffer)
+            bitmap.setHasAlpha(false)
+            bitmap.setPremultiplied(true)
+        }
+        return bitmap
     }
 }

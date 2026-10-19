@@ -451,7 +451,14 @@ private fun SettingsPage(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text("Распознавание", fontWeight = FontWeight.Bold)
-                    Text("Сегментатор выделяет объект. SigLIP2 создаёт вектор из 768 значений.")
+                    val pack = state.modelPack
+                    Text(when (pack?.sigLip2Runtime) {
+                        COMPLETE_NAFLEX_RUNTIME ->
+                            "SigLIP2 Base NaFlex p512 сохраняет пропорции изображения. Вектор: 768 значений."
+                        NAFLEX_SIGLIP_RUNTIME ->
+                            "SigLIP2 NaFlex p${pack.maxNumPatches}. Вектор: ${pack.vectorDimension} значений."
+                        else -> "SigLIP2 Base/224. Вектор: 768 значений."
+                    })
                     SegmenterPicker(state.segmenterMode, actions.setSegmenterMode)
                     if (state.segmenterMode == SegmenterMode.DIS) {
                         AcceleratorPicker(
@@ -459,7 +466,7 @@ private fun SettingsPage(
                             mode = state.disAcceleratorMode,
                             onChange = actions.setDisAcceleratorMode,
                         )
-                    } else {
+                    } else if (state.segmenterMode == SegmenterMode.YOLO) {
                         Text(
                             "YOLO26n-seg использует CPU и ищет класс bottle.",
                             style = MaterialTheme.typography.bodySmall,
@@ -574,7 +581,7 @@ private fun SegmenterPicker(
                 FilterChip(
                     selected = mode == candidate,
                     onClick = { onChange(candidate) },
-                    label = { Text(candidate.name) },
+                    label = { Text(if (candidate == SegmenterMode.NONE) "Без сегментации" else candidate.name) },
                 )
             }
         }
@@ -585,10 +592,10 @@ private fun automaticAcceleratorText(state: UiState): String {
     if (state.isAcceleratorCheckRunning) return "Идёт проверка GPU на этом устройстве."
     val dis = state.automaticDisAccelerator?.name ?: "не проверен"
     val sigLip2 = state.automaticSigLip2Accelerator?.name ?: "не проверен"
-    val segmentation = if (state.segmenterMode == SegmenterMode.YOLO) {
-        "YOLO — CPU"
-    } else {
-        "DIS — $dis"
+    val segmentation = when (state.segmenterMode) {
+        SegmenterMode.NONE -> "без сегментации"
+        SegmenterMode.YOLO -> "YOLO — CPU"
+        SegmenterMode.DIS -> "DIS — $dis"
     }
     return "Режим «Авто» проверяет модели на первом запуске. " +
         "Текущий выбор: $segmentation, SigLIP2 — $sigLip2."
@@ -653,9 +660,13 @@ private fun DebugSection(images: DebugImages) {
             Text(if (expanded) "Скрыть этапы обработки" else "Показать этапы обработки")
         }
         if (expanded) {
-            ImageCard("После ${images.segmenterName}: маска", images.disMask)
-            ImageCard("Обрезанное изображение", images.crop)
-            ImageCard("Белый фон и квадрат", images.whiteBackground)
+            if (images.segmenterName == SegmenterMode.NONE.name) {
+                ImageCard("Полный кадр без сегментации", images.whiteBackground)
+            } else {
+                ImageCard("После ${images.segmenterName}: маска", images.disMask)
+                ImageCard("Обрезанное изображение", images.crop)
+                ImageCard("Белый фон и квадрат", images.whiteBackground)
+            }
         }
     }
 }

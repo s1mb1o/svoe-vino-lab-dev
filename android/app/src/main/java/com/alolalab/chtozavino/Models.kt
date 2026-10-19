@@ -48,6 +48,9 @@ data class ModelPackInfo(
     val vectorCount: Int,
     val wineCount: Int,
     val installedAt: Long,
+    val sigLip2Runtime: String = LEGACY_SIGLIP_RUNTIME,
+    val vectorDimension: Int = LEGACY_VECTOR_DIMENSION,
+    val maxNumPatches: Int? = null,
 )
 
 data class HistoryEntry(
@@ -63,7 +66,7 @@ data class HistoryEntry(
 data class UiState(
     val ageAccepted: Boolean = false,
     val modelPack: ModelPackInfo? = null,
-    val segmenterMode: SegmenterMode = SegmenterMode.DIS,
+    val segmenterMode: SegmenterMode = SegmenterMode.NONE,
     val disAcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
     val sigLip2AcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
     val automaticDisAccelerator: ModelAccelerator? = null,

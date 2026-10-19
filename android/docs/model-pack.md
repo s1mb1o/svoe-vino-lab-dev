@@ -1,8 +1,9 @@
 # Model-pack contract
 
 The application reads one ZIP file.
-The application supports format versions 1, 2, 3, 4, and 5.
-The application uses the built-in format version 3 pack on the first start.
+The application supports format versions 1 through 6.
+The application uses the built-in format version 6 pack on the first start.
+An update replaces an older installed format with the built-in format 6 pack.
 The production user interface does not expose pack installation or replacement.
 
 ## Root payloads
@@ -33,6 +34,35 @@ Format versions 4 and 5 MUST contain these files instead:
 
 The application rejects an unknown root payload.
 The application rejects a duplicate root payload.
+
+Format version 6 MUST contain the common files and these files:
+
+- `base-p512-gpu-fp16.tflite`
+- `base-p512-gpu-fp16.manifest.json`
+- `position_table.bin`
+- `images.zip`
+- `yolo26n-seg_w8a32.tflite`
+
+Format 6 MUST declare runtime `naflex-complete`.
+It MUST declare pipeline `raw-native-naflex-base-p512-v1`.
+It MUST declare model `google/siglip2-base-patch16-naflex`.
+It MUST declare revision `b53b807d3a2d5e2b3911292f2d69e5341cdc064c`.
+It MUST declare vector dimension 768, patch size 16, and patch limit 512.
+It MUST declare a 16 by 16 source position grid and standard pooling.
+It MUST use profile SHA-256
+`1ac1a7a3a88074c04fc1559c9d0ae350820a8f681bc84f6176ef2aaed786683c`.
+The model SHA-256 MUST be
+`9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005`.
+The model manifest SHA-256 MUST be
+`8a45409f227794572e8fea98bbfc39266d558f0d759ba1e5774219340d4c36ec`.
+The position table MUST contain 786,432 bytes.
+Its SHA-256 MUST be
+`3ba1ba032ad8d97e0a1afebf4513615fbfedb56f646c14dcdb83d3c228c12860`.
+The complete graph MUST use the released v0.2.0 preprocessor.
+The GPU path MUST use FP32 execution, BUFFER storage, and no program cache.
+The built-in pack declares `gpu_compatible: true` based on the separate library tests.
+The application MUST also compare GPU and CPU outputs on first start.
+The application MUST keep GPU creation, inference, and cleanup on one thread.
 
 `manifest.json` MUST use format `svoe-vino-android-model-pack`.
 Formats 1 through 3 MUST declare pipeline `dis-white-square-timm-crop090-v2`.
@@ -111,12 +141,15 @@ Each vector MUST be finite and L2-normalized.
 `candidates.jsonl` contains one object for each vector relation.
 Each generated built-in object has `vector_row`, `wine_slug`, `view`, and `angle`.
 The application searches rows whose view is `full`.
-The built-in pack MUST contain the angles `0, 5, …, 355` for each included wine.
-The built-in pack MUST contain 72 reference vectors for each included wine.
+Legacy rotation packs contain angles `0, 5, …, 355` for each included wine.
+Legacy rotation packs contain 72 reference vectors for each included wine.
 The application uses the maximum cosine similarity across the rows of one wine.
 
-The manifest MUST set `reference_rotation_step_degrees` to `5`.
-The manifest MUST set `reference_frames_per_image` to `72`.
+Legacy rotation manifests set `reference_rotation_step_degrees` to `5`.
+Legacy rotation manifests set `reference_frames_per_image` to `72`.
+The current format 6 frozen index contains one unrotated reference per wine.
+It declares step `360` and frame count `1`.
+The exporter MUST NOT label these vectors as a 72-angle index.
 
 `wines.jsonl` contains one wine card on each line.
 The required fields are `wine_slug`, `name`, and `page_url`.
@@ -131,7 +164,7 @@ Supported kinds are `gtin`, `barcode`, and `qr_url`.
 
 ## Catalogue images
 
-Format version 2, 3, 4, or 5 uses one catalogue image for each included wine.
+Format versions 2 through 6 use one catalogue image for each included wine.
 `images.zip` MUST contain each image at
 `images/<wine_slug>.<extension>`.
 The `image_path` value in `wines.jsonl` MUST identify this path.
@@ -150,6 +183,18 @@ The pack MUST NOT contain the large `main` or `main_patched` source image.
 Those source images identify the matching vector and package cut only.
 
 ## Built-in pack
+
+Use `tools/build_verified_naflex_pack.py` for the current format 6 pack.
+Read the command in [the application README](../README.md#build).
+The source catalogue pack supplies metadata, images, codes, DIS, and YOLO only.
+The released p512 index supplies every reference vector.
+The exporter MUST reject a model or profile mismatch.
+The exporter MUST reject a missing catalogue wine.
+The exporter MUST validate a temporary archive before replacement.
+Write generated packs outside the Android source directory.
+Copy the verified output to `app/src/main/assets/default_model_pack.zip` for assembly.
+
+### Legacy fixed and split catalogue exports
 
 Use this command from the Android project to build the application pack from the
 workbench catalogue:

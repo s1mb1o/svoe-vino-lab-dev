@@ -146,7 +146,10 @@ private class AndroidMatcherServer(
         }
 
         val bitmap = try {
-            BitmapLoader.decode(image)
+            BitmapLoader.decode(
+                image,
+                fullResolution = ModelPackManager(context).current()?.isCompleteNaFlex() == true,
+            )
         } catch (decodeError: Exception) {
             return error(ApiStatus.UNSUPPORTED_MEDIA_TYPE, "image cannot be decoded")
         }
@@ -276,6 +279,9 @@ private class AndroidMatcherServer(
 }
 
 private fun debugPipelineName(pack: InstalledModelPack, segmenterMode: SegmenterMode): String {
+    if (pack.isCompleteNaFlex()) {
+        return "android-${segmenterMode.name.lowercase()}-siglip2-base-naflex-p512-complete"
+    }
     if (!pack.isNaFlex()) {
         return if (segmenterMode == SegmenterMode.YOLO) YOLO_PIPELINE_NAME else PIPELINE_NAME
     }

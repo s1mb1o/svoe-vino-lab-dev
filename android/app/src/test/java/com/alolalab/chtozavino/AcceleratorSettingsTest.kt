@@ -8,8 +8,14 @@ import org.junit.Test
 
 class AcceleratorSettingsTest {
     @Test
-    fun unknownSegmenterUsesDis() {
-        assertEquals(SegmenterMode.DIS, SegmenterMode.fromPreference("OTHER"))
+    fun noSegmentationPreferenceIsPreserved() {
+        assertEquals(SegmenterMode.NONE, SegmenterMode.fromPreference("NONE"))
+    }
+    @Test
+    fun unknownSegmenterUsesFullImage() {
+        assertEquals(SegmenterMode.NONE, SegmenterMode.fromPreference("OTHER"))
+        assertEquals(SegmenterMode.DIS, SegmenterMode.fromPreference("DIS"))
+        assertEquals(SegmenterMode.YOLO, SegmenterMode.fromPreference("YOLO"))
     }
 
     @Test

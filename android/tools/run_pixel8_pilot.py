@@ -166,7 +166,6 @@ def build(args) -> dict:
         urllib.request.urlopen(f"http://127.0.0.1:{PORT}/healthz", timeout=30).read()
     )
     before = thermal(args.serial)
-    adb(args.serial, "logcat", "-c")
     results = []
     for row in selection:
         before_pid = pid(args.serial)
@@ -218,7 +217,11 @@ def build(args) -> dict:
         with (output / "results.jsonl").open("a", encoding="utf-8", newline="\n") as target:
             target.write(json.dumps(result, ensure_ascii=False, sort_keys=True) + "\n")
     after = thermal(args.serial)
-    logcat = adb(args.serial, "logcat", "-d", "-v", "threadtime", timeout=120.0)
+    measured_pids = sorted({row[key] for row in results for key in ("pid_before", "pid_after")
+                            if row[key] is not None})
+    # Capture only this application's logs. Do not clear system logs.
+    logcat = "\n".join(adb(args.serial, "logcat", "-d", "-v", "threadtime",
+                           f"--pid={value}", timeout=60.0) for value in measured_pids)
     (output / "logcat.txt").write_text(logcat, encoding="utf-8")
     server_latency = [
         float(row["response"]["latency_ms"])

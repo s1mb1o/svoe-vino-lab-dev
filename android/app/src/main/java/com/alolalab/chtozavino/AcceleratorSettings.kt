@@ -11,12 +11,13 @@ internal const val KEY_SEGMENTER_MODE = "segmenter_mode"
 
 enum class SegmenterMode {
     DIS,
-    YOLO;
+    YOLO,
+    NONE;
 
     companion object {
         fun fromPreference(value: String?): SegmenterMode = entries.firstOrNull {
             it.name == value
-        } ?: DIS
+        } ?: NONE
     }
 }
 

@@ -41,9 +41,34 @@ The application opens the matching page on `vino-svoe.ru`.
 
 ## Image recognition
 
-The settings page MUST provide a `DIS / YOLO` segmentation setting.
-The default segmentation mode MUST be `DIS`.
-The application MUST use this image pipeline:
+The settings page MUST provide `Без сегментации`, `DIS`, and `YOLO` modes.
+The default mode MUST be `Без сегментации`.
+The main pipeline MUST use format 6 and the complete Base NaFlex p512 graph:
+
+1. Decode the original image without an intermediate long-side resize.
+2. Apply image orientation during decoding.
+3. Preserve RGB values without alpha compositing.
+4. Preserve the full image aspect ratio.
+5. Use the released v0.2.0 Pillow-compatible resize and patch preprocessing.
+6. Select at most 512 patches of 16 by 16 pixels.
+7. Supply patch pixels, position values, and valid-patch flags to the complete graph.
+8. Apply standard attention pooling inside the complete graph.
+9. L2-normalize the 768-dimensional output.
+10. Compare this vector with vectors from the same checkpoint and profile.
+
+The GPU path MUST use FP32 execution and BUFFER storage.
+It MUST disable GPU program caching and external tensor serialization.
+The application MUST create, run, and close model resources on one dedicated thread.
+The first-start check MUST compare a gradient-image GPU vector with the CPU vector.
+It MUST reject GPU when cosine is below `0.99999` or maximum error exceeds `0.001`.
+The `Авто` mode MUST retry a failed GPU inference on CPU.
+DIS and YOLO MUST remain explicit optional query modes.
+They MUST apply the native white-background crop before the complete NaFlex encoder.
+They MUST NOT replace the frozen catalogue vectors with legacy Base/224 vectors.
+
+### Legacy image pipelines
+
+Formats 1 through 3 MUST use this image pipeline:
 
 1. Decode the JPEG, PNG, WebP, HEIC, or HEIF image and limit its long side to 2,048
    pixels.
@@ -123,7 +148,7 @@ The technical result text MUST show the number of processed photographs.
 The user interface MUST show the image score as `Сходство: <whole percent>%`.
 The user interface MUST NOT describe the cosine score as confidence.
 
-Steps 9 and 10 reproduce the timm image processor with `crop_pct=0.9`.
+Legacy steps 9 and 10 reproduce the timm image processor with `crop_pct=0.9`.
 
 DIS MUST use a 1,024 by 1,024 input.
 YOLO MUST use the official `yolo26n-seg` w8a32 LiteRT model.
@@ -135,7 +160,7 @@ YOLO MUST use CPU in this implementation.
 YOLO MUST report an error when it does not find a bottle.
 YOLO MUST NOT fall back to DIS when YOLO is selected.
 
-The desktop catalogue pipeline MUST use the same steps.
+The desktop catalogue encoder MUST use the same checkpoint and profile as the query encoder.
 The application MUST reject vectors from a different model or pipeline.
 The application MUST reject an output that has a wrong size or a non-finite value.
 The application MUST test GPU inference for DIS and SigLIP2 on the first start.
@@ -168,14 +193,15 @@ The application MUST not upload a scanned value.
 
 ## Model pack
 
-The APK MUST contain a built-in format version 3 model pack.
-The built-in pack MUST use the completed
-`android-siglip2-base-224-dis-white-rot5` embedding index.
-The index MUST contain one reference vector at each angle from 0 degrees through 355
-degrees in 5-degree intervals.
-Each selected catalogue image MUST have 72 reference vectors.
+The APK MUST contain a built-in format version 6 model pack.
+The built-in pack MUST use the verified complete Base NaFlex p512 index.
+The current frozen pack contains one unrotated package-cut reference for each wine.
+It MUST declare the actual reference count.
+It MUST NOT claim 72-angle coverage.
+Legacy rotation packs MAY contain 72 references at 5-degree intervals.
+Those vectors MUST NOT be reused with the complete Base NaFlex p512 graph.
 The query image MUST produce one vector.
-The application MUST use the maximum score across the 72 reference vectors of each wine.
+The application MUST use the maximum score across the available reference vectors of each wine.
 The built-in pack MUST contain one transparent package cut for each included wine.
 The built-in pack MUST contain the verified YOLO26n-seg LiteRT file.
 The package cut MUST be WebP with a long side of 1,024 pixels or less.
@@ -183,6 +209,9 @@ The built-in pack MUST NOT contain the large `main_patched` or `main` source ima
 The source image MUST identify the selected vector and package cut only.
 The application MUST install the built-in pack on the first start.
 The application MUST show progress during this operation.
+An update MUST replace an installed format 1 through 5 pack with the built-in format 6 pack.
+The update MUST preserve history, the 18+ choice, and accelerator preferences.
+It MUST select no segmentation and repeat detection for the new model identity.
 
 The application MUST also accept an external format version 4 pack.
 The format version 4 pack MUST use `google/siglip2-so400m-patch16-naflex`.

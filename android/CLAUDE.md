@@ -13,6 +13,11 @@ The application MUST reject a model pack when its SigLIP2 model or vector dimens
 not match the application contract.
 
 Do not add model weights or generated model packs to Git.
-Use `tools/build_model_pack.py` to create a model pack outside the repository.
+Use `tools/build_verified_naflex_pack.py` for the default format 6 pack.
+Use `tools/build_model_pack.py` only for legacy fixed Base/224 packs.
+Write generated packs outside the Android source directory.
+Use the pinned `app/libs/naflex-0.2.0.aar` for the complete p512 runtime.
+Do not substitute a split graph or a fixed Base/224 reference index.
+Keep GPU creation, execution, and cleanup on the same inference worker.
 
 Update `ChangeLog.md` and `SMOKE_TESTS.md` with each functional change.
