@@ -5,6 +5,12 @@ project(shelfreid_app CXX)
 set(SHELFREID_TOOLS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cpp shelfreid)
 
-add_library(shelfreid_jni SHARED jni.cpp)
-target_include_directories(shelfreid_jni PRIVATE ${JSON_INCLUDE_DIR})
-target_link_libraries(shelfreid_jni shelfreid jnigraphics log)
+# ONNX Runtime for the bottle detector: headers and the library to link against from the
+# unpacked onnxruntime-android package (ORT_ANDROID_DIR); the APK gets the same library from
+# its Maven dependency.
+add_library(onnxruntime SHARED IMPORTED)
+set_target_properties(onnxruntime PROPERTIES IMPORTED_LOCATION ${ORT_ANDROID_DIR}/jni/${ANDROID_ABI}/libonnxruntime.so)
+
+add_library(shelfreid_jni SHARED jni.cpp detector.cpp pipeline.cpp)
+target_include_directories(shelfreid_jni PRIVATE ${JSON_INCLUDE_DIR} ${ORT_ANDROID_DIR}/headers)
+target_link_libraries(shelfreid_jni shelfreid onnxruntime jnigraphics log)

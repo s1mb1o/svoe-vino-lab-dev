@@ -6,6 +6,10 @@
 #include <mutex>
 #include <numeric>
 #include <thread>
+#ifdef __linux__
+#include <pthread.h>
+#include <sys/resource.h>
+#endif
 
 namespace shelfreid {
 
@@ -54,6 +58,11 @@ public:
 
 private:
     void run() {
+#ifdef __linux__
+        // In the background: the fast loop, the detector and the picture come first.
+        pthread_setname_np(pthread_self(), "slow loop");
+        setpriority(PRIO_PROCESS, 0, 10);
+#endif
         while (true) {
             std::unique_ptr<RealtimeTracker> shadow;
             Snapshot snap;
@@ -115,7 +124,12 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
         if (d.score >= cfg.min_score) scored.push_back(d);
     detections = whole_bottles(scored);
     if (previous) {
-        const auto step_H = flow(previous->first, gray, previous->second);
+        auto step_H = flow(previous->first, gray, previous->second, motion_hint);
+        if (!step_H && motion_hint) {
+            step_H = motion_hint;   // the picture moved continuously: no jump
+            ++hinted;
+            flow_failure += " (the motion hint stood in)";
+        }
         if (!step_H) {
             ++lost_motion;
             jump();
@@ -163,6 +177,7 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
     }
     ++count;
     if (latency == 0) land();
+    motion_hint.reset();
     return shown;
 }
 
@@ -191,7 +206,14 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
     SlowResult result;
     result.due = snap.count + latency;
     result.snap = snap;
+    auto mark = std::chrono::steady_clock::now();
+    auto lap = [&](const char* part) {
+        const auto now = std::chrono::steady_clock::now();
+        slow_profile[part] += std::chrono::duration<double>(now - mark).count();
+        mark = now;
+    };
     const FrameFeatures features = features_of(snap.frame, snap.detections);
+    lap("1 features");
     std::vector<int> order;
     if (snap.lost) {
         order.resize(keyframes.size());
@@ -218,6 +240,8 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
     for (int k : order)
         if (auto g = register_to(features, k))
             if (!snap.lost || g->strong) good.push_back(*g);
+    slow_profile["registrations"] += static_cast<double>(order.size());
+    lap("2 register");
     for (const auto& g : good) result.good.push_back(g.index);
     std::vector<std::pair<Edge, bool>> edges;
     if (!good.empty()) {
@@ -253,6 +277,7 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
         }
         result.graph = std::move(copy);
     }
+    lap("3 graph");
     // The pose of frame t as this result leaves it, for the keyframe and the labels.
     const int saved_ref = ref;
     const Mat3 saved_P = P;
@@ -271,7 +296,9 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
         }
         result.keyframe = kf;
     }
+    lap("4 keyframe");
     if (!snap.lost) slow_labels(snap, features, result);
+    lap("5 labels");
     ref = saved_ref;
     P = saved_P;
     trusted = saved_trusted;

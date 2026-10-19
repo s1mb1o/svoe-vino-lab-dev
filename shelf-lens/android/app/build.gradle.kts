@@ -29,6 +29,7 @@ android {
                     "-DEIGEN3_INCLUDE_DIR=${local.getProperty("eigen.dir")}",
                     "-DJSON_INCLUDE_DIR=${local.getProperty("json.dir")}",
                     "-DSHELFREID_TOOLS=OFF",
+                    "-DORT_ANDROID_DIR=${local.getProperty("ort.dir")}",
                 )
             }
         }
@@ -45,8 +46,20 @@ android {
             version = "3.22.1"
         }
     }
+    packaging {
+        jniLibs { pickFirsts += "**/libonnxruntime.so" }   // the Maven package and the linked copy are one version
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0")   // the native library of the detector
+    implementation("androidx.activity:activity:1.10.1")
+    implementation("androidx.camera:camera-core:1.5.1")
+    implementation("androidx.camera:camera-camera2:1.5.1")
+    implementation("androidx.camera:camera-lifecycle:1.5.1")
+    implementation("androidx.camera:camera-view:1.5.1")
 }

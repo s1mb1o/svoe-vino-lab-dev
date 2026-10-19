@@ -30,7 +30,8 @@ add_library(shelfreid
   src/posegraph.cpp
   src/tracker.cpp
   src/associate.cpp
-  src/realtime.cpp)
+  src/realtime.cpp
+  src/motion.cpp)
 target_include_directories(shelfreid PUBLIC include)
 target_link_libraries(shelfreid PUBLIC ${OpenCV_LIBS} Eigen3::Eigen)
 

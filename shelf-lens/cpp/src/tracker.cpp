@@ -269,8 +269,8 @@ cv::Mat Tracker::gray_of(const cv::Mat& frame) const {
     return gray;
 }
 
-std::optional<Mat3> Tracker::flow(const cv::Mat& gray_prev, const cv::Mat& gray,
-                                  const std::vector<Box>& boxes_prev) const {
+std::optional<Mat3> Tracker::flow(const cv::Mat& gray_prev, const cv::Mat& gray, const std::vector<Box>& boxes_prev,
+                                  const std::optional<Mat3>& hint) const {
     const double s = cfg.flow_scale;
     cv::Mat mask = cv::Mat::zeros(gray_prev.size(), CV_8U);
     for (const auto& b : boxes_prev) {
@@ -282,29 +282,53 @@ std::optional<Mat3> Tracker::flow(const cv::Mat& gray_prev, const cv::Mat& gray,
     if (cv::countNonZero(mask) > 0) cv::goodFeaturesToTrack(gray_prev, pts, cfg.max_corners, 0.01, 7, mask);
     if (static_cast<int>(pts.size()) < cfg.min_flow_points)
         cv::goodFeaturesToTrack(gray_prev, pts, cfg.max_corners, 0.01, 7);
-    if (static_cast<int>(pts.size()) < cfg.min_flow_points) return std::nullopt;
+    if (static_cast<int>(pts.size()) < cfg.min_flow_points) {
+        flow_failure = "corners " + std::to_string(pts.size());
+        return std::nullopt;
+    }
     const cv::TermCriteria criteria(cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 30, 0.01);
     std::vector<cv::Point2f> moved, back;
     std::vector<uchar> status, status_back;
     std::vector<float> err;
-    cv::calcOpticalFlowPyrLK(gray_prev, gray, pts, moved, status, err, cv::Size(21, 21), 4, criteria);
-    cv::calcOpticalFlowPyrLK(gray, gray_prev, moved, back, status_back, err, cv::Size(21, 21), 4, criteria);
+    int flags = 0;
+    if (hint) {
+        // Start each point where the frame-by-frame motion puts it; the way back starts at the
+        // point itself.
+        const Mat3 S(s, 0, 0, 0, s, 0, 0, 0, 1);
+        const Mat3 forward = S * hint->inv() * S.inv();   // previous -> current, at the flow's scale
+        cv::perspectiveTransform(pts, moved, cv::Mat(forward));
+        back = pts;
+        flags = cv::OPTFLOW_USE_INITIAL_FLOW;
+    }
+    cv::calcOpticalFlowPyrLK(gray_prev, gray, pts, moved, status, err, cv::Size(21, 21), 4, criteria, flags);
+    cv::calcOpticalFlowPyrLK(gray, gray_prev, moved, back, status_back, err, cv::Size(21, 21), 4, criteria, flags);
     std::vector<cv::Point2f> from, to;
     for (size_t i = 0; i < pts.size(); ++i)
         if (status[i] && status_back[i] && cv::norm(back[i] - pts[i]) < 1.0) {
             from.push_back(moved[i]);
             to.push_back(pts[i]);
         }
-    if (static_cast<int>(from.size()) < cfg.min_flow_points) return std::nullopt;
+    if (static_cast<int>(from.size()) < cfg.min_flow_points) {
+        flow_failure = "tracked " + std::to_string(from.size()) + " of " + std::to_string(pts.size());
+        return std::nullopt;
+    }
     std::vector<uchar> inliers;
     cv::Mat Hm = cv::findHomography(from, to, cv::USAC_MAGSAC, 2.0, inliers);
-    if (Hm.empty() || cv::countNonZero(inliers) < cfg.min_flow_points) return std::nullopt;
+    if (Hm.empty() || cv::countNonZero(inliers) < cfg.min_flow_points) {
+        flow_failure = "homography inliers " + std::to_string(Hm.empty() ? 0 : cv::countNonZero(inliers)) + " of " +
+                       std::to_string(from.size());
+        return std::nullopt;
+    }
     Mat3 Hs;
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j) Hs(i, j) = Hm.at<double>(i, j);
     const Mat3 S(s, 0, 0, 0, s, 0, 0, 0, 1);
     const Mat3 Hf = normalized(S.inv() * Hs * S);
-    if (check(Hf, size, cfg.homography)) return std::nullopt;
+    if (const auto why = check(Hf, size, cfg.homography)) {
+        flow_failure = "implausible: " + *why;
+        return std::nullopt;
+    }
+    flow_failure.clear();
     return Hf;
 }
 
@@ -542,7 +566,12 @@ std::vector<Shown> Tracker::step(int number, const cv::Mat& frame, std::vector<D
         if (d.score >= cfg.min_score) scored.push_back(d);
     detections = whole_bottles(scored);
     if (previous) {
-        const auto step_H = flow(previous->first, gray, previous->second);
+        auto step_H = flow(previous->first, gray, previous->second, motion_hint);
+        if (!step_H && motion_hint) {
+            step_H = motion_hint;   // the picture moved continuously: no jump
+            ++hinted;
+            flow_failure += " (the motion hint stood in)";
+        }
         if (!step_H) {
             ++lost_motion;
             jump();
@@ -573,6 +602,7 @@ std::vector<Shown> Tracker::step(int number, const cv::Mat& frame, std::vector<D
     if (needs_keyframe()) add_keyframe(number, features ? *features : features_of(frame, detections));
     previous = std::make_pair(gray, boxes);
     ++count;
+    motion_hint.reset();
     return shown;
 }
 

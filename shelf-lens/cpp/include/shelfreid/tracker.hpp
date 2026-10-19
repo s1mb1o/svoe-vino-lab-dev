@@ -111,6 +111,13 @@ public:
     int lost_steps = 0;
     bool trusted = true;
     std::optional<double> bottle_height, bottle_width;
+    mutable std::string flow_failure;   // why the last flow failed (empty: it did not)
+    // The motion of the picture since the last step, current frame -> previous step's frame,
+    // from the frame-by-frame motion (FrameMotion) when the caller has it. The flow starts
+    // its points where it puts them (so a large move between steps does not lose them), and
+    // takes it when the flow fails, instead of a jump. The step uses and clears it.
+    std::optional<Mat3> motion_hint;
+    int hinted = 0;   // steps whose flow failed and the hint stood in
     std::map<int, Votes> votes;   // box -> votes of this frame
 
     // Counters.
@@ -143,7 +150,8 @@ protected:
     std::vector<Detection> whole_bottles(const std::vector<Detection>& detections);
 
     // Motion and keyframes.
-    std::optional<Mat3> flow(const cv::Mat& gray_prev, const cv::Mat& gray, const std::vector<Box>& boxes_prev) const;
+    std::optional<Mat3> flow(const cv::Mat& gray_prev, const cv::Mat& gray, const std::vector<Box>& boxes_prev,
+                             const std::optional<Mat3>& hint = std::nullopt) const;
     Registration register_points(const std::vector<cv::Point2f>& points_k, const std::vector<cv::Point2f>& points_f) const;
     FrameFeatures features_of(const cv::Mat& frame, const std::vector<Detection>& detections) const;
     std::optional<Good> register_to(const FrameFeatures& features, int index) const;

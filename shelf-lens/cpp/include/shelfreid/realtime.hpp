@@ -4,7 +4,9 @@
 // result lands on the first step after it is done (the phone).
 #pragma once
 
+#include <map>
 #include <memory>
+#include <string>
 #include <optional>
 #include <set>
 #include <vector>
@@ -74,6 +76,7 @@ public:
     int lost_since = 0;
     std::set<int> provisional;
     std::vector<double> fast_seconds, slow_seconds;
+    std::map<std::string, double> slow_profile;   // seconds by part of the slow job (latency >= 0 only)
     std::vector<int> landed_after;   // the steps from the frame of a result to its landing
 
 private:
