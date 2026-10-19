@@ -270,7 +270,8 @@ Routes:
   - `/robots.txt`, answered by Caddy with `Disallow: /`.
 - Test in a fresh browser without Basic credentials: the mini-app host loads and works, any
   other path on it returns 404, and `chtozavino.ru` still returns 401.
-- DNS: the `A` record for `max.chtozavino.ru` points to Princess. Caddy gets the certificate.
+- DNS: the `A` record for `max.chtozavino.ru` points to Claudette (the VDS that serves
+  `chtozavino.ru`). Caddy gets the certificate.
 - gx10: the MAX bot reaches the account service on a shared Docker network. The bot reads
   `ACCOUNT_ENDPOINT` and `ACCOUNT_TOKEN`.
 - MAX: connect `https://max.chtozavino.ru/` in the bot settings (owner action).

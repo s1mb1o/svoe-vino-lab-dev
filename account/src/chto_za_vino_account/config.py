@@ -143,7 +143,7 @@ class Settings:
             environment=environment,
             database=get("ACCOUNT_DATABASE", "data/account.sqlite3"),
             host=get("ACCOUNT_HOST", "127.0.0.1"),
-            port=_positive_int(get("ACCOUNT_PORT", "28007"), "ACCOUNT_PORT"),
+            port=_positive_int(get("ACCOUNT_PORT", "28008"), "ACCOUNT_PORT"),
             allowed_networks=networks,
             web_token=get("ACCOUNT_WEB_TOKEN"),
             max_bot_token=get("ACCOUNT_MAX_BOT_TOKEN"),

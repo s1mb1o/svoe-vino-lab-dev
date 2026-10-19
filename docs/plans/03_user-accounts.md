@@ -55,7 +55,8 @@ Out of scope for this plan:
 
 ## Facts that shape the design
 
-- The Web UI runs on the VDS Princess behind Caddy (`webui/ResearchLog.md:587-600`). It reaches
+- The Web UI runs on the VDS Claudette behind Caddy (`webui/ResearchLog.md:587-600` calls it
+  Princess, its earlier name). It reaches
   gx10 only through restricted reverse SSH tunnels (`workbench/ChangeLog.md:676-681`).
   The VDS MUST NOT keep application data
   (`workbench/docs/deployment/01_gx10-public-failover-options.md:125-128`).
@@ -87,7 +88,7 @@ Out of scope for this plan:
 
 ```mermaid
 flowchart LR
-    B[Browser] -->|cookie session| N[Nuxt server on Princess]
+    B[Browser] -->|cookie session| N[Nuxt server on Claudette]
     C[MCP client] -->|app token, Phase 2| N
     N -->|reverse SSH tunnel, service token| A[account service on gx10]
     A --> D[(SQLite + photo files on gx10)]
@@ -374,9 +375,10 @@ MCP (`mcp/`):
 
 - gx10: Docker Compose in `/srv/svoe-vino-lab/prod/account/`, like the MAX bot. Read-only
   root, tmpfs `/tmp`, `cap_drop: ALL`, `no-new-privileges`, data volume `./data`.
-- Port: 28007 (production) and 29007 (dev). Confirm against `deploy/INFRASRUCTURE.md`.
+- Port: 28008 (production) and 29008 (dev). Slot 08 is reserved in the «Port policy» of the
+  `chtozavino-deploy` README; slot 07 belongs to dinner-lens.
   Publish on `127.0.0.1` only.
-- Princess: a new reverse SSH tunnel to `127.0.0.1:28007`, with its own key and
+- Claudette: a new reverse SSH tunnel to `127.0.0.1:28008`, with its own key and
   `PermitListen` for one port. Nuxt reads `NUXT_ACCOUNT_ENDPOINT` and `NUXT_ACCOUNT_TOKEN`.
 - Access: the account pages stay behind the HTTP Basic of `chtozavino.ru` (owner decision,
   2026-10-19). Only people with the site credentials can use them until the site is public.
@@ -468,7 +470,8 @@ Tokens and MCP (Phase 2):
 Recorded on 2026-10-19:
 
 1. Photo retention in the account: until the person deletes them.
-2. Ports: 28007 (production) and 29007 (dev).
+2. Ports: 28008 (production) and 29008 (dev). Changed from 28007/29007 on 2026-10-19:
+   dinner-lens owns slot 07.
 3. Name: «Винный дневник». Do not use «паспорт» for the account.
 4. Login: email code and Yandex ID, no passwords. Gosuslugi is not available to the
    self-employed owner.

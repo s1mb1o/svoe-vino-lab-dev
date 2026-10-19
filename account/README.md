@@ -33,7 +33,7 @@ cd account
 ./scripts/verify.sh            # lock check, sync, ruff, pytest
 cp .env.example .env           # then set the secrets
 set -a && . ./.env && set +a
-uv run chto-za-vino-account    # listens on ACCOUNT_HOST:ACCOUNT_PORT (default 127.0.0.1:28007)
+uv run chto-za-vino-account    # listens on ACCOUNT_HOST:ACCOUNT_PORT (default 127.0.0.1:28008)
 ```
 
 The development email backend `console` writes each message, with the code, to stderr.

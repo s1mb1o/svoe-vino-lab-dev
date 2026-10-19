@@ -20,7 +20,7 @@ services:
     environment:
       ACCOUNT_ENVIRONMENT: production
     ports:
-      - "127.0.0.1:28007:8080"
+      - "127.0.0.1:28008:8080"
     volumes:
       - ./data:/data
     read_only: true

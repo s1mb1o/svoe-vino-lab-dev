@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 2026-10-19 — Port 28008
+
+- The default port is 28008 (production) and 29008 (dev). Slot 07 belongs to dinner-lens.
+
 ## 2026-10-19 — Review fixes
 
 Codex reviewed commit `abc49baa`. Fixed and covered by tests (`tests/test_review_fixes.py`):
