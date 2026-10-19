@@ -113,8 +113,12 @@ Backup. The image has no `sqlite3` program; the service has a command:
 ```sh
 docker exec svoe-vino-lab-account-prod \
   chto-za-vino-account backup "/data/backups/account-$(date -u +%Y%m%dT%H%M%SZ).sqlite3"
-find <root>/prod/account/data/backups -name 'account-*.sqlite3' -mtime +7 -delete
+find <root>/prod/account/data/backups -type f \
+  \( -name 'account-*.sqlite3' -o -name '.backup-*.tmp' \) -mmin +10080 -delete
 ```
 
-The command uses the SQLite online backup API, writes mode 0600, and never overwrites a file.
-Keep backups 7 days (plan 03): deleted accounts then leave the backups within a week.
+The command uses the SQLite online backup API. It writes a unique temporary file with mode
+0600, publishes it with a hard link, and removes the temporary file in every case. It never
+overwrites a file, also when two backups run at the same time. Keep backups 7 days (plan 03):
+`-mmin +10080` is exactly 7 days (`-mtime +7` would keep files up to 9 days). Run the cleanup
+at least once a day. Deleted accounts then leave the backups within 8 days at most.

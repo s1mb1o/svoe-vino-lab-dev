@@ -7,10 +7,12 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import sqlite3
 import sys
+import tempfile
 from pathlib import Path
 
 import uvicorn
@@ -50,8 +52,16 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+BACKUP_TEMP_PREFIX = ".backup-"
+
+
 def backup(database: str, target: str) -> int:
-    """Copy the live database with the SQLite online backup API. Never overwrite a file."""
+    """Copy the live database with the SQLite online backup API.
+
+    The copy goes to a unique temporary file (mode 0600) in the target directory. A hard link
+    publishes it: the link fails when the target exists, so a backup never overwrites a file,
+    also when two backups run at the same time. The temporary file is removed in every case.
+    """
     source_path = Path(database)
     target_path = Path(target)
     if not source_path.is_file():
@@ -61,18 +71,32 @@ def backup(database: str, target: str) -> int:
         print(f"{target_path} exists; choose a new file name", file=sys.stderr)
         return 1
     target_path.parent.mkdir(parents=True, exist_ok=True)
-    partial = target_path.with_name(target_path.name + ".partial")
-    source = sqlite3.connect(f"file:{source_path}?mode=ro", uri=True)
+    handle, temp_name = tempfile.mkstemp(
+        prefix=BACKUP_TEMP_PREFIX, suffix=".tmp", dir=target_path.parent
+    )
+    os.close(handle)
+    temp_path = Path(temp_name)
     try:
-        copy = sqlite3.connect(partial)
+        source = sqlite3.connect(f"file:{source_path}?mode=ro", uri=True)
         try:
-            source.backup(copy)
+            copy = sqlite3.connect(temp_path)
+            try:
+                source.backup(copy)
+            finally:
+                copy.close()
         finally:
-            copy.close()
+            source.close()
+        try:
+            os.link(temp_path, target_path)
+        except FileExistsError:
+            print(f"{target_path} exists; choose a new file name", file=sys.stderr)
+            return 1
+    except sqlite3.Error as error:
+        print(f"Backup failed: {type(error).__name__}", file=sys.stderr)
+        return 1
     finally:
-        source.close()
-    partial.chmod(0o600)
-    partial.rename(target_path)
+        with contextlib.suppress(FileNotFoundError):
+            temp_path.unlink()
     print(target_path)
     return 0
 

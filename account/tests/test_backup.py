@@ -33,3 +33,35 @@ def test_backup_never_overwrites_and_needs_a_database(tmp_path):
     assert cli.backup(str(source), str(target)) == 1
     assert target.read_text() == "keep"
     assert cli.backup(str(tmp_path / "missing.sqlite3"), str(tmp_path / "new.sqlite3")) == 1
+
+
+def test_concurrent_backups_never_overwrite(tmp_path):
+    import threading
+
+    source = tmp_path / "account.sqlite3"
+    Database(str(source)).close()
+    target = tmp_path / "backups" / "same-name.sqlite3"
+    barrier = threading.Barrier(4)
+    results: list[int] = []
+
+    def worker() -> None:
+        barrier.wait()
+        results.append(cli.backup(str(source), str(target)))
+
+    threads = [threading.Thread(target=worker) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert sorted(results) == [0, 1, 1, 1]
+    assert target.is_file()
+    assert [p.name for p in target.parent.iterdir()] == ["same-name.sqlite3"]
+
+
+def test_failed_backup_leaves_no_temporary_file(tmp_path):
+    source = tmp_path / "not-a-database.sqlite3"
+    source.write_bytes(b"this is not sqlite" * 100)
+    target = tmp_path / "backups" / "account-x.sqlite3"
+    assert cli.backup(str(source), str(target)) == 1
+    assert not target.exists()
+    assert list(target.parent.iterdir()) == []

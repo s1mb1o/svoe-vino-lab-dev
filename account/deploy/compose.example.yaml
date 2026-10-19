@@ -4,7 +4,9 @@
 # config/*.env outside this repository.
 #
 #   .env                     ACCOUNT_IMAGE=svoe-vino-lab-account:prod
-#   config/account.env       the settings of ../.env.example with real secrets (mode 0600)
+#   config/account.env       the settings of ../.env.example with real secrets (mode 0600).
+#                            The four container settings below override its
+#                            ACCOUNT_ENVIRONMENT, ACCOUNT_DATABASE, ACCOUNT_HOST, ACCOUNT_PORT.
 #   config/yandex-oauth.env  YANDEX_CLIENT_ID, YANDEX_CLIENT_SECRET, YANDEX_REDIRECT_URIS
 #                            (mode 0600; without it, Yandex ID is off)
 #   data/                    account.sqlite3 and backups/, owned by uid 1000, mode 0700
@@ -33,6 +35,13 @@ services:
       - path: config/yandex-oauth.env
         format: raw
         required: false
+    # `environment` has precedence over `env_file`. These four values belong to the
+    # container, so a copied development value in config/account.env cannot break it.
+    environment:
+      ACCOUNT_ENVIRONMENT: production
+      ACCOUNT_DATABASE: /data/account.sqlite3
+      ACCOUNT_HOST: 0.0.0.0
+      ACCOUNT_PORT: "8080"
     ports:
       - "0.0.0.0:28008:8080"
     volumes:

@@ -1,5 +1,27 @@
 # ChangeLog
 
+## 2026-10-19 — Second review fixes, manual tests
+
+Codex reviewed `abc49baa..5416b5d1`. Fixed:
+
+- The Compose example sets `ACCOUNT_ENVIRONMENT`, `ACCOUNT_DATABASE`, `ACCOUNT_HOST`, and
+  `ACCOUNT_PORT` in `environment`. Before, values copied from `.env.example` into
+  `config/account.env` moved the database into the read-only root, bound the server to
+  loopback, and allowed the console mailer.
+- `backup` writes a unique temporary file (mode 0600), publishes it with a hard link, and
+  removes the temporary file in every case. Two backups with one name cannot overwrite each
+  other; an interrupted backup leaves no file behind.
+- The retention command uses `-mmin +10080` (exactly 7 days) and also removes old temporary
+  files.
+
+Also:
+
+- `MANUAL_TESTS.md`: the tests that need gx10, real mailboxes, a real Yandex account, other
+  LAN hosts, and phones.
+- The image builds and runs on `linux/arm64` (checked with emulation: `uname -m` is
+  `aarch64`, `/readyz` answers, `backup` works). A request from the host arrived from the
+  Docker bridge gateway `172.17.0.1`, and the refused-caller log named it.
+
 ## 2026-10-19 — Ready for the GPU host
 
 - The Compose example follows the matcher and the bots: project and container names
