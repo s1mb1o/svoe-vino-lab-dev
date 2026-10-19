@@ -582,7 +582,9 @@ async function scannerAndShelf() {
     } })
   })
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.getByRole('button', { name: 'Вся полка', exact: true }).click()
+  // The mode switch is a pair of links since the mode pages (/ and /shelf).
+  await page.getByRole('link', { name: 'Вся полка', exact: true }).click()
+  await page.waitForURL(/\/shelf$/)
   await page.getByLabel('Выбрать фотографию полки', { exact: true }).setInputFiles(uploadPath)
   const bottleOpener = page.getByRole('button', { name: 'Бутылка 1: открыть карточку', exact: true })
   await bottleOpener.click()

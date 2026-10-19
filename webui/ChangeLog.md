@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-19 — Line-map browser suite
+
+- Open shelf mode through the «Вся полка» link in `npm run test:line-map`. The mode switch is a pair of links since the mode pages, and the suite failed at this step on `main`.
+
 ## 2026-10-19 — Shared product-line core
 
 - Move the pure product-line types, the resolver, and the validator to `shared/product-line-core.ts`. The module has no runtime imports.
