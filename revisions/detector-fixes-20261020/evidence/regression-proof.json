@@ -1,0 +1,18 @@
+{
+  "baseline_selector_sha256": "5565761e9f6ae774f410a3c8e6439b90af0aacaf2111027eee02ee8319e247ed",
+  "recorded_cases": [
+    {
+      "case_id": "hc-145",
+      "before": "d0",
+      "after": "d1",
+      "old_fails_new_regression": true
+    },
+    {
+      "case_id": "hc-146",
+      "before": "d0",
+      "after": "d1",
+      "old_fails_new_regression": true
+    }
+  ],
+  "new_regression_methods": 9
+}

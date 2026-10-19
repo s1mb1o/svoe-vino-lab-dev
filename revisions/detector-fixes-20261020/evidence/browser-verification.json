@@ -1,0 +1,9 @@
+{
+  "checked": true,
+  "browser": "Chrome",
+  "summary_and_before_after_metrics": true,
+  "terminal_hand_group_filter": true,
+  "both_corrected_cards_report_policy_pass": true,
+  "four_main_images_loaded_for_each_terminal_hand_card": true,
+  "scope": "Visual inspection of summary layout and DOM verification of corrected cards; all assets/filter scopes checked separately offline."
+}

@@ -1,0 +1,52 @@
+{
+  "profile": "semantic-v2-empty-generic-recovery-20261020",
+  "trigger": "no usable package or label in primary response",
+  "cases": {
+    "hc-032": {
+      "image_sha256": "ec8eb434489e2659edac34888c45defe415ba17cef3b60039968e547bea5ec24",
+      "primary_prediction_sha256": "90cf3358d51c3b56009ae7cc325537276a0bf3600d4259382d574226bc271328",
+      "instances": [],
+      "nouns": [
+        "bottle"
+      ],
+      "ground_truth_supplied_to_detector": false,
+      "encoding": "normalized JPEG quality 86"
+    },
+    "hc-101": {
+      "image_sha256": "68377905b6fd143135fce3752a11eb619cb918ecded484933a01eed0003c2338",
+      "primary_prediction_sha256": "7cdcbac778294989b91b049428f2bdde7039c4b9d43d9ebe90679a6265e4079a",
+      "instances": [],
+      "nouns": [
+        "bottle"
+      ],
+      "ground_truth_supplied_to_detector": false,
+      "encoding": "normalized JPEG quality 86"
+    },
+    "real-520871": {
+      "image_sha256": "0217449170fd69f767bf97b95ff76ad5b5151204916d94151d9539aa829099be",
+      "primary_prediction_sha256": "a807753cf03d2687d5ac771a3452cee244897cb4e2bd2e0e684b35719cc71863",
+      "instances": [
+        {
+          "score": 0.85791015625,
+          "box": [
+            413.0,
+            30.0,
+            501.0,
+            188.0
+          ],
+          "mask_png_b64": "iVBORw0KGgoAAAANSUhEUgAAAoAAAAGpCAAAAAA47dicAAAC0UlEQVR42u3dwUoFMQxA0Ub8/1+OW0GREWYmTXPO0p32kqaCz7UAAAAAAAAAAAAAAAAAAAAAAAAAWGuFH8ExsuPxCvCE8OK3+HqcsQD7j7nWx/zpSM9Ob3cCVJ8AmZrfWh9Od0B/IUC8NAWIHRDzzwSUkAB5q8AQIKanAGUkQBQowGEFhgApLHD/wSlA0QqQuWugAA8uMARIYYEtRqYA5SpAHmiqycoowEML7PJkESAWBf4hzzpXExABMvfOEuDki1qATB+BAkSACBB3sAAxAUGACBAEiABBgAgQBIgAQYAIEASIAEGA/JQCBAEiQBCgJVCAKFCAk8pKAWIGCnBygfsn6OPZDh9rIUBqr1X/L5jStS4FSOmzIgVI6bN25wLtgMfnt/cxm4DaNQF5vqFdD9oE1K8AeSGgFCCl+aQAOe8R4REiv9aHbQIKWYAMvX8FOKy/FCCGqQAHN5MCBAHOvTRTgFgDBYgAaflsFSACxFAVICYgVkABIkCMVQFKxQQEASJAECACBAEiQBBgQyFAECACBAFaAgUIAjQCBQgCRIAgQAQIAkSA3Mtnw4AAESAIEAGCABEgCBABggARIAgQAYIAESAIEAGCAPvyh+kgQG6VAgQBIkAECAJEgCBABAgCRIAgQAQIAuRWKUAqhQBBgAgQAYIAESBTHqwhQFrW4tub6u/fHEf2PXQBdm8xriQqQB6qMK4NSQHyRIRx+ZoWIMWbolcwT0+ThuPEBBw4Bl3BvN1hfP+iAHmtQQcMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQ4AsadEQrsrDIgwAAAABJRU5ErkJggg==",
+          "label": "bottle",
+          "area": 10273
+        }
+      ],
+      "nouns": [
+        "bottle"
+      ],
+      "ground_truth_supplied_to_detector": false,
+      "encoding": "normalized JPEG quality 86"
+    }
+  },
+  "extra_requests": 3,
+  "raw_primary_caches_unchanged": 319,
+  "paired_comparison": "Both algorithms receive the same effective detections; legacy production detection is not remeasured."
+}

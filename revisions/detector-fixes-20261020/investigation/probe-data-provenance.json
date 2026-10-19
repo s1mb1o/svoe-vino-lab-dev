@@ -1,0 +1,155 @@
+[
+  {
+    "case_id": "hc-025",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-s004",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-s004/scene.blend",
+      "source_scene_sha256": "4fde517be1a06e5bffa4f0660b009b3c3022d9277bc56eec9c522b2766b6da2e",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-035",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-039",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-041",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-056",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-145",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "hc-146",
+    "provenance": "new_native_render",
+    "source": {
+      "source_series": "eval-held-001",
+      "source_split": "eval",
+      "source_scene": "/Volumes/Storage/svoe-vino-final/datasets/wine-multilabel-1000-v2/eval/scenes/eval-held-001/scene.blend",
+      "source_scene_sha256": "653b1c5b885991d3c477131eaaee53226f51509a77c2c34f255abf361b9bc7c5",
+      "annotation_source": "native opaque visible geometry"
+    }
+  },
+  {
+    "case_id": "real-520871",
+    "provenance": "coco_real_photo",
+    "source": {
+      "annotation_source": "COCO bottle polygons; Codex visual target review before evaluation, not independently adjudicated; background instance coverage can be incomplete",
+      "source": {
+        "dataset": "COCO val2017",
+        "image_id": 520871,
+        "coco_url": "http://images.cocodataset.org/val2017/000000520871.jpg",
+        "flickr_url": "http://farm3.staticflickr.com/2548/3711888643_b930d29ec8_z.jpg",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by/2.0/",
+          "id": 4,
+          "name": "Attribution License"
+        },
+        "original_rgb_sha256": "0217449170fd69f767bf97b95ff76ad5b5151204916d94151d9539aa829099be"
+      }
+    }
+  },
+  {
+    "case_id": "real-166918",
+    "provenance": "coco_real_photo",
+    "source": {
+      "annotation_source": "COCO bottle polygons; Codex visual target review before evaluation, not independently adjudicated; background instance coverage can be incomplete",
+      "source": {
+        "dataset": "COCO val2017",
+        "image_id": 166918,
+        "coco_url": "http://images.cocodataset.org/val2017/000000166918.jpg",
+        "flickr_url": "http://farm5.staticflickr.com/4117/4745624149_369a63786e_z.jpg",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by/2.0/",
+          "id": 4,
+          "name": "Attribution License"
+        },
+        "original_rgb_sha256": "a7f8457580a2bb8635ca7acd1b2061ea7977a84418e5e8441a77ba1f861d7e22"
+      }
+    }
+  },
+  {
+    "case_id": "real-117719",
+    "provenance": "coco_real_photo",
+    "source": {
+      "annotation_source": "COCO bottle polygons; Codex visual target review before evaluation, not independently adjudicated; background instance coverage can be incomplete",
+      "source": {
+        "dataset": "COCO val2017",
+        "image_id": 117719,
+        "coco_url": "http://images.cocodataset.org/val2017/000000117719.jpg",
+        "flickr_url": "http://farm4.staticflickr.com/3395/3499231904_8b958aa5bc_z.jpg",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by-sa/2.0/",
+          "id": 5,
+          "name": "Attribution-ShareAlike License"
+        },
+        "original_rgb_sha256": "347879f8b17e27bbe503a00f8fe6963c0519f35e4d3db5ecdad92de924024744"
+      }
+    }
+  },
+  {
+    "case_id": "real-397354",
+    "provenance": "coco_real_photo",
+    "source": {
+      "annotation_source": "COCO bottle polygons; Codex visual target review before evaluation, not independently adjudicated; background instance coverage can be incomplete",
+      "source": {
+        "dataset": "COCO val2017",
+        "image_id": 397354,
+        "coco_url": "http://images.cocodataset.org/val2017/000000397354.jpg",
+        "flickr_url": "http://farm1.staticflickr.com/188/410311643_a3c829f3c7_z.jpg",
+        "license": {
+          "url": "http://creativecommons.org/licenses/by-sa/2.0/",
+          "id": 5,
+          "name": "Attribution-ShareAlike License"
+        },
+        "original_rgb_sha256": "067fb73c369a8433d1f9d97c2c36f51f487cf3a6d37c1f2fe0368a39f3dc38db"
+      }
+    }
+  }
+]

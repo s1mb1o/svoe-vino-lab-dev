@@ -1,0 +1,33 @@
+{
+  "case_id": "real-166918",
+  "boxes": [
+    [
+      0,
+      0,
+      288,
+      384
+    ],
+    [
+      192,
+      0,
+      480,
+      384
+    ],
+    [
+      0,
+      256,
+      288,
+      640
+    ],
+    [
+      192,
+      256,
+      480,
+      640
+    ]
+  ],
+  "noun": "bottle",
+  "encoding": "PNG",
+  "purpose": "test image-only multiscale recovery of missed small objects",
+  "GT_supplied": false
+}

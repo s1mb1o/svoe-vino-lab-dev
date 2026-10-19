@@ -1,0 +1,9 @@
+{
+  "trigger": "fallback with two bottle candidates, both eligible, center-distance difference at most 5px",
+  "roi": "each candidate box plus 20% of its long side on every side, clamped to source image",
+  "prompt": "bottle",
+  "encoding": "PNG",
+  "match": "maximum mask IoU with original seed, minimum 0.5",
+  "geometry": "tight binary-mask bounding box projected into source pixels; no distance tolerance added",
+  "purpose": "investigate candidate localization jitter separately from fallback ordering"
+}

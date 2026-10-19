@@ -1,0 +1,14 @@
+{
+  "trigger": "no usable package or label in primary seven-noun detections",
+  "case_ids": [
+    "hc-032",
+    "hc-101",
+    "real-520871"
+  ],
+  "prompt": [
+    "bottle"
+  ],
+  "encoding": "normalized JPEG quality 86",
+  "GT_supplied": false,
+  "max_extra_requests": 1
+}

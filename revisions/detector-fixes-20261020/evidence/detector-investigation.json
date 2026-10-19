@@ -1,0 +1,14 @@
+{
+  "lossless_full_frame_requests": 22,
+  "local_roi_requests": 28,
+  "fixed_image_tile_requests": 4,
+  "accepted_empty_recovery_requests": 3,
+  "ground_truth_supplied_to_model": false,
+  "detector_service": "Existing project LAN SAM3 service",
+  "model": "facebook/sam3",
+  "exact_checkpoint_revision": "not disclosed by service",
+  "adopted": "Small visible mask/box reconciliation plus bounded generic-bottle recovery for empty primary inputs.",
+  "rejected": "Global lossless/generic prompt substitution, unbounded mask tightening, GrabCut and crop/tile proposals did not safely resolve the remaining target mismatches. All probe outputs are retained.",
+  "annotation_conflict": "real-117719 includes genuine detected bottles absent from COCO annotations. The GT fallback target comes from the annotated subset; actual nearer eligible bottles must not be silently dropped.",
+  "tiny_target": "real-166918 target has zero best mask IoU in the full-frame and four-tile trials."
+}

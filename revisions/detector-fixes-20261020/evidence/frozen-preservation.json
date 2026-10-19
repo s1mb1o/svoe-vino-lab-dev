@@ -1,0 +1,10 @@
+{
+  "main-selector-hardcases-v2": {
+    "verified_files": 6423,
+    "manifest_sha256": "cb2dcb5c283d3e5065c4dae12621803894ad1fec63036f43f1ee65febc0d2ffd"
+  },
+  "main-selector-hardcases-v2-selector-fixes-20261019": {
+    "verified_files": 5806,
+    "manifest_sha256": "9b8cddcbe18c246da9a6327489bb078e0abde2357ab8eb492a62f93f0c191535"
+  }
+}

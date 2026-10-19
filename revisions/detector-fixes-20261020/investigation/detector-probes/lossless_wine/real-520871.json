@@ -1,0 +1,1 @@
+{"profile": "lossless_wine", "case_id": "real-520871", "nouns": ["wine bottle", "wine label", "hand", "can", "packet", "box", "price tag"], "encoding": "PNG", "image_sha256": "6fd012ceda9277356f823edf7e644d90436a8191bbd3873a894902211456920e", "instances": [], "ground_truth_supplied_to_detector": false, "seconds": 0.7198013750021346}

@@ -1,0 +1,70 @@
+{
+  "title": "semantic-v2 detector investigation \u00b7 20 October 2026",
+  "legacy_heading": "scene-v1 with shared recovery inputs",
+  "revision": "2026-10-20-visible-mask-geometry-and-recovery",
+  "selector_sha256": "313cfe1ec0f14395a4fe857a77bea9019cabad7ba4343eabb179ddc693a9a36f",
+  "explanation": "Same 216 cases, original masks/targets and 319 primary detector caches. Three empty-input recovery requests add one generic-bottle detection. Both algorithms receive the shared recovery input; scene-v1 changes only for that carafe. This is a new development revision, not an independent accuracy estimate.",
+  "crop_contract": "369/369 results return crops",
+  "label_contract": "298/298 selected-subject label checks retain 100% of pixels",
+  "metrics": [
+    {
+      "scope": "controlled / passive_intent",
+      "before": "104/104",
+      "after": "104/104",
+      "legacy": "88/104"
+    },
+    {
+      "scope": "controlled / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "5/14"
+    },
+    {
+      "scope": "controlled / policy_targets",
+      "before": "33/33",
+      "after": "33/33",
+      "legacy": "20/33"
+    },
+    {
+      "scope": "controlled / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "live / passive_intent",
+      "before": "111/112",
+      "after": "112/112",
+      "legacy": "98/112"
+    },
+    {
+      "scope": "live / interaction",
+      "before": "14/14",
+      "after": "14/14",
+      "legacy": "6/14"
+    },
+    {
+      "scope": "live / policy_targets",
+      "before": "28/38",
+      "after": "30/38",
+      "legacy": "20/38"
+    },
+    {
+      "scope": "live / no_target",
+      "before": "2/2",
+      "after": "2/2",
+      "legacy": "2/2"
+    },
+    {
+      "scope": "fallback / rule_conformance",
+      "before": "50/50",
+      "after": "50/50",
+      "legacy": "not scored"
+    }
+  ],
+  "residual_explanation": "3 case/mode joint failures fixed; no new joint-contract regressions. 8 live mismatches remain under the exact detector/GT contract. Two mask/box disagreements and the missed carafe are resolved. Five native detector ties, two real geometry/annotation conflicts and one missing tiny detection remain explicit after unsuccessful image-only probes. No GT, tie tolerance, fallback ordering or assignment scorer was altered.",
+  "files_sha256": {
+    "revision-diff.json": "a71ade06c46d46b9f62668ea42e22492af87dc155c490c8015633e06545e6758",
+    "residual-failures.json": "1894801f3147484d974cd25e486d91367b0a02f720984a4b0acc47ad5f756f3f"
+  }
+}

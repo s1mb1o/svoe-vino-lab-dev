@@ -1,0 +1,103 @@
+{
+  "release": "main-selector-hardcases-v2-detector-fixes-20261020",
+  "implementation_revision": "2026-10-20-visible-mask-geometry-and-recovery",
+  "status": "three_resolved_eight_explicitly_unresolved",
+  "full_matcher_tests": {
+    "run": 440,
+    "passed": true,
+    "new_regression_methods_this_revision": 10
+  },
+  "crop_results": 369,
+  "crops_returned": 369,
+  "selected_label_trials": 298,
+  "selected_label_min_retention": 1.0,
+  "before_joint_failures": 11,
+  "after_joint_failures": 8,
+  "new_joint_regressions": 0,
+  "fixed_cases": [
+    "hc-145/live",
+    "hc-146/live",
+    "real-520871/live"
+  ],
+  "raw_primary_detector_caches_unchanged": 319,
+  "additional_empty_recovery_requests": 3,
+  "additional_recovered_bottle_detections": 1,
+  "targets_and_gt_masks_unchanged": true,
+  "source_contracts": {
+    "functions_unchanged": {
+      "_fallback": "2771e6d060ad2f146e31927952f38ffd722ff81444299a188b8f84884f3c2b95",
+      "_crops": "e21d1dfb1a014fabb2f0fde7364c4d3af229d3dc212f08ef01afdc8682655ee9",
+      "_complete_labels": "d76c854dea61874cd9d56fa573baae1ed571ef9f7fbed26633171c0040f36c6e",
+      "_label_panels": "374f3e90a1161600b082d377d2c75595e84dc202181baaf927f280a5a35d8843",
+      "selected_gt": "372da9f35dbf2bd436e5efc54221cb0b1b30aa67c5925ffe106d457c4186f704",
+      "assess": "5677c73a8d8be92ce7bc1e1af6489cd67932fd980625f8f0a1f51a832f1b7ac0"
+    }
+  },
+  "frozen_preservation": {
+    "main-selector-hardcases-v2": {
+      "verified_files": 6423,
+      "manifest_sha256": "cb2dcb5c283d3e5065c4dae12621803894ad1fec63036f43f1ee65febc0d2ffd"
+    },
+    "main-selector-hardcases-v2-selector-fixes-20261019": {
+      "verified_files": 5806,
+      "manifest_sha256": "9b8cddcbe18c246da9a6327489bb078e0abde2357ab8eb492a62f93f0c191535"
+    }
+  },
+  "robustness": {
+    "probe_rows": 1424,
+    "crops": 1424,
+    "selected_label_trials": 1424,
+    "selected_label_min": 1.0,
+    "new_intent_or_label_regressions": [],
+    "scope": "89 native extension scenes, 8 perturbations, controlled/live. Real-photo detector recovery is checked separately, not included in this probe count."
+  },
+  "report_verification": {
+    "passed": true,
+    "javascript_syntax_valid": true,
+    "verified_image_assets": 4644,
+    "photo_cases": 166,
+    "geometry_cases": 50,
+    "semantic_result_rows": 369,
+    "semantic_rows_with_crop": 369,
+    "browser_visual_check": "not run for this release; offline data, JavaScript and image assets verified",
+    "coverage_filter_scopes_verified": 480,
+    "pixel_metrics_independent_of_selected_id": true,
+    "metrics_cohorts": [
+      "passive_intent",
+      "interaction",
+      "policy_targets",
+      "no_target",
+      "rule_conformance"
+    ]
+  },
+  "browser_verification": {
+    "checked": true,
+    "browser": "Chrome",
+    "summary_and_before_after_metrics": true,
+    "terminal_hand_group_filter": true,
+    "both_corrected_cards_report_policy_pass": true,
+    "four_main_images_loaded_for_each_terminal_hand_card": true,
+    "scope": "Visual inspection of summary layout and DOM verification of corrected cards; all assets/filter scopes checked separately offline."
+  },
+  "patch": {
+    "base_commit": "05000460eac75994ae63c7cdeb881e8c4d489fab",
+    "patch_sha256": "67f54e2a2f7b32a0b2edff303ed9488159d3d0e9680fc3903e23ae3289bb76e0",
+    "patch_applies_to_base": true,
+    "reconstructed_files_match_tested_source": true,
+    "files": {
+      "matcher/experiments/main_selector/audit_additional_coverage.py": "d7778070cbef543fdc2ee7fbcfa33facf49437a1f106dd3a891f544f68347e65",
+      "matcher/experiments/main_selector/benchmark.py": "55c53f401283051c2c396b02830ed82650f1de37d23607c3c07c580d7411e200",
+      "matcher/experiments/main_selector/fallback_suite.py": "c2273534dafd98dd077ba60a28472a8eb2194a070df87f729d2ed6926df3d60e",
+      "matcher/experiments/main_selector/report.py": "7ac41bc5f224027c5ed298285185e3fac62f8047a067881b09c37a4b93997a8b",
+      "matcher/experiments/main_selector/report_template.html": "f4855cfbac0622558050e7b3b8475c073283fe4dc15a89fc15217d4e75cb051a",
+      "matcher/experiments/main_selector/verify_report.py": "d12182bdab2c7f0f3a2942e39a94b3ca6ee4b2f1416b0f217459c5044fc5d32b",
+      "matcher/semantic_selector.py": "313cfe1ec0f14395a4fe857a77bea9019cabad7ba4343eabb179ddc693a9a36f",
+      "matcher/tests/data/semantic-v2-regressions-20261019.json": "2bc5496f61ebbe1a69b93c285f9f167353f28f730c58902886ec38975c6bc8fe",
+      "matcher/tests/test_detector_recovery.py": "5f542048a86e2dff485adb3e82545897044129994a446f05690bb3300bd25e88",
+      "matcher/tests/test_selector_regressions.py": "3ee1c2b7e2b58692b24906751e73a6dd7f4237fab458c74f7debf0f1b89f50de"
+    }
+  },
+  "scene_v1": "Algorithm unchanged; shared recovered carafe input changes that case only. Original scene-v1 and both older galleries remain frozen.",
+  "production_rollout": false,
+  "limits": "Eight failures remain, without GT/scorer/tie changes. Generic recovery is in the standalone byte adapter; supplied instances/cascade inputs are replayed without another detector request. This is development coverage, not independent accuracy."
+}

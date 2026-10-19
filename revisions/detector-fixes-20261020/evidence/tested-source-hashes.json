@@ -1,0 +1,12 @@
+{
+  "matcher/experiments/main_selector/audit_additional_coverage.py": "d7778070cbef543fdc2ee7fbcfa33facf49437a1f106dd3a891f544f68347e65",
+  "matcher/experiments/main_selector/benchmark.py": "55c53f401283051c2c396b02830ed82650f1de37d23607c3c07c580d7411e200",
+  "matcher/experiments/main_selector/fallback_suite.py": "c2273534dafd98dd077ba60a28472a8eb2194a070df87f729d2ed6926df3d60e",
+  "matcher/experiments/main_selector/report.py": "7ac41bc5f224027c5ed298285185e3fac62f8047a067881b09c37a4b93997a8b",
+  "matcher/experiments/main_selector/report_template.html": "f4855cfbac0622558050e7b3b8475c073283fe4dc15a89fc15217d4e75cb051a",
+  "matcher/experiments/main_selector/verify_report.py": "d12182bdab2c7f0f3a2942e39a94b3ca6ee4b2f1416b0f217459c5044fc5d32b",
+  "matcher/semantic_selector.py": "313cfe1ec0f14395a4fe857a77bea9019cabad7ba4343eabb179ddc693a9a36f",
+  "matcher/tests/data/semantic-v2-regressions-20261019.json": "2bc5496f61ebbe1a69b93c285f9f167353f28f730c58902886ec38975c6bc8fe",
+  "matcher/tests/test_detector_recovery.py": "5f542048a86e2dff485adb3e82545897044129994a446f05690bb3300bd25e88",
+  "matcher/tests/test_selector_regressions.py": "3ee1c2b7e2b58692b24906751e73a6dd7f4237fab458c74f7debf0f1b89f50de"
+}

@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "javascript_syntax_valid": true,
+  "verified_image_assets": 4644,
+  "photo_cases": 166,
+  "geometry_cases": 50,
+  "semantic_result_rows": 369,
+  "semantic_rows_with_crop": 369,
+  "browser_visual_check": "not run for this release; offline data, JavaScript and image assets verified",
+  "coverage_filter_scopes_verified": 480,
+  "pixel_metrics_independent_of_selected_id": true,
+  "metrics_cohorts": [
+    "passive_intent",
+    "interaction",
+    "policy_targets",
+    "no_target",
+    "rule_conformance"
+  ]
+}

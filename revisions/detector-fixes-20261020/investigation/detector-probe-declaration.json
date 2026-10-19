@@ -1,0 +1,39 @@
+{
+  "case_ids": [
+    "hc-025",
+    "hc-035",
+    "hc-039",
+    "hc-041",
+    "hc-056",
+    "hc-145",
+    "hc-146",
+    "real-520871",
+    "real-166918",
+    "real-117719",
+    "real-397354"
+  ],
+  "profiles": {
+    "lossless_wine": [
+      "wine bottle",
+      "wine label",
+      "hand",
+      "can",
+      "packet",
+      "box",
+      "price tag"
+    ],
+    "lossless_generic": [
+      "bottle",
+      "wine label",
+      "hand",
+      "can",
+      "packet",
+      "box",
+      "price tag"
+    ]
+  },
+  "image_encoding": "lossless PNG of oriented source RGB",
+  "purpose": "Test compression and noun coverage without GT-assisted detection or changing fallback ordering.",
+  "all_attempts_retained": true,
+  "original_predictions_read_only": true
+}
