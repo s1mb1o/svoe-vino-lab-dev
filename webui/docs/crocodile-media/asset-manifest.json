@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-19",
+  "generation": "built-in image_gen",
+  "source_photos": [
+    {
+      "name": "PXL_20261019_160124757.jpg",
+      "sha256": "8898048cdfb5dc5c1342e6e63974f7e6a17800fccb90b7ef91de653227bcdee9"
+    },
+    {
+      "name": "PXL_20261019_160405934.PORTRAIT.jpg",
+      "sha256": "27a7275154ffd17073dd18c3cd00f70110473fd4d513ed0c61bf3dd14a7fab5b"
+    },
+    {
+      "name": "PXL_20261019_160324898.jpg",
+      "sha256": "abee1d01932f4d92da4535f31232803d472f7cc584ca252cdf310511fdc8112d"
+    }
+  ],
+  "assets": {
+    "public/crocodile/cards/P01.webp": {
+      "bytes": 20520,
+      "sha256": "0951748148a2b15eb0cbf615fb9474e07816af43b449ddae7a20ce5266bf8d8a"
+    },
+    "public/crocodile/cards/P03.webp": {
+      "bytes": 27040,
+      "sha256": "010ee6b0db514ea1d1b02f5960ead2f6d9f3baa77b80c474bec37a4e98a99405"
+    },
+    "public/crocodile/cards/R05.webp": {
+      "bytes": 56014,
+      "sha256": "0ed29317f8ea2720a9b74fa047f0b5a74eccad264218eb9f132a542d3e5d4e83"
+    },
+    "public/crocodile/cards/R09.webp": {
+      "bytes": 119168,
+      "sha256": "94dcbb213d3eed67c3664c36cc329b8a60fcfc535a81532c7486a8da5038d6d3"
+    },
+    "public/crocodile/cards/W01.webp": {
+      "bytes": 30306,
+      "sha256": "60faeae3198577bfacfc8210c2ec8e23f0fa441b45b06efb6f779549a8735cf4"
+    },
+    "public/crocodile/cards/W08.webp": {
+      "bytes": 19092,
+      "sha256": "04ccc26c2be9b79d4cb81c67301460adcbffc4909f5197b5971a1fc7dcbc9626"
+    },
+    "public/crocodile/detail.webp": {
+      "bytes": 301958,
+      "sha256": "f8b35711c6f494399e4f8969cc28caec8d5f55cabc8cc86fc4aaab09fe5ebb90"
+    },
+    "public/crocodile/downloads/box-a4.pdf": {
+      "bytes": 2158491,
+      "sha256": "c2cc252ec162ded3f108eb94aa7104c754a6981b77f74b3a9794cd9de3499410"
+    },
+    "public/crocodile/downloads/cards-a4.pdf": {
+      "bytes": 13102579,
+      "sha256": "860c1ded0acd9adb7dcacc17e73eec12857ca113938d3314222099cf5804f5ed"
+    },
+    "public/crocodile/hero.webp": {
+      "bytes": 273418,
+      "sha256": "a3047031e1aeecf0c8816f538060463901151855495b5ee7b2ccfc18336289fb"
+    },
+    "docs/crocodile-media/detail-retouched.png": {
+      "bytes": 2484884,
+      "sha256": "59e42002149b85938739758905f35a4da03ee259825d6c8b885adcfdf3dd74ef"
+    },
+    "docs/crocodile-media/hero-retouched.png": {
+      "bytes": 2385782,
+      "sha256": "d50852060eb9933d0747537c9b0786e54a4efa86fb51af1cb0ccde8794eb72ec"
+    }
+  },
+  "card_copy_source": "ideas/wine-crocodile/cards-01.md",
+  "photo_note": "Retouched editorial photographs. Generated microtext is not source evidence. UI card copy is exact and independent of the photos."
+}

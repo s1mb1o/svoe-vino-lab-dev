@@ -5,6 +5,12 @@ The UI uses the visual identity of [Свое Вино](https://vino-svoe.ru/).
 The home page is «Найти вино по фото». It does not reproduce the catalog UX.
 The current release uses a mock prediction service and local result metadata.
 
+## Wine Crocodile
+
+The physical card-game landing is at `/crocodile`. Open it from `/ideas`.
+The page includes rules, six illustrated card examples, photo-based artwork, and print files.
+Read [the page contract](docs/crocodile-landing.md).
+
 ## Scope
 
 - Select a label photo, use the mobile camera input, or drop a file.

@@ -235,3 +235,13 @@ The extension uses 67 selected imagegen derivatives.
 Original catalog and official source files remain outside the repository.
 Every product has a measured alpha frame.
 Generated fine print is not product evidence.
+
+## Wine Crocodile
+
+The owner supplied three photos of the handmade game on 2026-10-19.
+Built-in image_gen produced the hero and detail photo compositions.
+`crocodile-media/image-prompts.json` preserves the complete English prompts.
+`crocodile-media/asset-manifest.json` records the source hashes and all output hashes.
+The six card illustrations come from the approved local Wine Crocodile print project.
+The public WebP files are delivery encodings. The original generated PNG files remain in `docs/crocodile-media/`.
+The two print PDFs are exact copies of the existing owner print masters.

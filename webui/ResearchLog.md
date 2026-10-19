@@ -1,5 +1,15 @@
 # Research log
 
+## 2026-10-19: Wine Crocodile page evidence
+
+The owner selected a separate `/crocodile` route in the existing portal.
+The existing game worktree contained unrelated edits. Use the isolated `codex/wine-crocodile-landing-20261019` worktree.
+Use the approved thirty-card source for six examples. Keep the coupe story labeled as an unverified legend.
+Use the owner's photos for two retouched editorial compositions. Do not use generated microtext as factual evidence.
+The page exposes local card flips and filters. It does not claim online multiplayer, sales, reviews, or expert validation.
+Keep the existing physical print masters byte-identical in the download directory.
+Read `docs/crocodile-landing.md` for the full page contract and the browser verification command.
+
 ## Automatic Dinner Lens updates, 2026-10-19
 
 The owner removed the explicit confirmation step for dish-to-wine recommendations.
@@ -17,6 +27,7 @@ empty names, cancellation, route disposal and availability. Desktop/mobile brows
 The owner identified the blind-style quiz mock in a screenshot and requested a link to the game landing page in that position.
 Decision: replace that card with the existing Wine&Dine Merge artwork and a `/game` link.
 Use a working-prototype badge and accurate merge-game copy. Do not imply that the merge game implements the former quiz.
+
 
 ## Game landing evidence, 2026-10-19
 
@@ -1154,3 +1165,11 @@ An image copied directly into `.output/public` retained its old Content-Length.
 The browser request reported a parse error because the new file body was longer.
 Rebuild the application and restart the server after a public asset replacement.
 The rebuilt server returned the new image hash in both browser engines.
+
+### Crocodile visual verification findings
+
+Set an explicit automatic height when a responsive product photo has HTML width and height attributes.
+In scoped Vue CSS, keep the full theme descendant selector inside `:global(...)`.
+The split form affected the HTML root in this build.
+The final browser check verifies photo proportions, theme background luminance, and main text and button contrast.
+See `docs/validation/crocodile-landing.md` for the final evidence.

@@ -1,5 +1,17 @@
 # Smoke tests
 
+## Wine Crocodile landing
+
+1. Run the type check and production build. Run the existing bundle check after the build.
+2. Run `scripts/check-crocodile-browser.mjs` with the documented Playwright environment.
+3. Check `/ideas` to `/crocodile` navigation, the portal header, one heading, and canonical metadata.
+4. Test all three color filters. Flip a card with mouse and keyboard. Restore its front.
+5. Check the unverified coupe legend and the one-to-three-point score rule.
+6. Open the FAQ. Download both PDF files. Verify their hashes against the asset manifest.
+7. Inspect 320, 390, 768, and 1440 pixel layouts in both system themes.
+8. Confirm no horizontal overflow, missing local images, or browser errors.
+9. Inspect the hero, sample cards, rules, download links, and photo section on desktop and mobile.
+
 ## Automatic Dinner Lens recommendations
 
 1. Open `/dish` on desktop and mobile. Confirm that there is no primary pairing or confirmation button.
@@ -19,6 +31,7 @@
 2. Confirm that the blind-style quiz title, quiz tags, and unavailable quiz explanation are absent.
 3. Follow the card link to `/game`. Confirm the landing heading and the existing game entry URLs.
 4. Check the card at desktop, 390-pixel, and 320-pixel widths in both themes. Keep the remaining mock cards labeled as mockups.
+
 
 ## Wine&Dine Merge landing
 

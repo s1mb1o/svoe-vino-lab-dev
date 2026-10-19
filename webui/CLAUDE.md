@@ -104,3 +104,12 @@ Wait for `document.fonts.ready` before measuring a map centering target. A new g
 
 Apply image consumer class and style once to the frame. Keep native attributes on the inner image.
 Run the pixel/frame checker after asset or frame changes. It checks actual dimensions and alpha containment.
+
+## Scoped theme CSS
+
+Keep the complete theme and component selector inside `:global(...)` in scoped Vue styles.
+Use `:global([data-theme='dark'] .component-class)`.
+Do not use `:global([data-theme='dark']) .component-class`.
+In the current compiler, that form can reduce the selector to the root element and change the whole portal.
+Check rendered backgrounds and text contrast in both themes.
+A `data-theme` attribute check alone is not sufficient.

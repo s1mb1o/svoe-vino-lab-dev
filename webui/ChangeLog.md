@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-19: Wine Crocodile landing
+
+- Add `/crocodile` and its invitation on `/ideas`.
+- Pass the type check, production build, bundle check, and sixteen browser layouts. Check photo proportions and text contrast.
+- Add the three explanation modes, exact card examples, keyboard-operable card flips, filters, rules, and FAQ.
+- Retouch the owner's three photo references into two product images with built-in image_gen.
+- Add local print-master downloads. Preserve the existing portal age gate, themes, scanner, and Merge game.
+- Keep image masters, full prompts, hashes, and content provenance in `docs/crocodile-media/`.
+
 ## 2026-10-19 — Automatic Dinner Lens recommendations
 
 - Remove the primary pairing button. Refresh wine recommendations after recognition, manual dish selection, or taste/sauce changes. Debounce typed names for 450 ms.
@@ -20,6 +29,7 @@
 
 - Replace the grocery mock with a Dinner Lens card in the implemented section. Describe photo or name entry, sauce and heat choices, and explanations for wine pairings. Link directly to `/dish`.
 - Update section counts and balance the four implemented cards in two desktop columns.
+
 
 ## 2026-10-19 — Wine&Dine Merge landing
 
