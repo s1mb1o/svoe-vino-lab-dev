@@ -1,0 +1,44 @@
+# Example Docker Compose file of the account service. Copy it to the installation directory
+# and keep the real file, its .env, and config/account.env outside this repository.
+#
+#   .env                 ACCOUNT_IMAGE=svoe-vino-lab-account:<revision>
+#   config/account.env   the settings of ../.env.example with real secrets (mode 0600)
+#   data/                account.sqlite3, owned by uid 1000
+#
+# The service publishes its port on loopback only. The reverse SSH tunnel to the web server
+# connects to that port. The bots reach the service on the shared network "svoe-vino".
+
+name: svoe-vino-account
+
+services:
+  account:
+    image: ${ACCOUNT_IMAGE:?set ACCOUNT_IMAGE in .env}
+    restart: unless-stopped
+    env_file:
+      - path: config/account.env
+        format: raw
+    environment:
+      ACCOUNT_ENVIRONMENT: production
+    ports:
+      - "127.0.0.1:28007:8080"
+    volumes:
+      - ./data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    networks:
+      - svoe-vino
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "5"
+
+networks:
+  svoe-vino:
+    external: true

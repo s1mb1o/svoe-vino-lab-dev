@@ -1,0 +1,648 @@
+"""Account operations without HTTP: login, sign-up, sessions, linking, and deletion.
+
+Login methods: an email code and Yandex ID (plans 03 and 04, issue #48). MAX and Telegram
+are linked identities. A MAX launch can open a session only when MAX_LOGIN_ENABLED is true
+(issue #50 decides this).
+"""
+
+from __future__ import annotations
+
+import ipaddress
+import logging
+import re
+import sqlite3
+import uuid
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
+
+from . import max_launch
+from .config import Settings
+from .db import Database
+from .limits import SlidingWindow
+from .mailer import Dispatcher, code_mail
+from .tokens import code_mac, equal, new_email_code, new_token, pkce_pair, token_hash
+from .yandex import ProviderRejected, ProviderUnavailable, YandexClient
+
+LOG = logging.getLogger("chto_za_vino_account")
+
+EMAIL_CODE_TTL = 600
+EMAIL_MAX_ATTEMPTS = 5
+OAUTH_FLOW_TTL = 600
+SIGNUP_TTL = 1800
+LINK_CODE_TTL = 600
+SESSION_TTL = 30 * 86400
+MAX_SESSION_TTL = 86400
+SESSION_EXTEND_AFTER = 86400
+RECENT_AUTH = 900
+LAUNCH_ID_TTL = 3600
+LAUNCH_CLOCK_SKEW = 60
+
+EMAIL_RE = re.compile(r"[^@\s]{1,64}@[^@\s]+\.[^@\s]+")
+USERNAME_RE = re.compile(r"[a-z0-9][a-z0-9_.-]{1,30}[a-z0-9]")
+RESERVED_USERNAMES = frozenset(
+    {
+        "admin", "administrator", "root", "support", "help", "system", "account", "accounts",
+        "api", "max", "telegram", "yandex", "chtozavino", "moderator", "null", "undefined", "me",
+    }
+)
+
+
+class AccountError(Exception):
+    def __init__(
+        self,
+        code: str,
+        status: int = 400,
+        detail: str = "",
+        *,
+        retry_after: int | None = None,
+        extra: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status = status
+        self.detail = detail
+        self.retry_after = retry_after
+        self.extra = extra or {}
+
+
+@dataclass(frozen=True)
+class Session:
+    user_id: str
+    auth_method: str
+    auth_at: int
+    expires_at: int
+
+
+@dataclass(frozen=True)
+class SessionIssued:
+    token: str
+    expires_at: int
+    auth_method: str
+    user_id: str
+
+
+@dataclass(frozen=True)
+class SignupRequired:
+    ticket: str
+    provider: str
+    email: str | None
+
+
+@dataclass(frozen=True)
+class Linked:
+    user_id: str
+
+
+AuthResult = SessionIssued | SignupRequired
+
+
+def iso(timestamp: int) -> str:
+    return datetime.fromtimestamp(timestamp, UTC).isoformat().replace("+00:00", "Z")
+
+
+def normalize_email(value: str) -> str:
+    email = value.strip().lower()
+    if len(email) > 254 or not EMAIL_RE.fullmatch(email):
+        raise AccountError("invalid_email", detail="The email address is not valid")
+    return email
+
+
+def normalize_username(value: str) -> str:
+    username = value.strip().lower()
+    if not USERNAME_RE.fullmatch(username):
+        raise AccountError(
+            "invalid_username",
+            detail="Use 3-32 characters: a-z, 0-9, '_', '.', '-'; start and end with a letter "
+            "or digit",
+        )
+    if username in RESERVED_USERNAMES:
+        raise AccountError("username_reserved", detail="This username is reserved")
+    return username
+
+
+def normalize_ip(value: str) -> str:
+    try:
+        return str(ipaddress.ip_address(value.strip()))
+    except ValueError as error:
+        raise AccountError("client_ip_required", detail="X-Client-IP is not valid") from error
+
+
+class AccountService:
+    def __init__(
+        self,
+        settings: Settings,
+        db: Database,
+        dispatcher: Dispatcher,
+        yandex: YandexClient | None,
+        clock: Callable[[], float],
+    ) -> None:
+        self.settings = settings
+        self.db = db
+        self.dispatcher = dispatcher
+        self.yandex = yandex
+        self.clock = clock
+        self.email_resend = SlidingWindow(1, 60, clock)
+        self.email_hourly = SlidingWindow(3, 3600, clock)
+        self.email_per_ip = SlidingWindow(20, 3600, clock)
+
+    # ----------------------------------------------------------------- helpers
+
+    def _now(self) -> int:
+        return int(self.clock())
+
+    @property
+    def login_providers(self) -> tuple[str, ...]:
+        providers = ["email", "yandex"]
+        if self.settings.max is not None and self.settings.max.login_enabled:
+            providers.append("max")
+        return tuple(providers)
+
+    def _create_session(
+        self,
+        db: sqlite3.Connection,
+        user_id: str,
+        auth_method: str,
+        now: int,
+        *,
+        auth_at: int | None = None,
+        ttl: int = SESSION_TTL,
+    ) -> SessionIssued:
+        token = new_token()
+        expires_at = now + ttl
+        db.execute(
+            "INSERT INTO sessions (token_hash, user_id, auth_method, created_at, auth_at, "
+            "expires_at, extended_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (token_hash(token), user_id, auth_method, now, auth_at or now, expires_at, now),
+        )
+        LOG.info("Session created (%s)", auth_method)
+        return SessionIssued(token, expires_at, auth_method, user_id)
+
+    def _login_or_signup(
+        self, provider: str, subject: str, *, auth_at: int | None = None, ttl: int = SESSION_TTL
+    ) -> AuthResult:
+        now = self._now()
+        with self.db.transaction() as db:
+            row = db.execute(
+                "SELECT user_id FROM identities WHERE provider = ? AND subject = ?",
+                (provider, subject),
+            ).fetchone()
+            if row is not None:
+                return self._create_session(
+                    db, row["user_id"], provider, now, auth_at=auth_at, ttl=ttl
+                )
+            ticket = new_token()
+            db.execute(
+                "INSERT INTO signup_tickets (token_hash, provider, subject, created_at, "
+                "expires_at) VALUES (?, ?, ?, ?, ?)",
+                (token_hash(ticket), provider, subject, now, now + SIGNUP_TTL),
+            )
+        return SignupRequired(ticket, provider, subject if provider == "email" else None)
+
+    @staticmethod
+    def _link(
+        db: sqlite3.Connection,
+        user_id: str,
+        provider: str,
+        subject: str,
+        now: int,
+        *,
+        replace: bool = False,
+    ) -> None:
+        owner = db.execute(
+            "SELECT user_id FROM identities WHERE provider = ? AND subject = ?",
+            (provider, subject),
+        ).fetchone()
+        if owner is not None:
+            if owner["user_id"] == user_id:
+                return
+            raise AccountError("identity_in_use", 409, "This identity belongs to another account")
+        mine = db.execute(
+            "SELECT subject FROM identities WHERE user_id = ? AND provider = ?",
+            (user_id, provider),
+        ).fetchone()
+        if mine is not None:
+            if not replace:
+                raise AccountError(
+                    "provider_already_linked", 409, f"Unlink the current {provider} first"
+                )
+            db.execute(
+                "UPDATE identities SET subject = ?, linked_at = ? "
+                "WHERE user_id = ? AND provider = ?",
+                (subject, now, user_id, provider),
+            )
+        else:
+            db.execute(
+                "INSERT INTO identities (provider, subject, user_id, linked_at) "
+                "VALUES (?, ?, ?, ?)",
+                (provider, subject, user_id, now),
+            )
+        LOG.info("Identity linked (%s)", provider)
+
+    def _require_recent(self, session: Session) -> None:
+        if self._now() - session.auth_at > RECENT_AUTH:
+            raise AccountError("reauth_required", 403, "Log in again to confirm this action")
+
+    # ------------------------------------------------------------------ views
+
+    def provider_config(self) -> dict[str, Any]:
+        settings = self.settings
+        return {
+            "providers": {
+                "email": True,
+                "yandex": settings.yandex is not None,
+                "max_link": settings.max is not None,
+                "max_login": settings.max is not None and settings.max.login_enabled,
+                "telegram_link": bool(settings.telegram_bot_username),
+            },
+            "consent_version": settings.consent_version,
+            "terms_version": settings.terms_version,
+            "yandex_redirect_uris": list(settings.yandex.redirect_uris) if settings.yandex else [],
+        }
+
+    def user_view(self, user_id: str) -> dict[str, Any]:
+        with self.db.transaction() as db:
+            user = db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+            if user is None:
+                raise AccountError("session_invalid", 401, "The account no longer exists")
+            identities = db.execute(
+                "SELECT provider, subject, linked_at FROM identities WHERE user_id = ? "
+                "ORDER BY provider",
+                (user_id,),
+            ).fetchall()
+        return {
+            "id": user["id"],
+            "username": user["username"],
+            "created_at": iso(user["created_at"]),
+            "identities": [
+                {
+                    "provider": item["provider"],
+                    "linked_at": iso(item["linked_at"]),
+                    **({"email": item["subject"]} if item["provider"] == "email" else {}),
+                }
+                for item in identities
+            ],
+        }
+
+    # --------------------------------------------------------------- sessions
+
+    def authenticate(self, token: str) -> Session | None:
+        now = self._now()
+        with self.db.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM sessions WHERE token_hash = ?", (token_hash(token),)
+            ).fetchone()
+            if row is None:
+                return None
+            if row["expires_at"] <= now:
+                db.execute("DELETE FROM sessions WHERE token_hash = ?", (row["token_hash"],))
+                return None
+            expires_at = row["expires_at"]
+            if row["auth_method"] != "max" and now - row["extended_at"] >= SESSION_EXTEND_AFTER:
+                expires_at = now + SESSION_TTL
+                db.execute(
+                    "UPDATE sessions SET expires_at = ?, extended_at = ? WHERE token_hash = ?",
+                    (expires_at, now, row["token_hash"]),
+                )
+        return Session(row["user_id"], row["auth_method"], row["auth_at"], expires_at)
+
+    def logout(self, token: str) -> None:
+        with self.db.transaction() as db:
+            db.execute("DELETE FROM sessions WHERE token_hash = ?", (token_hash(token),))
+
+    # ------------------------------------------------------------------ email
+
+    def email_start(
+        self, email: str, purpose: str, client_ip: str, session: Session | None
+    ) -> tuple[str, int]:
+        email = normalize_email(email)
+        if purpose == "link" and session is None:
+            raise AccountError("session_required", 401, "Log in to link an email address")
+        checks = (
+            (self.email_resend, email),
+            (self.email_hourly, email),
+            (self.email_per_ip, client_ip),
+        )
+        wait = max(limiter.retry_after(key) for limiter, key in checks)
+        if wait:
+            raise AccountError("rate_limited", 429, "Too many codes", retry_after=wait)
+        for limiter, key in checks:
+            limiter.record(key)
+        challenge_id = new_token()
+        code = new_email_code()
+        now = self._now()
+        with self.db.transaction() as db:
+            db.execute(
+                "INSERT INTO email_challenges (id_hash, email, code_mac, purpose, user_id, "
+                "created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    token_hash(challenge_id),
+                    email,
+                    code_mac(self.settings.code_key, challenge_id, code),
+                    purpose,
+                    session.user_id if session else None,
+                    now,
+                    now + EMAIL_CODE_TTL,
+                ),
+            )
+        self.dispatcher.submit(code_mail(email, code, purpose, self.settings.site_name))
+        LOG.info("Email challenge created (%s)", purpose)
+        return challenge_id, EMAIL_CODE_TTL
+
+    def email_verify(
+        self, challenge_id: str, code: str, session: Session | None
+    ) -> AuthResult | Linked:
+        now = self._now()
+        error: AccountError | None = None
+        with self.db.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM email_challenges WHERE id_hash = ?", (token_hash(challenge_id),)
+            ).fetchone()
+            if row is None or row["used_at"] is not None or row["expires_at"] <= now:
+                error = AccountError("invalid_challenge", 400, "Request a new code")
+            elif row["attempts"] >= EMAIL_MAX_ATTEMPTS:
+                error = AccountError("too_many_attempts", 429, "Request a new code")
+            elif row["purpose"] == "link" and (
+                session is None or session.user_id != row["user_id"]
+            ):
+                error = AccountError("invalid_challenge", 400, "Request a new code")
+            elif not equal(row["code_mac"], code_mac(self.settings.code_key, challenge_id, code)):
+                db.execute(
+                    "UPDATE email_challenges SET attempts = attempts + 1 WHERE id_hash = ?",
+                    (row["id_hash"],),
+                )
+                remaining = EMAIL_MAX_ATTEMPTS - row["attempts"] - 1
+                error = AccountError(
+                    "invalid_code", 400, "The code is wrong", extra={"attempts_left": remaining}
+                )
+            else:
+                db.execute(
+                    "UPDATE email_challenges SET used_at = ? WHERE id_hash = ?",
+                    (now, row["id_hash"]),
+                )
+        if error is not None:
+            raise error
+        if row["purpose"] == "login":
+            return self._login_or_signup("email", row["email"])
+        with self.db.transaction() as db:
+            self._link(db, row["user_id"], "email", row["email"], now, replace=True)
+        return Linked(row["user_id"])
+
+    # ----------------------------------------------------------------- yandex
+
+    def yandex_start(
+        self, redirect_uri: str, purpose: str, session: Session | None
+    ) -> tuple[str, str, int]:
+        if self.yandex is None or self.settings.yandex is None:
+            raise AccountError("provider_disabled", 404, "Yandex ID is not configured")
+        if redirect_uri not in self.settings.yandex.redirect_uris:
+            raise AccountError("invalid_redirect_uri", 400, "The redirect URI is not registered")
+        if purpose == "link" and session is None:
+            raise AccountError("session_required", 401, "Log in to link Yandex ID")
+        flow_id = new_token()
+        state = new_token()
+        verifier, challenge = pkce_pair()
+        now = self._now()
+        with self.db.transaction() as db:
+            db.execute(
+                "INSERT INTO oauth_flows (id_hash, provider, state, code_verifier, redirect_uri, "
+                "purpose, user_id, created_at, expires_at) "
+                "VALUES (?, 'yandex', ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    token_hash(flow_id),
+                    state,
+                    verifier,
+                    redirect_uri,
+                    purpose,
+                    session.user_id if session else None,
+                    now,
+                    now + OAUTH_FLOW_TTL,
+                ),
+            )
+        url = self.yandex.authorize_url(
+            state=state, code_challenge=challenge, redirect_uri=redirect_uri
+        )
+        return url, flow_id, OAUTH_FLOW_TTL
+
+    def yandex_finish(
+        self, flow_id: str, state: str, code: str, session: Session | None
+    ) -> AuthResult | Linked:
+        if self.yandex is None:
+            raise AccountError("provider_disabled", 404, "Yandex ID is not configured")
+        now = self._now()
+        error: AccountError | None = None
+        with self.db.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM oauth_flows WHERE id_hash = ?", (token_hash(flow_id),)
+            ).fetchone()
+            if row is None or row["used_at"] is not None or row["expires_at"] <= now:
+                error = AccountError("invalid_flow", 400, "Start the Yandex login again")
+            else:
+                db.execute(
+                    "UPDATE oauth_flows SET used_at = ? WHERE id_hash = ?", (now, row["id_hash"])
+                )
+                if not equal(row["state"], state):
+                    error = AccountError("invalid_flow", 400, "Start the Yandex login again")
+                elif row["purpose"] == "link" and (
+                    session is None or session.user_id != row["user_id"]
+                ):
+                    error = AccountError("invalid_flow", 400, "Start the Yandex login again")
+        if error is not None:
+            raise error
+        try:
+            yandex_id = self.yandex.user_id(code=code, code_verifier=row["code_verifier"])
+        except ProviderUnavailable as failure:
+            LOG.warning("Yandex ID unavailable: %s", failure)
+            raise AccountError("provider_unavailable", 502, "Yandex ID did not answer") from None
+        except ProviderRejected as failure:
+            LOG.info("Yandex ID rejected the login: %s", failure)
+            raise AccountError("provider_rejected", 400, "Yandex ID rejected the login") from None
+        if row["purpose"] == "login":
+            return self._login_or_signup("yandex", yandex_id)
+        with self.db.transaction() as db:
+            self._link(db, row["user_id"], "yandex", yandex_id, self._now())
+        return Linked(row["user_id"])
+
+    # ---------------------------------------------------------------- sign-up
+
+    def signup(
+        self, ticket: str, username: str, consent_version: str, terms_version: str
+    ) -> SessionIssued:
+        username = normalize_username(username)
+        if consent_version != self.settings.consent_version:
+            raise AccountError("consent_outdated", 400, "Accept the current consent text")
+        if terms_version != self.settings.terms_version:
+            raise AccountError("terms_outdated", 400, "Accept the current terms of use")
+        now = self._now()
+        with self.db.transaction() as db:
+            row = db.execute(
+                "SELECT * FROM signup_tickets WHERE token_hash = ?", (token_hash(ticket),)
+            ).fetchone()
+            if row is None or row["used_at"] is not None or row["expires_at"] <= now:
+                raise AccountError("invalid_ticket", 400, "Log in again to sign up")
+            taken = db.execute("SELECT 1 FROM users WHERE username = ?", (username,)).fetchone()
+            if taken is not None:
+                raise AccountError("username_taken", 409, "This username is taken")
+            user_id = str(uuid.uuid4())
+            db.execute(
+                "INSERT INTO users (id, username, created_at, consent_version, consent_at, "
+                "terms_version, terms_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (user_id, username, now, consent_version, now, terms_version, now),
+            )
+            self._link(db, user_id, row["provider"], row["subject"], now)
+            db.execute(
+                "UPDATE signup_tickets SET used_at = ? WHERE token_hash = ?",
+                (now, row["token_hash"]),
+            )
+            issued = self._create_session(db, user_id, row["provider"], now)
+        LOG.info("Account created (%s)", row["provider"])
+        return issued
+
+    # ---------------------------------------------------------- account state
+
+    def unlink(self, session: Session, provider: str) -> None:
+        self._require_recent(session)
+        with self.db.transaction() as db:
+            rows = db.execute(
+                "SELECT provider FROM identities WHERE user_id = ?", (session.user_id,)
+            ).fetchall()
+            providers = {row["provider"] for row in rows}
+            if provider not in providers:
+                raise AccountError("not_linked", 404, f"No {provider} identity is linked")
+            remaining_logins = (providers - {provider}) & set(self.login_providers)
+            if provider in self.login_providers and not remaining_logins:
+                raise AccountError(
+                    "last_login_method", 409, "Link another login method before this unlink"
+                )
+            db.execute(
+                "DELETE FROM identities WHERE user_id = ? AND provider = ?",
+                (session.user_id, provider),
+            )
+        LOG.info("Identity unlinked (%s)", provider)
+
+    def delete_account(self, session: Session) -> None:
+        self._require_recent(session)
+        with self.db.transaction() as db:
+            db.execute("DELETE FROM users WHERE id = ?", (session.user_id,))
+        LOG.info("Account deleted")
+
+    # --------------------------------------------------------------- telegram
+
+    def telegram_link_start(self, session: Session) -> tuple[str, str, int]:
+        bot = self.settings.telegram_bot_username
+        if not bot:
+            raise AccountError("provider_disabled", 404, "Telegram linking is not configured")
+        code = new_token(16)
+        now = self._now()
+        with self.db.transaction() as db:
+            linked = db.execute(
+                "SELECT 1 FROM identities WHERE user_id = ? AND provider = 'telegram'",
+                (session.user_id,),
+            ).fetchone()
+            if linked is not None:
+                raise AccountError("provider_already_linked", 409, "Unlink Telegram first")
+            db.execute(
+                "INSERT INTO link_codes (code_hash, user_id, provider, created_at, expires_at) "
+                "VALUES (?, ?, 'telegram', ?, ?)",
+                (token_hash(code), session.user_id, now, now + LINK_CODE_TTL),
+            )
+        return code, f"https://t.me/{bot}?start=link_{code}", LINK_CODE_TTL
+
+    def _link_code(self, db: sqlite3.Connection, code: str, now: int) -> sqlite3.Row:
+        row = db.execute(
+            "SELECT link_codes.*, users.username FROM link_codes "
+            "JOIN users ON users.id = link_codes.user_id WHERE code_hash = ?",
+            (token_hash(code),),
+        ).fetchone()
+        if row is None or row["used_at"] is not None or row["expires_at"] <= now:
+            raise AccountError("invalid_link_code", 400, "Create a new link on the site")
+        return row
+
+    def telegram_claim(self, code: str, telegram_user_id: int) -> str:
+        now = self._now()
+        with self.db.transaction() as db:
+            row = self._link_code(db, code, now)
+            owner = db.execute(
+                "SELECT user_id FROM identities WHERE provider = 'telegram' AND subject = ?",
+                (str(telegram_user_id),),
+            ).fetchone()
+            if owner is not None and owner["user_id"] != row["user_id"]:
+                raise AccountError("identity_in_use", 409, "Telegram is linked to another diary")
+        return row["username"]
+
+    def telegram_confirm(self, code: str, telegram_user_id: int) -> str:
+        now = self._now()
+        with self.db.transaction() as db:
+            row = self._link_code(db, code, now)
+            self._link(db, row["user_id"], "telegram", str(telegram_user_id), now)
+            db.execute(
+                "UPDATE link_codes SET used_at = ? WHERE code_hash = ?", (now, row["code_hash"])
+            )
+        return row["username"]
+
+    def telegram_unlink(self, telegram_user_id: int) -> bool:
+        with self.db.transaction() as db:
+            cursor = db.execute(
+                "DELETE FROM identities WHERE provider = 'telegram' AND subject = ?",
+                (str(telegram_user_id),),
+            )
+        return cursor.rowcount > 0
+
+    # -------------------------------------------------------------------- max
+
+    def _check_launch(
+        self, db: sqlite3.Connection, init_data: str, client_ip: str, now: int
+    ) -> max_launch.Launch:
+        settings = self.settings.max
+        if settings is None:
+            raise AccountError("provider_disabled", 404, "MAX is not configured")
+        try:
+            launch = max_launch.verify(init_data, settings.webapp_key)
+        except max_launch.LaunchInvalid:
+            raise AccountError("invalid_launch", 400, "Open the diary from MAX again") from None
+        age = now - launch.auth_date
+        if age > settings.max_age_seconds or age < -LAUNCH_CLOCK_SKEW:
+            raise AccountError("launch_expired", 400, "Open the diary from MAX again")
+        if settings.require_ip_match and launch.ip != client_ip:
+            raise AccountError("launch_ip_mismatch", 403, "Open the diary from MAX again")
+        try:
+            db.execute(
+                "INSERT INTO used_launches (query_id, expires_at) VALUES (?, ?)",
+                (launch.query_id, now + LAUNCH_ID_TTL),
+            )
+        except sqlite3.IntegrityError:
+            raise AccountError("launch_reused", 400, "Open the diary from MAX again") from None
+        return launch
+
+    def max_session(self, init_data: str, client_ip: str) -> SessionIssued | None:
+        if self.settings.max is None or not self.settings.max.login_enabled:
+            raise AccountError("provider_disabled", 404, "MAX login is not enabled")
+        now = self._now()
+        with self.db.transaction() as db:
+            launch = self._check_launch(db, init_data, client_ip, now)
+            row = db.execute(
+                "SELECT user_id FROM identities WHERE provider = 'max' AND subject = ?",
+                (launch.user_id,),
+            ).fetchone()
+            if row is None:
+                return None
+            return self._create_session(
+                db, row["user_id"], "max", now, auth_at=launch.auth_date, ttl=MAX_SESSION_TTL
+            )
+
+    def max_link(self, session: Session, init_data: str, client_ip: str) -> None:
+        now = self._now()
+        with self.db.transaction() as db:
+            launch = self._check_launch(db, init_data, client_ip, now)
+            self._link(db, session.user_id, "max", launch.user_id, now)
+
+    # ------------------------------------------------------------ maintenance
+
+    def purge(self) -> None:
+        now = self._now()
+        with self.db.transaction() as db:
+            for table in ("email_challenges", "oauth_flows", "signup_tickets", "link_codes"):
+                db.execute(f"DELETE FROM {table} WHERE expires_at <= ?", (now - 3600,))  # noqa: S608
+            db.execute("DELETE FROM used_launches WHERE expires_at <= ?", (now,))
+            db.execute("DELETE FROM sessions WHERE expires_at <= ?", (now,))
