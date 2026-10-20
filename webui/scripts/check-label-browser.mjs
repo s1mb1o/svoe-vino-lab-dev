@@ -58,10 +58,14 @@ try {
   await dialog.locator('[data-label-section="grapes"]').click()
   for (const theme of ['light', 'dark']) {
     await page.evaluate(value => document.documentElement.dataset.theme = value, theme)
-    for (const width of [1440, 390, 320]) {
+    for (const width of [1440, 414, 390, 360, 320]) {
       await page.setViewportSize({ width, height: 1000 })
       assert(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth + 1), `Dialog overflow at ${width}px in ${theme}`)
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Page overflow at ${width}px`)
+      if (width <= 767) {
+        const rect = await dialog.boundingBox()
+        assert(rect && Math.abs(rect.x) <= 1 && Math.abs(rect.width - width) <= 1, `Mobile dialog does not span the viewport at ${width}px in ${theme}: ${JSON.stringify(rect)}`)
+      }
       await dialog.screenshot({ path: `reports/label/${theme}-${width}.png` })
     }
   }
@@ -91,5 +95,5 @@ try {
   await empty.context.close()
 
   assert.deepEqual(errors, [], 'Runtime errors or hydration warnings')
-  console.log('Label guide passed: blend and single grape, Russian sources, sweetness and region copy, sparse/empty metadata, six viewport/theme combinations, Escape and focus recovery.')
+  console.log('Label guide passed: blend and single grape, Russian sources, sweetness and region copy, sparse/empty metadata, ten viewport/theme combinations, full-width mobile dialogs, Escape and focus recovery.')
 } finally { await browser.close() }
