@@ -1,4 +1,4 @@
-package ru.svoevino.shelfreid;
+package com.alolalab.shelflens;
 
 import android.app.AlertDialog;
 import android.content.Context;

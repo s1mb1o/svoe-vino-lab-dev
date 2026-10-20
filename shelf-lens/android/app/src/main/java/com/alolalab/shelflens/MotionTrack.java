@@ -1,4 +1,4 @@
-package ru.svoevino.shelfreid;
+package com.alolalab.shelflens;
 
 /**
  * The motion of the recent frames: for each, the similarity that takes a point of the first

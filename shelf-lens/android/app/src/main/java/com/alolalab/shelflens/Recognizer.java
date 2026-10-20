@@ -1,4 +1,4 @@
-package ru.svoevino.shelfreid;
+package com.alolalab.shelflens;
 
 import android.util.Base64;
 import android.util.Log;

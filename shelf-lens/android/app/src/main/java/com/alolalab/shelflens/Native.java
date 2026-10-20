@@ -1,4 +1,4 @@
-package ru.svoevino.shelfreid;
+package com.alolalab.shelflens;
 
 import java.nio.ByteBuffer;
 

@@ -16,6 +16,10 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
   one crop of each bottle to `/v1/match`. It shows frames and the vino-svoe.ru rating over the
   camera image and builds a planogram. The paths inside the folder do not change. Put
   `api_password.txt` in `shelf-lens/`. Read `shelf-lens/README.md`.
+- The application ID and the Java package of «Полка вина» are now `com.alolalab.shelflens`
+  (was `ru.svoevino.shelfreid`), with the same prefix as `com.alolalab.chtozavino`. Android
+  installs it as a new application. Push `api_password.txt` and demo videos again to the folder
+  of the new ID.
 
 - Updated `ASSESSMENT.md` to `main` at `db288cc9`. Added Dinner Lens and wine for a dish
   (F-27 to F-29), the workbench research rows (F-14 to F-19), experiment tracking and run

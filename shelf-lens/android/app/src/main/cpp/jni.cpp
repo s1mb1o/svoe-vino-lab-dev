@@ -79,7 +79,7 @@ cv::Mat to_bgr(const cv::Mat& y, const uint8_t* u, const uint8_t* v, int uv_row_
 
 // Loads the detector (slow: the accelerator compiles the model); see Pipeline for
 // `cv_threads`, `cheap_slow` and `accelerator`. 0 on failure.
-extern "C" JNIEXPORT jlong JNICALL Java_ru_svoevino_shelfreid_Native_create(JNIEnv* env, jclass, jstring model_path,
+extern "C" JNIEXPORT jlong JNICALL Java_com_alolalab_shelflens_Native_create(JNIEnv* env, jclass, jstring model_path,
                                                                           jint cv_threads, jboolean cheap_slow,
                                                                           jboolean accelerator) {
     try {
@@ -93,13 +93,13 @@ extern "C" JNIEXPORT jlong JNICALL Java_ru_svoevino_shelfreid_Native_create(JNIE
 }
 
 // A new shot of upright frames this size.
-extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_begin(JNIEnv*, jclass, jlong handle, jint width,
+extern "C" JNIEXPORT void JNICALL Java_com_alolalab_shelflens_Native_begin(JNIEnv*, jclass, jlong handle, jint width,
                                                                         jint height) {
     Use use(handle);
     if (use.pipeline) use.pipeline->begin(width, height);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_end(JNIEnv*, jclass, jlong handle) {
+extern "C" JNIEXPORT void JNICALL Java_com_alolalab_shelflens_Native_end(JNIEnv*, jclass, jlong handle) {
     Use use(handle);
     if (use.pipeline) use.pipeline->end();
 }
@@ -108,7 +108,7 @@ extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_end(JNIEnv*,
 // similarity x' = a0 x + a1 y + a2, y' = a3 x + a4 y + a5 in upright pixels, and a seventh:
 // 1 when the flow found it, 0 when not (then the identity). With `process`, the frame also
 // goes to the detector and the tracker.
-extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_pushFrame(
+extern "C" JNIEXPORT jfloatArray JNICALL Java_com_alolalab_shelflens_Native_pushFrame(
     JNIEnv* env, jclass, jlong handle, jint frame, jobject y_buffer, jint y_row_stride, jobject u_buffer,
     jobject v_buffer, jint uv_row_stride, jint uv_pixel_stride, jint width, jint height, jint rotation,
     jboolean process) {
@@ -147,7 +147,7 @@ extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_pushF
 // (0 a bottle whose wine is not known yet, 1 known, 2 a crop of it waits for the server or
 // its answer, 3 not a bottle the tracker keeps (cut, too weak), 4 a bottle found but not on
 // the map yet: the tracker waits to know where it is), bottle id (-1 none).
-extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_latest(JNIEnv* env, jclass, jlong handle) {
+extern "C" JNIEXPORT jfloatArray JNICALL Java_com_alolalab_shelflens_Native_latest(JNIEnv* env, jclass, jlong handle) {
     Use use(handle);
     if (!use.pipeline) return nullptr;
     const auto result = use.pipeline->latest();
@@ -165,12 +165,12 @@ extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_lates
     return array;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_stats(JNIEnv* env, jclass, jlong handle) {
+extern "C" JNIEXPORT jstring JNICALL Java_com_alolalab_shelflens_Native_stats(JNIEnv* env, jclass, jlong handle) {
     Use use(handle);
     return use.pipeline ? env->NewStringUTF(use.pipeline->stats().c_str()) : nullptr;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_destroy(JNIEnv*, jclass, jlong handle) {
+extern "C" JNIEXPORT void JNICALL Java_com_alolalab_shelflens_Native_destroy(JNIEnv*, jclass, jlong handle) {
     auto* pipeline = reinterpret_cast<Pipeline*>(handle);
     {
         std::unique_lock<std::shared_mutex> lock(life);   // after the calls in progress
@@ -179,7 +179,7 @@ extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_destroy(JNIE
     delete pipeline;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_setRecognition(JNIEnv*, jclass, jlong handle,
+extern "C" JNIEXPORT void JNICALL Java_com_alolalab_shelflens_Native_setRecognition(JNIEnv*, jclass, jlong handle,
                                                                                  jboolean on) {
     Use use(handle);
     if (use.pipeline) use.pipeline->set_recognition(on);
@@ -187,7 +187,7 @@ extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_setRecogniti
 
 // The next crop to send: five little-endian int32 (bottle, frame, box height, sharpness x
 // 10, crops it was chosen from), then the PNG; null when none waits.
-extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_takeCrop(JNIEnv* env, jclass, jlong handle) {
+extern "C" JNIEXPORT jbyteArray JNICALL Java_com_alolalab_shelflens_Native_takeCrop(JNIEnv* env, jclass, jlong handle) {
     Use use(handle);
     if (!use.pipeline) return nullptr;
     const auto crop = use.pipeline->take_crop();
@@ -199,7 +199,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_takeCr
 
 // What came of the request for a crop (Pipeline::Outcome); the decision
 // ("slug\tname\tsure|unsure") when this answer changes it, else null.
-extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_answer(JNIEnv* env, jclass, jlong handle,
+extern "C" JNIEXPORT jstring JNICALL Java_com_alolalab_shelflens_Native_answer(JNIEnv* env, jclass, jlong handle,
                                                                             jint bottle, jint frame, jint height,
                                                                             jstring slug, jstring name, jint outcome) {
     Use use(handle);
@@ -209,14 +209,14 @@ extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_answer(JN
 }
 
 // Every bottle met, as JSON (Pipeline::recognition_table).
-extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_recognitionTable(JNIEnv* env, jclass,
+extern "C" JNIEXPORT jstring JNICALL Java_com_alolalab_shelflens_Native_recognitionTable(JNIEnv* env, jclass,
                                                                                       jlong handle) {
     Use use(handle);
     return use.pipeline ? env->NewStringUTF(use.pipeline->recognition_table().c_str()) : nullptr;
 }
 
 // A small JPEG of the bottle's latest crop, or null.
-extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_thumbnail(JNIEnv* env, jclass, jlong handle,
+extern "C" JNIEXPORT jbyteArray JNICALL Java_com_alolalab_shelflens_Native_thumbnail(JNIEnv* env, jclass, jlong handle,
                                                                                   jint bottle) {
     Use use(handle);
     if (!use.pipeline) return nullptr;
@@ -228,14 +228,14 @@ extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_thumbn
 }
 
 // The planogram of the map as it is now, as JSON (Pipeline::planogram).
-extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_planogram(JNIEnv* env, jclass, jlong handle) {
+extern "C" JNIEXPORT jstring JNICALL Java_com_alolalab_shelflens_Native_planogram(JNIEnv* env, jclass, jlong handle) {
     Use use(handle);
     return use.pipeline ? env->NewStringUTF(use.pipeline->planogram().c_str()) : nullptr;
 }
 
 // Four ints (Pipeline::summary): the bottles of the map, those whose wine is known, those
 // waiting for the server, and 1 while the tracker has lost its place on the map.
-extern "C" JNIEXPORT jintArray JNICALL Java_ru_svoevino_shelfreid_Native_summary(JNIEnv* env, jclass, jlong handle) {
+extern "C" JNIEXPORT jintArray JNICALL Java_com_alolalab_shelflens_Native_summary(JNIEnv* env, jclass, jlong handle) {
     Use use(handle);
     const auto s = use.pipeline ? use.pipeline->summary() : std::array<int, 4>{};
     jintArray out = env->NewIntArray(4);
@@ -245,7 +245,7 @@ extern "C" JNIEXPORT jintArray JNICALL Java_ru_svoevino_shelfreid_Native_summary
 }
 
 // The frames start again after a break (the camera was off): the map stays.
-extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_interrupt(JNIEnv*, jclass, jlong handle) {
+extern "C" JNIEXPORT void JNICALL Java_com_alolalab_shelflens_Native_interrupt(JNIEnv*, jclass, jlong handle) {
     Use use(handle);
     if (use.pipeline) use.pipeline->interrupt();
 }

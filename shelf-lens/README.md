@@ -94,7 +94,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - **На телефон.** Для APK без пароля файл кладётся в папку приложения после первого запуска:
 
   ```bash
-  adb push api_password.txt /sdcard/Android/data/ru.svoevino.shelfreid/files/
+  adb push api_password.txt /sdcard/Android/data/com.alolalab.shelflens/files/
   ```
 
 Пароль нужен только для распознавания: поиск бутылок и карта работают и без него.

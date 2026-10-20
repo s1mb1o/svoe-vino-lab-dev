@@ -10,12 +10,12 @@ val local = Properties().apply {
 }
 
 android {
-    namespace = "ru.svoevino.shelfreid"
+    namespace = "com.alolalab.shelflens"
     compileSdk = 36
     ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        applicationId = "ru.svoevino.shelfreid"
+        applicationId = "com.alolalab.shelflens"
         minSdk = 29
         targetSdk = 36
         versionCode = 2
