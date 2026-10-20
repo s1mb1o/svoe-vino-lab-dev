@@ -2,6 +2,11 @@
 
 ## 2026-10-20
 
+- Fixed the rank histograms of `/runs` ("How far from R@1", "Where the slug of a negative
+  photo landed"). The box had a fixed height of 74 px, but the highest column (count, bar
+  of 60 px, label) is about 93 px, so the count of the highest bar overlapped the note
+  above the histogram. The box now grows with its highest column.
+
 - Fixed the statistics line of `/testset` for a set with no verdict and no mark. It showed
   an empty separator: `labelled 0/2 photos ·  · 0/2 wines done`. The separator of the stat
   chips now stands only when there is a chip.
