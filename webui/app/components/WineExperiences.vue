@@ -3,6 +3,7 @@ import type { Wine } from '#shared/catalog'
 import { loadProductLine, resolveProductLine } from '#shared/product-line-map'
 import type { ProductLineMapData } from '#shared/product-line-map'
 import { deriveWineTasteExperience } from '#shared/taste'
+import { deriveWineLabelExperience } from '#shared/label'
 
 type Experience = 'food' | 'label' | 'taste' | 'line'
 
@@ -27,9 +28,9 @@ const title = computed(() => ({
   taste: 'Паспорт вкуса',
   line: lineProducer.value ? `Карта линейки ${lineProducer.value.name}` : 'Карта линейки производителя',
 }[active.value || 'food']))
-const varieties = computed(() => props.wine.grapes.length ? props.wine.grapes.join(', ') : 'Сорт не указан в карточке')
+const hasLabelContent = computed(() => deriveWineLabelExperience(props.wine).sections.length > 0)
 const taste = computed(() => deriveWineTasteExperience(props.wine))
-const dialogEyebrow = computed(() => active.value === 'line' ? 'ПУТЕВОДИТЕЛЬ ПО ЛИНЕЙКЕ' : 'ДЕМОНСТРАЦИЯ ВОЗМОЖНОСТИ')
+const dialogEyebrow = computed(() => active.value === 'line' ? 'ПУТЕВОДИТЕЛЬ ПО ЛИНЕЙКЕ' : active.value === 'label' ? 'ЭТИКЕТКА ПОНЯТНЫМ ЯЗЫКОМ' : 'ДЕМОНСТРАЦИЯ ВОЗМОЖНОСТИ')
 const lineActionSubtitle = computed(() => lineMatched.value ? (props.recognized ? 'Ваше вино отмечено на карте' : 'Выбранное вино отмечено на карте') : lineProducer.value ? 'Линейка вашего производителя' : 'Карта производителя пока не подготовлена')
 
 async function open(kind: Experience, event: MouseEvent) {
@@ -87,7 +88,7 @@ onBeforeUnmount(() => dialog.value?.close())
     <p class="experience-lead">Узнайте больше о вине и найдите другие продукты его производителя.</p>
     <div class="experience-grid">
       <button class="experience-action" @click="open('food', $event)"><span class="experience-icon"><AppIcon name="food" /></span><span><strong>Подобрать блюда</strong><small>Кухни России и соседних регионов</small></span><AppIcon name="arrow" /></button>
-      <button class="experience-action" @click="open('label', $event)"><span class="experience-icon"><AppIcon name="book" /></span><span><strong>Рассказать об этикетке</strong><small>Сорта, термины и почему это важно</small></span><AppIcon name="arrow" /></button>
+      <button v-if="hasLabelContent" class="experience-action" @click="open('label', $event)"><span class="experience-icon"><AppIcon name="book" /></span><span><strong>Рассказать об этикетке</strong><small>Сорта, сладость и регион</small></span><AppIcon name="arrow" /></button>
       <button class="experience-action" @click="open('taste', $event)"><span class="experience-icon"><AppIcon name="taste" /></span><span><strong>Паспорт вкуса</strong><small>Профиль и международный ориентир</small></span><AppIcon name="arrow" /></button>
       <button class="experience-action" @pointerenter="prepareLine" @focus="prepareLine" @click="open('line', $event)"><span class="experience-icon"><AppIcon name="map" /></span><span><strong>Путеводитель по линейке</strong><small>{{ lineActionSubtitle }}</small></span><AppIcon name="arrow" /></button>
     </div>
@@ -102,9 +103,7 @@ onBeforeUnmount(() => dialog.value?.close())
       </template>
 
       <template v-else-if="active === 'label'">
-        <div class="label-summary"><p class="step-label">НА ЭТИКЕТКЕ ВАШЕГО ВИНА</p><h3>{{ varieties }}</h3><p>Сервис может превратить короткую надпись на этикетке в понятное объяснение.</p></div>
-        <div class="label-compare"><article><span>01</span><h3>Сира или Шираз</h3><p>Это два названия одного красного сорта. На этикетке имя часто подсказывает стилистический контекст, но не гарантирует конкретный вкус.</p></article><article><span>02</span><h3>Вионье</h3><p>Это белый ароматный сорт. Его иногда используют рядом с Сира, чтобы показать более цветочный и мягкий образ вина.</p></article><article><span>03</span><h3>Почему это важно</h3><p>Сорт помогает сформировать ожидание. Регион, год и способ производства объясняют, почему два вина из похожего винограда могут отличаться.</p></article></div>
-        <div class="demo-callout"><AppIcon name="info" /><p>Сира и Вионье — фиксированный пример интерфейса. Это не утверждение о составе вина «{{ wine.name }}» и не дегустационная оценка.</p></div>
+        <WineLabelGuide :key="wine.slug" :wine="wine" />
       </template>
 
       <template v-else-if="active === 'taste'">
