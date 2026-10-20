@@ -1,5 +1,20 @@
 # Change log
 
+## 2026-10-20 — Android research preservation and assessment
+
+- Consolidate the complete Pixel research in `ANDROID-RESEARCH-AND-RESULTS-20261020.md`.
+- Record the model port, failed split runtimes, four pooling variants, query-frame controls,
+  DIS resolution specialization, ten SO400M mobile recipes, and production parity checks.
+- Preserve 23 result series with 15,364 hard-case observations and 100 Eval.zip observations.
+  Exclude photos, masks, weights, reference answers, APKs, credentials, and private owner messages.
+- Add source-file hashes, a portable standard-library verifier, and eight focused verifier tests.
+- Update `ASSESSMENT.md` for format 7, the selectable complete pipelines, release 0.3.0,
+  completed research, and explicit quality, heat, timing, continuation, and signing limits.
+- Correct the merged-manifest permission claim. Offline model inference does not require
+  absence of the `INTERNET` permission that dependencies add.
+- Keep the historical full-`my`, development-selected hard cohort, and Eval.zip results separate.
+  This task starts no device, benchmark, inference, service, or deployment.
+
 ## 2026-10-20 — Refresh benchmark summaries
 
 - Review the metric references in the current overview documents and the dated evidence.

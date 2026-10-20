@@ -3,9 +3,10 @@
 | Field | Value |
 |---|---|
 | Repository | `s1mb1o/svoe-vino-lab-dev` |
-| Branch | `codex/fix-alternatives-sweetness` |
+| Branch | Historical full-source review: `codex/fix-alternatives-sweetness`. Android research follow-up: `main`. |
 | Checked at commit | `7cb1044c1338f32b714e63c47b9b341872e51f37`, plus the existing working-tree changes described below |
 | Account test follow-up | `121c7f081eccd6289e8824d992d7251711c797e4`; 159 tests passed on 2026-10-20 |
+| Android research follow-up | GitHub `main` source `a92a2304`; Android implementation `7ce50c2e`; recorded release 0.3.0 and portable research evidence. Other component rows retain their earlier review scope. |
 | Date of the last check | 2026-10-20 |
 | Scope | The local checkout at review time. The review includes the existing MCP and alternatives changes. It does not establish the state of remote `main` or a running service. |
 | Task | Task #10 «Сканер российских вин с описанием на платформе Свое Вино» ([docs/task-10-specification.pdf](docs/task-10-specification.pdf)) |
@@ -48,6 +49,12 @@ Commit `121c7f08` now contains those changes.
 The account-only follow-up uses that commit.
 The follow-up does not repeat the earlier component tests.
 
+The Android-only follow-up reads committed source at `a92a2304` and the saved Pixel measurements.
+It updates F-44, F-79 to F-85, F-88, F-89, and F-91. F-125 indexes the complete research record.
+It runs the portable research checker and its eight focused tests.
+It does not repeat device inference, change a model, or repeat the other component suites.
+The Android build and device results below are recorded checks of the identified release.
+
 | Check executed on 2026-10-20 | Result | Evidence or boundary |
 |---|---|---|
 | `cd webui && npm test` | 31 files passed; 616 tests passed; 26 tests skipped | [webui/package.json](webui/package.json), [webui/tests/](webui/tests/). Skipped tests are not passes. |
@@ -59,6 +66,8 @@ The follow-up does not repeat the earlier component tests.
 | Restore `workbench/db-export/` into a temporary SQLite file | Passed; schema 36; 29 tables; 90,661 rows | F-36. The restored catalogue has 2,366 wines. |
 | Compare the matcher bundle files with `manifest.json` | All 5 payload SHA-256 values matched | F-32. This checks stored files without model inference. |
 | `python3 research/retrieval-20261020/verify.py` | Passed | 58 file hashes; 5,432 recipes; 39 profiles; 53 exact recipes; 281 compact metric rows; 930 printed recalls. F-112 states the limits. |
+| `python3 research/android-20261020/verify.py` | Passed | 23 result series; 15,364 hard-cohort observations; 100 Eval.zip observations; count, latency, paired-change, and production Top-1 parity checks. F-125 states the limits. |
+| `python3 -m unittest discover -s research/android-20261020 -p 'test_*.py' -v` | 8 tests passed | Rejects invalid latency, duplicate query IDs, inconsistent Top-k flags, hits on errors, and unpaired comparisons. No device or model is used. |
 
 The account follow-up installed the locked runtime and development dependencies in a separate virtual environment.
 The environment uses Python 3.13.7, pytest 9.1.1, httpx2 2.14.0, and Ruff 0.17.1.
@@ -112,7 +121,7 @@ Some suites need files that are not in Git:
 
 ## Highlights
 
-1. **Offline recognition on an Android phone.** The phone encodes the full photo with SigLIP2 Base NaFlex p512 and searches 2,093 wines without network. On a Pixel 8, the internal set `my` gave Top-1 69.09% with a median client time of 924 ms. The release manifest has no `INTERNET` permission. See F-80 to F-83 and F-89. A native iPhone app with on-device Core ML recognition is on `main` too (F-94).
+1. **Offline recognition and measured mobile model integration.** Android 0.3.0 defaults to DIS-768 cropped custom pooling with complete SigLIP2 Base NaFlex p512. Settings retains the full-image standard model/index pair. Both search 2,093 wines locally. Pixel replay preserves all 668 experimental Top-1 predictions, with median/P95 1372/1832 ms. The earlier standard pipeline reached 69.09% Top-1 on full `my`; this is not a full-`my` measurement of the new default. See F-80 to F-85, F-89, and F-125. A native iPhone app with on-device Core ML recognition is on `main` too (F-94).
 2. **A cascade matcher with an answer budget.** Barcode and QR scan, SAM3 package crop, and a VLM cluster re-rank overlap. With `fast_answer`, `/v1/eval/predict` returns an available answer by the configured 2.9 s cutoff and cancels pending calls. If no answer exists, the hard limit is 9.5 s. `/v1/match` has no such budget. See F-04 and F-61.
 3. **Recognition of a full shelf in one request.** One photo gives a mask, a box, and a wine card for each bottle. A production check recorded 93 matched bottles in one response. See F-20.
 4. **Image moderation before the first disk write.** ShieldGemma 2 checks each photo. Unsafe photos go to a closed quarantine, and the admin UI shows only a blurred preview. See F-73.
@@ -131,6 +140,7 @@ Some suites need files that are not in Git:
 14. **A result journey with alternatives and comparison.** The portal selects wines from another confirmed producer, compares eight facts, and reuses the diary save action. A second comparison wine can come from the saved list. See F-117 and F-118.
 15. **Diary history, saved wines, and public device copies.** The account stores recognition dates, four saved statuses, and private notes. A separate device store keeps at most 50 public cards for a warmed offline launch. See F-119 to F-121.
 16. **A source-based label guide.** The result explains supplied grape, sweetness, region, and alcohol facts with local references. It replaces the old fixed label example. See F-122.
+17. **Controlled on-device retrieval research.** The committed Android record covers runtime export failures, custom patch pooling, segmentation and crop controls, reduced-resolution DIS, and ten SO400M mobile recipes. A portable checker verifies 23 result series and the separate Eval.zip regression. It preserves quality, latency, thermal, and continuation limits. See F-125.
 
 ## Results summary
 
@@ -143,6 +153,8 @@ Some suites need files that are not in Git:
 | R@1 / R@5 | 74.15% / 92.94% | Internal set `my` | `siglip2-p512-as-is` (default of [matcher/config.yaml](matcher/config.yaml)) | [BENCHMARKS.md](BENCHMARKS.md) |
 | R@1 with the 3 s budget | 93.65% (59 of 63 positive photos), 0 errors, p50 1,353 ms, max 2,905 ms | Organizers' photos (lab set `official-real-photos`, 84 photos), labels by the team | `cascade-p512-rot5` with `fast_answer` and a local FP8 VLM on an RTX 4090 host (F-66) | [workbench/ResearchLog.md](workbench/ResearchLog.md) 2026-10-01 |
 | Top-1 / Top-5 / Top-10 on the phone | 69.09% / 87.10% / 90.03%, median 924 ms | Internal set `my`: 2,970 positive assignments of 3,409 queries | Android, SigLIP2 Base NaFlex p512, full photo, Pixel 8 GPU (F-89) | [android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md](android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md) |
+| Top-1 / Top-5 / Top-10, selected mobile pipeline | 46.56% / 84.58% / 89.67%, 311/565/599 of 668; release replay median/P95 1372/1832 ms | Development-selected `my-failed-2`, 668 assignments and 627 images | Android 0.3.0 DIS-768 cropped custom + Base p512; re-ranking off (F-80, F-125) | [android/docs/releases/0.3.0.md](android/docs/releases/0.3.0.md), [research evidence](research/android-20261020/README.md) |
+| Accepted Top-1 on a separate Android regression set | 86/100: 81 exact and 5 alternatives; median/P95 1660/2039 ms | Original 100-image Eval.zip cohort | Android 0.3.0 default; debug evaluator endpoint | [Android research results](ANDROID-RESEARCH-AND-RESULTS-20261020.md). Fourteen mismatches remain. No request failed. |
 
 The 95/100 value is an internal check of the team. It is not an official jury result ([README.md](README.md)).
 
@@ -323,6 +335,15 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Proof:** The reference contains the fixed model revision, frozen testset hashes, formulas, complete parameter grids, raw recall counts, baseline deltas, per-family results, all-budget leaderboards, p512 leaderboards, exact recipe JSON, and source audit hashes. Sections 11–14 keep each configuration's metrics together. Section 15 keeps the incomplete RTX4090 replay separate from GX10. The [portable research package](research/retrieval-20261020/README.md) commits the referenced source snapshots and specifications, [compact metric counts](research/retrieval-20261020/summaries/metrics.csv), [benchmark summaries](research/retrieval-20261020/summaries/README.md), and [file checksums](research/retrieval-20261020/package-manifest.json).
 - **Verify:** Run `python3 research/retrieval-20261020/verify.py` with Python 3.9 or later. The standard-library checker verifies package hashes, regenerates all 5,432 bottle recipes, checks all 39 pooling profiles and 53 exact result recipes, compares the report with the compact exports, and validates recall arithmetic, baseline deltas, leaderboard ordering, and repository links. It starts no model, service, SSH connection, or GPU job. Read Sections 4–8 for the algorithms and grids and Sections 11–14 for the results.
 - **Limits:** Both testsets were used for development selection and share 619 images. This is not independent validation or an official jury score. The report uses SigLIP2 SO400M NaFlex, not the Android Base model. Historical source snapshots preserve original path and service settings. The compact exports cover reported results and controls, not every measured variant. Full metric databases, per-image predictions, frozen images, masks, accepted answers, and model weights are not bundled. The offline checker verifies summary consistency; this repository alone cannot reproduce every prediction or independently establish global leaderboard optimality.
+
+### F-125 Controlled Android retrieval research and portable results
+
+- **Claim:** The Android research compares complete and split NaFlex runtimes, p224/p512 standard and fractional custom pooling, full-image/cropped queries, mobile YOLO/DIS masks, DIS 1024/768/512 specialization, and ten SO400M mobile recipe adaptations. The portable package retains 23 result series with 15,364 hard-cohort observations and a separate 100-image Eval.zip result. Thirteen Base series have separate requests. Ten SO400M recipe series share one campaign.
+- **Status:** Research-only for unselected recipes. The selected DIS-768 custom pipeline is deployed in Android 0.3.0 (F-80, F-85).
+- **Entry point:** [ANDROID-RESEARCH-AND-RESULTS-20261020.md](ANDROID-RESEARCH-AND-RESULTS-20261020.md), [research/android-20261020/README.md](research/android-20261020/README.md).
+- **Proof:** [results.json](research/android-20261020/results.json), [compact observations](research/android-20261020/observations/), [source hashes](research/android-20261020/source-manifest.json), [package hashes](research/android-20261020/package-manifest.json). The record includes negative results, paired gains/losses, heat, memory, continuation, and the exact production Top-1 parity hashes.
+- **Verify:** `python3 research/android-20261020/verify.py`. The standard-library checker starts no inference or external service. Eight focused tests check the verifier's rejection rules.
+- **Limits:** The hard cohort was used for development selection. It is not independent validation. The acceptance flags are derived evidence. Reference answers, photos, masks, weights, and full raw vectors are omitted. The checker recalculates saved summaries; it does not reproduce inference or independently label predictions. SO400M full-run request latency is shared across ten recipes. DIS 1024 required USB continuation. No full-`my` benchmark of the 0.3.0 custom default is recorded.
 
 ## Criterion 2: post-search features (20/100)
 
@@ -606,11 +627,11 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-44 Android model-pack contract
 
-- **Claim:** The Android model pack has a format version from 1 to 6. The app checks the SHA-256 of each payload, the pipeline ID, and the vector dimension. Format 6 also pins the SHA-256 of the p512 model, its profile, and its position table. The app rejects unsafe ZIP paths before it activates the pack. An update replaces an older pack with the built-in format 6 pack and keeps the history and the settings.
+- **Claim:** The Android model pack supports formats 1 through 7. The app checks payload hashes, pipeline identity, and vector dimensions before activation. Format 7 retains both complete Base p512 graph/index pairs and shares catalogue images and positions. The selected Settings pipeline changes the graph, manifest, vector rows, and candidate mapping together. An update replaces an older format with format 7 and preserves history, consent, and explicit accelerator settings.
 - **Status:** Implemented.
-- **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/ModelPack.kt](android/app/src/main/java/com/alolalab/chtozavino/ModelPack.kt), [android/docs/model-pack.md](android/docs/model-pack.md), [android/tools/build_verified_naflex_pack.py](android/tools/build_verified_naflex_pack.py)
+- **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/ModelPack.kt](android/app/src/main/java/com/alolalab/chtozavino/ModelPack.kt), [android/docs/model-pack.md](android/docs/model-pack.md), [android/tools/build_dual_pipeline_pack.py](android/tools/build_dual_pipeline_pack.py).
 - **Proof:** `android/tools/test_build_model_pack.py::test_builds_verified_pack`, `android/tools/test_build_model_pack.py::test_rejects_a_different_siglip_model`, `android/tools/test_build_verified_naflex_pack.py::test_rejects_an_index_from_another_model`, `android/tools/test_build_verified_naflex_pack.py::test_rejects_missing_wine_without_silent_catalogue_loss`; [android/app/src/test/](android/app/src/test/) (`ModelPackContractTest`, `ModelPackUpgradeTest`).
-- **Verify:** `cd android && python3 -m unittest tools.test_build_catalog_pack tools.test_build_model_pack tools.test_build_verified_naflex_pack`
+- **Verify:** `cd android && python3 -m unittest tools.test_build_dual_pipeline_pack tools.test_build_verified_naflex_pack`. Read [ProductionPipelineTest.kt](android/app/src/test/java/com/alolalab/chtozavino/ProductionPipelineTest.kt) for atomic model/index selection and the fractional weight contract.
 - **Limits:** The model pack is not in Git. Gradle stops the build when `app/src/main/assets/default_model_pack.zip` is missing (`verifyBuiltInModelPack` in [android/app/build.gradle.kts](android/app/build.gradle.kts)). The app does not download a model pack after installation ([android/docs/specification.md](android/docs/specification.md)).
 
 ### F-45 Matcher-compatible API on the phone
@@ -842,7 +863,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [webui/app/pages/ideas.vue](webui/app/pages/ideas.vue), [webui/app/pages/android.vue](webui/app/pages/android.vue), [webui/app/pages/hackaton.vue](webui/app/pages/hackaton.vue), [webui/app/pages/presentation.vue](webui/app/pages/presentation.vue)
 - **Proof:** [webui/tests/android-landing.test.ts](webui/tests/android-landing.test.ts); [webui/scripts/check-presentation-browser.mjs](webui/scripts/check-presentation-browser.mjs).
 - **Verify:** Read [webui/docs/ideas-landing.md](webui/docs/ideas-landing.md).
-- **Limits:** On `main`, `/android` offers APK 0.2.0 (F-85). The deployment of 2026-09-29 offered APK 0.1.4. No file records a deployment of the 0.2.0 page. The demo card «Место в линейке» on `/ideas` and [webui/docs/ideas-landing.md](webui/docs/ideas-landing.md) still describe only the Abrau-Durso map.
+- **Limits:** The recorded `/android` publication offers test-signed APK 0.3.0 (F-85). Historical Android screenshots remain labeled as version 0.1.4 examples. A page screenshot is not an accuracy measurement. Other page claims retain the earlier review scope.
 
 ### F-86 HEIF (HEIC) photos
 
@@ -855,14 +876,14 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### Android application
 
-#### F-80 Optional bottle segmentation on the device
+#### F-80 Two complete selectable on-device pipelines
 
-- **Claim:** The setting `Без сегментации / DIS / YOLO` selects how the app prepares the photo. The default is `Без сегментации`. In this mode, the app encodes the full original photo. DIS (LiteRT) and YOLO26n-seg (F-88) are optional modes. In these modes, the app cuts the object out of the photo and places it on a white square.
-- **Status:** Implemented.
-- **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/AcceleratorSettings.kt](android/app/src/main/java/com/alolalab/chtozavino/AcceleratorSettings.kt) (`SegmenterMode`), [android/app/src/main/java/com/alolalab/chtozavino/ImageRecognition.kt](android/app/src/main/java/com/alolalab/chtozavino/ImageRecognition.kt) (`DisSegmenter`, `YoloBottleSegmenter`, `ForegroundImageProcessor`)
-- **Proof:** [android/app/src/test/](android/app/src/test/) (`AcceleratorSettingsTest.unknownSegmenterUsesFullImage`, `AcceleratorSettingsTest.noSegmentationPreferenceIsPreserved`, `DisMaskTest`); [android/docs/reports/2026-10-19_base-p512-default.md](android/docs/reports/2026-10-19_base-p512-default.md) (the Pixel 8 health report gives the segmenter `NONE`); [android/docs/screenshots/android-0.1.4/raw/05_processing_pipeline_dark.png](android/docs/screenshots/android-0.1.4/raw/05_processing_pipeline_dark.png) (DIS mode, version 0.1.4).
-- **Verify:** Read [android/README.md](android/README.md), section «Functions».
-- **Limits:** The reference vectors are package cuts in all modes. When DIS runs on the GPU, the main app runs SigLIP2 on the CPU. A separate experimental app with DIS and SigLIP2 both on the GPU gave Top-1 72.29% on `my` ([android/docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md](android/docs/reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md)).
+- **Claim:** Android 0.3.0 defaults to `DIS-768 · обрезка · custom`. DIS runs at 768 by 768 pixels. The renderer adds a four-percent crop margin, composites on white, and limits the long side to 1024 pixels. Fractional foreground coverage controls attention weights 1.0/0.1. `Полное фото · standard` retains the complete full-image graph and original index. Settings switches both complete model/index pairs.
+- **Status:** Deployed. The signed release passed Pixel 8 gallery recognition, Settings switching, and saved-choice/history checks after a same-key update.
+- **Entry point:** [ProductionPipeline.kt](android/app/src/main/java/com/alolalab/chtozavino/ProductionPipeline.kt), [CustomPooling.kt](android/app/src/main/java/com/alolalab/chtozavino/CustomPooling.kt), [CustomCrop.kt](android/app/src/main/java/com/alolalab/chtozavino/CustomCrop.kt).
+- **Proof:** [ProductionPipelineTest.kt](android/app/src/test/java/com/alolalab/chtozavino/ProductionPipelineTest.kt), [release 0.3.0](android/docs/releases/0.3.0.md), [DIS resolution comparison](android/docs/reports/2026-10-20_dis-input-resolution.md). The production replay preserves all 668 experimental Top-1 results with zero errors.
+- **Verify:** Run the portable research checker in F-125. Read the format 7 contract in F-44.
+- **Limits:** The 46.56% Top-1 result uses the development-selected hard cohort, not full `my`. No complete full-`my` test of this custom default is recorded. The reference index and encoder must match. Optional YOLO is omitted from the public pack.
 
 #### F-81 On-device SigLIP2 NaFlex vectors
 
@@ -871,16 +892,16 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/VerifiedNaFlexEncoder.kt](android/app/src/main/java/com/alolalab/chtozavino/VerifiedNaFlexEncoder.kt), [android/app/build.gradle.kts](android/app/build.gradle.kts), [android/app/libs/README.md](android/app/libs/README.md)
 - **Proof:** [android/docs/reports/2026-10-19_base-p512-default.md](android/docs/reports/2026-10-19_base-p512-default.md) (section «Vector agreement»); [android/app/src/test/](android/app/src/test/) (`ModelPackContractTest`, `NaFlexPreprocessorTest`).
 - **Verify:** Read the section «Vector agreement» of the report.
-- **Limits:** The server default uses SigLIP2 so400m p512 (F-03), not Base. The phone uses its own index of 2,093 Base p512 vectors. The CPU/GPU check used one image. The check of 32 samples with a minimum cosine of 0.99999851 in [android/VERIFICATION_RESULTS.md](android/VERIFICATION_RESULTS.md) applies to the earlier fixed Base/16-224 encoder.
+- **Limits:** The server default uses SigLIP2 so400m p512 (F-03), not Base. The phone uses its own matched Base indexes. The 14-image vector result describes the earlier standard graph, not the custom graph. The custom experiment has its own mask/vector gates and complete production Top-1 replay (F-125). The earlier 32-sample result in [android/VERIFICATION_RESULTS.md](android/VERIFICATION_RESULTS.md) applies to fixed Base/16-224. Porting the pretrained model does not mean that the team trained a new SigLIP2 checkpoint.
 
 #### F-82 Offline catalogue search
 
-- **Claim:** The app searches the catalogue on the phone by cosine similarity and keeps the best image score for each wine. The built-in pack has 2,093 wines and one p512 vector for each wine. The release manifest has no `INTERNET` permission.
+- **Claim:** The app searches the catalogue on the phone by cosine similarity and keeps the best image score for each wine. Each format 7 index has 2,093 wines and one matching 768-dimensional p512 vector for each wine. Model inference and index search do not require a server request.
 - **Status:** Implemented.
 - **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/CatalogueIndex.kt](android/app/src/main/java/com/alolalab/chtozavino/CatalogueIndex.kt), [android/app/src/main/AndroidManifest.xml](android/app/src/main/AndroidManifest.xml)
-- **Proof:** [android/app/src/test/](android/app/src/test/) (`CatalogueIndexTest.searchUsesMaximumImageCosinePerWine`).
-- **Verify:** `grep -rn INTERNET android/app/src`
-- **Limits:** The debug manifest adds `INTERNET` for the debug HTTP server (F-45).
+- **Proof:** [android/app/src/test/](android/app/src/test/) (`CatalogueIndexTest.searchUsesMaximumImageCosinePerWine`), [merged release permission receipt](research/android-20261020/provenance/release-contract.json).
+- **Verify:** Read [CatalogueIndex.kt](android/app/src/main/java/com/alolalab/chtozavino/CatalogueIndex.kt), the model-pack contract, and the release record. Inspect the merged release manifest after a build.
+- **Limits:** Dependencies add `INTERNET` to the merged release manifest. Absence of a permission is not the offline guarantee. Google Code Scanner may need its module installed first. Opening a wine website needs internet. The release contains no debug HTTP implementation.
 
 #### F-83 Barcode and QR input
 
@@ -897,16 +918,16 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/AcceleratorSettings.kt](android/app/src/main/java/com/alolalab/chtozavino/AcceleratorSettings.kt), [android/app/src/main/java/com/alolalab/chtozavino/NaFlexAcceleratorAgreement.kt](android/app/src/main/java/com/alolalab/chtozavino/NaFlexAcceleratorAgreement.kt)
 - **Proof:** [android/app/src/test/](android/app/src/test/) (`AcceleratorSettingsTest.autoUsesDetectedAcceleratorsAndAllowsSafeFallback`, `NaFlexAcceleratorAgreementTest`); [android/docs/reports/2026-10-19_base-p512-default.md](android/docs/reports/2026-10-19_base-p512-default.md) (Pixel 8: automatic GPU, 30 requests, median server time 514.8 ms).
 - **Verify:** Read [android/README.md](android/README.md), section «Functions».
-- **Limits:** When DIS runs on the GPU, the main app runs SigLIP2 on the CPU. The timings in [android/ChangeLog.md](android/ChangeLog.md) 2026-09-29 apply to the earlier Base/224 pipeline.
+- **Limits:** The measured custom Pixel 8 path permits both models on GPU in one shared environment. Unmeasured phones and legacy paths retain the dual-GPU guard. Explicit settings and automatic CPU recovery do not establish compatibility on every Android phone. The September timings apply to the earlier Base/224 pipeline.
 
-#### F-85 Android releases 0.1.4 and 0.2.0
+#### F-85 Android release 0.3.0 and historical releases
 
-- **Claim:** The Android app 0.1.4 (Android 9 and later, arm64) is a GitHub pre-release with tag `android-v0.1.4`. `main` builds version 0.2.0 (version code 6) with the application ID `com.alolalab.chtozavino`. The 0.2.0 release APK has the same test/debug signing key as 0.1.4. The `/android` page on `main` points to this APK.
-- **Status:** 0.1.4: Implemented. 0.2.0: Implemented. No tag, GitHub release, or website deployment of 0.2.0 is recorded.
-- **Entry point:** [android/app/build.gradle.kts](android/app/build.gradle.kts), [webui/shared/android.ts](webui/shared/android.ts), [android/docs/releases/2026-10-20-main.md](android/docs/releases/2026-10-20-main.md)
-- **Proof:** [android/SMOKE_TESTS.md](android/SMOKE_TESTS.md) 2026-09-29 (APK SHA-256 values); [android/docs/releases/2026-10-20-rebuild.md](android/docs/releases/2026-10-20-rebuild.md) (section «Same-key signing follow-up»); [android/app/src/test/](android/app/src/test/) (`ApplicationIdentityTest.mainApplicationUsesCanonicalId`); `webui/tests/android-landing.test.ts` ("keeps one versioned release contract for the page and download route").
-- **Verify:** `git tag --list 'android-*'`
-- **Limits:** The 0.2.0 key is a test/debug key, not a production key. The new application ID installs as a separate app, and the history does not migrate. No record shows an installation of the new-ID APK on a phone. The device measurements used the old ID with the same pack. The APK contains YOLO26n-seg weights with AGPL-3.0 metadata. [android/README.md](android/README.md) requires a license approval before publication.
+- **Claim:** Release 0.3.0, version code 7, uses `com.alolalab.chtozavino`, Android 9 minimum, and arm64. The recorded `/android` publication offers `chtozavino-0.3.0-release-test-signed.apk`. Staged and public complete downloads match all 753111053 bytes and SHA-256 `89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a`.
+- **Status:** Deployed on 2026-10-20. The exact signed release was installed and checked on Pixel 8 after the DIS-512 benchmark finished.
+- **Entry point:** [android/app/build.gradle.kts](android/app/build.gradle.kts), [webui/shared/android.ts](webui/shared/android.ts), [release record](android/docs/releases/0.3.0.md).
+- **Proof:** The release record identifies the APK, model pack, certificate, source commits, 71 debug tests, 68 release tests, 10 exporter tests, and signed-release UI acceptance. The custom replay preserves 668/668 Top-1 predictions. Eval.zip accepts 86/100 predictions and retains 14 mismatches.
+- **Verify:** Read the release record and run the portable checker in F-125. Historical GitHub release `android-v0.1.4` remains separate evidence.
+- **Limits:** This is a test-key signature, not a production-key signature. The public pack omits optional YOLO. No new 0.3.0 GitHub release tag is claimed. The old application ID remains a separate installation. Same-ID updates preserve history, but history does not automatically migrate from the old ID. No full-`my` result for the custom default is recorded.
 
 #### F-87 Multi-shot recognition
 
@@ -919,21 +940,21 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 #### F-88 YOLO bottle segmentation
 
-- **Claim:** The YOLO mode runs the Ultralytics `yolo26n-seg` w8a32 LiteRT model at 640 by 640 pixels on the CPU. It keeps only COCO class 39 (`bottle`) and selects the largest central bottle mask. Model-pack format 3 and later formats contain this model.
-- **Status:** Implemented.
+- **Claim:** Legacy YOLO mode runs the Ultralytics `yolo26n-seg` w8a32 LiteRT model at 640 by 640 pixels on CPU. It keeps only COCO class 39 (`bottle`) and selects the largest central bottle mask. Formats 3 through 6 contain this asset. The public format 7 release omits it by owner choice.
+- **Status:** Implemented for legacy packs. Not bundled in public release 0.3.0.
 - **Entry point:** [android/app/src/main/java/com/alolalab/chtozavino/YoloBottleMask.kt](android/app/src/main/java/com/alolalab/chtozavino/YoloBottleMask.kt), [android/app/src/main/java/com/alolalab/chtozavino/ImageRecognition.kt](android/app/src/main/java/com/alolalab/chtozavino/ImageRecognition.kt) (`YoloBottleSegmenter`)
 - **Proof:** [android/app/src/test/](android/app/src/test/) (`YoloBottleMaskTest`: `selectsLargestCentralBottleAndReadsCoefficients`, `rejectsCandidateWhenBottleIsNotBestClass`, `buildsMaskAndRemovesLetterboxArea`); [android/README.md](android/README.md), section «Pixel 8 segmentation comparison».
 - **Verify:** Read that README section.
-- **Limits:** In a test of 100 images on a Pixel 8 with Base/224 on the CPU, YOLO found a bottle in 70 images and accepted 23 results. DIS accepted 38. The YOLO median was 1,234 ms, and the DIS median was 2,024.5 ms. The result files are not in this repository. No YOLO measurement with p512 exists. The model metadata declares AGPL-3.0.
+- **Limits:** In the earlier 100-image Base/224 CPU test, this YOLO asset found a bottle in 70 images and accepted 23 results. DIS accepted 38. Median latency was 1234 ms for YOLO and 2024.5 ms for DIS. Those raw files are not in Git. The later p512 research uses a separate catalogue-trained mobile segmenter (F-125). Do not attribute its results to this generic COCO asset. The omitted asset's metadata declares AGPL-3.0.
 
-#### F-89 Retrieval benchmark of the default pipeline on a Pixel 8
+#### F-89 Historical full-`my` benchmark of the standard pipeline on Pixel 8
 
 - **Claim:** The debug app on a Pixel 8 answered all 3,409 queries of the internal set `my` through `/v1/match?k=20`. It used Base NaFlex p512 on the full photo on the GPU. Top-1 was 2,052 of 2,970 positive assignments (69.09%). Top-5 was 87.10%, and Top-10 was 90.03%. The median client time was 924 ms, and the P95 was 1,479 ms. 3,406 requests finished within 3 s. The baseline of Base/224 with DIS gave Top-1 33.27% at a median of 1,699 ms.
 - **Status:** Implemented (measurement of 2026-10-19).
 - **Entry point:** [android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md](android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md)
 - **Proof:** [android/docs/reports/2026-10-19_pixel8-base-p512-full-my.json](android/docs/reports/2026-10-19_pixel8-base-p512-full-my.json) (`metrics.latency_ms`, `paired_top1_changes`, `runtime.maximum_thermal_status`).
 - **Verify:** Read the section «Results» of the report.
-- **Limits:** The forbidden wine is Top-1 in 73 of 430 negative assignments (baseline: 42). All 9 no-match queries return a wine. The thermal status reached `SEVERE`. 170 positive assignments have no accepted wine in the pack. Barcode decoding was off. The run directory is not in Git. The app ID in this run was `chtozavino.alolalab.com`.
+- **Limits:** The forbidden wine is Top-1 in 73 of 430 negative assignments (baseline: 42). All 9 no-match queries return a wine. The thermal status reached `SEVERE`. 170 positive assignments have no accepted wine in the pack. Barcode decoding was off. The run directory is not in Git. The app ID was `chtozavino.alolalab.com`. These results describe the earlier standard pipeline. They do not measure the custom default shipped in 0.3.0.
 
 #### F-90 HEIC and HEIF gallery input on Android
 
@@ -947,11 +968,11 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 #### F-91 Offline retrieval benchmark on the phone
 
 - **Claim:** [android/tools/offline_benchmark/](android/tools/offline_benchmark/) contains a separate app (`com.alolalab.chtozavino.offlinebench`) and host tools. The app runs ten mobile versions of desktop retrieval recipes on the phone. It uses YOLO11n-seg bottle and label masks on the CPU, SigLIP2 so400m NaFlex p512 (1,152 dimensions) on the GPU, and FP32 search over 2,274 wines. The host client opens a new HTTP socket over ADB for each request. It repeats a failed transfer at most two times. It continues an interrupted run from audited saved predictions.
-- **Status:** Partial.
-- **Entry point:** [android/tools/offline_benchmark/README.md](android/tools/offline_benchmark/README.md), [android/docs/plans/06_android-retrieval-variants.md](android/docs/plans/06_android-retrieval-variants.md)
+- **Status:** Research-only. The complete 668-assignment campaign finished and passed its independent audit.
+- **Entry point:** [android/tools/offline_benchmark/README.md](android/tools/offline_benchmark/README.md), [completed recovery record](android/docs/reports/2026-10-20_pixel-benchmark-recovery.md), [portable results](research/android-20261020/README.md).
 - **Proof:** `android/tools/offline_benchmark/test_usb_http.py::test_binary_prefix_is_rejected_and_retried_on_fresh_socket`, `android/tools/offline_benchmark/test_usb_http.py::test_retries_are_bounded`, `android/tools/offline_benchmark/test_resume_run.py::test_copy_is_exact_and_source_is_unchanged`, `android/tools/offline_benchmark/test_audit_device_run.py::test_partial_does_not_publish_full_accuracy`; [android/docs/reports/2026-10-19_pixel8-my-failed2-offline-variants.md](android/docs/reports/2026-10-19_pixel8-my-failed2-offline-variants.md) (pilot: 300 requests with HTTP 200, medians of 4.09 s to 13.74 s).
 - **Verify:** `python3 -m unittest discover -s android/tools/offline_benchmark -p 'test_*.py' -v`
-- **Limits:** The complete result for the 668 `my-failed-2` assignments is pending. Two full runs stopped after 29 and 44 records. The pilot reached the thermal status `SEVERE` and 2,173.36 MiB peak PSS. The main app does not use these recipes. On the same assignments, the main app gave Top-1 41.02% and Top-5 77.84% ([android/docs/reports/2026-10-19_pixel8-my-failed2-offline-control.md](android/docs/reports/2026-10-19_pixel8-my-failed2-offline-control.md)).
+- **Limits:** Recipes 1 and 3 reach 335/668 Top-1 hits, or 50.15%. Recipe 3 reaches 80.99/83.38% Top-5/10. Two no-bottle errors remain in every denominator. The full campaign shares work across ten recipes; its 37.05/46.77 s request median/P95 is not per-recipe latency. Independent pilot medians range from 4.09 to 13.74 s. Continuations preserve the saved prefixes and process segments. This is not an uninterrupted-stability pass. The main app does not use these recipes. Different model, catalogue, and segmentation policies prevent attributing the result only to pooling. F-125 retains the complete quality table and caveats.
 
 #### F-92 Smoke test on a second phone
 
@@ -1200,6 +1221,9 @@ The full source review used `7cb1044c` and local MCP and alternatives changes.
 Commit `121c7f08` contains those changes.
 The account follow-up verifies the account source at `121c7f08`.
 It does not reassess the other component feature rows.
+The Android-only follow-up uses `a92a2304` and identified saved measurements.
+Its release statements cite recorded 0.3.0 acceptance, not a new deployment in this documentation task.
+Its portable package verifies derived summaries without publishing reference answers or repeating inference.
 This file does not assess other branches or verify the state of remote `main`.
 Historical branch and release names inside linked reports identify the source of those checks.
 They do not establish that the same source is deployed now.
@@ -1222,6 +1246,7 @@ They do not establish that the same source is deployed now.
 - Recognition model weights. The Shelf Lens bottle detector is a separate in-Git asset (F-113). [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists the archives and their SHA-256 values.
 - The working lab SQLite file and the rotated index that the `cascade` pipeline needs. The current schema-36 text export restores database rows (F-36). A database restore does not rebuild the image bodies or embedding index.
 - The Android model pack (F-44).
+- Android research images, masks, reference answers, raw vectors, and full response archives (F-125). The compact observations, source hashes, and verifier are in Git.
 - The iPhone Core ML models and resource pack (F-94).
 - The Dinner Lens embedding indexes, the benchmark ground truth, and the audit directory (F-27, F-29).
 - The static wine image release (F-108).

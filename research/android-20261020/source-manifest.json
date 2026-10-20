@@ -1,0 +1,178 @@
+{
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-1-full/independent-audit.json": {
+    "bytes": 52518,
+    "sha256": "3760c087ff7be7fde58ae02695ba1606f23bf819169b2bf8e1bc2d72a8cf6027"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-1-full/responses.jsonl": {
+    "bytes": 2415325,
+    "sha256": "9c8dda19e761f3e9a5717b7155c78e4952d4cd1d9881808c1e6cbe8d642c0a9f"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-1-full/run.json": {
+    "bytes": 3508,
+    "sha256": "23e05b737ddad4ad2854d1508d462a3b0848f4975c93e3a919af048c0380796c"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-2-full/independent-audit.json": {
+    "bytes": 52507,
+    "sha256": "2c77dae6872813745305f96dec99a8a527b1899a23089a19c58d6d85a044034d"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-2-full/responses.jsonl": {
+    "bytes": 2428649,
+    "sha256": "3c4437714e884632816f796a91c4ff5c1a681a7ceb503f1b9db6f724c2bb0a33"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-2-full/run.json": {
+    "bytes": 3539,
+    "sha256": "bba7ca3cfa5208dadd1e2f0ee6056d151d979cb8af92bf7393c5287511aeb2b4"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-3-full/independent-audit.json": {
+    "bytes": 52375,
+    "sha256": "4a7a50a7e6651f5d8e6edf4de2d83ed55d4074a9e779f0ca45efe76c853fb120"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-3-full/responses.jsonl": {
+    "bytes": 2412093,
+    "sha256": "5231e5d24893e093d4984e27df21194285bd2ba008843a3c76639cb3dc1308db"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-3-full/run.json": {
+    "bytes": 3507,
+    "sha256": "ac3e46ba391c4b094857171fc9a07c04d98fd3eb13901ad353da60758037cc84"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-4-full/independent-audit.json": {
+    "bytes": 52321,
+    "sha256": "6dd5d0e08ba1d6e1a1c005efd2fe5d1fddef0ba991af49cfbc97b86ea1578384"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-4-full/responses.jsonl": {
+    "bytes": 2422119,
+    "sha256": "2976c859f427c20ad474bfb51ee2295b12255ae1e1fad240fe0b55c6baad02eb"
+  },
+  "artifacts/android-base-p224-pooling-20261020/comparison-v3/condition-4-full/run.json": {
+    "bytes": 3537,
+    "sha256": "bdc42d1e23bf982ede73ba837027158da1445f6f970fffdf042c7321610787e7"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-5-full/independent-audit.json": {
+    "bytes": 52170,
+    "sha256": "61d9d143cd408316a5b5752df993ec01ab20c7de8f9159a7b05b8b5b7ff38c56"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-5-full/responses.jsonl": {
+    "bytes": 2411637,
+    "sha256": "32937a13aa126ec46112d3235af064d6fb257bebde1f923393951afcf64b0a13"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-5-full/run.json": {
+    "bytes": 3816,
+    "sha256": "aa198f9b3b3b396997e2011b75471ce72e91241a8fd2b73278c7b8b3ab156bed"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-7-full/independent-audit.json": {
+    "bytes": 52084,
+    "sha256": "5f1f62336d53db2e14db3f9d4436cf06151b9348d08a5f206d44d3636da33330"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-7-full/responses.jsonl": {
+    "bytes": 2493303,
+    "sha256": "59cc842fe0fdd3b8d43ebb1644b9ce21adc723f5887bbe8e7c8cba88325f7ab6"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v3/condition-7-full/run.json": {
+    "bytes": 3823,
+    "sha256": "4104d3204aa126b0735e88392f68ab762d338c780918d03a6e5c60801107cd15"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v4/condition-8-full/independent-audit.json": {
+    "bytes": 52106,
+    "sha256": "11cf3ad6ea606e75d71cd122c1bf3d24068c6bdc8204d2a4c41389ec138d4c61"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v4/condition-8-full/responses.jsonl": {
+    "bytes": 2508601,
+    "sha256": "b8ef5fc4fceea2931753225796e5b8e7f8ced2a6335ae9beeed7e84d40188f75"
+  },
+  "artifacts/android-dis-p512-pooling-20261020/comparison-v4/condition-8-full/run.json": {
+    "bytes": 9389,
+    "sha256": "733e5450f87848ef2044c418354c25a622162a0bbbd2e3079917d553cf6725fe"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-512/full/independent-audit.json": {
+    "bytes": 52142,
+    "sha256": "d8f2ae77d42a4abf4b4a8b9918759eae3111a615263ccc4fa6fb7c0a9d56536d"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-512/full/responses.jsonl": {
+    "bytes": 2593949,
+    "sha256": "2fd06f48788913c96a5ffcf424f23fbc51b3e628c5b5b3d607da8776be8a509a"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-512/full/run.json": {
+    "bytes": 3937,
+    "sha256": "1114a3a9c2c1ad543c09d155695e2bfdc7b1d0582758a085d9f6b9c06e6ef258"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-768/full/independent-audit.json": {
+    "bytes": 52115,
+    "sha256": "c62bf3b99d67c5f25d72c9e53282c5ffcc4561e826d406564a047647134f97f8"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-768/full/responses.jsonl": {
+    "bytes": 2593439,
+    "sha256": "976cabf0215159170e25529b6f5c95c497b6e2da00394a58a01f3aca02a99d07"
+  },
+  "artifacts/android-dis-resolution-20261020/comparison-v1/dis-768/full/run.json": {
+    "bytes": 3934,
+    "sha256": "171dbf90a25b4ecbac9d49d9bcae023b22462953782348ca45810cf6f4ba56ff"
+  },
+  "artifacts/android-dual-pipeline-20261020/validation-v1/custom-full/responses.jsonl": {
+    "bytes": 13879033,
+    "sha256": "c0fb49c22d3fceca235594b8eb41f75a82c945047e7ee326024c28561cc343a4"
+  },
+  "artifacts/android-dual-pipeline-20261020/validation-v1/custom-full/run.json": {
+    "bytes": 1819,
+    "sha256": "8355210ad617b33c8e9e5ac7482fdc33253cde2bad340d4cc215301dd8ef286c"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-5-full/independent-audit.json": {
+    "bytes": 52170,
+    "sha256": "8c4bf4165130cb7c83361c68c7cccd364a8df02ab1d1dea1172454c44790a06f"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-5-full/responses.jsonl": {
+    "bytes": 2415764,
+    "sha256": "6271a3ee223009d9f1b51c6816a40e5f3d0b1f1ffec860a50d58d5ee93fec232"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-5-full/run.json": {
+    "bytes": 3800,
+    "sha256": "3c8179de9ad1b905d957ca3317e3336814e2b058f50af5ef7140e6cbeacbe7fc"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-6-full/independent-audit.json": {
+    "bytes": 52188,
+    "sha256": "d17538712e344c2faade6291dd363117c4b6196653c169745edcf9ec4f381605"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-6-full/responses.jsonl": {
+    "bytes": 2581432,
+    "sha256": "b0305249a1eaacdf08f5a36b75f59eb73d8a04fef7c5c0ba82598f5b5a5bb5a1"
+  },
+  "artifacts/android-full-image-p512-pooling-20261020/comparison-v2/condition-6-full/run.json": {
+    "bytes": 3822,
+    "sha256": "5624a701e6e83c31dd5581be3a0e8f25bd07912a4e787a3fa17e5381394281da"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/control-base-p512-no-seg/queries.json": {
+    "bytes": 402983,
+    "sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/control-base-p512-no-seg/responses.jsonl": {
+    "bytes": 9912029,
+    "sha256": "4cf5162576ee0926357dd0039a97eee1585f5df976457c6f5117cafb698216f7"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/control-base-p512-no-seg/run.json": {
+    "bytes": 19830,
+    "sha256": "d8358b850c32d3f353dcf2b7dd9da22b9c9d10e9aee711d5a9b0c2c9feae88af"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/full-my-failed2-v4/independent-audit.json": {
+    "bytes": 3171,
+    "sha256": "120ddb202eec85664e43d686f29980e78b7a37b7069bd99e3d932b63becd830b"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/full-my-failed2-v4/responses.jsonl": {
+    "bytes": 20568041,
+    "sha256": "eea2427ead67f16f2a4599e254d8f2bc8d65d143f489c2268b975af8af20b0aa"
+  },
+  "artifacts/android-offline-retrieval-variants-20261019/full-my-failed2-v4/run.json": {
+    "bytes": 6862,
+    "sha256": "4e64f7b462c74b66b55b867532862946e9226a0bbb48fcb35c143038490a9629"
+  },
+  "eval-run/predictions.jsonl": {
+    "bytes": 23521,
+    "sha256": "7cd600d8db6b2b569efeddbbc60d7af7f4e19db7aaa3e12fb97a670314dc5cf2"
+  },
+  "eval-run/report.json": {
+    "bytes": 30142,
+    "sha256": "4819fbe5cbbcf68162096ce0c8643167ce65f502c25bb96bfd59324da08a4f85"
+  },
+  "eval-run/run.json": {
+    "bytes": 1865,
+    "sha256": "58f343343df569929c331eceb908e2735fba0df28aa67fe4efb67078c561e62f"
+  }
+}

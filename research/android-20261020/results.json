@@ -1,0 +1,1551 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "cohorts": {
+    "my-failed-2": {
+      "assignments": 668,
+      "distinct_images": 627,
+      "fingerprint": "2af2f70bd6beed4fb9d0a302375b58d16d4f51bf0daef994ba0a22ec65dea001"
+    }
+  },
+  "runs": [
+    {
+      "id": "standard-original",
+      "cohort": "my-failed-2",
+      "observations": "observations/standard-original.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 274,
+          "5": 520,
+          "10": 565
+        },
+        "median_ms": 662.207416999081,
+        "p95_ms": 955.981264800357,
+        "max_ms": 4982.091791996936
+      },
+      "provenance": {
+        "package": "chtozavino.alolalab.com",
+        "initial_pid": 2961,
+        "final_pid": 2961,
+        "peak_sampled_pss_kib": 975318,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": null
+      }
+    },
+    {
+      "id": "pooling-1",
+      "cohort": "my-failed-2",
+      "observations": "observations/pooling-1.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 186,
+          "5": 386,
+          "10": 427
+        },
+        "median_ms": 1383.3968749968335,
+        "p95_ms": 1747.9652766487561,
+        "max_ms": 2319.5653339935234
+      },
+      "provenance": {
+        "condition": {
+          "number": 1,
+          "name": "base-p224-standard",
+          "budget": 224,
+          "pooling": "standard",
+          "vectors": "base-p224-standard.f32",
+          "model_manifest": "base-p224-weighted.manifest.json",
+          "model_sha256": "c0371d2c6825642a6f2e1d782e7d3c202d72c0908cbb7320045aeb2fa31fd097",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 224,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "standard",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": null,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "5f1c09e9ed2f27ef68459e091510cb497f6291d528d6035630e9d32e73a8943f"
+          }
+        },
+        "package": "com.alolalab.chtozavino.basepoolbench",
+        "pack_version": "20261020-base-p224-p512-pooling-v2",
+        "installed_apk_sha256": "7ed834e5022de84af472e88d2985d8220fc708a81a707d9402b8582694893ad5",
+        "pack_manifest_sha256": "8d6e9aee47e2c5ff64595a8d35c268379c2e032d19a92c8cc4d6dc1d1f965c41",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 16862,
+        "final_pid": 16862,
+        "peak_sampled_pss_kib": 946508,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "pooling-2",
+      "cohort": "my-failed-2",
+      "observations": "observations/pooling-2.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 190,
+          "5": 386,
+          "10": 442
+        },
+        "median_ms": 1365.7599584985292,
+        "p95_ms": 2072.7817130515177,
+        "max_ms": 2733.9295410056366
+      },
+      "provenance": {
+        "condition": {
+          "number": 2,
+          "name": "base-p224-fractional-bg010",
+          "budget": 224,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p224-fractional-bg010.f32",
+          "model_manifest": "base-p224-weighted.manifest.json",
+          "model_sha256": "c0371d2c6825642a6f2e1d782e7d3c202d72c0908cbb7320045aeb2fa31fd097",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 224,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "38bddbd0e30de0bf2ecc65b3775c200703e73a471b647e11e5c1825bea248822"
+          }
+        },
+        "package": "com.alolalab.chtozavino.basepoolbench",
+        "pack_version": "20261020-base-p224-p512-pooling-v2",
+        "installed_apk_sha256": "7ed834e5022de84af472e88d2985d8220fc708a81a707d9402b8582694893ad5",
+        "pack_manifest_sha256": "8d6e9aee47e2c5ff64595a8d35c268379c2e032d19a92c8cc4d6dc1d1f965c41",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 16862,
+        "final_pid": 16862,
+        "peak_sampled_pss_kib": 776563,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "pooling-3",
+      "cohort": "my-failed-2",
+      "observations": "observations/pooling-3.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 226,
+          "5": 443,
+          "10": 471
+        },
+        "median_ms": 2283.301562500128,
+        "p95_ms": 3215.3208749979967,
+        "max_ms": 5005.385208001826
+      },
+      "provenance": {
+        "condition": {
+          "number": 3,
+          "name": "base-p512-standard",
+          "budget": 512,
+          "pooling": "standard",
+          "vectors": "base-p512-standard.f32",
+          "model_manifest": "base-p512-gpu-fp16.manifest.json",
+          "model_sha256": "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "standard",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": null,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "38ba13cb2b39e340ed6fd5fd25cc910f2cf71d691b7fa3229f29f7ce1da7a682"
+          }
+        },
+        "package": "com.alolalab.chtozavino.basepoolbench",
+        "pack_version": "20261020-base-p224-p512-pooling-v2",
+        "installed_apk_sha256": "7ed834e5022de84af472e88d2985d8220fc708a81a707d9402b8582694893ad5",
+        "pack_manifest_sha256": "8d6e9aee47e2c5ff64595a8d35c268379c2e032d19a92c8cc4d6dc1d1f965c41",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 16862,
+        "final_pid": 16862,
+        "peak_sampled_pss_kib": 944996,
+        "maximum_thermal_status": 3,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "pooling-4",
+      "cohort": "my-failed-2",
+      "observations": "observations/pooling-4.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 247,
+          "5": 460,
+          "10": 494
+        },
+        "median_ms": 1768.6666665103985,
+        "p95_ms": 2428.155791550671,
+        "max_ms": 3135.122958003194
+      },
+      "provenance": {
+        "condition": {
+          "number": 4,
+          "name": "base-p512-fractional-bg010",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          }
+        },
+        "package": "com.alolalab.chtozavino.basepoolbench",
+        "pack_version": "20261020-base-p224-p512-pooling-v2",
+        "installed_apk_sha256": "7ed834e5022de84af472e88d2985d8220fc708a81a707d9402b8582694893ad5",
+        "pack_manifest_sha256": "8d6e9aee47e2c5ff64595a8d35c268379c2e032d19a92c8cc4d6dc1d1f965c41",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 16862,
+        "final_pid": 16862,
+        "peak_sampled_pss_kib": 931832,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "standard-full-image-control",
+      "cohort": "my-failed-2",
+      "observations": "observations/standard-full-image-control.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 274,
+          "5": 520,
+          "10": 565
+        },
+        "median_ms": 877.8782289955416,
+        "p95_ms": 1252.2629645965935,
+        "max_ms": 6908.174416996189
+      },
+      "provenance": {
+        "condition": {
+          "number": 5,
+          "name": "full-image-p512-standard-control",
+          "budget": 512,
+          "pooling": "standard",
+          "vectors": "production-standard-p512.f32",
+          "model_manifest": "base-p512-gpu-fp16.manifest.json",
+          "model_sha256": "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "standard",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": null,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "38ba13cb2b39e340ed6fd5fd25cc910f2cf71d691b7fa3229f29f7ce1da7a682"
+          },
+          "query_frame": "full-image",
+          "segmenter": "NONE",
+          "reference_policy": "production-standard"
+        },
+        "package": "com.alolalab.chtozavino.fullpoolbench",
+        "pack_version": "20261020-full-image-p512-pooling-v1",
+        "installed_apk_sha256": "6effa272d90c4ab6e2b0214b22472566ac42f7108d471433da603b1efc44083a",
+        "pack_manifest_sha256": "9bf4a3baa655cc77d6873cf8a49aa6e5295a745ea36f33784dff98e0dbeb1157",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 21332,
+        "final_pid": 21332,
+        "peak_sampled_pss_kib": 1181936,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "yolo-full-image-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/yolo-full-image-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 260,
+          "5": 518,
+          "10": 564
+        },
+        "median_ms": 1553.9228540001204,
+        "p95_ms": 3001.6317062531007,
+        "max_ms": 8827.332832996035
+      },
+      "provenance": {
+        "condition": {
+          "number": 6,
+          "name": "full-image-p512-fractional-bg010",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          },
+          "query_frame": "full-image",
+          "segmenter": "CPU",
+          "reference_policy": "previous-matched-custom"
+        },
+        "package": "com.alolalab.chtozavino.fullpoolbench",
+        "pack_version": "20261020-full-image-p512-pooling-v1",
+        "installed_apk_sha256": "6effa272d90c4ab6e2b0214b22472566ac42f7108d471433da603b1efc44083a",
+        "pack_manifest_sha256": "9bf4a3baa655cc77d6873cf8a49aa6e5295a745ea36f33784dff98e0dbeb1157",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 21332,
+        "final_pid": 21332,
+        "peak_sampled_pss_kib": 1139110,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "standard-dis-control",
+      "cohort": "my-failed-2",
+      "observations": "observations/standard-dis-control.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 274,
+          "5": 520,
+          "10": 565
+        },
+        "median_ms": 966.3595625097514,
+        "p95_ms": 1700.0322097534074,
+        "max_ms": 5432.187957994756
+      },
+      "provenance": {
+        "condition": {
+          "number": 5,
+          "name": "full-image-p512-standard-control",
+          "budget": 512,
+          "pooling": "standard",
+          "vectors": "production-standard-p512.f32",
+          "model_manifest": "base-p512-gpu-fp16.manifest.json",
+          "model_sha256": "9cd7a00df9818bebe9e505e7a84647334587f88101300dd14b4bce1e39165005",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "standard",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": null,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "38ba13cb2b39e340ed6fd5fd25cc910f2cf71d691b7fa3229f29f7ce1da7a682"
+          },
+          "query_frame": "full-image",
+          "segmenter": "NONE",
+          "reference_policy": "production-standard",
+          "segmenter_model": "NONE"
+        },
+        "package": "com.alolalab.chtozavino.dispoolbench",
+        "pack_version": "20261020-dis-p512-pooling-v1",
+        "installed_apk_sha256": "b3882684242ba832f9325d52c6c6924fbf5ef316e4ef1f70edbd3458cbc62923",
+        "pack_manifest_sha256": "26629872732840ef6957610b9669e2e174c6de6cad488699f62c0d37c2de68e3",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 22646,
+        "final_pid": 22646,
+        "peak_sampled_pss_kib": 1646596,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "dis1024-full-image-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/dis1024-full-image-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 292,
+          "5": 556,
+          "10": 594
+        },
+        "median_ms": 2283.2219374977285,
+        "p95_ms": 5351.242660855496,
+        "max_ms": 15783.60820900707
+      },
+      "provenance": {
+        "condition": {
+          "number": 7,
+          "name": "dis-p512-custom-full-image",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          },
+          "query_frame": "full-image",
+          "segmenter": "GPU",
+          "reference_policy": "previous-matched-custom",
+          "segmenter_model": "DIS"
+        },
+        "package": "com.alolalab.chtozavino.dispoolbench",
+        "pack_version": "20261020-dis-p512-pooling-v1",
+        "installed_apk_sha256": "b3882684242ba832f9325d52c6c6924fbf5ef316e4ef1f70edbd3458cbc62923",
+        "pack_manifest_sha256": "26629872732840ef6957610b9669e2e174c6de6cad488699f62c0d37c2de68e3",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 22646,
+        "final_pid": 22646,
+        "peak_sampled_pss_kib": 2106377,
+        "maximum_thermal_status": 3,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "dis1024-cropped-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/dis1024-cropped-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 314,
+          "5": 565,
+          "10": 600
+        },
+        "median_ms": 2606.7120834995876,
+        "p95_ms": 3429.1318358533313,
+        "max_ms": 5322.730165993562
+      },
+      "provenance": {
+        "condition": {
+          "number": 8,
+          "name": "dis-p512-custom-bottle-crop-white",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          },
+          "query_frame": "bottle-crop-white",
+          "segmenter": "GPU",
+          "reference_policy": "previous-matched-custom",
+          "segmenter_model": "DIS"
+        },
+        "package": "com.alolalab.chtozavino.dispoolbench",
+        "pack_version": "20261020-dis-p512-pooling-v1",
+        "installed_apk_sha256": "b3882684242ba832f9325d52c6c6924fbf5ef316e4ef1f70edbd3458cbc62923",
+        "pack_manifest_sha256": "26629872732840ef6957610b9669e2e174c6de6cad488699f62c0d37c2de68e3",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 22646,
+        "final_pid": 22646,
+        "peak_sampled_pss_kib": 1751076,
+        "maximum_thermal_status": 2,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": true,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "dis768-cropped-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/dis768-cropped-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 311,
+          "5": 565,
+          "10": 599
+        },
+        "median_ms": 1636.5348329927656,
+        "p95_ms": 2052.1923935535597,
+        "max_ms": 2752.5870410026982
+      },
+      "provenance": {
+        "condition": {
+          "number": 8,
+          "name": "dis768-p512-custom-bottle-crop-white",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          },
+          "query_frame": "bottle-crop-white",
+          "segmenter": "GPU",
+          "reference_policy": "previous-matched-custom",
+          "segmenter_model": "DIS",
+          "dis_input_size": 768
+        },
+        "package": "com.alolalab.chtozavino.disresbench",
+        "pack_version": "20261020-dis768-p512-crop-v1",
+        "installed_apk_sha256": "7f69363432bdf81dabacef91e91f72e62f801c415fb4b8fbe98234e2a1e6e18f",
+        "pack_manifest_sha256": "ae6205fb4579530470d5213113d1e9b2b5d1d2234a4d3a28d53731dfe0f07338",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 7960,
+        "final_pid": 7960,
+        "peak_sampled_pss_kib": 1647703,
+        "maximum_thermal_status": 2,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "dis512-cropped-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/dis512-cropped-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 311,
+          "5": 550,
+          "10": 586
+        },
+        "median_ms": 1324.4021249993239,
+        "p95_ms": 1665.430602291599,
+        "max_ms": 2044.4259170035366
+      },
+      "provenance": {
+        "condition": {
+          "number": 8,
+          "name": "dis512-p512-custom-bottle-crop-white",
+          "budget": 512,
+          "pooling": "fractional-bg010",
+          "vectors": "base-p512-fractional-bg010.f32",
+          "model_manifest": "base-p512-weighted.manifest.json",
+          "model_sha256": "6d626149ec6460ef3c57efd671d75691a7f98628f0d1eddefc8c203f818d5ab7",
+          "effective_profile": {
+            "parameters": {
+              "batch_size": 1,
+              "embedding_dimension": 768,
+              "max_num_patches": 512,
+              "model_id": "google/siglip2-base-patch16-naflex",
+              "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "normalize_output": true,
+              "patch_size": 16,
+              "preserve_aspect_ratio": true,
+              "processor_library": "transformers==4.57.1",
+              "processor_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c",
+              "runtime": "LiteRT",
+              "status": "implementation",
+              "target_platform": "Android",
+              "vision_only": true,
+              "weight_precision": "float16",
+              "pooling": "fractional-bg010",
+              "mask_coverage": "bilinear-float-actual-grid-16x16",
+              "background_weight": 0.1,
+              "foreground_weight": 1.0,
+              "label_weight": 1.0,
+              "reference_views": 1,
+              "reference_aggregation": "max"
+            },
+            "sha256": "e290248c8c15788d7896ce5f0ec6a51947187e67dbe6cb072663e90ef13a8869"
+          },
+          "query_frame": "bottle-crop-white",
+          "segmenter": "GPU",
+          "reference_policy": "previous-matched-custom",
+          "segmenter_model": "DIS",
+          "dis_input_size": 512
+        },
+        "package": "com.alolalab.chtozavino.disresbench",
+        "pack_version": "20261020-dis512-p512-crop-v1",
+        "installed_apk_sha256": "7f69363432bdf81dabacef91e91f72e62f801c415fb4b8fbe98234e2a1e6e18f",
+        "pack_manifest_sha256": "f7e17174d5500ee7e4a0e18e0cc125ecadfd9309ced7d0fdcd867b942b06d59e",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 30779,
+        "final_pid": 30779,
+        "peak_sampled_pss_kib": 1481891,
+        "maximum_thermal_status": 1,
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": "b53b807d3a2d5e2b3911292f2d69e5341cdc064c"
+      }
+    },
+    {
+      "id": "production-custom",
+      "cohort": "my-failed-2",
+      "observations": "observations/production-custom.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "complete USB HTTP request",
+      "metrics": {
+        "assignments": 668,
+        "errors": 0,
+        "hits": {
+          "1": 311,
+          "5": 565,
+          "10": 599
+        },
+        "median_ms": 1372.026208002353,
+        "p95_ms": 1831.9335580919867,
+        "max_ms": 2146.834332990693
+      },
+      "provenance": {
+        "initial_pid": "24286",
+        "final_pid": "24286",
+        "model": "google/siglip2-base-patch16-naflex",
+        "dimension": 768,
+        "resumed": false,
+        "wine_count": 2093,
+        "model_revision": null
+      }
+    },
+    {
+      "id": "so400m-recipe-01",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-01.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 335,
+          "5": 533,
+          "10": 546
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 1,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top3-mean",
+          "axial_union": true,
+          "gallery": "zero",
+          "query_budget": 512,
+          "query_geometry": "crop",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-02",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-02.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 332,
+          "5": 526,
+          "10": 542
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 2,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top2-mean",
+          "axial_union": true,
+          "gallery": "rot5",
+          "query_budget": 512,
+          "query_geometry": "iou",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-03",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-03.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 335,
+          "5": 541,
+          "10": 557
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 3,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top2-mean",
+          "axial_union": true,
+          "gallery": "rot5",
+          "query_budget": 512,
+          "query_geometry": "mean-card5",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-04",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-04.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 332,
+          "5": 539,
+          "10": 554
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 4,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top2-mean",
+          "axial_union": true,
+          "gallery": "rot5",
+          "query_budget": 512,
+          "query_geometry": "mean-iou",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-05",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-05.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 313,
+          "5": 527,
+          "10": 546
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 5,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top3-mean",
+          "axial_union": true,
+          "gallery": "zero",
+          "query_budget": 512,
+          "query_geometry": "card5",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-06",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-06.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 313,
+          "5": 542,
+          "10": 558
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 6,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top3-mean",
+          "axial_union": true,
+          "gallery": "rot5",
+          "query_budget": 512,
+          "query_geometry": "mean-card5",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-07",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-07.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 321,
+          "5": 529,
+          "10": 550
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 7,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "max",
+          "axial_union": false,
+          "gallery": "rot5",
+          "query_budget": 512,
+          "query_geometry": "iou",
+          "query_margin": null,
+          "query_pool": "g1-bg000-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l1-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-08",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-08.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 297,
+          "5": 515,
+          "10": 540
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 8,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top2-mean",
+          "axial_union": true,
+          "gallery": "zero",
+          "query_budget": 512,
+          "query_geometry": "card5",
+          "query_margin": null,
+          "query_pool": "u",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "u"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-09",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-09.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 330,
+          "5": 530,
+          "10": 545
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 9,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "top3-mean",
+          "axial_union": true,
+          "gallery": "cardinal",
+          "query_budget": 512,
+          "query_geometry": "crop",
+          "query_margin": null,
+          "query_pool": "g1-bg010-l2-legacy",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg010-l2-legacy"
+        }
+      }
+    },
+    {
+      "id": "so400m-recipe-10",
+      "cohort": "my-failed-2",
+      "observations": "observations/so400m-recipe-10.jsonl",
+      "reranking": false,
+      "barcode": false,
+      "timing_scope": "shared-query-work: one request evaluates all ten recipes",
+      "metrics": {
+        "assignments": 668,
+        "errors": 2,
+        "hits": {
+          "1": 326,
+          "5": 511,
+          "10": 527
+        },
+        "median_ms": 37050.84352050471,
+        "p95_ms": 46773.007416544715,
+        "max_ms": 59369.40116599726
+      },
+      "provenance": {
+        "package": "com.alolalab.chtozavino.offlinebench",
+        "pack_version": "20261019-offline-frozen",
+        "installed_apk_sha256": "5802b58299ea2474717061e6701f0c7d47fc226983715817b8e1f7bb75bff12e",
+        "pack_manifest_sha256": "806593b1e0634275237142814c07c39427d658b8b23064bb896ededa7a1d45b1",
+        "query_file_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+        "initial_pid": 9424,
+        "final_pid": 9424,
+        "peak_sampled_pss_kib": 2156340,
+        "maximum_thermal_status": 3,
+        "maximum_battery_celsius": 45.7,
+        "variant": 10,
+        "model": "google/siglip2-so400m-patch16-naflex",
+        "dimension": 1152,
+        "resumed": true,
+        "wine_count": 2274,
+        "model_revision": "cc24074f717b612951c2dead130904ab9b65a81e",
+        "process_segments": [
+          {
+            "start_request": 1,
+            "pid": 20524
+          },
+          {
+            "start_request": 45,
+            "pid": 9424
+          },
+          {
+            "start_request": 537,
+            "pid": 9424
+          }
+        ],
+        "recipe": {
+          "aggregation": "max",
+          "axial_union": true,
+          "gallery": "cardinal",
+          "query_budget": 512,
+          "query_geometry": "iou",
+          "query_margin": null,
+          "query_pool": "g1-bg000-l3-exact",
+          "reference_budget": 512,
+          "reference_margin": null,
+          "reference_pool": "g1-bg000-l3-exact"
+        }
+      }
+    }
+  ],
+  "eval_zip": {
+    "assignments": 100,
+    "accepted": 86,
+    "exact": 81,
+    "alternatives": 5,
+    "mismatches": 14,
+    "comparison_status": "FAIL",
+    "transport_status": "completed",
+    "observations": "observations/eval-zip.jsonl",
+    "median_ms": 1660.0,
+    "p95_ms": 2039.35
+  },
+  "limits": [
+    "Acceptance flags are derived evidence, not published reference answers.",
+    "No images, masks, reference answers, raw vectors, model weights, or device state are included.",
+    "Summary verification does not reproduce model inference or independently relabel predictions."
+  ]
+}
