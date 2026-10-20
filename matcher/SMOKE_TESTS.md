@@ -1,5 +1,13 @@
 # Matcher smoke tests
 
+## Local configuration and shared SAM3 override
+
+- Load `matcher/config.local.example.yaml` from the repository root. Confirm the SigLIP2 URL is `http://127.0.0.1:18090/v1/embeddings`.
+- Confirm that the archive directory is `work/matcher-requests`.
+- Set `SAM3_ENDPOINT` before startup. Confirm that shelf, hand-selection, and cascade clients use this URL.
+- Remove the variable. Confirm that existing YAML fallback URLs still apply.
+- Set an empty or invalid `SAM3_ENDPOINT`. Confirm that startup rejects the configuration.
+
 ## Organizers' eval script
 
 - Start the SigLIP2 matcher on port 8158 as `eval/README.md` states.

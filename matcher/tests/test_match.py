@@ -287,6 +287,7 @@ class MatchEndpointTest(unittest.TestCase):
             pipeline["bundle"] = str(root / "bundle")
         config = write_config(root / "config.yaml", pipeline, token)
         environment = os.environ.copy()
+        environment.pop("SAM3_ENDPOINT", None)
         environment["SVOE_VINO_MATCHER_CONFIG"] = str(config)
         environment["SVOE_VINO_MATCHER_TOKEN"] = TOKEN
         port = free_port()

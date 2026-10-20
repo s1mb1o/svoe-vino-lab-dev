@@ -1,5 +1,18 @@
 # Research log
 
+## 2026-10-20 — Endpoint configuration boundaries
+
+The old `SIGLIP2_ENDPOINT` and `SVOE_VINO_MATCHER_OUTPUT_DIR` variables do not change public YAML settings.
+The local example now supplies those settings directly.
+The workspace requires `SAM3_ENDPOINT` as the canonical shared SAM3 variable.
+The matcher now reads this variable at startup for shelf, hand-selection, and cascade clients.
+An absent variable retains the existing YAML fallback URLs.
+An invalid variable stops startup instead of selecting the YAML fallback.
+Changing the variable in a running process requires a restart.
+An inherited real endpoint changed the targets of the first remediation test run.
+Subprocess fixtures and CI now remove that inherited value.
+The isolated final suite passes 285 tests with one optional integration skip.
+
 ## 2026-10-17: Optional MLflow experiment tracking
 
 - The existing Workbench runner saves structured run files after scoring. Both matcher evaluators save structured comparison reports. These boundaries allow tracking without changing model inference.

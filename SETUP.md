@@ -29,9 +29,11 @@ python3 -m venv .venv
 pip install -r matcher/requirements.txt
 
 export SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml
-export SVOE_VINO_MATCHER_OUTPUT_DIR=work/matcher-requests
 python -m uvicorn matcher.app:app --host 127.0.0.1 --port 8158
 ```
+
+The mock configuration stores requests in `work/matcher-test-requests`.
+Change `matcher.output_dir` in a private YAML copy to use another directory.
 
 Проверьте service:
 
@@ -48,27 +50,32 @@ curl -F image=@matcher/tests/data/02eef911.webp \
 ```dotenv
 NUXT_PREDICTION_MODE=upstream
 NUXT_PREDICTION_ENDPOINT=http://127.0.0.1:8158/v1/eval/predict
-NUXT_SHELF_MODE=disabled
 ```
 
 Перезапустите Web UI. Браузер продолжит вызывать route на origin Web UI.
 
-## Реальный SigLIP2 matcher
+## Local SigLIP2 matcher
 
-Реальный matcher требует:
+The real matcher requires the committed bundle
+`matcher/data/gx10-siglip2-so400m-patch16-naflex-p512` and an OpenAI-compatible SigLIP2 endpoint.
+Read [bootstrap/README.md](bootstrap/README.md) to install the model services.
 
-1. Bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`. Он хранится в Git.
-2. OpenAI-compatible SigLIP2 endpoint.
-3. Environment variable `SIGLIP2_ENDPOINT` без suffix `/v1`.
+Run the commands from the repository root.
+The [local example configuration](matcher/config.local.example.yaml) selects the gateway
+`http://127.0.0.1:18090` and the archive directory `work/matcher-requests`.
+For another gateway or archive directory, make a private YAML copy.
+Change `pipeline[].endpoint` and `matcher.output_dir` in that copy.
+The endpoint MUST be the gateway root without `/v1`.
+Set `SVOE_VINO_MATCHER_CONFIG` to the selected YAML file.
+`SIGLIP2_ENDPOINT` and `SVOE_VINO_MATCHER_OUTPUT_DIR` do not override YAML.
 
-Bundle создаёт `workbench/scripts/build_matcher_bundle.py`. Model services можно
-развернуть из [bootstrap/README.md](bootstrap/README.md). Затем запустите matcher без
-`SVOE_VINO_MATCHER_CONFIG`:
+`SAM3_ENDPOINT` is the shared SAM3 override.
+Shelf segmentation and optional hand selection require SAM3.
+The local bootstrap gateway provides the following SAM3 route:
 
 ```bash
-unset SVOE_VINO_MATCHER_CONFIG
-export SIGLIP2_ENDPOINT=http://127.0.0.1:18090
-export SVOE_VINO_MATCHER_OUTPUT_DIR=work/matcher-requests
+export SVOE_VINO_MATCHER_CONFIG=matcher/config.local.example.yaml
+export SAM3_ENDPOINT=http://127.0.0.1:18090/upstream/sam3
 python -m uvicorn matcher.app:app --host 127.0.0.1 --port 8158
 ```
 
@@ -114,7 +121,7 @@ uv run chto-za-vino-max-bot
 
 ```bash
 # Matcher
-python -m unittest discover -s matcher/tests -v
+env -u SAM3_ENDPOINT python -m unittest discover -s matcher/tests -v
 
 # Web UI
 cd webui

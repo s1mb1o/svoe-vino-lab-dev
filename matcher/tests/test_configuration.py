@@ -11,7 +11,8 @@ import yaml
 from fastapi.testclient import TestClient
 
 from matcher.configuration import (ConfigError, RuntimeSettings, endpoint_url,
-                                   minimum_score, read_configuration, runtime_settings)
+                                   minimum_score, read_configuration, runtime_settings,
+                                   sam3_endpoint)
 from matcher.service import load_matcher
 from matcher.tests.config_helpers import process_environment
 
@@ -31,6 +32,28 @@ class ConfigurationTest(unittest.TestCase):
             document['matcher']['min_score'] = value
             with self.subTest(value=value), self.assertRaisesRegex(ConfigError, 'matcher.min_score'):
                 load_matcher(TEMPLATE, document=document)
+
+    def test_subprocess_fixtures_remove_an_ambient_sam3_endpoint(self):
+        with patch.dict(os.environ, {'SAM3_ENDPOINT': 'http://ambient.invalid'}):
+            environment = process_environment(TEMPLATE)
+        self.assertNotIn('SAM3_ENDPOINT', environment)
+
+    def test_canonical_sam3_environment_overrides_the_yaml_fallback(self):
+        document = {'matcher': {'sam3_endpoint': 'http://yaml.test'}}
+        with patch.dict(os.environ, {'SAM3_ENDPOINT': 'http://canonical.test'}):
+            self.assertEqual(sam3_endpoint(document), 'http://canonical.test')
+            self.assertEqual(sam3_endpoint({'matcher': {}}), 'http://canonical.test')
+        with patch.dict(os.environ):
+            os.environ.pop('SAM3_ENDPOINT', None)
+            self.assertEqual(sam3_endpoint(document), 'http://yaml.test')
+            self.assertIsNone(sam3_endpoint({'matcher': {}}))
+
+    def test_invalid_canonical_sam3_environment_does_not_use_the_yaml_fallback(self):
+        for value in ('', 'ftp://invalid.test', 'http://user:private@host'):
+            with self.subTest(value=value), patch.dict(os.environ, {'SAM3_ENDPOINT': value}):
+                with self.assertRaises(ConfigError) as caught:
+                    sam3_endpoint({'matcher': {'sam3_endpoint': 'http://yaml.test'}})
+                self.assertNotIn('private', str(caught.exception))
 
     def test_defaults_keep_the_existing_service_limits(self):
         self.assertEqual(asdict(runtime_settings({'matcher': {}})), {
@@ -73,7 +96,7 @@ class ConfigurationTest(unittest.TestCase):
             env = process_environment(TEMPLATE, output_dir=directory,
                                       limits={'max_image_bytes': 64, 'max_inflight_requests': 2})
             env.update(SVOE_VINO_MATCHER_MAX_IMAGE_BYTES='99999999')
-            with patch.dict(os.environ, env):
+            with patch.dict(os.environ, env, clear=True):
                 from matcher.app import create_app
                 app = create_app(env['SVOE_VINO_MATCHER_CONFIG'])
             self.assertEqual(app.state.runtime_settings.max_inflight_requests, 2)
@@ -88,7 +111,7 @@ class ConfigurationTest(unittest.TestCase):
     def test_every_http_factory_override_uses_strict_validation(self):
         with tempfile.TemporaryDirectory() as directory:
             env = process_environment(TEMPLATE, output_dir=directory)
-            with patch.dict(os.environ, env):
+            with patch.dict(os.environ, env, clear=True):
                 from matcher.app import create_app
                 for key in asdict(RuntimeSettings()):
                     for value in (0, '123', float('inf')):

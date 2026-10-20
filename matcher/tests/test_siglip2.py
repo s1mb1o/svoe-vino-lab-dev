@@ -474,6 +474,7 @@ class Siglip2HarnessTest(unittest.TestCase):
                           "endpoint": fake.url}],
         }), encoding="utf-8")
         environment = os.environ.copy()
+        environment.pop("SAM3_ENDPOINT", None)
         environment["SVOE_VINO_MATCHER_CONFIG"] = str(config)
         port = free_port()
         process = subprocess.Popen(

@@ -56,12 +56,15 @@ Tests write private YAML files with an archive path and runtime limits.
 Запустите полный набор тестов:
 
 ~~~bash
-~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning \
+env -u SAM3_ENDPOINT ~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning \
   -m unittest discover -s matcher/tests -v
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 262 tests.
+`env -u SAM3_ENDPOINT` removes the production SAM3 override from the test environment.
+Subprocess fixtures also remove the inherited override and use their private YAML URLs.
+Dedicated override tests set their own fixture values.
+The optional real-store MLflow test requires its separate integration settings.
 
 ### API и official harness
 

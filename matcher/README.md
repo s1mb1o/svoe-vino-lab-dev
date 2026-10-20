@@ -150,8 +150,10 @@ SigLIP2 даёт HTTP 504.
 ### Optional hand-aware selection
 
 Set `hand_selection: true` in the selected `pipeline` entry. The default is `false`.
-Set `matcher.sam3_endpoint` in YAML to the SAM3 base URL. Restart the matcher after a configuration
-change. This option applies only to the `siglip2` backend.
+Set `SAM3_ENDPOINT` to the SAM3 base URL.
+When the variable is absent, `matcher.sam3_endpoint` in YAML provides the fallback.
+Restart the matcher after a configuration change.
+This option applies only to the `siglip2` backend.
 
 Both `POST /v1/match` and `POST /v1/eval/predict` request package and hand detections.
 The selector combines hand-box overlap with package size, position, sharpness, and
@@ -281,7 +283,9 @@ python3 scripts/copy_catalog.py --out <новый каталог> --no-images \
 
 ## Runtime configuration
 
-All public service settings are in the selected YAML file. The file is read once at startup.
+Public service settings are in the selected YAML file.
+`SAM3_ENDPOINT` is the canonical environment override for every SAM3 client.
+Settings are read once at startup.
 Restart the process after a change. `SVOE_VINO_MATCHER_CONFIG` selects this file.
 The default file is `matcher/config.yaml`.
 
@@ -323,15 +327,18 @@ is added: a 0.015 margin rejected 15 correct answers and only one wrong identity
 These are results for `cascade-p512-rot5` at `da8c8954`, not a universal accuracy claim.
 
 Each pipeline endpoint is a literal HTTP(S) URL in YAML. URLs MUST NOT contain credentials.
-`matcher.sam3_endpoint` is the shared endpoint for shelf segmentation and optional
-single-package hand selection. The cascade keeps its pipeline-specific `sam3.endpoint`.
+`SAM3_ENDPOINT` overrides shelf segmentation, optional single-package hand selection,
+and the cascade SAM3 client. An invalid value stops startup.
+When the variable is absent, shelf segmentation and hand selection use
+`matcher.sam3_endpoint`. The cascade uses its pipeline-specific `sam3.endpoint` fallback.
 VLM model names and model request settings stay in their pipeline entries.
 
-The old endpoint, output-directory, and limit environment variables are no longer read.
-Endpoint and output-path `{env:NAME}` references are rejected. Migrate those values into
-YAML before changing the image. Only the config-file selector and secret references
-remain environment-driven. The optional `matcher.token` MUST be an exact `{env:NAME}`
-reference. Missing secret values stop startup. Errors do not print secret values.
+Except for `SAM3_ENDPOINT`, the old endpoint, output-directory, and limit environment variables are no longer read.
+Endpoint and output-path `{env:NAME}` references are rejected.
+Migrate those values into YAML before changing the image.
+The environment supplies the config-file selector, secret references, and `SAM3_ENDPOINT`.
+The optional `matcher.token` MUST be an exact `{env:NAME}` reference.
+Missing secret values stop startup. Errors do not print secret values.
 
 Container ports, mounts, restart policy and image tags belong to Compose.
 `SVOE_VINO_MATCHER_PORT` in shell examples is a launcher variable, not an application setting.
@@ -406,8 +413,9 @@ docker run --rm -p 127.0.0.1:8080:8080 \
   "svoe-vino-lab-matcher:$REV"
 ~~~
 
-Model endpoint URLs are in the mounted YAML. Do not use `SIGLIP2_ENDPOINT`,
-`SAM3_ENDPOINT`, `QR_SCANNER_ENDPOINT`, or `VLM_ENDPOINT` environment variables.
+Model endpoint URLs are in the mounted YAML.
+Set `SAM3_ENDPOINT` to override the SAM3 URL for all matcher clients.
+Do not use `SIGLIP2_ENDPOINT`, `QR_SCANNER_ENDPOINT`, or `VLM_ENDPOINT` environment variables.
 Use the host LAN address for a model service on the Docker host.
 The address `127.0.0.1` inside a container names that container.
 

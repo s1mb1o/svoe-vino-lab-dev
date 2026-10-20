@@ -21,7 +21,7 @@ matcher-tests:
     - python -m pip install --no-cache-dir -r matcher/requirements.txt
     - python -m pip check
   script:
-    - python -W error::ResourceWarning -m unittest discover -s matcher/tests -v
+    - env -u SAM3_ENDPOINT python -W error::ResourceWarning -m unittest discover -s matcher/tests -v
 
 webui-tests:
   stage: test

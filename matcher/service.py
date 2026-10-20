@@ -556,7 +556,8 @@ def _load_cascade(selected, entry, output_dir, token, fast_answer):
     if "sam3" in entry:
         part = label + " sam3"
         raw = _keys(entry["sam3"], SAM3_KEYS, part)
-        sam3_url = _endpoint(raw.get("endpoint"), selected, "sam3 endpoint")
+        sam3_url = _endpoint(os.environ.get("SAM3_ENDPOINT", raw.get("endpoint")),
+                             selected, "sam3 endpoint")
         threshold = _positive(raw, "threshold", Sam3Config.threshold, part)
         if threshold >= 1:
             raise ConfigError("%s threshold MUST be below 1" % part)

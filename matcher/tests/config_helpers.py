@@ -22,4 +22,6 @@ def process_environment(template, *, output_dir=None, sam3_endpoint=None, limits
     atexit.register(shutil.rmtree, directory, ignore_errors=True)
     path = directory / "config.yaml"
     path.write_text(yaml.safe_dump(document), encoding="utf-8")
-    return dict(os.environ, SVOE_VINO_MATCHER_CONFIG=str(path))
+    environment = dict(os.environ, SVOE_VINO_MATCHER_CONFIG=str(path))
+    environment.pop("SAM3_ENDPOINT", None)
+    return environment

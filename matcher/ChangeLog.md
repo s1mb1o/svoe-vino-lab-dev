@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — Local setup and canonical SAM3 configuration
+
+- Add `config.local.example.yaml` with a loopback SigLIP2 gateway and an explicit archive directory.
+- Use `SAM3_ENDPOINT` before YAML fallback URLs for shelf, hand-selection, and cascade clients.
+- Reject an invalid SAM3 override at startup. Keep other public endpoint settings in YAML.
+- Add configuration and cascade regressions. Correct the runtime configuration instructions.
+- Remove ambient SAM3 overrides from subprocess fixtures and CI. Test explicit override values separately.
+- Pass 285 tests. Skip the one optional real-store MLflow integration test.
+
 ## 2026-10-20 — Configurable single-image score floor (#79)
 
 - Add `matcher.min_score`, default 0.7, with strict numeric validation.

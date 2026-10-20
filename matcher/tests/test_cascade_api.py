@@ -105,6 +105,11 @@ class CascadeConfigTest(unittest.TestCase):
         self.assertEqual(sorted(matcher.cascade.rules.by_slug), ["wine-a", "wine-b"])
         self.assertIn("wine-c", matcher.cards)
 
+    def test_cascade_uses_the_canonical_sam3_environment(self):
+        with mock.patch.dict(os.environ, {"SAM3_ENDPOINT": "http://canonical.test"}):
+            matcher = self.load(entry(self.catalog, self.fake))
+        self.assertEqual(matcher.cascade.services.sam3_root, "http://canonical.test")
+
     def test_the_stages_are_optional(self):
         pipeline = entry(self.catalog, self.fake)
         for key in ("barcode", "sam3", "rerank"):
@@ -196,6 +201,7 @@ class CascadeEndpointTest(unittest.TestCase):
         config = write_config(root / "config.yaml", entry(catalog, self.fake, **changes),
                               fast_answer, self.requests_dir)
         environment = dict(os.environ, SVOE_VINO_MATCHER_CONFIG=str(config))
+        environment.pop("SAM3_ENDPOINT", None)
         environment.pop("SVOE_VINO_MATCHER_TOKEN", None)
         port = free_port()
         process = subprocess.Popen(

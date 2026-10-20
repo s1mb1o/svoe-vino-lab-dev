@@ -63,23 +63,23 @@ Matcher требует:
 
 1. Python-окружение с пакетами `matcher/requirements.txt`. Подготовка описана в
    [SETUP.md](../SETUP.md) и [matcher/README.md](../matcher/README.md).
-2. Embedding bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`. Bundle не
-   хранится в Git. Его создаёт `workbench/scripts/build_matcher_bundle.py`.
-3. OpenAI-compatible SigLIP2 endpoint. `SIGLIP2_ENDPOINT` указывает корень endpoint без
-   `/v1`. Локальные model services описаны в [bootstrap/README.md](../bootstrap/README.md).
+2. The committed embedding bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`.
+   `workbench/scripts/build_matcher_bundle.py` creates this bundle.
+3. An OpenAI-compatible SigLIP2 endpoint. Set its root URL without `/v1` in the selected YAML.
+   Read [bootstrap/README.md](../bootstrap/README.md) for the local model services.
 
 Выполните команды из корня svoe-vino-lab:
 
 ```bash
-unset SVOE_VINO_MATCHER_CONFIG
-export SIGLIP2_ENDPOINT=http://127.0.0.1:18090
-export SVOE_VINO_MATCHER_OUTPUT_DIR=work/matcher-requests
+export SVOE_VINO_MATCHER_CONFIG=matcher/config.local.example.yaml
 python -m uvicorn matcher.app:app --host 127.0.0.1 --port 8158
 ```
 
-Без `SVOE_VINO_MATCHER_CONFIG` matcher читает `matcher/config.yaml` и выбирает pipeline
-`siglip2-p512-as-is`. Matcher сохраняет каждый запрос и его изображение в
-`work/matcher-requests/`.
+The [local YAML example](../matcher/config.local.example.yaml) selects `siglip2-p512-as-is`.
+It sets the gateway to `http://127.0.0.1:18090` and the request archive to `work/matcher-requests`.
+For another installation, make a private YAML copy and change `pipeline[].endpoint` and
+`matcher.output_dir`. Set `SVOE_VINO_MATCHER_CONFIG` to that copy.
+`SIGLIP2_ENDPOINT` and `SVOE_VINO_MATCHER_OUTPUT_DIR` do not override YAML.
 
 Проверьте matcher во втором терминале из корня svoe-vino-lab:
 

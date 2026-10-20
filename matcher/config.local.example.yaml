@@ -1,0 +1,13 @@
+# Run the commands from the repository root.
+# Change endpoint to the root URL of the local SigLIP2 gateway.
+# Set SAM3_ENDPOINT for shelf segmentation and optional hand selection.
+matcher:
+  pipeline: siglip2-p512-as-is
+  output_dir: work/matcher-requests
+
+pipeline:
+  - name: siglip2-p512-as-is
+    backend: siglip2
+    bundle: matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
+    endpoint: http://127.0.0.1:18090
+    hand_selection: false

@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, fields, replace
 import math
+import os
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -92,5 +93,7 @@ def endpoint_url(value, label):
 
 
 def sam3_endpoint(document):
+    if "SAM3_ENDPOINT" in os.environ:
+        return endpoint_url(os.environ["SAM3_ENDPOINT"], "SAM3_ENDPOINT")
     value = document["matcher"].get("sam3_endpoint")
     return None if value is None else endpoint_url(value, "matcher.sam3_endpoint")
