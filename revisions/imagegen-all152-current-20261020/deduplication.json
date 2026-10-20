@@ -1,0 +1,10 @@
+{
+  "selected_records": 152,
+  "unique_source_hashes": 152,
+  "duplicate_source_groups": [],
+  "matches_in_other_original_image_directories": {},
+  "historically_tested_selected_images": 50,
+  "new_pending_selected_images": 102,
+  "scene_independence_group_keys": 151,
+  "split_policy": "No dataset split or held-out accuracy claim. GP02 and its reference edit GP11 share one group."
+}

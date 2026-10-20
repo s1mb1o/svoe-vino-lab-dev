@@ -1,0 +1,100 @@
+{
+  "case_key": "main-selector-imagegen-hardcases-v2-20261020:PT03",
+  "slug": "hardcases-v2--PT03",
+  "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+  "variant": "dis-v1",
+  "image_sha256": "f227feccf1ac514004fcfc51cb5c2128d53cab4467b829323372346e0ad18f1b",
+  "selector_seconds": 1.3828621669963468,
+  "decision": {
+    "variant": "dis-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "dis-foreground",
+    "reason": "dis_foreground_mask",
+    "candidates": [
+      {
+        "id": "dis-foreground",
+        "source_index": null,
+        "kind": "foreground",
+        "box": [
+          251,
+          0,
+          1360,
+          981
+        ],
+        "signals": {
+          "foreground_fraction": 0.32771873474121094,
+          "model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+          "model_revision": "1b966dbe2f33bd5ca1299cf94fbab59265210b6b"
+        }
+      }
+    ],
+    "crop_box": [
+      251,
+      0,
+      1360,
+      981
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "foreground",
+    "fallback_trigger": null,
+    "crop_scope": "foreground_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/hardcases-v2--PT03-dis-v1.png",
+  "crop_sha256": "84a0436ed46d5f1ec1cf109eedd9df02400c12bec1e3fb055cff580a1aee4833",
+  "keep_mask_path": "keep-masks/hardcases-v2--PT03-dis-v1.png",
+  "keep_mask_sha256": "3650d57f7fe8fe4b4256c4d0693629181a6ef7fd0264d79a2fcfeb8091ff54b5",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d2",
+    "accepted_targets": [
+      "d2"
+    ],
+    "target_agreement": null,
+    "cohort": "scene_confirmed_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      1109,
+      981
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 0.9895150637606056,
+    "maximum_other_bottle_retention_proxy": 0.9993638170974155,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": [
+      {
+        "id": "d5",
+        "retention": 0.9954447718404077,
+        "source_area_px": 62785,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.9981360780959684
+      },
+      {
+        "id": "d1",
+        "retention": 0.9993638170974155
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d0",
+      "iou": 0.32804742583412977
+    },
+    "minimum_target_label_retention_proxy": 0.9954447718404077
+  },
+  "execution_provenance": "fresh_local_DIS_prediction"
+}

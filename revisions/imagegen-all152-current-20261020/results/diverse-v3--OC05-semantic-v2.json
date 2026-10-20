@@ -1,0 +1,207 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:OC05",
+  "slug": "diverse-v3--OC05",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "semantic-v2",
+  "image_sha256": "7c08f73f02229d1f8614734f126782cef72d74fcb4e7f603006097ba99076b0d",
+  "selector_seconds": 0.18460949999280274,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-pointing-display-panels-and-side-grips",
+    "status": "selected",
+    "width": 1254,
+    "height": 1254,
+    "selected_id": "d0",
+    "reason": "unique_visible_hand_contact",
+    "candidates": [
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          523,
+          530,
+          668,
+          963
+        ],
+        "reported_box": [
+          523.0,
+          529.0,
+          667.0,
+          964.0
+        ],
+        "geometry_source": "visible_mask",
+        "score": 0.503751,
+        "signals": {
+          "prominence": 0.303893,
+          "aim_distance": 0.09855,
+          "hand_contact": 0.0,
+          "hand_contacts": {
+            "d4": 0.0
+          },
+          "isolation": 0.5,
+          "focus": 0.266973,
+          "foreground_axis": null,
+          "hand_wrap": {},
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": false,
+          "grip_evidence": {},
+          "pointing_evidence": [],
+          "panel_context": false,
+          "contains_photo_center": false,
+          "photo_center_distance_px": 123.581957
+        },
+        "label_ids": [
+          "d3"
+        ],
+        "label_boxes": [
+          [
+            527,
+            807,
+            665,
+            958
+          ]
+        ],
+        "eligible_for_selection": true
+      },
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          740,
+          479,
+          966,
+          958
+        ],
+        "reported_box": [
+          739.0,
+          477.0,
+          965.0,
+          960.0
+        ],
+        "geometry_source": "visible_mask",
+        "score": 0.452447,
+        "signals": {
+          "prominence": 0.307206,
+          "aim_distance": 0.194434,
+          "hand_contact": 3.601779,
+          "hand_contacts": {
+            "d4": 3.601779
+          },
+          "isolation": 0.5,
+          "focus": 0.211225,
+          "foreground_axis": null,
+          "hand_wrap": {
+            "d4": true
+          },
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": true,
+          "grip_evidence": {
+            "d4": {
+              "front_wrap": true,
+              "front_fraction": 0.368571,
+              "front_body_fraction": 0.137527,
+              "terminal_opposition": false,
+              "extended_terminal_contact": false,
+              "side_body_contact": false,
+              "tapered_body": true,
+              "mid_body_contact_fraction": 0.845679,
+              "slender_unlabelled_object": false,
+              "contact_span": 0.350027,
+              "localized_front_contact": false,
+              "broad_front_contact": true,
+              "confirmed": true
+            }
+          },
+          "pointing_evidence": [],
+          "panel_context": false,
+          "contains_photo_center": false,
+          "photo_center_distance_px": 243.820118
+        },
+        "label_ids": [
+          "d2"
+        ],
+        "label_boxes": [
+          [
+            749,
+            737,
+            930,
+            954
+          ]
+        ],
+        "eligible_for_selection": true
+      }
+    ],
+    "crop_box": [
+      731,
+      460,
+      975,
+      977
+    ],
+    "label_boxes": [
+      [
+        742,
+        728,
+        937,
+        963
+      ]
+    ],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "confident",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--OC05-semantic-v2.png",
+  "crop_sha256": "7c20df071477217bf5a8c2c9961c77269f177851a13d83325f94b3a8382aa432",
+  "keep_mask_path": "keep-masks/diverse-v3--OC05-semantic-v2.png",
+  "keep_mask_sha256": "66b5c9d75264027c0e68ac8599f33effa649a1d9c5d263dd029e39995519952a",
+  "label_crop_paths": [
+    "label-crops/diverse-v3--OC05-semantic-v2-0.png"
+  ],
+  "assessment": {
+    "target": "d0",
+    "accepted_targets": [
+      "d0"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      244,
+      517
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d2",
+        "retention": 1.0,
+        "source_area_px": 26765,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d1",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d0",
+      "iou": 0.4109989105457342
+    },
+    "minimum_target_label_retention_proxy": 1.0
+  },
+  "execution_provenance": "fresh_current_selector_frozen_proposal_replay"
+}

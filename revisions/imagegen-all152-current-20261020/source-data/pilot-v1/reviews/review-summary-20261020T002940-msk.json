@@ -1,0 +1,78 @@
+{
+  "source_review_file": "user-review-20261020T002940-msk.json",
+  "source_review_sha256": "2ccf3ab13219c57f351a9b2799cfa763b8ae6ea89f392194575a8e5910be19f4",
+  "reviewed_at": "2026-10-19T21:29:40.616Z",
+  "timezone": "Europe/Moscow",
+  "dataset": "main-selector-imagegen-pilot-v1-20261019",
+  "case_count": 30,
+  "scene_verdict_counts": {
+    "accept": 30
+  },
+  "mask_verdict_counts": {
+    "pending": 30
+  },
+  "accepted_scene_ids": [
+    "FG01",
+    "FG02",
+    "FG03",
+    "FG04",
+    "FG05",
+    "HA01",
+    "HA02",
+    "HA03",
+    "HA04",
+    "HA05",
+    "LA01",
+    "LA02",
+    "LA03",
+    "LA04",
+    "LA05",
+    "OW01",
+    "OW02",
+    "OW03",
+    "OW04",
+    "OW05",
+    "VI01",
+    "VI02",
+    "VI03",
+    "VI04",
+    "VI05",
+    "AM01",
+    "AM02",
+    "AM03",
+    "AM04",
+    "AM05"
+  ],
+  "pending_scene_ids": [],
+  "target_and_intent_changes": [
+    {
+      "id": "FG03",
+      "verdict": "accept",
+      "changes": {
+        "target": {
+          "agent_proposal": "d2",
+          "user_review": "d1"
+        }
+      }
+    },
+    {
+      "id": "HA02",
+      "verdict": "accept",
+      "changes": {
+        "target": {
+          "agent_proposal": "d0",
+          "user_review": "d1"
+        },
+        "intent": {
+          "agent_proposal": "ambiguous",
+          "user_review": "clear"
+        }
+      }
+    }
+  ],
+  "manual_polygon_count": 0,
+  "hashes_validated": true,
+  "selector_evaluation_run": false,
+  "frozen_for_scoring": false,
+  "usable_as_complete_segmentation_ground_truth": false
+}

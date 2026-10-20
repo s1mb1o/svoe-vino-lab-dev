@@ -1,0 +1,73 @@
+test_semantic_selector (unittest.loader._FailedTest.test_semantic_selector) ... ERROR
+test_selector_regressions (unittest.loader._FailedTest.test_selector_regressions) ... ERROR
+test_selector_localization (unittest.loader._FailedTest.test_selector_localization) ... ERROR
+test_imagegen_intent (unittest.loader._FailedTest.test_imagegen_intent) ... ERROR
+
+======================================================================
+ERROR: test_semantic_selector (unittest.loader._FailedTest.test_semantic_selector)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_semantic_selector
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_semantic_selector.py", line 14, in <module>
+    from selector_cases import (
+    ...<3 lines>...
+    )
+ModuleNotFoundError: No module named 'selector_cases'
+
+
+======================================================================
+ERROR: test_selector_regressions (unittest.loader._FailedTest.test_selector_regressions)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_selector_regressions
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_selector_regressions.py", line 17, in <module>
+    from test_semantic_selector import rotate_inputs
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_semantic_selector.py", line 14, in <module>
+    from selector_cases import (
+    ...<3 lines>...
+    )
+ModuleNotFoundError: No module named 'selector_cases'
+
+
+======================================================================
+ERROR: test_selector_localization (unittest.loader._FailedTest.test_selector_localization)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_selector_localization
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_selector_localization.py", line 21, in <module>
+    import test_selector_regressions as recorded
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_selector_regressions.py", line 17, in <module>
+    from test_semantic_selector import rotate_inputs
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_semantic_selector.py", line 14, in <module>
+    from selector_cases import (
+    ...<3 lines>...
+    )
+ModuleNotFoundError: No module named 'selector_cases'
+
+
+======================================================================
+ERROR: test_imagegen_intent (unittest.loader._FailedTest.test_imagegen_intent)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_imagegen_intent
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_imagegen_intent.py", line 13, in <module>
+    from test_semantic_selector import rotate_inputs
+  File "/Volumes/Storage/svoe-vino-final/datasets/main-selector-imagegen-all152-20261020-current-v1/checks/test_semantic_selector.py", line 14, in <module>
+    from selector_cases import (
+    ...<3 lines>...
+    )
+ModuleNotFoundError: No module named 'selector_cases'
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+FAILED (errors=4)

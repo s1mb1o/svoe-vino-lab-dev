@@ -1,0 +1,178 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:LT08",
+  "slug": "diverse-v3--LT08",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "dis-v1",
+  "image_sha256": "d06c6a9432c84aeea829cd6353762589d23d250ddff9f02f956ae1fa5699ca78",
+  "selector_seconds": 1.8389339169953018,
+  "decision": {
+    "variant": "dis-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1024,
+    "height": 1536,
+    "selected_id": "dis-foreground",
+    "reason": "dis_foreground_mask",
+    "candidates": [
+      {
+        "id": "dis-foreground",
+        "source_index": null,
+        "kind": "foreground",
+        "box": [
+          18,
+          134,
+          857,
+          1250
+        ],
+        "signals": {
+          "foreground_fraction": 0.31186580657958984,
+          "model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+          "model_revision": "1b966dbe2f33bd5ca1299cf94fbab59265210b6b"
+        }
+      }
+    ],
+    "crop_box": [
+      18,
+      134,
+      857,
+      1250
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "foreground",
+    "fallback_trigger": null,
+    "crop_scope": "foreground_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--LT08-dis-v1.png",
+  "crop_sha256": "f33e79af171c2894d9a13c82a5e7ed308f4ea355fcdea527dfa67a5ab29c39bd",
+  "keep_mask_path": "keep-masks/diverse-v3--LT08-dis-v1.png",
+  "keep_mask_sha256": "2fa01c144fdfa42efdad880a57410a625f4db4624de57719b82c2041d331f75d",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d10",
+    "accepted_targets": [
+      "d10"
+    ],
+    "target_agreement": null,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      839,
+      1116
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 0.9851870960734264,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d23",
+        "retention": 0.9826365475387727,
+        "source_area_px": 5932,
+        "ownership": "unreviewed_geometric_overlap"
+      },
+      {
+        "id": "d28",
+        "retention": 1.0,
+        "source_area_px": 29235,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      },
+      {
+        "id": "d1",
+        "retention": 0.0
+      },
+      {
+        "id": "d2",
+        "retention": 0.0
+      },
+      {
+        "id": "d3",
+        "retention": 0.0
+      },
+      {
+        "id": "d4",
+        "retention": 0.0
+      },
+      {
+        "id": "d5",
+        "retention": 0.0
+      },
+      {
+        "id": "d6",
+        "retention": 0.0
+      },
+      {
+        "id": "d7",
+        "retention": 0.0
+      },
+      {
+        "id": "d8",
+        "retention": 0.0
+      },
+      {
+        "id": "d9",
+        "retention": 0.0
+      },
+      {
+        "id": "d11",
+        "retention": 0.0
+      },
+      {
+        "id": "d12",
+        "retention": 0.0
+      },
+      {
+        "id": "d13",
+        "retention": 0.0
+      },
+      {
+        "id": "d14",
+        "retention": 0.0
+      },
+      {
+        "id": "d15",
+        "retention": 0.0
+      },
+      {
+        "id": "d16",
+        "retention": 0.0
+      },
+      {
+        "id": "d17",
+        "retention": 0.0
+      },
+      {
+        "id": "d18",
+        "retention": 0.0
+      },
+      {
+        "id": "d19",
+        "retention": 0.0
+      },
+      {
+        "id": "d20",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d10",
+      "iou": 0.14758549711789185
+    },
+    "minimum_target_label_retention_proxy": 0.9826365475387727
+  },
+  "execution_provenance": "fresh_local_DIS_prediction"
+}

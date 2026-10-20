@@ -1,0 +1,61 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:CT08",
+  "slug": "diverse-v3--CT08",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "semantic-v2",
+  "image_sha256": "1019996f6f6877ce8ddbe7ef1647d8d8e3b5ffc54a82a36fe8ffbff64fda9841",
+  "selector_seconds": 0.21634462500514928,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-pointing-display-panels-and-side-grips",
+    "status": "no_target",
+    "width": 1024,
+    "height": 1536,
+    "selected_id": null,
+    "reason": "fallback_original_frame",
+    "candidates": [],
+    "crop_box": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "fallback",
+    "fallback_trigger": "no_credible_bottle_or_label",
+    "crop_scope": "original_frame",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--CT08-semantic-v2.png",
+  "crop_sha256": "2ebc3021b3e4250a8dc81696e5aeab182de1376ac9c96fe91d7b3b36e1f96c83",
+  "keep_mask_path": "keep-masks/diverse-v3--CT08-semantic-v2.png",
+  "keep_mask_sha256": "8682d2c5465215e8ba249d6021eac23b81bda96869cba924218a7b2e15290d43",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "full_frame",
+    "accepted_targets": [
+      "full_frame"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": true,
+    "crop_size_px": [
+      1024,
+      1536
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": null,
+    "maximum_other_bottle_retention_proxy": null,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": []
+  },
+  "execution_provenance": "fresh_current_selector_frozen_proposal_replay"
+}

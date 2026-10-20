@@ -1,0 +1,15 @@
+{
+  "AST_signatures": {
+    "_fallback": {
+      "prior_localization": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3",
+      "current": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3"
+    },
+    "_crops": {
+      "prior_localization": "161111339c03b1654b7e05b7c4430387b193ffbc9d9d190ac5a60b5a1351d85a",
+      "current": "161111339c03b1654b7e05b7c4430387b193ffbc9d9d190ac5a60b5a1351d85a"
+    }
+  },
+  "prior_path": "/private/tmp/issue-34-review-assets-v2/revisions/localization-fixes-20261020/implementation/matcher/semantic_selector.py",
+  "current_path": "datasets/main-selector-imagegen-all152-20261020-current-v1/runtime/matcher/semantic_selector.py",
+  "unchanged": true
+}

@@ -1,0 +1,61 @@
+{
+  "case_key": "main-selector-imagegen-pilot-v1-20261019:AM05",
+  "slug": "pilot-v1--AM05",
+  "dataset": "main-selector-imagegen-pilot-v1-20261019",
+  "variant": "semantic-v2",
+  "image_sha256": "58ac7f1e9335e4364be43d98c568f92e8c851cd83c2465eda28cce89a859f53b",
+  "selector_seconds": 0.12170441600028425,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-pointing-display-panels-and-side-grips",
+    "status": "no_target",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": null,
+    "reason": "fallback_original_frame",
+    "candidates": [],
+    "crop_box": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "fallback",
+    "fallback_trigger": "no_credible_bottle_or_label",
+    "crop_scope": "original_frame",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/pilot-v1--AM05-semantic-v2.png",
+  "crop_sha256": "a6e9a66047d410bb66496672321d3726c7f2d8b6586334a154cd8656ca281190",
+  "keep_mask_path": "keep-masks/pilot-v1--AM05-semantic-v2.png",
+  "keep_mask_sha256": "906e69b14f3dd76103b461679de3ecc54ab5200915d128e2f07db34a439178e5",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "full_frame",
+    "accepted_targets": [
+      "full_frame"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_confirmed_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": true,
+    "crop_size_px": [
+      1536,
+      1024
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": null,
+    "maximum_other_bottle_retention_proxy": null,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": []
+  },
+  "execution_provenance": "fresh_current_selector_frozen_proposal_replay"
+}

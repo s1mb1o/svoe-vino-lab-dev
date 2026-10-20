@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "case": "SP01",
+      "state": {
+        "count": "1 / 152 cases",
+        "images": true,
+        "overflow": false
+      }
+    },
+    {
+      "case": "GP11",
+      "state": {
+        "count": "1 / 152 cases",
+        "images": true,
+        "overflow": false
+      }
+    },
+    {
+      "case": "PN02",
+      "state": {
+        "count": "1 / 152 cases",
+        "images": true,
+        "sceneFailure": "true"
+      }
+    },
+    {
+      "scope": "scene-v1 flags",
+      "state": {
+        "allFlagged": true,
+        "count": "60 / 152 cases"
+      }
+    },
+    {
+      "scope": "pending scene-v1 flags",
+      "state": {
+        "allPending": true,
+        "count": "44 / 152 cases"
+      }
+    },
+    {
+      "case": "VI01",
+      "state": {
+        "count": "1 / 152 cases",
+        "hasLabelAudit": true,
+        "semanticFailure": "true"
+      }
+    }
+  ],
+  "logs": []
+}

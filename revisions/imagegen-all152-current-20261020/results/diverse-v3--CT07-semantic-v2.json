@@ -1,0 +1,101 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:CT07",
+  "slug": "diverse-v3--CT07",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "semantic-v2",
+  "image_sha256": "b7a4c1454cc519bf02da62cf46c8801fa793eab962c1fe8c8e5505b21cb98054",
+  "selector_seconds": 0.23001062500406988,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-pointing-display-panels-and-side-grips",
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "d0",
+    "reason": "only_credible_subject",
+    "candidates": [
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "box",
+        "box": [
+          503,
+          235,
+          820,
+          859
+        ],
+        "reported_box": [
+          503.0,
+          235.0,
+          820.0,
+          859.0
+        ],
+        "geometry_source": "detector_box",
+        "score": 0.681702,
+        "signals": {
+          "prominence": 0.573257,
+          "aim_distance": 0.077303,
+          "hand_contact": 0.0,
+          "hand_contacts": {},
+          "isolation": 1.0,
+          "focus": 0.139892,
+          "foreground_axis": null,
+          "hand_wrap": {},
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": false,
+          "grip_evidence": {},
+          "pointing_evidence": [],
+          "panel_context": false,
+          "contains_photo_center": true,
+          "photo_center_distance_px": 112.103747
+        },
+        "label_ids": [],
+        "label_boxes": [],
+        "eligible_for_selection": true
+      }
+    ],
+    "crop_box": [
+      490,
+      210,
+      833,
+      884
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "confident",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--CT07-semantic-v2.png",
+  "crop_sha256": "c7f483e9456089b3db11dd6b966aef9dcab902221c88117d427f775f6606fabf",
+  "keep_mask_path": "keep-masks/diverse-v3--CT07-semantic-v2.png",
+  "keep_mask_sha256": "d1c9ac16691a809d86c8af32caa72af3235560368d1041811fae7d71318c2698",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "full_frame",
+    "accepted_targets": [
+      "full_frame"
+    ],
+    "target_agreement": false,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      343,
+      674
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": null,
+    "maximum_other_bottle_retention_proxy": null,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": []
+  },
+  "execution_provenance": "fresh_current_selector_frozen_proposal_replay"
+}

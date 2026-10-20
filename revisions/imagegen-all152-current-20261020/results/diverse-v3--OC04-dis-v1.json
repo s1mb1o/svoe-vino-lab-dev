@@ -1,0 +1,212 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:OC04",
+  "slug": "diverse-v3--OC04",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "dis-v1",
+  "image_sha256": "94a3d96e9e93097ebfa9fad4eed0e8adb6ead05c227ef169d907ebc288a3d0b8",
+  "selector_seconds": 1.4939724169962574,
+  "decision": {
+    "variant": "dis-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "dis-foreground",
+    "reason": "dis_foreground_mask",
+    "candidates": [
+      {
+        "id": "dis-foreground",
+        "source_index": null,
+        "kind": "foreground",
+        "box": [
+          335,
+          41,
+          944,
+          1024
+        ],
+        "signals": {
+          "foreground_fraction": 0.17843151092529297,
+          "model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+          "model_revision": "1b966dbe2f33bd5ca1299cf94fbab59265210b6b"
+        }
+      }
+    ],
+    "crop_box": [
+      335,
+      41,
+      944,
+      1024
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "foreground",
+    "fallback_trigger": null,
+    "crop_scope": "foreground_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--OC04-dis-v1.png",
+  "crop_sha256": "58220dc2f09af0c815ee76ee69e740c706839471e7980ef743c144822ad8096b",
+  "keep_mask_path": "keep-masks/diverse-v3--OC04-dis-v1.png",
+  "keep_mask_sha256": "664140eac8fc569283df2ff6f2f1168626fd41877d8ead6f8b1bd1284d3ed297",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d25",
+    "accepted_targets": [
+      "d25"
+    ],
+    "target_agreement": null,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      609,
+      983
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 0.9403808190248829,
+    "maximum_other_bottle_retention_proxy": 0.6583221576516167,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": [
+      {
+        "id": "d45",
+        "retention": 0.9995889932389388,
+        "source_area_px": 97322,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      },
+      {
+        "id": "d1",
+        "retention": 0.11360860004886392
+      },
+      {
+        "id": "d2",
+        "retention": 0.03035143769968051
+      },
+      {
+        "id": "d3",
+        "retention": 0.6583221576516167
+      },
+      {
+        "id": "d4",
+        "retention": 0.0
+      },
+      {
+        "id": "d5",
+        "retention": 0.0
+      },
+      {
+        "id": "d6",
+        "retention": 0.0
+      },
+      {
+        "id": "d7",
+        "retention": 0.0
+      },
+      {
+        "id": "d8",
+        "retention": 0.018746488225979466
+      },
+      {
+        "id": "d9",
+        "retention": 0.0009706853038245001
+      },
+      {
+        "id": "d10",
+        "retention": 0.0
+      },
+      {
+        "id": "d11",
+        "retention": 0.0
+      },
+      {
+        "id": "d12",
+        "retention": 0.553905553905554
+      },
+      {
+        "id": "d13",
+        "retention": 0.0
+      },
+      {
+        "id": "d14",
+        "retention": 0.013108221476510067
+      },
+      {
+        "id": "d15",
+        "retention": 0.0
+      },
+      {
+        "id": "d16",
+        "retention": 0.2382196217741093
+      },
+      {
+        "id": "d17",
+        "retention": 0.633034379671151
+      },
+      {
+        "id": "d18",
+        "retention": 0.0
+      },
+      {
+        "id": "d19",
+        "retention": 0.4578684109272797
+      },
+      {
+        "id": "d20",
+        "retention": 0.0004874482086278333
+      },
+      {
+        "id": "d21",
+        "retention": 0.0
+      },
+      {
+        "id": "d22",
+        "retention": 0.0
+      },
+      {
+        "id": "d23",
+        "retention": 0.0
+      },
+      {
+        "id": "d24",
+        "retention": 0.0
+      },
+      {
+        "id": "d26",
+        "retention": 0.004810583283223091
+      },
+      {
+        "id": "d27",
+        "retention": 0.012004466778336125
+      },
+      {
+        "id": "d28",
+        "retention": 0.0
+      },
+      {
+        "id": "d29",
+        "retention": 0.0
+      },
+      {
+        "id": "d30",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d25",
+      "iou": 0.5630491178037006
+    },
+    "minimum_target_label_retention_proxy": 0.9995889932389388
+  },
+  "execution_provenance": "fresh_local_DIS_prediction"
+}

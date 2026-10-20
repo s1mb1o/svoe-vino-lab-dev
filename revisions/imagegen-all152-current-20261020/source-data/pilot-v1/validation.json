@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "generated_images": 30,
+  "families": 6,
+  "mask_proposals": 419,
+  "source_hashes_verified": 90,
+  "original_copies_match_generated_images": true,
+  "human_approvals": 0,
+  "selector_evaluation_run": false,
+  "browser_review_page_rendered": true,
+  "isolated_qa_export_verified": true,
+  "export_cases": 30,
+  "human_review_source_state_unchanged": true
+}

@@ -1,0 +1,79 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:CT04",
+  "slug": "diverse-v3--CT04",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "dis-v1",
+  "image_sha256": "9ae9e0778325dbe19e93d3c2e31e3391044a4a8ef079aebaf5b9e6863b380f86",
+  "selector_seconds": 1.7391513330076123,
+  "decision": {
+    "variant": "dis-v1",
+    "implementation_revision": null,
+    "status": "no_target",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": null,
+    "reason": "fallback_original_frame",
+    "candidates": [],
+    "crop_box": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "fallback",
+    "fallback_trigger": "dis_no_foreground",
+    "crop_scope": "original_frame",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null
+  },
+  "crop_path": "crops/diverse-v3--CT04-dis-v1.png",
+  "crop_sha256": "29d3361bc6e0440bcf350fc7de6c0bab5cd388690bd464534d01b96d94681086",
+  "keep_mask_path": "keep-masks/diverse-v3--CT04-dis-v1.png",
+  "keep_mask_sha256": "906e69b14f3dd76103b461679de3ecc54ab5200915d128e2f07db34a439178e5",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d0",
+    "accepted_targets": [
+      "d0"
+    ],
+    "target_agreement": null,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": true,
+    "crop_size_px": [
+      1536,
+      1024
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 1.0,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": [
+      {
+        "id": "d2",
+        "retention": 1.0,
+        "source_area_px": 6111,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d1",
+        "retention": 1.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d0",
+      "iou": 0.009968439737955729
+    },
+    "minimum_target_label_retention_proxy": 1.0
+  },
+  "execution_provenance": "fresh_local_DIS_prediction"
+}

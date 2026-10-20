@@ -1,0 +1,19 @@
+{
+  "runtime/matcher/catalog.py": "88239ed43c0104102e9e8eae12e51c161a80b001bdbb6347cbabc2c3b0bf0fc1",
+  "runtime/matcher/selective_ocr.py": "ea097738f299a15dcf9479911df1f53a274e725da39e318d0f3cd866c51da79f",
+  "runtime/matcher/siglip2.py": "1b9fa6dc82f46dbbb8ba314f7da9e329da9459c82c87c0d4dd36b4a7f9c7d421",
+  "runtime/matcher/rerank.py": "86d92ed1240f6ba83125615e9f87827aaf74ea5705b4a52ae377be51b94abe84",
+  "runtime/matcher/bundle.py": "49f50ef874f23eafdaff8552d7ddec72c8ddc9a65efad10e6972dd6be558ac58",
+  "runtime/matcher/service.py": "da4207e7ef1ffc82fcc7e251b5745073a1e97113df4269668ea9ecc55b7278da",
+  "runtime/matcher/labels.py": "480a77354a36b351d0f711329495175460e88011c0b8d23ca58fe7f1e81b09b6",
+  "runtime/matcher/cascade_run.py": "868ae0c35c44cb96fdebaa2d6a238128708698827dac1c955c3eb57c8f9c9487",
+  "runtime/matcher/services.py": "9d9cd65ada30f5ca92aeae071bef8300d1d2a5a6e1bb049a237155a556ac32b5",
+  "runtime/matcher/audit.py": "0ede7c7c2fe49ab049d0f84009f28a8abbe0a8560ba3205a636dacb1903a9579",
+  "runtime/matcher/codes.py": "96cb00e34f57b6f24446bbfa5c866b5c1f0601d0718ea0824766c03e2ef6e237",
+  "runtime/matcher/ocr.py": "a15ea6e2ec217fea454616beb86fd3c3385b9f3557f08fab470103c9ea2bca3e",
+  "runtime/matcher/app.py": "abc2f77ef9665f1f56619c224ac8d361a5ffcdaa9cb560b14ae393df57dd45fc",
+  "runtime/matcher/photo.py": "f97db7ef8f8afd1bc47c7b32e8bb17f1ea8f8ae678dcdf73ef0e1f7dad037edb",
+  "runtime/matcher/input_selector.py": "6af8230b53bbe2183dd475aa73a0519b8e748487074a7f8e41c6930abf708366",
+  "runtime/matcher/protection.py": "2bf0f9f991bff9e81d72ed74c6192daad22361a8af102d11083edbba56f7744d",
+  "runtime/matcher/cascade.py": "44dfa27692b3e3a1fc1a9b028758d9f300a03b614fd501cdc1fa169c22ea664c"
+}

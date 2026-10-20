@@ -1,0 +1,10 @@
+{
+  "selected_originals": 100,
+  "blocked_requests": 3,
+  "canceled_in_flight_outcomes": "Unknown; see generation-interruption.json.",
+  "character_substitutions": [
+    "GP01",
+    "LT09",
+    "CT03"
+  ]
+}

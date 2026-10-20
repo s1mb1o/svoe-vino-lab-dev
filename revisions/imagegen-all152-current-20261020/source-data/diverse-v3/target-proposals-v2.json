@@ -1,0 +1,2047 @@
+{
+  "revision": "declared-anchor-proposals-20261020-diverse-v1",
+  "proposals": [
+    {
+      "case_id": "PN01",
+      "target": "d48",
+      "description_ru": "Правая бутылка с бордовой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1075,
+        22,
+        1329,
+        955
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "b0951770801a89dbce9cf25250230d19d088f20ad57afec9b4249727dcba4f6d"
+    },
+    {
+      "case_id": "PN02",
+      "target": "d15",
+      "description_ru": "Левая бутылка с голубой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        394,
+        231,
+        566,
+        885
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "d3329fbf2c50c9398e591ac86c2050d8f9d532d11d5442c1fde271ceeb79f238"
+    },
+    {
+      "case_id": "PN03",
+      "target": "d32",
+      "description_ru": "Левая бутылка с зелёной этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        84,
+        144,
+        334,
+        1147
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "c930bff6c7bb02faf51e056ca201b36b3176b377ce9f667daa3ab2955150f929"
+    },
+    {
+      "case_id": "PN04",
+      "target": "d37",
+      "description_ru": "Средняя бутылка с фиолетовой капсулой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        621,
+        100,
+        842,
+        843
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "98f42fcc548141d3dc00a79826e4da4dd99e236ebece7f746f6664a11d342264"
+    },
+    {
+      "case_id": "PN05",
+      "target": "d44",
+      "description_ru": "Правая бутылка с синей этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        703,
+        147,
+        959,
+        1054
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "e7abe638ee9fa3fbaba3a97a497667ea58594a2538911a539ce799c8bc4dbd06"
+    },
+    {
+      "case_id": "PN06",
+      "target": "d27",
+      "description_ru": "Маленькая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        592,
+        417,
+        720,
+        883
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "7bc859111b37e6a7c3cb094e436b1bffb56db310591e45250db112aeb9c0badb"
+    },
+    {
+      "case_id": "PN07",
+      "target": "d45",
+      "description_ru": "Правая бутылка с белой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        950,
+        152,
+        1144,
+        849
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "3b5ba9d519aeb47772ff4e59225d0eaf41a66529a5a90991d349ad8134a42eaf"
+    },
+    {
+      "case_id": "PN08",
+      "target": "d10",
+      "description_ru": "Левая бутылка с оранжевой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        352,
+        378,
+        593,
+        1281
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a40050f719acbedad278a676f6bd411958239ff7c4eac70290abd0ee2c1ccc56"
+    },
+    {
+      "case_id": "PN09",
+      "target": "d54",
+      "description_ru": "Правая бутылка с синей этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        731,
+        0,
+        962,
+        921
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "24301b40345e78d07cc38381e29ba50ef028b4dd1e477a58fc1fc63d05ecd7c4"
+    },
+    {
+      "case_id": "PN10",
+      "target": "d33",
+      "description_ru": "Левая бутылка с круглой красной эмблемой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        349,
+        169,
+        522,
+        788
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "6b68872acbb5745e1d8ee11422cb9574363818a4160d3078fd0488bf05b02b42"
+    },
+    {
+      "case_id": "HP01",
+      "target": "d14",
+      "description_ru": "Удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        474,
+        11,
+        735,
+        810
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "44bca1aff2c48028c5c6f80b54aaa382ee97aa69e817faf2079cabe20b395f78"
+    },
+    {
+      "case_id": "HP02",
+      "target": "d25",
+      "description_ru": "Удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        797,
+        82,
+        1088,
+        958
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "16f68ab618e3a1f64b2f2533c8a9530806f30909624213fb756597efdd06be91"
+    },
+    {
+      "case_id": "HP03",
+      "target": "d48",
+      "description_ru": "Удерживаемая средняя бутылка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        365,
+        234,
+        628,
+        1205
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "2292e6931137b4327af212124d4ce82c0a497bb91622d19d6611938540283be6"
+    },
+    {
+      "case_id": "HP04",
+      "target": "d13",
+      "description_ru": "Маленькая удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        575,
+        115,
+        824,
+        863
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "f8dfeb2dfe0fa147bf4f9d7947cfb479712a03684e5c0885eb51cd0266873473"
+    },
+    {
+      "case_id": "HP05",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        831,
+        227,
+        1174,
+        937
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "d1165a2c9c6815ae084be84a6513c13d067081cca7a79481a66ee7fcc3d25284"
+    },
+    {
+      "case_id": "HP06",
+      "target": "d14",
+      "description_ru": "Левая бутылка в руке в перчатке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        421,
+        25,
+        716,
+        981
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "291c9105c398f55d5e8b2b7a6ef74c64c7358198a815fa3597efd33840040501"
+    },
+    {
+      "case_id": "HP07",
+      "target": "d54",
+      "description_ru": "Правая бутылка, удерживаемая двумя руками",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        741,
+        14,
+        1070,
+        917
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "adecaf79b1cbb328e74e0ec6dd1c0af1f2b553fde82ce7db28d0c35998d7d341"
+    },
+    {
+      "case_id": "HP08",
+      "target": "d6",
+      "description_ru": "Удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        149,
+        142,
+        545,
+        1242
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "60e6f2933992a3e1fe21386983f7e4e0c76a33ddc09816741190c1697fcd26e9"
+    },
+    {
+      "case_id": "HP09",
+      "target": "d34",
+      "description_ru": "Удерживаемая правая бутылка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        754,
+        11,
+        1066,
+        951
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "0888af44992996057535a99c8265336094ffa9b9b062a37e0d12454b364ac42a"
+    },
+    {
+      "case_id": "HP10",
+      "target": "d14",
+      "description_ru": "Удерживаемая левая бутылка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        462,
+        252,
+        657,
+        918
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "7f626d23c3dd8805fa63a3ec74ea59e689939b098f41203406db6dbd32113bc2"
+    },
+    {
+      "case_id": "GP01",
+      "target": "d0",
+      "description_ru": "Правая бутылка, удерживаемая за горлышко",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        944,
+        186,
+        1227,
+        804
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "2fff01f8f26c8642df2f8d9c624c1e4ca6b59d8d2c2531d696060237f6c7c934"
+    },
+    {
+      "case_id": "GP02",
+      "target": "d1",
+      "description_ru": "Левая бутылка, поддерживаемая снизу",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        308,
+        299,
+        596,
+        881
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "90bcb75f7cdb453b3195a929ac3d3101bca6cd7223cf1366e50f2546c25b97cb"
+    },
+    {
+      "case_id": "GP03",
+      "target": "d0",
+      "description_ru": "Горизонтальная удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        392,
+        656,
+        1024,
+        1051
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "c0e9dfda3de7fa0e427accfbeea5a4160082e4e9283bacb282e1a73e1edcf018"
+    },
+    {
+      "case_id": "GP04",
+      "target": "d1",
+      "description_ru": "Бутылка слева, из которой наливают",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        241,
+        398,
+        776,
+        562
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "17a48ae357883675c1524a2584306552997901aa256cce014683e46bfddc1d90"
+    },
+    {
+      "case_id": "GP05",
+      "target": "d0",
+      "description_ru": "Бутылка справа на ладони",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        718,
+        379,
+        1119,
+        1097
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "17385a2f79cbedda2ec874a44aba6b9188ea882966a860cdec9b90d87684c189"
+    },
+    {
+      "case_id": "GP06",
+      "target": "d1",
+      "description_ru": "Тонкая удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        353,
+        228,
+        580,
+        843
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "bff4d6b8dcbb5db5a03749665ccac4a64512df017013e29d3ae7b4d8030a128b"
+    },
+    {
+      "case_id": "GP07",
+      "target": "d0",
+      "description_ru": "Широкая удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        959,
+        293,
+        1253,
+        846
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "8e1bb5b311b1689bd0d1443d893c0dff6e642b04b50d151d29c3a209b45e984d"
+    },
+    {
+      "case_id": "GP08",
+      "target": "d1",
+      "description_ru": "Холодная бутылка слева в перчатке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        323,
+        453,
+        558,
+        1241
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "cb10bfdf649e9a0fdffeb9fa59d3cfe37bce1410746b3edfd95df2942641c92f"
+    },
+    {
+      "case_id": "GP09",
+      "target": "d0",
+      "description_ru": "Правая бутылка с хватом под этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1123,
+        206,
+        1391,
+        639
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "2a0353a9af924847ac664d195d6b02279254cbed2c1f590755248c93fbecea61"
+    },
+    {
+      "case_id": "GP10",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева при наклоне камеры",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        658,
+        392,
+        993,
+        974
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ee16680935752d79a9ab38814b968dc6fe22a587ca1715f421624eaf3f99298c"
+    },
+    {
+      "case_id": "PD01",
+      "target": "d48",
+      "description_ru": "Удерживаемая настоящая бутылка справа от меню",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        764,
+        0,
+        1060,
+        942
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "e83b3d2ea5a955020302dc19910d18a643713be5f7c3d9fbddd7fec63004150e"
+    },
+    {
+      "case_id": "PD02",
+      "target": "d10",
+      "description_ru": "Настоящая бутылка слева от телефона",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        408,
+        40,
+        632,
+        886
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "294fcbef8864033aa3de2bab9a5f2e29edef51f156496726cfcf0277e82673f4"
+    },
+    {
+      "case_id": "PD03",
+      "target": "d39",
+      "description_ru": "Удерживаемая настоящая бутылка справа от ноутбука",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        523,
+        59,
+        884,
+        1293
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "3a83c208ac6f71cbb3383c1f82a97f5b1150a2ccb27785a19c6d215e580d99d2"
+    },
+    {
+      "case_id": "PD04",
+      "target": "d12",
+      "description_ru": "Настоящая бутылка слева перед телевизором",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        277,
+        341,
+        407,
+        807
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "29eaba267d079f79934eb6b601a54bbb553d57caba1d05cefb231c5ef087ef8f"
+    },
+    {
+      "case_id": "PD05",
+      "target": "d27",
+      "description_ru": "Удерживаемая настоящая бутылка справа на столе",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        499,
+        13,
+        907,
+        1211
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a2b905f1dea12b7dd638ea5d0bc38e18ca2e76bb9bd17378c0669cc305caef65"
+    },
+    {
+      "case_id": "PD06",
+      "target": "d10",
+      "description_ru": "Настоящая бутылка слева от бумажного пакета",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        456,
+        164,
+        670,
+        936
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "b0f9072cd790c1f04f490e4473e4d8d8ddf77d929d48a11091390b39215eedff"
+    },
+    {
+      "case_id": "PD07",
+      "target": "d47",
+      "description_ru": "Удерживаемая настоящая бутылка справа от лежащей коробки",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        970,
+        0,
+        1302,
+        955
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "61a576275dea62ad56bc283a014cb79b58bf5cd02758c04338db86d530a2b5d5"
+    },
+    {
+      "case_id": "PD08",
+      "target": "d1",
+      "description_ru": "Настоящая бутылка слева от отражения",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        187,
+        415,
+        414,
+        1308
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a1a1752e052ebafb51c03f50bb6f3964ea06a4acba9da4855f26b4d7036dcacd"
+    },
+    {
+      "case_id": "PD09",
+      "target": "d20",
+      "description_ru": "Удерживаемая настоящая бутылка справа от картонной фигуры",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        789,
+        0,
+        1136,
+        964
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ac490b901b92e6649a27603b4814f8d28bee319f5c464b0f8243481b34ba3f9b"
+    },
+    {
+      "case_id": "PD10",
+      "target": "d7",
+      "description_ru": "Настоящая бутылка слева от ценового плаката",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        300,
+        296,
+        535,
+        680
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a2c0a0c483bb2dad8e25a735ed97e3f56174e034a91c8f59cd1c88e38a4117d2"
+    },
+    {
+      "case_id": "WP01",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа в прозрачном пакете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        756,
+        70,
+        1034,
+        974
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "1b447d45ed123d4cb9e9f85575c9a601bfe424d363ffdbb6a63a9b8a5832edac"
+    },
+    {
+      "case_id": "WP02",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева под плёнкой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        271,
+        303,
+        523,
+        833
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ca301a797e4f27a1684452c20ed4833fc65a73b5c7c62c1e9e885bbadb05bf51"
+    },
+    {
+      "case_id": "WP03",
+      "target": "d0",
+      "description_ru": "Правая бутылка в пузырчатой упаковке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        521,
+        594,
+        807,
+        1293
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a458d2238b25ac8ef2b8e9bd6c171be2a06c31c77ccdb35c059e515a5240770d"
+    },
+    {
+      "case_id": "WP04",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева в сетке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        288,
+        164,
+        560,
+        704
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ea01f69c9ebbae2cd65286b78ddb6ccf89e5f97c6ad88308a373d2431b33a7d6"
+    },
+    {
+      "case_id": "WP05",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа в пакете с окном",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        897,
+        422,
+        1097,
+        991
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "144aca8f43d8e6655637565f96a392a09e9751505345f1804ff5bad306775852"
+    },
+    {
+      "case_id": "WP06",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева в прозрачной сумке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        714,
+        381,
+        870,
+        882
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ccb989817ade9825073df372c062b4c58b26f0fec772a6ad35d7ed7b4d365ef0"
+    },
+    {
+      "case_id": "WP07",
+      "target": "d0",
+      "description_ru": "Предъявляемая бутылка справа в поднятом пакете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1072,
+        295,
+        1248,
+        839
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "55c776dd6f033ad4063d014970d4cf06ed801ab7a8b020ed27d9995ba7d32faf"
+    },
+    {
+      "case_id": "WP08",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева с отогнутой фольгой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        93,
+        399,
+        412,
+        1050
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "59287ef7a365fe65b1762f2296e2d024059a9fd07b4c62918eb0687e638f988a"
+    },
+    {
+      "case_id": "WP09",
+      "target": "d0",
+      "description_ru": "Бутылка справа в удерживаемом прозрачном футляре",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1044,
+        292,
+        1269,
+        830
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "dabd017fc38e447878b9ae99e5fa2018fd4a15bd6c819cd1c32fcbbbdeb8401f"
+    },
+    {
+      "case_id": "WP10",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева у соседней бутылки",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        609,
+        513,
+        839,
+        1175
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "48a2f73f36e51cc203f2a91ddc2b62020dcedcdfe6721f7a73bd3eeebe4a571c"
+    },
+    {
+      "case_id": "OC01",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа за бокалом",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        940,
+        199,
+        1301,
+        804
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "b1257331b9ae06f5b148ef26acf497d30def759e5256ebf175347f02f8143e0f"
+    },
+    {
+      "case_id": "OC02",
+      "target": "d1",
+      "description_ru": "Левая бутылка, поднятая из ведёрка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        446,
+        256,
+        672,
+        870
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ea759ffd2abe52a0576cdc93f9e4713bc2232ae221bfb2bd7d1093641d0ad670"
+    },
+    {
+      "case_id": "OC03",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа за стеблями",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        640,
+        469,
+        1005,
+        1001
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "c5a373a3e32ca6409208bb03c7b218985a429e8720e80d58a7e2d3f52d1906a1"
+    },
+    {
+      "case_id": "OC04",
+      "target": "d25",
+      "description_ru": "Удерживаемая бутылка с бордовой этикеткой на переднем плане",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        578,
+        0,
+        902,
+        830
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "94a3d96e9e93097ebfa9fad4eed0e8adb6ead05c227ef169d907ebc288a3d0b8"
+    },
+    {
+      "case_id": "OC05",
+      "target": "d0",
+      "description_ru": "Удерживаемая бутылка справа в корзине",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        740,
+        479,
+        966,
+        958
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "7c08f73f02229d1f8614734f126782cef72d74fcb4e7f603006097ba99076b0d"
+    },
+    {
+      "case_id": "OC06",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева с перекрытой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        305,
+        291,
+        555,
+        728
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "2184eea7743c872fc090cedb3047861b8d7e93c73309c5450b661062b32c318b"
+    },
+    {
+      "case_id": "OC07",
+      "target": "d0",
+      "description_ru": "Удерживаемая синяя бутылка справа за соседом",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        969,
+        224,
+        1269,
+        796
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "bb6b97e420ecdb676243225b01a30a0fede8fab595412cfff4beb4e5c7014179"
+    },
+    {
+      "case_id": "OC08",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка слева за плёнкой и бокалом",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        183,
+        549,
+        579,
+        1121
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "3a1b9da88067fbda260d945cf0edebcaeb4185cf04cd99f9e4ceeb37d3c6dcc9"
+    },
+    {
+      "case_id": "OC09",
+      "target": "d1",
+      "description_ru": "Удерживаемая бутылка справа с подарочной биркой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        898,
+        285,
+        1184,
+        789
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "64a729ed68a5b359886f61e0d782f1f2f06068b2abf26989a204f58114b4da8b"
+    },
+    {
+      "case_id": "OC10",
+      "target": "d1",
+      "description_ru": "Движущаяся удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        313,
+        453,
+        545,
+        941
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "9baf169cae68bb195b97cde0b1cf01531401e33760f37d4c361638dff1fc897c"
+    },
+    {
+      "case_id": "LT01",
+      "target": "d2",
+      "description_ru": "Правая удерживаемая бутылка в контровом свете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        648,
+        22,
+        975,
+        986
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "46f4fb0a335ca4a22153cdca1839b63142156efb8ce5c5d746ac23df14253303"
+    },
+    {
+      "case_id": "LT02",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка при красном свете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        309,
+        320,
+        549,
+        707
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "c3c88fa25512c16b7b49f9d4b5e1c9c759952ac99a7a036b5fbf68befc2d2e0d"
+    },
+    {
+      "case_id": "LT03",
+      "target": "d0",
+      "description_ru": "Правая удерживаемая бутылка в холодном свете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        627,
+        406,
+        960,
+        934
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a408f57338fab4ccb717305d7122bd4fabb398fba037c249591ee6dfe5d77978"
+    },
+    {
+      "case_id": "LT04",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка с широким бликом",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        761,
+        335,
+        1079,
+        889
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "e4f2790298e282da900e0e6df09d6391d32dfc167bf643aedb3817e09a150110"
+    },
+    {
+      "case_id": "LT05",
+      "target": "d1",
+      "description_ru": "Правая удерживаемая бутылка в плёнке при слабом свете",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        698,
+        514,
+        958,
+        1061
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "5e7a86c2f86cb45a9d4b120abb8ea54a6dc6f9b8e8127bc7566ad02b65e5c887"
+    },
+    {
+      "case_id": "LT06",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка в тени",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        390,
+        217,
+        661,
+        800
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "ff9ba6f34e401120cf3d0ab22e8244fcfd1f42158bc28da07d2b64266b188bab"
+    },
+    {
+      "case_id": "LT07",
+      "target": "d0",
+      "description_ru": "Правая удерживаемая бутылка со вспышкой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1198,
+        416,
+        1419,
+        846
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "d4f82dd06d1ba241e00f447338463d471a468af022626732d5de2b570f02a2f6"
+    },
+    {
+      "case_id": "LT08",
+      "target": "d10",
+      "description_ru": "Левая удерживаемая бутылка на тёмном переднем плане",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        102,
+        618,
+        483,
+        1205
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "d06c6a9432c84aeea829cd6353762589d23d250ddff9f02f956ae1fa5699ca78"
+    },
+    {
+      "case_id": "LT09",
+      "target": "d0",
+      "description_ru": "Правая удерживаемая бутылка при свечах",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1047,
+        160,
+        1312,
+        608
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "5ee18f11354baf2686c6dd641c24c7875d5af03f1f48bc71f8fb0bc7039b558f"
+    },
+    {
+      "case_id": "LT10",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая холодная бутылка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        161,
+        183,
+        474,
+        831
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "5a0368bdc6a5d2826e291ea33863c0a667949d934b130db5e1918522af19d423"
+    },
+    {
+      "case_id": "SZ01",
+      "target": "d1",
+      "description_ru": "Маленькая удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        1146,
+        199,
+        1328,
+        529
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "2d560298b81c43043f1474267c5085eec55d8a990e95d1c61bb0f1d022fb90d5"
+    },
+    {
+      "case_id": "SZ02",
+      "target": "d1",
+      "description_ru": "Маленькая настоящая бутылка в руке слева от большого постера",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        709,
+        413,
+        896,
+        658
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "04fdffd1a00384ac5f18914c75ee25c9360740b67254f9fc147636164a8fa46b"
+    },
+    {
+      "case_id": "SZ03",
+      "target": "d2",
+      "description_ru": "Передняя удерживаемая бутылка справа",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        544,
+        564,
+        768,
+        1317
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "d67097e1c58b971222705d775977c4f59579d802bba88bd74b12e0b74d12de23"
+    },
+    {
+      "case_id": "SZ04",
+      "target": "d40",
+      "description_ru": "Удерживаемая бутылка слева перед полкой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        827,
+        250,
+        1111,
+        814
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "35c10cbc5e23b5f7851b13e07dfc87d80d6de9a0929c9c3aca6f6d2f1d8e457e"
+    },
+    {
+      "case_id": "SZ05",
+      "target": "d12",
+      "description_ru": "Правая удерживаемая бутылка у края кадра",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        819,
+        521,
+        1137,
+        1254
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "f39d887c0ce541a56b9b29eddad447aa44b1db8db37eb1cf0822ef7deac04f2b"
+    },
+    {
+      "case_id": "SZ06",
+      "target": "d2",
+      "description_ru": "Крайняя левая удерживаемая бутылка",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        448,
+        224,
+        667,
+        595
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "25f279176a1bbf458bd68d3fb9873b849b21e2dc19e39c4f9c5e6eae61dd3b03"
+    },
+    {
+      "case_id": "SZ07",
+      "target": "d0",
+      "description_ru": "Правая передняя бутылка в руке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        808,
+        344,
+        1133,
+        829
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "f6366664af791af1235677cef97e7c50d8a6cfc434fb00099b94e7cc8f606e83"
+    },
+    {
+      "case_id": "SZ08",
+      "target": "d1",
+      "description_ru": "Большая удерживаемая бутылка слева",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        460,
+        316,
+        824,
+        991
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "c39458d662e3116080691f087ee1c45a548cc7e28c177a3bef59b936291e7c51"
+    },
+    {
+      "case_id": "SZ09",
+      "target": "d21",
+      "description_ru": "Правая передняя бутылка в руке",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        812,
+        18,
+        1132,
+        970
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "cacd0273ebae8933130a581eb1ef7f6ee5cc3130921ad2c52a7770c6805d0d69"
+    },
+    {
+      "case_id": "SZ10",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка в ракурсе сверху",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        475,
+        314,
+        750,
+        843
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "840265c22769979419e279b420db320820a01a3b3525a24df5991aad4e3cebc1"
+    },
+    {
+      "case_id": "LB01",
+      "target": "d0",
+      "description_ru": "Правая удерживаемая бутылка с отогнутой бумагой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        990,
+        228,
+        1312,
+        831
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "cf378a5387c1fdd20586047f20c964ae63bf4332d35224af50c2cc3f0a61fab9"
+    },
+    {
+      "case_id": "LB02",
+      "target": "d0",
+      "description_ru": "Левая удерживаемая бутылка с широкой биркой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        245,
+        205,
+        544,
+        764
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "b074ba97e6939254ad14d49f1ca4fba5eb49307b1d3e6b6d77debfaf2771156e"
+    },
+    {
+      "case_id": "LB03",
+      "target": "d0",
+      "description_ru": "Правая удерживаемая бутылка с печатью на стекле",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        612,
+        571,
+        928,
+        1206
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a99c96f2653e8fb9e3f154231168c3e3db0301b317cfa577ef4b489903826280"
+    },
+    {
+      "case_id": "LB04",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка с прозрачной наклейкой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        267,
+        119,
+        538,
+        632
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "af6930410e66dc3cca4278aab933c535242be6589060e1905940b9a3e074e208"
+    },
+    {
+      "case_id": "LB05",
+      "target": "d2",
+      "description_ru": "Правая удерживаемая бутылка с двумя этикетками",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        858,
+        300,
+        1136,
+        880
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "6f3028a02205a94562841ac154294005e78fe7333bf41a956499f5c8a4c1ae95"
+    },
+    {
+      "case_id": "LB06",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка с медальоном",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        813,
+        260,
+        1109,
+        728
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "4df8f2384f387904d41fdf693ec2a1b066541581be67b99c2718bcfa4d20ef2c"
+    },
+    {
+      "case_id": "LB07",
+      "target": "d10",
+      "description_ru": "Правая удерживаемая бутылка с розовой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        541,
+        227,
+        784,
+        712
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "80fb3eb5612c52297ed6e23092b6d62c895baee37a386cc351eefd4e01a2a480"
+    },
+    {
+      "case_id": "LB08",
+      "target": "d3",
+      "description_ru": "Левая удерживаемая бутылка с потёртой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        363,
+        400,
+        729,
+        1024
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "87fbceb1f83c7e45e9ddecfcc9c661e5935020048e7443f9c78bfc85e46969c8"
+    },
+    {
+      "case_id": "LB09",
+      "target": "d1",
+      "description_ru": "Правая удерживаемая бутылка с узкой этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        501,
+        185,
+        720,
+        787
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "1d54f42a5509f919e26ddeda935ca039e79b0a8a0fe08dba414a75a9e1b5ceb0"
+    },
+    {
+      "case_id": "LB10",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка с отслоившейся этикеткой",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        314,
+        358,
+        618,
+        1036
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "6be3626c78f105aee235fa4121ed5a7cfbd508d2b274dffae49325d32fcb2b8d"
+    },
+    {
+      "case_id": "CT01",
+      "target": "d1",
+      "description_ru": "Неоднозначная пара — предварительный fallback",
+      "proposed_intent": "ambiguous",
+      "mode": "fallback",
+      "box": [
+        293,
+        206,
+        459,
+        789
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "3085af14348e96f5149389019053efd796427af18af81ac93fd4230faa307d1c"
+    },
+    {
+      "case_id": "CT02",
+      "target": "d8",
+      "description_ru": "Средняя бутылка — предварительный fallback",
+      "proposed_intent": "ambiguous",
+      "mode": "fallback",
+      "box": [
+        656,
+        78,
+        885,
+        944
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "748f3440f61b056b9fd060484edef383220913c6a4b661758393391d66af04f4"
+    },
+    {
+      "case_id": "CT03",
+      "target": "d1",
+      "description_ru": "Две удерживаемые бутылки — предварительный fallback",
+      "proposed_intent": "ambiguous",
+      "mode": "fallback",
+      "box": [
+        213,
+        521,
+        377,
+        1112
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "4546171108b6b90f99ea038b875786b1e6aba1c29c84e14c0ffbad3696b2ca77"
+    },
+    {
+      "case_id": "CT04",
+      "target": "d0",
+      "description_ru": "Неоднозначные бутылки на полках — fallback",
+      "proposed_intent": "ambiguous",
+      "mode": "fallback",
+      "box": [
+        1040,
+        288,
+        1120,
+        558
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "9ae9e0778325dbe19e93d3c2e31e3391044a4a8ef079aebaf5b9e6863b380f86"
+    },
+    {
+      "case_id": "CT05",
+      "target": "d0",
+      "description_ru": "Перекрывающаяся пара — предварительный fallback",
+      "proposed_intent": "ambiguous",
+      "mode": "fallback",
+      "box": [
+        626,
+        196,
+        848,
+        1077
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a9326e81016e63c5cea11569b3c14d59af13a59a601d30ace4397966e7532125"
+    },
+    {
+      "case_id": "CT06",
+      "target": "full_frame",
+      "description_ru": "Нет целевой бутылки — полный кадр",
+      "proposed_intent": "no_target",
+      "mode": "no_target",
+      "box": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "f52a33872f08901da46f4dc27576357d866eed6d568c7d91b15c7dfd3f87bb46"
+    },
+    {
+      "case_id": "CT07",
+      "target": "full_frame",
+      "description_ru": "Нет видимой бутылки — полный кадр",
+      "proposed_intent": "no_target",
+      "mode": "no_target",
+      "box": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "b7a4c1454cc519bf02da62cf46c8801fa793eab962c1fe8c8e5505b21cb98054"
+    },
+    {
+      "case_id": "CT08",
+      "target": "full_frame",
+      "description_ru": "Нет бутылки — полный кадр",
+      "proposed_intent": "no_target",
+      "mode": "no_target",
+      "box": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "1019996f6f6877ce8ddbe7ef1647d8d8e3b5ffc54a82a36fe8ffbff64fda9841"
+    },
+    {
+      "case_id": "CT09",
+      "target": "full_context",
+      "description_ru": "Полный контекст крупного плана этикетки",
+      "proposed_intent": "label_context",
+      "mode": "label_context",
+      "box": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "265c958db86fb3d4edb1240b6a9d90461f4719d0dfd196290306282880eca885"
+    },
+    {
+      "case_id": "CT10",
+      "target": "full_context",
+      "description_ru": "Полный контекст двух этикеток одной бутылки",
+      "proposed_intent": "label_context",
+      "mode": "label_context",
+      "box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "626a0a7dbf39a098c8b530390923ec1ea389d8b8e4e756c5b8e775169eb0ea6a"
+    },
+    {
+      "case_id": "GP11",
+      "target": "d1",
+      "description_ru": "Левая удерживаемая бутылка AGORA",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        306,
+        299,
+        596,
+        881
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "24a3db375ff990a9ad6ff4300374e523f77de2be241fde8bb3ff07de0ee6ca06"
+    },
+    {
+      "case_id": "SP01",
+      "target": "d0",
+      "description_ru": "Бутылка шампанского в руках астронавта",
+      "proposed_intent": "clear",
+      "mode": "clear",
+      "box": [
+        710,
+        330,
+        1013,
+        880
+      ],
+      "basis_en": "Declared target anchor linked to an unreviewed detector proposal, with independent geometric fallback for ambiguity controls. Proposed before any selector inference. Visual corrections are versioned separately; human confirmation remains pending.",
+      "provenance": "declared_anchor_and_detector_proposal",
+      "geometry_mask_provenance": "detector_proposal",
+      "human_review_status": "pending",
+      "usable_as_ground_truth": false,
+      "selector_evaluation_run": false,
+      "image_sha256": "a18ab976255722bbd457b3cf9b3d5d4d493f90c8a79493228f9b87df4ce9c0a1"
+    }
+  ],
+  "human_approved_cases": 0,
+  "selector_evaluation_run": false
+}

@@ -1,0 +1,104 @@
+{
+  "created_at": "2026-10-20T10:30:51.454775+00:00",
+  "variants": [
+    "scene-v1",
+    "semantic-v2",
+    "dis-v1"
+  ],
+  "selected_case_count": 152,
+  "expected_results": 456,
+  "datasets": [
+    {
+      "dataset": "main-selector-imagegen-pilot-v1-20261019",
+      "case_count": 30,
+      "review_path": "reviews/user-review-amendments-20261020-v2.json",
+      "human_scene_confirmed": 30,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "e24aec2e04adf02ee834d005bbc29c44ab439007aee2ee5cf2c204ed0ef246d8"
+    },
+    {
+      "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+      "case_count": 20,
+      "review_path": "reviews/user-review-20261020T063637Z.json",
+      "human_scene_confirmed": 20,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "f6f11d8a2775ab5b612783eda9940981fa27762e41f3eee9936cb8e30d2cf9be"
+    },
+    {
+      "dataset": "main-selector-imagegen-diverse-v3-20261020",
+      "case_count": 102,
+      "review_path": null,
+      "human_scene_confirmed": 0,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "b7d2127cc78bca85b3cb4700594952b47aaa07a67c259bfa97fc176213cf30bc"
+    }
+  ],
+  "source_files": {
+    "__init__.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/__init__.py",
+      "sha256": "fc853e96b9236acfe1d0c912d0d52cfb51518fc113f6c22877de929d37284f0f"
+    },
+    "group.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/group.py",
+      "sha256": "d632eb1a709e2272e603af6ba134718cd8b2d7c6b0f57c9526a796e321ef87c0"
+    },
+    "main_scene.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/main_scene.py",
+      "sha256": "01a0449e6cc976bfc788ba24354d07a60828a62b1c7233ef105af568bac9e491"
+    },
+    "semantic_selector.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_selector.py",
+      "sha256": "bc6123928c7f6ca6cf14a860cd5860cb9a1734f0898f6ae7861c696fcd65faa3"
+    },
+    "semantic_intent.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_intent.py",
+      "sha256": "0c869414e086abb73fc94f83b0190826a07d1032a172210fefa47e4d71aef812"
+    },
+    "selector_detection.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/selector_detection.py",
+      "sha256": "9e6075cb6258856bd58c64245dfb7b4c2c3e9852ad29afe8ac51913665793d9e"
+    },
+    "dis_selector.py": {
+      "path": "/private/tmp/svoe-vino-dis-v1/matcher/dis_selector.py",
+      "sha256": "a8551283b74c62d44e5379dfa1fb4240f3808c2f9c22c104e8ad305459ffba10"
+    }
+  },
+  "fallback_ast_sha256": {
+    "current": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3"
+  },
+  "source_git_heads": {
+    "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector": "05000460eac75994ae63c7cdeb881e8c4d489fab",
+    "/private/tmp/svoe-vino-dis-v1": "250eeda0b5baae5225992a5244561f4e0996c454"
+  },
+  "source_dirty_status": " M matcher/experiments/main_selector/audit_additional_coverage.py\n M matcher/experiments/main_selector/benchmark.py\n M matcher/experiments/main_selector/fallback_suite.py\n M matcher/experiments/main_selector/report.py\n M matcher/experiments/main_selector/report_template.html\n M matcher/experiments/main_selector/verify_report.py\n M matcher/semantic_selector.py\n?? matcher/docs/semantic-intent-policy.md\n?? matcher/selector_detection.py\n?? matcher/semantic_intent.py\n?? matcher/tests/data/imagegen-intent-regressions-20261020.json\n?? matcher/tests/data/semantic-v2-localization-regressions-20261020.json\n?? matcher/tests/data/semantic-v2-regressions-20261019.json\n?? matcher/tests/test_detector_recovery.py\n?? matcher/tests/test_imagegen_intent.py\n?? matcher/tests/test_selector_localization.py\n?? matcher/tests/test_selector_regressions.py\n",
+  "implementation_revision": "2026-10-20-pointing-display-panels-and-side-grips",
+  "python": "3.14.7",
+  "packages": {
+    "numpy": "2.5.3",
+    "Pillow": "12.3.0",
+    "ai-edge-litert": "2.2.0"
+  },
+  "dis_model_path": "/Users/ashmelev/.cache/huggingface/hub/models--litert-community--DIS-ISNet-LiteRT/snapshots/1b966dbe2f33bd5ca1299cf94fbab59265210b6b/dis.tflite",
+  "dis_model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+  "execution": {
+    "sam3_selectors": "Fresh current-code selector replay on frozen SAM3 review proposals; unchanged response order and dN IDs; no new detector request, tracker or central recovery.",
+    "sam3_prompt_difference": "Review proposal nouns include wine glass and omit can relative to the production semantic prompt.",
+    "dis": "Fresh local CPU inference on all unique selected originals; pinned LiteRT model, four interpreter threads, 120 second timeout.",
+    "configuration": "Default select_variant with supplied instances; tap=None; aim=None. Exact frozen fallback unchanged."
+  },
+  "scoring": {
+    "target_agreement": "Selected dN equals an accepted target, or exact full-frame/context expectation. DIS has no native target ID and is never assigned semantic accuracy.",
+    "proxies": "Target mask retention >=95% and other bottle mask retention <=10%, excluding proposal duplicates at IoU>=0.5; masks and owners unreviewed.",
+    "label_proxy": "Wine-label proposals with >=80% of their mask inside the proposed target; report retained fraction and area. Ownership and legibility are not ground truth.",
+    "usability": "Target agreement alone is not crop usefulness. No automatic PASS for legibility. Human crop-usability review remains pending for every result.",
+    "confirmed_annotation_accuracy": "Not reported: zero human-approved masks. Separate scene-confirmed and pending-scene cohorts."
+  },
+  "cases_sha256": "9b3298ea9759233199c5d5c440bd8dadb59872206d83760f03c3ed98e3f10b1b",
+  "provenance": "Selected cases only. Rejected, blocked and canceled attempts are retained in source-data JSON provenance and excluded from accepted-scene denominators.",
+  "limitations": [
+    "Synthetic development images, including previously used development cases; not independent real-world accuracy.",
+    "Fifty scene approvals do not approve detector masks or their ownership; all mask metrics are provisional.",
+    "The 102 pending scenes, including GP11 and SP01, are exploratory only.",
+    "No visual target, ground truth, fallback contract or historical report is changed by this run."
+  ]
+}
