@@ -27,10 +27,10 @@ const wine = z.strictObject({
   sweetness: z.enum(SWEETNESS).nullable(), alcohol: z.string().nullable(), serving_temperature: z.string().nullable(),
   description: z.string().max(3000).nullable(), pairings: z.array(z.string().max(300)).max(15), state: z.enum(['Active', 'Disabled', 'Removed']),
   source_url: z.url(), facts: z.record(z.string(), evidence), unknown_fields: z.array(z.string()).max(20),
-  sources: z.array(source).max(3), record_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  sources: z.array(source).max(4), record_sha256: z.string().regex(/^[a-f0-9]{64}$/),
 });
 const catalog = z.strictObject({
-  version: z.string().length(64), matcher_catalog_sha256: z.string().length(64), source_export_sha256: z.string().length(64), provenance_sha256: z.string().length(64), product_line_maps_sha256: z.string().length(64),
+  version: z.string().length(64), matcher_catalog_sha256: z.string().length(64), source_export_sha256: z.string().length(64), provenance_sha256: z.string().length(64), category_provenance_sha256: z.string().length(64), product_line_maps_sha256: z.string().length(64),
   matcher_snapshot: z.string().max(40), catalog_count: z.int(), active_count: z.int(), source: bounded(200), production_pairing_verified: z.literal(false),
 });
 const base = z.strictObject({ catalog, data_policy: bounded(500) });
@@ -64,7 +64,7 @@ export const outputs = {
     }).nullable(),
     note: bounded(500),
   })]),
-  get_audio: z.union([unavailable.extend({ kind: inputs.get_audio.shape.kind }), base.extend({ status: z.literal('ready'), wine_slug: slugSchema, kind: inputs.get_audio.shape.kind, transcript: bounded(8000), media_url: z.url(), mime_type: z.literal('audio/mpeg'), sha256: z.string().length(64), record_sha256: z.string().length(64), bytes: z.int().positive().max(20 * 1024 * 1024), sources: z.array(source).max(3) })]),
+  get_audio: z.union([unavailable.extend({ kind: inputs.get_audio.shape.kind }), base.extend({ status: z.literal('ready'), wine_slug: slugSchema, kind: inputs.get_audio.shape.kind, transcript: bounded(8000), media_url: z.url(), mime_type: z.literal('audio/mpeg'), sha256: z.string().length(64), record_sha256: z.string().length(64), bytes: z.int().positive().max(20 * 1024 * 1024), sources: z.array(source).max(4) })]),
 };
 
 // Account tools (issue #65). They exist only with CHTOZAVINO_ACCOUNT_TOKEN.

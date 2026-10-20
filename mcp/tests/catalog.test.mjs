@@ -4,7 +4,7 @@ import { readFile, writeFile, mkdtemp, mkdir, copyFile, rm, symlink, readdir } f
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { CatalogService, BUNDLE_PATH, PRODUCT_LINE_INDEX_PATH, PRODUCT_LINE_PATH, sha256 } from '../src/catalog.mjs';
+import { CatalogService, BUNDLE_PATH, CATEGORY_PROVENANCE_PATH, PRODUCT_LINE_INDEX_PATH, PRODUCT_LINE_PATH, sha256 } from '../src/catalog.mjs';
 import { resolveProductLineIn, resolveProductLineIndex } from '../../webui/shared/product-line-core.ts';
 import { outputs, inputs } from '../src/server.mjs';
 
@@ -15,7 +15,7 @@ before(async () => { service = await CatalogService.load(root); });
 async function fixture(t) {
   const target = await mkdtemp(join(tmpdir(), 'wine-mcp-test-'));
   t.after(() => rm(target, { recursive: true, force: true }));
-  for (const name of [`${BUNDLE_PATH}/manifest.json`, `${BUNDLE_PATH}/wines.jsonl`, 'workbench/db-export/rows/wine_catalog.jsonl', 'webui/docs/catalog-provenance.json', PRODUCT_LINE_INDEX_PATH]) {
+  for (const name of [`${BUNDLE_PATH}/manifest.json`, `${BUNDLE_PATH}/wines.jsonl`, 'workbench/db-export/rows/wine_catalog.jsonl', 'webui/docs/catalog-provenance.json', CATEGORY_PROVENANCE_PATH, PRODUCT_LINE_INDEX_PATH]) {
     const path = join(target, name); await mkdir(dirname(path), { recursive: true }); await copyFile(join(root, name), path);
   }
   await mkdir(join(target, PRODUCT_LINE_PATH), { recursive: true });
@@ -28,7 +28,7 @@ const linkedSlug = line => line.products.find(product => product.wine_slug && se
 
 test('uses all matcher IDs and excludes non-Active records from discovery', () => {
   assert.equal(service.metadata.catalog_count, 2094);
-  assert.equal(service.metadata.active_count, 2093);
+  assert.equal(service.metadata.active_count, 2025);
   assert.equal(service.getWine('__aaaaa').state, 'Removed');
   assert.equal(service.getWine('__aaaaa').status, 'unavailable');
   assert.equal(service.getWine('__aaaaa').wine, undefined);
@@ -43,16 +43,56 @@ test('all active records satisfy the public card schema and response bound', () 
   }
 });
 
-test('exact non-fixture card retains provenance, missing facts, and source-name basis', () => {
+test('exact non-fixture card retains provenance, missing facts, and source-category basis', () => {
   const result = service.getWine('avtohtonnoe-vino-kryma-beloe-suhoe');
   assert.equal(result.wine.sweetness, 'dry');
-  assert.equal(result.wine.facts.sweetness.basis, 'source_name');
+  assert.equal(result.wine.facts.sweetness.basis, 'source_category');
+  assert(result.wine.sources.some(source => source.id === result.wine.facts.sweetness.source_id && source.checked_at));
   assert(result.wine.unknown_fields.includes('oak'));
   assert(result.wine.unknown_fields.includes('price'));
   assert.equal(result.wine.facts.oak, undefined);
   assert.equal(result.wine.source_url, 'https://vino-svoe.ru/wines/avtohtonnoe-vino-kryma-beloe-suhoe');
   assert(!JSON.stringify(result).includes('192.168.'));
   assert.equal(result.catalog.production_pairing_verified, false);
+});
+
+test('source categories restore still-wine sweetness without guessing from slugs or names', () => {
+  for (const [slug, sweetness] of [
+    ['kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125', 'dry'],
+    ['shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135', 'dry'],
+    ['shato-pino-pino-gridzhio-beloe-suhoe-12', 'dry'],
+    ['appassimento', 'sweet'],
+    ['abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12', 'brut'],
+  ]) {
+    const wine = service.wine(slug);
+    assert.equal(wine.sweetness, sweetness, slug);
+    assert.equal(wine.facts.sweetness.basis, 'source_category');
+    assert.equal(wine.facts.sweetness.source_id, `portal-category:${service.metadata.category_provenance_sha256}:${slug}`);
+    assert(!wine.unknown_fields.includes('sweetness'));
+  }
+});
+
+test('category evidence distinguishes sugar classes and preserves unknowns and name provenance', async t => {
+  const target = await fixture(t);
+  const path = join(target, CATEGORY_PROVENANCE_PATH);
+  const snapshot = JSON.parse(await readFile(path));
+  const expectations = [
+    ['kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125', 'Красное полусухое', 'semi_dry', 'source_category'],
+    ['shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135', 'Красное полусладкое', 'semi_sweet', 'source_category'],
+    ['shato-pino-pino-gridzhio-beloe-suhoe-12', 'Белое сладкое', 'sweet', 'source_category'],
+    ['appassimento', 'Красное', null, null],
+    ['abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12', 'Белое', 'brut', 'source_name'],
+  ];
+  for (const [slug, category] of expectations) snapshot.categories.find(row => row.slug === slug).category = category;
+  await writeFile(path, JSON.stringify(snapshot));
+  const changed = await CatalogService.load(target);
+  assert.notEqual(changed.metadata.version, service.metadata.version);
+  for (const [slug, , sweetness, basis] of expectations) {
+    const wine = changed.wine(slug);
+    assert.equal(wine.sweetness, sweetness, slug);
+    assert.equal(wine.facts.sweetness?.basis ?? null, basis, slug);
+    if (basis === 'source_name') assert(wine.facts.sweetness.source_id.startsWith('matcher:'));
+  }
 });
 
 test('unknown exact ID never becomes an approximate or demo match', () => {
@@ -136,7 +176,7 @@ test('every Active ID resolves to its exact map node or to unavailable', () => {
     counts[key] = (counts[key] ?? 0) + 1;
     if (result.status === 'ok') assert.equal(result.products.filter(product => product.current).length, 1);
   }
-  assert.deepEqual(counts, { unavailable: 963, placed: 1127, alias: 3 });
+  assert.deepEqual(counts, { unavailable: 948, placed: 1074, alias: 3 });
 });
 
 test('the Web index resolves every Active ID like the full maps', async () => {
@@ -174,7 +214,7 @@ test('a placed node keeps its details and links only Active snapshot IDs', () =>
   assert.equal(result.resolution, 'placed'); assert.equal(result.current_product.slug, slug);
   assert(result.current_product.description && result.current_product.sources.length);
   const outside = result.products.filter(product => product.catalog_state === 'outside_snapshot');
-  assert.equal(outside.length, 4);
+  assert.equal(outside.length, 14);
   assert(outside.every(product => product.slug === null && product.source_url === null));
   assert(result.products.filter(product => product.catalog_state === 'linked').every(product => service.wines.get(product.slug).state === 'Active' && product.source_url.endsWith(`/${product.slug}`)));
   assert(result.products.every(product => !('description' in product) && !('image' in product)));

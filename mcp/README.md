@@ -124,8 +124,8 @@ Unavailable optional content uses an explicit result state.
 
 The default source is the checked-in matcher bundle.
 The bundle has 2,094 exact IDs in this source revision.
-The joined catalog export marks 2,093 IDs as Active.
-The remaining Removed ID returns its state without a public card claim.
+The current joined catalog export marks 2,025 IDs as Active.
+Non-Active IDs return their state without a public card claim.
 Only Active records enter discovery and comparison.
 Lab-only entries outside the bundle do not enter MCP.
 
@@ -137,7 +137,13 @@ The service can be imported independently from MCP through `src/catalog.mjs`.
 A later Web or Qwen adapter can use the same methods.
 The existing Web routes are unchanged in this implementation.
 
-Source fields, explicit source-name sweetness, and reviewed Web metadata have separate evidence labels.
+Source fields, source-category sweetness, explicit source-name sweetness, and reviewed Web metadata have separate evidence labels.
+`webui/docs/catalog-category-provenance.json` pins explicit source portal categories for the Active IDs.
+`category_provenance_sha256` and the catalog version cover this file.
+Category evidence takes priority over a name; an absent category does not imply a dry wine.
+Run `npm run alternatives:categories` in `webui/` to explicitly refresh these public source categories,
+then `npm run alternatives:catalog` and review the versioned anchor fixture before building.
+Runtime catalog reads and builds do not fetch source categories over the network.
 The current food filter uses source pairing categories from existing Web provenance.
 Its coverage is reported. Missing pairings do not establish a negative pairing.
 The service does not infer numeric sugar, vintage, oak, price, stock, quality, or a taste score.

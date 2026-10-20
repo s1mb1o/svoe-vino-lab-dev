@@ -95,10 +95,16 @@ try {
   assert.equal((await fetch(base + '/api/wines/invalid%20id/offline')).status, 400)
   report.checks.publicCardLookup = { exactID: true, pinnedVersion: true, publicFieldsOnly: true, unknownWine: 404, invalidWine: 400 }
 
-  const anchors = JSON.parse(await readFile(resolve(root, 'tests/data/f04-anchors.json')))
+  const anchors = JSON.parse(await readFile(resolve(root, 'tests/data/f04-anchors-v2.json')))
   const outcomes = []
   for (const anchor of anchors.anchors) {
-    const answer = await fetch(base + '/api/recommendations/alternatives?' + new URLSearchParams({ slug: anchor.slug })).then(r => r.json())
+    const response = await fetch(base + '/api/recommendations/alternatives?' + new URLSearchParams({ slug: anchor.slug }))
+    assert.equal(response.status, anchor.expectedStatus)
+    if (response.status === 404) {
+      outcomes.push({ slug: anchor.slug, count: 0, candidates: [], explanation: 'Retired exact ID; excluded from the current snapshot.' })
+      continue
+    }
+    const answer = await response.json()
     assert.equal(answer.version, anchors.version)
     const canonical = new Set([answer.base.canonicalId])
     for (const { wine } of answer.results) {

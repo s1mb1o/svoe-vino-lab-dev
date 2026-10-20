@@ -10,6 +10,7 @@ on:
       - 'webui/shared/data/product-line-index.json'
       - 'webui/shared/data/product-line-maps/**'
       - 'webui/docs/catalog-provenance.json'
+      - 'webui/docs/catalog-category-provenance.json'
       - 'workbench/db-export/rows/wine_catalog.jsonl'
       - 'matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json'
       - 'matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/wines.jsonl'
@@ -19,6 +20,7 @@ on:
       - 'mcp/**'
       - 'webui/shared/**'
       - 'webui/docs/catalog-provenance.json'
+      - 'webui/docs/catalog-category-provenance.json'
       - 'workbench/db-export/rows/wine_catalog.jsonl'
       - 'matcher/data/**'
       - '.github/workflows/mcp-tests.yml'
@@ -47,6 +49,7 @@ jobs:
             /webui/shared/data/product-line-index.json
             /webui/shared/data/product-line-maps/
             /webui/docs/catalog-provenance.json
+            /webui/docs/catalog-category-provenance.json
             /workbench/db-export/rows/wine_catalog.jsonl
             /matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json
             /matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/wines.jsonl

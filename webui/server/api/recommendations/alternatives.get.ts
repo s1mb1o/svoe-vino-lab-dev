@@ -13,5 +13,11 @@ export default defineEventHandler(event => {
   if (!base) throw createError({ statusCode: 404, statusMessage: 'Wine is absent from this catalog snapshot' })
   const results = rankAlternatives(base, alternativeCatalog, { color, sweetness, sparkle })
   setHeader(event, 'Cache-Control', 'no-store')
-  return { base, results, version: alternativeVersion, explanation: results.length ? '' : !base.producerId ? 'Производитель исходного вина не подтверждён. Строгий подбор недоступен.' : 'В снимке каталога нет вин другого подтверждённого производителя с общими сортами и выбранными характеристиками.' }
+  const explanation = results.length ? ''
+    : !base.producerId ? 'Производитель исходного вина не подтверждён. Строгий подбор недоступен.'
+    : !(color || base.color) ? 'Цвет исходного вина не указан в снимке каталога. Выберите цвет для подбора.'
+    : !(sweetness || base.sweetness) ? 'Сладость исходного вина не указана в снимке каталога. Выберите сладость для подбора.'
+    : !base.grapes.length ? 'Сорта исходного вина не указаны в снимке каталога. Подбор по общим сортам недоступен.'
+    : 'В снимке каталога нет вин другого подтверждённого производителя с общими сортами и выбранными характеристиками.'
+  return { base, results, version: alternativeVersion, explanation }
 })

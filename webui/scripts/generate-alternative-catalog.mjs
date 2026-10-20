@@ -44,12 +44,18 @@ if (process.argv.includes('--check')) {
   if (await readFile(outputPath, 'utf8') !== content) throw new Error('Alternative catalog is stale. Regenerate it from the accepted catalog sources.')
   const code = await build({ entryPoints: [resolve(root, 'webui/shared/alternatives.ts')], bundle: true, platform: 'node', format: 'esm', write: false })
   const { compareWineFacts, rankAlternatives } = await import('data:text/javascript;base64,' + Buffer.from(code.outputFiles[0].text).toString('base64'))
-  const anchors = JSON.parse(await readFile(resolve(root, 'webui/tests/data/f04-anchors.json'), 'utf8'))
+  const anchors = JSON.parse(await readFile(resolve(root, 'webui/tests/data/f04-anchors-v2.json'), 'utf8'))
   if (anchors.version !== output.version) throw new Error('Review anchor expectations for the selected catalog version.')
   let checked = 0
   for (const anchor of anchors.anchors) {
     const base = wines.find(wine => wine.slug === anchor.slug)
+    if (anchor.expectedStatus === 404) {
+      if (base || service.wines.get(anchor.slug)?.state === 'Active') throw new Error('Retired anchor entered discovery')
+      continue
+    }
     if (!base) throw new Error('Anchor is absent from the selected catalog')
+    if (base.color !== anchor.color || base.sweetness !== anchor.sweetness) throw new Error(`Anchor facts differ from the selected source: ${base.slug}`)
+    if (!rankAlternatives(base, wines).length) throw new Error(`Anchor has no alternatives: ${base.slug}`)
     for (const { wine } of rankAlternatives(base, wines)) {
       const source = service.compareWines([base.slug, wine.slug])
       for (const row of compareWineFacts(base, wine)) {

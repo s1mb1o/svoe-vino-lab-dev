@@ -1,0 +1,187 @@
+{
+  "selection": "First exact slug for each of twenty distinct known producers, in the pinned sorted catalog. Select by source fields before the anchor run. Do not replace a failed anchor.",
+  "version": "3e0faa97808fdf63e4eb0bf091922438a1413161d4f3c48248fd1b5a17c94857",
+  "anchors": [
+    {
+      "slug": "abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125",
+      "name": "Абрау Купаж светлый сухое",
+      "producerId": "map:abrau-durso",
+      "color": "Белое",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 404
+    },
+    {
+      "slug": "agora-rosa-viva-beloe-bryut",
+      "name": "Agora Rosa Viva Белое Брют",
+      "producerId": "map:agora",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "aratti-kaberne-sovinon-2020-krasnoe-suhoe",
+      "name": "АРАТТИ Каберне Совиньон 2020 красное сухое",
+      "producerId": "name:аратти",
+      "color": "Красное",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "aristov-anima-millesimato-beloe-bryut",
+      "name": "Аристов ANIMA Millesimato белое брют",
+      "producerId": "map:kuban-vino",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "avtohtonnoe-vino-kryma-beloe-suhoe",
+      "name": "Автохтонное Вино Крыма белое сухое",
+      "producerId": "map:valery-zakharyin",
+      "color": "Белое",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "avtorskij-gid-artura-sarkisyana",
+      "name": "Темелион брют",
+      "producerId": "name:долина лефкадия",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+      "name": "БЮРНЬЕ.КРАСНОСТОП сухое красное Classic",
+      "producerId": "map:burnier",
+      "color": "Красное",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "balaklava-bryut-rezerv",
+      "name": "Балаклава Брют Резерв",
+      "producerId": "map:zolotaya-balka",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "belbek-beloe-suhoe-kaberne-sovinon-krasnoe-14",
+      "name": "Белое сухое",
+      "producerId": "map:belbek",
+      "color": "Красное",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "beloe-polusladkoe",
+      "name": "Белое полусладкое",
+      "producerId": "map:massandra",
+      "color": "Белое",
+      "sweetness": "semi_sweet",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 404
+    },
+    {
+      "slug": "beloe-suhoe",
+      "name": "Белое сухое",
+      "producerId": "name:солнечная долина",
+      "color": "Белое",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "cantiani-cabernet-sauvignon",
+      "name": "Cantiani Cabernet Sauvignon",
+      "producerId": "name:шато алвиса",
+      "color": "Красное",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "cloudy-winery-krash-super-bryut-shardone-beloe-ekstra-bryut-85",
+      "name": "Краш. Супер Брют",
+      "producerId": "name:cloudy winery",
+      "color": "Белое",
+      "sweetness": "extra_brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "czimlyanskoe-beloe-bryut",
+      "name": "Цимлянское белое брют",
+      "producerId": "name:цимлянские вина",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "denisov-winery-pino-nuar-shardone-ekstra-bryut-beloe-125",
+      "name": "Пино Нуар - Шардоне экстра брют",
+      "producerId": "name:denisov winery",
+      "color": "Белое",
+      "sweetness": "extra_brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "derbent-vino-desono-risling-ekstra-bryut-beloe-105-125",
+      "name": "Дэсоно Рислинг экстра брют",
+      "producerId": "map:derbent-vino",
+      "color": "Белое",
+      "sweetness": "extra_brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "dubinin-winery-pino-nuar-bryut-roze-rozovoe-ekstra-bryut-125",
+      "name": "Пино Нуар брют розе",
+      "producerId": "name:dubinin winery",
+      "color": "Розовое",
+      "sweetness": "extra_brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "dva-serdtsa-muskat-suhoy-muskat-belyy-beloe-suhoe-12",
+      "name": "Мускат Сухой",
+      "producerId": "name:два сердца",
+      "color": "Белое",
+      "sweetness": "dry",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "esse-prirodno-polusladkoe-beloe-risling-125",
+      "name": "Природно Полусладкое белое",
+      "producerId": "map:esse",
+      "color": "Белое",
+      "sweetness": "semi_sweet",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    },
+    {
+      "slug": "evolution-pinot-noir-bryut-beloe",
+      "name": "Evolution pinot noir, брют, белое",
+      "producerId": "map:aya",
+      "color": "Белое",
+      "sweetness": "brut",
+      "expected": "Different known producer; same default color and sweetness; shared sourced grape; exact Active ID; else explicit insufficient evidence.",
+      "expectedStatus": 200
+    }
+  ],
+  "source": "Source portal categories checked on 2026-10-20T18:58:05.451Z"
+}
