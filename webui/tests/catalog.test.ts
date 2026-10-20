@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import wines from '../server/data/wines.json'
-import { extractSlug, MOCK_SLUG, sourceWineUrl } from '../shared/catalog'
+import { extractSlug, MOCK_SLUG, sourceWineUrl, wineImageUrl } from '../shared/catalog'
 import { existsSync } from 'node:fs'
 
 describe('demo catalog', () => {
@@ -12,6 +12,17 @@ describe('demo catalog', () => {
       expect(wine.source).toBe(sourceWineUrl(wine.slug))
     }
     expect(wines.find(wine => wine.slug === 'muskat-ottonel-gusev')?.alcohol).toBeNull()
+  })
+})
+
+describe('static wine images', () => {
+  it('uses the media host for full-size bottles and thumbnails', () => {
+    expect(wineImageUrl('oleg')).toBe('https://media.chtozavino.ru/img/wines/1600/oleg.webp')
+    expect(wineImageUrl('oleg', 400)).toBe('https://media.chtozavino.ru/img/wines/400/oleg.webp')
+  })
+
+  it('encodes the slug as one path segment on the media host', () => {
+    expect(wineImageUrl('//other.test/?x=1')).toBe('https://media.chtozavino.ru/img/wines/1600/%2F%2Fother.test%2F%3Fx%3D1.webp')
   })
 })
 
