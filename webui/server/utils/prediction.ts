@@ -1,6 +1,6 @@
 import { createError, getHeader, type H3Event } from 'h3'
 import { Buffer } from 'node:buffer'
-import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug } from '#shared/catalog'
+import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isNoMatch } from '#shared/catalog'
 
 const MAX_BODY_BYTES = MAX_IMAGE_BYTES + 64 * 1024
 // A HEIF (HEIC) file starts with an ISO BMFF "ftyp" box. The matcher decodes the image (issue #24).
@@ -113,7 +113,9 @@ export async function predict(file: File, mode: PredictionMode, endpoint: string
     } finally {
       await reader.cancel().catch(() => {})
     }
-    const slug = extractSlug(JSON.parse(Buffer.concat(chunks).toString('utf8')))
+    const result: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+    if (isNoMatch(result)) return { slug: '' }
+    const slug = extractSlug(result)
     if (!slug) throw new Error('Invalid upstream slug')
     return { slug }
   } catch (error) {

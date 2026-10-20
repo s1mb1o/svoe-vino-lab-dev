@@ -18,6 +18,35 @@ function setup(request: ReturnType<typeof vi.fn>, mode: 'mock' | 'upstream' | un
 afterEach(() => { scopes.splice(0).forEach(scope => scope.stop()) })
 
 describe('automatic photo search', () => {
+  it('shows no match without fetching metadata and can retry the same photo', async () => {
+    const request = vi.fn().mockResolvedValueOnce(response({ slug: '' }))
+      .mockResolvedValueOnce(response({ slug: MOCK_SLUG })).mockResolvedValueOnce(response(wines[0]))
+    const { scanner } = setup(request, 'upstream')
+    await scanner.select([photo()])
+    expect(scanner.phase.value).toBe('unmatched')
+    expect(scanner.slug.value).toBe('')
+    expect(scanner.wine.value).toBeNull()
+    expect(scanner.portalUrl.value).toBe('')
+    expect(scanner.error.value).toBe('')
+    expect(scanner.busy.value).toBe(false)
+    expect(request).toHaveBeenCalledTimes(1)
+    await scanner.submit()
+    expect(scanner.phase.value).toBe('matched')
+  })
+
+  it('ignores a stale no-match response after another photo succeeds', async () => {
+    let finish!: (response: Response) => void
+    const request = vi.fn().mockImplementationOnce(() => new Promise(resolve => { finish = resolve }))
+      .mockResolvedValueOnce(response({ slug: MOCK_SLUG })).mockResolvedValueOnce(response(wines[0]))
+    const { scanner } = setup(request, 'upstream')
+    const previous = scanner.select([photo('old.webp')])
+    await scanner.select([photo('new.webp')])
+    finish(response({ slug: '' }))
+    await previous
+    expect(scanner.phase.value).toBe('matched')
+    expect(scanner.slug.value).toBe(MOCK_SLUG)
+  })
+
   it('submits exactly once on selection and shows one source-linked bottle', async () => {
     const request = vi.fn().mockResolvedValueOnce(response({ slug: MOCK_SLUG })).mockResolvedValueOnce(response(wines[0]))
     const { scanner } = setup(request)

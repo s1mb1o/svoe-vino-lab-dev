@@ -55,7 +55,10 @@ describe('prediction provider', () => {
     expect(await predict(file(), 'upstream', origin + path)).toEqual({ slug: 'Exact-Slug_2024' })
     expect(received).toEqual([{ key: 'image', type: 'image/webp', size: fixture.length }])
   })
-  it.each(['/fail', '/redirect', '/bad-json', '/empty', '/wrong-key', '/large', '/wrong-status'])('does not substitute mock output for %s', async path => {
+  it('preserves a successful no-match response from the matcher', async () => {
+    expect(await predict(file(), 'upstream', origin + '/empty')).toEqual({ slug: '' })
+  })
+  it.each(['/fail', '/redirect', '/bad-json', '/wrong-key', '/large', '/wrong-status'])('does not substitute mock output for %s', async path => {
     await expect(predict(file(), 'upstream', origin + path)).rejects.toMatchObject({ statusCode: 502 })
   })
   it.each([400, 401, 408, 413, 415, 422, 502, 503, 504])('preserves actionable upstream status %i', async status => {

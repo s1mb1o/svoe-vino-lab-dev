@@ -1,6 +1,6 @@
 """Load one configured matcher pipeline and return its Top-1 or ranked wine slugs."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 from io import BytesIO
 import math
@@ -19,7 +19,8 @@ from .main_scene import select_main_package
 from .rerank import RuleBook, RuleError
 from .services import Services
 from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
-from .configuration import ConfigError, endpoint_url, read_configuration, sam3_endpoint
+from .configuration import (ConfigError, endpoint_url, minimum_score,
+                            read_configuration, sam3_endpoint)
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -138,6 +139,7 @@ class Siglip2Matcher(_MatcherSettings):
     token: str | None = None
     hand_selection: bool = False
     sam3_endpoint: str | None = None
+    min_score: float = 0.7
 
     @property
     def cards(self) -> dict | None:
@@ -150,7 +152,9 @@ class Siglip2Matcher(_MatcherSettings):
 
     def predict(self, image: bytes) -> str:
         """Return the Top-1 slug for one image body."""
-        return self.backend.predict(self._single_image(image))
+        vector = self.backend.embed(model_input(self._single_image(image)))
+        slug, score = self.backend.bundle.top1(SIGLIP2_VIEW, vector)
+        return slug if score >= self.min_score else ""
 
     def check_ready(self) -> None:
         """Run one small request through each dependency of this pipeline."""
@@ -169,7 +173,8 @@ class Siglip2Matcher(_MatcherSettings):
     def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
         """Return the `k` best `(slug, cosine)` pairs of wines with a card."""
         vector = self.backend.embed(model_input(self._single_image(image)))
-        return self._rank(vector, k)
+        ranked = self._rank(vector, k)
+        return ranked if ranked and ranked[0][1] >= self.min_score else []
 
     def match_many(self, images: list[bytes], k: int) -> list[list[tuple[str, float]]]:
         """Match every group crop. Never run single-image hand selection here."""
@@ -256,6 +261,7 @@ class CascadeMatcher(_MatcherSettings):
     output_dir: str | None = None
     token: str | None = None
     fast_answer: FastAnswer | None = None
+    min_score: float = 0.7
 
     @property
     def cards(self) -> dict:
@@ -275,12 +281,16 @@ class CascadeMatcher(_MatcherSettings):
         """Return the Top-1 slug and the audit fields. The time budget of
         `matcher.fast_answer` counts from `started_at`."""
         return await self.cascade.predict(
-            image, self.cascade.budget(started_at, self.fast_answer))
+            image, self.cascade.budget(started_at, self.fast_answer), min_score=self.min_score)
 
     async def match_async(self, image: bytes, k: int,
                           started_at: float) -> tuple[list[tuple[str, float]], dict]:
         """Return at most `k` ranked pairs with no time budget, and the audit fields."""
-        return await self.cascade.match(image, k, self.cascade.budget(started_at))
+        ranked, trace = await self.cascade.match(image, k, self.cascade.budget(started_at))
+        accepted = bool(ranked) and ranked[0][1] >= self.min_score
+        trace["decision"].update(min_score=self.min_score, accepted=accepted,
+                                 score=ranked[0][1] if ranked else None)
+        return (ranked if accepted else []), trace
 
     async def check_ready_async(self) -> None:
         await self.cascade.check_ready(model_input(READINESS_IMAGE))
@@ -323,6 +333,7 @@ def load_matcher(config_path, *, document=None) -> MockMatcher | Siglip2Matcher:
     config = _mapping(config, "configuration")
 
     matcher = _mapping(config.get("matcher"), "matcher")
+    min_score = minimum_score(config)
     selected = matcher.get("pipeline")
     if not isinstance(selected, str) or not selected:
         raise ConfigError("matcher.pipeline MUST name one pipeline")
@@ -356,10 +367,11 @@ def load_matcher(config_path, *, document=None) -> MockMatcher | Siglip2Matcher:
     if fast_answer is not None and entry.get("backend") != "cascade":
         raise ConfigError("matcher.fast_answer requires a pipeline of the backend cascade")
     if entry.get("backend") == "cascade":
-        return _load_cascade(selected, entry, output_dir, token, fast_answer)
+        return replace(_load_cascade(selected, entry, output_dir, token, fast_answer),
+                       min_score=min_score)
     if entry.get("backend") == "siglip2":
-        return _load_siglip2(selected, entry, output_dir, token,
-                             sam3_endpoint=sam3_endpoint(config))
+        return replace(_load_siglip2(selected, entry, output_dir, token,
+                                     sam3_endpoint=sam3_endpoint(config)), min_score=min_score)
     if entry.get("backend") != "mock":
         raise ConfigError("pipeline %s uses unsupported backend: %s"
                           % (selected, entry.get("backend")))

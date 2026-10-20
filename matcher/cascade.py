@@ -101,7 +101,7 @@ class Cascade:
         return Budget(started_at, started_at + fast_answer.answer_at_seconds,
                       started_at + fast_answer.timeout_seconds)
 
-    async def predict(self, body, budget):
+    async def predict(self, body, budget, *, min_score=0.0):
         """Return (the Top-1 slug, the audit fields). The slug is empty when the hard
         limit comes with no answer. When all stages end with no answer after an error,
         raise the first error."""
@@ -109,7 +109,10 @@ class Cascade:
         answer, reason = await run.execute()
         trace = run.trace(answer, reason)
         if answer is not None and answer.pairs:
-            return answer.pairs[0][0], trace
+            slug, score = answer.pairs[0]
+            accepted = score >= min_score
+            trace["decision"].update(score=score, min_score=min_score, accepted=accepted)
+            return slug if accepted else "", trace
         if reason == "timeout" or not run.failures:
             return "", trace
         raise run.failures[0]

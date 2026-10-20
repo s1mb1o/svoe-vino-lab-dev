@@ -11,7 +11,7 @@ import yaml
 from fastapi.testclient import TestClient
 
 from matcher.configuration import (ConfigError, RuntimeSettings, endpoint_url,
-                                   read_configuration, runtime_settings)
+                                   minimum_score, read_configuration, runtime_settings)
 from matcher.service import load_matcher
 from matcher.tests.config_helpers import process_environment
 
@@ -19,6 +19,19 @@ TEMPLATE = Path(__file__).with_name('config.yaml')
 
 
 class ConfigurationTest(unittest.TestCase):
+    def test_min_score_defaults_to_point_seven_and_accepts_inclusive_limits(self):
+        self.assertEqual(minimum_score({'matcher': {}}), 0.7)
+        for value in (0, 0.7, 0.85, 1):
+            self.assertEqual(minimum_score({'matcher': {'min_score': value}}), value)
+
+    def test_invalid_min_score_stops_loading(self):
+        for value in (None, True, False, '0.7', -0.1, 1.1, float('nan'),
+                      float('inf'), 10 ** 1000, [], {}):
+            document = yaml.safe_load(TEMPLATE.read_text())
+            document['matcher']['min_score'] = value
+            with self.subTest(value=value), self.assertRaisesRegex(ConfigError, 'matcher.min_score'):
+                load_matcher(TEMPLATE, document=document)
+
     def test_defaults_keep_the_existing_service_limits(self):
         self.assertEqual(asdict(runtime_settings({'matcher': {}})), {
             'max_image_bytes': 20971520, 'max_image_pixels': 40000000,

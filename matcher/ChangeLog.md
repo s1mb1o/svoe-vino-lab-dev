@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-20 — Configurable single-image score floor (#79)
+
+- Add `matcher.min_score`, default 0.7, with strict numeric validation.
+- Reject a lower Top-1 score in SigLIP2 and cascade single-image prediction and matching.
+- Keep the prediction wire shape, inference budgets, ranked alternatives after acceptance,
+  mock fixtures, and independent shelf quality rules. Log cascade acceptance and score.
+- Cover default rejection, YAML overrides, equality, invalid settings, and HTTP no-match output.
+
 ## 2026-10-19
 
 - The card field `image_url` is the static wine image of chtozavino.ru (plan

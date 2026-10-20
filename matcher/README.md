@@ -288,6 +288,7 @@ The default file is `matcher/config.yaml`.
 ```yaml
 matcher:
   pipeline: siglip2-p512-as-is
+  min_score: 0.7
   output_dir: /data/requests
   sam3_endpoint: http://192.168.86.14:18081/upstream/sam3
   limits:
@@ -304,6 +305,22 @@ matcher:
 Omitted limits use the values above. Invalid types, non-finite numbers, unknown limit
 names, and pixel limits above the Pillow limit stop startup. Factory callers can pass
 explicit test overrides. Those overrides use the same validation.
+
+`matcher.min_score` is the inclusive score floor for the single-image `siglip2` and
+`cascade` backends. Its default is `0.7`. A lower Top-1 score returns HTTP 200 with
+`{"slug":""}` from `/v1/eval/predict` and an empty `candidates` list from `/v1/match`.
+Equality passes. Once the Top-1 passes, its ranked alternatives remain available.
+The value must be a finite YAML number from 0 to 1; strings, booleans, and invalid
+values stop startup. Set 0 to disable rejection of nonnegative scores. Restart the
+matcher after a change. Mock lookup behavior and shelf quality rules are independent.
+
+The floor rejects unrelated inputs, not every wrong wine identity. A live check on
+2026-10-20 used 100 reference wine photos (scores 0.7398–0.9126, 94 correct Top-1
+answers) and 36 negative controls (scores at most 0.6621). A 0.7 floor rejected all
+36 controls and retained all 94 correct answers, including the held-out subset.
+Six wrong wine identities still scored 0.8194–0.8707. No mandatory Top-1/Top-2 margin
+is added: a 0.015 margin rejected 15 correct answers and only one wrong identity.
+These are results for `cascade-p512-rot5` at `da8c8954`, not a universal accuracy claim.
 
 Each pipeline endpoint is a literal HTTP(S) URL in YAML. URLs MUST NOT contain credentials.
 `matcher.sam3_endpoint` is the shared endpoint for shelf segmentation and optional

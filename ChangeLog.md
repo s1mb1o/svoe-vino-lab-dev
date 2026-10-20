@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — Configurable matcher rejection threshold (#79)
+
+- Add the default 0.7 single-image score floor in matcher YAML.
+- Handle rejected predictions on the website as a normal no-match result with no diary entry.
+- Document the measured 100-photo / 36-control comparison and the limits of score filtering.
+
 ## 2026-10-20 — Account test verification for the assessment
 
 - Install the account runtime and development dependencies from `account/uv.lock` in a separate temporary environment.

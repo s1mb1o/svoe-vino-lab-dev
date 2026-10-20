@@ -58,11 +58,9 @@ async function undoHistory() {
   }
 }
 watch(phase, async state => {
-  if (state !== 'matched') {
-    historyRecord.value = null
-    return
-  }
-  void recordMatch()
+  if (state !== 'matched') historyRecord.value = null
+  if (state !== 'matched' && state !== 'unmatched') return
+  if (state === 'matched') void recordMatch()
   await nextTick()
   resultHeading.value?.focus({ preventScroll: true })
   if (window.matchMedia('(max-width: 767px)').matches) resultPanel.value?.scrollIntoView({ block: 'start', behavior: 'auto' })
@@ -104,8 +102,9 @@ useScannerTools(scanner)
 
       <section ref="resultPanel" class="match-panel" :class="{ 'is-empty': !file && !hasResult, 'is-loading': busy }" aria-label="Результат поиска" :aria-busy="busy">
         <div class="panel-heading"><span class="step-label">02 / ВАШЕ ВИНО</span><span class="panel-heading-end"><span v-if="hasResult && !mock" class="match-badge"><AppIcon name="check" />Совпадение найдено</span><span v-else-if="hasResult && mock" class="demo-badge">ДЕМО</span><PinButton v-if="hasResult && !mock && slug" :key="slug" :slug="slug" source="photo" :wine-name="wine?.name" allow-offline-copy /></span></div>
-        <div class="result-announcement" role="status" aria-live="polite" aria-atomic="true"><span class="sr-only">{{ hasResult ? `${mock ? 'Демонстрационный результат' : 'Лучшее совпадение'}: ${wine?.name || slug}` : busy ? 'Поиск вина выполняется' : '' }}</span></div>
-        <template v-if="hasResult && wine">
+        <div class="result-announcement" role="status" aria-live="polite" aria-atomic="true"><span class="sr-only">{{ hasResult ? `${mock ? 'Демонстрационный результат' : 'Лучшее совпадение'}: ${wine?.name || slug}` : phase === 'unmatched' ? 'Не удалось уверенно определить вино. Сфотографируйте этикетку крупнее или выберите другое фото.' : busy ? 'Поиск вина выполняется' : '' }}</span></div>
+        <div v-if="phase === 'unmatched'" class="missing-result"><div class="result-symbol"><AppIcon name="info" /></div><p class="result-kicker">Результат поиска</p><h2 ref="resultHeading" tabindex="-1">Совпадение не найдено</h2><p>Не удалось уверенно определить вино. Сфотографируйте этикетку крупнее или выберите другое фото.</p><button class="button primary" @click="fileInput?.click()"><AppIcon name="upload" />Выбрать другое фото</button></div>
+        <template v-else-if="hasResult && wine">
           <div class="match-bottle"><WineImage :src="wine.image" :alt="wine.name" width="300" height="300" /></div>
           <div class="match-copy"><p class="result-kicker">{{ mock ? 'Демонстрационный результат' : 'Лучшее совпадение' }}</p><h2 ref="resultHeading" tabindex="-1">{{ wine.name }}</h2><p class="match-producer">{{ wine.producer }}<span v-if="wine.region"> · {{ wine.region }}</span></p><p class="match-kind">{{ wine.color }} {{ wine.category.toLocaleLowerCase('ru') }}</p><a :href="portalUrl" class="button primary result-link" target="_blank" rel="noopener noreferrer">Подробнее на «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-if="mock" class="result-disclaimer">Пример карточки. Это не распознавание вашего фото.</p><p v-if="historyNote" class="history-note" role="status"><AppIcon name="history" /><span>{{ historyNote.status === 'already' ? 'Уже в истории дневника за сегодня' : 'Записано в историю дневника' }}</span><button type="button" class="account-link" :disabled="historyBusy" @click="undoHistory">Убрать</button></p></div>
         </template>

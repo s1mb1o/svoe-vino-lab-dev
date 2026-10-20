@@ -217,7 +217,8 @@ class Siglip2Test(unittest.TestCase):
         return (DATA / "02eef911.webp").read_bytes()
 
     def test_the_best_full_view_cosine_wins_and_label_vectors_are_ignored(self):
-        matcher, _ = self.matcher((0.1, 0.5, 0.9, 0))
+        # The full-view winner passes the floor, while the ignored label scores higher.
+        matcher, _ = self.matcher((0.01, 0.71, 0.72, 0))
         self.assertEqual(matcher.pipeline, "test-siglip2")
         self.assertEqual(matcher.predict(self.photo()), "wine-b")
 

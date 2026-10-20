@@ -1,8 +1,8 @@
 import { computed, onScopeDispose, ref, shallowRef, type Ref } from 'vue'
-import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isHeicFile, sourceWineUrl, type Wine } from '#shared/catalog'
+import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isNoMatch, isHeicFile, sourceWineUrl, type Wine } from '#shared/catalog'
 
 type Mode = 'mock' | 'upstream' | undefined
-type Phase = 'idle' | 'selected' | 'loading' | 'resolving' | 'matched' | 'error'
+type Phase = 'idle' | 'selected' | 'loading' | 'resolving' | 'matched' | 'unmatched' | 'error'
 interface Dependencies {
   fetch?: typeof fetch
   createObjectURL?: (file: Blob) => string
@@ -87,7 +87,13 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
         }
         throw new Error(messages[response.status] || 'Не удалось найти вино. Попробуйте ещё раз.')
       }
-      const predicted = extractSlug(await response.json())
+      const result: unknown = await response.json()
+      if (current !== generation) return
+      if (isNoMatch(result)) {
+        phase.value = 'unmatched'
+        return
+      }
+      const predicted = extractSlug(result)
       if (!predicted) throw new Error('Сервис вернул неполный ответ. Попробуйте ещё раз.')
       if (current !== generation) return
       clearTimeout(timer)

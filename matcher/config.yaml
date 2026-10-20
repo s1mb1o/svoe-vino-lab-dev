@@ -3,6 +3,9 @@
 matcher:
   # Select one entry of pipeline by name.
   pipeline: siglip2-p512-as-is
+  # Inclusive single-image score floor. Below it, predict returns an empty slug
+  # and match returns no candidates. Shelf quality rules are independent.
+  min_score: 0.7
   # Independent shelf ranking. Enable this key with the installed catalogue path.
   # group_pipeline: siglip2-p512-rot5-seg
   output_dir: work/matcher-requests

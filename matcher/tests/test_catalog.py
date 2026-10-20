@@ -238,7 +238,7 @@ class CatalogPipelineTest(unittest.TestCase):
         return load_matcher(path)
 
     def test_a_siglip2_pipeline_reads_the_catalog(self):
-        fake = FakeSiglip2((0.1, 0.5, 0.9, 0))
+        fake = FakeSiglip2((0.01, 0.71, 0.72, 0))
         self.addCleanup(fake.close)
         matcher = self.load({"name": "p", "backend": "siglip2", "catalog": str(self.root),
                              "embedding": EMBEDDING, "endpoint": fake.url})

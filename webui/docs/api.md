@@ -27,6 +27,11 @@ The evaluator accepts HTTP 200 or 201.
 The evaluator accepts a nonempty string in `slug`.
 The evaluator also accepts the first object in a nonempty array.
 The portal returns the object form.
+When the matcher rejects a low-score input, the portal preserves HTTP 200 with
+`{"slug":""}`. This is a normal no-match result. The browser displays a retry prompt,
+keeps the photo, and does not fetch wine metadata or write diary history.
+The floor is configured by `matcher.min_score` in the matcher YAML (default `0.7`).
+Missing, null, whitespace-only, and malformed slug values remain upstream errors.
 The evaluator uses a 5-second connection timeout and a 10-second total timeout.
 The evaluator does not retry requests or follow redirects.
 

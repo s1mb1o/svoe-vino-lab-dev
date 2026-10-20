@@ -13,6 +13,15 @@ class ConfigError(ValueError):
     """The matcher configuration is not valid."""
 
 
+def minimum_score(document):
+    """Read the inclusive single-image acceptance floor from public YAML."""
+    value = document["matcher"].get("min_score", 0.7)
+    if (type(value) not in (int, float) or not 0 <= value <= 1
+            or not math.isfinite(value)):
+        raise ConfigError("matcher.min_score MUST be a finite number from 0 to 1")
+    return float(value)
+
+
 @dataclass(frozen=True)
 class RuntimeSettings:
     max_image_bytes: int = 20 * 1024 * 1024

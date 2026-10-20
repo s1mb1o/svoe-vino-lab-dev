@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — Handle matcher score rejection (#79)
+
+- Preserve a normal empty-slug prediction response instead of turning it into HTTP 502.
+- Show an accessible no-match result with a photo retry action.
+- Skip wine metadata and diary history for rejected inputs. Ignore stale no-match responses.
+
 ## 2026-10-20 — Move implemented ideas on `/ideas`
 
 - Move four live features to «Реализовано»: «Что расскажет этикетка», «Путеводитель по линейке», «Винный дневник», and Wine&Dine Merge.

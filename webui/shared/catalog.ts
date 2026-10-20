@@ -31,6 +31,11 @@ export function sourceWineUrl(slug: string): string {
   return `https://vino-svoe.ru/wines/${encodeURIComponent(slug)}`
 }
 
+export function isNoMatch(value: unknown): boolean {
+  const item = Array.isArray(value) ? value[0] : value
+  return Boolean(item && typeof item === 'object' && 'slug' in item && item.slug === '')
+}
+
 // Static wine images are served as image/webp from the media host.
 // A wine with no image has no file.
 export type WineImageSize = 1600 | 400

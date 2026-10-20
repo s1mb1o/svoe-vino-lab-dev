@@ -2,6 +2,7 @@
 the answer priority, with local fake services (plan 85 of the workbench)."""
 
 import asyncio
+from dataclasses import replace
 import base64
 from io import BytesIO
 from time import monotonic, perf_counter
@@ -15,6 +16,7 @@ from matcher.cascade_run import Budget
 from matcher.protection import ImageRejected
 from matcher.rerank import RuleBook
 from matcher.services import Services
+from matcher.service import CascadeMatcher
 
 from cascade_fakes import (EAN_FULL, EAN_PACKAGE, EAN_SHARED, OTHER_PACKAGE, PACKAGE,
                            FakeServices, chat_body, colour_vector, dominant, make_bundle,
@@ -88,6 +90,26 @@ class CascadeRunTest(unittest.IsolatedAsyncioTestCase):
         return False
 
     # ---------------------------------------------------------------- the answers
+
+    async def test_single_image_score_floor_rejects_and_accepts_equality(self):
+        self.fake.embed = lambda image: (0.5, -0.5, 0.5, 0.5)
+        cascade = await self.cascade(config=CascadeConfig())
+        matcher = CascadeMatcher('threshold-test', cascade, None, min_score=0.7)
+        slug, trace = await matcher.predict_async(photo(), perf_counter())
+        self.assertEqual(slug, '')
+        self.assertEqual(trace['decision']['score'], 0.5)
+        self.assertFalse(trace['decision']['accepted'])
+        ranked, trace = await matcher.match_async(photo(), 3, perf_counter())
+        self.assertEqual(ranked, [])
+        self.assertFalse(trace['decision']['accepted'])
+        inclusive = replace(matcher, min_score=0.5)
+        slug, trace = await inclusive.predict_async(photo(), perf_counter())
+        self.assertEqual(slug, 'wine-a')
+        self.assertTrue(trace['decision']['accepted'])
+        ranked, trace = await inclusive.match_async(photo(), 3, perf_counter())
+        self.assertEqual(ranked[0], ('wine-a', 0.5))
+        self.assertEqual(len(ranked), 3)
+        self.assertTrue(trace['decision']['accepted'])
 
     async def test_all_fast_answers_the_crop_ranking(self):
         cascade = await self.cascade()
