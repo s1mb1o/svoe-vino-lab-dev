@@ -59,6 +59,34 @@ android {
     }
 }
 
+// The recognition API's password: api_password.txt at the root of the repository (git ignores
+// it) goes into the APK's assets when it is there; without it the build carries none.
+abstract class PasswordAsset : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val password: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val out = outputDir.get().asFile
+        out.deleteRecursively()   // a password taken out of the repository leaves the next build too
+        out.mkdirs()
+        password.files.filter { it.isFile }.forEach { it.copyTo(File(out, "api_password.txt"), overwrite = true) }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val task = tasks.register<PasswordAsset>("${variant.name}PasswordAsset") {
+            password.from(rootProject.file("../api_password.txt"))
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(task, PasswordAsset::outputDir)
+    }
+}
+
 dependencies {
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0")   // the native library of the detector
     implementation("androidx.activity:activity:1.10.1")

@@ -47,11 +47,14 @@ import java.util.List;
  *
  * The detector is in the APK's assets (bottle_yoloxs.onnx; one in the app's external folder
  * takes its place). The recognition API's password is read from api_password.txt pushed to that
- * folder; it is never in the code or the APK.
+ * folder, or comes in the APK: api_password.txt at the root of the repository goes into the
+ * build's assets (build.gradle.kts) and from there to the folder at the start. It is never in
+ * the code or in git.
  */
 public class MainActivity extends ComponentActivity {
     private static final String MODEL = "bottle_yoloxs.onnx";
     private static final String DEMO = "demo.mp4";
+    private static final String PASSWORD = "api_password.txt";
     private static final int CAMERA_REQUEST = 1;
     private static final long TICK_MS = 500;
 
@@ -120,6 +123,18 @@ public class MainActivity extends ComponentActivity {
 
     /** The detector: the APK's copy (or the one in the external folder), compiled for the accelerator. */
     private void load() {
+        // The password the APK carries, if any, takes the place of the one in the folder.
+        try (InputStream in = getAssets().open(PASSWORD)) {
+            java.io.ByteArrayOutputStream bundled = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[256];
+            for (int n; (n = in.read(buffer)) > 0; ) bundled.write(buffer, 0, n);
+            File secret = new File(getExternalFilesDir(null), PASSWORD);
+            if (!secret.exists() || !Arrays.equals(bundled.toByteArray(), java.nio.file.Files.readAllBytes(secret.toPath())))
+                try (OutputStream out = new FileOutputStream(secret)) {
+                    bundled.writeTo(out);
+                }
+        } catch (Exception ignored) {   // a build without the password: the one pushed to the folder, if any
+        }
         File model = new File(getExternalFilesDir(null), MODEL);
         if (!model.exists()) {
             model = new File(getFilesDir(), MODEL);

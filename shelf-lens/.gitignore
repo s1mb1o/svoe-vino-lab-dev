@@ -18,3 +18,5 @@ android/app/build/
 android/app/.cxx/
 android/local.properties
 
+# The API password: the build puts it into the APK's assets, git never takes it.
+/api_password.txt
