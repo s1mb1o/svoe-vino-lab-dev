@@ -1,0 +1,64 @@
+{
+  "purpose": "Separate newly observed local hackathon indexability edits from current production. No deployment or app source change by this audit.",
+  "requests": [
+    {
+      "url": "https://chtozavino.ru/robots.txt",
+      "method": "GET",
+      "observed_utc": "2026-10-20T18:26:20.308586+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "via": "1.1 Caddy"
+      },
+      "curl_exit": 0,
+      "body": "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /v1/\nDisallow: /hackaton\n\nSitemap: https://chtozavino.ru/sitemap.xml\n"
+    },
+    {
+      "url": "https://chtozavino.ru/sitemap.xml",
+      "method": "GET",
+      "observed_utc": "2026-10-20T18:26:20.310231+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "application/xml",
+        "via": "1.1 Caddy"
+      },
+      "curl_exit": 0,
+      "sitemap_urls": [
+        "https://chtozavino.ru/",
+        "https://chtozavino.ru/shelf",
+        "https://chtozavino.ru/dish",
+        "https://chtozavino.ru/lineup",
+        "https://chtozavino.ru/android",
+        "https://chtozavino.ru/iphone",
+        "https://chtozavino.ru/telegram-bot",
+        "https://chtozavino.ru/max-bot",
+        "https://chtozavino.ru/presentation",
+        "https://chtozavino.ru/ideas",
+        "https://chtozavino.ru/game",
+        "https://chtozavino.ru/crocodile",
+        "https://chtozavino.ru/terms",
+        "https://chtozavino.ru/privacy",
+        "https://chtozavino.ru/contacts",
+        "https://chtozavino.ru/sitemap"
+      ]
+    },
+    {
+      "url": "https://chtozavino.ru/hackaton",
+      "method": "GET",
+      "observed_utc": "2026-10-20T18:26:20.310956+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "via": "1.1 Caddy",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "curl_exit": 0,
+      "robots_meta": [
+        "<meta name=\"robots\" content=\"noindex, nofollow, noarchive\">"
+      ],
+      "canonical_tags": [
+        "<link rel=\"canonical\" href=\"https://chtozavino.ru/hackaton\">"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "requests": [
+    {
+      "url": "https://chtozavino.ru/",
+      "method": "GET",
+      "accept": "text/html",
+      "observed_utc": "2026-10-20T18:14:45.767245+00:00",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "via": "1.1 Caddy"
+      },
+      "decoded_bytes": 19901,
+      "error": "",
+      "title": [
+        "Найти вино по фото — Что за вино?"
+      ],
+      "canonical_tags": [
+        "<link rel=\"canonical\" href=\"https://chtozavino.ru/\">"
+      ],
+      "h1": [
+        "Найти вино <span>по фото</span>"
+      ],
+      "lang_tags": [
+        "<html  lang=\"ru\">"
+      ],
+      "has_age_gate": true,
+      "has_data_nosnippet": false,
+      "noindex_elements": 0
+    },
+    {
+      "url": "https://chtozavino.ru/favicon.ico",
+      "method": "GET",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.732385+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/x-icon",
+        "via": "1.1 Caddy",
+        "content-length": "78"
+      },
+      "decoded_bytes": 78,
+      "error": "",
+      "body_text": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+      "magic_hex": "646174613a696d61"
+    },
+    {
+      "url": "https://chtozavino.ru/nonexistent-page-xyz",
+      "method": "GET",
+      "accept": "text/html",
+      "observed_utc": "2026-10-20T18:14:45.727254+00:00",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "via": "1.1 Caddy"
+      },
+      "decoded_bytes": 12268,
+      "error": "",
+      "title": [
+        "404 - Page not found: &#x2F;nonexistent-page-xyz | Nuxt"
+      ],
+      "canonical_tags": [
+        "<link rel=\"canonical\" href=\"https://chtozavino.ru/\">"
+      ],
+      "h1": [
+        "404"
+      ],
+      "lang_tags": [
+        "<html  lang=\"ru\">"
+      ],
+      "has_age_gate": false,
+      "has_data_nosnippet": false,
+      "noindex_elements": 0
+    },
+    {
+      "url": "https://chtozavino.ru/shelf-lens",
+      "method": "GET",
+      "accept": "text/html",
+      "observed_utc": "2026-10-20T18:14:45.742866+00:00",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "via": "1.1 Caddy"
+      },
+      "decoded_bytes": 12208,
+      "error": "",
+      "title": [
+        "404 - Page not found: &#x2F;shelf-lens | Nuxt"
+      ],
+      "canonical_tags": [
+        "<link rel=\"canonical\" href=\"https://chtozavino.ru/\">"
+      ],
+      "h1": [
+        "404"
+      ],
+      "lang_tags": [
+        "<html  lang=\"ru\">"
+      ],
+      "has_age_gate": false,
+      "has_data_nosnippet": false,
+      "noindex_elements": 0
+    },
+    {
+      "url": "https://chtozavino.ru/account",
+      "method": "GET",
+      "accept": "text/html",
+      "observed_utc": "2026-10-20T18:14:45.838825+00:00",
+      "status": 200,
+      "headers": {
+        "cache-control": "no-store",
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "via": "1.1 Caddy",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "decoded_bytes": 15294,
+      "error": "",
+      "title": [
+        "Винный дневник — Что за вино?"
+      ],
+      "canonical_tags": [
+        "<link rel=\"canonical\" href=\"https://chtozavino.ru/\">"
+      ],
+      "h1": [
+        "Винный дневник"
+      ],
+      "lang_tags": [
+        "<html  lang=\"ru\">"
+      ],
+      "has_age_gate": true,
+      "has_data_nosnippet": false,
+      "noindex_elements": 0
+    },
+    {
+      "url": "https://chtozavino.ru/icons/pwa-512.png",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.841408+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/png",
+        "etag": "\"1631f-y0jdDQ5PSxTw2jiXvc1kWTbExmc\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "90911"
+      },
+      "error": "",
+      "captured_header_bytes": 345,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/line-wines/abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.847958+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "etag": "\"1dfa-+PjDFRM/GanZMjq/C00bUcX98X8\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "7674"
+      },
+      "error": "",
+      "captured_header_bytes": 344,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.860530+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "etag": "\"3db6a-Kf6AUontuuVXdSn4jGs5W/MMdKo\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:33 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "252778"
+      },
+      "error": "",
+      "captured_header_bytes": 347,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/dishes/chudu-s-zelenyu-i-syrom.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.904364+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "etag": "\"110ca-tADd0M6dje3NsRGheyqwWSMCcuQ\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "69834"
+      },
+      "error": "",
+      "captured_header_bytes": 346,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/crocodile/hero.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.908825+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "etag": "\"42c0a-y6jw3UynH2+TjhYSJb9jEWxYfEA\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "273418"
+      },
+      "error": "",
+      "captured_header_bytes": 347,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/game-art/hero.svg",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.914412+00:00",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "image/svg+xml",
+        "etag": "\"514c-VACCssNyFRRzgeKOtxRPVq+1Cjs-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "20"
+      },
+      "error": "",
+      "captured_header_bytes": 397,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/wines/priboj-marchenko-beloe-polusuhoe.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.926033+00:00",
+      "status": 200,
+      "headers": {
+        "content-type": "image/webp",
+        "etag": "\"1bd6-LTYyhij1RpHXkzZrJc597btpZXI\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "7126"
+      },
+      "error": "",
+      "captured_header_bytes": 344,
+      "decoded_body_bytes": 0
+    },
+    {
+      "url": "https://chtozavino.ru/reference/background.webp",
+      "method": "HEAD",
+      "accept": null,
+      "observed_utc": "2026-10-20T18:14:45.960753+00:00",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
+        "content-type": "image/webp",
+        "etag": "\"1753e-+C8cFTxoQvQIWcazpizSyFajIas\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "via": "1.1 Caddy",
+        "content-length": "95550"
+      },
+      "error": "",
+      "captured_header_bytes": 415,
+      "decoded_body_bytes": 0
+    }
+  ],
+  "note": "HEAD Content-Length is recorded as received; do not infer actual transferred resource bytes from HEAD, especially when compression is negotiated."
+}

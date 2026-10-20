@@ -1,0 +1,14 @@
+{
+  "package": "nitropack",
+  "version": "2.13.4",
+  "source_archive": "https://registry.npmjs.org/nitropack/-/nitropack-2.13.4.tgz",
+  "sha256": "51c9ae14ddfd7d5ce4fdb468cc4290236b578218d507fdae967020653c368cdc",
+  "integrity_matches_repository_lockfile": true,
+  "source_member": "package/dist/runtime/internal/renderer.mjs",
+  "relevant_lines": [
+    18,
+    23
+  ],
+  "repository_caller": "webui/nuxt.config.ts -> Nitro renderer; missing webui/public/favicon.ico",
+  "note": "Published dependency source inspected without installation; current production build revision is not independently attested."
+}

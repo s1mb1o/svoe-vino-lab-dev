@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-20 — SEO audit of chtozavino.ru
+
+- Add the SEO audit in `docs/seo-audit/`: technical, performance, content and deployment findings, a prioritised backlog, evidence files, and draft GitHub issues (`github-issues/`, not created yet).
+- The audit is read-only. It records production observations of 2026-10-20 and the source baseline `cd8b063e`.
+
 ## 2026-10-20 — Vector product logo
 
 - Replace `assets/product-logo-640x640.svg` with a 2,810-byte vector redraw of the PNG. The previous SVG embedded the PNG and was 171,311 bytes.

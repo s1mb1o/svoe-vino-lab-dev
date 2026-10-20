@@ -1,0 +1,164 @@
+{
+  "observedUtc": "2026-10-20T17:35:59.900Z",
+  "note": "Existing browser session had age confirmation; no storage or cookies read; requested 390x844 viewport produced actual 520 CSS px; no new age confirmation performed.",
+  "observations": [
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/android"
+      ],
+      "description": "Определяйте российское вино по фотографии, QR-коду или штрихкоду. Каталог и модели работают на Android без интернета.",
+      "h1": [
+        "Узнайте вино.Даже без интернета."
+      ],
+      "h2Count": 5,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Что за вино? для Android — распознавание без интернета",
+      "url": "https://chtozavino.ru/android",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/iphone"
+      ],
+      "description": "Нативное приложение для iPhone определяет российское вино по фотографии, QR-коду или штрихкоду. Core ML и каталог работают без интернета.",
+      "h1": [
+        "Вино в кадре.Ответ на iPhone."
+      ],
+      "h2Count": 5,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Что за вино? для iPhone — распознавание на устройстве",
+      "url": "https://chtozavino.ru/iphone",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/game"
+      ],
+      "description": "Собирайте блюда, подбирайте вино и практикуйте подачу в Wine&Dine Merge. Уютная игра в браузере с путешествием по винным регионам России.",
+      "h1": [
+        "Хороший вкус начинается с игры."
+      ],
+      "h2Count": 5,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Wine&Dine Merge — маленькое бистро, большая история вкуса",
+      "url": "https://chtozavino.ru/game",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/crocodile"
+      ],
+      "description": "Слова, жесты и неожиданные ассоциации. 30 иллюстрированных карточек о вине, три режима и правила, которые можно объяснить за минуту. Распечатайте и играйте.",
+      "h1": [
+        "Винныйкрокодил"
+      ],
+      "h2Count": 6,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Винный крокодил — настольная игра для хорошей компании",
+      "url": "https://chtozavino.ru/crocodile",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/lineup"
+      ],
+      "description": "Путеводители по линейкам 25 российских производителей вина: группы, ступени внутри линейки и бутылки.",
+      "h1": [
+        "Карты линеек производителей"
+      ],
+      "h2Count": 0,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Карты линеек производителей — Что за вино?",
+      "url": "https://chtozavino.ru/lineup",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "canonical": [
+        "https://chtozavino.ru/terms"
+      ],
+      "description": "Правила использования сайта, ботов в Telegram и MAX и приложений «Что за вино?»: возраст, допустимые фотографии, жалобы и ответственность.",
+      "h1": [
+        "Условия использования"
+      ],
+      "h2Count": 12,
+      "loadedBrokenImages": 0,
+      "scrollWidth": 520,
+      "title": "Условия использования — Что за вино?",
+      "url": "https://chtozavino.ru/terms",
+      "viewportWidth": 520
+    },
+    {
+      "ageGatePresent": false,
+      "h1": [
+        "Найти вино по фото"
+      ],
+      "mode": "viewport-reset",
+      "scrollWidth": 2167,
+      "url": "https://chtozavino.ru/",
+      "viewportWidth": 2167
+    }
+  ],
+  "additional_observations_from_tool_output": [
+    {
+      "url": "https://chtozavino.ru/",
+      "viewportWidth": 520,
+      "scrollWidth": 520,
+      "canonical": [
+        "https://chtozavino.ru/"
+      ],
+      "h1": [
+        "Найти вино по фото"
+      ],
+      "ageGatePresent": false
+    },
+    {
+      "url": "https://chtozavino.ru/dish",
+      "viewportWidth": 520,
+      "scrollWidth": 520,
+      "canonical": [
+        "https://chtozavino.ru/dish"
+      ],
+      "h1": [
+        "Найти вино к блюду"
+      ],
+      "ogUrl": "https://chtozavino.ru/",
+      "ageGatePresent": false
+    },
+    {
+      "url": "https://chtozavino.ru/shelf",
+      "navigation": "client-side link from /dish",
+      "viewportWidth": 520,
+      "scrollWidth": 520,
+      "title": "Найти вино на полке по фото — Что за вино?",
+      "canonical": [
+        "https://chtozavino.ru/shelf"
+      ],
+      "h1": [
+        "Найти вино по фото"
+      ]
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/fanagoria",
+      "viewportWidth": 520,
+      "scrollWidth": 520,
+      "robots": "noindex, nofollow, noarchive",
+      "h1": [
+        "Карта линейки Фанагория"
+      ],
+      "imagesInDOM": 182,
+      "loadedBrokenImages": 0,
+      "consoleWarningsErrorsInSample": []
+    }
+  ]
+}

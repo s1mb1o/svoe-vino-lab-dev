@@ -1,0 +1,62 @@
+{
+  "generated_utc": "2026-10-20T17:38:26.570812+00:00",
+  "source_commit": "cd8b063ecd000872567e543407b11926b45b3d37",
+  "production_revision": "Not independently attested; deploy runbook records 09403930a3ef71e6e03a9b9a04be9bb949a16d8d; current responses are not proof of that exact commit.",
+  "scope": "Anonymous public HTTP GET/HEAD, Chromium DOM, read-only source and selected non-secret deployment configuration excerpts.",
+  "sampling": {
+    "crawl_records": 41,
+    "sitemap_urls": 16,
+    "asset_gets": 53,
+    "internal_link_heads": 33,
+    "image_heads": 53
+  },
+  "secrets": "Environment/credential files not opened; raw HTML and credential-bearing configuration not copied.",
+  "limitations": [
+    "No Search Console / Yandex Webmaster / analytics account access",
+    "PageSpeed API HTTP 429 mobile and desktop",
+    "Browser actual minimum viewport 520 CSS px for requested 390 px",
+    "Browser session already age confirmed; no age confirmation submitted",
+    "APK binary not downloaded, hashed, or installed",
+    "No remote server commands or production mutations",
+    "No local build or application tests executed: documentation-only audit, dependencies not installed"
+  ],
+  "workspace_reconciliation": {
+    "note": "Concurrent report edits were preserved; final seven documents reconciled to E01–E05. Unsupported draft Lighthouse numbers were not adopted.",
+    "backup_directory": "/tmp/chto-seo-concurrent-drafts/",
+    "finalized_utc": "2026-10-20T17:59:59.214125+00:00"
+  },
+  "parallel_review": {
+    "date": "2026-10-20",
+    "trigger": "User requested verification of Claude's parallel findings.",
+    "supersedes": "The initial reconciliation note about unsupported Lighthouse numbers: 15 original LHR JSONs were subsequently located and validated against the summary. No independent rerun was performed; field CWV remains unavailable.",
+    "artifacts": [
+      "../claude-review.md",
+      "claude-lighthouse-validated.json",
+      "claude-review-http.json",
+      "claude-first-visit.jpg",
+      "nitro-favicon-provenance.json",
+      "nitro-favicon-source.txt"
+    ],
+    "corrections": [
+      "SEO-007 is an accepted owner crawl-block policy documented in webui/ResearchLog.md:949–957, not an automatic remediation task.",
+      "Invalid favicon response matches Nitro 2.13.4 fallback source; no matching Caddy rule was found in the inspected snapshot."
+    ],
+    "additional_scope": "13 read-only public GET/HEAD checks, then 3 hackathon policy GETs; public dependency archive inspected without installation; no app/infrastructure changes or issue posting by this audit.",
+    "concurrent_workspace": {
+      "observed_utc": "2026-10-20T18:25:25Z",
+      "head_at_observation": "7cb1044c1338f32b714e63c47b9b341872e51f37",
+      "note": "Other concurrent local edits remove hackathon exclusion and add XML/HTML links/tests; new ResearchLog lines 3–11 record an owner-requested reversal. Left untouched. Source line references/counts elsewhere retain original audit baseline unless explicitly marked.",
+      "production_recheck": "hackathon-policy-followup.json: 18:26:20 UTC still Disallow/noindex and XML16 without hackathon; no deployment established."
+    }
+  },
+  "android_030_followup": {
+    "verified_utc": "2026-10-20T19:26:18Z–2026-10-20T19:28:27Z",
+    "evidence": "android-030-verification.json",
+    "report": "../android-030-verification.md",
+    "supersedes": "Initial no-APK-download limitation and the current-action conclusion of the old 0.2.0 metadata mismatch. Historical E01–E03 remain unchanged.",
+    "result": "Full 753111053-byte production APK hash/version/code/package/certificate agrees with 0.3.0 record/schema. Primary mismatch resolved; HEAD 404 remains P3/S.",
+    "pinned_remote_main": "58388d835d9a0dcf31cf4561dab03e757bfc2c03",
+    "source_drift": "Local checkout at start 892e5674 still declared 0.2.0; no local branch/ref/application changes made by audit.",
+    "limits": "Certificate fingerprint extraction only; no independent full Android signature/alignment or installation/upgrade test. No app execution, deployment, issue posting or commit."
+  }
+}

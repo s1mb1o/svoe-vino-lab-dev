@@ -1,0 +1,1914 @@
+{
+ "tool": "Lighthouse 12.8.2",
+ "browser": "Google Chrome 150 (headless, macOS 12, x86_64)",
+ "note": "Lab data, first visit with empty storage (age gate open). benchmarkIndex 660-1200: TBT is overstated; use byte weights, LCP element and phases. Field data was not available (PageSpeed Insights API 429).",
+ "runs": [
+  {
+   "file": "android-mobile-1.json",
+   "url": "https://chtozavino.ru/android",
+   "fetchTime": "2026-10-20T17:45:09.511Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1052,
+   "scores": {
+    "performance": 49,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 1983,
+    "LCP": 4961,
+    "TBT": 5756,
+    "SI": 3608,
+    "TTFB": 15
+   },
+   "CLS": 0.004,
+   "transfer_bytes": 712592,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 601
+    },
+    {
+     "Load Delay": 0
+    },
+    {
+     "Load Time": 0
+    },
+    {
+     "Render Delay": 4360
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95678
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74790
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/02_bottle_selected_light.webp",
+     "type": "Image",
+     "bytes": 65724
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/03_bottle_selected_dark.webp",
+     "type": "Image",
+     "bytes": 63118
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/screenshots/android/02_bottle_selected_light.webp",
+     "total_bytes": 65614,
+     "wasted_bytes": 60089
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/03_bottle_selected_dark.webp",
+     "total_bytes": 62938,
+     "wasted_bytes": 49258
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 160 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "uses-responsive-images": "Est savings of 107 KiB",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "android-mobile-2.json",
+   "url": "https://chtozavino.ru/android",
+   "fetchTime": "2026-10-20T17:45:33.637Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1244.5,
+   "scores": {
+    "performance": 52,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 1805,
+    "LCP": 4660,
+    "TBT": 4877,
+    "SI": 2157,
+    "TTFB": 23
+   },
+   "CLS": 0.004,
+   "transfer_bytes": 749079,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 603
+    },
+    {
+     "Load Delay": 461
+    },
+    {
+     "Load Time": 239
+    },
+    {
+     "Render Delay": 3357
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95678
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/02_bottle_selected_light.webp",
+     "type": "Image",
+     "bytes": 65724
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/03_bottle_selected_dark.webp",
+     "type": "Image",
+     "bytes": 63095
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/screenshots/android/02_bottle_selected_light.webp",
+     "total_bytes": 65614,
+     "wasted_bytes": 60089
+    },
+    {
+     "url": "https://chtozavino.ru/screenshots/android/03_bottle_selected_dark.webp",
+     "total_bytes": 62938,
+     "wasted_bytes": 49258
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 400 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "uses-responsive-images": "Est savings of 107 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 390 ms"
+   }
+  },
+  {
+   "file": "dish-mobile-1.json",
+   "url": "https://chtozavino.ru/dish",
+   "fetchTime": "2026-10-20T17:42:41.405Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1159,
+   "scores": {
+    "performance": 52,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2424,
+    "LCP": 4688,
+    "TBT": 2180,
+    "SI": 2817,
+    "TTFB": 28
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 720292,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 610
+    },
+    {
+     "Load Delay": 210
+    },
+    {
+     "Load Time": 56
+    },
+    {
+     "Render Delay": 3811
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/FKKnuMkC.js",
+     "type": "Script",
+     "bytes": 21512
+    }
+   ],
+   "oversized_images": [],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 550 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "dish-mobile-2.json",
+   "url": "https://chtozavino.ru/dish",
+   "fetchTime": "2026-10-20T17:43:03.451Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1292.5,
+   "scores": {
+    "performance": 55,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2449,
+    "LCP": 3898,
+    "TBT": 3151,
+    "SI": 2449,
+    "TTFB": 36
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 704433,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 615
+    },
+    {
+     "Load Delay": 530
+    },
+    {
+     "Load Time": 80
+    },
+    {
+     "Render Delay": 2673
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/FKKnuMkC.js",
+     "type": "Script",
+     "bytes": 21512
+    }
+   ],
+   "oversized_images": [],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 410 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 540 ms"
+   }
+  },
+  {
+   "file": "ideas-mobile-1.json",
+   "url": "https://chtozavino.ru/ideas",
+   "fetchTime": "2026-10-20T17:45:53.060Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1244.5,
+   "scores": {
+    "performance": 51,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2256,
+    "LCP": 4581,
+    "TBT": 5858,
+    "SI": 2622,
+    "TTFB": 26
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 1023896,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 606
+    },
+    {
+     "Load Delay": 557
+    },
+    {
+     "Load Time": 203
+    },
+    {
+     "Render Delay": 3215
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/crocodile/hero.webp",
+     "type": "Image",
+     "bytes": 273646
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95717
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/dishes/chudu-s-zelenyu-i-syrom.webp",
+     "type": "Image",
+     "bytes": 69942
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/crocodile/hero.webp",
+     "total_bytes": 273418,
+     "wasted_bytes": 227703
+    }
+   ],
+   "failing_perf_audits": {
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "7 resources found",
+    "uses-responsive-images": "Est savings of 222 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 1,250 ms"
+   }
+  },
+  {
+   "file": "ideas-mobile-2.json",
+   "url": "https://chtozavino.ru/ideas",
+   "fetchTime": "2026-10-20T17:46:14.052Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1182,
+   "scores": {
+    "performance": 52,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2259,
+    "LCP": 4434,
+    "TBT": 5531,
+    "SI": 2259,
+    "TTFB": 20
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 1045050,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 609
+    },
+    {
+     "Load Delay": 398
+    },
+    {
+     "Load Time": 144
+    },
+    {
+     "Render Delay": 3283
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/crocodile/hero.webp",
+     "type": "Image",
+     "bytes": 273646
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95717
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/dishes/chudu-s-zelenyu-i-syrom.webp",
+     "type": "Image",
+     "bytes": 69942
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38807
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/crocodile/hero.webp",
+     "total_bytes": 273418,
+     "wasted_bytes": 227703
+    }
+   ],
+   "failing_perf_audits": {
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "7 resources found",
+    "uses-responsive-images": "Est savings of 222 KiB",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "index-desktop-1.json",
+   "url": "https://chtozavino.ru/",
+   "fetchTime": "2026-10-20T17:46:33.658Z",
+   "formFactor": "desktop",
+   "throttling": "simulate",
+   "benchmarkIndex": 1074.5,
+   "scores": {
+    "performance": 70
+   },
+   "metrics_ms": {
+    "FCP": 533,
+    "LCP": 922,
+    "TBT": 1108,
+    "SI": 1036,
+    "TTFB": 41
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 676717,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 162
+    },
+    {
+     "Load Delay": 4
+    },
+    {
+     "Load Time": 22
+    },
+    {
+     "Render Delay": 734
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95717
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71191
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35910
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DZf8cCLO.js",
+     "type": "Script",
+     "bytes": 21063
+    }
+   ],
+   "oversized_images": [],
+   "failing_perf_audits": {
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "5 resources found",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "index-mobile-1.json",
+   "url": "https://chtozavino.ru/",
+   "fetchTime": "2026-10-20T17:40:58.620Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1017,
+   "scores": {
+    "performance": 41,
+    "accessibility": 96,
+    "best-practices": 75,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 3020,
+    "LCP": 4827,
+    "TBT": 2947,
+    "SI": 7122,
+    "TTFB": 49
+   },
+   "CLS": 0,
+   "transfer_bytes": 675788,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 627
+    },
+    {
+     "Load Delay": 0
+    },
+    {
+     "Load Time": 0
+    },
+    {
+     "Render Delay": 4200
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95717
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DZf8cCLO.js",
+     "type": "Script",
+     "bytes": 21063
+    }
+   ],
+   "oversized_images": [],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 510 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "5 resources found",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "index-mobile-2.json",
+   "url": "https://chtozavino.ru/",
+   "fetchTime": "2026-10-20T17:41:31.248Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 828.5,
+   "scores": {
+    "performance": 55,
+    "accessibility": 96,
+    "best-practices": 75,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2415,
+    "LCP": 3765,
+    "TBT": 5400,
+    "SI": 3051,
+    "TTFB": 35
+   },
+   "CLS": 0.005,
+   "transfer_bytes": 676876,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 615
+    },
+    {
+     "Load Delay": 1638
+    },
+    {
+     "Load Time": 71
+    },
+    {
+     "Render Delay": 1441
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95717
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74790
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38807
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DZf8cCLO.js",
+     "type": "Script",
+     "bytes": 21063
+    }
+   ],
+   "oversized_images": [],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 540 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "5 resources found",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "lineup-mobile-1.json",
+   "url": "https://chtozavino.ru/lineup",
+   "fetchTime": "2026-10-20T17:43:24.258Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 660.5,
+   "scores": {
+    "performance": 48,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 1531,
+    "LCP": 5871,
+    "TBT": 6066,
+    "SI": 1909,
+    "TTFB": 23
+   },
+   "CLS": 0.002,
+   "transfer_bytes": 1639017,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 613
+    },
+    {
+     "Load Delay": 868
+    },
+    {
+     "Load Time": 186
+    },
+    {
+     "Render Delay": 4204
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+     "type": "Image",
+     "bytes": 252996
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+     "type": "Image",
+     "bytes": 96437
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "type": "Image",
+     "bytes": 78004
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "type": "Image",
+     "bytes": 64334
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+     "total_bytes": 252778,
+     "wasted_bytes": 252030
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+     "total_bytes": 96310,
+     "wasted_bytes": 96076
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "total_bytes": 77886,
+     "wasted_bytes": 77350
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "total_bytes": 64226,
+     "wasted_bytes": 63784
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/soyuz-vino/wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11.webp",
+     "total_bytes": 53482,
+     "wasted_bytes": 49558
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/koktebel/wine-koktebel-casa-belyj-kupazh.webp",
+     "total_bytes": 38988,
+     "wasted_bytes": 37942
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/kuban-vino/wine-aristov-anima-millesimato.webp",
+     "total_bytes": 36308,
+     "wasted_bytes": 35262
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/derbent-vino/wine-caucasian-dzharag.webp",
+     "total_bytes": 34906,
+     "wasted_bytes": 33894
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/novy-svet/wine-novyj-svet-aligote.webp",
+     "total_bytes": 34248,
+     "wasted_bytes": 31769
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/agora/wine-agora-bastardo.webp",
+     "total_bytes": 33622,
+     "wasted_bytes": 31126
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/vedernikov/wine-rkacziteli-beloe-suhoe.webp",
+     "total_bytes": 28500,
+     "wasted_bytes": 27737
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123.webp",
+     "total_bytes": 28524,
+     "wasted_bytes": 27410
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/massandra/wine-aligote-avtorskoe.webp",
+     "total_bytes": 24806,
+     "wasted_bytes": 23864
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/aya/wine-evolution-reserve-pinot-noir.webp",
+     "total_bytes": 24882,
+     "wasted_bytes": 23772
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/belbek/wine-belbek-aligote-beloe-suhoe-125.webp",
+     "total_bytes": 25056,
+     "wasted_bytes": 23257
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/chateau-pinot/wine-aligote-shato-pino.webp",
+     "total_bytes": 24328,
+     "wasted_bytes": 22501
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/fanagoria/wine-cru-lermont-risling.webp",
+     "total_bytes": 21610,
+     "wasted_bytes": 21034
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/valery-zakharyin/wine-avtohtonnoe-vino-kryma-beloe-suhoe.webp",
+     "total_bytes": 21364,
+     "wasted_bytes": 19796
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/chateau-de-talu/wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15.webp",
+     "total_bytes": 20268,
+     "wasted_bytes": 19482
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sober-bash/wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125.webp",
+     "total_bytes": 19132,
+     "wasted_bytes": 17725
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/myskhako/wine-glera-manno.webp",
+     "total_bytes": 18722,
+     "wasted_bytes": 16719
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/inkerman/wine-inkerman-muskatnoe-beloe.webp",
+     "total_bytes": 14366,
+     "wasted_bytes": 12808
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+     "total_bytes": 13832,
+     "wasted_bytes": 11517
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 0 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "27 resources found",
+    "uses-responsive-images": "Est savings of 954 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 480 ms"
+   }
+  },
+  {
+   "file": "lineup-mobile-2.json",
+   "url": "https://chtozavino.ru/lineup",
+   "fetchTime": "2026-10-20T17:43:49.329Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1189,
+   "scores": {
+    "performance": 50,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 1511,
+    "LCP": 5261,
+    "TBT": 5980,
+    "SI": 1635,
+    "TTFB": 23
+   },
+   "CLS": 0.002,
+   "transfer_bytes": 1684753,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 611
+    },
+    {
+     "Load Delay": 1301
+    },
+    {
+     "Load Time": 310
+    },
+    {
+     "Render Delay": 3039
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+     "type": "Image",
+     "bytes": 252996
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+     "type": "Image",
+     "bytes": 96437
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "type": "Image",
+     "bytes": 78004
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "type": "Image",
+     "bytes": 64334
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/zolotaya-balka/wine-balaklava-bryut-rezerv.webp",
+     "total_bytes": 252778,
+     "wasted_bytes": 252030
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/burnier/wine-vinodelnya-byurne-krasnostop-krasnoe-suhoe-145.webp",
+     "total_bytes": 96310,
+     "wasted_bytes": 96076
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sikory/wine-imenie-sikory-semeynoe-nasledie-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "total_bytes": 77886,
+     "wasted_bytes": 77350
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+     "total_bytes": 64226,
+     "wasted_bytes": 63784
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/soyuz-vino/wine-soyuz-vino-el-krusero-blanko-polusladkoe-belye-sorta-vinograda-beloe-11.webp",
+     "total_bytes": 53482,
+     "wasted_bytes": 49558
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/koktebel/wine-koktebel-casa-belyj-kupazh.webp",
+     "total_bytes": 38988,
+     "wasted_bytes": 37942
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/kuban-vino/wine-aristov-anima-millesimato.webp",
+     "total_bytes": 36308,
+     "wasted_bytes": 35262
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/derbent-vino/wine-caucasian-dzharag.webp",
+     "total_bytes": 34906,
+     "wasted_bytes": 33894
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/novy-svet/wine-novyj-svet-aligote.webp",
+     "total_bytes": 34248,
+     "wasted_bytes": 31769
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/agora/wine-agora-bastardo.webp",
+     "total_bytes": 33622,
+     "wasted_bytes": 31126
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/vedernikov/wine-rkacziteli-beloe-suhoe.webp",
+     "total_bytes": 28500,
+     "wasted_bytes": 27737
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/raevskoe/wine-vinodelnya-raevskoe-genezis-beloe-risling-suhoe-123.webp",
+     "total_bytes": 28524,
+     "wasted_bytes": 27410
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/massandra/wine-aligote-avtorskoe.webp",
+     "total_bytes": 24806,
+     "wasted_bytes": 23864
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/aya/wine-evolution-reserve-pinot-noir.webp",
+     "total_bytes": 24882,
+     "wasted_bytes": 23772
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/belbek/wine-belbek-aligote-beloe-suhoe-125.webp",
+     "total_bytes": 25056,
+     "wasted_bytes": 23257
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/chateau-pinot/wine-aligote-shato-pino.webp",
+     "total_bytes": 24328,
+     "wasted_bytes": 22501
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/fanagoria/wine-cru-lermont-risling.webp",
+     "total_bytes": 21610,
+     "wasted_bytes": 21034
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/valery-zakharyin/wine-avtohtonnoe-vino-kryma-beloe-suhoe.webp",
+     "total_bytes": 21364,
+     "wasted_bytes": 19796
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/chateau-de-talu/wine-chateau-de-talu-enolog-kaberne-sovinon-krasnoe-suhoe-15.webp",
+     "total_bytes": 20268,
+     "wasted_bytes": 19482
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/sober-bash/wine-sober-bash-afa-kaberne-sovinon-krasnoe-suhoe-125.webp",
+     "total_bytes": 19132,
+     "wasted_bytes": 17725
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/myskhako/wine-glera-manno.webp",
+     "total_bytes": 18722,
+     "wasted_bytes": 16719
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/inkerman/wine-inkerman-muskatnoe-beloe.webp",
+     "total_bytes": 14366,
+     "wasted_bytes": 12808
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+     "total_bytes": 13832,
+     "wasted_bytes": 11517
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 0 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "27 resources found",
+    "uses-responsive-images": "Est savings of 954 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 480 ms"
+   }
+  },
+  {
+   "file": "lineup_abrau-durso-mobile-1.json",
+   "url": "https://chtozavino.ru/lineup/abrau-durso",
+   "fetchTime": "2026-10-20T17:44:12.127Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1157.5,
+   "scores": {
+    "performance": 44,
+    "accessibility": 96,
+    "best-practices": 71,
+    "seo": 69
+   },
+   "metrics_ms": {
+    "FCP": 2582,
+    "LCP": 5931,
+    "TBT": 3337,
+    "SI": 3631,
+    "TTFB": 44
+   },
+   "CLS": 0.025,
+   "transfer_bytes": 1226521,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 606
+    },
+    {
+     "Load Delay": 15
+    },
+    {
+     "Load Time": 122
+    },
+    {
+     "Render Delay": 5188
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74806
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38807
+    },
+    {
+     "url": "https://chtozavino.ru/lineup/abrau-durso",
+     "type": "Document",
+     "bytes": 38081
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+     "type": "Script",
+     "bytes": 28311
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+     "total_bytes": 24930,
+     "wasted_bytes": 20902
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125.webp",
+     "total_bytes": 23566,
+     "wasted_bytes": 20304
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105.webp",
+     "total_bytes": 23710,
+     "wasted_bytes": 19860
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125.webp",
+     "total_bytes": 22674,
+     "wasted_bytes": 19132
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-gift-box.webp",
+     "total_bytes": 21878,
+     "wasted_bytes": 18359
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+     "total_bytes": 20994,
+     "wasted_bytes": 18088
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12.webp",
+     "total_bytes": 20934,
+     "wasted_bytes": 18012
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135.webp",
+     "total_bytes": 20790,
+     "wasted_bytes": 17431
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105.webp",
+     "total_bytes": 20624,
+     "wasted_bytes": 17292
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-blanc-de-blancs.webp",
+     "total_bytes": 17452,
+     "wasted_bytes": 11709
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-brut.webp",
+     "total_bytes": 18304,
+     "wasted_bytes": 11368
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-blanc-de-noirs.webp",
+     "total_bytes": 16864,
+     "wasted_bytes": 11314
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-riesling.webp",
+     "total_bytes": 16534,
+     "wasted_bytes": 11093
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-rose.webp",
+     "total_bytes": 16304,
+     "wasted_bytes": 10939
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-rose.webp",
+     "total_bytes": 16106,
+     "wasted_bytes": 10840
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/udelnoe-vedomstvo-semi-sweet.webp",
+     "total_bytes": 17140,
+     "wasted_bytes": 10836
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-brut-rose.webp",
+     "total_bytes": 17172,
+     "wasted_bytes": 10513
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-vintage.webp",
+     "total_bytes": 15358,
+     "wasted_bytes": 10270
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/reserve-brut.webp",
+     "total_bytes": 15836,
+     "wasted_bytes": 9968
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/reserve-brut-rose.webp",
+     "total_bytes": 15608,
+     "wasted_bytes": 9867
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-extra-brut.webp",
+     "total_bytes": 15886,
+     "wasted_bytes": 9773
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-cuvee-rose.webp",
+     "total_bytes": 14470,
+     "wasted_bytes": 9645
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-semi-dry.webp",
+     "total_bytes": 15162,
+     "wasted_bytes": 9585
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/udelnoe-vedomstvo-brut.webp",
+     "total_bytes": 15064,
+     "wasted_bytes": 9564
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-lart-nouveau.webp",
+     "total_bytes": 14114,
+     "wasted_bytes": 9530
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-semi-sweet.webp",
+     "total_bytes": 15040,
+     "wasted_bytes": 9508
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+     "total_bytes": 13832,
+     "wasted_bytes": 9453
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-semi-dry.webp",
+     "total_bytes": 15208,
+     "wasted_bytes": 9356
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-brut.webp",
+     "total_bytes": 14742,
+     "wasted_bytes": 9320
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 520 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "33 resources found",
+    "uses-responsive-images": "Est savings of 365 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 450 ms"
+   }
+  },
+  {
+   "file": "lineup_abrau-durso-mobile-2.json",
+   "url": "https://chtozavino.ru/lineup/abrau-durso",
+   "fetchTime": "2026-10-20T17:44:41.523Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1228.5,
+   "scores": {
+    "performance": 50,
+    "accessibility": 96,
+    "best-practices": 71,
+    "seo": 69
+   },
+   "metrics_ms": {
+    "FCP": 2262,
+    "LCP": 4898,
+    "TBT": 5531,
+    "SI": 2285,
+    "TTFB": 47
+   },
+   "CLS": 0.027,
+   "transfer_bytes": 1174140,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 604
+    },
+    {
+     "Load Delay": 572
+    },
+    {
+     "Load Time": 139
+    },
+    {
+     "Render Delay": 3582
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171533
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95726
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74806
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 73635
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38807
+    },
+    {
+     "url": "https://chtozavino.ru/lineup/abrau-durso",
+     "type": "Document",
+     "bytes": 38081
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+     "type": "Script",
+     "bytes": 35887
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+     "type": "Image",
+     "bytes": 25029
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12.webp",
+     "total_bytes": 24930,
+     "wasted_bytes": 20902
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-125.webp",
+     "total_bytes": 23566,
+     "wasted_bytes": 20304
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105.webp",
+     "total_bytes": 23710,
+     "wasted_bytes": 19860
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125.webp",
+     "total_bytes": 22674,
+     "wasted_bytes": 19132
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-gift-box.webp",
+     "total_bytes": 21878,
+     "wasted_bytes": 18359
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp",
+     "total_bytes": 20994,
+     "wasted_bytes": 18088
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-pino-nuar-krasnoe-suhoe-12.webp",
+     "total_bytes": 20934,
+     "wasted_bytes": 18012
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135.webp",
+     "total_bytes": 20790,
+     "wasted_bytes": 17431
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/wine-abrau-dyurso-abrau-estates-amurskiy-potapenko-krasnoe-suhoe-105.webp",
+     "total_bytes": 20624,
+     "wasted_bytes": 17292
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-blanc-de-blancs.webp",
+     "total_bytes": 17452,
+     "wasted_bytes": 11709
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-brut.webp",
+     "total_bytes": 18304,
+     "wasted_bytes": 11368
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-blanc-de-noirs.webp",
+     "total_bytes": 16864,
+     "wasted_bytes": 11314
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-riesling.webp",
+     "total_bytes": 16534,
+     "wasted_bytes": 11093
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/brut-dor-rose.webp",
+     "total_bytes": 16304,
+     "wasted_bytes": 10939
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-rose.webp",
+     "total_bytes": 16106,
+     "wasted_bytes": 10840
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/udelnoe-vedomstvo-semi-sweet.webp",
+     "total_bytes": 17140,
+     "wasted_bytes": 10836
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-brut-rose.webp",
+     "total_bytes": 17172,
+     "wasted_bytes": 10513
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-vintage.webp",
+     "total_bytes": 15358,
+     "wasted_bytes": 10270
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/reserve-brut.webp",
+     "total_bytes": 15836,
+     "wasted_bytes": 9968
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/reserve-brut-rose.webp",
+     "total_bytes": 15608,
+     "wasted_bytes": 9867
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-extra-brut.webp",
+     "total_bytes": 15886,
+     "wasted_bytes": 9773
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-cuvee-rose.webp",
+     "total_bytes": 14470,
+     "wasted_bytes": 9645
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-semi-dry.webp",
+     "total_bytes": 15162,
+     "wasted_bytes": 9585
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/udelnoe-vedomstvo-brut.webp",
+     "total_bytes": 15064,
+     "wasted_bytes": 9564
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperial-brut-lart-nouveau.webp",
+     "total_bytes": 14114,
+     "wasted_bytes": 9530
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-semi-sweet.webp",
+     "total_bytes": 15040,
+     "wasted_bytes": 9508
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+     "total_bytes": 13832,
+     "wasted_bytes": 9453
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/victor-dravigny-semi-dry.webp",
+     "total_bytes": 15208,
+     "wasted_bytes": 9356
+    },
+    {
+     "url": "https://chtozavino.ru/product-line-maps/abrau-durso/imperatorskoe-brut.webp",
+     "total_bytes": 14742,
+     "wasted_bytes": 9320
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 530 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "33 resources found",
+    "uses-responsive-images": "Est savings of 365 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 590 ms"
+   }
+  },
+  {
+   "file": "shelf-mobile-1.json",
+   "url": "https://chtozavino.ru/shelf",
+   "fetchTime": "2026-10-20T17:41:53.931Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1201.5,
+   "scores": {
+    "performance": 42,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2268,
+    "LCP": 15918,
+    "TBT": 3709,
+    "SI": 3096,
+    "TTFB": 28
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 2984775,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 778
+    },
+    {
+     "Load Delay": 6225
+    },
+    {
+     "Load Time": 654
+    },
+    {
+     "Render Delay": 8261
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-wide.webp",
+     "type": "Image",
+     "bytes": 899341
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-sparkling-display.webp",
+     "type": "Image",
+     "bytes": 736515
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-close.webp",
+     "type": "Image",
+     "bytes": 679182
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95678
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74790
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71201
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-wide.webp",
+     "total_bytes": 898762,
+     "wasted_bytes": 897818
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-sparkling-display.webp",
+     "total_bytes": 736018,
+     "wasted_bytes": 735245
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-close.webp",
+     "total_bytes": 678658,
+     "wasted_bytes": 645231
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 400 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "uses-responsive-images": "Est savings of 2,225 KiB",
+    "prioritize-lcp-image": ""
+   }
+  },
+  {
+   "file": "shelf-mobile-2.json",
+   "url": "https://chtozavino.ru/shelf",
+   "fetchTime": "2026-10-20T17:42:17.084Z",
+   "formFactor": "mobile",
+   "throttling": "simulate",
+   "benchmarkIndex": 1125.5,
+   "scores": {
+    "performance": 42,
+    "accessibility": 96,
+    "best-practices": 79,
+    "seo": 100
+   },
+   "metrics_ms": {
+    "FCP": 2268,
+    "LCP": 15018,
+    "TBT": 8511,
+    "SI": 2380,
+    "TTFB": 30
+   },
+   "CLS": 0.003,
+   "transfer_bytes": 2984866,
+   "lcp_element": "body > div#__nuxt > div.site-shell",
+   "lcp_phases_ms": [
+    {
+     "TTFB": 618
+    },
+    {
+     "Load Delay": 1449
+    },
+    {
+     "Load Time": 2031
+    },
+    {
+     "Render Delay": 10920
+    }
+   ],
+   "top_transfers": [
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-wide.webp",
+     "type": "Image",
+     "bytes": 899332
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-sparkling-display.webp",
+     "type": "Image",
+     "bytes": 736497
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-close.webp",
+     "type": "Image",
+     "bytes": 679200
+    },
+    {
+     "url": "https://chtozavino.ru/icons/product-logo.svg",
+     "type": "Image",
+     "bytes": 171510
+    },
+    {
+     "url": "https://chtozavino.ru/reference/background.webp",
+     "type": "Image",
+     "bytes": 95678
+    },
+    {
+     "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+     "type": "Font",
+     "bytes": 74767
+    },
+    {
+     "url": "https://mc.yandex.ru/metrika/tag.js?id=113460637",
+     "type": "Script",
+     "bytes": 71202
+    },
+    {
+     "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+     "type": "Script",
+     "bytes": 38784
+    }
+   ],
+   "oversized_images": [
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-wide.webp",
+     "total_bytes": 898762,
+     "wasted_bytes": 897818
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-sparkling-display.webp",
+     "total_bytes": 736018,
+     "wasted_bytes": 735245
+    },
+    {
+     "url": "https://chtozavino.ru/reference/shelf-example-abrau-close.webp",
+     "total_bytes": 678658,
+     "wasted_bytes": 645231
+    }
+   ],
+   "failing_perf_audits": {
+    "render-blocking-resources": "Est savings of 380 ms",
+    "unused-javascript": "Est savings of 36 KiB",
+    "uses-long-cache-ttl": "4 resources found",
+    "uses-responsive-images": "Est savings of 2,225 KiB",
+    "prioritize-lcp-image": "",
+    "third-party-summary": "Third-party code blocked the main thread for 1,120 ms"
+   }
+  }
+ ]
+}

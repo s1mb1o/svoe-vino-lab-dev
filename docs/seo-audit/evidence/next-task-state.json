@@ -1,0 +1,53 @@
+{
+  "purpose": "Bounded current-state check before recommending the next Pareto task. No application/deployment change.",
+  "requests": [
+    {
+      "url": "https://chtozavino.ru/icons/product-logo.svg",
+      "observed_utc": "2026-10-20T19:43:56.047619+00:00",
+      "status": 200,
+      "curl_exit": 0,
+      "decoded_bytes": 171311,
+      "transferred_body_bytes": 155135,
+      "sha256": "97153903dba33b7c19b9722fb19aab0da39dedd2ab1f27fbd125a15c2f42d49b",
+      "embedded_raster": true,
+      "matches_local_candidate": false
+    },
+    {
+      "url": "https://chtozavino.ru/shelf",
+      "observed_utc": "2026-10-20T19:43:56.049123+00:00",
+      "status": 200,
+      "curl_exit": 0,
+      "decoded_bytes": 20830,
+      "transferred_body_bytes": 5996,
+      "sha256": "13b11514b7a5e9d04a5d95bc4da57a60f3f5c767e66b44b9cd25211868e29fac",
+      "h1": "Найти вино по фото",
+      "shelf_example_images": [
+        {
+          "src": "/reference/shelf-example-abrau-close.webp",
+          "width": "2560",
+          "height": "1928"
+        },
+        {
+          "src": "/reference/shelf-example-abrau-close.webp"
+        },
+        {
+          "src": "/reference/shelf-example-abrau-wide.webp"
+        },
+        {
+          "src": "/reference/shelf-example-sparkling-display.webp"
+        }
+      ]
+    }
+  ],
+  "local_logo_candidate_bytes": 2810,
+  "evidence_id": "E11",
+  "source_locations": [
+    "webui/public/icons/product-logo.svg",
+    "webui/app/components/ProductBrand.vue:3",
+    "webui/shared/shelf.ts:7–33",
+    "webui/app/components/ShelfScanner.vue:69–72",
+    "webui/app/components/ScannerPage.vue:29–31"
+  ],
+  "local_logo_candidate_sha256": "3e23d9baa0727f13d79277690cfac6f8f2660fca0c3ebe170d68c353fe3962da",
+  "limits": "HTTP/source checks only; no new rendering, Lighthouse, recognition, deployment or source changes. Local logo is a concurrent uncommitted candidate, not a verified deployed fix."
+}

@@ -1,0 +1,5782 @@
+{
+  "observed_utc": "2026-10-20T17:32:03.207025+00:00",
+  "assets": [
+    {
+      "url": "https://chtozavino.ru/_nuxt/0rU5Fe5s.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.227401+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"9595-qq5o0w7LNwY4INf7QNdEb8kMEFQ-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/0rU5Fe5s.js",
+        "num_redirects": 0,
+        "size_download": 15064,
+        "size_header": 446,
+        "time_namelookup": 0.002765,
+        "time_connect": 0.007742,
+        "time_appconnect": 0.033522,
+        "time_starttransfer": 0.042972,
+        "time_total": 0.050591,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 38293,
+      "sha256": "4e504c4f9a7d383dffe2018dfb60395b56443d8bf43cdd668c65f44e3fbf6a33"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/2ROtIbvw.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.228413+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"22a-8wWSGGnLkmo6/EyBzmeA0GUo+Qg-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "430"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/2ROtIbvw.js",
+        "num_redirects": 0,
+        "size_download": 430,
+        "size_header": 466,
+        "time_namelookup": 0.002651,
+        "time_connect": 0.006934,
+        "time_appconnect": 0.031344,
+        "time_starttransfer": 0.037369,
+        "time_total": 0.038231,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 554,
+      "sha256": "d84ff3d478e4c362e2e366a2adb8ee1b8302d02cb5db1e24f433748031fd9fa9"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/7328V_V_.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.233079+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"e12-KNQxX9hZp/XVwnoXRqo69mxfo10-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "1555"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/7328V_V_.js",
+        "num_redirects": 0,
+        "size_download": 1555,
+        "size_header": 467,
+        "time_namelookup": 0.002952,
+        "time_connect": 0.007069,
+        "time_appconnect": 0.030383,
+        "time_starttransfer": 0.037526,
+        "time_total": 0.038241,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 3602,
+      "sha256": "6c1d3ad9a64554c74ca703e6e8a7cffac0351bfb82ad438df15779c352299e39"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/B0-PB-8a.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.233755+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"161-yR16Y9Ih88Qr3K0XMe9dN3zvjn0\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "353"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/B0-PB-8a.js",
+        "num_redirects": 0,
+        "size_download": 353,
+        "size_header": 414,
+        "time_namelookup": 0.003677,
+        "time_connect": 0.008282,
+        "time_appconnect": 0.031787,
+        "time_starttransfer": 0.039688,
+        "time_total": 0.040096,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 353,
+      "sha256": "5ae87f777868b37baf31732828b79a31d4eb2decce3b543d3998067296d79d15"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/B6367ggZ.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.317793+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"1819-T/blxLy5eQes9nkEujGwKjRJ6p8-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "2362"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/B6367ggZ.js",
+        "num_redirects": 0,
+        "size_download": 2362,
+        "size_header": 468,
+        "time_namelookup": 0.002506,
+        "time_connect": 0.007064,
+        "time_appconnect": 0.032035,
+        "time_starttransfer": 0.038911,
+        "time_total": 0.040001,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 6169,
+      "sha256": "919c86f86aca0aac993f458863fa885f49da754ba671feab3dac45cdfb089856"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/BDNMzG2s.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.323568+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"54-MasMfSk/A98C3Gn9uIOxtFxkWNw\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "84"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/BDNMzG2s.js",
+        "num_redirects": 0,
+        "size_download": 84,
+        "size_header": 412,
+        "time_namelookup": 0.003666,
+        "time_connect": 0.008234,
+        "time_appconnect": 0.031466,
+        "time_starttransfer": 0.038059,
+        "time_total": 0.038647,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 84,
+      "sha256": "27e87fe62aa760227b7529576953d8314891fd2aec28e0a3f03aece406f2d7d7"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/BQuVdr5B.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.330963+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"4f-5OgOimOCZ9aYjFaMFtpmnF+YmZg\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "79"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/BQuVdr5B.js",
+        "num_redirects": 0,
+        "size_download": 79,
+        "size_header": 412,
+        "time_namelookup": 0.0029,
+        "time_connect": 0.007743,
+        "time_appconnect": 0.032996,
+        "time_starttransfer": 0.04051,
+        "time_total": 0.041342,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 79,
+      "sha256": "674c4a3b3abf0841285b7961040ad9e9edb0707fad71da320fdfc06851ffb7e8"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.336963+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"1642f-i8ajbfcBIJgjom9OtVBsExq9I5g-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/BUN8dXRC.js",
+        "num_redirects": 0,
+        "size_download": 27591,
+        "size_header": 447,
+        "time_namelookup": 0.003721,
+        "time_connect": 0.008739,
+        "time_appconnect": 0.0346,
+        "time_starttransfer": 0.045143,
+        "time_total": 0.051513,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 91183,
+      "sha256": "7f7a25979585385f8a74a5181f93ffc0ab4304ac3bfc89d2b0d139964102df8b"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/BVa9-aD-.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.390020+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"163-l0JR3nAg+Pe/NYpDk5nCYtem1NI\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "355"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/BVa9-aD-.js",
+        "num_redirects": 0,
+        "size_download": 355,
+        "size_header": 414,
+        "time_namelookup": 0.016733,
+        "time_connect": 0.022881,
+        "time_appconnect": 0.054865,
+        "time_starttransfer": 0.062157,
+        "time_total": 0.062645,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 355,
+      "sha256": "adff2ba50a93629b6d9295a461dffd558faaa1a811ae6e7e311b9f42b32cbbb2"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/Bd17z0YL.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.405291+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"1615-CPDn06/EO3pj6KudXz5uMZ0FkhI-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "2246"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/Bd17z0YL.js",
+        "num_redirects": 0,
+        "size_download": 2246,
+        "size_header": 468,
+        "time_namelookup": 0.011984,
+        "time_connect": 0.016654,
+        "time_appconnect": 0.044575,
+        "time_starttransfer": 0.051136,
+        "time_total": 0.052008,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 5653,
+      "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/BkMHKqUw.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.412784+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"4ddb-Agm0XpdeQV8DZ8hTMib7eApDUQs-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/BkMHKqUw.js",
+        "num_redirects": 0,
+        "size_download": 7824,
+        "size_header": 446,
+        "time_namelookup": 0.004967,
+        "time_connect": 0.009049,
+        "time_appconnect": 0.03537,
+        "time_starttransfer": 0.043095,
+        "time_total": 0.044508,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19931,
+      "sha256": "56c2f1853a54e2f2d01429a06978ddb38de55d034a46bacf252346a6b8d1a44f"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/C4i0PbWK.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.445754+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"eaa-YcLlyK9M6DL9OQlKR2NfuQArb2o-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "1711"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/C4i0PbWK.js",
+        "num_redirects": 0,
+        "size_download": 1711,
+        "size_header": 467,
+        "time_namelookup": 0.006151,
+        "time_connect": 0.011639,
+        "time_appconnect": 0.037399,
+        "time_starttransfer": 0.044811,
+        "time_total": 0.045533,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 3754,
+      "sha256": "ea55451fe7f974b86073b6b0b9295d13a6a461bbe2d887ed7e46b573d27aa8ae"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/CECKVOQY.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.502668+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"4d62-4RtikoJGHc/izBixshl3oAQ4mO8-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/CECKVOQY.js",
+        "num_redirects": 0,
+        "size_download": 7528,
+        "size_header": 446,
+        "time_namelookup": 0.002647,
+        "time_connect": 0.00776,
+        "time_appconnect": 0.030891,
+        "time_starttransfer": 0.038731,
+        "time_total": 0.041191,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19810,
+      "sha256": "895eb9c9f0673825bb7e2af3dc12fdf26eb157c3278b30b74003f8123cfd72cc"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/CI4320fK.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.524698+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"e5e0-HiFQQpGIkzIzyfRrSudzX90EnFU-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/CI4320fK.js",
+        "num_redirects": 0,
+        "size_download": 18961,
+        "size_header": 446,
+        "time_namelookup": 0.004033,
+        "time_connect": 0.008733,
+        "time_appconnect": 0.033922,
+        "time_starttransfer": 0.047819,
+        "time_total": 0.053443,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 58848,
+      "sha256": "b3aea5920411d8c01fd56068aa7162df3e50d76e868cae815773d290838e68b8"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/CVxAk-kZ.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.533214+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"3591-POBfKnHIsmRsoWzFugbptzdvsjM-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/CVxAk-kZ.js",
+        "num_redirects": 0,
+        "size_download": 4210,
+        "size_header": 446,
+        "time_namelookup": 0.004478,
+        "time_connect": 0.010116,
+        "time_appconnect": 0.034055,
+        "time_starttransfer": 0.041157,
+        "time_total": 0.042169,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 13713,
+      "sha256": "e499457bfb440076a1a403d20dfa11db260e33aa27fa2942adc6aeb3712065ba"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/CbPwrV4D.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.548832+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"85ed-nVTcpwcnvP6AJxxCnKWrvUXDxL0-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/CbPwrV4D.js",
+        "num_redirects": 0,
+        "size_download": 12490,
+        "size_header": 446,
+        "time_namelookup": 0.005423,
+        "time_connect": 0.010167,
+        "time_appconnect": 0.035865,
+        "time_starttransfer": 0.044704,
+        "time_total": 0.046341,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 34285,
+      "sha256": "db033d22ef08be8de52438886ed313f464bafb0cbae152b8cdb1408d583d1aa0"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/CeqCqXjG.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.589285+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"3414-z4Whkphi4ZbMriGHqQzxRiRE4pg-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/CeqCqXjG.js",
+        "num_redirects": 0,
+        "size_download": 4915,
+        "size_header": 446,
+        "time_namelookup": 0.003385,
+        "time_connect": 0.009177,
+        "time_appconnect": 0.032596,
+        "time_starttransfer": 0.040008,
+        "time_total": 0.040733,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 13332,
+      "sha256": "5c1f2d924852b095c3e3a869667e8ebc68ce691cd1620f33da49318b300a0740"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/Cki4HsKu.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.617670+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"4a-pXYbPLX/78xMyND3SlrowPoH7N0\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "74"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/Cki4HsKu.js",
+        "num_redirects": 0,
+        "size_download": 74,
+        "size_header": 412,
+        "time_namelookup": 0.003972,
+        "time_connect": 0.009677,
+        "time_appconnect": 0.038255,
+        "time_starttransfer": 0.044897,
+        "time_total": 0.046337,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 74,
+      "sha256": "a746e29400f81d7579bc3823aa65c1259e346c1f95c88ebdabbcb672903968bb"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.625587+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"1819e-T/gx9Up8q6SsXyjeCjOiRhekUtQ-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/ClRa6ZD2.js",
+        "num_redirects": 0,
+        "size_download": 37694,
+        "size_header": 447,
+        "time_namelookup": 0.003553,
+        "time_connect": 0.009392,
+        "time_appconnect": 0.043167,
+        "time_starttransfer": 0.051016,
+        "time_total": 0.060156,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 98718,
+      "sha256": "0cdd2c8f92bcd21fede6f36b7af553988a49d924f26945b5e64f7fc76c29847d"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/D3iYONJX.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.637275+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"4c60-YrffcfCNFTEfJGWVtfzc0BURCnE-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/D3iYONJX.js",
+        "num_redirects": 0,
+        "size_download": 7147,
+        "size_header": 446,
+        "time_namelookup": 0.022764,
+        "time_connect": 0.028472,
+        "time_appconnect": 0.05346,
+        "time_starttransfer": 0.060059,
+        "time_total": 0.062256,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19552,
+      "sha256": "345c641788fd8019eb658f71a140ed74487cd65268fe8c4ed80661a133e9b23c"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/D4Lb1seT.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.686250+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"8614-P2aE3sf8jaQImlx3j0h13gb9d4I-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/D4Lb1seT.js",
+        "num_redirects": 0,
+        "size_download": 9149,
+        "size_header": 446,
+        "time_namelookup": 0.004868,
+        "time_connect": 0.00875,
+        "time_appconnect": 0.040295,
+        "time_starttransfer": 0.047308,
+        "time_total": 0.05247,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 34324,
+      "sha256": "86ebca52cdb044436328bbb8782801355ab36d36728f69f91f4a0d4422dbb692"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/D9euAWXG.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.702995+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:56 GMT",
+        "etag": "\"d4d-wnvc0IYQ/x2lelvZN6j5nNQgG18-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "1553"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/D9euAWXG.js",
+        "num_redirects": 0,
+        "size_download": 1553,
+        "size_header": 467,
+        "time_namelookup": 0.00466,
+        "time_connect": 0.01103,
+        "time_appconnect": 0.042059,
+        "time_starttransfer": 0.048681,
+        "time_total": 0.049645,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 3405,
+      "sha256": "3c931cadf6f6cd33c97e0f1cef50cc07446908e9f5c2f1572bb270d6a0f55e34"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.730930+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"15cf7-UBaA3CCUVHrCYyC+hTjvjF5YXv8-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DQBUlhso.js",
+        "num_redirects": 0,
+        "size_download": 34891,
+        "size_header": 447,
+        "time_namelookup": 0.004997,
+        "time_connect": 0.010507,
+        "time_appconnect": 0.03807,
+        "time_starttransfer": 0.046357,
+        "time_total": 0.052743,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 89335,
+      "sha256": "57262860112f02e044597a4f791e317b18e1981f6c29b8e4b3b4e45a2794f6fb"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DVr65jch.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.749845+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"bb8-vQb11gTQvE68BxwJrgkVFRkBpPc-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "1591"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DVr65jch.js",
+        "num_redirects": 0,
+        "size_download": 1591,
+        "size_header": 467,
+        "time_namelookup": 0.027445,
+        "time_connect": 0.031674,
+        "time_appconnect": 0.058998,
+        "time_starttransfer": 0.065383,
+        "time_total": 0.066271,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 3000,
+      "sha256": "968675ce19f444e76afdc55c5088bca561cf51cf759a05914af33c48137eeeba"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DZf8cCLO.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.788352+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"23abe-8ruUSOThepp24H341Rups5cLFzc-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DZf8cCLO.js",
+        "num_redirects": 0,
+        "size_download": 19880,
+        "size_header": 447,
+        "time_namelookup": 0.014179,
+        "time_connect": 0.019413,
+        "time_appconnect": 0.04563,
+        "time_starttransfer": 0.055721,
+        "time_total": 0.061716,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 146110,
+      "sha256": "be76f3b1b4d41d09ac8cf35d6061b408b8ca8443745840e7ddd61e2728c86c55"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DjQfYKVe.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.797593+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"2b0-+EqzIkXAH+nh/aTu4Y5Z7KbiVDQ-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "485"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DjQfYKVe.js",
+        "num_redirects": 0,
+        "size_download": 485,
+        "size_header": 466,
+        "time_namelookup": 0.009284,
+        "time_connect": 0.015923,
+        "time_appconnect": 0.041699,
+        "time_starttransfer": 0.049269,
+        "time_total": 0.050091,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 688,
+      "sha256": "22d4a947771768965c73b644aeb2cf0cbbd2a5dd1418cb545dad81b442b8808e"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DowBHoMM.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.840151+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"42c-OQBo11sTTqGaTAkYwoKpOwXEbJ0-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "713"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DowBHoMM.js",
+        "num_redirects": 0,
+        "size_download": 713,
+        "size_header": 466,
+        "time_namelookup": 0.004118,
+        "time_connect": 0.009959,
+        "time_appconnect": 0.047359,
+        "time_starttransfer": 0.058418,
+        "time_total": 0.059404,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1068,
+      "sha256": "83652ff578bb8c3bfe1c8ce974f1f4e01fd34873341a85ba046307cab77596f0"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DtO_nxII.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.868211+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"1cb-fE4g2bSlp/O8u6jRDEcJZWc9QRM\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "459"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DtO_nxII.js",
+        "num_redirects": 0,
+        "size_download": 459,
+        "size_header": 414,
+        "time_namelookup": 0.004427,
+        "time_connect": 0.011616,
+        "time_appconnect": 0.051073,
+        "time_starttransfer": 0.06148,
+        "time_total": 0.062651,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 459,
+      "sha256": "af98a16a67be801efde1910f42d9596d5f3b1ffa9813a1e70122eec440c55c4c"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/DyMrcEWi.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.896266+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"429b-otO1+bvkECMjo3Kr5S5CTZgH/4c-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/DyMrcEWi.js",
+        "num_redirects": 0,
+        "size_download": 5900,
+        "size_header": 446,
+        "time_namelookup": 0.004008,
+        "time_connect": 0.009294,
+        "time_appconnect": 0.037351,
+        "time_starttransfer": 0.051349,
+        "time_total": 0.053998,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 17051,
+      "sha256": "82d1144d90f3fe2bea3d4582db380c8187fa3a4f294eecd79c1255542f6d3248"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/ERmm1SMR.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.906182+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"2bd0-XvbeST5AtVpFUn+/1pEL552rNsc-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/ERmm1SMR.js",
+        "num_redirects": 0,
+        "size_download": 4405,
+        "size_header": 446,
+        "time_namelookup": 0.00313,
+        "time_connect": 0.009112,
+        "time_appconnect": 0.038012,
+        "time_starttransfer": 0.044938,
+        "time_total": 0.046772,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 11216,
+      "sha256": "7027c2794ac1b434861cd447d73ac9862b3e2e76e7e4c32186acaf62f5bbe574"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/FKKnuMkC.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.943585+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"10664-BATWY/qVxu9HXsVSyWf3Vf/iWJE-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/FKKnuMkC.js",
+        "num_redirects": 0,
+        "size_download": 20627,
+        "size_header": 447,
+        "time_namelookup": 0.007271,
+        "time_connect": 0.01361,
+        "time_appconnect": 0.038341,
+        "time_starttransfer": 0.047039,
+        "time_total": 0.053344,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 67172,
+      "sha256": "68e035803b14d2a06b9c90bc790d406bd743a461f059288ec9d130fa99dad996"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/LRhNHhcJ.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.983690+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"62f-I4/BSfuB1DmyyWaUt6S7zg82JYs-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "911"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/LRhNHhcJ.js",
+        "num_redirects": 0,
+        "size_download": 911,
+        "size_header": 466,
+        "time_namelookup": 0.002736,
+        "time_connect": 0.007569,
+        "time_appconnect": 0.03833,
+        "time_starttransfer": 0.047352,
+        "time_total": 0.048229,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1583,
+      "sha256": "93bffb19f9447695e817b128be877218bcbb0487441de7173e0f1f375025920a"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/LegalPage.C6jWbUSQ.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:56.997525+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"af5-ZUJUwKa4I14idfHdT/UQouxX19k-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "912"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/LegalPage.C6jWbUSQ.css",
+        "num_redirects": 0,
+        "size_download": 912,
+        "size_header": 459,
+        "time_namelookup": 0.006155,
+        "time_connect": 0.016835,
+        "time_appconnect": 0.042571,
+        "time_starttransfer": 0.049272,
+        "time_total": 0.052454,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 2805,
+      "sha256": "0f3a754ebafb035815b89c5a1c71f6044cb99aa25f6b0e41e4f08b8d31dc1ba8"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/PBduzueD.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.001558+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"dd-zV6nqa2umUudnRaDo3WKuheIDKI\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "221"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/PBduzueD.js",
+        "num_redirects": 0,
+        "size_download": 221,
+        "size_header": 413,
+        "time_namelookup": 0.00765,
+        "time_connect": 0.013062,
+        "time_appconnect": 0.041402,
+        "time_starttransfer": 0.048283,
+        "time_total": 0.049163,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 221,
+      "sha256": "6c910c1ee4caca38e9596aca39e94f41e1ed7511335499a6d832d18f27bd1086"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/WineImage.I5brU0l1.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.044119+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"fe-pliwStUAIWK86cJeH5QXOUt+1s0\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "254"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/WineImage.I5brU0l1.css",
+        "num_redirects": 0,
+        "size_download": 254,
+        "size_header": 406,
+        "time_namelookup": 0.008256,
+        "time_connect": 0.013127,
+        "time_appconnect": 0.04284,
+        "time_starttransfer": 0.049077,
+        "time_total": 0.050451,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 254,
+      "sha256": "b32cc635de49bde0bfa81569be782098d1d872b0ac49eccc3582fa8693350dfa"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/XvuQ6pUv.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.068793+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"3663-uHXC3x9bWIit4FfPSwwSH2q8uZ4-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/XvuQ6pUv.js",
+        "num_redirects": 0,
+        "size_download": 5356,
+        "size_header": 446,
+        "time_namelookup": 0.006876,
+        "time_connect": 0.011667,
+        "time_appconnect": 0.042812,
+        "time_starttransfer": 0.051544,
+        "time_total": 0.052667,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 13923,
+      "sha256": "754da3cf42f54786d6b83a2b64f940097134fba63af414e9ca3096f313bade75"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/_-oT3dcO.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.082757+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"520-FwFcZQgeWLlvHeKqWd1TXEg77xQ-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "744"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/_-oT3dcO.js",
+        "num_redirects": 0,
+        "size_download": 744,
+        "size_header": 466,
+        "time_namelookup": 0.009477,
+        "time_connect": 0.015475,
+        "time_appconnect": 0.075895,
+        "time_starttransfer": 0.083939,
+        "time_total": 0.084652,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1312,
+      "sha256": "7710b25bfe3a4a4155f684540afa07b3d8fdf0bd21d2b2ae155f084ae58ca7c9"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/asyncData.CNxf0Rz5.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.098639+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"514c-s8M4ZQfP7EjZh0PoBa2EjQwELSw-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/asyncData.CNxf0Rz5.css",
+        "num_redirects": 0,
+        "size_download": 4473,
+        "size_header": 439,
+        "time_namelookup": 0.006464,
+        "time_connect": 0.01214,
+        "time_appconnect": 0.054284,
+        "time_starttransfer": 0.061435,
+        "time_total": 0.068771,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 20812,
+      "sha256": "046b9618b3a8615d9427322f94717d265f1eca0b9162f4bf021aa11b3a71428b"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/bQpHJfXN.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.133432+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"e2-aEKhxd/2YCZKrx/x7O4zYvweZWE\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "226"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/bQpHJfXN.js",
+        "num_redirects": 0,
+        "size_download": 226,
+        "size_header": 413,
+        "time_namelookup": 0.004334,
+        "time_connect": 0.009557,
+        "time_appconnect": 0.041731,
+        "time_starttransfer": 0.049095,
+        "time_total": 0.050404,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 226,
+      "sha256": "93309565e881f917c353eb18554e0502bfc2af08949656eb3ead8534efaf9f5e"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/botLandings.D4rbaqkE.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.168516+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"3bc6-V33O4HnkvOlRrHwUOYEuGRnHSbs-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "3528"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/botLandings.D4rbaqkE.css",
+        "num_redirects": 0,
+        "size_download": 3528,
+        "size_header": 461,
+        "time_namelookup": 0.00593,
+        "time_connect": 0.011265,
+        "time_appconnect": 0.034582,
+        "time_starttransfer": 0.041979,
+        "time_total": 0.043645,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 15302,
+      "sha256": "18fd9c7b467cfc938bf7c19ecf79bdcec7a7088d71df9ec0c0c9c0770ec1739c"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/dinner-heic.worker-CeP_85SJ.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.217089+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"6be-qRczQffcwJsQd2VwI/j2EQ3tqkk-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "911"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/dinner-heic.worker-CeP_85SJ.js",
+        "num_redirects": 0,
+        "size_download": 911,
+        "size_header": 466,
+        "time_namelookup": 0.029143,
+        "time_connect": 0.03419,
+        "time_appconnect": 0.057407,
+        "time_starttransfer": 0.063739,
+        "time_total": 0.064901,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1726,
+      "sha256": "68015a4aa820b86ff6ab9306affa34658622f3bdb77a3c997982ae3ed3f61f7f"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/entry.DbVFzIR5.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.220794+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"1075e-hdql/zNT7ZquxYcQaIAWLw6x1kI-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/entry.DbVFzIR5.css",
+        "num_redirects": 0,
+        "size_download": 14712,
+        "size_header": 440,
+        "time_namelookup": 0.007747,
+        "time_connect": 0.013294,
+        "time_appconnect": 0.035471,
+        "time_starttransfer": 0.043488,
+        "time_total": 0.050206,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 67422,
+      "sha256": "862c69c62533aa3dc2f79e41fb8b71586d9c5f8b03cbf035ef24ba0d64bee577"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/fetch.DayTIZOI.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.267645+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"d1f-FWLUDLeDLdJqOKuuf6lcdUqZPdY-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "998"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/fetch.DayTIZOI.css",
+        "num_redirects": 0,
+        "size_download": 998,
+        "size_header": 459,
+        "time_namelookup": 0.002877,
+        "time_connect": 0.007073,
+        "time_appconnect": 0.03292,
+        "time_starttransfer": 0.039798,
+        "time_total": 0.040598,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 3359,
+      "sha256": "49c2fef05b368b500e4e60de671c9f59cabffd5efb98f0603645496788bc8886"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/ierkRv7s.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.278937+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"127-VY5pgvRGlbWyteWvr74zIwuOPMM\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "295"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/ierkRv7s.js",
+        "num_redirects": 0,
+        "size_download": 295,
+        "size_header": 414,
+        "time_namelookup": 0.007455,
+        "time_connect": 0.011917,
+        "time_appconnect": 0.037912,
+        "time_starttransfer": 0.045763,
+        "time_total": 0.049938,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 295,
+      "sha256": "01de568db599af86e59fe6161729061684cd5c8d134556ad8123cc1769bc7767"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/product-line-map.5kr3W_go.css",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.320290+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/css; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"1c5-r1qz90l8t6MYFNOeI3SvyAbXjN8\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "453"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/product-line-map.5kr3W_go.css",
+        "num_redirects": 0,
+        "size_download": 453,
+        "size_header": 407,
+        "time_namelookup": 0.007031,
+        "time_connect": 0.012108,
+        "time_appconnect": 0.037644,
+        "time_starttransfer": 0.043891,
+        "time_total": 0.044637,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 453,
+      "sha256": "dd682cd30c659f51716d6526801624be51be357885524fa2c33934634c3fffce"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/scm-fJBc.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.334016+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"16d9-45AVTEO7dkLWfGHuva4RjoFHzlg-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "2577"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/scm-fJBc.js",
+        "num_redirects": 0,
+        "size_download": 2577,
+        "size_header": 468,
+        "time_namelookup": 0.003961,
+        "time_connect": 0.008596,
+        "time_appconnect": 0.036332,
+        "time_starttransfer": 0.047766,
+        "time_total": 0.057722,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 5849,
+      "sha256": "2949c2d02a874e14d00b7abd96b5e6d3bea4aef0c54924a228f6eb4bb298afed"
+    },
+    {
+      "url": "https://chtozavino.ru/_nuxt/tfyk0GNe.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.350797+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"4c-3Q5H/7caV+CSvXYbuMDzSdeODtM\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "76"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/_nuxt/tfyk0GNe.js",
+        "num_redirects": 0,
+        "size_download": 76,
+        "size_header": 412,
+        "time_namelookup": 0.011888,
+        "time_connect": 0.02419,
+        "time_appconnect": 0.06453,
+        "time_starttransfer": 0.070602,
+        "time_total": 0.072054,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 76,
+      "sha256": "468b6d973cb7ac4759f890581dbf900b696144556d1dae4c262973e3e6a88a08"
+    },
+    {
+      "url": "https://chtozavino.ru/icons/product-logo.svg",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.369862+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "image/svg+xml",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"29d2f-nbWE29a0QJRwE5UwpAf5V6AedUo-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/icons/product-logo.svg",
+        "num_redirects": 0,
+        "size_download": 155135,
+        "size_header": 378,
+        "time_namelookup": 0.025472,
+        "time_connect": 0.030402,
+        "time_appconnect": 0.065443,
+        "time_starttransfer": 0.072361,
+        "time_total": 0.08795,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 171311,
+      "sha256": "97153903dba33b7c19b9722fb19aab0da39dedd2ab1f27fbd125a15c2f42d49b"
+    },
+    {
+      "url": "https://chtozavino.ru/icons/pwa-512.png",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.436670+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-type": "image/png",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"1631f-y0jdDQ5PSxTw2jiXvc1kWTbExmc\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "90911"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/icons/pwa-512.png",
+        "num_redirects": 0,
+        "size_download": 90911,
+        "size_header": 345,
+        "time_namelookup": 0.006028,
+        "time_connect": 0.010143,
+        "time_appconnect": 0.033584,
+        "time_starttransfer": 0.040142,
+        "time_total": 0.050084,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 90911,
+      "sha256": "b2f82afaece69c3b5ca1dd6f5a5b5e508cbeb2b658d14329c040f8e4b96ef126"
+    },
+    {
+      "url": "https://chtozavino.ru/manifest.webmanifest",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.445947+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-encoding": "gzip",
+        "content-type": "application/manifest+json",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"3b5-6Gm9lYObkQdgF1MDN8zGxTiKc7A-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:31 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "453"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/manifest.webmanifest",
+        "num_redirects": 0,
+        "size_download": 453,
+        "size_header": 460,
+        "time_namelookup": 0.005095,
+        "time_connect": 0.010651,
+        "time_appconnect": 0.032902,
+        "time_starttransfer": 0.040694,
+        "time_total": 0.041504,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 949,
+      "sha256": "6e18a67043c6ce4375c7f9dae8b712cf188902cb83265765d747a262b7cad2ab"
+    },
+    {
+      "url": "https://chtozavino.ru/reference/background.webp",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.482007+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
+        "content-type": "image/webp",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"1753e-+C8cFTxoQvQIWcazpizSyFajIas\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "95550"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/reference/background.webp",
+        "num_redirects": 0,
+        "size_download": 95550,
+        "size_header": 415,
+        "time_namelookup": 0.004357,
+        "time_connect": 0.009549,
+        "time_appconnect": 0.034986,
+        "time_starttransfer": 0.047616,
+        "time_total": 0.056181,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 95550,
+      "sha256": "56a52075c69b80b9632642ccd57d8b7672c3b3f914ee9ec5c55ecfb3a1d39a9c"
+    },
+    {
+      "url": "https://chtozavino.ru/reference/playfair-display.woff2",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.507427+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
+        "content-type": "font/woff2",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"12390-Pg0ScBBzDLtGoTD604bAxp2uKso\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "74640"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/reference/playfair-display.woff2",
+        "num_redirects": 0,
+        "size_download": 74640,
+        "size_header": 415,
+        "time_namelookup": 0.003495,
+        "time_connect": 0.008367,
+        "time_appconnect": 0.038887,
+        "time_starttransfer": 0.046469,
+        "time_total": 0.058525,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 74640,
+      "sha256": "f944fb36ede0ae3c2345a1a2f859537ae7a751bbbffecd38e43e9714aa18008d"
+    },
+    {
+      "url": "https://chtozavino.ru/sw.js",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:31:57.534607+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-encoding": "gzip",
+        "content-type": "text/javascript; charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:31:57 GMT",
+        "etag": "\"16d1-DV5o+YzaLiV1BEA0BRYKMNfF/RY-gzip\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:41 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "content-length": "2110"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/sw.js",
+        "num_redirects": 0,
+        "size_download": 2110,
+        "size_header": 467,
+        "time_namelookup": 0.004056,
+        "time_connect": 0.010102,
+        "time_appconnect": 0.03221,
+        "time_starttransfer": 0.039832,
+        "time_total": 0.040409,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 5841,
+      "sha256": "e1ca27239757f701767de3f5734592340411732eb669a33e88a0d5493b5bf684"
+    }
+  ],
+  "asset_relations": {
+    "https://chtozavino.ru/_nuxt/entry.DbVFzIR5.css": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/fetch.DayTIZOI.css": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/product-line-map.5kr3W_go.css": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/asyncData.CNxf0Rz5.css": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/WineImage.I5brU0l1.css": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/ClRa6ZD2.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DQBUlhso.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/0rU5Fe5s.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/BVa9-aD-.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/BQuVdr5B.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/BDNMzG2s.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/ierkRv7s.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/CI4320fK.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/BUN8dXRC.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DZf8cCLO.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DtO_nxII.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/CbPwrV4D.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/BkMHKqUw.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DowBHoMM.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/Bd17z0YL.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "prefetch"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/C4i0PbWK.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "prefetch"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/D9euAWXG.js": [
+      {
+        "page": "https://chtozavino.ru/",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "prefetch"
+      },
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "prefetch"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DjQfYKVe.js": [
+      {
+        "page": "https://chtozavino.ru/shelf",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/2ROtIbvw.js": [
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/FKKnuMkC.js": [
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/_-oT3dcO.js": [
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "prefetch"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/dinner-heic.worker-CeP_85SJ.js": [
+      {
+        "page": "https://chtozavino.ru/dish",
+        "rel": "prefetch"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DVr65jch.js": [
+      {
+        "page": "https://chtozavino.ru/lineup",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/CeqCqXjG.js": [
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/B0-PB-8a.js": [
+      {
+        "page": "https://chtozavino.ru/android",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/ERmm1SMR.js": [
+      {
+        "page": "https://chtozavino.ru/iphone",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/botLandings.D4rbaqkE.css": [
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/bQpHJfXN.js": [
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/DyMrcEWi.js": [
+      {
+        "page": "https://chtozavino.ru/telegram-bot",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/PBduzueD.js": [
+      {
+        "page": "https://chtozavino.ru/max-bot",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/7328V_V_.js": [
+      {
+        "page": "https://chtozavino.ru/presentation",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/CECKVOQY.js": [
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/tfyk0GNe.js": [
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/Cki4HsKu.js": [
+      {
+        "page": "https://chtozavino.ru/ideas",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/XvuQ6pUv.js": [
+      {
+        "page": "https://chtozavino.ru/game",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/D3iYONJX.js": [
+      {
+        "page": "https://chtozavino.ru/crocodile",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/LegalPage.C6jWbUSQ.css": [
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "stylesheet"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "stylesheet"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/CVxAk-kZ.js": [
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/LRhNHhcJ.js": [
+      {
+        "page": "https://chtozavino.ru/terms",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      },
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/D4Lb1seT.js": [
+      {
+        "page": "https://chtozavino.ru/privacy",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/B6367ggZ.js": [
+      {
+        "page": "https://chtozavino.ru/contacts",
+        "rel": "modulepreload"
+      }
+    ],
+    "https://chtozavino.ru/_nuxt/scm-fJBc.js": [
+      {
+        "page": "https://chtozavino.ru/sitemap",
+        "rel": "modulepreload"
+      }
+    ]
+  },
+  "links": [
+    {
+      "url": "https://chtozavino.ru/account",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.712304+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/crocodile/downloads/box-a4.pdf",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "application/pdf",
+        "etag": "\"20ef9b-dw0HIL5CDnKHsKO8mGEFB6I5txY\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "content-length": "2158491"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.751611+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/crocodile/downloads/cards-a4.pdf",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "application/pdf",
+        "etag": "\"c7edf3-YXXev9M9oz4Mm7cetiRM+rhvKyY\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:32 GMT",
+        "content-length": "13102579"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.889860+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/downloads/chtozavino-0.2.0-release-test-signed.apk",
+      "method": "HEAD",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-type": "application/json"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.718783+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/abrau-durso",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.814552+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/agora",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.844803+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/alma-valley",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.859178+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/aya",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.913074+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/belbek",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.933901+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/burnier",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.954972+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/chateau-de-talu",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:57.978056+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/chateau-pinot",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.002983+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/derbent-vino",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.053001+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/esse",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.129264+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/fanagoria",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.133239+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/golubitskoe-estate",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.163697+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/inkerman",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.167048+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/koktebel",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.214256+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/kuban-vino",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.250447+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/massandra",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.304745+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/myskhako",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.303703+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/novy-svet",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.335006+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/raevskoe",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.360654+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/sikory",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.392783+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/sober-bash",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.409818+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/soyuz-vino",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.434442+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/valery-zakharyin",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.463000+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/vedernikov",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.485484+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/lineup/zolotaya-balka",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "text/html;charset=utf-8",
+        "x-robots-tag": "noindex, nofollow, noarchive"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.508287+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/presentation/video.mp4",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-store",
+        "content-type": "video/mp4",
+        "etag": "\"36115774-r4P7g10rnfq+kANIaxTQ3ZsjdLU\"",
+        "last-modified": "Tue, 29 Sep 2026 20:57:40 GMT",
+        "x-robots-tag": "noindex, nofollow, noarchive",
+        "content-length": "907106164"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:32:00.926016+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/presentations/chtozavino-presentation.pdf",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-store",
+        "content-type": "application/pdf",
+        "etag": "\"8884af-wJL4yI+nFgn2aNlZNpiC2vk79NY\"",
+        "last-modified": "Tue, 29 Sep 2026 20:57:40 GMT",
+        "x-robots-tag": "noindex, nofollow, noarchive",
+        "content-length": "8946863"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.610260+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/presentations/chtozavino-presentation.pptx",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-store",
+        "content-type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "etag": "\"573835b-Ll0/TxXixdDyLcD63FUmY0viWkI\"",
+        "last-modified": "Tue, 29 Sep 2026 20:57:40 GMT",
+        "x-robots-tag": "noindex, nofollow, noarchive",
+        "content-length": "91456347"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.831107+00:00"
+    },
+    {
+      "url": "https://chtozavino.ru/sitemap.xml",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "content-type": "application/xml",
+        "etag": "\"446-wkagP3q2qC2iSCJuXrKuaCkweMs\"",
+        "last-modified": "Tue, 20 Oct 2026 15:25:33 GMT",
+        "content-length": "1094"
+      },
+      "error": "",
+      "observed_utc": "2026-10-20T17:31:58.614050+00:00"
+    }
+  ],
+  "rechecks": [],
+  "extra": [
+    {
+      "url": "https://chtozavino.ru/shelf-lens",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:32:00.926563+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-type": "application/json",
+        "date": "Tue, 20 Oct 2026 17:32:01 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "222"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/shelf-lens",
+        "num_redirects": 0,
+        "size_download": 222,
+        "size_header": 378,
+        "time_namelookup": 0.005034,
+        "time_connect": 0.009999,
+        "time_appconnect": 0.028496,
+        "time_starttransfer": 0.222762,
+        "time_total": 0.22322,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 222,
+      "sha256": "cccce3128742445df8bf12a53727be6dcc71320e90a7982e20143d71811c3d3c",
+      "body": "{\n  \"error\": true,\n  \"url\": \"https://chtozavino.ru/shelf-lens\",\n  \"statusCode\": 404,\n  \"statusMessage\": \"Page not found: /shelf-lens\",\n  \"message\": \"Page not found: /shelf-lens\",\n  \"data\": {\n    \"path\": \"/shelf-lens\"\n  }\n}"
+    },
+    {
+      "url": "https://chtozavino.ru/api/config",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:32:01.179620+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "date": "Tue, 20 Oct 2026 17:32:01 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "151"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/api/config",
+        "num_redirects": 0,
+        "size_download": 151,
+        "size_header": 286,
+        "time_namelookup": 0.003019,
+        "time_connect": 0.008156,
+        "time_appconnect": 0.024718,
+        "time_starttransfer": 0.121921,
+        "time_total": 0.123146,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 151,
+      "sha256": "0e1bddf293e7912b44f5ee1969b6d616677fead295a12ec17e45935ea79d546c",
+      "body": "{\"predictionMode\":\"upstream\",\"apiAvailable\":true,\"catalogMode\":\"source-fallback\",\"maxImageBytes\":10485760,\"shelfAvailable\":true,\"dinnerAvailable\":true}"
+    },
+    {
+      "url": "https://chtozavino.ru/wines/priboj-marchenko-beloe-polusuhoe",
+      "variant": "",
+      "observed_utc": "2026-10-20T17:32:01.328590+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 308,
+      "headers": {
+        "content-type": "text/html",
+        "date": "Tue, 20 Oct 2026 17:32:01 GMT",
+        "location": "https://vino-svoe.ru/wines/priboj-marchenko-beloe-polusuhoe",
+        "strict-transport-security": "max-age=31536000",
+        "via": "1.1 Caddy",
+        "content-length": "145"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/wines/priboj-marchenko-beloe-polusuhoe",
+        "num_redirects": 0,
+        "size_download": 145,
+        "size_header": 325,
+        "time_namelookup": 0.00255,
+        "time_connect": 0.009852,
+        "time_appconnect": 0.027979,
+        "time_starttransfer": 0.046183,
+        "time_total": 0.046626,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 145,
+      "sha256": "6d3c9b8b2502cf650a77c8d8193a84351bd3b2dee29083e2dbec75c51f7613da",
+      "page": {
+        "lang": null,
+        "title": "",
+        "meta": [
+          {
+            "http-equiv": "refresh",
+            "content": "0; url=https://vino-svoe.ru/wines/priboj-marchenko-beloe-polusuhoe"
+          }
+        ],
+        "links": [],
+        "anchors": [],
+        "headings": [],
+        "schemas": [],
+        "scripts": [],
+        "images": [],
+        "videos": [],
+        "word_count_whitespace": 0,
+        "inert_elements": 0,
+        "age_dialog_in_html": false,
+        "nuxt_ssr": false,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    },
+    {
+      "url": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fchtozavino.ru%2F&strategy=mobile&category=performance",
+      "variant": "pagespeed-mobile",
+      "observed_utc": "2026-10-20T17:32:02.129703+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 429,
+      "headers": {
+        "vary": "Referer",
+        "content-type": "application/json; charset=UTF-8",
+        "content-encoding": "gzip",
+        "date": "Tue, 20 Oct 2026 17:32:02 GMT",
+        "server": "ESF",
+        "content-length": "513"
+      },
+      "metrics": {
+        "url_effective": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fchtozavino.ru%2F&strategy=mobile&category=performance",
+        "num_redirects": 0,
+        "size_download": 513,
+        "size_header": 342,
+        "time_namelookup": 0.277949,
+        "time_connect": 0.373271,
+        "time_appconnect": 0.499508,
+        "time_starttransfer": 0.623919,
+        "time_total": 0.626032,
+        "remote_ip": "172.217.118.4",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1346,
+      "sha256": "78e42697033c74d5a068793ca95598c162d656c71e32864eae045f753bd400b2",
+      "body": "PageSpeed API returned HTTP 429 RESOURCE_EXHAUSTED / daily quota exceeded."
+    },
+    {
+      "url": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fchtozavino.ru%2F&strategy=desktop&category=performance",
+      "variant": "pagespeed-desktop",
+      "observed_utc": "2026-10-20T17:32:02.780706+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 429,
+      "headers": {
+        "vary": "Referer",
+        "content-type": "application/json; charset=UTF-8",
+        "content-encoding": "gzip",
+        "date": "Tue, 20 Oct 2026 17:32:03 GMT",
+        "server": "ESF",
+        "content-length": "514"
+      },
+      "metrics": {
+        "url_effective": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fchtozavino.ru%2F&strategy=desktop&category=performance",
+        "num_redirects": 0,
+        "size_download": 514,
+        "size_header": 342,
+        "time_namelookup": 0.002151,
+        "time_connect": 0.076458,
+        "time_appconnect": 0.190066,
+        "time_starttransfer": 0.400012,
+        "time_total": 0.401594,
+        "remote_ip": "172.217.118.4",
+        "http_version": "2"
+      },
+      "decoded_bytes": 1346,
+      "sha256": "beef43d6583e50f7f9dbe5f911bf724923880ae17804d8253bc7e3004dae0a3d",
+      "body": "PageSpeed API returned HTTP 429 RESOURCE_EXHAUSTED / daily quota exceeded."
+    }
+  ],
+  "samples": [
+    {
+      "url": "https://chtozavino.ru/",
+      "variant": "ttfb-0",
+      "observed_utc": "2026-10-20T17:32:01.400057+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:32:01 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "x-powered-by": "Nuxt"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/",
+        "num_redirects": 0,
+        "size_download": 5957,
+        "size_header": 314,
+        "time_namelookup": 0.002923,
+        "time_connect": 0.0088,
+        "time_appconnect": 0.027245,
+        "time_starttransfer": 0.193291,
+        "time_total": 0.19398,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19901,
+      "sha256": "24d9e556af21429204ea69bea9ec8af22902f35c2a614832c9e9f32d330fe2cf",
+      "page": {
+        "lang": "ru",
+        "title": "Найти вино по фото — Что за вино?",
+        "meta": [
+          {
+            "charset": "utf-8"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+          },
+          {
+            "name": "description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "property": "og:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:url",
+            "content": "https://chtozavino.ru/"
+          },
+          {
+            "property": "og:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "property": "og:image:alt",
+            "content": "Что за вино? — поиск российского вина по фотографии"
+          },
+          {
+            "property": "og:locale",
+            "content": "ru_RU"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "name": "twitter:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "name": "twitter:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: light)",
+            "content": "#7b3528"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: dark)",
+            "content": "#211e1c"
+          },
+          {
+            "name": "mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "content": "default"
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "content": "Что за вино?"
+          }
+        ],
+        "links": [
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/entry.DbVFzIR5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/fetch.DayTIZOI.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/product-line-map.5kr3W_go.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/asyncData.CNxf0Rz5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/WineImage.I5brU0l1.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ClRa6ZD2.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DQBUlhso.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/0rU5Fe5s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BVa9-aD-.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BQuVdr5B.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BDNMzG2s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ierkRv7s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CI4320fK.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BUN8dXRC.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DZf8cCLO.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DtO_nxII.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CbPwrV4D.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BkMHKqUw.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DowBHoMM.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/Bd17z0YL.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/C4i0PbWK.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/D9euAWXG.js"
+          },
+          {
+            "rel": "canonical",
+            "href": "https://chtozavino.ru/"
+          },
+          {
+            "rel": "icon",
+            "type": "image/svg+xml",
+            "href": "/icons/product-logo.svg"
+          },
+          {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "/icons/apple-touch-icon.png"
+          },
+          {
+            "rel": "manifest",
+            "href": "/manifest.webmanifest"
+          }
+        ],
+        "anchors": [
+          {
+            "href": "#main-content",
+            "rel": null,
+            "text": "К основному содержанию"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Что за вино?"
+          },
+          {
+            "href": "/account",
+            "rel": null,
+            "text": "Дневник"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "На портал «Свое Вино»"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Одна бутылка"
+          },
+          {
+            "href": "/shelf",
+            "rel": null,
+            "text": "Вся полка"
+          },
+          {
+            "href": "/dish",
+            "rel": null,
+            "text": "Вино к блюду"
+          },
+          {
+            "href": "/privacy#site",
+            "rel": null,
+            "text": "Фото хранится 30 дней"
+          },
+          {
+            "href": "/terms",
+            "rel": null,
+            "text": "Условия использования"
+          },
+          {
+            "href": "/privacy",
+            "rel": null,
+            "text": "Политика обработки персональных данных"
+          },
+          {
+            "href": "/contacts",
+            "rel": null,
+            "text": "Контакты"
+          },
+          {
+            "href": "/ideas",
+            "rel": null,
+            "text": "Идеи за пределами распознавания"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "/iphone",
+            "rel": null,
+            "text": "iPhone"
+          },
+          {
+            "href": "/sitemap",
+            "rel": null,
+            "text": "Карта сайта"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "Откройте культуру российского вина"
+          }
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Найти вино по фото"
+          },
+          {
+            "level": 2,
+            "text": "Всего один снимок"
+          },
+          {
+            "level": 2,
+            "text": "Здесь появится ваше вино"
+          },
+          {
+            "level": 2,
+            "text": "Вам уже исполнилось 18 лет?"
+          }
+        ],
+        "schemas": [
+          {
+            "valid_json": true,
+            "data": {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://chtozavino.ru/#website",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "inLanguage": "ru"
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://chtozavino.ru/#webapp",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "applicationCategory": "LifestyleApplication",
+                  "operatingSystem": "Any",
+                  "inLanguage": "ru",
+                  "isPartOf": {
+                    "@id": "https://chtozavino.ru/#website"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "RUB"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scripts": [
+          {
+            "type": "importmap"
+          },
+          {
+            "data-hid": "theme-init"
+          },
+          {
+            "data-hid": "age-init"
+          },
+          {
+            "type": "text/javascript",
+            "data-hid": "yandex-metrika"
+          },
+          {
+            "type": "module",
+            "src": "/_nuxt/ClRa6ZD2.js",
+            "crossorigin": null
+          },
+          {
+            "type": "application/ld+json"
+          },
+          {},
+          {
+            "type": "application/json",
+            "data-nuxt-data": "nuxt-app",
+            "data-ssr": "true",
+            "id": "__NUXT_DATA__"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://mc.yandex.ru/watch/113460637",
+            "style": "position:absolute; left:-9999px;",
+            "alt": ""
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          },
+          {
+            "src": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+            "alt": "",
+            "width": "230",
+            "height": "300"
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          }
+        ],
+        "videos": [],
+        "word_count_whitespace": 203,
+        "inert_elements": 1,
+        "age_dialog_in_html": true,
+        "nuxt_ssr": true,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    },
+    {
+      "url": "https://chtozavino.ru/",
+      "variant": "ttfb-1",
+      "observed_utc": "2026-10-20T17:32:01.640163+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:32:01 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "x-powered-by": "Nuxt"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/",
+        "num_redirects": 0,
+        "size_download": 5957,
+        "size_header": 314,
+        "time_namelookup": 0.002469,
+        "time_connect": 0.008098,
+        "time_appconnect": 0.023044,
+        "time_starttransfer": 0.118224,
+        "time_total": 0.119503,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19901,
+      "sha256": "24d9e556af21429204ea69bea9ec8af22902f35c2a614832c9e9f32d330fe2cf",
+      "page": {
+        "lang": "ru",
+        "title": "Найти вино по фото — Что за вино?",
+        "meta": [
+          {
+            "charset": "utf-8"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+          },
+          {
+            "name": "description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "property": "og:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:url",
+            "content": "https://chtozavino.ru/"
+          },
+          {
+            "property": "og:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "property": "og:image:alt",
+            "content": "Что за вино? — поиск российского вина по фотографии"
+          },
+          {
+            "property": "og:locale",
+            "content": "ru_RU"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "name": "twitter:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "name": "twitter:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: light)",
+            "content": "#7b3528"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: dark)",
+            "content": "#211e1c"
+          },
+          {
+            "name": "mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "content": "default"
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "content": "Что за вино?"
+          }
+        ],
+        "links": [
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/entry.DbVFzIR5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/fetch.DayTIZOI.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/product-line-map.5kr3W_go.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/asyncData.CNxf0Rz5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/WineImage.I5brU0l1.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ClRa6ZD2.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DQBUlhso.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/0rU5Fe5s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BVa9-aD-.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BQuVdr5B.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BDNMzG2s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ierkRv7s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CI4320fK.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BUN8dXRC.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DZf8cCLO.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DtO_nxII.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CbPwrV4D.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BkMHKqUw.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DowBHoMM.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/Bd17z0YL.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/C4i0PbWK.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/D9euAWXG.js"
+          },
+          {
+            "rel": "canonical",
+            "href": "https://chtozavino.ru/"
+          },
+          {
+            "rel": "icon",
+            "type": "image/svg+xml",
+            "href": "/icons/product-logo.svg"
+          },
+          {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "/icons/apple-touch-icon.png"
+          },
+          {
+            "rel": "manifest",
+            "href": "/manifest.webmanifest"
+          }
+        ],
+        "anchors": [
+          {
+            "href": "#main-content",
+            "rel": null,
+            "text": "К основному содержанию"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Что за вино?"
+          },
+          {
+            "href": "/account",
+            "rel": null,
+            "text": "Дневник"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "На портал «Свое Вино»"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Одна бутылка"
+          },
+          {
+            "href": "/shelf",
+            "rel": null,
+            "text": "Вся полка"
+          },
+          {
+            "href": "/dish",
+            "rel": null,
+            "text": "Вино к блюду"
+          },
+          {
+            "href": "/privacy#site",
+            "rel": null,
+            "text": "Фото хранится 30 дней"
+          },
+          {
+            "href": "/terms",
+            "rel": null,
+            "text": "Условия использования"
+          },
+          {
+            "href": "/privacy",
+            "rel": null,
+            "text": "Политика обработки персональных данных"
+          },
+          {
+            "href": "/contacts",
+            "rel": null,
+            "text": "Контакты"
+          },
+          {
+            "href": "/ideas",
+            "rel": null,
+            "text": "Идеи за пределами распознавания"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "/iphone",
+            "rel": null,
+            "text": "iPhone"
+          },
+          {
+            "href": "/sitemap",
+            "rel": null,
+            "text": "Карта сайта"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "Откройте культуру российского вина"
+          }
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Найти вино по фото"
+          },
+          {
+            "level": 2,
+            "text": "Всего один снимок"
+          },
+          {
+            "level": 2,
+            "text": "Здесь появится ваше вино"
+          },
+          {
+            "level": 2,
+            "text": "Вам уже исполнилось 18 лет?"
+          }
+        ],
+        "schemas": [
+          {
+            "valid_json": true,
+            "data": {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://chtozavino.ru/#website",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "inLanguage": "ru"
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://chtozavino.ru/#webapp",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "applicationCategory": "LifestyleApplication",
+                  "operatingSystem": "Any",
+                  "inLanguage": "ru",
+                  "isPartOf": {
+                    "@id": "https://chtozavino.ru/#website"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "RUB"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scripts": [
+          {
+            "type": "importmap"
+          },
+          {
+            "data-hid": "theme-init"
+          },
+          {
+            "data-hid": "age-init"
+          },
+          {
+            "type": "text/javascript",
+            "data-hid": "yandex-metrika"
+          },
+          {
+            "type": "module",
+            "src": "/_nuxt/ClRa6ZD2.js",
+            "crossorigin": null
+          },
+          {
+            "type": "application/ld+json"
+          },
+          {},
+          {
+            "type": "application/json",
+            "data-nuxt-data": "nuxt-app",
+            "data-ssr": "true",
+            "id": "__NUXT_DATA__"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://mc.yandex.ru/watch/113460637",
+            "style": "position:absolute; left:-9999px;",
+            "alt": ""
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          },
+          {
+            "src": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+            "alt": "",
+            "width": "230",
+            "height": "300"
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          }
+        ],
+        "videos": [],
+        "word_count_whitespace": 203,
+        "inert_elements": 1,
+        "age_dialog_in_html": true,
+        "nuxt_ssr": true,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    },
+    {
+      "url": "https://chtozavino.ru/",
+      "variant": "ttfb-2",
+      "observed_utc": "2026-10-20T17:32:01.794336+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:32:02 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "x-powered-by": "Nuxt"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/",
+        "num_redirects": 0,
+        "size_download": 5957,
+        "size_header": 314,
+        "time_namelookup": 0.002471,
+        "time_connect": 0.007705,
+        "time_appconnect": 0.031371,
+        "time_starttransfer": 0.093484,
+        "time_total": 0.094469,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19901,
+      "sha256": "24d9e556af21429204ea69bea9ec8af22902f35c2a614832c9e9f32d330fe2cf",
+      "page": {
+        "lang": "ru",
+        "title": "Найти вино по фото — Что за вино?",
+        "meta": [
+          {
+            "charset": "utf-8"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+          },
+          {
+            "name": "description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "property": "og:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:url",
+            "content": "https://chtozavino.ru/"
+          },
+          {
+            "property": "og:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "property": "og:image:alt",
+            "content": "Что за вино? — поиск российского вина по фотографии"
+          },
+          {
+            "property": "og:locale",
+            "content": "ru_RU"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "name": "twitter:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "name": "twitter:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: light)",
+            "content": "#7b3528"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: dark)",
+            "content": "#211e1c"
+          },
+          {
+            "name": "mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "content": "default"
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "content": "Что за вино?"
+          }
+        ],
+        "links": [
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/entry.DbVFzIR5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/fetch.DayTIZOI.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/product-line-map.5kr3W_go.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/asyncData.CNxf0Rz5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/WineImage.I5brU0l1.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ClRa6ZD2.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DQBUlhso.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/0rU5Fe5s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BVa9-aD-.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BQuVdr5B.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BDNMzG2s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ierkRv7s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CI4320fK.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BUN8dXRC.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DZf8cCLO.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DtO_nxII.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CbPwrV4D.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BkMHKqUw.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DowBHoMM.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/Bd17z0YL.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/C4i0PbWK.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/D9euAWXG.js"
+          },
+          {
+            "rel": "canonical",
+            "href": "https://chtozavino.ru/"
+          },
+          {
+            "rel": "icon",
+            "type": "image/svg+xml",
+            "href": "/icons/product-logo.svg"
+          },
+          {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "/icons/apple-touch-icon.png"
+          },
+          {
+            "rel": "manifest",
+            "href": "/manifest.webmanifest"
+          }
+        ],
+        "anchors": [
+          {
+            "href": "#main-content",
+            "rel": null,
+            "text": "К основному содержанию"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Что за вино?"
+          },
+          {
+            "href": "/account",
+            "rel": null,
+            "text": "Дневник"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "На портал «Свое Вино»"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Одна бутылка"
+          },
+          {
+            "href": "/shelf",
+            "rel": null,
+            "text": "Вся полка"
+          },
+          {
+            "href": "/dish",
+            "rel": null,
+            "text": "Вино к блюду"
+          },
+          {
+            "href": "/privacy#site",
+            "rel": null,
+            "text": "Фото хранится 30 дней"
+          },
+          {
+            "href": "/terms",
+            "rel": null,
+            "text": "Условия использования"
+          },
+          {
+            "href": "/privacy",
+            "rel": null,
+            "text": "Политика обработки персональных данных"
+          },
+          {
+            "href": "/contacts",
+            "rel": null,
+            "text": "Контакты"
+          },
+          {
+            "href": "/ideas",
+            "rel": null,
+            "text": "Идеи за пределами распознавания"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "/iphone",
+            "rel": null,
+            "text": "iPhone"
+          },
+          {
+            "href": "/sitemap",
+            "rel": null,
+            "text": "Карта сайта"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "Откройте культуру российского вина"
+          }
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Найти вино по фото"
+          },
+          {
+            "level": 2,
+            "text": "Всего один снимок"
+          },
+          {
+            "level": 2,
+            "text": "Здесь появится ваше вино"
+          },
+          {
+            "level": 2,
+            "text": "Вам уже исполнилось 18 лет?"
+          }
+        ],
+        "schemas": [
+          {
+            "valid_json": true,
+            "data": {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://chtozavino.ru/#website",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "inLanguage": "ru"
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://chtozavino.ru/#webapp",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "applicationCategory": "LifestyleApplication",
+                  "operatingSystem": "Any",
+                  "inLanguage": "ru",
+                  "isPartOf": {
+                    "@id": "https://chtozavino.ru/#website"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "RUB"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scripts": [
+          {
+            "type": "importmap"
+          },
+          {
+            "data-hid": "theme-init"
+          },
+          {
+            "data-hid": "age-init"
+          },
+          {
+            "type": "text/javascript",
+            "data-hid": "yandex-metrika"
+          },
+          {
+            "type": "module",
+            "src": "/_nuxt/ClRa6ZD2.js",
+            "crossorigin": null
+          },
+          {
+            "type": "application/ld+json"
+          },
+          {},
+          {
+            "type": "application/json",
+            "data-nuxt-data": "nuxt-app",
+            "data-ssr": "true",
+            "id": "__NUXT_DATA__"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://mc.yandex.ru/watch/113460637",
+            "style": "position:absolute; left:-9999px;",
+            "alt": ""
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          },
+          {
+            "src": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+            "alt": "",
+            "width": "230",
+            "height": "300"
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          }
+        ],
+        "videos": [],
+        "word_count_whitespace": 203,
+        "inert_elements": 1,
+        "age_dialog_in_html": true,
+        "nuxt_ssr": true,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    },
+    {
+      "url": "https://chtozavino.ru/",
+      "variant": "ttfb-3",
+      "observed_utc": "2026-10-20T17:32:01.922598+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:32:02 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "x-powered-by": "Nuxt"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/",
+        "num_redirects": 0,
+        "size_download": 5957,
+        "size_header": 314,
+        "time_namelookup": 0.003008,
+        "time_connect": 0.008733,
+        "time_appconnect": 0.026881,
+        "time_starttransfer": 0.065199,
+        "time_total": 0.065959,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19901,
+      "sha256": "24d9e556af21429204ea69bea9ec8af22902f35c2a614832c9e9f32d330fe2cf",
+      "page": {
+        "lang": "ru",
+        "title": "Найти вино по фото — Что за вино?",
+        "meta": [
+          {
+            "charset": "utf-8"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+          },
+          {
+            "name": "description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "property": "og:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:url",
+            "content": "https://chtozavino.ru/"
+          },
+          {
+            "property": "og:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "property": "og:image:alt",
+            "content": "Что за вино? — поиск российского вина по фотографии"
+          },
+          {
+            "property": "og:locale",
+            "content": "ru_RU"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "name": "twitter:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "name": "twitter:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: light)",
+            "content": "#7b3528"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: dark)",
+            "content": "#211e1c"
+          },
+          {
+            "name": "mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "content": "default"
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "content": "Что за вино?"
+          }
+        ],
+        "links": [
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/entry.DbVFzIR5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/fetch.DayTIZOI.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/product-line-map.5kr3W_go.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/asyncData.CNxf0Rz5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/WineImage.I5brU0l1.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ClRa6ZD2.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DQBUlhso.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/0rU5Fe5s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BVa9-aD-.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BQuVdr5B.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BDNMzG2s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ierkRv7s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CI4320fK.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BUN8dXRC.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DZf8cCLO.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DtO_nxII.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CbPwrV4D.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BkMHKqUw.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DowBHoMM.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/Bd17z0YL.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/C4i0PbWK.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/D9euAWXG.js"
+          },
+          {
+            "rel": "canonical",
+            "href": "https://chtozavino.ru/"
+          },
+          {
+            "rel": "icon",
+            "type": "image/svg+xml",
+            "href": "/icons/product-logo.svg"
+          },
+          {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "/icons/apple-touch-icon.png"
+          },
+          {
+            "rel": "manifest",
+            "href": "/manifest.webmanifest"
+          }
+        ],
+        "anchors": [
+          {
+            "href": "#main-content",
+            "rel": null,
+            "text": "К основному содержанию"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Что за вино?"
+          },
+          {
+            "href": "/account",
+            "rel": null,
+            "text": "Дневник"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "На портал «Свое Вино»"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Одна бутылка"
+          },
+          {
+            "href": "/shelf",
+            "rel": null,
+            "text": "Вся полка"
+          },
+          {
+            "href": "/dish",
+            "rel": null,
+            "text": "Вино к блюду"
+          },
+          {
+            "href": "/privacy#site",
+            "rel": null,
+            "text": "Фото хранится 30 дней"
+          },
+          {
+            "href": "/terms",
+            "rel": null,
+            "text": "Условия использования"
+          },
+          {
+            "href": "/privacy",
+            "rel": null,
+            "text": "Политика обработки персональных данных"
+          },
+          {
+            "href": "/contacts",
+            "rel": null,
+            "text": "Контакты"
+          },
+          {
+            "href": "/ideas",
+            "rel": null,
+            "text": "Идеи за пределами распознавания"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "/iphone",
+            "rel": null,
+            "text": "iPhone"
+          },
+          {
+            "href": "/sitemap",
+            "rel": null,
+            "text": "Карта сайта"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "Откройте культуру российского вина"
+          }
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Найти вино по фото"
+          },
+          {
+            "level": 2,
+            "text": "Всего один снимок"
+          },
+          {
+            "level": 2,
+            "text": "Здесь появится ваше вино"
+          },
+          {
+            "level": 2,
+            "text": "Вам уже исполнилось 18 лет?"
+          }
+        ],
+        "schemas": [
+          {
+            "valid_json": true,
+            "data": {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://chtozavino.ru/#website",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "inLanguage": "ru"
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://chtozavino.ru/#webapp",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "applicationCategory": "LifestyleApplication",
+                  "operatingSystem": "Any",
+                  "inLanguage": "ru",
+                  "isPartOf": {
+                    "@id": "https://chtozavino.ru/#website"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "RUB"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scripts": [
+          {
+            "type": "importmap"
+          },
+          {
+            "data-hid": "theme-init"
+          },
+          {
+            "data-hid": "age-init"
+          },
+          {
+            "type": "text/javascript",
+            "data-hid": "yandex-metrika"
+          },
+          {
+            "type": "module",
+            "src": "/_nuxt/ClRa6ZD2.js",
+            "crossorigin": null
+          },
+          {
+            "type": "application/ld+json"
+          },
+          {},
+          {
+            "type": "application/json",
+            "data-nuxt-data": "nuxt-app",
+            "data-ssr": "true",
+            "id": "__NUXT_DATA__"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://mc.yandex.ru/watch/113460637",
+            "style": "position:absolute; left:-9999px;",
+            "alt": ""
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          },
+          {
+            "src": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+            "alt": "",
+            "width": "230",
+            "height": "300"
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          }
+        ],
+        "videos": [],
+        "word_count_whitespace": 203,
+        "inert_elements": 1,
+        "age_dialog_in_html": true,
+        "nuxt_ssr": true,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    },
+    {
+      "url": "https://chtozavino.ru/",
+      "variant": "ttfb-4",
+      "observed_utc": "2026-10-20T17:32:02.028271+00:00",
+      "exit_code": 0,
+      "error": "",
+      "status": 200,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Tue, 20 Oct 2026 17:32:02 GMT",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding",
+        "via": "1.1 Caddy",
+        "x-powered-by": "Nuxt"
+      },
+      "metrics": {
+        "url_effective": "https://chtozavino.ru/",
+        "num_redirects": 0,
+        "size_download": 5957,
+        "size_header": 314,
+        "time_namelookup": 0.003739,
+        "time_connect": 0.009185,
+        "time_appconnect": 0.02346,
+        "time_starttransfer": 0.058839,
+        "time_total": 0.059608,
+        "remote_ip": "135.106.228.193",
+        "http_version": "2"
+      },
+      "decoded_bytes": 19901,
+      "sha256": "24d9e556af21429204ea69bea9ec8af22902f35c2a614832c9e9f32d330fe2cf",
+      "page": {
+        "lang": "ru",
+        "title": "Найти вино по фото — Что за вино?",
+        "meta": [
+          {
+            "charset": "utf-8"
+          },
+          {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+          },
+          {
+            "name": "description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:type",
+            "content": "website"
+          },
+          {
+            "property": "og:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "property": "og:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "property": "og:url",
+            "content": "https://chtozavino.ru/"
+          },
+          {
+            "property": "og:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "property": "og:image:alt",
+            "content": "Что за вино? — поиск российского вина по фотографии"
+          },
+          {
+            "property": "og:locale",
+            "content": "ru_RU"
+          },
+          {
+            "name": "twitter:card",
+            "content": "summary"
+          },
+          {
+            "name": "twitter:title",
+            "content": "Найти вино по фото — Что за вино?"
+          },
+          {
+            "name": "twitter:description",
+            "content": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино»."
+          },
+          {
+            "name": "twitter:image",
+            "content": "https://chtozavino.ru/icons/pwa-512.png"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: light)",
+            "content": "#7b3528"
+          },
+          {
+            "name": "theme-color",
+            "media": "(prefers-color-scheme: dark)",
+            "content": "#211e1c"
+          },
+          {
+            "name": "mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "content": "yes"
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "content": "default"
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "content": "Что за вино?"
+          }
+        ],
+        "links": [
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/entry.DbVFzIR5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/fetch.DayTIZOI.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/product-line-map.5kr3W_go.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/asyncData.CNxf0Rz5.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "stylesheet",
+            "href": "/_nuxt/WineImage.I5brU0l1.css",
+            "crossorigin": null
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ClRa6ZD2.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DQBUlhso.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/0rU5Fe5s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BVa9-aD-.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BQuVdr5B.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BDNMzG2s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/ierkRv7s.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CI4320fK.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BUN8dXRC.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DZf8cCLO.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DtO_nxII.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/CbPwrV4D.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/BkMHKqUw.js"
+          },
+          {
+            "rel": "modulepreload",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/DowBHoMM.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/Bd17z0YL.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/C4i0PbWK.js"
+          },
+          {
+            "rel": "prefetch",
+            "as": "script",
+            "crossorigin": null,
+            "href": "/_nuxt/D9euAWXG.js"
+          },
+          {
+            "rel": "canonical",
+            "href": "https://chtozavino.ru/"
+          },
+          {
+            "rel": "icon",
+            "type": "image/svg+xml",
+            "href": "/icons/product-logo.svg"
+          },
+          {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": "/icons/apple-touch-icon.png"
+          },
+          {
+            "rel": "manifest",
+            "href": "/manifest.webmanifest"
+          }
+        ],
+        "anchors": [
+          {
+            "href": "#main-content",
+            "rel": null,
+            "text": "К основному содержанию"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Что за вино?"
+          },
+          {
+            "href": "/account",
+            "rel": null,
+            "text": "Дневник"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "На портал «Свое Вино»"
+          },
+          {
+            "href": "/",
+            "rel": null,
+            "text": "Одна бутылка"
+          },
+          {
+            "href": "/shelf",
+            "rel": null,
+            "text": "Вся полка"
+          },
+          {
+            "href": "/dish",
+            "rel": null,
+            "text": "Вино к блюду"
+          },
+          {
+            "href": "/privacy#site",
+            "rel": null,
+            "text": "Фото хранится 30 дней"
+          },
+          {
+            "href": "/terms",
+            "rel": null,
+            "text": "Условия использования"
+          },
+          {
+            "href": "/privacy",
+            "rel": null,
+            "text": "Политика обработки персональных данных"
+          },
+          {
+            "href": "/contacts",
+            "rel": null,
+            "text": "Контакты"
+          },
+          {
+            "href": "/ideas",
+            "rel": null,
+            "text": "Идеи за пределами распознавания"
+          },
+          {
+            "href": "/android",
+            "rel": null,
+            "text": "Android"
+          },
+          {
+            "href": "/iphone",
+            "rel": null,
+            "text": "iPhone"
+          },
+          {
+            "href": "/sitemap",
+            "rel": null,
+            "text": "Карта сайта"
+          },
+          {
+            "href": "https://vino-svoe.ru/",
+            "rel": "noopener noreferrer",
+            "text": "Откройте культуру российского вина"
+          }
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Найти вино по фото"
+          },
+          {
+            "level": 2,
+            "text": "Всего один снимок"
+          },
+          {
+            "level": 2,
+            "text": "Здесь появится ваше вино"
+          },
+          {
+            "level": 2,
+            "text": "Вам уже исполнилось 18 лет?"
+          }
+        ],
+        "schemas": [
+          {
+            "valid_json": true,
+            "data": {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://chtozavino.ru/#website",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "inLanguage": "ru"
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://chtozavino.ru/#webapp",
+                  "url": "https://chtozavino.ru/",
+                  "name": "Что за вино? — поиск по фото",
+                  "description": "Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».",
+                  "applicationCategory": "LifestyleApplication",
+                  "operatingSystem": "Any",
+                  "inLanguage": "ru",
+                  "isPartOf": {
+                    "@id": "https://chtozavino.ru/#website"
+                  },
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "RUB"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scripts": [
+          {
+            "type": "importmap"
+          },
+          {
+            "data-hid": "theme-init"
+          },
+          {
+            "data-hid": "age-init"
+          },
+          {
+            "type": "text/javascript",
+            "data-hid": "yandex-metrika"
+          },
+          {
+            "type": "module",
+            "src": "/_nuxt/ClRa6ZD2.js",
+            "crossorigin": null
+          },
+          {
+            "type": "application/ld+json"
+          },
+          {},
+          {
+            "type": "application/json",
+            "data-nuxt-data": "nuxt-app",
+            "data-ssr": "true",
+            "id": "__NUXT_DATA__"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://mc.yandex.ru/watch/113460637",
+            "style": "position:absolute; left:-9999px;",
+            "alt": ""
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          },
+          {
+            "src": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+            "alt": "",
+            "width": "230",
+            "height": "300"
+          },
+          {
+            "src": "/icons/product-logo.svg",
+            "alt": "",
+            "width": "44",
+            "height": "44"
+          }
+        ],
+        "videos": [],
+        "word_count_whitespace": 203,
+        "inert_elements": 1,
+        "age_dialog_in_html": true,
+        "nuxt_ssr": true,
+        "word_count_note": "Whitespace tokens of all extracted text including navigation and age dialog; not main-content word count."
+      }
+    }
+  ],
+  "external_links_discovered_only": [
+    "https://drive.google.com/drive/folders/1YfZ9ghYz8yJpznCIEiqgKho64EB3vdHD",
+    "https://game.chtozavino.ru/",
+    "https://game.chtozavino.ru/?mode=pour",
+    "https://github.com/s1mb1o/svoe-vino-lab-dev",
+    "https://github.com/s1mb1o/svoe-vino-lab-dev/issues/36",
+    "https://legal.max.ru/pp",
+    "https://max.ru/se14697933_bot",
+    "https://policies.google.com/privacy",
+    "https://t.me/ChtoZaVinoBot",
+    "https://t.me/s1mb1o",
+    "https://telegram.org/privacy",
+    "https://vino-svoe.ru/",
+    "https://yandex.ru/legal/confidential/",
+    "https://yandex.ru/support/metrica/general/opt-out.html"
+  ]
+}

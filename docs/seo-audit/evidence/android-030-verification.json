@@ -1,0 +1,221 @@
+{
+  "evidence_id": "E10",
+  "generated_utc": "2026-10-20T19:31:33.257369+00:00",
+  "scope": "Public production page and APK GET/HEAD; complete download SHA-256, embedded binary XML/version/package and signer certificate fingerprint inspection. No installation, execution, deployment or application-source edit.",
+  "status": "Original artifact/metadata mismatch RESOLVED for 0.3.0; HEAD 404 VERIFIED remains, P3/S follow-up.",
+  "local_checkout_at_start": {
+    "commit": "892e56749f27c95e518252d508c8084c5e73d02c",
+    "contract_version": "0.2.0",
+    "note": "Working branch differs from remote main/production. Do not infer deployed behavior from this old local contract."
+  },
+  "remote_source": {
+    "repository": "s1mb1o/svoe-vino-lab-dev",
+    "pinned_main_commit": "58388d835d9a0dcf31cf4561dab03e757bfc2c03",
+    "files": {
+      "webui/shared/android.ts": {
+        "blob_sha": "99872a47df4402867efd469857874110990a3af7",
+        "html_url": "https://github.com/s1mb1o/svoe-vino-lab-dev/blob/58388d835d9a0dcf31cf4561dab03e757bfc2c03/webui/shared/android.ts",
+        "text": "export const ANDROID_RELEASE = Object.freeze({\n  version: '0.3.0',\n  versionCode: 7,\n  applicationId: 'com.alolalab.chtozavino',\n  minAndroid: 9,\n  catalogueSize: 2093,\n  apkFileName: 'chtozavino-0.3.0-release-test-signed.apk',\n  apkBytes: 753_111_053,\n  apkDisplaySize: '718 МБ',\n  sha256: '89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a',\n})\n\nexport const DEFAULT_ANDROID_APK_URL = `/downloads/${ANDROID_RELEASE.apkFileName}`\n"
+      },
+      "android/docs/releases/0.3.0.md": {
+        "blob_sha": "6f8d470252a8197fe1878f928da01c27aa7e2042",
+        "html_url": "https://github.com/s1mb1o/svoe-vino-lab-dev/blob/58388d835d9a0dcf31cf4561dab03e757bfc2c03/android/docs/releases/0.3.0.md",
+        "text": "# Android 0.3.0 dual-pipeline release\n\nDate: 2026-10-20.\n\n## Artifact\n\nApplication ID: `com.alolalab.chtozavino`.\nVersion: `0.3.0`. Version code: `7`. Minimum Android API: `28`.\nAPK source: `7ce50c2e`. Later website commits do not change Android runtime code.\nArchive: `/Volumes/Storage/svoe-vino-final/releases/android/0.3.0-dis768-custom-20261020/`.\n\n| Artifact | Bytes | SHA-256 |\n| --- | ---: | --- |\n| `chtozavino-0.3.0-release-test-signed.apk` | 753111053 | `89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a` |\n| `chtozavino-0.3.0-release-unsigned.apk` | 753088654 | `e40b0e4cab41a9d73caa837eb3e42889691f17bc46579f2c6a082a7b6f83d0e4` |\n\nThe installable APK uses the existing test signing certificate.\nCertificate SHA-256: `0d7616b6a86850435116fa262bbd2db5b18b06aebfd452ae37d5ac658a457cfb`.\nThis certificate matches the archived 0.2.0 test release.\nThis is not a production-key signature.\nSignature verification and 16-KiB alignment verification passed.\n\n"
+      },
+      "webui/server/routes/downloads/[filename].get.ts": {
+        "blob_sha": "0f17303618a8795c6c455234b4820350098394fd",
+        "html_url": "https://github.com/s1mb1o/svoe-vino-lab-dev/blob/58388d835d9a0dcf31cf4561dab03e757bfc2c03/webui/server/routes/downloads/[filename].get.ts",
+        "text": "import { createReadStream } from 'node:fs'\nimport { stat } from 'node:fs/promises'\nimport { ANDROID_RELEASE } from '#shared/android'\n\nexport default defineEventHandler(async event => {\n  const filename = getRouterParam(event, 'filename')\n  if (filename !== ANDROID_RELEASE.apkFileName) {\n    throw createError({ statusCode: 404, statusMessage: 'APK not found' })\n  }\n\n  const config = useRuntimeConfig(event)\n  const apkPath = String(config.androidApkPath || '')\n  let apkStat\n  try {\n    apkStat = await stat(apkPath)\n  } catch {\n    throw createError({ statusCode: 404, statusMessage: 'APK is not available' })\n  }\n  if (!apkStat.isFile() || apkStat.size !== ANDROID_RELEASE.apkBytes) {\n    throw createError({ statusCode: 404, statusMessage: 'APK is not available' })\n  }\n\n  setHeaders(event, {\n    'Content-Type': 'application/vnd.android.package-archive',\n    'Content-Length': String(apkStat.size),\n    'Content-Disposition': `attachment; filename=\"${ANDROID_RELEASE.apkFileName}\"`,\n    'Cache-Control': 'public, max-age=3600, must-revalidate',\n    'X-Content-Type-Options': 'nosniff',\n  })\n  return sendStream(event, createReadStream(apkPath))\n})\n"
+      }
+    },
+    "note": "Matching contract/source is not independent attestation of the exact deployed web commit."
+  },
+  "production_page": {
+    "url": "https://chtozavino.ru/android",
+    "observed_utc": "2026-10-20T19:26:18.422315+00:00",
+    "status": 200,
+    "title": [
+      "Что за вино? для Android — распознавание без интернета"
+    ],
+    "visible_release_facts": "Android 9+ Версия 0.3.0 718 МБ Бесплатно",
+    "download_links": [
+      {
+        "class": "button primary android-download",
+        "href": "/downloads/chtozavino-0.3.0-release-test-signed.apk",
+        "download": "chtozavino-0.3.0-release-test-signed.apk"
+      },
+      {
+        "class": "button primary android-download",
+        "href": "/downloads/chtozavino-0.3.0-release-test-signed.apk",
+        "download": "chtozavino-0.3.0-release-test-signed.apk"
+      }
+    ],
+    "software_application": {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Что за вино?",
+      "operatingSystem": "Android 9 и новее",
+      "applicationCategory": "LifestyleApplication",
+      "softwareVersion": "0.3.0",
+      "fileSize": "753111053 bytes",
+      "downloadUrl": "/downloads/chtozavino-0.3.0-release-test-signed.apk",
+      "description": "Определяйте российское вино по фотографии, QR-коду или штрихкоду. Каталог и модели работают на Android без интернета.",
+      "inLanguage": "ru",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "RUB"
+      }
+    },
+    "decoded_html_sha256": "81bfdf0b5ee610711f3ead4f36a5f5c48abf79a1b1dd3c39170aa14fca2554ba"
+  },
+  "download_probes": [
+    {
+      "name": "head",
+      "url": "https://chtozavino.ru/downloads/chtozavino-0.3.0-release-test-signed.apk",
+      "method": "HEAD",
+      "range": null,
+      "observed_utc": "2026-10-20T19:27:01.440205+00:00",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-type": "application/json",
+        "via": "1.1 Caddy"
+      },
+      "curl_exit": 0,
+      "curl_error": "",
+      "bytes_downloaded": 0,
+      "body_prefix_hex": "",
+      "http_status_lines": [
+        "HTTP/2 404 "
+      ]
+    },
+    {
+      "name": "range",
+      "url": "https://chtozavino.ru/downloads/chtozavino-0.3.0-release-test-signed.apk",
+      "method": "GET",
+      "range": "bytes=0-65535",
+      "observed_utc": "2026-10-20T19:27:01.443629+00:00",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=3600, must-revalidate",
+        "content-disposition": "attachment; filename=\"chtozavino-0.3.0-release-test-signed.apk\"",
+        "content-type": "application/vnd.android.package-archive",
+        "via": "1.1 Caddy",
+        "content-length": "753111053"
+      },
+      "curl_exit": 56,
+      "curl_error": "curl: (56) Maximum file size exceeded",
+      "bytes_downloaded": 0,
+      "body_prefix_hex": "",
+      "http_status_lines": [
+        "HTTP/2 200 "
+      ]
+    },
+    {
+      "name": "old-head",
+      "url": "https://chtozavino.ru/downloads/chtozavino-0.2.0-release-test-signed.apk",
+      "method": "HEAD",
+      "range": null,
+      "observed_utc": "2026-10-20T19:27:01.444315+00:00",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-cache",
+        "content-type": "application/json",
+        "via": "1.1 Caddy"
+      },
+      "curl_exit": 0,
+      "curl_error": "",
+      "bytes_downloaded": 0,
+      "body_prefix_hex": "",
+      "http_status_lines": [
+        "HTTP/2 404 "
+      ]
+    }
+  ],
+  "complete_download": {
+    "observed_utc": "2026-10-20T19:27:51.473895+00:00",
+    "completed_utc": "2026-10-20T19:28:27.525600+00:00",
+    "url": "https://chtozavino.ru/downloads/chtozavino-0.3.0-release-test-signed.apk",
+    "status": 200,
+    "curl_exit": 0,
+    "curl_error": "",
+    "downloaded_bytes": 753111053,
+    "file_bytes": 753111053,
+    "time_total": 36.011104,
+    "sha256": "89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a"
+  },
+  "complete_download_headers": {
+    "cache-control": "public, max-age=3600, must-revalidate",
+    "content-disposition": "attachment; filename=\"chtozavino-0.3.0-release-test-signed.apk\"",
+    "content-type": "application/vnd.android.package-archive",
+    "via": "1.1 Caddy",
+    "content-length": "753111053"
+  },
+  "binary_inspection": {
+    "method": "Read-only Python ZIP/binary-XML and APK Signing Block inspection. Certificate fingerprint extraction is not full Android signature verification.",
+    "file_bytes": 753111053,
+    "manifest_sha256": "809c30d432800c2fc43be23aa65636238cb82b498778cf0cfa067f638852edda",
+    "manifest_elements": [
+      {
+        "tag": "manifest",
+        "attributes": {
+          "versionCode": 7,
+          "versionName": "0.3.0",
+          "compileSdkVersion": 36,
+          "package": "com.alolalab.chtozavino"
+        }
+      },
+      {
+        "tag": "uses-sdk",
+        "attributes": {
+          "minSdkVersion": 28,
+          "targetSdkVersion": 36
+        }
+      },
+      {
+        "tag": "application",
+        "attributes": {}
+      }
+    ],
+    "zip_entries": 214,
+    "signing_block_ids": [
+      "0x7109871a",
+      "0xf05368c0",
+      "0x42726577"
+    ],
+    "signer_certificates": [
+      {
+        "scheme_id": "0x7109871a",
+        "chain_index": 0,
+        "sha256": "0d7616b6a86850435116fa262bbd2db5b18b06aebfd452ae37d5ac658a457cfb"
+      },
+      {
+        "scheme_id": "0xf05368c0",
+        "chain_index": 0,
+        "sha256": "0d7616b6a86850435116fa262bbd2db5b18b06aebfd452ae37d5ac658a457cfb"
+      }
+    ]
+  },
+  "comparison": {
+    "sha256_matches_remote_contract_and_release_record": true,
+    "file_bytes_match_contract_schema_and_GET": true,
+    "embedded_version_matches_schema_and_contract": true,
+    "embedded_versionCode_matches_contract": true,
+    "embedded_package_matches_contract": true,
+    "certificate_fingerprints_match_release_record": true,
+    "minimum_sdk_matches_Android_9_label": true,
+    "visible_rounded_binary_size_matches_contract": true
+  },
+  "limits": [
+    "No installation or upgrade test; no Android runtime/recognition test.",
+    "Existing Java/apksigner SDK unavailable. Certificate hashes were extracted from v2/v3 blocks and DER parsed with existing OpenSSL; complete Android signature verification was not independently rerun. The pinned release record reports signature/alignment verification.",
+    "No archive volume was mounted; GitHub main contract/release record and the complete public download were compared instead."
+  ],
+  "temporary_artifact": {
+    "path": "/tmp/chto-android-030-6r4f5_7p/production-0.3.0.apk",
+    "retained_in_repository": false,
+    "cleanup": "Audit-owned temporary APK removed after final comparison/link/data validation; manifest/hash/source evidence retained.",
+    "removed": true
+  }
+}
