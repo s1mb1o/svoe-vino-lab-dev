@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-20 — Production token revocation verification
+
+- Record successful application-token revocation through the production account page.
+- Confirm that the next `get_my_profile` and `list_my_wines` calls return `unauthorized` on the same MCP connection, and repeat the check successfully.
+- Confirm that `find_wines` keeps working without a server restart or reconnect.
+- Update the README, research log, and smoke checks without saving the token or raw personal responses.
+- Preserve earlier acceptance records and keep runtime behavior unchanged.
+
 ## 2026-10-20 — Richer account data
 
 - Read versioned stated preferences and integer ratings from 1 to 5 with bounded tasting notes.

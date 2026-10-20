@@ -1,5 +1,32 @@
 # MCP research log
 
+## 2026-10-20 — Production token revocation
+
+A real SDK client connected to the local MCP server over stdio with an authorized production
+application token. The run used Node.js 26.4.0, the pinned SDK packages at 2.3.1, and the production
+account origin `https://chtozavino.ru`. The same client, server subprocess, and connection stayed open
+through the checks before and after revocation.
+
+The account owner authorized revocation. The signed-in production account page revoked the selected
+application token and displayed a success confirmation. Other tokens and diary entries were unchanged.
+
+| Tool | Before revocation | Next call after revocation | Repeat check |
+| --- | --- | --- | --- |
+| `get_my_profile` | `status: ok`; no tool error. | `isError: true`, `status: error`, `code: unauthorized`. | Same error. |
+| `list_my_wines` (`limit: 1`) | `status: ok`; no tool error. | `isError: true`, `status: error`, `code: unauthorized`. | Same error. |
+| `find_wines` (`limit: 1`) | `status: ok`; no tool error. | `status: ok`; no tool error. | Same successful result state. |
+
+Both account reads lost access on their next call without restarting or reconnecting MCP.
+The repeat check confirmed continued denial, while catalog access remained available.
+These are observed MCP results; the probe did not capture the underlying HTTP response status.
+Captured server stderr was empty. The checked tool results and stderr did not contain the token.
+The token entered through stdin with terminal echo disabled and was passed to the subprocess in memory.
+It was not saved to a file or configuration. This record omits token values, token names, account
+identifiers, and raw personal responses.
+
+This check establishes production token revocation. It does not establish production deployment of
+schema 007 or acceptance through an interactive third-party assistant.
+
 ## 2026-10-20 — Preferences and rating contract
 
 The account service stores stated preferences instead of returning a fixed null value.

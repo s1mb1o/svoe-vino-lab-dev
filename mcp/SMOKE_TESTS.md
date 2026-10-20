@@ -11,7 +11,7 @@ Run commands from `mcp/`.
 7. Confirm the producer-line result is `ok` with resolution `alias`. Confirm that audio is `unavailable` without approved assets.
 8. Check one non-fixture card and a comparison in a compatible MCP host.
 9. Create a token on `/account` → «Токены приложений». Set `CHTOZAVINO_ACCOUNT_TOKEN` in the host configuration. Confirm seven tools and that `get_my_profile` returns your username.
-10. Revoke the token on the site. Confirm that the next `get_my_profile` call returns `unauthorized` and that the catalog tools still work.
+10. Keep the MCP connection open and revoke the token on the site. Confirm that the next calls to both `get_my_profile` and `list_my_wines` return `isError: true`, `status: error`, and `code: unauthorized`. Repeat both calls. Confirm `find_wines` still returns `status: ok` after revocation and in the repeat check, without restarting or reconnecting MCP.
 11. Set a malformed token. Confirm exit code 1 and a stderr message without the value.
 12. Check an unknown ID, an unknown region, and a limit of 11.
 13. Confirm a valid call still works after a rejected call.
@@ -42,6 +42,22 @@ Production token revocation and interactive third-party assistant acceptance rem
 The diary count is an observation at the check time, not a required count for future runs.
 Read [ResearchLog.md](ResearchLog.md#2026-10-20--live-account-access) for the detailed record.
 
+## Recorded production token revocation check — 2026-10-20
+
+A later production check used a real SDK client over stdio, Node.js 26.4.0, and the pinned SDK at 2.3.1.
+The client and server subprocess stayed connected throughout the check.
+
+- Before revocation, `get_my_profile`, `list_my_wines` (`limit: 1`), and `find_wines` (`limit: 1`) returned `status: ok`.
+- The signed-in account page on `https://chtozavino.ru` confirmed successful revocation of the selected application token.
+- The next calls to both account tools returned `isError: true`, `status: error`, and `code: unauthorized`.
+- A repeat check on the same connection returned the same errors for both account tools.
+- `find_wines` returned `status: ok` after revocation and in the repeat check.
+- Captured server stderr was empty. The checked tool results and stderr contained no token.
+
+The token was supplied in memory and was not saved to a file or configuration.
+No restart or reconnect was needed. Other tokens and diary entries were unchanged.
+This result does not claim production deployment of schema 007 or interactive third-party assistant acceptance.
+Read [ResearchLog.md](ResearchLog.md#2026-10-20--production-token-revocation) for the detailed record.
 
 ## Preferences and ratings acceptance
 

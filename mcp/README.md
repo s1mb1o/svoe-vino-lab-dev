@@ -98,6 +98,16 @@ The token was supplied in memory and was not saved to a file or configuration.
 This run did not check production token revocation or an interactive third-party assistant.
 Read [ResearchLog.md](ResearchLog.md#2026-10-20--live-account-access) for the method and limits.
 
+#### Production token revocation — 2026-10-20
+
+A later check revoked the application token through the production account page.
+Before revocation, `get_my_profile`, `list_my_wines`, and `find_wines` all returned `status: ok`.
+On the same MCP connection, the next calls to both account tools returned `isError: true`,
+`status: error`, and `code: unauthorized`. A repeat check returned the same errors.
+`find_wines` kept returning `status: ok` in both checks. No server restart or reconnect was needed.
+Captured stderr was empty, and the token was not saved or present in the checked results or stderr.
+Read [ResearchLog.md](ResearchLog.md#2026-10-20--production-token-revocation) for the method and limits.
+
 The SDK client example is in `examples/client.mjs`.
 It discovers tools, finds two wines, reads a card, compares the wines, reads a producer-line map, and checks audio availability.
 It uses a real MCP subprocess. It does not call a model provider.
