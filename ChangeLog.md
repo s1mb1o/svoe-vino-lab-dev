@@ -13,6 +13,14 @@
 - The redraws use flat colours, fitted circles for dots, and fitted strokes for thin lines. Paper grain and soft gradients are not kept.
 - Chrome renders each SVG within a mean difference of 0.9–2.8 of 255 per channel from its PNG. No tracked SVG embeds a bitmap now.
 
+## 2026-10-20 — Comprehensive repository review
+
+- Review the README, setup, assessment evidence, main service paths, tests, and packaging.
+- Record five findings in `docs/reviews/2026-10-20-comprehensive-review.md`.
+- Verify the metadata identifier defect and the obsolete matcher environment settings without external service calls.
+- Run the available Web UI, matcher, account, MCP, bot, bootstrap, and focused workbench checks.
+- Preserve application source and record the remaining verification limits.
+
 ## 2026-10-20 — Android 0.3.0 GitHub release
 
 - Publish GitHub prerelease `android-v0.3.0` with the verified 753111053-byte test-signed APK.
