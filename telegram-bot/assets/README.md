@@ -2,15 +2,17 @@
 
 This directory contains images that belong only to `@ChtoZaVinoBot`.
 Each current artwork has a PNG file and an SVG file.
-The SVG file embeds the matching PNG file without a visual change.
-The SVG file is not an editable path-based illustration.
+The PNG file is the source artwork. Telegram and the bot runtime use the PNG files.
+The SVG file is a vector redraw of the PNG file with paths and no embedded bitmap.
+The redraw uses flat colours. It omits the paper grain and replaces soft gradients with flat shades.
+`botpic-v3-scanner.svg` is the same file as `../../assets/product-logo-640x640.svg`.
 
 ## Project-wide logo
 
 The canonical product logo is in the project-level `../../assets` directory.
 The files are `../../assets/product-logo-640x640.png` and
 `../../assets/product-logo-640x640.svg`.
-The Telegram bot can use this logo as its profile image.
+The Telegram bot can use the PNG file as its profile image.
 
 ## Asset catalog
 

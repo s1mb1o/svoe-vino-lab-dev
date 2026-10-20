@@ -42,9 +42,13 @@ describe('PWA assets', () => {
 
   it('provides icons at their declared sizes', async () => {
     const config = await readFile(fileURLToPath(new URL('../nuxt.config.ts', import.meta.url)), 'utf8')
-    const sharedLogo = await readFile(sharedAssetFile('product-logo-640x640.svg'))
+    const logo = await readFile(publicFile('icons/product-logo.svg'), 'utf8')
     expect(config).toContain("{ rel: 'icon', type: 'image/svg+xml', href: '/icons/product-logo.svg' }")
-    await expect(readFile(publicFile('icons/product-logo.svg'))).resolves.toEqual(sharedLogo)
+    expect(logo).toBe(await readFile(sharedAssetFile('product-logo-640x640.svg'), 'utf8'))
+    // A vector redraw of the shared artwork. An embedded bitmap made it 171 KB (SEO-002).
+    expect(logo).toContain('viewBox="0 0 640 640"')
+    expect(logo).not.toMatch(/<image|data:/)
+    expect(Buffer.byteLength(logo)).toBeLessThan(10_240)
     await expect(pngSize('icons/pwa-192.png')).resolves.toEqual({ width: 192, height: 192 })
     await expect(pngSize('icons/pwa-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/pwa-maskable-512.png')).resolves.toEqual({ width: 512, height: 512 })

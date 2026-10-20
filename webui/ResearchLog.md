@@ -1,5 +1,19 @@
 # Research log
 
+## 2026-10-20 — Vector product logo
+
+The header, age gate, and favicon used a 171,311-byte SVG that embeds the 640 by 640 PNG (SEO-002).
+The header shows it at 44 by 44 pixels.
+The owner requested a real SVG at the same URL.
+The redraw has five flat colors taken as medians from the PNG.
+The bottle shoulder is one cubic Bezier curve per side. Its fit to the PNG edge has an RMS error of 0.22 px.
+The question mark and highlight are `potracer` traces of a 4× upsampled coverage mask.
+Chrome renders the redraw at 640 by 640 with a mean difference of 0.9 of 255 per channel from the PNG.
+The remaining differences are anti-aliased edges. Visual checks at 44, 88, and 640 pixels show no visible change.
+The owner then requested the same file for the shared `assets/product-logo-640x640.svg`.
+Raster consumers use `assets/product-logo-640x640.png`, which is unchanged. The PNG install icons are unchanged.
+The PWA precache revision follows the file content, so installed apps fetch the new file.
+
 ## 2026-10-20 — Shelf Lens APK publication input
 
 The owner supplied `/Users/ashmelev/Downloads/shelf-lens-1.0.apk`.

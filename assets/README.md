@@ -13,7 +13,8 @@ Keep a subproject-specific asset in the directory of that subproject.
 ## File maintenance
 
 Treat the PNG file as the visual source for its SVG counterpart.
-The SVG file embeds the PNG file without a visual change.
-The SVG file is not an editable path-based illustration.
-Regenerate the SVG file after the PNG file changes.
-Preserve the 640 × 640 canvas size during regeneration.
+The SVG file is a vector redraw of the PNG file. It has no embedded bitmap and is 2,810 bytes.
+Use the SVG file for web pages and favicons. Use the PNG file when a tool or store needs a raster image.
+Redraw the SVG file after the PNG file changes. `webui/docs/assets.md` records the method.
+Preserve the 640 × 640 canvas size.
+`webui/public/icons/product-logo.svg` MUST stay an exact copy of the SVG file. A Web UI test checks this.

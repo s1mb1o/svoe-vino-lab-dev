@@ -150,6 +150,7 @@ The production build includes a web app manifest and a service worker.
 The `@vite-pwa/nuxt` module generates these files with Workbox.
 Use the browser install action to add «Что за вино?» to the device.
 The favicon and installed app use the shared product logo from the repository-level `assets/` directory.
+The favicon and header use `public/icons/product-logo.svg`, a copy of the 2,810-byte vector SVG of that logo.
 The app shell can open without a network connection after the second successful online visit.
 The first launch of the installed app counts as an online visit.
 The first visit does not fill the page cache because the service worker is not active yet.

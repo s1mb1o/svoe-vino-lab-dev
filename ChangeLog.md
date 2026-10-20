@@ -1,5 +1,18 @@
 # Change log
 
+## 2026-10-20 — Vector product logo
+
+- Replace `assets/product-logo-640x640.svg` with a 2,810-byte vector redraw of the PNG. The previous SVG embedded the PNG and was 171,311 bytes.
+- Keep `assets/product-logo-640x640.png` unchanged for raster consumers: Android, iOS, the MAX bot card, and the PWA icons.
+- Use the same file for `webui/public/icons/product-logo.svg` (SEO-002).
+- Replace the other six SVG files that embedded a PNG with vector redraws. Each PNG stays unchanged and remains the runtime file.
+  - `telegram-bot/assets/botpic-v3-scanner.svg`: the product logo SVG (171,305 → 2,810 bytes).
+  - `telegram-bot/assets/description-picture-v2-scanner.svg`: the vector logo plus traced text (76,563 → 17,996 bytes).
+  - `telegram-bot/assets/description-picture-selected-640x360.svg` and `description-variants/description-light-640x360.svg` (353,795 → 22,645 bytes).
+  - `telegram-bot/assets/content-rejected-monkey-640x640.svg` and its `max-bot/assets/` copy (662,389 → 39,136 bytes).
+- The redraws use flat colours, fitted circles for dots, and fitted strokes for thin lines. Paper grain and soft gradients are not kept.
+- Chrome renders each SVG within a mean difference of 0.9–2.8 of 255 per channel from its PNG. No tracked SVG embeds a bitmap now.
+
 ## 2026-10-20 — Android 0.3.0 GitHub release
 
 - Publish GitHub prerelease `android-v0.3.0` with the verified 753111053-byte test-signed APK.

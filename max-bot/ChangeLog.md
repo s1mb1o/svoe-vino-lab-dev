@@ -2,6 +2,7 @@
 
 ## 2026-10-20
 
+- Replace `assets/content-rejected-monkey-640x640.svg` with a vector redraw without an embedded bitmap. The PNG file and the runtime are unchanged.
 - Review fix: «❌ Не совпало» and a selected alternative send `at`, the time of the result card:
   the end of the last successful `result_delivery` step of the request, else its receipt time.
   The account service then changes the day of the card, not the day of the press. A plain record

@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — Vector product logo
+
+- Replace `public/icons/product-logo.svg` and the shared `assets/product-logo-640x640.svg` with a vector redraw (SEO-002).
+- Reduce the file from 171,311 bytes to 2,810 bytes. Keep the URL, colors, and 640 by 640 view box.
+- Check in `tests/pwa.test.ts` that the public logo equals the shared SVG, has no embedded bitmap, and stays below 10 KiB.
+
 ## 2026-10-20 — Shelf Lens Android download
 
 - Add APK download actions to `/shelf-lens`. Keep the video demonstration.

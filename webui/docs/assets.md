@@ -225,12 +225,16 @@ Create a polished editorial food illustration for a Russian regional cuisine win
 - Source: `../assets/product-logo-640x640.png` and `../assets/product-logo-640x640.svg`.
 - Design: a wine bottle with a question mark inside scanner marks.
 - `public/icons/product-logo.svg` is an exact copy of the shared SVG. The favicon, header, and age gate use this file.
+- The shared SVG is a vector redraw of the shared PNG. It is 2,810 bytes and has no embedded bitmap.
+  The previous shared SVG embedded the PNG and was 171,311 bytes.
+  The bottle, cap, label, and scanner marks are measured geometry. The question mark and highlight are traced from the PNG with `potracer` (blur 1.2 px, curve tolerance 0.8 px).
+  At 640 by 640 in Chrome, the mean color difference from the PNG is 0.9 of 255 per channel. Edges match within 0.5 px.
 - `ProductBrand` displays the shared artwork beside the `Что за вино?` name. Both themes preserve the source artwork colors.
 - The 192 by 192 and 512 by 512 install icons are resized from the shared PNG.
 - The maskable icon places a 400 by 400 copy of the shared PNG in the center of a 512 by 512 `#fff8ea` canvas.
 - The Apple touch icon is a 180 by 180 export of the shared PNG.
 - Shared PNG SHA-256: `ebff41f926b210d6ae22250e0ff7e5eb2ff5a680b227cef59208e3f1fc028729`.
-- Shared and public SVG SHA-256: `97153903dba33b7c19b9722fb19aab0da39dedd2ab1f27fbd125a15c2f42d49b`.
+- Shared and public SVG SHA-256: `3e23d9baa0727f13d79277690cfac6f8f2660fca0c3ebe170d68c353fe3962da`.
 
 ## Manifest screenshots
 
