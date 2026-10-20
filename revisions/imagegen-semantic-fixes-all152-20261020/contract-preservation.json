@@ -1,0 +1,6 @@
+{
+  "fallback_ast_sha256": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3",
+  "frozen_targets_byte_identical": true,
+  "frozen_scorer_ast_identical": true,
+  "historical_reports_overwritten": false
+}

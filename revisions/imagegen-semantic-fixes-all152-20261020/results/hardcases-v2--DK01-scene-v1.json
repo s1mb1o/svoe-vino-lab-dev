@@ -1,0 +1,178 @@
+{
+  "case_key": "main-selector-imagegen-hardcases-v2-20261020:DK01",
+  "slug": "hardcases-v2--DK01",
+  "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+  "variant": "scene-v1",
+  "image_sha256": "2bff2f14f2dd0c240da765438f784f14bdccdfc63872faf6fdba18db23ad8808",
+  "selector_seconds": 0.028922041004989296,
+  "decision": {
+    "variant": "scene-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "d5",
+    "reason": "existing_scene_v1_rank",
+    "candidates": [
+      {
+        "id": "d5",
+        "source_index": 5,
+        "kind": "wine bottle",
+        "box": [
+          739,
+          0,
+          1120,
+          962
+        ]
+      },
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          352,
+          0,
+          584,
+          702
+        ]
+      },
+      {
+        "id": "d6",
+        "source_index": 6,
+        "kind": "wine bottle",
+        "box": [
+          1392,
+          0,
+          1434,
+          84
+        ]
+      },
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          1288,
+          0,
+          1328,
+          90
+        ]
+      },
+      {
+        "id": "d2",
+        "source_index": 2,
+        "kind": "wine bottle",
+        "box": [
+          1340,
+          1,
+          1389,
+          97
+        ]
+      },
+      {
+        "id": "d3",
+        "source_index": 3,
+        "kind": "wine bottle",
+        "box": [
+          1437,
+          0,
+          1480,
+          82
+        ]
+      },
+      {
+        "id": "d4",
+        "source_index": 4,
+        "kind": "wine bottle",
+        "box": [
+          1491,
+          0,
+          1534,
+          88
+        ]
+      }
+    ],
+    "crop_box": [
+      739,
+      0,
+      1120,
+      962
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "legacy",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/hardcases-v2--DK01-scene-v1.png",
+  "crop_sha256": "5e796eee200e575a70b968c918f92fdabc0aad4418af24c9c11efe1c0daa2a80",
+  "keep_mask_path": "keep-masks/hardcases-v2--DK01-scene-v1.png",
+  "keep_mask_sha256": "a4b44a18ef933c2ac56b4e5cdb05727857750732d2141e53c53fdb896dbd66bc",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d5",
+    "accepted_targets": [
+      "d5"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_confirmed_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      381,
+      962
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 0.9996283597914443,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d13",
+        "retention": 0.9998694400351825,
+        "source_area_px": 145527,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      },
+      {
+        "id": "d1",
+        "retention": 0.0
+      },
+      {
+        "id": "d2",
+        "retention": 0.0
+      },
+      {
+        "id": "d3",
+        "retention": 0.0
+      },
+      {
+        "id": "d4",
+        "retention": 0.0
+      },
+      {
+        "id": "d6",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d5",
+      "iou": 0.9996283597914443
+    },
+    "minimum_target_label_retention_proxy": 0.9998694400351825
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

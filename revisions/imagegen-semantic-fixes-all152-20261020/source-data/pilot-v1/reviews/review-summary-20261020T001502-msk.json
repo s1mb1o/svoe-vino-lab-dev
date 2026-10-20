@@ -1,0 +1,90 @@
+{
+  "source_review_file": "user-review-20261020T001502-msk.json",
+  "source_review_sha256": "b8dd1e289030ad5395c89ca8b61bc5276fcb08fe1f0b7fcbdfff1ca29a7fe60b",
+  "reviewed_at": "2026-10-19T21:15:02.057Z",
+  "timezone": "Europe/Moscow",
+  "dataset": "main-selector-imagegen-pilot-v1-20261019",
+  "case_count": 30,
+  "scene_verdict_counts": {
+    "accept": 27,
+    "pending": 3
+  },
+  "mask_verdict_counts": {
+    "pending": 30
+  },
+  "accepted_scene_ids": [
+    "FG01",
+    "FG05",
+    "HA01",
+    "HA02",
+    "HA03",
+    "HA04",
+    "HA05",
+    "LA01",
+    "LA02",
+    "LA03",
+    "LA04",
+    "LA05",
+    "OW01",
+    "OW02",
+    "OW03",
+    "OW04",
+    "OW05",
+    "VI01",
+    "VI02",
+    "VI03",
+    "VI04",
+    "VI05",
+    "AM01",
+    "AM02",
+    "AM03",
+    "AM04",
+    "AM05"
+  ],
+  "pending_scene_ids": [
+    "FG02",
+    "FG03",
+    "FG04"
+  ],
+  "target_and_intent_changes": [
+    {
+      "id": "FG02",
+      "verdict": "pending",
+      "changes": {
+        "target": {
+          "agent_proposal": "d0",
+          "user_review": "d1"
+        }
+      }
+    },
+    {
+      "id": "FG03",
+      "verdict": "pending",
+      "changes": {
+        "target": {
+          "agent_proposal": "d2",
+          "user_review": "d1"
+        }
+      }
+    },
+    {
+      "id": "HA02",
+      "verdict": "accept",
+      "changes": {
+        "target": {
+          "agent_proposal": "d0",
+          "user_review": "d1"
+        },
+        "intent": {
+          "agent_proposal": "ambiguous",
+          "user_review": "clear"
+        }
+      }
+    }
+  ],
+  "manual_polygon_count": 0,
+  "hashes_validated": true,
+  "selector_evaluation_run": false,
+  "frozen_for_scoring": false,
+  "usable_as_complete_segmentation_ground_truth": false
+}

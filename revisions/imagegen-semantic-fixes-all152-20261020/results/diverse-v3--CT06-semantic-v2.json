@@ -1,0 +1,62 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:CT06",
+  "slug": "diverse-v3--CT06",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "semantic-v2",
+  "image_sha256": "f52a33872f08901da46f4dc27576357d866eed6d568c7d91b15c7dfd3f87bb46",
+  "selector_seconds": 0.10585474999970756,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-imagegen-selection-isolation-and-label-bounds",
+    "status": "no_target",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": null,
+    "reason": "fallback_original_frame",
+    "candidates": [],
+    "crop_box": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "fallback",
+    "fallback_trigger": "no_credible_bottle_or_label",
+    "crop_scope": "original_frame",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--CT06-semantic-v2.png",
+  "crop_sha256": "3b9e0e57e867d17d9550842dc831313c5d017d88e62a6f5098c8a669a509f098",
+  "keep_mask_path": "keep-masks/diverse-v3--CT06-semantic-v2.png",
+  "keep_mask_sha256": "906e69b14f3dd76103b461679de3ecc54ab5200915d128e2f07db34a439178e5",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "full_frame",
+    "accepted_targets": [
+      "full_frame"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": true,
+    "crop_size_px": [
+      1536,
+      1024
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": null,
+    "maximum_other_bottle_retention_proxy": null,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": []
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

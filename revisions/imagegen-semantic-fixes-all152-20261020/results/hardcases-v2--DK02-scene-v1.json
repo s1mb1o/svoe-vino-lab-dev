@@ -1,0 +1,193 @@
+{
+  "case_key": "main-selector-imagegen-hardcases-v2-20261020:DK02",
+  "slug": "hardcases-v2--DK02",
+  "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+  "variant": "scene-v1",
+  "image_sha256": "58b6cbe102adb5f3b34efb293d7ba6e98e927886efd8a24cf735ec903bad5d9d",
+  "selector_seconds": 0.04066870899987407,
+  "decision": {
+    "variant": "scene-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "d4",
+    "reason": "existing_scene_v1_rank",
+    "candidates": [
+      {
+        "id": "d4",
+        "source_index": 4,
+        "kind": "wine bottle",
+        "box": [
+          322,
+          0,
+          753,
+          1006
+        ]
+      },
+      {
+        "id": "d7",
+        "source_index": 7,
+        "kind": "wine bottle",
+        "box": [
+          811,
+          0,
+          1064,
+          805
+        ]
+      },
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          1090,
+          0,
+          1364,
+          817
+        ]
+      },
+      {
+        "id": "d3",
+        "source_index": 3,
+        "kind": "wine bottle",
+        "box": [
+          121,
+          0,
+          158,
+          57
+        ]
+      },
+      {
+        "id": "d6",
+        "source_index": 6,
+        "kind": "wine bottle",
+        "box": [
+          0,
+          0,
+          30,
+          39
+        ]
+      },
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          160,
+          0,
+          186,
+          62
+        ]
+      },
+      {
+        "id": "d2",
+        "source_index": 2,
+        "kind": "wine bottle",
+        "box": [
+          32,
+          0,
+          71,
+          43
+        ]
+      },
+      {
+        "id": "d5",
+        "source_index": 5,
+        "kind": "wine bottle",
+        "box": [
+          75,
+          0,
+          118,
+          50
+        ]
+      }
+    ],
+    "crop_box": [
+      322,
+      0,
+      753,
+      1006
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "legacy",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/hardcases-v2--DK02-scene-v1.png",
+  "crop_sha256": "a1f6c6d6abced0853b4c7917b9739feda7ed45b56021c614ce7332acc4b2228e",
+  "keep_mask_path": "keep-masks/hardcases-v2--DK02-scene-v1.png",
+  "keep_mask_sha256": "f579707a5a4c1616b64be57379aeb5c65dbb3c94f3781416d78755d7bb24b9fd",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d4",
+    "accepted_targets": [
+      "d4"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_confirmed_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      431,
+      1006
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 0.9999233182525896,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d9",
+        "retention": 0.9993571525240222,
+        "source_area_px": 177336,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      },
+      {
+        "id": "d1",
+        "retention": 0.0
+      },
+      {
+        "id": "d2",
+        "retention": 0.0
+      },
+      {
+        "id": "d3",
+        "retention": 0.0
+      },
+      {
+        "id": "d5",
+        "retention": 0.0
+      },
+      {
+        "id": "d6",
+        "retention": 0.0
+      },
+      {
+        "id": "d7",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d4",
+      "iou": 0.9999233182525896
+    },
+    "minimum_target_label_retention_proxy": 0.9993571525240222
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

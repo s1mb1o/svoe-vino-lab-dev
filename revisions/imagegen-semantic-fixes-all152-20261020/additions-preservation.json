@@ -1,0 +1,409 @@
+{
+  "original_100_cases_unchanged": true,
+  "new_case_ids": [
+    "GP11",
+    "SP01"
+  ],
+  "checks": {
+    "PN01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PN10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "HP10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "GP10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "PD10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "WP10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "OC10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LT10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "SZ10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "LB10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT01": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT02": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT03": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT04": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT05": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT06": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT07": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT08": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT09": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    },
+    "CT10": {
+      "image_hash_unchanged": true,
+      "case_record_unchanged": true
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "case_key": "main-selector-imagegen-pilot-v1-20261019:OW04",
+  "slug": "pilot-v1--OW04",
+  "dataset": "main-selector-imagegen-pilot-v1-20261019",
+  "variant": "semantic-v2",
+  "image_sha256": "8a8dab404f75f664450fe643f975f95e84279d060805e9102c6f62f087d12547",
+  "selector_seconds": 0.28189608300453983,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-imagegen-selection-isolation-and-label-bounds",
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "d1",
+    "reason": "only_credible_subject",
+    "candidates": [
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          541,
+          18,
+          799,
+          948
+        ],
+        "reported_box": [
+          539.0,
+          18.0,
+          796.0,
+          947.0
+        ],
+        "geometry_source": "neck_axis",
+        "score": 0.705382,
+        "signals": {
+          "prominence": 0.604401,
+          "aim_distance": 0.069805,
+          "hand_contact": 0.0,
+          "hand_contacts": {},
+          "isolation": 1.0,
+          "focus": 0.192178,
+          "foreground_axis": null,
+          "hand_wrap": {},
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": false,
+          "grip_evidence": {},
+          "pointing_evidence": [],
+          "held_context_support": 0.996701,
+          "wrapping_context_support": 0.0,
+          "panel_context": false,
+          "contains_photo_center": true,
+          "photo_center_distance_px": 102.200783
+        },
+        "label_ids": [
+          "d3"
+        ],
+        "label_boxes": [
+          [
+            556,
+            591,
+            778,
+            878
+          ]
+        ],
+        "eligible_for_selection": true
+      }
+    ],
+    "crop_box": [
+      531,
+      0,
+      809,
+      985
+    ],
+    "label_boxes": [
+      [
+        547,
+        580,
+        787,
+        889
+      ]
+    ],
+    "rejected": [
+      {
+        "id": "d0",
+        "reason": "depiction_in_mirror",
+        "context_id": "d21"
+      },
+      {
+        "id": "d2",
+        "reason": "paper_in_mirror",
+        "context_id": "d21"
+      }
+    ],
+    "label_views_truncated": false,
+    "selection_mode": "confident",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/pilot-v1--OW04-semantic-v2.png",
+  "crop_sha256": "42338b28a534593b03f161c855117e515826dba62c3cf486e0d0b287b977a0ec",
+  "keep_mask_path": "keep-masks/pilot-v1--OW04-semantic-v2.png",
+  "keep_mask_sha256": "cd2e0b41f1747a05997b67c6254d62cc695951a78aac12e61d7f142cc0ac6808",
+  "label_crop_paths": [
+    "label-crops/pilot-v1--OW04-semantic-v2-0.png"
+  ],
+  "assessment": {
+    "target": "d1",
+    "accepted_targets": [
+      "d1"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_confirmed_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      278,
+      985
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d3",
+        "retention": 1.0,
+        "source_area_px": 58675,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d1",
+      "iou": 0.7243769275652246
+    },
+    "minimum_target_label_retention_proxy": 1.0
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

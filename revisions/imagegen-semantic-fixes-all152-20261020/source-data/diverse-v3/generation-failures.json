@@ -1,0 +1,38 @@
+{
+  "failed_calls": [
+    {
+      "id": "GP01",
+      "attempt": 1,
+      "status": "blocked",
+      "selected": false,
+      "original_prompt": "Use case: photorealistic-natural. Generate ONE independent photograph, landscape 3:2, approximately 1536 by 1024 pixels. Captain Jack Sparrow from Pirates of the Caribbean, recognizably portrayed with tricorn hat, beaded dreadlocks, dark eye makeup and weathered pirate clothes, examines a WINE bottle on the deck of a wooden pirate ship. Show his face and upper torso, ship rigging and sunset sea. The bottle is the subject, label toward camera. Photorealistic cinematic candid photograph. Two wine bottles in the described setting. A single hand from upper right clearly encloses the NECK of the RIGHT white-label bottle, thumb and fingers wrapping opposing sides, lifting its base slightly. The LEFT blue-label bottle is unheld and larger. Full target label visible. Make the scene composition, person, clothing and location specific to this scenario, rather than repeating a generic bottle on a tasting counter. Show genuine physical contact when a grip is requested. Fictional wine branding; no arrows, bounding boxes, captions, collages, watermark or UI. Maintain anatomically plausible hands. Keep the target visible label inside the frame except the explicit close-up and occlusion cases.",
+      "stage": "output",
+      "reason": "other",
+      "request_id": "7bb292e8-863e-47b5-a862-9f731b6038e0",
+      "substitution": "A distinct original pirate character; no existing character or actor likeness requested."
+    },
+    {
+      "id": "LT09",
+      "attempt": 1,
+      "status": "blocked",
+      "selected": false,
+      "original_prompt": "Use case: photorealistic-natural. Generate ONE independent photograph, landscape 3:2, approximately 1536 by 1024 pixels. Captain Jack Sparrow, recognizable beaded dreadlocks, tricorn, dark eyeliner and worn pirate coat, examines a dark wine bottle by candlelight inside his ship cabin. Show face, opposing fingers gripping glass, maps, compass and timber porthole. Photorealistic cinematic photograph. Two bottles in the described setting. A hand from right visibly grips the RIGHT nearly black wine bottle with a dark paper label. A candle near the LEFT unheld bottle brightly illuminates its large ivory label. Keep target label outline and opposed thumb/finger contact distinguishable. Make the scene composition, person, clothing and location specific to this scenario, rather than repeating a generic bottle on a tasting counter. Show genuine physical contact when a grip is requested. Fictional wine branding; no arrows, bounding boxes, captions, collages, watermark or UI. Maintain anatomically plausible hands. Keep the target visible label inside the frame except the explicit close-up and occlusion cases.",
+      "stage": "input",
+      "reason": "public-figure",
+      "request_id": "d2853f1a-8588-4322-86a0-d17b12889c96",
+      "substitution": "A distinct original pirate character; no existing character or actor likeness requested."
+    },
+    {
+      "id": "CT03",
+      "attempt": 1,
+      "status": "blocked",
+      "selected": false,
+      "original_prompt": "Use case: photorealistic-natural. Generate ONE independent photograph, portrait 2:3, approximately 1024 by 1536 pixels. Two adult pirates, Captain Jack Sparrow and another weathered pirate captain, each present one wine bottle equally toward camera on a wooden ship deck. Show both faces, equally sized bottles and two separate real grasps. No dominant owner or direction. Two equal-sized wine bottles LEFT and RIGHT at the same depth. Two different people each hold one bottle around mid-body with visible opposed thumb and fingers, equally presenting both. Labels equally readable, no third bottle. Centered symmetric composition, no dominant gesture. Make the scene composition, person, clothing and location specific to this scenario, rather than repeating a generic bottle on a tasting counter. Show genuine physical contact when a grip is requested. Fictional wine branding; no arrows, bounding boxes, captions, collages, watermark or UI. Maintain anatomically plausible hands. Keep the target visible label inside the frame except the explicit close-up and occlusion cases.",
+      "stage": "input",
+      "reason": "public-figure",
+      "request_id": "be67840f-4aa2-4a47-9dc9-26fa482a8aee",
+      "substitution": "A distinct original pirate character; no existing character or actor likeness requested."
+    }
+  ],
+  "canceled_in_flight_calls": "Unknown; see generation-interruption.json."
+}

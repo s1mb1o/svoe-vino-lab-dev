@@ -1,0 +1,74 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:CT10",
+  "slug": "diverse-v3--CT10",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "scene-v1",
+  "image_sha256": "626a0a7dbf39a098c8b530390923ec1ea389d8b8e4e756c5b8e775169eb0ea6a",
+  "selector_seconds": 0.058179542000289075,
+  "decision": {
+    "variant": "scene-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1254,
+    "height": 1254,
+    "selected_id": "d0",
+    "reason": "existing_scene_v1_rank",
+    "candidates": [
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          120,
+          3,
+          1032,
+          1250
+        ]
+      }
+    ],
+    "crop_box": [
+      120,
+      3,
+      1032,
+      1250
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "legacy",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--CT10-scene-v1.png",
+  "crop_sha256": "229f186cf689e50c018b100ea5f5037db46665413b979f8e05b72ed60e49d05c",
+  "keep_mask_path": "keep-masks/diverse-v3--CT10-scene-v1.png",
+  "keep_mask_sha256": "6dfc7c316257900e80c32f757e266127910ac1a38347f6ea0f780d2e72d1c97b",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "full_context",
+    "accepted_targets": [
+      "full_context"
+    ],
+    "target_agreement": false,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      912,
+      1247
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": null,
+    "maximum_other_bottle_retention_proxy": null,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": []
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

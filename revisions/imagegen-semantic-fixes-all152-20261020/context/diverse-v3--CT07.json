@@ -1,0 +1,16 @@
+{
+  "image_sha256": "b7a4c1454cc519bf02da62cf46c8801fa793eab962c1fe8c8e5505b21cb98054",
+  "request_image_sha256": "337744859b3cff9579ed8fcc93533a67a8c607353ab74ba9322258127f93a5c0",
+  "request_nouns": "poster, screen, mirror, bottle held in hand, transparent wrapping, empty gift bag",
+  "request_threshold": 0.4,
+  "mask_threshold": 0.5,
+  "source": "fixed_RGB_only_context_request",
+  "target_or_annotation_supplied": false,
+  "response": {
+    "instances": []
+  },
+  "elapsed_seconds": 1.3416934169945307,
+  "created_at": "2026-10-20T11:18:20.440818+00:00",
+  "endpoint": "http://192.168.86.14:18081/upstream/sam3",
+  "model_checkpoint_revision": "not disclosed by existing service"
+}

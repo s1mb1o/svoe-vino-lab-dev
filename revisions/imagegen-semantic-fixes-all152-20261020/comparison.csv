@@ -1,0 +1,457 @@
+case_key,dataset,variant,cohort,target,selected,target_agreement,isolation_proxy_pass,crop_width,crop_height,target_retention_proxy,maximum_other_bottle_retention_proxy,minimum_label_retention_proxy,flags,human_crop_usability
+main-selector-imagegen-pilot-v1-20261019:FG01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,285,980,0.9994099338315113,0.0,0.9999804697036278,,pending
+main-selector-imagegen-pilot-v1-20261019:FG01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,306,1019,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,795,953,0.921025724182353,0.9997106445079069,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:FG02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,344,1017,0.9957849312766942,0.0,0.9976981970857002,,pending
+main-selector-imagegen-pilot-v1-20261019:FG02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,358,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1010,875,0.6099558154684179,0.9993087740370996,0.6568041491726352,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:FG03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d2,d2,True,True,199,694,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d2,d2,True,True,213,749,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d2,dis-foreground,,False,870,1024,0.9987205783798054,0.9997247593048206,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:FG04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d2,d2,True,True,183,640,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d2,d2,True,True,199,666,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d2,dis-foreground,,False,1057,1017,0.9994689156319373,0.9992096353705866,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:FG05,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,265,816,0.9998284537968893,0.0,0.9994439612768931,,pending
+main-selector-imagegen-pilot-v1-20261019:FG05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,288,882,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:FG05,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1203,1024,0.9996569075937786,0.9997275204359674,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:HA01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,276,907,0.9997925222580901,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,298,942,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,657,941,0.9979679385865884,0.9988888380514142,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:HA02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d0,False,False,262,914,0.0,0.9992727933824198,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:HA02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,269,941,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1048,940,0.9975766326947508,0.9578674665939461,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:HA03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,249,961,0.9991030234019583,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,270,1015,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1120,1017,0.9996186506678985,0.9975582400635559,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:HA04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d0,False,False,251,928,0.0,0.9999883697263978,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:HA04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,290,1018,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,724,1019,0.9068122981335832,0.9254848370307911,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:HA05,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d1,False,False,258,854,0.0,0.9997794548399325,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:HA05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,255,928,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:HA05,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,965,956,0.999325289443651,0.9972087253178952,0.9994233264452881,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:LA01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,236,945,0.9996784990498498,0.0,0.991509270490383,label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:LA01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,261,1000,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,True,259,999,0.9988230768789147,0.0,0.9883902269970543,label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:LA02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,247,935,0.998990588065645,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,277,989,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,True,490,991,0.9995063864716616,0.0,0.999821440528536,,pending
+main-selector-imagegen-pilot-v1-20261019:LA03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,465,886,0.999923578561239,0.0,0.9999652968851476,,pending
+main-selector-imagegen-pilot-v1-20261019:LA03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,501,921,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,True,1028,929,0.9989759527206032,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d11,d11,True,True,266,971,0.9998656629533254,0.0,0.9980986584979402,,pending
+main-selector-imagegen-pilot-v1-20261019:LA04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d11,d11,True,True,288,1023,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d11,dis-foreground,,True,291,1024,0.9996566942140537,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA05,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,1076,1020,0.9975844628805373,0.0,0.9994314070092009,,pending
+main-selector-imagegen-pilot-v1-20261019:LA05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,1536,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:LA05,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,891,896,0.19943070266051252,0.0,0.21436651583710406,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:OW01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d4,d8,False,False,875,908,0.0,0.718814701936296,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:OW01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d4,d4,True,True,291,997,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d4,dis-foreground,,False,1029,1024,0.9989018018978569,0.8582561741175692,0.9984669134901184,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:OW02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d6,False,False,400,897,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:OW02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,286,962,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,630,1001,0.9937805295242582,0.9991849893143043,0.9995423233544177,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:OW03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d3,d3,True,True,269,761,0.9998340452551374,0.0,0.9777227722772277,label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:OW03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d3,d3,True,True,293,819,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d3,dis-foreground,,False,1259,1024,0.9998917686446548,1.0,0.9888613861386139,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:OW04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,257,929,0.9999021903605724,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,278,985,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,637,987,0.9992290299009822,0.9967145751671117,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:OW05,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,243,762,1.0,0.0,0.9997942894758496,,pending
+main-selector-imagegen-pilot-v1-20261019:OW05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,263,811,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:OW05,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,True,477,912,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d3,d3,True,True,309,996,0.9996310026430508,0.0,0.9443078660469965,label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:VI01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d3,d3,True,True,367,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d3,dis-foreground,,False,1338,1024,0.9985111385713795,0.9979262105892139,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:VI02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,349,760,0.9997756604819341,0.0,0.9983525332874338,,pending
+main-selector-imagegen-pilot-v1-20261019:VI02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,377,791,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1525,885,0.9737192852806883,0.9073416295134976,0.9998647601952371,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:VI03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,576,1017,0.9996356765611888,0.0,0.999995423906428,,pending
+main-selector-imagegen-pilot-v1-20261019:VI03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,616,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1536,1024,0.8038608234212232,0.9436996676945184,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:VI04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d7,d7,True,True,452,1020,0.9991164028761086,0.0,0.9995928901725224,,pending
+main-selector-imagegen-pilot-v1-20261019:VI04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d7,d7,True,True,488,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d7,dis-foreground,,False,1515,1024,0.9990059532356222,0.924644240315555,0.9998617362850076,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:VI05,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,498,902,0.9987159126820624,0.0,0.9999858029160811,,pending
+main-selector-imagegen-pilot-v1-20261019:VI05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,557,935,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:VI05,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1303,1024,0.9839389078457335,0.9588588352980405,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:AM01,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d0,False,False,246,919,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-pilot-v1-20261019:AM01,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,267,990,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:AM01,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,656,991,0.9997520903292691,0.9995693172545108,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:AM02,pilot-v1,scene-v1,scene_confirmed_masks_pending,d18,d18,True,True,246,893,0.9986944321370551,0.0,0.99839182552544,,pending
+main-selector-imagegen-pilot-v1-20261019:AM02,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d18,d18,True,True,277,932,1.0,0.0028303940779446984,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:AM02,pilot-v1,dis-v1,scene_confirmed_masks_pending,d18,dis-foreground,,False,1303,934,0.9991434057007827,0.999339731648077,0.9995422888033945,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:AM03,pilot-v1,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,211,810,0.9992638967937773,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:AM03,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,232,873,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:AM03,pilot-v1,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1536,899,0.9995902105862265,0.9998984771573604,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:AM04,pilot-v1,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,242,887,1.0,0.0,0.9996361623032508,,pending
+main-selector-imagegen-pilot-v1-20261019:AM04,pilot-v1,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,271,955,1.0,0.0,1.0,,pending
+main-selector-imagegen-pilot-v1-20261019:AM04,pilot-v1,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,488,963,0.9877866338127326,0.996817353363526,1.0,isolation proxy failure,pending
+main-selector-imagegen-pilot-v1-20261019:AM05,pilot-v1,scene-v1,scene_confirmed_masks_pending,full_frame,,True,True,1536,1024,,,,,pending
+main-selector-imagegen-pilot-v1-20261019:AM05,pilot-v1,semantic-v2,scene_confirmed_masks_pending,full_frame,,True,True,1536,1024,,,,,pending
+main-selector-imagegen-pilot-v1-20261019:AM05,pilot-v1,dis-v1,scene_confirmed_masks_pending,full_frame,dis-foreground,,False,1084,682,,,,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:PT01,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d2,False,False,284,883,0.0,0.9998661171649437,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:PT01,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,334,924,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:PT01,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1485,926,1.0,0.9998195492223153,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:PT02,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,213,781,0.9997729079141592,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:PT02,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,239,841,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:PT02,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1046,857,0.9985725640318578,0.9992914465273178,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:PT03,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d2,d1,False,False,254,848,0.0,0.9999072233267065,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:PT03,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d2,d2,True,True,279,933,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:PT03,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d2,dis-foreground,,False,1109,981,0.9895150637606056,0.9993638170974155,0.9954447718404077,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:PT04,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d1,False,False,258,834,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:PT04,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,219,753,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:PT04,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,961,1024,0.9992182614133833,0.9980342334142395,0.9998609018198679,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DP01,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,201,739,0.9999817626407697,0.0,0.9980663331792005,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP01,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,218,794,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP01,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1237,972,0.998194501436192,0.9990766930957161,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DP02,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d4,False,False,357,910,0.0,0.9999235829411652,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:DP02,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,236,847,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP02,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,682,969,0.9980170358298344,0.999254933676361,0.9998408118595165,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DP03,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,252,887,0.9996829384290818,0.0,0.9996266030934498,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP03,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,276,949,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP03,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1145,954,0.9997926905113228,0.9391752424228924,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DP04,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d21,d66,False,False,871,921,0.0,0.9999919924408642,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:DP04,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d21,d21,True,True,211,764,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DP04,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d21,dis-foreground,,False,1305,980,0.9981290833498317,0.9993513877099982,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:GL01,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,439,996,0.9992932966784944,0.0,0.9997965698547822,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL01,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,479,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL01,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1264,1024,1.0,0.9991253468452166,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:GL02,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d4,d4,True,True,419,1008,1.0,0.0,0.9999428141172882,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL02,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d4,d4,True,True,450,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL02,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d4,dis-foreground,,False,1372,1024,0.9898141487284484,0.9997932203857129,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:GL03,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,432,995,0.9999569266288195,0.0,0.9996371649306631,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL03,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,466,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL03,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,1288,1024,0.9999569266288195,0.9800230232897165,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:GL04,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,303,885,0.9999680541801105,0.0,0.9991557665530058,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL04,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,326,919,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:GL04,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,False,699,943,0.9999946756966851,0.9818692483766992,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DK01,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d5,d5,True,True,381,962,0.9996283597914443,0.0,0.9998694400351825,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK01,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d5,d5,True,True,413,1000,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK01,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d5,dis-foreground,,False,1231,1024,0.9787837163292149,0.9575938240464725,0.9997320084932693,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DK02,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d4,d4,True,True,431,1006,0.9999233182525896,0.0,0.9993571525240222,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK02,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d4,d4,True,True,463,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK02,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d4,dis-foreground,,False,1260,1024,0.9853704561897173,0.9162469279996107,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:DK03,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d5,d5,True,True,323,892,0.999947045882336,0.0,0.98360218637515,label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:DK03,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d5,d5,True,True,348,925,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK03,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d5,dis-foreground,,False,1173,1007,0.9694551021292369,0.8630924538411164,0.15131315824556726,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:DK04,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d0,d0,True,True,361,971,0.999950258654994,0.0,0.9989568120175255,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK04,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d0,d0,True,True,388,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:DK04,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d0,dis-foreground,,True,713,1024,0.999691603660963,0.0,0.9999890190738687,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG01,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d28,d28,True,True,363,961,0.9997443522019348,0.000784313725490196,0.9600207919001988,label retention proxy below 99.5%,pending
+main-selector-imagegen-hardcases-v2-20261020:BG01,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d28,d28,True,True,396,1003,1.0,0.000784313725490196,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG01,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d28,dis-foreground,,False,1278,1024,0.9999416943618448,0.9970518659746496,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:BG02,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,338,1011,0.9996477293219209,0.0,0.999953789706195,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG02,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,356,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG02,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,1307,1024,0.7796630782586086,0.9987187113897406,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:BG03,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d6,d6,True,True,371,986,0.998886143279674,0.0,0.9980256601107649,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG03,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d6,d6,True,True,407,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG03,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d6,dis-foreground,,False,1428,1024,0.9969360372062417,0.9366123578235475,1.0,isolation proxy failure,pending
+main-selector-imagegen-hardcases-v2-20261020:BG04,hardcases-v2,scene-v1,scene_confirmed_masks_pending,d1,d1,True,True,326,868,0.9998331656811993,0.0,0.9999670445557606,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG04,hardcases-v2,semantic-v2,scene_confirmed_masks_pending,d1,d1,True,True,346,949,1.0,0.0,1.0,,pending
+main-selector-imagegen-hardcases-v2-20261020:BG04,hardcases-v2,dis-v1,scene_confirmed_masks_pending,d1,dis-foreground,,False,873,956,0.9946465811231875,0.9630969752920973,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN01,diverse-v3,scene-v1,scene_pending_masks_pending,d48,d13,False,False,230,881,0.0,0.9997216266034684,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN01,diverse-v3,semantic-v2,scene_pending_masks_pending,d48,d48,True,True,274,992,1.0,0.010416666666666666,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN01,diverse-v3,dis-v1,scene_pending_masks_pending,d48,dis-foreground,,False,1385,993,0.9994293204958696,0.8602565549411277,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN02,diverse-v3,scene-v1,scene_pending_masks_pending,d15,d40,False,False,236,832,0.0,0.9989705579575869,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN02,diverse-v3,semantic-v2,scene_pending_masks_pending,d15,d15,True,True,186,706,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN02,diverse-v3,dis-v1,scene_pending_masks_pending,d15,dis-foreground,,False,795,903,0.9937096448149161,0.9995333196074394,0.9953899346907414,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN03,diverse-v3,scene-v1,scene_pending_masks_pending,d32,d19,False,False,254,985,0.0,0.9990335926393303,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN03,diverse-v3,semantic-v2,scene_pending_masks_pending,d32,d32,True,True,274,1083,1.0,0.00043271311120726956,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN03,diverse-v3,dis-v1,scene_pending_masks_pending,d32,dis-foreground,,False,979,1090,0.9998918269880848,0.9965416992795872,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN04,diverse-v3,scene-v1,scene_pending_masks_pending,d37,d7,False,False,194,615,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN04,diverse-v3,semantic-v2,scene_pending_masks_pending,d37,d37,True,True,214,806,0.9994653786593909,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN04,diverse-v3,dis-v1,scene_pending_masks_pending,d37,dis-foreground,,False,897,834,0.9991704151611238,0.9995715648392156,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN05,diverse-v3,scene-v1,scene_pending_masks_pending,d44,d44,True,True,256,910,1.0,0.0,0.9920310922977268,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN05,diverse-v3,semantic-v2,scene_pending_masks_pending,d44,d44,True,True,278,979,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN05,diverse-v3,dis-v1,scene_pending_masks_pending,d44,dis-foreground,,False,1139,1102,0.9996315876729235,0.9939409282700422,0.999879487218113,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN06,diverse-v3,scene-v1,scene_pending_masks_pending,d27,d2,False,False,276,898,0.0,0.9969785498091854,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN06,diverse-v3,semantic-v2,scene_pending_masks_pending,d27,d27,True,True,142,504,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN06,diverse-v3,dis-v1,scene_pending_masks_pending,d27,dis-foreground,,False,982,944,0.9935465889112817,0.9971259376233715,0.9917186149155935,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN07,diverse-v3,scene-v1,scene_pending_masks_pending,d45,d12,False,False,215,800,0.0,0.9988283984054046,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN07,diverse-v3,semantic-v2,scene_pending_masks_pending,d45,d45,True,True,211,753,1.0,0.0005173305742369374,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN07,diverse-v3,dis-v1,scene_pending_masks_pending,d45,dis-foreground,,False,1536,908,0.9996441396266701,1.0,0.9898170246618934,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN08,diverse-v3,scene-v1,scene_pending_masks_pending,d10,d10,True,True,241,909,1.0,0.0,0.9999402271368799,,pending
+main-selector-imagegen-diverse-v3-20261020:PN08,diverse-v3,semantic-v2,scene_pending_masks_pending,d10,d10,True,True,261,975,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN08,diverse-v3,dis-v1,scene_pending_masks_pending,d10,dis-foreground,,False,606,1003,0.9947181005188027,0.9974777811646435,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PN09,diverse-v3,scene-v1,scene_pending_masks_pending,d54,d54,True,True,228,922,0.9975133192442516,0.013623978201634877,0.954426533884716,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN09,diverse-v3,semantic-v2,scene_pending_masks_pending,d54,d54,True,True,261,958,1.0,0.017438692098092644,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN09,diverse-v3,dis-v1,scene_pending_masks_pending,d54,dis-foreground,,False,1234,1024,0.9997911947457006,0.9569927342524344,0.9929107941598447,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN10,diverse-v3,scene-v1,scene_pending_masks_pending,d33,d3,False,False,211,721,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PN10,diverse-v3,semantic-v2,scene_pending_masks_pending,d33,d33,True,True,187,669,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PN10,diverse-v3,dis-v1,scene_pending_masks_pending,d33,dis-foreground,,False,1171,1239,0.9983808868150641,0.9839177804243306,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP01,diverse-v3,scene-v1,scene_pending_masks_pending,d14,d14,True,True,261,800,0.9999325398015171,0.009569377990430622,0.9946397814337471,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP01,diverse-v3,semantic-v2,scene_pending_masks_pending,d14,d14,True,True,281,842,1.0,0.009569377990430622,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP01,diverse-v3,dis-v1,scene_pending_masks_pending,d14,dis-foreground,,False,776,839,0.9778355770095644,0.8147407628368954,0.9994209182158341,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP02,diverse-v3,scene-v1,scene_pending_masks_pending,d25,d25,True,True,291,878,0.9999937371611805,0.0,0.9709807973822441,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP02,diverse-v3,semantic-v2,scene_pending_masks_pending,d25,d25,True,True,315,946,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP02,diverse-v3,dis-v1,scene_pending_masks_pending,d25,dis-foreground,,False,1163,1007,0.9996743323813818,0.9986973359103427,0.9900111943511581,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP03,diverse-v3,scene-v1,scene_pending_masks_pending,d48,d48,True,True,264,971,0.9992710206774719,0.0,0.9989976372878929,,pending
+main-selector-imagegen-diverse-v3-20261020:HP03,diverse-v3,semantic-v2,scene_pending_masks_pending,d48,d48,True,True,285,1049,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP03,diverse-v3,dis-v1,scene_pending_masks_pending,d48,dis-foreground,,False,942,1357,1.0,0.9999549167086191,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP04,diverse-v3,scene-v1,scene_pending_masks_pending,d13,d13,True,True,249,750,0.9999599804704696,0.0,0.9998351648351649,,pending
+main-selector-imagegen-diverse-v3-20261020:HP04,diverse-v3,semantic-v2,scene_pending_masks_pending,d13,d13,True,True,269,808,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP04,diverse-v3,dis-v1,scene_pending_masks_pending,d13,dis-foreground,,False,1270,1024,0.9997198632932871,0.9981106067447775,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP05,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,347,713,1.0,0.0,0.9943986505840043,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP05,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,371,766,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP05,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1254,1254,0.4144111848001434,0.8822018072666659,0.9991725279271825,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP06,diverse-v3,scene-v1,scene_pending_masks_pending,d14,d14,True,True,295,959,0.9991171198961818,0.0,0.9961906054320222,,pending
+main-selector-imagegen-diverse-v3-20261020:HP06,diverse-v3,semantic-v2,scene_pending_masks_pending,d14,d14,True,True,319,1019,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP06,diverse-v3,dis-v1,scene_pending_masks_pending,d14,dis-foreground,,False,755,1018,0.9987182282830109,0.9990290546187504,0.9981634527089073,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP07,diverse-v3,scene-v1,scene_pending_masks_pending,d54,d54,True,True,329,905,0.9994588382316841,0.0038314176245210726,0.9776797455945293,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP07,diverse-v3,semantic-v2,scene_pending_masks_pending,d54,d54,True,True,355,953,1.0,0.0038314176245210726,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP07,diverse-v3,dis-v1,scene_pending_masks_pending,d54,dis-foreground,,False,775,956,0.6679554127334806,0.12487205731832139,0.9980871769122254,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP08,diverse-v3,scene-v1,scene_pending_masks_pending,d6,d6,True,True,397,1103,0.9999430201749281,0.0,0.9977392102534465,,pending
+main-selector-imagegen-diverse-v3-20261020:HP08,diverse-v3,semantic-v2,scene_pending_masks_pending,d6,d6,True,True,428,1188,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP08,diverse-v3,dis-v1,scene_pending_masks_pending,d6,dis-foreground,,False,913,1187,0.9931257911038213,0.9999420635314761,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP09,diverse-v3,scene-v1,scene_pending_masks_pending,d34,d34,True,True,309,943,0.9995875881457731,0.014221556886227544,0.96417280091626,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:HP09,diverse-v3,semantic-v2,scene_pending_masks_pending,d34,d34,True,True,336,989,1.0,0.014221556886227544,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP09,diverse-v3,dis-v1,scene_pending_masks_pending,d34,dis-foreground,,False,1276,1024,0.999726994969737,0.9869768332637944,0.9997733210847183,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:HP10,diverse-v3,scene-v1,scene_pending_masks_pending,d14,d14,True,True,193,669,0.9994392344954304,0.0014485755673587638,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP10,diverse-v3,semantic-v2,scene_pending_masks_pending,d14,d14,True,True,211,720,1.0,0.0014485755673587638,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:HP10,diverse-v3,dis-v1,scene_pending_masks_pending,d14,dis-foreground,,False,1159,1189,0.976937027226955,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP01,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,284,619,1.0,0.0,0.9999484323432343,,pending
+main-selector-imagegen-diverse-v3-20261020:GP01,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,305,668,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP01,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1390,1006,0.9996396863830278,0.9564125759226098,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP02,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,288,583,0.9999273511000254,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP02,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,312,628,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP02,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1320,1024,0.9993461599002288,0.2937583628492719,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP03,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,634,399,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP03,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,657,427,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP03,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1024,1525,0.9998502276539659,0.9741441196128425,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP04,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,534,165,0.9994279483008277,0.0,0.9998721554589619,,pending
+main-selector-imagegen-diverse-v3-20261020:GP04,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,577,178,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP04,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1530,1024,0.9872003432310195,0.9962112909791151,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP05,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,403,719,1.0,0.0,0.9998902838513503,,pending
+main-selector-imagegen-diverse-v3-20261020:GP05,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,433,776,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP05,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1098,1246,1.0,0.9984672076933575,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP06,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,226,618,0.9998555122092183,0.0,0.9894019682059046,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:GP06,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,245,665,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP06,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1180,1012,0.9405329535368547,0.25333950153241197,0.9962149886449659,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP07,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,296,554,1.0,0.0,0.9997498749374687,,pending
+main-selector-imagegen-diverse-v3-20261020:GP07,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,318,597,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP07,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1306,1024,0.9985234899328859,0.7966072235547677,0.9996249062265566,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP08,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,238,791,1.0,0.0,0.9994854586129754,,pending
+main-selector-imagegen-diverse-v3-20261020:GP08,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,253,852,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP08,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1024,1536,0.9574025112619875,0.9996363085315957,0.9999776286353468,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP09,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,266,435,0.9996802439984258,0.0,0.9965901825673084,,pending
+main-selector-imagegen-diverse-v3-20261020:GP09,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,290,467,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP09,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,997,1020,0.5236373475009839,0.991501468094031,0.9992896213681892,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,338,585,1.0,0.0,0.9995091873983865,,pending
+main-selector-imagegen-diverse-v3-20261020:GP10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,361,628,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1178,1254,0.9967460116485186,0.9997316601554793,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD01,diverse-v3,scene-v1,scene_pending_masks_pending,d48,d48,True,True,295,944,0.9996156605513989,0.0,0.9248213208908748,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD01,diverse-v3,semantic-v2,scene_pending_masks_pending,d48,d48,True,True,320,980,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD01,diverse-v3,dis-v1,scene_pending_masks_pending,d48,dis-foreground,,False,324,881,0.9392333709131905,0.0014587892049598833,0.9997232080190591,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD02,diverse-v3,scene-v1,scene_pending_masks_pending,d10,d10,True,True,223,848,0.9997505560521338,0.0,0.9979907546613087,,pending
+main-selector-imagegen-diverse-v3-20261020:PD02,diverse-v3,semantic-v2,scene_pending_masks_pending,d10,d10,True,True,246,914,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD02,diverse-v3,dis-v1,scene_pending_masks_pending,d10,dis-foreground,,False,792,919,0.9989121472273612,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD03,diverse-v3,scene-v1,scene_pending_masks_pending,d39,d39,True,True,362,1235,1.0,0.0015936254980079682,0.9990680467106285,,pending
+main-selector-imagegen-diverse-v3-20261020:PD03,diverse-v3,semantic-v2,scene_pending_masks_pending,d39,d39,True,True,389,1332,1.0,0.0015936254980079682,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD03,diverse-v3,dis-v1,scene_pending_masks_pending,d39,dis-foreground,,False,412,1333,0.9751264919564089,0.10779220779220779,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD04,diverse-v3,scene-v1,scene_pending_masks_pending,d12,d12,True,True,131,468,0.9998438719750196,0.0,0.9692969870875179,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD04,diverse-v3,semantic-v2,scene_pending_masks_pending,d12,d12,True,True,142,504,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD04,diverse-v3,dis-v1,scene_pending_masks_pending,d12,dis-foreground,,False,465,495,0.6850451656072265,0.0,0.9710186513629843,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD05,diverse-v3,scene-v1,scene_pending_masks_pending,d27,d27,True,True,408,1201,1.0,0.0,0.9960877765317565,,pending
+main-selector-imagegen-diverse-v3-20261020:PD05,diverse-v3,semantic-v2,scene_pending_masks_pending,d27,d27,True,True,440,1254,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD05,diverse-v3,dis-v1,scene_pending_masks_pending,d27,dis-foreground,,True,451,1254,0.998483966466708,0.05190677966101695,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD06,diverse-v3,scene-v1,scene_pending_masks_pending,d10,d58,False,False,462,939,0.0,0.9742367953480859,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD06,diverse-v3,semantic-v2,scene_pending_masks_pending,d10,d10,True,True,236,834,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD06,diverse-v3,dis-v1,scene_pending_masks_pending,d10,dis-foreground,,False,809,1008,0.9985891530768911,1.0,0.9858644436389996,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD07,diverse-v3,scene-v1,scene_pending_masks_pending,d47,d47,True,True,333,954,0.9998197409419823,0.0,0.993985306252299,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD07,diverse-v3,semantic-v2,scene_pending_masks_pending,d47,d47,True,True,358,993,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD07,diverse-v3,dis-v1,scene_pending_masks_pending,d47,dis-foreground,,False,1357,888,0.9290860865758505,0.9999638124326007,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD08,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,227,897,0.9998744649066647,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD08,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,254,965,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD08,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1024,1245,1.0,0.9989746364943961,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD09,diverse-v3,scene-v1,scene_pending_masks_pending,d20,d20,True,True,347,965,1.0,0.0,0.9305488535020464,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:PD09,diverse-v3,semantic-v2,scene_pending_masks_pending,d20,d20,True,True,375,1003,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD09,diverse-v3,dis-v1,scene_pending_masks_pending,d20,dis-foreground,,False,917,1024,0.9407265684935352,0.9902572010551385,0.9999642557146177,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:PD10,diverse-v3,scene-v1,scene_pending_masks_pending,d7,d7,True,True,235,385,0.9998175404452013,0.0,0.9973511780287188,,pending
+main-selector-imagegen-diverse-v3-20261020:PD10,diverse-v3,semantic-v2,scene_pending_masks_pending,d7,d7,True,True,253,414,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:PD10,diverse-v3,dis-v1,scene_pending_masks_pending,d7,dis-foreground,,True,595,1109,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP01,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,277,903,0.9992898264731734,0.0,0.9996814007286227,,pending
+main-selector-imagegen-diverse-v3-20261020:WP01,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,308,976,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP01,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1133,1012,0.9999767156220712,0.999744449198878,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP02,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,248,532,0.9997060840599589,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP02,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,272,572,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP02,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,True,1097,1024,0.9992722081484695,0.005599134433324317,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP03,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,293,703,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP03,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,308,755,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP03,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,965,1536,1.0,0.9994903618430914,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP04,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,269,543,0.999260304135416,0.0,0.9977297951770759,,pending
+main-selector-imagegen-diverse-v3-20261020:WP04,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,294,584,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP04,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1405,1024,0.9938932085598293,0.998383752134667,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP05,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d8,False,False,436,739,0.0,0.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:WP05,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,217,615,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP05,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1110,1161,0.9320705131990787,0.9789532501396908,0.9999513642332571,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP06,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d8,False,False,261,640,0.6711356810168458,0.0,0.998250885769386,target disagreement; isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP06,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,168,541,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP06,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1211,1024,0.3953989465894746,0.0,0.47104991702919674,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:WP07,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,179,546,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP07,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,190,588,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP07,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1263,1024,0.9992752572836643,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP08,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,321,655,1.0,0.0,0.9985656227587856,,pending
+main-selector-imagegen-diverse-v3-20261020:WP08,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,345,703,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP08,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1024,1488,0.9998546242698173,0.9824388795039819,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:WP09,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d11,False,True,338,653,1.0,0.0,1.0,target disagreement,pending
+main-selector-imagegen-diverse-v3-20261020:WP09,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,246,548,0.9781536686577719,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP09,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1061,1024,0.6299335677999218,0.0,0.7142090913154249,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:WP10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,234,665,1.0,0.0,0.996020482809071,,pending
+main-selector-imagegen-diverse-v3-20261020:WP10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,248,714,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:WP10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1204,1254,0.9999183702027917,0.6549612821898073,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC01,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,361,606,0.9999357697989595,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:OC01,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,389,653,1.0,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:OC01,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1220,1024,0.9845526366497527,0.9986885607229447,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC02,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,230,615,1.0,0.0,0.9995336147191195,,pending
+main-selector-imagegen-diverse-v3-20261020:OC02,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,244,664,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC02,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1030,1024,0.9995465823645729,0.9997320133678038,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC03,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,361,528,0.9985551416638446,0.0,0.9798180062020233,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:OC03,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,395,574,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC03,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1024,1503,0.9804266847273959,1.0,0.9999491637435819,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC04,diverse-v3,scene-v1,scene_pending_masks_pending,d25,d25,True,True,325,831,1.0,0.0020861272537624795,0.9972976305460225,,pending
+main-selector-imagegen-diverse-v3-20261020:OC04,diverse-v3,semantic-v2,scene_pending_masks_pending,d25,d25,True,True,350,863,1.0,0.0020861272537624795,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC04,diverse-v3,dis-v1,scene_pending_masks_pending,d25,dis-foreground,,False,609,983,0.9403808190248829,0.6583221576516167,0.9995889932389388,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC05,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d1,False,False,144,435,0.0,0.9999772365126337,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:OC05,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,244,517,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC05,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,995,1193,0.9948767068362551,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC06,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,250,438,0.9998607552634511,0.0,0.9942156862745098,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:OC06,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,270,471,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC06,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1325,1024,0.9920073521220898,0.9297536771220982,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC07,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,302,572,0.9998706543452954,0.0,0.9985122491486759,,pending
+main-selector-imagegen-diverse-v3-20261020:OC07,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,324,618,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC07,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1536,1024,0.2573116224256622,0.999943313228425,0.24772704731047707,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:OC08,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,374,578,0.9977867104984783,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:OC08,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,404,624,0.9977867104984783,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:OC08,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,994,1478,1.0,0.979513649354489,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:OC09,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,284,504,0.9992559691565396,0.0,0.999319048483748,,pending
+main-selector-imagegen-diverse-v3-20261020:OC09,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,308,544,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC09,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,True,1534,1024,0.995580907717629,0.006618447385976616,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d8,False,False,605,531,0.0,0.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:OC10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,250,528,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:OC10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1254,1254,1.0,0.8308170951367283,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT01,diverse-v3,scene-v1,scene_pending_masks_pending,d2,d2,True,True,329,966,1.0,0.0,0.9979543051533122,,pending
+main-selector-imagegen-diverse-v3-20261020:LT01,diverse-v3,semantic-v2,scene_pending_masks_pending,d2,d2,True,True,353,1024,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT01,diverse-v3,dis-v1,scene_pending_masks_pending,d2,dis-foreground,,False,1260,1024,0.9995861470288385,0.9999291027360436,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT02,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,241,388,0.9997077305275464,0.0,0.9956254850772596,,pending
+main-selector-imagegen-diverse-v3-20261020:LT02,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,260,417,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT02,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1207,1024,1.0,0.1716486613433537,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT03,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d1,False,False,170,645,0.0,0.9986833603569556,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT03,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,359,570,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT03,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1024,1536,0.9994633303704697,0.9947334414278225,0.9925836841050311,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT04,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,318,555,1.0,0.0,0.9997418688693857,,pending
+main-selector-imagegen-diverse-v3-20261020:LT04,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,344,598,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT04,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1435,1024,0.9992759647099836,0.9989532905926992,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT05,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,262,547,0.9994801641586867,0.0,0.9982880583998192,,pending
+main-selector-imagegen-diverse-v3-20261020:LT05,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,280,591,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT05,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1051,1254,0.5782900136798905,0.0,0.9997738945056365,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT06,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,273,583,0.9998274548147296,0.0,0.9987896393125151,,pending
+main-selector-imagegen-diverse-v3-20261020:LT06,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,293,629,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT06,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1359,984,0.9982889269127353,0.9975776040756187,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT07,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,220,430,0.9999080480908484,0.0,0.999650512581547,,pending
+main-selector-imagegen-diverse-v3-20261020:LT07,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,239,464,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT07,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1454,1024,0.9988735891128939,0.7851691864650828,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LT08,diverse-v3,scene-v1,scene_pending_masks_pending,d10,d10,True,True,385,589,1.0,0.0,0.9890424814565071,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT08,diverse-v3,semantic-v2,scene_pending_masks_pending,d10,d10,True,True,411,633,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT08,diverse-v3,dis-v1,scene_pending_masks_pending,d10,dis-foreground,,True,839,1116,0.9851870960734264,0.0,0.9826365475387727,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT09,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,265,449,1.0,0.0,0.994850890366874,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT09,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,287,484,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT09,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1037,857,0.25025128091981075,0.0,0.5666166058785669,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,173,659,0.0,0.9999186887988012,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LT10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,339,700,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LT10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1141,1254,0.9979617478710038,0.9991055767868137,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:SZ01,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,261,891,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ01,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,196,356,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ01,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1536,1024,0.9918323532157192,0.9997162923462622,0.9781879194630873,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ02,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,212,805,0.0,0.9989459587887166,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ02,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,201,265,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ02,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,True,873,951,0.9898012212550344,0.0,0.9950747282608695,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ03,diverse-v3,scene-v1,scene_pending_masks_pending,d2,d2,True,True,224,755,0.9998029894213885,0.0,0.9994694669057115,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ03,diverse-v3,semantic-v2,scene_pending_masks_pending,d2,d2,True,True,242,813,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ03,diverse-v3,dis-v1,scene_pending_masks_pending,d2,dis-foreground,,False,971,1402,0.9871086556169429,0.9973603432016125,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:SZ04,diverse-v3,scene-v1,scene_pending_masks_pending,d40,d40,True,True,285,564,0.9999571440815976,0.0,0.9941874139031683,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ04,diverse-v3,semantic-v2,scene_pending_masks_pending,d40,d40,True,True,306,610,1.0,0.018297533810660304,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ04,diverse-v3,dis-v1,scene_pending_masks_pending,d40,dis-foreground,,True,1158,1024,0.9955572697922916,0.024420788979336257,0.9986896482209454,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ05,diverse-v3,scene-v1,scene_pending_masks_pending,d12,d12,True,True,317,734,0.9999456627207451,0.0,0.961627699446725,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ05,diverse-v3,semantic-v2,scene_pending_masks_pending,d12,d12,True,True,344,762,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ05,diverse-v3,dis-v1,scene_pending_masks_pending,d12,dis-foreground,,False,1254,1254,0.9461129439161653,1.0,0.10351597358557915,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ06,diverse-v3,scene-v1,scene_pending_masks_pending,d2,d2,True,True,217,371,0.9994382852919438,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ06,diverse-v3,semantic-v2,scene_pending_masks_pending,d2,d2,True,True,237,401,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ06,diverse-v3,dis-v1,scene_pending_masks_pending,d2,dis-foreground,,False,1536,1024,0.9968662232076866,0.9880364781648099,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:SZ07,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,325,483,0.9990609091058866,0.0,0.9998526030304817,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ07,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,351,523,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ07,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1536,1024,0.9995881180288977,0.9986715376951179,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:SZ08,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,364,676,0.9999330220453154,0.0,0.9805216242984484,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ08,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,394,729,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ08,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,True,858,1473,0.9999521586037967,0.0,0.9970287223506108,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ09,diverse-v3,scene-v1,scene_pending_masks_pending,d21,d21,True,True,321,950,0.9998233728940067,0.0,0.940443650698581,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ09,diverse-v3,semantic-v2,scene_pending_masks_pending,d21,d21,True,True,346,1008,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ09,diverse-v3,dis-v1,scene_pending_masks_pending,d21,dis-foreground,,False,467,991,0.8993738284210107,0.0,0.41345565749235474,isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:SZ10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,279,530,0.9999689440993789,0.0,0.9999647812918222,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,297,571,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SZ10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,782,979,0.9353105590062112,0.0,0.9998943438754666,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB01,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,323,604,0.99991367296854,0.0,0.9993736134673105,,pending
+main-selector-imagegen-diverse-v3-20261020:LB01,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,348,651,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB01,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1366,1024,0.9993463810475168,0.9239363292148266,0.9999739005611379,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB02,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,301,559,0.9996531298361706,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:LB02,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,323,603,1.0,0.0,,,pending
+main-selector-imagegen-diverse-v3-20261020:LB02,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1344,1024,0.9127754949570415,1.0,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB03,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,316,636,0.9999145142578005,0.0,0.9855563480741797,label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LB03,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,342,685,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB03,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,1002,1395,0.9998656652622581,0.9995320891157548,0.9953637660485022,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB04,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,165,596,0.0,0.9999711049468331,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LB04,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,293,555,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB04,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1341,1024,0.998539145490288,0.9999566574202496,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB05,diverse-v3,scene-v1,scene_pending_masks_pending,d2,d2,True,True,280,581,1.0,0.0,0.9973336177474402,,pending
+main-selector-imagegen-diverse-v3-20261020:LB05,diverse-v3,semantic-v2,scene_pending_masks_pending,d2,d2,True,True,300,626,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB05,diverse-v3,dis-v1,scene_pending_masks_pending,d2,dis-foreground,,False,997,1186,0.997665960249728,0.9989104973579561,0.9999183706787478,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB06,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,154,530,0.0,0.9993246753246753,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:LB06,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,320,506,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB06,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1153,1024,0.9361693660710733,0.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB07,diverse-v3,scene-v1,scene_pending_masks_pending,d10,d10,True,True,244,488,0.999689356579816,0.0,0.9998230479982305,,pending
+main-selector-imagegen-diverse-v3-20261020:LB07,diverse-v3,semantic-v2,scene_pending_masks_pending,d10,d10,True,True,263,523,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB07,diverse-v3,dis-v1,scene_pending_masks_pending,d10,dis-foreground,,True,1279,1024,0.9742360113384848,5.272940587141934e-05,0.9999115239991152,,pending
+main-selector-imagegen-diverse-v3-20261020:LB08,diverse-v3,scene-v1,scene_pending_masks_pending,d3,d3,True,True,372,623,0.9997213584333656,0.0,0.99704523602936,,pending
+main-selector-imagegen-diverse-v3-20261020:LB08,diverse-v3,semantic-v2,scene_pending_masks_pending,d3,d3,True,True,396,674,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB08,diverse-v3,dis-v1,scene_pending_masks_pending,d3,dis-foreground,,False,940,1507,0.9997770867466925,0.9775404873066822,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:LB09,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,223,602,0.9998845732094419,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB09,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,237,650,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB09,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,True,1536,1024,0.9959408245320406,0.05431376645080426,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB10,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,305,679,0.9998328143612464,0.0,0.9983147309094927,,pending
+main-selector-imagegen-diverse-v3-20261020:LB10,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,328,732,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:LB10,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1034,1252,0.9985789220705942,0.9191903479520509,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT01,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d0,False,False,170,590,0.0,1.0,0.0,target disagreement; isolation proxy failure; label retention proxy below 99.5%,pending
+main-selector-imagegen-diverse-v3-20261020:CT01,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,185,629,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT01,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1069,640,0.9978874727131892,0.9981433193627217,0.9967498505678422,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT02,diverse-v3,scene-v1,scene_pending_masks_pending,d8,d8,True,True,228,868,0.9989511356340544,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT02,diverse-v3,semantic-v2,scene_pending_masks_pending,d8,d8,True,True,247,936,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT02,diverse-v3,dis-v1,scene_pending_masks_pending,d8,dis-foreground,,False,936,938,0.9996122380222868,0.9987167506811092,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT03,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,162,592,0.9991577724533508,0.0,0.9981647030963234,,pending
+main-selector-imagegen-diverse-v3-20261020:CT03,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,178,639,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT03,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1024,1468,1.0,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT04,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,80,269,0.996747241533261,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT04,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,86,292,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT04,diverse-v3,dis-v1,scene_pending_masks_pending,d0,,,False,1536,1024,1.0,1.0,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT05,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,223,882,0.9998709703707225,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT05,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,247,951,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:CT05,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,False,484,972,0.9994567173504105,0.9992699994965514,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT06,diverse-v3,scene-v1,scene_pending_masks_pending,full_frame,,True,True,1536,1024,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT06,diverse-v3,semantic-v2,scene_pending_masks_pending,full_frame,,True,True,1536,1024,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT06,diverse-v3,dis-v1,scene_pending_masks_pending,full_frame,dis-foreground,,False,1392,701,,,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT07,diverse-v3,scene-v1,scene_pending_masks_pending,full_frame,d0,False,False,317,624,,,,target disagreement; isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT07,diverse-v3,semantic-v2,scene_pending_masks_pending,full_frame,,True,True,1536,1024,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT07,diverse-v3,dis-v1,scene_pending_masks_pending,full_frame,dis-foreground,,False,890,858,,,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT08,diverse-v3,scene-v1,scene_pending_masks_pending,full_frame,,True,True,1024,1536,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT08,diverse-v3,semantic-v2,scene_pending_masks_pending,full_frame,,True,True,1024,1536,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT08,diverse-v3,dis-v1,scene_pending_masks_pending,full_frame,dis-foreground,,False,1018,1536,,,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT09,diverse-v3,scene-v1,scene_pending_masks_pending,full_context,d0,False,False,619,1019,,,,target disagreement; isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT09,diverse-v3,semantic-v2,scene_pending_masks_pending,full_context,d0,True,True,1536,1024,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT09,diverse-v3,dis-v1,scene_pending_masks_pending,full_context,dis-foreground,,False,642,909,,,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT10,diverse-v3,scene-v1,scene_pending_masks_pending,full_context,d0,False,False,912,1247,,,,target disagreement; isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:CT10,diverse-v3,semantic-v2,scene_pending_masks_pending,full_context,d0,True,True,1254,1254,,,,,pending
+main-selector-imagegen-diverse-v3-20261020:CT10,diverse-v3,dis-v1,scene_pending_masks_pending,full_context,dis-foreground,,False,1153,1254,,,,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:GP11,diverse-v3,scene-v1,scene_pending_masks_pending,d1,d1,True,True,289,584,0.9999634841034131,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP11,diverse-v3,semantic-v2,scene_pending_masks_pending,d1,d1,True,True,314,628,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:GP11,diverse-v3,dis-v1,scene_pending_masks_pending,d1,dis-foreground,,False,1265,1024,0.9991601343784995,0.3650070181525699,1.0,isolation proxy failure,pending
+main-selector-imagegen-diverse-v3-20261020:SP01,diverse-v3,scene-v1,scene_pending_masks_pending,d0,d0,True,True,303,552,1.0,0.0,0.9959046013008913,,pending
+main-selector-imagegen-diverse-v3-20261020:SP01,diverse-v3,semantic-v2,scene_pending_masks_pending,d0,d0,True,True,327,594,1.0,0.0,1.0,,pending
+main-selector-imagegen-diverse-v3-20261020:SP01,diverse-v3,dis-v1,scene_pending_masks_pending,d0,dis-foreground,,True,1000,1024,0.9982764890976077,0.0,0.997109130330041,,pending

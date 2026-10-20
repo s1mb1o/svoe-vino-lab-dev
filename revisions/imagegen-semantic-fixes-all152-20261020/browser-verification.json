@@ -1,0 +1,157 @@
+{
+  "cases": [
+    {
+      "id": "diverse-v3--PN01",
+      "images": [
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/diverse-v3--PN01-original.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/diverse-v3--PN01-target.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--PN01-scene-v1.jpg",
+          "width": 120
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--PN01-semantic-v2.jpg",
+          "width": 127
+        },
+        {
+          "complete": true,
+          "height": 459,
+          "src": "previews/diverse-v3--PN01-dis-v1.jpg",
+          "width": 640
+        }
+      ],
+      "text": "main-selector-imagegen-diverse-v3-20261020:PN01\n\nScene and masks pending — exploratory. Target proposal: d48; family: pointing. Portable case page\n\nOriginal / proposed target\n\nSource title: Палец проходит перед соседом\n\nSource target description: Правая бутылка с бордовой этикеткой\n\nscene-v1\nFAIL — provisional target/proxy\n\nSelected: d13; reason: existing_scene_v1_rank; mode: legacy; crop 230×881 px. Target agreement: False. Target retention proxy: 0.0%; maximum other-bottle retention: 100.0%; minimum associated label retention: 0.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nsemantic-v2\nNo automatic failure flag; usability pending\n\nSelected: d48; reason: explicit_pointing_gesture; mode: confident; crop 274×992 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 1.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review. Selected-label mask audit: d71 100.0%.\n\nDecision JSON · Keep mask\ndis-v1\nPROXY failure; no native target ID\n\nSelected: dis-foreground; reason: dis_foreground_mask; mode: foreground; crop 1385×993 px. Target agreement: n/a (no native target ID). Target retention proxy: 99.9%; maximum other-bottle retention: 86.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nAll 132 proposal masks, source notes and prompt"
+    },
+    {
+      "id": "hardcases-v2--DP03",
+      "images": [
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/hardcases-v2--DP03-original.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/hardcases-v2--DP03-target.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/hardcases-v2--DP03-scene-v1.jpg",
+          "width": 131
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/hardcases-v2--DP03-semantic-v2.jpg",
+          "width": 134
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/hardcases-v2--DP03-dis-v1.jpg",
+          "width": 552
+        }
+      ],
+      "text": "main-selector-imagegen-hardcases-v2-20261020:DP03\n\nScene confirmed; masks pending. Target proposal: d1; family: depiction. Portable case page\n\nOriginal / proposed target\n\nSource title: Настоящая бутылка перекрывает рекламную картинку\n\nSource target description: Настоящая бутылка справа перед планшетом\n\nscene-v1\nNo automatic failure flag; usability pending\n\nSelected: d1; reason: existing_scene_v1_rank; mode: legacy; crop 252×887 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nsemantic-v2\nNo automatic failure flag; usability pending\n\nSelected: d1; reason: single_substantial_bottle_in_scene_context; mode: confident; crop 276×949 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review. Selected-label mask audit: d4 100.0%.\n\nDecision JSON · Keep mask\ndis-v1\nPROXY failure; no native target ID\n\nSelected: dis-foreground; reason: dis_foreground_mask; mode: foreground; crop 1145×954 px. Target agreement: n/a (no native target ID). Target retention proxy: 100.0%; maximum other-bottle retention: 93.9%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nAll 7 proposal masks, source notes and prompt"
+    },
+    {
+      "id": "diverse-v3--WP05",
+      "images": [
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--WP05-original.jpg",
+          "width": 460
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--WP05-target.jpg",
+          "width": 460
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--WP05-scene-v1.jpg",
+          "width": 271
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--WP05-semantic-v2.jpg",
+          "width": 162
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/diverse-v3--WP05-dis-v1.jpg",
+          "width": 440
+        }
+      ],
+      "text": "main-selector-imagegen-diverse-v3-20261020:WP05\n\nScene and masks pending — exploratory. Target proposal: d0; family: wrapping. Portable case page\n\nOriginal / proposed target\n\nSource title: В кабинете изобретателя · открытый бумажный пакет\n\nSource target description: Удерживаемая бутылка справа в пакете с окном\n\nscene-v1\nFAIL — provisional target/proxy\n\nSelected: d8; reason: existing_scene_v1_rank; mode: legacy; crop 436×739 px. Target agreement: False. Target retention proxy: 0.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 0.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nsemantic-v2\nNo automatic failure flag; usability pending\n\nSelected: d0; reason: unique_visible_hand_contact; mode: confident; crop 217×615 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review. Selected-label mask audit: d2 100.0%.\n\nDecision JSON · Keep mask\ndis-v1\nPROXY failure; no native target ID\n\nSelected: dis-foreground; reason: dis_foreground_mask; mode: foreground; crop 1110×1161 px. Target agreement: n/a (no native target ID). Target retention proxy: 93.2%; maximum other-bottle retention: 97.9%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nAll 10 proposal masks, source notes and prompt"
+    },
+    {
+      "id": "pilot-v1--VI01",
+      "images": [
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/pilot-v1--VI01-original.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 427,
+          "src": "previews/pilot-v1--VI01-target.jpg",
+          "width": 640
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/pilot-v1--VI01-scene-v1.jpg",
+          "width": 143
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/pilot-v1--VI01-semantic-v2.jpg",
+          "width": 165
+        },
+        {
+          "complete": true,
+          "height": 460,
+          "src": "previews/pilot-v1--VI01-dis-v1.jpg",
+          "width": 601
+        }
+      ],
+      "text": "main-selector-imagegen-pilot-v1-20261019:VI01\n\nScene confirmed; masks pending. Target proposal: d3; family: visibility. Portable case page\n\nOriginal / proposed target\n\nSource title: Пять бутылок и бокал спереди\n\nSource target description: Крупная бутылка слева за бокалом\n\nscene-v1\nFAIL — provisional target/proxy\n\nSelected: d3; reason: existing_scene_v1_rank; mode: legacy; crop 309×996 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 94.4%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nsemantic-v2\nNo automatic failure flag; usability pending\n\nSelected: d3; reason: foreground_scale_and_lower_base; mode: confident; crop 367×1024 px. Target agreement: True. Target retention proxy: 100.0%; maximum other-bottle retention: 0.0%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review. Selected-label mask audit: d9 100.0%; d10 100.0%.\n\nDecision JSON · Keep mask\ndis-v1\nPROXY failure; no native target ID\n\nSelected: dis-foreground; reason: dis_foreground_mask; mode: foreground; crop 1338×1024 px. Target agreement: n/a (no native target ID). Target retention proxy: 99.9%; maximum other-bottle retention: 99.8%; minimum associated label retention: 100.0%. Mask ownership, label completeness and legibility still require human review.\n\nDecision JSON · Keep mask\nAll 13 proposal masks, source notes and prompt"
+    }
+  ],
+  "sceneFailureFilter": "60 / 152 cases",
+  "semanticFailureFilter": "0 / 152 cases",
+  "slugSearchVerified": true,
+  "visualInspection": [
+    "PN01",
+    "DP03",
+    "WP05"
+  ],
+  "humanMaskOrCropApproval": false
+}

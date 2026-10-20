@@ -1,0 +1,333 @@
+{
+  "schema_version": 2,
+  "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+  "purpose": "New development stress cases for previously observed semantic-v2 failures; not an independent untouched benchmark.",
+  "generator": "built-in image_gen",
+  "case_count": 20,
+  "recipes": [
+    {
+      "id": "PT01",
+      "family": "pointing",
+      "review_title_ru": "Палец слева — бутылка справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с узкой бордовой этикеткой",
+      "target_point_proposal": [
+        0.74,
+        0.58
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. A kitchen counter holds exactly three separate upright wine bottles. A human hand enters from the left, palm well visible, index finger fully extended horizontally toward the RIGHTMOST bottle with a narrow burgundy label; the other fingers curl naturally. The fingertip stops a small visible gap before the target middle body. A larger cream-label bottle stands at center and a green-label bottle at left, both unheld. The finger direction clearly passes in front of the central bottle and ends at the rightmost target, without touching any bottle. Midday window light, pale stone counter, casual close photograph.",
+      "expected_result_ru": "Выбрать: правая бутылка с узкой бордовой этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "HA02"
+      ]
+    },
+    {
+      "id": "PT02",
+      "family": "pointing",
+      "review_title_ru": "Указание сверху на левую бутылку",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка с голубой этикеткой",
+      "target_point_proposal": [
+        0.25,
+        0.6
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two physical upright wine bottles on a wooden tasting table. The LEFT bottle has a pale blue label; the RIGHT bottle has a large orange label and stands far to the right, separated by a gap as wide as a bottle. A single human hand enters from the TOP LEFT, hovering directly above the LEFT bottle. Its broad palm and curled fingers are visible above the left target, and its index points almost vertically DOWNWARD, stopping just short of the LEFT bottle blue label shoulder. The finger and palm stay entirely within the left third of the image, far from the right bottle. It does not grasp either bottle. The gesture unequivocally indicates the LEFT blue-label bottle. Warm indoor daylight, slightly elevated camera viewpoint, no background bottles.",
+      "expected_result_ru": "Выбрать: левая бутылка с голубой этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "HA02"
+      ]
+    },
+    {
+      "id": "PT03",
+      "family": "pointing",
+      "review_title_ru": "Указание сверху на среднюю бутылку",
+      "declared_intent": "clear",
+      "declared_target_description": "Средняя бутылка с красной круглой эмблемой",
+      "target_point_proposal": [
+        0.5,
+        0.6
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly three upright wine bottles form a loose row on a dark restaurant table, separated by visible air. The middle bottle has a white front label with a small red circular emblem. A single hand enters from above, visible palm and curled fingers, index extended straight downward and ending a small gap above that middle bottle shoulder. The index clearly indicates the middle bottle without holding it. The left bottle has a bright gold label and the right a black label. All bottle front labels are unobstructed. Natural overhead restaurant lighting, moderate depth of field, close candid phone photo.",
+      "expected_result_ru": "Выбрать: средняя бутылка с красной круглой эмблемой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "HA02"
+      ]
+    },
+    {
+      "id": "PT04",
+      "family": "pointing",
+      "review_title_ru": "Диагональное указание — маленькая бутылка",
+      "declared_intent": "clear",
+      "declared_target_description": "Маленькая бутылка слева с зелёной этикеткой",
+      "target_point_proposal": [
+        0.27,
+        0.59
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. On a gray stone counter are exactly two bottles: a smaller 375 ml wine bottle on the LEFT with a green paper label and a taller 750 ml bottle on the right with a crisp white label. A hand with visible palm enters from bottom right; its extended index points diagonally up-left and ends just short of the left small bottle middle body. Other fingers are curled. No bottle is held. The larger right bottle dominates the center-right, but the gesture clearly identifies the left small bottle. Soft overcast daylight, realistic skin, all visible label edges retained, no additional hands.",
+      "expected_result_ru": "Выбрать: маленькая бутылка слева с зелёной этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "HA02"
+      ]
+    },
+    {
+      "id": "DP01",
+      "family": "depiction",
+      "review_title_ru": "Настоящая бутылка перед большим плакатом",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка справа на прилавке",
+      "target_point_proposal": [
+        0.75,
+        0.62
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. A small physical green wine bottle with an ivory label stands on the RIGHT of a shop counter. On the left behind it is a large flat rectangular advertising poster on an easel, showing a much larger high-contrast photograph of a dark wine bottle with a red label. The entire poster border and thin easel legs are visible; the printed bottle is unmistakably flat within the poster. Exactly one real bottle, no hands and no other bottles. The real bottle has visible curved glass reflections, a three-dimensional base and cast shadow. Bright shop daylight, realistic handheld photo.",
+      "expected_result_ru": "Выбрать: настоящая бутылка справа на прилавке. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "OW01",
+        "OW02"
+      ]
+    },
+    {
+      "id": "DP02",
+      "family": "depiction",
+      "review_title_ru": "Бутылка рядом с рисунком на коробке",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева от коробки",
+      "target_point_proposal": [
+        0.24,
+        0.61
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly one real upright wine bottle on the LEFT with a lavender label stands on a wooden sideboard beside a tall rectangular gift carton on the right. The carton has an oversized realistic printed bottle illustration with a bright cream label. Both carton side panel and top folded seam are visible, separating its flat printed bottle from the real glass bottle. The physical bottle and carton are close but their silhouettes have a narrow clear gap. No hands or background bottles. Soft evening window light, casual eye-level phone photograph. Preserve all physical front-label paper.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева от коробки. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "OW01",
+        "OW02"
+      ]
+    },
+    {
+      "id": "DP03",
+      "family": "depiction",
+      "review_title_ru": "Настоящая бутылка перекрывает рекламную картинку",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка справа перед планшетом",
+      "target_point_proposal": [
+        0.66,
+        0.62
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly one physical wine bottle with a yellow label stands on the RIGHT foreground of a tasting counter. Behind and slightly left is a tablet in landscape orientation on a visible stand, displaying a large studio photograph of another wine bottle. The tablet screen border and dark bezel are fully visible. The real bottle partly overlaps the lower-right corner of the tablet but its entire label and three-dimensional base remain visible. The screen bottle is larger and centered within the screen. No hands, no other physical bottles. Gentle cafe ambient light, realistic reflections without obscuring the screen border.",
+      "expected_result_ru": "Выбрать: настоящая бутылка справа перед планшетом. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "OW01",
+        "OW02"
+      ]
+    },
+    {
+      "id": "DP04",
+      "family": "depiction",
+      "review_title_ru": "Бутылка слева у коробки с двумя изображениями",
+      "declared_intent": "clear",
+      "declared_target_description": "Единственная настоящая бутылка слева",
+      "target_point_proposal": [
+        0.25,
+        0.62
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. A single physical rosé wine bottle, pale pink glass contents and white label, stands on the LEFT of a marble counter. A wide upright cardboard presentation box on the right shows TWO large printed wine bottles on its front. Visible right side panel, top flaps and rectangular corners prove the graphics belong to the box. The physical bottle is smaller than the printed pictures and is separated from the box by a narrow gap, with a real cast shadow. No hands or background bottles. Soft shop lighting, lightly worn real packaging, no artificial target markers.",
+      "expected_result_ru": "Выбрать переднюю настоящую бутылку слева от коробки. Не выбирать две печатные бутылки на коробке и не включать их в кроп.",
+      "historical_failure_reference": [
+        "OW01",
+        "OW02"
+      ]
+    },
+    {
+      "id": "GL01",
+      "family": "glare",
+      "review_title_ru": "Хват справа и вертикальный блик",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа с серебристой этикеткой",
+      "target_point_proposal": [
+        0.73,
+        0.57
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two wine bottles. In the RIGHT foreground a single hand visibly grips the middle body of a dark bottle with a silver-gray paper label: thumb wraps one side and bent fingers wrap the opposite side in front of the glass. A bright narrow vertical window reflection crosses part of its label, but the label outline remains visible. A larger unheld bottle with a clean readable cream label stands on the left behind it. The held bottle is slightly tilted, hand is connected to a wrist entering from right. Natural daylight in a kitchen, anatomically correct single hand, no extra fingers.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа с серебристой этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI03"
+      ]
+    },
+    {
+      "id": "GL02",
+      "family": "glare",
+      "review_title_ru": "Хват слева — блик на тёмном стекле",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева с красной этикеткой",
+      "target_point_proposal": [
+        0.27,
+        0.59
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly three wine bottles on a dim bar counter. In the LEFT foreground a hand enters from the left and firmly wraps around the middle body of a dark red-label bottle, with visible thumb on one side and curled fingers on the other; a bright oblique strip of reflected light crosses the bottle and part of the label. Two unheld bottles with clearer white and yellow labels stand farther back at center-right. The held bottle is the clearly presented subject even though its label is less readable. Include full front-label extent, realistic skin and glass, phone flash reflected in the bottle, natural exposure.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева с красной этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI03"
+      ]
+    },
+    {
+      "id": "GL03",
+      "family": "glare",
+      "review_title_ru": "Наклонённая бутылка с широким бликом",
+      "declared_intent": "clear",
+      "declared_target_description": "Наклонённая удерживаемая бутылка справа",
+      "target_point_proposal": [
+        0.68,
+        0.57
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. At a home dining table there are exactly two physical wine bottles. A single hand from lower right holds the RIGHT bottle around its mid-body, thumb and curled fingers visibly wrapping opposite sides. The bottle tilts about twenty degrees left and has a large off-white label crossed by a broad soft glare stripe. An upright unheld dark bottle on the left has a sharper blue label. Both bottles are fully within frame with their labels visible, target label partially washed by reflection but not cropped. Warm ceiling light plus window reflections, plausible hand anatomy and natural candid framing.",
+      "expected_result_ru": "Выбрать: наклонённая удерживаемая бутылка справа. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI03"
+      ]
+    },
+    {
+      "id": "GL04",
+      "family": "glare",
+      "review_title_ru": "Хват слева — конденсат и блик",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая холодная бутылка слева",
+      "target_point_proposal": [
+        0.3,
+        0.58
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two wine bottles on a terrace table at sunset. A single hand enters from left and visibly grips the LEFT pale green chilled wine bottle around its middle body, thumb opposing naturally bent fingers in contact with the glass. Fine condensation and a strong sunset highlight obscure some of its mint label. An unheld dry bottle on the right has an exceptionally clear cream label and is closer to center. The held bottle is slightly lifted above the tabletop; all label borders remain in frame. Photorealistic skin, moisture and glass, no additional hands, everyday smartphone exposure.",
+      "expected_result_ru": "Выбрать: удерживаемая холодная бутылка слева. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI03"
+      ]
+    },
+    {
+      "id": "DK01",
+      "family": "dark",
+      "review_title_ru": "Тёмная бутылка справа и яркая этикетка слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая тёмная бутылка справа",
+      "target_point_proposal": [
+        0.72,
+        0.57
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. A dim wine bar with exactly two physical bottles in view. On the RIGHT foreground, a visible hand enters from right and wraps firmly around the middle of a dark wine bottle with a very dark blue label, thumb and curled fingers clearly contacting opposite sides. The dark target glass and hand remain distinguishable under weak side light. On the left farther back, an unheld bottle with a bright white label is strongly illuminated by a small table lamp. It must look tempting visually but is not held. No other hands. Low-key realistic phone photo with mild noise, target full label inside frame.",
+      "expected_result_ru": "Выбрать: удерживаемая тёмная бутылка справа. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI04"
+      ]
+    },
+    {
+      "id": "DK02",
+      "family": "dark",
+      "review_title_ru": "Боковой хват слева в полумраке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева с тёмной этикеткой",
+      "target_point_proposal": [
+        0.27,
+        0.58
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly three wine bottles in a dark restaurant booth. In LEFT foreground a single hand from left clasps a dark bottle at the middle body, with thumb and bent fingers wrapping both side edges. Its charcoal label has low contrast but a visible full paper outline. At center-right in the back, two unheld bottles have much brighter cream labels lit by a warm pendant lamp. The foreground bottle is slightly lifted and presented toward the camera. Preserve readable physical contact between hand and bottle in low light. No other hands, plausible shadows, candid smartphone scene.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева с тёмной этикеткой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI04"
+      ]
+    },
+    {
+      "id": "DK03",
+      "family": "dark",
+      "review_title_ru": "Хват справа и чужая рука на заднем плане",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая передняя бутылка справа",
+      "target_point_proposal": [
+        0.72,
+        0.59
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two wine bottles in a dim tasting room. The RIGHT foreground bottle with a dark maroon label is firmly held around its middle body by a hand entering from right, visibly opposing thumb and bent fingers wrapping glass. The LEFT background bottle has a bright ivory label. A second distant person has an OPEN relaxed hand resting on the table behind and to the left of that background bottle, visibly separated by a small air gap and not grasping it. Clearly distinguish a real foreground grip from the background hand proximity. Low evening light, target label outline visible, realistic two hands belonging to different off-frame people.",
+      "expected_result_ru": "Выбрать: удерживаемая передняя бутылка справа. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI04"
+      ]
+    },
+    {
+      "id": "DK04",
+      "family": "dark",
+      "review_title_ru": "Левый хват и яркая бутылка на полке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева перед полкой",
+      "target_point_proposal": [
+        0.29,
+        0.57
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two visible physical wine bottles at night in a home kitchen. A LEFT foreground dark bottle with a navy paper label is held at its middle body by one hand from lower left, thumb on one side and curled fingers wrapping the other. Its complete label outline is visible under weak cool window light. The other unheld bottle stands on a higher shelf at upper right, its large pale label brightly illuminated by a warm under-shelf lamp. Different support planes are obvious. No extra bottles or hands, realistic underexposure and subtle phone noise, foreground grip remains clearly visible.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева перед полкой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI04"
+      ]
+    },
+    {
+      "id": "BG01",
+      "family": "bag",
+      "review_title_ru": "Хват справа через прозрачный пакет",
+      "declared_intent": "clear",
+      "declared_target_description": "Бутылка справа в прозрачном пакете",
+      "target_point_proposal": [
+        0.72,
+        0.59
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two wine bottles on a counter. On the RIGHT foreground a single hand enters from right and grips the middle body of a wine bottle THROUGH a loose clear cellophane gift bag. Thumb and curled fingers visibly squeeze opposite sides of the bottle, with transparent plastic folds compressed between skin and glass. The bag is open above the neck and its creases reflect light; a pale pink front label remains discernible. An unwrapped unheld bottle with a clear cream label stands at left behind it. No printed bottle graphics, no opaque bag, no extra hands. Realistic everyday shop light.",
+      "expected_result_ru": "Выбрать: бутылка справа в прозрачном пакете. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI05"
+      ]
+    },
+    {
+      "id": "BG02",
+      "family": "bag",
+      "review_title_ru": "Левый хват и крупный ценник на плёнке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева внутри плёнки",
+      "target_point_proposal": [
+        0.28,
+        0.59
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two wine bottles in a small gift shop. On the LEFT foreground, one hand from left grips the middle body of a green wine bottle through a crinkled transparent plastic sleeve, thumb opposing curled fingers on the glass body. A small bright orange rectangular price sticker is attached to an upper loose flap of the sleeve, not the bottle label. The target bottle has a complete ivory paper label visible through the plastic despite glare. On the right a separate unheld bottle has a clean blue label. Clear gap between the two bottles. Accurate single hand anatomy, natural warm light, no opaque wrapping.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева внутри плёнки. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI05"
+      ]
+    },
+    {
+      "id": "BG03",
+      "family": "bag",
+      "review_title_ru": "Прозрачная обёртка и печать поверх этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа под прозрачной плёнкой",
+      "target_point_proposal": [
+        0.72,
+        0.58
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly three wine bottles on a shop tasting counter. A RIGHT foreground dark bottle is held around its middle body by a hand entering from right through a transparent loose gift wrap. Show thumb and naturally curled fingers visibly enclosing opposite sides of the bottle, compressing the film. A few small gold decorative words and stars are printed on the clear wrapper, visibly distinct from the bottle pale gray paper label behind it; do not cover the entire label. Two unwrapped unheld bottles stand on the left behind, their labels clearer. Strong plastic highlights, believable transparent film, no extra fingers, realistic phone photo.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа под прозрачной плёнкой. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI05"
+      ]
+    },
+    {
+      "id": "BG04",
+      "family": "bag",
+      "review_title_ru": "Хват слева — соседняя бутылка близко к пакету",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева в прозрачном пакете",
+      "target_point_proposal": [
+        0.29,
+        0.58
+      ],
+      "prompt": "Generate exactly one independent photorealistic smartphone photograph, landscape 3:2, approximately 1536 by 1024 pixels. This is an ordinary wine selection moment, with natural perspective, believable glass and paper, imperfect ambient lighting, and realistic human anatomy. No collage, inset, split screen, arrows, highlights, bounding boxes, annotations, watermarks, UI, or text outside physical objects. Use fictional wine branding. Keep the target bottle's entire front label within the frame. The scene must communicate the stated gesture or physical relation visually; do not add any explanatory caption. Exactly two physical wine bottles on a pale countertop. The LEFT bottle has a burgundy front label and is wrapped in a very clear crinkled cellophane gift bag. One hand enters from left and grips its middle body through the film, with opposing thumb and bent fingers visibly wrapping glass. The RIGHT unheld bottle with a cream label stands close beside it, with a narrow but visible gap between glass silhouettes. The loose transparent bag flap extends into the gap in front of the neighbor but the bottles do not overlap. Make the target grip obvious and all target label borders visible; keep the neighboring bottle separate. Soft overcast window light, natural anatomy.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева в прозрачном пакете. Сохранить видимую этикетку; не включать соседнюю бутылку или её печатное изображение.",
+      "historical_failure_reference": [
+        "VI05"
+      ]
+    }
+  ]
+}

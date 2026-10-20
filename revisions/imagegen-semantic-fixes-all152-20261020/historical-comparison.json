@@ -1,0 +1,355 @@
+{
+  "changed_predictions": [
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:FG01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:FG04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d2",
+      "current_selected": "d2",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:HA01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:HA02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:HA03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:HA04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:HA05",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:LA01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:LA03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:LA04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d11",
+      "current_selected": "d11",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:LA05",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:OW01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d4",
+      "current_selected": "d4",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:OW02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:OW05",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:VI01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d3",
+      "current_selected": "d3",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:VI02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d0",
+      "current_selected": "d0",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:VI05",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:AM01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:AM02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d18",
+      "current_selected": "d18",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-pilot-v1-20261019:AM04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-pilot-v1-20261019/runs/three-selectors-20261020-v2",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:PT01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d2",
+      "current_selected": "d0",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:PT02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:PT03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d2",
+      "current_selected": "d2",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:PT04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d1",
+      "current_selected": "d0",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:DP01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d47",
+      "current_selected": "d1",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:DP02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d4",
+      "current_selected": "d1",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:DP03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d2",
+      "current_selected": "d1",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:DP04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d16",
+      "current_selected": "d21",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:GL02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d4",
+      "current_selected": "d4",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:GL04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d1",
+      "current_selected": "d0",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:DK03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d5",
+      "current_selected": "d5",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:BG01",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d28",
+      "current_selected": "d28",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:BG02",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d1",
+      "current_selected": "d1",
+      "old_target_agreement": true,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:BG03",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d37",
+      "current_selected": "d6",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    },
+    {
+      "case_key": "main-selector-imagegen-hardcases-v2-20261020:BG04",
+      "variant": "semantic-v2",
+      "old_run": "main-selector-imagegen-hardcases-v2-20261020/runs/three-selectors-20261020-v1",
+      "old_selected": "d7",
+      "current_selected": "d1",
+      "old_target_agreement": false,
+      "current_target_agreement": true,
+      "crop_changed": true
+    }
+  ],
+  "historical_predictions_overwritten": false
+}

@@ -1,0 +1,103 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:GP03",
+  "slug": "diverse-v3--GP03",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "scene-v1",
+  "image_sha256": "c0e9dfda3de7fa0e427accfbeea5a4160082e4e9283bacb282e1a73e1edcf018",
+  "selector_seconds": 0.024732124991714954,
+  "decision": {
+    "variant": "scene-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1024,
+    "height": 1536,
+    "selected_id": "d0",
+    "reason": "existing_scene_v1_rank",
+    "candidates": [
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          390,
+          655,
+          1024,
+          1054
+        ]
+      },
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          0,
+          598,
+          170,
+          1204
+        ]
+      }
+    ],
+    "crop_box": [
+      390,
+      655,
+      1024,
+      1054
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "legacy",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--GP03-scene-v1.png",
+  "crop_sha256": "19d5fb4230fcba910e7d2c86a7501fe0749ccbd144370801d09b9658a5ec30c4",
+  "keep_mask_path": "keep-masks/diverse-v3--GP03-scene-v1.png",
+  "keep_mask_sha256": "1efb9529623ad81b0af9b3cf52c050918ef6a5089e79cc8c139d2aae2be72cf8",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d0",
+    "accepted_targets": [
+      "d0"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      634,
+      399
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d2",
+        "retention": 1.0,
+        "source_area_px": 49963,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d1",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d0",
+      "iou": 1.0
+    },
+    "minimum_target_label_retention_proxy": 1.0
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

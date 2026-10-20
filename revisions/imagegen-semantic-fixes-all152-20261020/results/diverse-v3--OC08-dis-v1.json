@@ -1,0 +1,90 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:OC08",
+  "slug": "diverse-v3--OC08",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "dis-v1",
+  "image_sha256": "3a1b9da88067fbda260d945cf0edebcaeb4185cf04cd99f9e4ceeb37d3c6dcc9",
+  "selector_seconds": 1.382129374993383,
+  "decision": {
+    "variant": "dis-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1024,
+    "height": 1536,
+    "selected_id": "dis-foreground",
+    "reason": "dis_foreground_mask",
+    "candidates": [
+      {
+        "id": "dis-foreground",
+        "source_index": null,
+        "kind": "foreground",
+        "box": [
+          30,
+          58,
+          1024,
+          1536
+        ],
+        "signals": {
+          "foreground_fraction": 0.49430370330810547,
+          "model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+          "model_revision": "1b966dbe2f33bd5ca1299cf94fbab59265210b6b"
+        }
+      }
+    ],
+    "crop_box": [
+      30,
+      58,
+      1024,
+      1536
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "foreground",
+    "fallback_trigger": null,
+    "crop_scope": "foreground_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--OC08-dis-v1.png",
+  "crop_sha256": "6785dfd2589c1f23861f922f196a47b8a2c93a3a28d483990f8f2ff29f411d01",
+  "keep_mask_path": "keep-masks/diverse-v3--OC08-dis-v1.png",
+  "keep_mask_sha256": "b38e6b5275e0681a6003099c794be35e44491643ee70efbe1a53613ded563c2c",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d1",
+    "accepted_targets": [
+      "d1"
+    ],
+    "target_agreement": null,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      994,
+      1478
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.979513649354489,
+    "isolation_proxy_pass": false,
+    "label_retention_proxies": [],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.979513649354489
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d0",
+      "iou": 0.10206405237147809
+    },
+    "minimum_target_label_retention_proxy": null
+  },
+  "execution_provenance": "fresh_local_DIS_prediction"
+}

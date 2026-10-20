@@ -1,0 +1,1687 @@
+{
+  "schema_version": 3,
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "purpose": "One hundred new diverse development stress scenes; human review precedes any selector inference.",
+  "generator": "built-in image_gen",
+  "generator_model_revision": null,
+  "case_count": 100,
+  "recipes": [
+    {
+      "id": "PN01",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец проходит перед соседом",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с бордовой этикеткой",
+      "target_anchor_proposal": [
+        0.8,
+        0.64
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Three upright bottles on a tasting counter. A hand from left with visible broad palm and curled non-index fingers points horizontally RIGHT across the middle bottle toward the rightmost burgundy-label bottle. The fingertip ends in the air gap immediately beside the rightmost bottle. No grasping. The middle bottle is brighter.",
+      "expected_result_ru": "Выбрать: правая бутылка с бордовой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN02",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Указание слева сверху",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка с голубой этикеткой",
+      "target_anchor_proposal": [
+        0.29,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two bottles widely separated on a tasting table. An index finger from upper left points vertically down at the LEFT pale-blue-label bottle, ending just above its shoulder; palm and curled fingers remain above that same bottle. The right bottle is larger. No bottle is touched.",
+      "expected_result_ru": "Выбрать: левая бутылка с голубой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN03",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец справа влево",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка с зелёной этикеткой",
+      "target_anchor_proposal": [
+        0.27,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two bottles on a tasting counter. A single hand enters from RIGHT with extended index directed horizontally LEFT toward the left green-label bottle. Fingertip stops in empty air just before its mid-body. The forearm passes in front of the right cream-label bottle without grasping it.",
+      "expected_result_ru": "Выбрать: левая бутылка с зелёной этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN04",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец снизу у горлышка",
+      "declared_intent": "clear",
+      "declared_target_description": "Средняя бутылка с фиолетовой капсулой",
+      "target_anchor_proposal": [
+        0.51,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Three bottles on a low table viewed from slightly above. A hand from lower right points diagonally up-left toward the CENTER bottle with a purple neck capsule, fingertip ending beside its shoulder. Other fingers curl into the palm. None of the three bottles is held.",
+      "expected_result_ru": "Выбрать: средняя бутылка с фиолетовой капсулой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN05",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Указание на бутылку на полке",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с синей этикеткой",
+      "target_anchor_proposal": [
+        0.74,
+        0.58
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two widely separated bottles sit on the same low shelf. A hand enters from upper right, palm above the RIGHT blue-label bottle, index pointing almost vertically downward at that bottle shoulder. The left bottle has a bright yellow label. No grasp or contact.",
+      "expected_result_ru": "Выбрать: правая бутылка с синей этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN06",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец рядом с мини-бутылкой",
+      "declared_intent": "clear",
+      "declared_target_description": "Маленькая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.64
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: A tiny 187 ml bottle with a mint label stands LEFT, a large magnum with a cream label stands RIGHT on a tasting counter. A hand from lower left points upward at the small left bottle, fingertip ending just short of its label. No bottle is held.",
+      "expected_result_ru": "Выбрать: маленькая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN07",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Указание при двух видимых руках",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с белой этикеткой",
+      "target_anchor_proposal": [
+        0.77,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Three bottles on a tasting table. A RIGHT foreground hand with visible palm points down at the rightmost white-label bottle. A different relaxed open hand rests far left on the table, separated from all bottles. Neither hand grips a bottle. The middle bottle is visually larger.",
+      "expected_result_ru": "Выбрать: правая бутылка с белой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN08",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец в перчатке",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка с оранжевой этикеткой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two wine bottles on a wooden tasting bench. A black knitted-glove hand enters from upper left with index extended down toward the LEFT orange-label bottle; other fingers curl visibly. Fingertip stops before the shoulder. The right cream-label bottle is unheld. Cool light from a high window.",
+      "expected_result_ru": "Выбрать: левая бутылка с оранжевой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN09",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Палец касается этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с синей этикеткой",
+      "target_anchor_proposal": [
+        0.72,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two upright bottles on a plain tasting counter. A single hand enters from right and uses only the index fingertip to touch the RIGHT bottle blue paper label. Palm and other curled fingers stay away from glass. This is a pointing touch, not a grip. The left bottle is larger.",
+      "expected_result_ru": "Выбрать: правая бутылка с синей этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PN10",
+      "family": "pointing",
+      "family_ru": "Указание пальцем",
+      "review_title_ru": "Указание в ракурсе сверху",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка с круглой красной эмблемой",
+      "target_anchor_proposal": [
+        0.28,
+        0.58
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Top-down oblique phone photo of three separated bottles standing on a round table. A hand from bottom left points diagonally toward the LEFT bottle with a circular red emblem, with a short visible fingertip-to-bottle gap. The other bottles are center-right. No grip.",
+      "expected_result_ru": "Выбрать: левая бутылка с круглой красной эмблемой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "HP01",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Хват слева и ладонь за соседом",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles at a tasting counter. The LEFT green-label bottle is firmly held around mid-body by one hand from left, thumb opposing curled fingers. A second open hand rests BEHIND the right unheld cream-label bottle, visibly separated by air. Show real grip versus apparent overlap.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP02",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Правый хват и рука под основанием соседа",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from right wraps the RIGHT blue-label bottle body. Another relaxed hand lies flat on the table behind the left bottle base without supporting or touching it. Show a small visible gap between that left bottle and resting fingers.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP03",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Хват и рука возле горлышка",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая средняя бутылка",
+      "target_anchor_proposal": [
+        0.5,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Three bottles on a counter. One hand holds the CENTER red-label bottle around its middle, thumb and fingers visible on opposite sides. Another hand reaches behind the left bottle neck but is separated from it by a visible gap; the right bottle is unattended.",
+      "expected_result_ru": "Выбрать: удерживаемая средняя бутылка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP04",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Предплечье перед соседней бутылкой",
+      "declared_intent": "clear",
+      "declared_target_description": "Маленькая удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.6
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left holds a small LEFT white-label bottle at mid-body, fingers wrapping glass. Its forearm extends across the scene in front of a larger RIGHT blue-label bottle without touching that right bottle. Two bottles only. Bright natural window light.",
+      "expected_result_ru": "Выбрать: маленькая удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP05",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Правый хват и пальцы у соседней этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.72,
+        0.6
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A right-side hand firmly wraps the RIGHT burgundy-label bottle middle body. A second hand points toward the LEFT bottle but stops just short of its label, without grasping. The actual held bottle is clearly presented closer to camera.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP06",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Хват в перчатке и голая ладонь",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка в руке в перчатке",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting counter. A dark leather-gloved hand firmly grips the LEFT gray-label bottle body. A bare relaxed hand lies far behind the RIGHT bright cream-label bottle. Keep glove fingers and thumb visibly wrapped, with no contact at the neighbor.",
+      "expected_result_ru": "Выбрать: левая бутылка в руке в перчатке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP07",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Одна бутылка двумя руками",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка, удерживаемая двумя руками",
+      "target_anchor_proposal": [
+        0.72,
+        0.6
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two physical wine bottles. Two hands belonging to one person visibly hold the RIGHT yellow-label bottle, one around body and one around neck, presenting it toward camera. The LEFT blue-label bottle is completely unattended and farther back. No other hands.",
+      "expected_result_ru": "Выбрать: правая бутылка, удерживаемая двумя руками. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP08",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Рука за стеклом бокала",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a table. The LEFT green-label bottle is firmly gripped at mid-body by a hand from left. A transparent empty wine glass stands before the unheld RIGHT bottle, refracting the image of another relaxed hand resting well behind it. Separate physical contact from optical overlap.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP09",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Хват справа и отражение руки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая правая бутылка",
+      "target_anchor_proposal": [
+        0.72,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: On a counter exactly two real bottles. A hand firmly holds the RIGHT pale-pink-label bottle around body. A small mirror behind the LEFT unheld bottle shows a reflection of the same hand, with visible mirror frame. The reflection does not imply a second physical grip.",
+      "expected_result_ru": "Выбрать: удерживаемая правая бутылка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "HP10",
+      "family": "hand_proximity",
+      "family_ru": "Руки рядом с бутылками",
+      "review_title_ru": "Хват слева и рука на коробке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая левая бутылка",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles and a plain small carton on a shop counter. A hand from left grips the LEFT blue-label bottle body. Another hand rests on the carton behind the RIGHT yellow-label bottle, clearly not touching that bottle. Natural shop phone photograph.",
+      "expected_result_ru": "Выбрать: удерживаемая левая бутылка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP01",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Хват за горлышко справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка, удерживаемая за горлышко",
+      "target_anchor_proposal": [
+        0.72,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two wine bottles on a tasting counter. A single hand from upper right clearly encloses the NECK of the RIGHT white-label bottle, thumb and fingers wrapping opposing sides, lifting its base slightly. The LEFT blue-label bottle is unheld and larger. Full target label visible.",
+      "expected_result_ru": "Выбрать: правая бутылка, удерживаемая за горлышко. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP02",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Поддержка основания слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка, поддерживаемая снизу",
+      "target_anchor_proposal": [
+        0.28,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from lower left visibly cups and supports the BASE of the LEFT dark bottle with ivory label, fingers curved upward around its bottom and base lifted from table. The right unheld bottle has a brighter red label.",
+      "expected_result_ru": "Выбрать: левая бутылка, поддерживаемая снизу. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP03",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Горизонтальная бутылка в руке",
+      "declared_intent": "clear",
+      "declared_target_description": "Горизонтальная удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.67,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand firmly grips the body of a nearly HORIZONTAL bottle across the RIGHT foreground, thumb opposed to fingers, its cream label facing camera and fully visible. An unheld upright blue-label bottle stands at left behind. Warm cellar tasting scene.",
+      "expected_result_ru": "Выбрать: горизонтальная удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP04",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Наливание слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Бутылка слева, из которой наливают",
+      "target_anchor_proposal": [
+        0.29,
+        0.54
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A single hand on LEFT visibly grips a green bottle body and tilts it about forty degrees, pouring a thin stream into an empty stemmed glass near lower center. Its pale blue label faces camera. A second unheld dark bottle with clear ivory label stands RIGHT behind. Plausible liquid and anatomy.",
+      "expected_result_ru": "Выбрать: бутылка слева, из которой наливают. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP05",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Бутылка лежит на ладони справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Бутылка справа на ладони",
+      "target_anchor_proposal": [
+        0.7,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A single palm from right visibly supports a wine bottle lying diagonally across the RIGHT foreground, fingers wrapping its lower body from below; front orange label faces camera. A second upright unheld bottle stands at LEFT. Show physical weight and contact, not levitation.",
+      "expected_result_ru": "Выбрать: бутылка справа на ладони. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP06",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Тонкая бутылка слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Тонкая удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand entering left firmly grips the middle of a tall slender Riesling-style bottle on LEFT, fingers and thumb around narrow body; small green label visible. A broad-shouldered unheld bottle with a white label stands RIGHT. Ordinary candid phone photo.",
+      "expected_result_ru": "Выбрать: тонкая удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP07",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Широкая бутылка справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Широкая удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.72,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from right firmly wraps around the lower middle of a broad rounded sparkling-wine bottle on RIGHT with a gold front label. The thumb and curled fingers are visible on both side edges. An unheld thin bottle stands LEFT. Natural realistic skin and glass.",
+      "expected_result_ru": "Выбрать: широкая удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP08",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Перчатка держит холодную бутылку",
+      "declared_intent": "clear",
+      "declared_target_description": "Холодная бутылка слева в перчатке",
+      "target_anchor_proposal": [
+        0.29,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A gray knitted-glove hand from left visibly grips the LEFT chilled green wine bottle body; frost and condensation cover glass but the lavender label remains visible. The RIGHT dry cream-label bottle is unattended. Cold tasting table, believable glove finger shapes.",
+      "expected_result_ru": "Выбрать: холодная бутылка слева в перчатке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP09",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Хват у нижнего края этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка с хватом под этикеткой",
+      "target_anchor_proposal": [
+        0.73,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting counter. A hand from right grips the RIGHT navy-label bottle just below the label, with thumb and naturally bent fingers wrapping opposite sides of the lower glass body. The left unheld bottle is centered more prominently and has a white label.",
+      "expected_result_ru": "Выбрать: правая бутылка с хватом под этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "GP10",
+      "family": "grip",
+      "family_ru": "Разные виды хвата",
+      "review_title_ru": "Наклон камеры и боковой хват",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева при наклоне камеры",
+      "target_anchor_proposal": [
+        0.28,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Phone camera rolled about twenty degrees clockwise in a candid dining photograph. A hand from left firmly grips the LEFT cream-label bottle mid-body, thumb and curled fingers opposing. A second unheld bottle stands RIGHT. All vertical room lines share the same camera tilt.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева при наклоне камеры. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD01",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "В руке: бутылка и меню",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая настоящая бутылка справа от меню",
+      "target_anchor_proposal": [
+        0.73,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real green wine bottle stands RIGHT on a tasting table, ivory label and real glass base visible. A large open menu on LEFT contains a bigger flat printed photograph of another wine bottle. Show menu edges, binding and page curvature. No other foreground real bottles. A visible hand from right firmly grips the REAL bottle around its mid-body, with thumb opposing curled fingers, presenting its visible label toward the phone. The graphic bottle remains on its flat medium.",
+      "expected_result_ru": "Выбрать: удерживаемая настоящая бутылка справа от меню. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD02",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "Бутылка и экран телефона",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева от телефона",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: One real blue-label wine bottle stands LEFT on a tasting counter. At right a smartphone on a visible stand displays a large photo of another bottle. The entire phone bezel is visible. Screen picture is brighter; real bottle has cast shadow and curved glass highlights. No hands.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева от телефона. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PD03",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "В руке: бутылка и ноутбук",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая настоящая бутылка справа от ноутбука",
+      "target_anchor_proposal": [
+        0.73,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real rosé bottle with an ivory label stands RIGHT foreground. A laptop at LEFT displays a single wine bottle product photograph. Visible keyboard, hinge and screen borders prove the image is on a device. No extra foreground physical bottles. Casual tasting desk. A visible hand from right firmly grips the REAL bottle around its mid-body, with thumb opposing curled fingers, presenting its visible label toward the phone. The graphic bottle remains on its flat medium.",
+      "expected_result_ru": "Выбрать: удерживаемая настоящая бутылка справа от ноутбука. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD04",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "Бутылка перед телевизором",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева перед телевизором",
+      "target_anchor_proposal": [
+        0.27,
+        0.65
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: A small real white-label wine bottle stands LEFT on a low side table. A large wall-mounted television behind RIGHT displays a huge dark wine bottle advertisement within a visible bezel. The physical bottle is smaller and off center, with glass reflections and a real base shadow. No hands.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева перед телевизором. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PD05",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "В руке: бутылка и рисунок на фартуке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая настоящая бутылка справа на столе",
+      "target_anchor_proposal": [
+        0.73,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real red-label bottle stands RIGHT on a tasting counter. A person behind LEFT wears a white apron with a large clearly flat printed bottle graphic. Both of their hands remain outside frame. Show fabric folds deforming the graphic. No other foreground physical bottles. A visible hand from right firmly grips the REAL bottle around its mid-body, with thumb opposing curled fingers, presenting its visible label toward the phone. The graphic bottle remains on its flat medium.",
+      "expected_result_ru": "Выбрать: удерживаемая настоящая бутылка справа на столе. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD06",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "Бутылка и бумажный пакет",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева от бумажного пакета",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: One real green wine bottle with blue label stands LEFT. Beside it at RIGHT is a tall kraft paper bag with a large printed photograph of a bottle, visible paper handles, folds and side gusset. The printed bottle is visually larger. No hands, physical bottle separate from bag.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева от бумажного пакета. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PD07",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "В руке: бутылка и коробка на боку",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая настоящая бутылка справа от лежащей коробки",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real purple-label wine bottle stands RIGHT. At LEFT lies a wide rectangular cardboard wine carton horizontally, with a large printed bottle running along its front face; folded seams and visible top plane show flat packaging. No extra foreground real wine bottles. A visible hand from right firmly grips the REAL bottle around its mid-body, with thumb opposing curled fingers, presenting its visible label toward the phone. The graphic bottle remains on its flat medium.",
+      "expected_result_ru": "Выбрать: удерживаемая настоящая бутылка справа от лежащей коробки. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD08",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "Бутылка и отражение",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева от отражения",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: One real cream-label bottle stands LEFT foreground on a wooden tasting cabinet. At right a framed mirror reflects the same bottle larger due to angle. Show frame, reflected reversed label and believable perspective; do not add a second real bottle. No hands. Physical owner is the left foreground bottle.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева от отражения. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "PD09",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "В руке: бутылка и вырезанная реклама",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая настоящая бутылка справа от картонной фигуры",
+      "target_anchor_proposal": [
+        0.73,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real pale-green bottle with pink label stands RIGHT. LEFT of it is a life-size cardboard bottle-shaped advertising cutout, held upright by a clearly visible folded cardboard stand and thin flat edge. The cutout has a bright dark-red printed label. No extra foreground real bottles. A visible hand from right firmly grips the REAL bottle around its mid-body, with thumb opposing curled fingers, presenting its visible label toward the phone. The graphic bottle remains on its flat medium.",
+      "expected_result_ru": "Выбрать: удерживаемая настоящая бутылка справа от картонной фигуры. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "PD10",
+      "family": "depiction",
+      "family_ru": "Предмет и его изображение",
+      "review_title_ru": "Бутылка и этикетка с рисунком бутылки",
+      "declared_intent": "clear",
+      "declared_target_description": "Настоящая бутылка слева от ценового плаката",
+      "target_anchor_proposal": [
+        0.28,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two objects on a counter: a real small blue-label bottle LEFT, and a large rectangular flat promotional placard RIGHT showing several wine bottle pictures and prices. Show all placard edges and stand. The real bottle is closer with visible rounded glass base; no hands or other physical bottles.",
+      "expected_result_ru": "Выбрать: настоящая бутылка слева от ценового плаката. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "WP01",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Прозрачный пакет и хват справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа в прозрачном пакете",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from right firmly grips the RIGHT pink-label bottle mid-body THROUGH clear crinkled cellophane, thumb and fingers compressing film around glass. A left unwrapped blue-label bottle is unheld. Plain background without shelves. Wrapper fully transparent, no graphics.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа в прозрачном пакете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP02",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Плёнка с золотыми надписями",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева под плёнкой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a shop counter with a plain rear wall. A hand from left grips the LEFT ivory-label bottle through transparent gift wrap printed with small gold words and stars. Thumb and curled fingers surround glass, not merely the bag handles. Right unheld bottle has a red label.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева под плёнкой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP03",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Пузырчатая упаковка",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая бутылка в пузырчатой упаковке",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from right grips the middle body of the RIGHT wine bottle in a very clear bubble-wrap sleeve, showing compressed air bubbles between fingers and glass. Its navy paper label remains discernible. An unwrapped unheld cream-label bottle stands LEFT. Two bottles only.",
+      "expected_result_ru": "Выбрать: правая бутылка в пузырчатой упаковке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP04",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Сетка на бутылке",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева в сетке",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left visibly wraps around the LEFT burgundy-label bottle mid-body through a loose gold decorative wire mesh. Glass and complete label outline remain visible between thin mesh strands. An unwrapped unheld bottle stands RIGHT. Warm tasting-room light, two bottles only.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева в сетке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP05",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Открытый бумажный пакет",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа в пакете с окном",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A RIGHT foreground wine bottle is partly inside an open kraft paper gift bag whose front has a broad die-cut window exposing its entire ivory label and bottle body. A hand from right reaches through that opening and visibly grips the glass body. A second unheld bottle stands LEFT.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа в пакете с окном. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP06",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Прозрачная сумка с ручками",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева в прозрачной сумке",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left holds the LEFT green-label bottle by gripping its middle THROUGH a clear plastic gift tote. The two loose tote handles hang above the neck and are not held. The RIGHT unwrapped bottle is unattended. Two bottles only, neutral counter background.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева в прозрачной сумке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP07",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Рука держит пакет за ручки",
+      "declared_intent": "clear",
+      "declared_target_description": "Предъявляемая бутылка справа в поднятом пакете",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a counter. At RIGHT a transparent gift bag containing a pink-label wine bottle is suspended by its handles in a hand from upper right; hand does not touch glass. Bottle and label are fully visible through clear film. LEFT unbagged bottle stands unheld. The presented bagged bottle is the intended subject.",
+      "expected_result_ru": "Выбрать: предъявляемая бутылка справа в поднятом пакете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP08",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Часть фольги снята",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева с отогнутой фольгой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left holds the LEFT wine bottle at mid-body. A reflective silver decorative wrapper covers only its neck and back half, peeled aside to expose the entire front paper label. The right unheld cream-label bottle is brighter. Show thumb and fingers touching glass on opposite edges.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева с отогнутой фольгой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP09",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Прозрачный футляр",
+      "declared_intent": "clear",
+      "declared_target_description": "Бутылка справа в удерживаемом прозрачном футляре",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A single real wine bottle with blue label sits in a clear rigid cylindrical acrylic gift tube at RIGHT; a hand from right holds the transparent tube firmly at bottle-body height. A second unheld bottle stands LEFT. Distinguish the bottle and its transparent container, with visible tube lid and reflections.",
+      "expected_result_ru": "Выбрать: бутылка справа в удерживаемом прозрачном футляре. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "WP10",
+      "family": "wrapping",
+      "family_ru": "Упаковка и бутылка",
+      "review_title_ru": "Пакет между близкими бутылками",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева у соседней бутылки",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left grips the LEFT wine bottle mid-body through clear cellophane. A RIGHT unheld bottle stands very close with a narrow air gap between glass silhouettes; a loose transparent flap crosses that gap. Target burgundy label remains visible, neighbor ivory label separate. Plain counter, two bottles.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева у соседней бутылки. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC01",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Бокал перед этикеткой",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа за бокалом",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from right firmly holds the RIGHT cream-label bottle body. A transparent empty stemmed glass in front partly refracts its label, but the hand contact is clearly visible on both side edges. A separate blue-label bottle stands LEFT, unattended.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа за бокалом. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC02",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Ведёрко закрывает основание",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая бутылка, поднятая из ведёрка",
+      "target_anchor_proposal": [
+        0.28,
+        0.52
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two wine bottles. A hand from left visibly grips the neck of the LEFT ivory-label bottle as it is lifted slightly from a metal ice bucket. The bucket rim hides the lower glass base, but the full front label is above the rim. A second unheld bottle stands RIGHT.",
+      "expected_result_ru": "Выбрать: левая бутылка, поднятая из ведёрка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC03",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Цветы перекрывают часть бутылки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа за стеблями",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles at a tasting table. A hand from right wraps the RIGHT dark bottle mid-body, thumb and fingers visible. Thin flower stems in a small foreground vase cross part of its white label; visible paper elsewhere must remain. LEFT unheld bottle has a clear blue label.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа за стеблями. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC04",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Ценник перед частью этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева за ценником",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a shop counter. A hand from left grips the LEFT burgundy-label bottle mid-body. A small shelf price-card holder crosses only the bottom corner of its label. The RIGHT unheld bottle has a fully readable cream label. Plain background, real grip and occlusion physically plausible.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева за ценником. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC05",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Корзина закрывает низ",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа в корзине",
+      "target_anchor_proposal": [
+        0.73,
+        0.57
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from right grips the RIGHT green-label bottle at the upper body, visibly wrapping glass. Its bottom is behind the rim of an open wicker basket but most of the front label is visible above it. LEFT bottle is unheld.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа в корзине. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC06",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Рука закрывает половину этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева с перекрытой этикеткой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from left visibly wraps around the FRONT of the LEFT dark bottle middle body, covering about half of its ivory label, with thumb and curled fingers making a real grasp. Remaining label paper is visible. RIGHT unheld bottle has a clear bright orange label.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева с перекрытой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC07",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Сосед перекрывает удерживаемую бутылку",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая синяя бутылка справа за соседом",
+      "target_anchor_proposal": [
+        0.72,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a counter. The RIGHT foreground hand clearly grips the middle body of a target blue-label bottle at right, fingers and thumb visible at side edges. A closer unheld bottle at center-left partly overlaps the target left silhouette but not all of its label. Target is physically held.",
+      "expected_result_ru": "Выбрать: удерживаемая синяя бутылка справа за соседом. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC08",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Пакет и бокал одновременно",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева за плёнкой и бокалом",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from left grips the LEFT pale pink-label bottle through loose transparent cellophane. An empty wine glass in front partly refracts its lower label. The right unheld cream-label bottle is clearer. Preserve obvious grip and believable layered transparency without opaque fog.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева за плёнкой и бокалом. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC09",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Крупная бирка перед этикеткой",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка справа с подарочной биркой",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from right grips the RIGHT green bottle body. A large paper gift tag suspended from its neck falls diagonally across part of its ivory front label. The tag belongs to the same bottle. LEFT unheld bottle has a clear blue label.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка справа с подарочной биркой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "OC10",
+      "family": "occlusion",
+      "family_ru": "Перекрытия и видимость",
+      "review_title_ru": "Лёгкое размытие движения",
+      "declared_intent": "clear",
+      "declared_target_description": "Движущаяся удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting counter. A hand from left is lifting the LEFT red-label bottle by its body, clearly opposing thumb and bent fingers. Mild realistic motion blur affects this moving bottle and hand; the RIGHT unheld cream-label bottle is sharp. Do not make the target unrecognizable.",
+      "expected_result_ru": "Выбрать: движущаяся удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT01",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Сильная контровая засветка",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка в контровом свете",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles before a bright window. A hand from right firmly grips the RIGHT dark bottle middle body, thumb and fingers clear in silhouette, navy label outline discernible. LEFT unheld bottle has a brighter white label. Bright window backlight and realistic limited phone dynamic range.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка в контровом свете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT02",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Красный свет бара",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка при красном свете",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles in a tasting area illuminated mainly by red neon. A hand from left wraps the LEFT cream-label bottle mid-body; contact remains visible despite colored light. RIGHT unheld bottle has a larger white label. Natural dark phone noise, no illegible black frame.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка при красном свете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT03",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Холодный и тёплый свет",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка в холодном свете",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting counter. A hand from right grips the RIGHT blue-label bottle body in cool blue window light. The LEFT unheld bottle is lit by a warm lamp making its ivory label much brighter. Plausible mixed white balance and natural skin.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка в холодном свете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT04",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Слепящая полоса на бумаге",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с широким бликом",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from left holds the LEFT silver-label bottle body; a broad bright white reflection washes out a third of the label but all paper edges remain visible. RIGHT unheld bottle has a perfectly clear red label. Strong window reflection, realistic grip.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с широким бликом. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT05",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Блики на прозрачном пакете в темноте",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка в плёнке при слабом свете",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles in a dim tasting area. A hand from right firmly grips the RIGHT wine bottle through clear gift film with sharp reflected highlights. Its muted cream label remains visible. LEFT unheld bottle has a brightly lit white label. Thumb and fingers oppose across bottle body.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка в плёнке при слабом свете. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT06",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Жёсткая тень на этикетке",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка в тени",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles in harsh afternoon sunlight. A hand from left grips the LEFT ivory-label bottle body. A window-frame shadow crosses half its label, while the RIGHT unheld bottle has an evenly lit blue label. Crisp plausible cast shadows and visible skin contact.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка в тени. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT07",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Отражение вспышки справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка со вспышкой",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles in a dark tasting area. A hand from right grips the RIGHT dark bottle mid-body, thumb and fingers enclosing it. A phone-flash hotspot and vertical glare stripe cross its burgundy label. LEFT unheld bottle has a clearer white label, no hands near it.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка со вспышкой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT08",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Бутылка на фоне яркой вывески",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка на тёмном переднем плане",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on an evening tasting counter. A hand from left firmly wraps the LEFT navy-label bottle body. Behind RIGHT is a bright shop sign and an unheld cream-label bottle. The foreground hand and dark bottle remain recognizable. Realistic phone exposure, no added graphics.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка на тёмном переднем плане. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT09",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Тусклая свеча и тёмное стекло",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка при свечах",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles at a candlelit tasting. A hand from right visibly grips the RIGHT nearly black wine bottle with a dark paper label. A candle near the LEFT unheld bottle brightly illuminates its large ivory label. Keep target label outline and opposed thumb/finger contact distinguishable.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка при свечах. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LT10",
+      "family": "lighting",
+      "family_ru": "Сложное освещение",
+      "review_title_ru": "Конденсат и утреннее солнце",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая холодная бутылка",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles at a tasting counter. A hand from left wraps the LEFT chilled pale-green bottle body, condensation and sun highlights partly obscuring its mint label. RIGHT dry unheld bottle has a clear cream label. Visible thumb and fingers on opposite sides, full target paper within frame.",
+      "expected_result_ru": "Выбрать: левая удерживаемая холодная бутылка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ01",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Мини-бутылка справа и магнум слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Маленькая удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.75,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a counter. A hand from right visibly grips a tiny 187 ml blue-label bottle at RIGHT, holding it slightly up. A large unheld magnum stands LEFT and dominates the frame. Clear opposed fingers and thumb around the small bottle, label visible.",
+      "expected_result_ru": "Выбрать: маленькая удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ02",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Бутылка слева и огромная картинка",
+      "declared_intent": "clear",
+      "declared_target_description": "Маленькая настоящая бутылка слева в руке",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: One real small cream-label bottle is held mid-body by a hand at LEFT foreground. A huge framed poster at RIGHT shows a much larger printed wine bottle. Show poster border and physical glass base of the held bottle. No other real bottles.",
+      "expected_result_ru": "Выбрать: маленькая настоящая бутылка слева в руке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ03",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Передняя маленькая и задняя большая",
+      "declared_intent": "clear",
+      "declared_target_description": "Передняя удерживаемая бутылка справа",
+      "target_anchor_proposal": [
+        0.74,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on the same tasting table. A hand from right grips the RIGHT foreground half-size green-label bottle body. A much larger unheld magnum stands LEFT farther back and appears taller. Perspective and size conflict, but grip is obvious and target label inside frame.",
+      "expected_result_ru": "Выбрать: передняя удерживаемая бутылка справа. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ04",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Высокая полка и передняя бутылка",
+      "declared_intent": "clear",
+      "declared_target_description": "Удерживаемая бутылка слева перед полкой",
+      "target_anchor_proposal": [
+        0.28,
+        0.64
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on different support planes. A hand from left firmly grips the LEFT foreground blue-label bottle body. A large unheld ivory-label bottle stands on a high shelf at upper right. Show shelf edge and counter plane. Foreground grip is clear despite shelf bottle size.",
+      "expected_result_ru": "Выбрать: удерживаемая бутылка слева перед полкой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ05",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Широкоугольный край справа",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка у края кадра",
+      "target_anchor_proposal": [
+        0.82,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A wide-angle phone photo in a tasting area. A hand from right grips the RIGHT bottle close to the frame edge, ivory label fully visible despite mild lens stretch. Two smaller unheld bottles stand center-left. All glass silhouettes remain within frame; target is held.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка у края кадра. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ06",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Слева далеко от центра",
+      "declared_intent": "clear",
+      "declared_target_description": "Крайняя левая удерживаемая бутылка",
+      "target_anchor_proposal": [
+        0.15,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Wide horizontal tasting-table scene. A hand from left firmly holds a LEFTMOST red-label bottle near the edge, full label visible. Three unheld cream-label bottles stand center and right. Large empty table area separates target from center. Realistic grip and perspective.",
+      "expected_result_ru": "Выбрать: крайняя левая удерживаемая бутылка. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ07",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Один и тот же размер на разных планах",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая передняя бутылка в руке",
+      "target_anchor_proposal": [
+        0.75,
+        0.63
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Three identical-size physical bottles on a table at different depths. A hand from right holds the RIGHT foreground navy-label bottle body. Two unattended bottles farther left appear smaller. Avoid extra hands. Obvious grip should establish target rather than photo center.",
+      "expected_result_ru": "Выбрать: правая передняя бутылка в руке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ08",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Большая бутылка слева в руке",
+      "declared_intent": "clear",
+      "declared_target_description": "Большая удерживаемая бутылка слева",
+      "target_anchor_proposal": [
+        0.29,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from left firmly holds the mid-body of a broad LEFT sparkling-wine magnum with a pale pink label, while a tiny unattended blue-label bottle stands RIGHT. Show plausible hand contact at the side of the large body; labels fully inside frame.",
+      "expected_result_ru": "Выбрать: большая удерживаемая бутылка слева. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ09",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Глубокая полка с ярким фоном",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая передняя бутылка в руке",
+      "target_anchor_proposal": [
+        0.74,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A hand from right holds a RIGHT foreground dark bottle with muted gray label. Deep shelves behind LEFT contain many small bright-label bottles, clearly farther away; the shelves and repeated rows show depth. Grip is fully visible at mid-body, target label within frame.",
+      "expected_result_ru": "Выбрать: правая передняя бутылка в руке. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "SZ10",
+      "family": "scale",
+      "family_ru": "Размер и перспектива",
+      "review_title_ru": "Высокий ракурс и бутылка слева",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка в ракурсе сверху",
+      "target_anchor_proposal": [
+        0.28,
+        0.61
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: A steep oblique overhead photo of a tasting table. A hand from left grips a LEFT green-label bottle body, tilted slightly toward camera; a larger unheld cream-label bottle stands RIGHT. Bases and shoulders foreshorten naturally, full target front label remains visible.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка в ракурсе сверху. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB01",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Большая этикетка с отогнутым краем",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка с отогнутой бумагой",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from right grips the RIGHT dark bottle below its oversized ivory paper label. One corner of label paper curls visibly outward, retaining printed text and blank margins. LEFT unheld bottle has a cleaner blue label. Target full paper stays in frame.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка с отогнутой бумагой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB02",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Бирка шире бутылки",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с широкой биркой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a shop counter. A hand from left holds the LEFT green bottle body beneath a wide hanging paper neck tag that extends beyond glass silhouette. A small cream front label also belongs to this bottle. RIGHT unheld bottle has a large orange label. Keep entire tag visible.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с широкой биркой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB03",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Текст прямо на стекле",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка с печатью на стекле",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from right grips the RIGHT dark bottle below a large white decorative text print directly on glass, with no front paper label. A small neck label is present. LEFT unheld bottle has a vivid ivory paper label. Target visible printing all within frame.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка с печатью на стекле. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB04",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Прозрачная наклейка",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с прозрачной наклейкой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting table. A hand from left holds the LEFT clear rosé bottle with a transparent front sticker bearing black lettering and a small red emblem. The sticker edge is faint but visible. RIGHT unheld dark bottle has a bright cream label. Keep full target sticker in frame.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с прозрачной наклейкой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB05",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Две бумажные этикетки",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка с двумя этикетками",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from right grips the RIGHT bottle between a large upper ivory label and a separate smaller lower red label; both labels face camera and remain fully in frame. LEFT unheld bottle has one clean blue label. Thumb and fingers visibly wrap glass.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка с двумя этикетками. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB06",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Медальон и главная этикетка",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с медальоном",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from left holds the LEFT wine bottle body. It has a cream front label plus a round metallic medal hanging from neck on a thin ribbon and partly overlapping upper paper. RIGHT unheld bottle has a brighter green label. Keep visible label, medal and ribbon plausible.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с медальоном. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB07",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Соседний ценник не принадлежит цели",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка с розовой этикеткой",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a tasting counter. A hand from right holds the RIGHT pink-label bottle body. A large bright price card sits beside the LEFT unheld blue-label bottle, clearly on its own stand and not attached to the target. Full target label paper visible.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка с розовой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB08",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Потёртая этикетка",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с потёртой этикеткой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles in a cellar. A hand from left grips the LEFT dusty dark bottle below its aged cream paper label, paper stained and partly torn but visible outline identifiable. RIGHT unheld bottle has a pristine white label. Keep wear realistic and hand contact obvious.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с потёртой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB09",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Длинная узкая этикетка",
+      "declared_intent": "clear",
+      "declared_target_description": "Правая удерживаемая бутылка с узкой этикеткой",
+      "target_anchor_proposal": [
+        0.73,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles on a neutral table. A hand from right holds the RIGHT tall bottle at its lower body; it bears a long narrow vertical blue paper label spanning much of front. A broad unheld bottle with a bright ivory label stands LEFT. Entire narrow paper inside frame.",
+      "expected_result_ru": "Выбрать: правая удерживаемая бутылка с узкой этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "LB10",
+      "family": "label_detail",
+      "family_ru": "Этикетки и принадлежность",
+      "review_title_ru": "Частично снятая бумага",
+      "declared_intent": "clear",
+      "declared_target_description": "Левая удерживаемая бутылка с отслоившейся этикеткой",
+      "target_anchor_proposal": [
+        0.28,
+        0.62
+      ],
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Background wine bottles may be present on shelves but should remain clearly in the background. Viewpoint: the customer is examining a wine bottle in their own hand while shopping or browsing the cellar, with the bottle front label turned toward the phone camera. Show the bottle, the holding hand and enough surrounding shelves or cellar details to establish the location. Scene details: Two bottles. A hand from left firmly grips the LEFT bottle body while a corner of its red paper label is peeled outward and hangs visibly. The remaining front paper and detached flap belong to the same bottle. RIGHT unheld bottle has a complete ivory label. No extra hands.",
+      "expected_result_ru": "Выбрать: левая удерживаемая бутылка с отслоившейся этикеткой. Проверить принадлежность видимой этикетки и исключить соседние бутылки.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": true
+    },
+    {
+      "id": "CT01",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Равнозначная пара без рук",
+      "declared_intent": "ambiguous",
+      "declared_target_description": "Неоднозначная пара — предварительный fallback",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Exactly two identical-size upright wine bottles stand symmetrically LEFT and RIGHT on the same table, same depth, equally lit, with matching cream-label size. Empty air gap at photo center, no hands, no foreground cue, no other bottles. A genuinely balanced ambiguous pair, natural phone photo.",
+      "expected_result_ru": "Проверить неоднозначность и предварительную цель fallback по геометрии видимых масок.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT02",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Три равнозначные бутылки",
+      "declared_intent": "ambiguous",
+      "declared_target_description": "Средняя бутылка — предварительный fallback",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Exactly three similarly sized upright wine bottles form an evenly spaced row on a plain table, same depth and lighting, middle bottle exactly at photo center. Labels differ in muted color but have same size and contrast. No hands, no obvious main subject or other bottles.",
+      "expected_result_ru": "Проверить неоднозначность и предварительную цель fallback по геометрии видимых масок.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT03",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Две руки держат разные бутылки",
+      "declared_intent": "ambiguous",
+      "declared_target_description": "Две удерживаемые бутылки — предварительный fallback",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Two equal-sized wine bottles LEFT and RIGHT at the same depth. Two different people each hold one bottle around mid-body with visible opposed thumb and fingers, equally presenting both. Labels equally readable, no third bottle. Centered symmetric composition, no dominant gesture.",
+      "expected_result_ru": "Проверить неоднозначность и предварительную цель fallback по геометрии видимых масок.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT04",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Равнозначные бутылки на полках",
+      "declared_intent": "ambiguous",
+      "declared_target_description": "Неоднозначные бутылки на полках — fallback",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Exactly two similarly sized wine bottles on separate short shelves, one upper left and one lower right, equal distance from image center and equal apparent label size. No hands or depth dominance. Both shelf edges visible. Avoid making either bottle the obvious main subject.",
+      "expected_result_ru": "Проверить неоднозначность и предварительную цель fallback по геометрии видимых масок.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT05",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Перекрывающаяся пара без намерения",
+      "declared_intent": "ambiguous",
+      "declared_target_description": "Перекрывающаяся пара — предварительный fallback",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Exactly two equal-sized upright wine bottles on the same plane overlap slightly near photo center, both labels equally visible and neither bottle held. No hands, no other bottles. Neither looks substantially larger, closer or brighter. Natural balanced tasting-table photo.",
+      "expected_result_ru": "Проверить неоднозначность и предварительную цель fallback по геометрии видимых масок.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT06",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Бокалы и мельница без бутылок",
+      "declared_intent": "no_target",
+      "declared_target_description": "Нет целевой бутылки — полный кадр",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. This is an empty accessories or packing corner; keep all wine bottles and bottle pictures OUT of the entire frame as required by the negative case. Scene details: A tasting table with two empty wine glasses, a wooden pepper mill, folded napkins and a water carafe of clearly non-bottle shape. NO wine bottles, no bottle pictures or packaging, no hands. Natural tasting-area phone photograph, no obvious wine-bottle-shaped object.",
+      "expected_result_ru": "Сохранить полный исходный кадр: видимой бутылки нет.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT07",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Коробка без изображения бутылки",
+      "declared_intent": "no_target",
+      "declared_target_description": "Нет видимой бутылки — полный кадр",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. This is an empty accessories or packing corner; keep all wine bottles and bottle pictures OUT of the entire frame as required by the negative case. Scene details: A closed plain rectangular gift carton, two empty glasses and a plate on a table. NO visible wine bottle, no printed bottle image, no bottle-shaped decoration, no hands. The plain carton has only abstract geometric patterns and a small ribbon. Ordinary smartphone photograph.",
+      "expected_result_ru": "Сохранить полный исходный кадр: видимой бутылки нет.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT08",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Пустая винная полка",
+      "declared_intent": "no_target",
+      "declared_target_description": "Нет бутылки — полный кадр",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: portrait 2:3, approximately 1024 by 1536 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. This is an empty accessories or packing corner; keep all wine bottles and bottle pictures OUT of the entire frame as required by the negative case. Scene details: An entirely empty wooden wine rack with diamond-shaped cubbies, a folded cloth and a corkscrew on a shelf. NO bottles, no bottle photographs, no labels, no hands. Realistic room light, plausible ordinary cellar phone photograph.",
+      "expected_result_ru": "Сохранить полный исходный кадр: видимой бутылки нет.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT09",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Крупный план без горлышка",
+      "declared_intent": "label_context",
+      "declared_target_description": "Полный контекст крупного плана этикетки",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: landscape 3:2, approximately 1536 by 1024 pixels. Setting: inside a real wine store. Use a shop tasting counter, bottle shelves with small price strips, retail aisle details and natural store lighting. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Extreme close-up of one physical dark wine bottle front paper label. Its entire cream label, blank paper margins, curved glass on both sides and a little glass below are visible. Bottle neck and base extend beyond frame. No hands, other bottles or background distractions. Preserve full visible label context.",
+      "expected_result_ru": "Сохранить полный контекст видимых этикеток крупного плана.",
+      "environment": "wine_store",
+      "environment_ru": "Винный магазин",
+      "handheld_primary_scenario": false
+    },
+    {
+      "id": "CT10",
+      "family": "controls",
+      "family_ru": "Неоднозначность и контроль",
+      "review_title_ru": "Крупный план двух этикеток одной бутылки",
+      "declared_intent": "label_context",
+      "declared_target_description": "Полный контекст двух этикеток одной бутылки",
+      "target_anchor_proposal": null,
+      "prompt": "Use case: photorealistic-natural. Generate exactly ONE independent candid smartphone photograph. Show believable glass, paper, natural material imperfections, fictional wine branding, and anatomically plausible hands. No collage, grid, arrows, annotations, bounding boxes, highlights, watermark, UI overlay, or explanatory caption. Text is allowed on physical objects within the scene. Keep the target visible front label entirely inside the frame unless partial occlusion or close-up is explicitly requested. Image format: square, approximately 1024 by 1024 pixels. Setting: inside a real wine cellar. Use stone or brick walls, wooden wine racks, storage cubbies, a cellar tasting table and practical dim lights. Keep the described foreground inventory; background racks may be empty or softly blurred. Scene details: Extreme close-up of one physical wine bottle body showing a complete large white main label and complete separate small red lower label, with surrounding curved dark glass. Bottle neck and bottom are outside frame. No hands or other bottles. Both papers fully inside the image, realistic phone detail.",
+      "expected_result_ru": "Сохранить полный контекст видимых этикеток крупного плана.",
+      "environment": "wine_cellar",
+      "environment_ru": "Винный погреб",
+      "handheld_primary_scenario": false
+    }
+  ],
+  "environment_revision": 2,
+  "environment_revision_basis": "The user requested examining wine in hand inside wine stores and wine cellars before generation.",
+  "environment_counts": {
+    "wine_store": 50,
+    "wine_cellar": 50
+  },
+  "handheld_primary_scene_count": 75
+}

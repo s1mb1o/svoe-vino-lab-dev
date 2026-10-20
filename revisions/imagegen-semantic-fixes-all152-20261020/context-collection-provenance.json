@@ -1,0 +1,15 @@
+{
+  "successful_RGB_only_requests": 152,
+  "all_request_JPEG_hashes_reconstructed_from_source_RGB": true,
+  "nouns": "poster, screen, mirror, bottle held in hand, transparent wrapping, empty gift bag",
+  "collector_timeout_seconds": 90,
+  "production_context_timeout_cap_seconds": 30,
+  "maximum_observed_request_seconds": 4.0197910419956315,
+  "minimum_created_at": "2026-10-20T11:15:03.286498+00:00",
+  "maximum_created_at": "2026-10-20T11:18:27.117331+00:00",
+  "all_observed_requests_under_production_context_cap": true,
+  "collector_sha256": "d3b0b18b89c394984e2379e66c1e7f03b0189d615b2e5665b2090c6bafd441ea",
+  "transport_envelopes_retained": false,
+  "validated_instances_retained": true,
+  "service_checkpoint_revision": "not disclosed by existing service"
+}

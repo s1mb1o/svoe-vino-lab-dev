@@ -1,0 +1,334 @@
+{
+  "created_at": "2026-10-20T11:53:47.534071+00:00",
+  "variants": [
+    "scene-v1",
+    "semantic-v2",
+    "dis-v1"
+  ],
+  "selected_case_count": 152,
+  "expected_results": 456,
+  "datasets": [
+    {
+      "dataset": "main-selector-imagegen-pilot-v1-20261019",
+      "case_count": 30,
+      "review_path": "reviews/user-review-amendments-20261020-v2.json",
+      "human_scene_confirmed": 30,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "e24aec2e04adf02ee834d005bbc29c44ab439007aee2ee5cf2c204ed0ef246d8"
+    },
+    {
+      "dataset": "main-selector-imagegen-hardcases-v2-20261020",
+      "case_count": 20,
+      "review_path": "reviews/user-review-20261020T063637Z.json",
+      "human_scene_confirmed": 20,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "f6f11d8a2775ab5b612783eda9940981fa27762e41f3eee9936cb8e30d2cf9be"
+    },
+    {
+      "dataset": "main-selector-imagegen-diverse-v3-20261020",
+      "case_count": 102,
+      "review_path": null,
+      "human_scene_confirmed": 0,
+      "human_mask_approved": 0,
+      "source_manifest_sha256": "b7d2127cc78bca85b3cb4700594952b47aaa07a67c259bfa97fc176213cf30bc"
+    }
+  ],
+  "source_files": {
+    "__init__.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/__init__.py",
+      "sha256": "fc853e96b9236acfe1d0c912d0d52cfb51518fc113f6c22877de929d37284f0f"
+    },
+    "app.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/app.py",
+      "sha256": "abc2f77ef9665f1f56619c224ac8d361a5ffcdaa9cb560b14ae393df57dd45fc"
+    },
+    "audit.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/audit.py",
+      "sha256": "0ede7c7c2fe49ab049d0f84009f28a8abbe0a8560ba3205a636dacb1903a9579"
+    },
+    "bundle.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/bundle.py",
+      "sha256": "49f50ef874f23eafdaff8552d7ddec72c8ddc9a65efad10e6972dd6be558ac58"
+    },
+    "cascade.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/cascade.py",
+      "sha256": "44dfa27692b3e3a1fc1a9b028758d9f300a03b614fd501cdc1fa169c22ea664c"
+    },
+    "cascade_run.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/cascade_run.py",
+      "sha256": "868ae0c35c44cb96fdebaa2d6a238128708698827dac1c955c3eb57c8f9c9487"
+    },
+    "catalog.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/catalog.py",
+      "sha256": "88239ed43c0104102e9e8eae12e51c161a80b001bdbb6347cbabc2c3b0bf0fc1"
+    },
+    "codes.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/codes.py",
+      "sha256": "96cb00e34f57b6f24446bbfa5c866b5c1f0601d0718ea0824766c03e2ef6e237"
+    },
+    "group.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/group.py",
+      "sha256": "d632eb1a709e2272e603af6ba134718cd8b2d7c6b0f57c9526a796e321ef87c0"
+    },
+    "input_selector.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/input_selector.py",
+      "sha256": "6af8230b53bbe2183dd475aa73a0519b8e748487074a7f8e41c6930abf708366"
+    },
+    "labels.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/labels.py",
+      "sha256": "480a77354a36b351d0f711329495175460e88011c0b8d23ca58fe7f1e81b09b6"
+    },
+    "main_scene.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/main_scene.py",
+      "sha256": "01a0449e6cc976bfc788ba24354d07a60828a62b1c7233ef105af568bac9e491"
+    },
+    "ocr.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/ocr.py",
+      "sha256": "a15ea6e2ec217fea454616beb86fd3c3385b9f3557f08fab470103c9ea2bca3e"
+    },
+    "photo.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/photo.py",
+      "sha256": "f97db7ef8f8afd1bc47c7b32e8bb17f1ea8f8ae678dcdf73ef0e1f7dad037edb"
+    },
+    "protection.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/protection.py",
+      "sha256": "2bf0f9f991bff9e81d72ed74c6192daad22361a8af102d11083edbba56f7744d"
+    },
+    "rerank.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/rerank.py",
+      "sha256": "86d92ed1240f6ba83125615e9f87827aaf74ea5705b4a52ae377be51b94abe84"
+    },
+    "selective_ocr.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/selective_ocr.py",
+      "sha256": "ea097738f299a15dcf9479911df1f53a274e725da39e318d0f3cd866c51da79f"
+    },
+    "selector_detection.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/selector_detection.py",
+      "sha256": "9e6075cb6258856bd58c64245dfb7b4c2c3e9852ad29afe8ac51913665793d9e"
+    },
+    "semantic_context.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_context.py",
+      "sha256": "cc7e3224870d87d90728b05fbf48e4d6117c678e67577fc7b785c689c868717e"
+    },
+    "semantic_intent.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_intent.py",
+      "sha256": "c39d02aa9ebff50462485b3117af36d419bee084ea4f0c8a7ea73d66be929a87"
+    },
+    "semantic_selector.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_selector.py",
+      "sha256": "d30e94c6c4990457b5399669868b0f8d8fea336b502052db43828006fb028446"
+    },
+    "service.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/service.py",
+      "sha256": "da4207e7ef1ffc82fcc7e251b5745073a1e97113df4269668ea9ecc55b7278da"
+    },
+    "services.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/services.py",
+      "sha256": "9d9cd65ada30f5ca92aeae071bef8300d1d2a5a6e1bb049a237155a556ac32b5"
+    },
+    "siglip2.py": {
+      "path": "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/siglip2.py",
+      "sha256": "1b9fa6dc82f46dbbb8ba314f7da9e329da9459c82c87c0d4dd36b4a7f9c7d421"
+    },
+    "dis_selector.py": {
+      "path": "/private/tmp/svoe-vino-dis-v1/matcher/dis_selector.py",
+      "sha256": "a8551283b74c62d44e5379dfa1fb4240f3808c2f9c22c104e8ad305459ffba10"
+    }
+  },
+  "fallback_ast_sha256": {
+    "current": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3",
+    "frozen_baseline": "a3af54508263fe7e9ca85249cee58b5ea97a71b28d0fae7ec1832853579d48f3"
+  },
+  "source_git_heads": {
+    "/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector": "05000460eac75994ae63c7cdeb881e8c4d489fab",
+    "/private/tmp/svoe-vino-dis-v1": "250eeda0b5baae5225992a5244561f4e0996c454"
+  },
+  "source_dirty_status": " M matcher/experiments/main_selector/audit_additional_coverage.py\n M matcher/experiments/main_selector/benchmark.py\n M matcher/experiments/main_selector/fallback_suite.py\n M matcher/experiments/main_selector/report.py\n M matcher/experiments/main_selector/report_template.html\n M matcher/experiments/main_selector/verify_report.py\n M matcher/semantic_selector.py\n?? matcher/docs/semantic-intent-policy.md\n?? matcher/docs/semantic-v2-selection-isolation.md\n?? matcher/selector_detection.py\n?? matcher/semantic_context.py\n?? matcher/semantic_intent.py\n?? matcher/tests/data/imagegen-intent-regressions-20261020.json\n?? matcher/tests/data/semantic-v2-imagegen-fixes-20261020.json\n?? matcher/tests/data/semantic-v2-localization-regressions-20261020.json\n?? matcher/tests/data/semantic-v2-regressions-20261019.json\n?? matcher/tests/test_detector_recovery.py\n?? matcher/tests/test_imagegen_fixes.py\n?? matcher/tests/test_imagegen_intent.py\n?? matcher/tests/test_selector_localization.py\n?? matcher/tests/test_selector_regressions.py\n",
+  "implementation_revision": "2026-10-20-imagegen-selection-isolation-and-label-bounds",
+  "python": "3.14.7",
+  "packages": {
+    "numpy": "2.5.3",
+    "Pillow": "12.3.0",
+    "ai-edge-litert": "2.2.0"
+  },
+  "dis_model_path": "/Users/ashmelev/.cache/huggingface/hub/models--litert-community--DIS-ISNet-LiteRT/snapshots/1b966dbe2f33bd5ca1299cf94fbab59265210b6b/dis.tflite",
+  "dis_model_sha256": "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087",
+  "execution": {
+    "sam3_selectors": "Fresh pinned selector replay on frozen primary proposals plus fixed image-only auxiliary context masks. Identical appended context and unchanged primary dN IDs for both selectors.",
+    "context": "152 additional RGB-only SAM3 requests; fixed English nouns, default thresholds; no target, annotation or desired answer supplied. The service does not expose a checkpoint revision. Saved responses contain validated instances, not raw transport envelopes.",
+    "sam3_prompt_difference": "Review proposal nouns include wine glass and omit can relative to the production semantic prompt.",
+    "dis": "Fresh local CPU inference on all 152 originals, same pinned LiteRT model and configuration.",
+    "configuration": "select_variant with supplied instances, tap=None, aim=None; exact frozen fallback unchanged."
+  },
+  "scoring": {
+    "target_agreement": "Selected dN equals an accepted target, or exact full-frame/context expectation. DIS has no native target ID and is never assigned semantic accuracy.",
+    "proxies": "Target mask retention >=95% and other bottle mask retention <=10%, excluding proposal duplicates at IoU>=0.5; masks and owners unreviewed.",
+    "label_proxy": "Wine-label proposals with >=80% of their mask inside the proposed target; report retained fraction and area. Ownership and legibility are not ground truth.",
+    "usability": "Target agreement alone is not crop usefulness. No automatic PASS for legibility. Human crop-usability review remains pending for every result.",
+    "confirmed_annotation_accuracy": "Not reported: zero human-approved masks. Separate scene-confirmed and pending-scene cohorts."
+  },
+  "cases_sha256": "9b3298ea9759233199c5d5c440bd8dadb59872206d83760f03c3ed98e3f10b1b",
+  "provenance": "Selected cases only. Rejected, blocked and canceled attempts are retained in source-data JSON provenance and excluded from accepted-scene denominators.",
+  "limitations": [
+    "Synthetic development images, including previously used development cases; not independent real-world accuracy.",
+    "Fifty scene approvals do not approve detector masks or their ownership; all mask metrics are provisional.",
+    "The 102 pending scenes, including GP11 and SP01, are exploratory only.",
+    "No visual target, ground truth, fallback contract or historical report is changed by this run."
+  ],
+  "baseline_bundle": "main-selector-imagegen-all152-20261020-current-v1",
+  "baseline_protocol_sha256": "50960370a12dfa082007f4eba6ff604c6db3caf41c8ed8c4197b962bee00e371",
+  "context_sha256": {
+    "pilot-v1--FG01": "4afd98bd1c62a83b6cb7644f1971b46830af048f44375fee85e2f7eee7081a13",
+    "pilot-v1--FG02": "b0e8b23454267972cdd96d1fcf83d16223b955add29df04e9481d2b1ac4bd809",
+    "pilot-v1--FG03": "bcd68a98d11fc1bcd978dca10ea7757b1485dd31d1b3836cc6da45264e083069",
+    "pilot-v1--FG04": "30dde9735872f8d71825b1634b2b1948e56c6cb0f4711d9950030421c520d451",
+    "pilot-v1--FG05": "e402cae4e41663d8bca9f1ec65179eef8295f0be86140d9f6c6f0660e44e5752",
+    "pilot-v1--HA01": "b22589e739870f8c095ac094fec6cf8bb2714904030f8ddaed9b8a0d621400a2",
+    "pilot-v1--HA02": "e530e7694be492fd9b3768fa56f8351a5183200156a213841535fb7bf7bf53e2",
+    "pilot-v1--HA03": "be02825609f93134f703cf4b739f2eaf66820d55e466c9f2da82dd98562e3f7d",
+    "pilot-v1--HA04": "3211fa47fbfac462a828258e4aadeddc500703ed0ca5b4e6273b343869cf9345",
+    "pilot-v1--HA05": "8ab07550264bf29e1b02e8e6740c3ced3c2c916ee0299b5eda992cd7c5b99977",
+    "pilot-v1--LA01": "2f56d332ac2a7bdf69f0a5e85c9cfc4cff4ad6a7dcd24202283ccf23fdb68ad5",
+    "pilot-v1--LA02": "2778841b4499d55546b9b9a5c331138ba699d5b558c14ab2573a96eed90ad8a2",
+    "pilot-v1--LA03": "53e0c9969899dbec445b0eb41ad5fa477b7903c3eb4d4defe4054e49d9d53fc9",
+    "pilot-v1--LA04": "88ac44dfabae65f1f3f31a66399d24252cb78685e3a1f22264d6b5af56de070d",
+    "pilot-v1--LA05": "b3a5d89c4b9a73d50945f7f326b4c8789298080630669dc8b5307043b342899b",
+    "pilot-v1--OW01": "16c7641b5f639b5d1018811901cf3719d13af2204d3c7aa64adfc33be771a06f",
+    "pilot-v1--OW02": "8dbee2bf142c9f2dab91c987054c7e97e741768d40c53536668e6a4c86f64a43",
+    "pilot-v1--OW03": "ae01528ce3bf0f279ea51f9d69d4b6989325666f15c0c9b7d2691b670085a5a0",
+    "pilot-v1--OW04": "e268f1b8f1dfd44bc023cd4a35fe0b03bf3c4e319795e5771bd170703a8a9095",
+    "pilot-v1--OW05": "830f73aeb954d0cd31dd3db1e238a73836d74b8e214a843d74297c3b9a4909d7",
+    "pilot-v1--VI01": "0c02fd8c19dbf47d5553dcb443193f988ff92ead6f3b16707d37e27f0e04b3cb",
+    "pilot-v1--VI02": "ed8be380397af4cf3739a7f478453caa8f99b5237f90e54a5404fbe3d699abd4",
+    "pilot-v1--VI03": "ec86ef5eb8602cbba5b6b1f8547ff39855dc36cf526ce652509226d122afd4b7",
+    "pilot-v1--VI04": "f0924409d76be3353ecbe02a3a5ba5630fa936c21b68ebf654a2547402ab3dbb",
+    "pilot-v1--VI05": "dfa4a13a4b684c49b2451ffc43ac0c49708f7046b50ef9147ca1afed4e108b58",
+    "pilot-v1--AM01": "88fb602105504b0839ac187da4e149978ff47139e018d10e18717dbecaa71d6f",
+    "pilot-v1--AM02": "ebf01c53ac4f3cd251ea4b82416db0be2bca7c59a9c68eef4fc4d9c86ad3313a",
+    "pilot-v1--AM03": "8cc8132696f2d66c12827a811bdc12eae5a7ad8ec4a87eb5aedeecada1294bdc",
+    "pilot-v1--AM04": "b99857b7ce7baa45ed7dcbe05aa1e3f457f54f72be72c6110a49b00261b7a945",
+    "pilot-v1--AM05": "9f4b98213d6f2b51024accfae26f1fa1b853208a15f68d541e3130ff17de2972",
+    "hardcases-v2--PT01": "3cc0a664979b27b9343c1ff355866038de6d9243397cf64a6eabb188085ea6f2",
+    "hardcases-v2--PT02": "5041adf1f195202980d697b88bf1df2f9f1a90e04cc9a15bd38c5372351e31bb",
+    "hardcases-v2--PT03": "e85bbc674b941a10943b5b3a09c12e24c4b994826a868ffb9cf52b51e406696e",
+    "hardcases-v2--PT04": "5973093e1deac3423af2359a8a7a17f31562f061631387348af406511472f856",
+    "hardcases-v2--DP01": "471854283919af9093c8a55f38c05668270e6e7606503ad136c9512fdb721146",
+    "hardcases-v2--DP02": "c02f5f382ea677b540943367af5e8e4732075ee4174df12ed9de71fd7aec1174",
+    "hardcases-v2--DP03": "6567e4a91fe9383486bdc8a9705168862a784b363478d5db06f567fa902a7061",
+    "hardcases-v2--DP04": "06f580594d30fd4502517870c41d82126651790e0297f295a06e5a74cc39c58a",
+    "hardcases-v2--GL01": "4a70c62b4c728437ecf24594cd8e6577c6feebc59b3e73d5ade4d6ca8bd450a5",
+    "hardcases-v2--GL02": "019b45567a2b951f757538e210720c40b030c796ebc934568a711ccea0cb00ff",
+    "hardcases-v2--GL03": "8f400913be45a278ac0d3e252e66c2d38eb58388c467141924cf7ef433e1ae90",
+    "hardcases-v2--GL04": "fab5f0fd68dfe9ffc6603ae1824e41a0359d509b3b71cd100cd97974bcb18b4e",
+    "hardcases-v2--DK01": "7884e289cf37d98bf85983aa0ed2898a3a47a7d0b4031dc1cad957c2424abba3",
+    "hardcases-v2--DK02": "a3720d47d746569de0761c32948f5b782f975160f5c01caccbb3be8327f5e134",
+    "hardcases-v2--DK03": "cd9441689f8cac4f7a766ece23d3c488c08171ed3693f920d24603727a3dfc34",
+    "hardcases-v2--DK04": "279a5cffcf1fc062b86a84a69e2d8fb0a5b2fcaa34d48e90981025b1096951bd",
+    "hardcases-v2--BG01": "62e0e78db03e258a0b90a860ea670d1d5e668da1293e4c7d6218b8de79ea9b3f",
+    "hardcases-v2--BG02": "33efe52b3dea090da18ef33bf64d722b082de379c6653eb5788dacdf1e5affe4",
+    "hardcases-v2--BG03": "30665dcad7c7318aeac421c1f6dc0764bc0d3d3918cec7d8ee8c4b9bc11023f4",
+    "hardcases-v2--BG04": "00e27687b09cceaf6509a0deac60e354b0a05aefd2ee0d42ad5d902760257bec",
+    "diverse-v3--PN01": "8259132a82d2981bc63100182c67afdc90eb815a5b952bd08b4632653186beb0",
+    "diverse-v3--PN02": "47f5d38d21fa7d652bb2cb5778a5ee77a087ccf238ef2960d5ed1c0e3d6e054f",
+    "diverse-v3--PN03": "0b0e88048ea47c8aa7de1c2c7576a3ceb6642e9b08a623b2eba1ac7e4a7fc6c4",
+    "diverse-v3--PN04": "345293bd547113cad2c1f9f6f80291c2e9bf535945129b8d27ac47685a4f4a04",
+    "diverse-v3--PN05": "b22c51df127329b7027b483d57ffd2044d6898d8ddff0c07d481aa2528f7fde6",
+    "diverse-v3--PN06": "f27f41cb368e7b9d23cec15d5b78d0180a009fa389faddc84a68cef51fdf6c3f",
+    "diverse-v3--PN07": "09df7feb384eaa217ef8618b7b1a1b5937992f9fa90cbdb26229d464454a77d2",
+    "diverse-v3--PN08": "70de750d1c734e33a4aae7f5558e69a92ec580cc5e09618cbe72d1f411e2364c",
+    "diverse-v3--PN09": "ffad106781b71ce55b4c1c941ef605107c791a99912ebf0717becb6bb12a865f",
+    "diverse-v3--PN10": "a0a93b36b5a4207e1ff0cffbbe0ef29139667219a6aea2c1359186748e3b8ac9",
+    "diverse-v3--HP01": "e02e0de60b46722574109fa3bd973abdffc36b56cd450a2802f1ac9eee89b5eb",
+    "diverse-v3--HP02": "0e8b974ba3f9d1248c8ccaef9e5769bcdfd4933816a28dc41349d75037f8c1e9",
+    "diverse-v3--HP03": "260dc62397abb84f52477c2cb79d1e2b576f0879233df799db1c31d8043f3d97",
+    "diverse-v3--HP04": "5c169f21a2038a48601b28eec37f881e68b665572213a8534218de15c8e31261",
+    "diverse-v3--HP05": "d8f378dd240c06aa6723f0dc26c3ea94408b8845045fa725e790320c8a3485b9",
+    "diverse-v3--HP06": "13a79c8225a53ea52a43ca718badb3e446a8dfabf75830bb983ac5ee6a82cfcc",
+    "diverse-v3--HP07": "3795360a8684607479cf54292f2949db5b2f0578db61bc96b133d91c9fe76688",
+    "diverse-v3--HP08": "e21c9966444917bcd58d87fbfdde7d06ccf6cfd1eba7b4b2b6f9684da4df9daa",
+    "diverse-v3--HP09": "6ee8b2b8a11ac7ad722d981459c590e157093f3eb5ce4f5b47371856b4b19bd7",
+    "diverse-v3--HP10": "8fd04768e69846f62b28cbc5ab9c40ab256a5ab2c3ce9d85dae086fd46b1de94",
+    "diverse-v3--GP01": "6e2827b634fb5392eb307f321022c269b6d63ef6db3fbcd72d72cc62fd6509e4",
+    "diverse-v3--GP02": "d16cdefc29b148de720dab444f191bc3c4d1f25fe9115a5985471573503198a0",
+    "diverse-v3--GP03": "706fa7a40b24b66c6cd0b4d17cd29e2c5eaf3b71e4c5a4686a0d9c2443779765",
+    "diverse-v3--GP04": "3d9f9647b5aad50d7017f3121c8d80c332d1d3d121238b1ecbfe5cc9e4c5a39b",
+    "diverse-v3--GP05": "f1307ea086ce0c426dd09de9a317b3338447a91bd588389e959dba7d52085f29",
+    "diverse-v3--GP06": "0e17436c530d9ff78f672dabcefa690b64f8aa7c0b4edabf54737cbcfd758cb7",
+    "diverse-v3--GP07": "0322973c37ebdb2d7378a8c0f140a4ddd0b8d083607d72a38f04706987b3d539",
+    "diverse-v3--GP08": "67268c05ba1d5e0db5ca953e7cec98234b36dbf2c93f315b87426c55904d7421",
+    "diverse-v3--GP09": "83ee68a4a9d4f91e3c001ede66314a2230f7cf8fe58d4ef37da71ca58b2a1979",
+    "diverse-v3--GP10": "e34a50de75c192fa200c2f21c333502b5f64bdc238cf1bd74617b6f25501b033",
+    "diverse-v3--PD01": "da03244dfe9cc290b6e7fbd208ffb0835bafa33426448de8b2e262a71f58bcf1",
+    "diverse-v3--PD02": "928dfae3ff7e5f3cfa88291eda41a45fddd26801751505f2231b9dc69d64b4e0",
+    "diverse-v3--PD03": "8359f2b67a4ddefe470058b6534118a7de842ad351ff5aa8a6061b5abcbce7c3",
+    "diverse-v3--PD04": "14630f207746a67c609e2a73236a443b242527052f7d77b68b4d9ed5b1896412",
+    "diverse-v3--PD05": "da1feba0144e328babebd0cce331749678f94a71e2297521dac5c8b8f004f89c",
+    "diverse-v3--PD06": "e83fdcb8fb449eae9a70aae494b5813f03464e5fda1d26fa5d3199b8d6e4f365",
+    "diverse-v3--PD07": "c76c33502527c9fba191f660fbe8ab7926b77d5e351c44a646ef1b0dddd44b40",
+    "diverse-v3--PD08": "90fb6e3a9a0b9d8afec991e9a647d67dbd1b457dce47e88533c3c6e17fb15741",
+    "diverse-v3--PD09": "623b79df4e46e8518b0621b31c4de35997d6f5dac459346ea6d8b553e94dd75f",
+    "diverse-v3--PD10": "9b7d37682e5f7d4b539623e1d93942e92af44313592d51bbec8be3f38d46f2d3",
+    "diverse-v3--WP01": "37df8c524ddb9757d644b438f9b502a290aa38b46abebb688ffd6911e9fea4e6",
+    "diverse-v3--WP02": "be1746df21c78d00014501160ce2419d433a2945d96499f1d939858a06adb73f",
+    "diverse-v3--WP03": "f5300e89c16ae27ed30519924dcb5d72fdbc600aa87d93bbbe22867ea218a5e8",
+    "diverse-v3--WP04": "bd9d149bc52d84b154c5c42208ccba8fb05170bd3019259874ca0951a4130ff5",
+    "diverse-v3--WP05": "25876457c7d5dd0dfdcee6562a7ae9136c8f03fbd16914c8bfeee08ae7a0236b",
+    "diverse-v3--WP06": "78dd90c99829b17e272bf147dcb92bfb0c634e87940de3a21158ad55d4ff5f62",
+    "diverse-v3--WP07": "5220c430181f16c97b9e63c3108907d6e0003d196a2f5d3dd8acd1f25e66da64",
+    "diverse-v3--WP08": "dc796fd225718e79d996c4171d6d58d04f8f3e59d78748ec3622b7aa4d34a092",
+    "diverse-v3--WP09": "e7415229b6663a86dc34874d1890b04043e3e30ded6faddca73ff4889edbfb2e",
+    "diverse-v3--WP10": "19ee07917f534f8a45cd71fca9ee0a4d562a0b193b58a3b4b94711691bb44084",
+    "diverse-v3--OC01": "4306376ac9b7daaa096ad521a365f21f2b938292dd542cb61c0c9b8619a1874e",
+    "diverse-v3--OC02": "31d0535f0f633ae85ccdbb3062bc2958f2222ad75c479c1a606feb8cd3ab91b9",
+    "diverse-v3--OC03": "9afbcca0aab34665609c6c51b658a0a8c3f1c5ffb39e19151cf5bdabf7bfded8",
+    "diverse-v3--OC04": "3c3ed8a14700fca205b1b0ff68c108278fc08d347e84afd2b85a078442371c59",
+    "diverse-v3--OC05": "596abb6c096946eaf87c3e0b40c630941cc065323ef93cccc3bb2f857200c6b7",
+    "diverse-v3--OC06": "3b818a413e709511297abb03e4e93046d7cec36faefb531f814dfbf8c955cb0e",
+    "diverse-v3--OC07": "9a7fad48922a8a0f2c41f363dd0cccdff13df864650f6fdb76cac0601b3e7803",
+    "diverse-v3--OC08": "cec29a914f811feebde97891457b68135855afa73836478007ae1f9a48082137",
+    "diverse-v3--OC09": "f5a5125080b920389bfc96497edec1834ceba79fe1431e5035255d0285cc00f0",
+    "diverse-v3--OC10": "57c9f789d737dc91b88912eae17a600b835ec647de44c07f260f5220f1fd4ee6",
+    "diverse-v3--LT01": "751467a6345ac3251cda0d8ddcc70f5b6c06c26e2c8fb15984d191f0bb2a7da1",
+    "diverse-v3--LT02": "0385d569ff76bb6e338021f0345c1bbc14adf928bffa6b881768404e97945d41",
+    "diverse-v3--LT03": "14e881de3e812e5836a2e02471fde8cba1b95585137866decc7ee031935e1c9a",
+    "diverse-v3--LT04": "f67b66498f872d2290fdefb0c622a0df166c8d8e34190b7ec38d09ec6c04a56a",
+    "diverse-v3--LT05": "7c4e05668200e2d4a1b1a6dbb0552a4b0197736ada75ec64d85ef8a589ea006b",
+    "diverse-v3--LT06": "7dfdbbf8f2095b9a98a34c5f3d4f4f0ae579d50c3fd6755c860d8c5a98fa4b0e",
+    "diverse-v3--LT07": "b827c08293fb4dd285f94bff1e9483839cbf07567b324d91ca3b2fb7c6c2a7d3",
+    "diverse-v3--LT08": "550244c6b31dc228c921f81565bfbf4b5794b736df27bcc9e36d7723e0af5142",
+    "diverse-v3--LT09": "a7927d074ff4d73277983a535d573ccb1222e8589140ad42250a620b18b47d61",
+    "diverse-v3--LT10": "dfcec2352c02dad9e41ee5c3e0f90418f132c464fa8499465a83828732c55760",
+    "diverse-v3--SZ01": "6409efda3c44d6508b2acbaa4d12f2b4059f0376e03b024d15eceb949fa93aa6",
+    "diverse-v3--SZ02": "76a0b2dc4009157f6caeb864897d40025611980957a0db4bf11a55fd95e1466e",
+    "diverse-v3--SZ03": "8b7f757f07dc47d1140e57a34b85a303b8c3b8bf89df6ee381130669d2758cfd",
+    "diverse-v3--SZ04": "e7f35c851e93b7f73e2741595444aca370e7a596f974ab0bf3d5a8edae478197",
+    "diverse-v3--SZ05": "a5d7c89a9075fca62aee0c6c86c2b89a476d1846ca39b0a6daf6c95a7dc38bab",
+    "diverse-v3--SZ06": "ed63b08813d753e57ea375ef2caf12fe4811ffd6f3759d9287f7b15ae1f4e104",
+    "diverse-v3--SZ07": "1fe8283688caf2b557f5dab033384240bcc551ac7e076b988e1e326802cf6566",
+    "diverse-v3--SZ08": "90f97521b03177ae4f16e67b5ab9fffe43a0c9ce55477f2d70a9443a7789bd49",
+    "diverse-v3--SZ09": "2189336408b6680a429279cd69282ab548c272a9fb906054d51d6b013042a0f8",
+    "diverse-v3--SZ10": "8577df57e10db56493e1524024dc082804502279d0856497e2f5aff2235bcdc3",
+    "diverse-v3--LB01": "04eddbd8cc456652279f44300f4a7370703363b82a0821f161e2a28eff84e063",
+    "diverse-v3--LB02": "699fa3369dbf04ecb888cf60cfe597d5f52bd42212e12028df5ffa30ae4726ad",
+    "diverse-v3--LB03": "b2a5e3bde751218a4153b3c69776eae4530e28729c8bd7340bf7884483d5d167",
+    "diverse-v3--LB04": "cd2940a5ec95b1b6706cb8cd94b98233422b45dc002519264133d7db281e1040",
+    "diverse-v3--LB05": "46cec955f22a25aa095cdab9f1adf483897cebdc675989e20b47d89162920783",
+    "diverse-v3--LB06": "633f8a01002d1ef0094a8157e074775bb04590040264e4c88df79755cb3754d9",
+    "diverse-v3--LB07": "8d5f580f5b36791362c3901134805990b08ec2ec15fd40c2faff9642669b2402",
+    "diverse-v3--LB08": "53fda378b1a7fde0e23462fc258ab06c2606e2d2cd6e136883be679c1644c1ca",
+    "diverse-v3--LB09": "c74668a41cfe247f1427fe5f15bbbc1b1b448554a1a9f53c4cce00eca3d11094",
+    "diverse-v3--LB10": "0e1b7a16421084006ceadc2c53fb644374be433a4940e3fd785a0efeb5419d60",
+    "diverse-v3--CT01": "95c53d923a0f399085d23204f8b9b16d1cdceda5f04717fba864a455f7dfc1f5",
+    "diverse-v3--CT02": "5d842107a3ffd3178aad68a05348558e2aebd031b2a9cfe57754f09788dd4536",
+    "diverse-v3--CT03": "027f1060f71808fda52f1b43fa3d06d699f6b73b7e217eff4db34cef5952f426",
+    "diverse-v3--CT04": "c6a012fc4f291ca1aa9c6dc17b398d69166204ccdaac3177d7d0eb878bfa47fe",
+    "diverse-v3--CT05": "63d0f6754baf9a27f14bce75717930651231e4edbb3e95880933c1d51f603a91",
+    "diverse-v3--CT06": "87db985eb556703164183e742bc573929209f41255e1bac85e08783403fc18b6",
+    "diverse-v3--CT07": "2c83777171eb7ff0f08c895e800b3cc016b1dcbdac6f013356a01a61906c6e06",
+    "diverse-v3--CT08": "d04a99d18c38f04a99d980b87eef4e07c857174d2ee2dec32afb26e092983e81",
+    "diverse-v3--CT09": "59b6e5ec07cf4f953ab85aea8d90b8db7d79ef952636e3542fffc63e399c3e7e",
+    "diverse-v3--CT10": "bcf53b45bc674daa7d2232bdd1ffbc21462aa66921e9b7ceca22477a833a7cd2",
+    "diverse-v3--GP11": "d4e82f5d69cd844a7e3d67e0fdbfb1cc4428173e0623069d84f73281e8293b99",
+    "diverse-v3--SP01": "ce13aaf92c2d94d9f1bc536879523588d4be6c5144b91f0aa054f7eef3004f37"
+  }
+}

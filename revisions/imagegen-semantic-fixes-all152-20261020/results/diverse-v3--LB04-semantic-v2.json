@@ -1,0 +1,219 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:LB04",
+  "slug": "diverse-v3--LB04",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "semantic-v2",
+  "image_sha256": "af6930410e66dc3cca4278aab933c535242be6589060e1905940b9a3e074e208",
+  "selector_seconds": 0.31071354101004545,
+  "decision": {
+    "variant": "semantic-v2",
+    "implementation_revision": "2026-10-20-imagegen-selection-isolation-and-label-bounds",
+    "status": "selected",
+    "width": 1536,
+    "height": 1024,
+    "selected_id": "d1",
+    "reason": "unique_visible_hand_contact",
+    "candidates": [
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          942,
+          320,
+          1109,
+          914
+        ],
+        "reported_box": [
+          941.0,
+          319.0,
+          1106.0,
+          915.0
+        ],
+        "geometry_source": "neck_axis",
+        "score": 0.518935,
+        "signals": {
+          "prominence": 0.381413,
+          "aim_distance": 0.196516,
+          "hand_contact": 0.0,
+          "hand_contacts": {
+            "d4": 0.0,
+            "d5": 0.0,
+            "d6": 0.0
+          },
+          "isolation": 1.0,
+          "focus": 0.246576,
+          "foreground_axis": null,
+          "hand_wrap": {},
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": false,
+          "grip_evidence": {},
+          "pointing_evidence": [],
+          "held_context_support": 0.996899,
+          "wrapping_context_support": 0.0,
+          "panel_context": false,
+          "contains_photo_center": false,
+          "photo_center_distance_px": 278.084969
+        },
+        "label_ids": [
+          "d2"
+        ],
+        "label_boxes": [
+          [
+            944,
+            703,
+            1104,
+            896
+          ]
+        ],
+        "eligible_for_selection": true
+      },
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          267,
+          119,
+          538,
+          632
+        ],
+        "reported_box": [
+          266.0,
+          118.0,
+          536.0,
+          631.0
+        ],
+        "geometry_source": "visible_mask",
+        "score": 0.45998,
+        "signals": {
+          "prominence": 0.341374,
+          "aim_distance": 0.272749,
+          "hand_contact": 6.324745,
+          "hand_contacts": {
+            "d4": 0.0,
+            "d5": 0.0,
+            "d6": 6.324745
+          },
+          "isolation": 1.0,
+          "focus": 0.308348,
+          "foreground_axis": null,
+          "hand_wrap": {
+            "d6": false
+          },
+          "ambiguous_hand_contact": false,
+          "confirmed_hand_owner": true,
+          "grip_evidence": {
+            "d6": {
+              "front_wrap": false,
+              "front_fraction": 0.17341,
+              "front_body_fraction": 0.038936,
+              "terminal_opposition": false,
+              "extended_terminal_contact": false,
+              "side_body_contact": false,
+              "context_supported_body_contact": true,
+              "visible_carrier_contact": false,
+              "tapered_body": true,
+              "mid_body_contact_fraction": 0.77,
+              "slender_unlabelled_object": false,
+              "contact_span": 0.518067,
+              "localized_front_contact": false,
+              "local_front_fraction": 0.17341,
+              "broad_front_contact": false,
+              "confirmed": true
+            }
+          },
+          "pointing_evidence": [],
+          "held_context_support": 0.99288,
+          "wrapping_context_support": 0.0,
+          "panel_context": false,
+          "contains_photo_center": false,
+          "photo_center_distance_px": 390.15702
+        },
+        "label_ids": [
+          "d3"
+        ],
+        "label_boxes": [
+          [
+            355,
+            386,
+            522,
+            581
+          ]
+        ],
+        "eligible_for_selection": true
+      }
+    ],
+    "crop_box": [
+      256,
+      98,
+      549,
+      653
+    ],
+    "label_boxes": [
+      [
+        348,
+        378,
+        529,
+        589
+      ]
+    ],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "confident",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--LB04-semantic-v2.png",
+  "crop_sha256": "469b633cf61e8d09c318998f3658a373eff64704070392e9d4f3826af9dc43cd",
+  "keep_mask_path": "keep-masks/diverse-v3--LB04-semantic-v2.png",
+  "keep_mask_sha256": "d0184b7c900b56e8c679fa1370aa9f8ef5ee5ab667025083efb5ff1f9cf6e338",
+  "label_crop_paths": [
+    "label-crops/diverse-v3--LB04-semantic-v2-0.png"
+  ],
+  "assessment": {
+    "target": "d1",
+    "accepted_targets": [
+      "d1"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      293,
+      555
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d3",
+        "retention": 1.0,
+        "source_area_px": 18371,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d1",
+      "iou": 0.39883328657847983
+    },
+    "minimum_target_label_retention_proxy": 1.0
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}

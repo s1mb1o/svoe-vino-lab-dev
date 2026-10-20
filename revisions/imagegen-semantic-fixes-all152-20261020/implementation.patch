@@ -1,0 +1,1174 @@
+diff --git a/Volumes/Storage/svoe-vino-final/planning/selector-imagegen-fixes-20261020/baseline/matcher/semantic_selector.py b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_selector.py
+index 5d13ced..416c310 100644
+--- a/Volumes/Storage/svoe-vino-final/planning/selector-imagegen-fixes-20261020/baseline/matcher/semantic_selector.py
++++ b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_selector.py
+@@ -12,9 +12,15 @@ import math
+ from time import monotonic
+ 
+ import numpy as np
+-from PIL import Image, ImageDraw, ImageFilter
++from PIL import Image, ImageChops, ImageDraw, ImageFilter
+ 
+ from .semantic_intent import pointing_evidence, reject_display_panels
++from .semantic_context import (
++    CONTEXT_NOUNS,
++    contextual_packages,
++    substantial_bottle,
++    edge_label_context,
++)
+ 
+ from .group import (
+     DETECTION_THRESHOLD,
+@@ -28,7 +34,7 @@ from .group import (
+ 
+ 
+ VERSION = "semantic-v2"
+-IMPLEMENTATION_REVISION = "2026-10-20-pointing-display-panels-and-side-grips"
++IMPLEMENTATION_REVISION = "2026-10-20-imagegen-selection-isolation-and-label-bounds"
+ NOUNS = ("wine bottle", "wine label", "hand", "can", "packet", "box", "price tag")
+ RECOVERY_NOUNS = ("bottle",)
+ PACKAGE_LABELS = frozenset(("wine bottle", "bottle", "can", "packet", "box"))
+@@ -68,6 +74,7 @@ class Selection:
+     tap_status: str = "absent"
+     detection_recovery: str | None = None
+     detection_refinement: dict | None = None
++    detection_context: dict | None = None
+ 
+     def as_dict(self, *, media=True):
+         value = dict(
+@@ -92,6 +99,7 @@ class Selection:
+             tap_status=self.tap_status,
+             detection_recovery=self.detection_recovery,
+             detection_refinement=self.detection_refinement,
++            detection_context=self.detection_context,
+         )
+         if media:
+             value["crop"] = _data_url("image/png", self.crop) if self.crop else None
+@@ -154,7 +162,10 @@ def _read(image, instances):
+         if item.get("score", 0) < DETECTION_THRESHOLD or not item.get("mask_png_b64"):
+             continue
+         reported_box = item.get("primary_box", item["box"])
+-        item = _upright_bottle_geometry(image, _visible_bottle_geometry(image, item))
++        item = _complete_label_geometry(
++            image,
++            _upright_bottle_geometry(image, _visible_bottle_geometry(image, item)),
++        )
+         prepared = _instance_mask(image, item)
+         if prepared is None:
+             continue
+@@ -188,6 +199,38 @@ def _read(image, instances):
+     return detections
+ 
+ 
++def _complete_label_geometry(image, item):
++    """Keep a paper mask's bounded visible extent as well as its declared box.
++
++    Independent box/mask heads can disagree at a peeling edge or small secondary
++    label. Validate their intersection first. Do not amplify an unrelated remote
++    mask component into an arbitrarily large paper rectangle.
++    """
++    if item["label"] not in LABEL_LABELS | {"price tag"}:
++        return item
++    if _instance_mask(image, item) is None:
++        return item
++    with Image.open(
++        BytesIO(base64.b64decode(item["mask_png_b64"], validate=True))
++    ) as opened:
++        mask = opened.convert("L").point(lambda value: 255 if value >= 128 else 0)
++    bounds = mask.getbbox()
++    if bounds is None:
++        return item
++    a = item["box"]
++    union = (
++        max(0, min(a[0], bounds[0])),
++        max(0, min(a[1], bounds[1])),
++        min(image.width, max(a[2], bounds[2])),
++        min(image.height, max(a[3], bounds[3])),
++    )
++    if (union[2] - union[0]) > max(1, a[2] - a[0]) * 1.2 or (union[3] - union[1]) > max(
++        1, a[3] - a[1]
++    ) * 1.2:
++        return item
++    return dict(item, box=union, geometry_source="complete_paper_bounds")
++
++
+ def _visible_bottle_geometry(image, item):
+     """Reconcile small box/mask disagreement without fitting an amodal outline.
+ 
+@@ -293,9 +336,76 @@ def _deduplicate(items):
+     return kept
+ 
+ 
++def _convex_mask(grid):
++    """Fill enclosed paper/surface gaps without filling a rotated rectangle."""
++    im = Image.fromarray(grid.astype("uint8") * 255)
++    boundary = grid & ~(np.asarray(im.filter(ImageFilter.MinFilter(3))) > 0)
++    y, x = np.nonzero(boundary)
++    points = sorted(zip(x.tolist(), y.tolist()))
++
++    def cross(a, b, c):
++        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
++
++    chains = []
++    for ordered in (points, reversed(points)):
++        chain = []
++        for point in ordered:
++            while len(chain) >= 2 and cross(chain[-2], chain[-1], point) <= 0:
++                chain.pop()
++            chain.append(point)
++        chains.append(chain[:-1])
++    hull = chains[0] + chains[1]
++    if len(hull) >= 3:
++        ImageDraw.Draw(im).polygon(hull, fill=255)
++    return im
++
++
++def _paper_support(package):
++    """A narrow surface envelope fills label holes without filling a tilted box."""
++    if "paper_support" in package:
++        return package["paper_support"]
++    grid = package["grid"]
++    im = _convex_mask(grid)
++    y, x = np.nonzero(grid)
++    # A small exterior strip can be missing from the bottle mask itself.
++    radius = max(1, round(min(np.ptp(x) + 1, np.ptp(y) + 1) * 0.12)) if len(x) else 1
++    package["paper_support"] = (
++        np.asarray(im.filter(ImageFilter.MaxFilter(radius * 2 + 1))) > 0
++    )
++    return package["paper_support"]
++
++
+ def _associate(labels, packages):
+     orphans = []
+     for label in labels:
++
++        def rectangle_evidence(package):
++            visible = float(
++                (label["grid"] & package["grid"]).sum() / max(1, label["grid"].sum())
++            )
++            if label["label"] == "price tag" and visible < 0.2:
++                return False
++            # Tiny shelf paper in a tilted object's rectangle is not evidence
++            # of attachment. Enclosed mask holes can still own small paper.
++            if visible >= 0.1 or label["area"] >= package["area"] * 0.05:
++                return True
++            if "filled_paper_support" not in package:
++                package["filled_paper_support"] = (
++                    np.asarray(
++                        _fill_interior_holes(
++                            Image.fromarray(package["grid"].astype("uint8") * 255)
++                        )
++                    )
++                    > 0
++                )
++            return (
++                float(
++                    (label["grid"] & package["filled_paper_support"]).sum()
++                    / max(1, label["grid"].sum())
++                )
++                >= 0.65
++            )
++
+         owners = []
+         for package in packages:
+             share = np.logical_and(label["grid"], package["grid"]).sum() / max(
+@@ -304,6 +414,28 @@ def _associate(labels, packages):
+             if share >= MIN_OWNER_CONTAINMENT:
+                 owners.append((float(share), package))
+         owners.sort(key=lambda pair: (-pair[0], pair[1]["source_index"]))
++        if not owners:
++            # Partial visible ownership precedes rectangle recovery. Otherwise
++            # a foreground rectangle can steal a neighboring bottle's paper.
++            partial = [
++                (
++                    float(
++                        (label["grid"] & p["grid"]).sum() / max(1, label["grid"].sum())
++                    ),
++                    p,
++                )
++                for p in packages
++            ]
++            partial.sort(key=lambda pair: (-pair[0], pair[1]["source_index"]))
++            if (
++                partial
++                and partial[0][0] >= 0.2
++                and (
++                    len(partial) == 1
++                    or partial[0][0] - partial[1][0] >= MIN_OWNER_MARGIN
++                )
++            ):
++                owners = partial[:1]
+         if not owners:
+             # Missing white paper may be connected to the mask exterior. A
+             # unique enclosing package rectangle is conservative ownership
+@@ -316,6 +448,12 @@ def _associate(labels, packages):
+                 and p["box"][1] <= a[1]
+                 and p["box"][2] >= a[2]
+                 and p["box"][3] >= a[3]
++                and rectangle_evidence(p)
++                and float(
++                    (label["grid"] & _paper_support(p)).sum()
++                    / max(1, label["grid"].sum())
++                )
++                >= 0.65
+             ]
+             if len(enclosing) == 1:
+                 owners = [(1.0, enclosing[0])]
+@@ -339,6 +477,12 @@ def _associate(labels, packages):
+                 share = max(share, rectangle_share)
+                 if (
+                     share >= 0.20
++                    and rectangle_evidence(package)
++                    and float(
++                        (label["grid"] & _paper_support(package)).sum()
++                        / max(1, label["grid"].sum())
++                    )
++                    >= 0.20
+                     and label["area"] <= width * height * 0.5
+                     and max(a[2] - a[0], a[3] - a[1]) <= max(width, height) * 0.5
+                     and a[0] >= b[0] - min(width, height) * 1.25
+@@ -394,6 +538,11 @@ def _hand_contacts(package, hands):
+         # by each object's area and capping at 1 let tiny fragments tie a grip.
+         # This is unbounded geometric support, not an identity probability.
+         support[hand["id"]] = float(near / max(1, math.sqrt(hand["grid"].sum()) * 1.7))
++    if package.get("carrier"):
++        carrier_support = _hand_contacts(package["carrier"], hands)
++        support = {
++            key: max(value, carrier_support[key]) for key, value in support.items()
++        }
+     return support
+ 
+ 
+@@ -440,8 +589,13 @@ def _held_subject(pool, hands):
+     uncertain = False
+     unconfirmed_contact = False
+     side_grip_present = any(
+-        evidence.get("side_body_contact") and evidence.get("confirmed")
+-        for package in pool for evidence in package.get("grip_evidence", {}).values()
++        (
++            evidence.get("side_body_contact")
++            or evidence.get("context_supported_body_contact")
++        )
++        and evidence.get("confirmed")
++        for package in pool
++        for evidence in package.get("grip_evidence", {}).values()
+     )
+     for package in pool:
+         package["ambiguous_hand_contact"] = False
+@@ -449,7 +603,12 @@ def _held_subject(pool, hands):
+     for hand in hands:
+         a = hand["box"]
+         touching = [p for p in pool if p["hand_contacts"].get(hand["id"], 0) >= 0.25]
+-        touched = [p for p in touching if not side_grip_present or p.get("grip_evidence", {}).get(hand["id"], {}).get("confirmed", False)]
++        touched = [
++            p
++            for p in touching
++            if not side_grip_present
++            or p.get("grip_evidence", {}).get(hand["id"], {}).get("confirmed", False)
++        ]
+         for package in touching:
+             if not any(package is item for item in touched):
+                 package["ambiguous_hand_contact"] = True
+@@ -508,9 +667,16 @@ def _held_subject(pool, hands):
+                 package["ambiguous_hand_contact"] = True
+     if len(owners) == 1 and not uncertain:
+         return next(p for p in pool if p["id"] in owners), None
+-    return None, "multiple_hand_subjects" if len(
+-        owners
+-    ) > 1 else "hand_contact_has_no_unique_owner" if uncertain else "hand_contact_not_confirmed" if unconfirmed_contact else None
++    return (
++        None,
++        "multiple_hand_subjects"
++        if len(owners) > 1
++        else "hand_contact_has_no_unique_owner"
++        if uncertain
++        else "hand_contact_not_confirmed"
++        if unconfirmed_contact
++        else None,
++    )
+ 
+ 
+ def _silhouette_frame(item, size):
+@@ -597,18 +763,24 @@ def _grip_evidence(package, hand, size):
+         body_along, touch_along = frame["points"] @ axis, points @ axis
+         span = float(np.ptp(body_along))
+         across = frame["points"] @ np.array([-axis[1], axis[0]])
+-        neck = across[body_along <= body_along.min() + span * .15]
+-        other_end = across[body_along >= body_along.max() - span * .15]
+-        body_band = across[(body_along >= body_along.min() + span * .50) &
+-                           (body_along <= body_along.min() + span * .85)]
++        neck = across[body_along <= body_along.min() + span * 0.15]
++        other_end = across[body_along >= body_along.max() - span * 0.15]
++        body_band = across[
++            (body_along >= body_along.min() + span * 0.50)
++            & (body_along <= body_along.min() + span * 0.85)
++        ]
+         if len(neck) >= 3 and len(other_end) >= 3 and len(body_band) >= 3:
+             # Visible wrapping can reverse the estimated axis under camera roll;
+             # either narrow end is sufficient for a bottle-like profile.
+-            tapered_body = bool(min(np.ptp(neck), np.ptp(other_end)) <= np.ptp(body_band) * .75)
++            tapered_body = bool(
++                min(np.ptp(neck), np.ptp(other_end)) <= np.ptp(body_band) * 0.75
++            )
+         contact_span = float(np.ptp(touch_along) / span) if span > 0 else None
+         if span > 0:
+             normalized = (touch_along - body_along.min()) / span
+-            mid_body_contact_fraction = float(((normalized >= .20) & (normalized <= .80)).mean())
++            mid_body_contact_fraction = float(
++                ((normalized >= 0.20) & (normalized <= 0.80)).mean()
++            )
+         terminal_opposition = bool(
+             span > 0
+             and (
+@@ -621,12 +793,33 @@ def _grip_evidence(package, hand, size):
+     # An extended arm can make front/hand area small even for a genuine body
+     # grip. Localized front contact supplies a separate positive cue; a long
+     # forearm crossing the bottle does not satisfy this route.
++    local_front_fraction = front_fraction
++    if frame is not None:
++        gy, gx = np.nonzero(skin)
++        hand_points = np.column_stack(
++            ((gx + 0.5) * size[0] / skin.shape[1], (gy + 0.5) * size[1] / skin.shape[0])
++        )
++        axis = frame["axis"]
++        across_axis = np.array([-axis[1], axis[0]])
++        body_along = frame["points"] @ axis
++        body_across = frame["points"] @ across_axis
++        local_along, local_across = hand_points @ axis, hand_points @ across_axis
++        reach = max(1.0, float(np.ptp(body_across))) * 0.5
++        local = (
++            (local_along >= body_along.min())
++            & (local_along <= body_along.max())
++            & (local_across >= body_across.min() - reach)
++            & (local_across <= body_across.max() + reach)
++        )
++        local_front_fraction = front_pixels / max(1, int(local.sum()))
+     localized_front_contact = bool(
+         front_pixels >= 2
+-        and front_fraction >= 0.12
++        and local_front_fraction >= 0.12
+         and front_body_fraction <= 0.10
+         and contact_span is not None
+         and 0.10 <= contact_span <= 0.50
++        and (contact_span >= 0.20 or front_fraction >= 0.08)
++        and mid_body_contact_fraction >= 0.35
+     )
+     broad_front_contact = bool(
+         front_pixels >= 2
+@@ -650,12 +843,21 @@ def _grip_evidence(package, hand, size):
+         and tapered_body
+         # A tiny or subordinate fragment cannot establish a side grip without
+         # the existing positive front-wrap/opposed-finger evidence.
+-        and body.mean() >= .04
+-        and package.get("relative_area", 1.0) >= .75
++        and body.mean() >= 0.04
++        and package.get("relative_area", 1.0) >= 0.75
+         and contact_span is not None
+-        and contact_span >= .50
+-        and mid_body_contact_fraction >= .35
+-        and front_body_fraction <= .10
++        and contact_span >= 0.50
++        and mid_body_contact_fraction >= 0.35
++        and front_body_fraction <= 0.10
++    )
++    context_supported_body_contact = bool(
++        package["label"] in ("wine bottle", "bottle")
++        and package.get("held_context_support", 0) >= 0.5
++        and (tapered_body or package.get("wrapping_context_support", 0) >= 0.6)
++        and body.sum() >= skin.sum() * 0.15
++        and contact_span is not None
++        and contact_span >= 0.30
++        and mid_body_contact_fraction >= 0.50
+     )
+     slender_unlabelled_object = False
+     if frame is not None and package["label"] in ("wine bottle", "bottle"):
+@@ -666,6 +868,10 @@ def _grip_evidence(package, hand, size):
+             np.ptp(points @ axis) > max(1, width) * 8
+             and not any(label["label"] in LABEL_LABELS for label in package["labels"])
+         )
++    carrier_contact = bool(
++        package.get("carrier")
++        and _grip_evidence(package["carrier"], hand, size)["confirmed"]
++    )
+     return dict(
+         front_wrap=wrapped,
+         front_fraction=round(front_fraction, 6),
+@@ -673,20 +879,26 @@ def _grip_evidence(package, hand, size):
+         terminal_opposition=terminal_opposition,
+         extended_terminal_contact=extended_terminal_contact,
+         side_body_contact=side_body_contact,
++        context_supported_body_contact=context_supported_body_contact,
++        visible_carrier_contact=carrier_contact,
+         tapered_body=tapered_body,
+         mid_body_contact_fraction=round(mid_body_contact_fraction, 6),
+         slender_unlabelled_object=slender_unlabelled_object,
+         contact_span=round(contact_span, 6) if contact_span is not None else None,
+         localized_front_contact=localized_front_contact,
++        local_front_fraction=round(local_front_fraction, 6),
+         broad_front_contact=broad_front_contact,
+         confirmed=bool(
+             not slender_unlabelled_object
++            and (body.sum() >= skin.sum() * 0.10 or carrier_contact)
+             and (
+                 wrapped
+                 or broad_front_contact
+                 or extended_terminal_contact
+                 or localized_front_contact
+                 or side_body_contact
++                or context_supported_body_contact
++                or carrier_contact
+             )
+         ),
+     )
+@@ -955,14 +1167,56 @@ def _pad(box, size):
+     )
+ 
+ 
+-def _crops(image, selected, result):
++def _paper_mask(image, label):
++    """Unclipped observed label pixels; ranking geometry stays separately bounded."""
++    with Image.open(
++        BytesIO(base64.b64decode(label["instance"]["mask_png_b64"], validate=True))
++    ) as opened:
++        mask = opened.convert("L").point(lambda value: 255 if value >= 128 else 0)
++    if mask.size != image.size:
++        raise GroupMatchError(502, "SAM3 mask dimensions are invalid")
++    return mask
++
++
++def _label_surface(image, label):
++    """Protect complete paper, excluding corners outside a dense tilted mask.
++
++    An artwork-only mask cannot delimit paper, so its entire declared rectangle
++    remains protected. Every observed mask pixel is protected separately too.
++    """
++    box = label["box"]
++    core = _paper_mask(image, label).crop(box)
++    grid = np.asarray(core) > 0
++    if grid.mean() >= 0.50:
++        surface = _convex_mask(grid)
++    else:
++        surface = Image.new("L", core.size, 255)
++    full = Image.new("L", image.size)
++    full.paste(surface, box[:2])
++    return full
++
++
++def _crops(image, selected, result, competitors=()):
+     labels = selected["labels"]
+-    if selected["label"] in LABEL_LABELS:
++    fragment = (
++        not labels
++        and min(
++            selected["box"][2] - selected["box"][0],
++            selected["box"][3] - selected["box"][1],
++        )
++        < 32
++        and selected["area"] < image.width * image.height * 0.002
++    )
++    if (
++        selected["label"] in LABEL_LABELS
++        or edge_label_context(selected, image.size)
++        or fragment
++    ):
+         # A lone label prediction could itself be a misclassified logo. Without a
+         # trustworthy enclosing bottle, the original frame is the safe context.
+         keep = Image.new("L", image.size, 255)
+         box = (0, 0, image.width, image.height)
+-        labels = [selected]
++        labels = [selected] if selected["label"] in LABEL_LABELS else labels
+         result.crop_scope = "context_frame"
+     else:
+         prepared_box, mask = _instance_mask(image, selected["instance"])
+@@ -987,12 +1241,46 @@ def _crops(image, selected, result):
+             # Preserve blank paper, text and artwork even when the label mask has
+             # holes or has collapsed to artwork inside its detector box.
+             keep.paste(255, _pad(label["box"], image.size))
++            paper = _paper_mask(image, label)
++            keep = ImageChops.lighter(keep, paper)
++            visible = paper.getbbox() or label["box"]
+             box = (
+-                min(box[0], label["box"][0]),
+-                min(box[1], label["box"][1]),
+-                max(box[2], label["box"][2]),
+-                max(box[3], label["box"][3]),
++                min(box[0], label["box"][0], visible[0]),
++                min(box[1], label["box"][1], visible[1]),
++                max(box[2], label["box"][2], visible[2]),
++                max(box[3], label["box"][3], visible[3]),
+             )
++        # Retain the subject rectangle for missing paper, but remove positively
++        # detected neighboring bottles outside the selected silhouette/paper.
++        # Own visible pixels and complete label rectangles always win overlap.
++        if selected["label"] in ("wine bottle", "bottle"):
++            protected = _full_mask(image.size, (prepared_box, mask))
++            for label in labels:
++                protected = ImageChops.lighter(protected, _label_surface(image, label))
++                protected = ImageChops.lighter(protected, _paper_mask(image, label))
++            guard = np.asarray(protected) > 0
++            foreign = np.zeros(guard.shape, dtype=bool)
++            for other in competitors:
++                if (
++                    other is selected
++                    or other["id"] == selected["id"]
++                    or other["label"] not in ("wine bottle", "bottle")
++                ):
++                    continue
++                prepared = _instance_mask(image, other["instance"])
++                if prepared is not None:
++                    with Image.open(
++                        BytesIO(
++                            base64.b64decode(
++                                other["instance"]["mask_png_b64"], validate=True
++                            )
++                        )
++                    ) as opened:
++                        foreign |= np.asarray(opened.convert("L")) >= 128
++            if foreign.any():
++                keep = Image.fromarray(
++                    np.where(foreign & ~guard, 0, np.asarray(keep)).astype("uint8")
++                )
+     box = _pad(box, image.size)
+     result.crop_box = box
+     result.keep_mask = keep
+@@ -1011,6 +1299,14 @@ def _crops(image, selected, result):
+             label_box = (0, 0, image.width, image.height)
+         elif label_area < 0.05 * bottle_area:
+             label_box = _pad(bottle_box, image.size)
++        visible = _paper_mask(image, label).getbbox()
++        if visible is not None:
++            label_box = (
++                min(label_box[0], visible[0]),
++                min(label_box[1], visible[1]),
++                max(label_box[2], visible[2]),
++                max(label_box[3], visible[3]),
++            )
+         result.label_boxes.append(label_box)
+         result.label_crops.append(_png(image.crop(label_box)))
+ 
+@@ -1029,6 +1325,10 @@ def select(image, instances, *, tap=None, aim=None):
+     labels = _deduplicate([x for x in detections if x["label"] in LABEL_LABELS])
+     hands = [x for x in detections if x["label"] == "hand"]
+     price_tags = [x for x in detections if x["label"] == "price tag"]
++    contexts = [x for x in detections if x["label"] in CONTEXT_NOUNS]
++    packages, labels = contextual_packages(
++        packages, labels, contexts, hands, result.rejected
++    )
+     packages, labels = reject_display_panels(packages, labels, hands, result.rejected)
+     # Bottle pictures embedded in a detected carton are not independent physical
+     # targets. Keep the carton as the package; never let its artwork beat it.
+@@ -1066,6 +1366,20 @@ def select(image, instances, *, tap=None, aim=None):
+     # real label. Suppress nested graphics only within the same inferred owner.
+     for package in packages:
+         package["labels"] = _complete_labels(package["labels"])
++    if (
++        tap is None
++        and not hands
++        and not labels
++        and not any(d["label"] in ("wine bottle", "bottle") for d in detections)
++        and packages
++        and all(p["label"] in ("box", "packet") for p in packages)
++    ):
++        # A generic opaque bag/box alone supplies no visible wine evidence.
++        result.rejected.extend(
++            dict(id=p["id"], reason="generic_package_without_visible_wine")
++            for p in packages
++        )
++        packages = []
+     candidates = list(packages)
+     pending_paper = any(label.get("panel_context") for label in labels)
+     dominant_orphan_paper = False
+@@ -1197,14 +1511,47 @@ def select(image, instances, *, tap=None, aim=None):
+                 for hand in hands
+                 if package["hand_contacts"].get(hand["id"], 0) >= 0.25
+             }
++        pointed = [
++            evidence
++            for hand in hands
++            for evidence in pointing_evidence(hand, pool, image.size)
++        ]
++        pointing_hands = {evidence["hand_id"] for evidence in pointed}
++        # One extended pointing finger can cross another bottle's silhouette.
++        # That same hand must not simultaneously manufacture a front-wrap grip.
+         held, hand_ambiguity = _held_subject(pool, hands)
++        pointed_owners = {evidence["candidate_id"] for evidence in pointed}
++        if (
++            pointing_hands
++            and len(pointed_owners) == 1
++            and (held is None or held["id"] not in pointed_owners)
++            and (
++                held is None
++                or not any(
++                    e.get("confirmed")
++                    and (
++                        e.get("broad_front_contact")
++                        or e.get("side_body_contact")
++                        or e.get("extended_terminal_contact")
++                        or e.get("terminal_opposition")
++                        or e.get("visible_carrier_contact")
++                    )
++                    for e in held["grip_evidence"].values()
++                )
++            )
++            and hand_ambiguity != "multiple_hand_subjects"
++        ):
++            held, hand_ambiguity = _held_subject(
++                pool, [h for h in hands if h["id"] not in pointing_hands]
++            )
+         intent_reason = "unique_visible_hand_contact"
+-        if held is not None and not any(value["confirmed"] for value in held["grip_evidence"].values()):
++        if held is not None and not any(
++            value["confirmed"] for value in held["grip_evidence"].values()
++        ):
+             held["ambiguous_hand_contact"] = True
+             held = None
+             unresolved = hand_ambiguity = "hand_contact_not_confirmed"
+         if held is None and hand_ambiguity != "multiple_hand_subjects":
+-            pointed = [evidence for hand in hands for evidence in pointing_evidence(hand, pool, image.size)]
+             owners = {evidence["candidate_id"] for evidence in pointed}
+             if len(owners) == 1:
+                 held = next(package for package in pool if package["id"] in owners)
+@@ -1258,6 +1605,21 @@ def select(image, instances, *, tap=None, aim=None):
+                 for hand in hands
+                 if p["hand_contacts"].get(hand["id"], 0) >= 0.25
+             )
++            isolated_bottle = substantial_bottle(bottles, image.size)
++            if (
++                selected is None
++                and isolated_bottle is not None
++                and not other_grips
++                and not any(p.get("confirmed_hand_owner", False) for p in pool)
++                and not pending_paper
++                and not conflict
++                and hand_ambiguity
++                not in ("multiple_hand_subjects", "hand_contact_has_no_unique_owner")
++            ):
++                selected, result.reason = (
++                    isolated_bottle,
++                    "single_substantial_bottle_in_scene_context",
++                )
+             if (
+                 selected is None
+                 and _edge_closeup(largest, peers, image.size)
+@@ -1319,6 +1681,8 @@ def select(image, instances, *, tap=None, aim=None):
+                 confirmed_hand_owner=x.get("confirmed_hand_owner", False),
+                 grip_evidence=x.get("grip_evidence", {}),
+                 pointing_evidence=x.get("pointing_evidence", []),
++                held_context_support=round(x.get("held_context_support", 0), 6),
++                wrapping_context_support=round(x.get("wrapping_context_support", 0), 6),
+                 panel_context=x.get("panel_context", False),
+                 contains_photo_center=x["contains_photo_center"],
+                 photo_center_distance_px=round(x["photo_center_distance_px"], 6),
+@@ -1335,7 +1699,14 @@ def select(image, instances, *, tap=None, aim=None):
+         selected, result.reason = _fallback(pool, image.size)
+     result.status = "selected"
+     result.selected_id = selected["id"]
+-    _crops(image, selected, result)
++    crop_competitors = [
++        dict(id="d%d" % i, label=item["label"], instance=item)
++        for i, item in enumerate(instances)
++        if item.get("score", 0) >= DETECTION_THRESHOLD
++        and item.get("mask_png_b64")
++        and item["label"] in ("wine bottle", "bottle")
++    ]
++    _crops(image, selected, result, crop_competitors)
+     # A hand or explicit interaction may establish the subject's identity while
+     # its bottle mask covers only a neck. Unowned complete paper must survive
+     # those paths too, not just geometric fallback.
+@@ -1365,6 +1736,7 @@ def select_photo(
+     image, jpeg = _normalize_image(image_bytes)
+     recovery = None
+     refinement = None
++    context = None
+     live_inference = instances is None
+     if instances is None:
+         deadline = monotonic() + timeout
+@@ -1397,6 +1769,29 @@ def select_photo(
+     if live_inference and variant == VERSION:
+         from .selector_detection import enhance, request_optional, small_scene
+ 
++        primary = _read(image, instances)
++        if len([p for p in primary if p["label"] in PACKAGE_LABELS]) > 1:
++            remaining = deadline - monotonic()
++            context = {"status": "budget_exhausted", "nouns": list(CONTEXT_NOUNS)}
++            if remaining > 0:
++                try:
++                    additional = _request_sam3(
++                        jpeg,
++                        *image.size,
++                        endpoint,
++                        min(remaining, 30),
++                        opener=opener,
++                        nouns=CONTEXT_NOUNS,
++                    )
++                    # The transport validates these classes. Keep the boundary
++                    # explicit for injected transports and recorded adapters too.
++                    additional = [
++                        item for item in additional if item["label"] in CONTEXT_NOUNS
++                    ]
++                    instances = [*instances, *additional]
++                    context.update(status="received", instances=len(additional))
++                except GroupMatchError:
++                    context["status"] = "unavailable"
+         initial = select(image, instances, tap=tap, aim=aim)
+         if small_scene(image, initial):
+             instances, refinement = enhance(
+@@ -1411,6 +1806,7 @@ def select_photo(
+     result = select_variant(image, instances, tap=tap, aim=aim, variant=variant)
+     result.detection_recovery = recovery
+     result.detection_refinement = refinement
++    result.detection_context = context
+     return result
+ 
+ 
+diff --git a/Volumes/Storage/svoe-vino-final/planning/selector-imagegen-fixes-20261020/baseline/matcher/semantic_intent.py b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_intent.py
+index 42f430e..6bc7c31 100644
+--- a/Volumes/Storage/svoe-vino-final/planning/selector-imagegen-fixes-20261020/baseline/matcher/semantic_intent.py
++++ b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_intent.py
+@@ -27,7 +27,7 @@ def _components(mask):
+             yield np.asarray(points, dtype=float)
+ 
+ 
+-def pointing_evidence(hand, candidates, size):
++def _pointing_at_scale(hand, candidates, size, kernel):
+     """Find a narrow finger extending beyond the broad palm toward one bottle.
+ 
+     A hand rectangle, mere adjacency, or the principal axis of a forearm is not
+@@ -35,15 +35,20 @@ def pointing_evidence(hand, candidates, size):
+     a coherent elongated residual with a distal endpoint away from the palm
+     can cast a short ray toward a visible candidate mask.
+     """
+-    skin = hand['grid']
++    skin = hand["grid"]
+     y, x = np.nonzero(skin)
+     if len(x) < 24:
+         return []
+-    short = min(int(np.ptp(x)) + 1, int(np.ptp(y)) + 1)
+-    kernel = max(5, min(19, int(round(short * .22)) | 1))
+-    image = Image.fromarray(skin.astype('uint8') * 255)
+-    palm = np.asarray(image.filter(ImageFilter.MinFilter(kernel)).filter(ImageFilter.MaxFilter(kernel))) > 0
+-    if palm.sum() < skin.sum() * .35:
++    image = Image.fromarray(skin.astype("uint8") * 255)
++    palm = (
++        np.asarray(
++            image.filter(ImageFilter.MinFilter(kernel)).filter(
++                ImageFilter.MaxFilter(kernel)
++            )
++        )
++        > 0
++    )
++    if palm.sum() < skin.sum() * 0.35:
+         return []
+     py, px = np.nonzero(palm)
+     center = np.array([float(px.mean()), float(py.mean())])
+@@ -61,8 +66,10 @@ def pointing_evidence(hand, candidates, size):
+         across = float(np.ptp(points @ np.array([-axis[1], axis[0]])))
+         if length < kernel * 1.2 or length < max(2.5, across * 2.5):
+             continue
+-        ends = [points[along <= along.min() + 1].mean(axis=0),
+-                points[along >= along.max() - 1].mean(axis=0)]
++        ends = [
++            points[along <= along.min() + 1].mean(axis=0),
++            points[along >= along.max() - 1].mean(axis=0),
++        ]
+         tip = max(ends, key=lambda p: float(np.linalg.norm(p - center)))
+         base = min(ends, key=lambda p: float(np.linalg.norm(p - center)))
+         if min(tip[0], tip[1], width - 1 - tip[0], height - 1 - tip[1]) < 2:
+@@ -74,34 +81,77 @@ def pointing_evidence(hand, candidates, size):
+         direction /= norm
+         # The distal extension must continue outward rather than run around a palm edge.
+         radial = (tip - center) * scale
+-        if float(np.dot(radial, direction)) < float(np.linalg.norm(radial)) * .70:
++        if float(np.dot(radial, direction)) < float(np.linalg.norm(radial)) * 0.70:
+             continue
+         hits = []
+         for candidate in candidates:
+-            if candidate['label'] not in ('wine bottle', 'bottle'):
++            if candidate["label"] not in ("wine bottle", "bottle"):
++                continue
++            # A finger can align with a tiny shelf fragment behind the gesture.
++            # Such a region does not resolve the gesture at the hand's scale.
++            if candidate["grid"].sum() < skin.sum() * 0.10:
+                 continue
+-            cy, cx = np.nonzero(candidate['grid'])
++            cy, cx = np.nonzero(candidate["grid"])
+             pixels = (np.column_stack((cx, cy)) - tip) * scale
+             forward = pixels @ direction
+             lateral = np.abs(pixels @ np.array([-direction[1], direction[0]]))
+-            corridor = max(2 * max(scale), across * max(scale) * .65)
+-            reach = max(size) * .18
+-            valid = (forward >= -kernel * max(scale) * .4) & (forward <= reach) & (lateral <= corridor)
++            corridor = max(2 * max(scale), across * max(scale) * 0.65)
++            reach = max(size) * 0.18
++            # A bottle crossed by the finger is behind its distal endpoint,
++            # not the subject of the outward ray.
++            valid = (forward >= 0) & (forward <= reach) & (lateral <= corridor)
+             if valid.any():
+                 distance = max(0.0, float(forward[valid].min()))
+-                hits.append((distance, candidate['source_index'], candidate))
++                hits.append((distance, candidate["source_index"], candidate))
+         if not hits:
+             continue
+         hits.sort(key=lambda item: item[:2])
++        # A hand projected along a neck/base is not a side-directed index cue.
++        # A detached ray can still point toward an end from a visible gap.
++        chosen = hits[0][2]
++        by, bx = np.nonzero(chosen["grid"])
++        body_points = np.column_stack((bx, by)) * scale
++        centered_body = body_points - body_points.mean(axis=0)
++        _, body_vectors = np.linalg.eigh(centered_body.T @ centered_body)
++        if (
++            hits[0][0] <= max(scale) * 2
++            and abs(float(body_vectors[:, -1] @ direction)) > 0.85
++        ):
++            continue
+         if len(hits) > 1 and hits[1][0] - hits[0][0] < max(scale) * 3:
+             continue
+-        findings.append({'candidate_id': hits[0][2]['id'], 'hand_id': hand['id'],
+-                         'finger_tip': ((tip + .5) * scale).tolist(),
+-                         'direction': direction.tolist(), 'distance_px': round(hits[0][0], 3),
+-                         'extension_length_px': round(norm, 3)})
++        findings.append(
++            {
++                "candidate_id": hits[0][2]["id"],
++                "hand_id": hand["id"],
++                "finger_tip": ((tip + 0.5) * scale).tolist(),
++                "direction": direction.tolist(),
++                "distance_px": round(hits[0][0], 3),
++                "extension_length_px": round(norm, 3),
++            }
++        )
+     return findings
+ 
+ 
++def pointing_evidence(hand, candidates, size):
++    """Use several palm widths, retaining the first unambiguous visible finger.
++
++    Finger thickness varies with perspective. The broad palm must survive each
++    opening; an edge-touching arm endpoint still cannot become a fingertip.
++    """
++    y, x = np.nonzero(hand["grid"])
++    if len(x) < 24:
++        return []
++    short = min(int(np.ptp(x)) + 1, int(np.ptp(y)) + 1)
++    base = max(5, min(19, int(round(short * 0.22)) | 1))
++    kernels = sorted({base, min(31, (round(base * 1.5) | 1)), min(39, (base * 2 + 1))})
++    for kernel in kernels:
++        found = _pointing_at_scale(hand, candidates, size, kernel)
++        if found:
++            return found
++    return []
++
++
+ def reject_display_panels(packages, labels, hands, rejected):
+     """Prefer an independent bottle over an unattended panel and its bottle art.
+ 
+@@ -112,38 +162,59 @@ def reject_display_panels(packages, labels, hands, rejected):
+     """
+     excluded = set()
+     excluded_paper = set()
+-    bottles = [p for p in packages if p['label'] in ('wine bottle', 'bottle')]
++    bottles = [p for p in packages if p["label"] in ("wine bottle", "bottle")]
+     for panel in packages:
+-        if panel['label'] not in ('box', 'packet'):
++        if panel["label"] not in ("box", "packet"):
+             continue
+-        x1, y1, x2, y2 = panel['box']
+-        width, height = x2-x1, y2-y1
+-        if not .65 <= width / max(1, height) <= 2.5:
++        x1, y1, x2, y2 = panel["box"]
++        width, height = x2 - x1, y2 - y1
++        if not 0.28 <= width / max(1, height) <= 2.5:
+             continue
+         # Strong hand proximity makes unattended-display interpretation unsafe.
+-        if any((panel['grid'] & hand['grid']).sum() / max(1, hand['grid'].sum()) >= .05 for hand in hands):
++        if any(
++            (panel["grid"] & hand["grid"]).sum() / max(1, hand["grid"].sum()) >= 0.05
++            for hand in hands
++        ):
+             continue
+         nested = []
+         outside = []
+         for bottle in bottles:
+-            overlap = float((bottle['grid'] & panel['grid']).sum()) / max(1, bottle['grid'].sum())
+-            a, b, c, d = bottle['box']
+-            bbox_share = max(0, min(c, x2)-max(a, x1)) * max(0, min(d, y2)-max(b, y1)) / max(1, (c-a)*(d-b))
+-            if overlap >= .50 and bbox_share >= .95 and bottle['area'] <= panel['area'] * .80:
++            overlap = float((bottle["grid"] & panel["grid"]).sum()) / max(
++                1, bottle["grid"].sum()
++            )
++            a, b, c, d = bottle["box"]
++            bbox_share = (
++                max(0, min(c, x2) - max(a, x1))
++                * max(0, min(d, y2) - max(b, y1))
++                / max(1, (c - a) * (d - b))
++            )
++            if (
++                overlap >= 0.50
++                and bbox_share >= 0.95
++                and bottle["area"] <= panel["area"] * 0.80
++            ):
+                 nested.append(bottle)
+-            elif overlap <= .05 and bottle['area'] >= panel['area'] * .10:
++            elif overlap <= 0.05 and bottle["area"] >= panel["area"] * 0.10:
+                 outside.append(bottle)
+         if not nested or not outside:
+             continue
+-        excluded.add(panel['id'])
+-        rejected.append({'id': panel['id'], 'reason': 'display_panel_beside_physical_bottle'})
++        excluded.add(panel["id"])
++        rejected.append(
++            {"id": panel["id"], "reason": "display_panel_beside_physical_bottle"}
++        )
+         for bottle in nested:
+-            excluded.add(bottle['id'])
+-            rejected.append({'id': bottle['id'], 'reason': 'bottle_depiction_in_display_panel'})
++            excluded.add(bottle["id"])
++            rejected.append(
++                {"id": bottle["id"], "reason": "bottle_depiction_in_display_panel"}
++            )
+         for label in labels:
+-            share = (label['grid'] & panel['grid']).sum() / max(1, label['grid'].sum())
+-            if share >= .50:
+-                excluded_paper.add(label['id'])
+-                rejected.append({'id': label['id'], 'reason': 'artwork_label_in_display_panel'})
+-    return ([p for p in packages if p['id'] not in excluded],
+-            [p for p in labels if p['id'] not in excluded_paper])
++            share = (label["grid"] & panel["grid"]).sum() / max(1, label["grid"].sum())
++            if share >= 0.50:
++                excluded_paper.add(label["id"])
++                rejected.append(
++                    {"id": label["id"], "reason": "artwork_label_in_display_panel"}
++                )
++    return (
++        [p for p in packages if p["id"] not in excluded],
++        [p for p in labels if p["id"] not in excluded_paper],
++    )
+diff --git a/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_context.py b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_context.py
+new file mode 100644
+index 0000000..5d26609
+--- /dev/null
++++ b/Volumes/Storage/svoe-vino-final/code/svoe-vino-lab-main-selector/matcher/semantic_context.py
+@@ -0,0 +1,222 @@
++"""Image-only context masks; no targets, identities or crop scores are consumed."""
++
++import numpy as np
++from PIL import Image, ImageDraw, ImageFilter
++
++CONTEXT_NOUNS = (
++    "poster",
++    "screen",
++    "mirror",
++    "bottle held in hand",
++    "transparent wrapping",
++    "empty gift bag",
++)
++
++
++def _share(first, second):
++    return float((first & second).sum()) / max(1, int(first.sum()))
++
++
++def _iou(first, second):
++    return float((first & second).sum()) / max(1, int((first | second).sum()))
++
++
++def _rectangle_share(first, second):
++    a, b, c, d = first
++    x, y, X, Y = second
++    return (
++        max(0, min(c, X) - max(a, x))
++        * max(0, min(d, Y) - max(b, y))
++        / max(1, (c - a) * (d - b))
++    )
++
++
++def _frame_interior(grid):
++    """Include display contents omitted as holes by a visible-frame mask."""
++    im = Image.fromarray(grid.astype("uint8") * 255)
++    padded = Image.new("L", (im.width + 2, im.height + 2))
++    padded.paste(im, (1, 1))
++    ImageDraw.floodfill(padded, (0, 0), 128)
++    return grid | (np.asarray(padded)[1:-1, 1:-1] == 0)
++
++
++def contextual_packages(packages, labels, contexts, hands, rejected):
++    """Separate display imagery and transparent wrapper aliases from bottles.
++
++    A framed display can have a hole where its depicted bottle was segmented.
++    Enclosed depictions require an independent physical bottle outside the
++    frame and no visible hand contact with the enclosed object.
++    Held-bottle text detections only supply supporting evidence: they never
++    establish a grip without independently measured hand/body contact.
++    """
++    excluded = set()
++    paper_excluded = set()
++    for package in packages:
++        package["held_context_support"] = max(
++            (
++                _iou(package["grid"], c["grid"])
++                for c in contexts
++                if c["label"] == "bottle held in hand" and c["confidence"] >= 0.6
++            ),
++            default=0.0,
++        )
++        package["wrapping_context_support"] = max(
++            (
++                _share(package["grid"], c["grid"])
++                for c in contexts
++                if c["label"] == "transparent wrapping" and c["confidence"] >= 0.65
++            ),
++            default=0.0,
++        )
++    for context in contexts:
++        if (
++            context["label"] not in ("poster", "screen", "mirror")
++            or context["confidence"] < 0.6
++        ):
++            continue
++        if context["grid"].mean() < 0.015:
++            continue
++        inside = _frame_interior(context["grid"])
++        removed = []
++        for package in packages:
++            touching = any(
++                _share(
++                    package["grid"],
++                    np.asarray(
++                        Image.fromarray(h["grid"].astype("uint8") * 255).filter(
++                            ImageFilter.MaxFilter(5)
++                        )
++                    )
++                    > 0,
++                )
++                >= 0.01
++                for h in hands
++            )
++            outside = any(
++                p is not package
++                and p["label"] in ("wine bottle", "bottle")
++                and p["area"] >= package["area"] * 0.1
++                and _rectangle_share(p["box"], context["box"]) < 0.1
++                for p in packages
++            )
++            enclosed = (
++                outside
++                and not touching
++                and (
++                    _rectangle_share(package["box"], context["box"]) >= 0.95
++                    or _share(package["grid"], inside) >= 0.95
++                )
++                and package["area"] < context["area"] * 0.85
++            )
++            if (
++                _share(package["grid"], context["grid"]) >= 0.85 and not touching
++            ) or enclosed:
++                excluded.add(package["id"])
++                removed.append(package)
++                rejected.append(
++                    dict(
++                        id=package["id"],
++                        reason="depiction_in_" + context["label"],
++                        context_id=context["id"],
++                    )
++                )
++        for paper in labels:
++            if _share(paper["grid"], context["grid"]) >= 0.85 or any(
++                _share(paper["grid"], p["grid"]) >= 0.65 for p in removed
++            ):
++                paper_excluded.add(paper["id"])
++                rejected.append(
++                    dict(
++                        id=paper["id"],
++                        reason="paper_in_" + context["label"],
++                        context_id=context["id"],
++                    )
++                )
++    packages = [p for p in packages if p["id"] not in excluded]
++    bottles = [p for p in packages if p["label"] in ("wine bottle", "bottle")]
++    for container in packages:
++        if container["label"] not in ("box", "packet"):
++            continue
++        contents = [
++            b
++            for b in bottles
++            if b["area"] < container["area"] * 0.95
++            and (
++                (
++                    container["wrapping_context_support"] >= 0.6
++                    and _share(b["grid"], container["grid"]) >= 0.65
++                )
++                or (
++                    _rectangle_share(b["box"], container["box"]) >= 0.95
++                    and _share(b["grid"], container["grid"]) <= 0.2
++                    and b["area"] >= container["area"] * 0.15
++                )
++            )
++        ]
++        if len(contents) == 1:
++            container["transparent_container"] = True
++            contents[0]["carrier"] = container
++            excluded.add(container["id"])
++            rejected.append(
++                dict(
++                    id=container["id"],
++                    reason="visible_container_of_physical_bottle",
++                    bottle_id=contents[0]["id"],
++                )
++            )
++    return (
++        [p for p in packages if p["id"] not in excluded],
++        [p for p in labels if p["id"] not in paper_excluded],
++    )
++
++
++def substantial_bottle(bottles, size):
++    """A sole substantial bottle is distinct from tiny shelf/background regions.
++
++    This supplies a framing decision, not an alternative geometric fallback.
++    Comparable bottles, an unlabeled fragment and tiny all-scene detections do
++    not qualify. Hand/interaction evidence retains its earlier priority.
++    """
++    if not bottles:
++        return None
++    first = max(bottles, key=lambda p: p["area"])
++    width, height = first["box"][2] - first["box"][0], first["box"][3] - first["box"][1]
++    if (
++        first["area"] < size[0] * size[1] * 0.015
++        or max(width, height) < max(size) * 0.25
++        or not first["labels"]
++    ):
++        return None
++    others = [p for p in bottles if p is not first]
++    if any(
++        p["area"] > first["area"] * 0.12
++        or max(p["box"][2] - p["box"][0], p["box"][3] - p["box"][1])
++        > max(width, height) * 0.45
++        for p in others
++    ):
++        return None
++    return first
++
++
++def edge_label_context(selected, size):
++    """A label-dominated, doubly clipped body needs its original photo context."""
++    if selected["label"] not in ("wine bottle", "bottle") or not selected["labels"]:
++        return False
++    x, y, X, Y = selected["box"]
++    labels = selected["labels"]
++    a = min(p["box"][0] for p in labels)
++    b = min(p["box"][1] for p in labels)
++    c = max(p["box"][2] for p in labels)
++    d = max(p["box"][3] for p in labels)
++    dominance = max(
++        (p["box"][2] - p["box"][0]) * (p["box"][3] - p["box"][1]) for p in labels
++    ) / max(1, (X - x) * (Y - y))
++    return dominance >= 0.45 and (
++        (y <= 0 and Y >= size[1] and d - b >= size[1] * 0.6 and c - a >= size[0] * 0.3)
++        or (
++            x <= 0
++            and X >= size[0]
++            and c - a >= size[0] * 0.6
++            and d - b >= size[1] * 0.3
++        )
++    )

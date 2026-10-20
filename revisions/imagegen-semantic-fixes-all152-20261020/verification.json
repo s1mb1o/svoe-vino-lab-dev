@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "selected_cases": 152,
+  "result_rows": 456,
+  "crop_checks": 456,
+  "unaltered_source_RGB_crop_checks": 304,
+  "source_images_hash_verified": 152,
+  "source_mask_files_hash_verified": 4645,
+  "semantic_selected_label_masks_checked": 174,
+  "semantic_selected_label_masks_fully_preserved": 174,
+  "semantic_partial_selected_label_proposal_masks": 0,
+  "all_historical_source_files_unchanged": {
+    "main-selector-imagegen-pilot-v1-20261019": 2102,
+    "main-selector-imagegen-hardcases-v2-20261020": 1362,
+    "main-selector-imagegen-diverse-v3-20261020": 8542,
+    "main-selector-imagegen-all152-20261020-current-v1": 7727
+  },
+  "portable_links_verified": 15467,
+  "context_mask_files_verified": 812,
+  "frozen_cases_and_scorer_and_fallback_unchanged": true,
+  "regression_tests": 472,
+  "zero_human_approved_masks": true,
+  "human_crop_usability_approvals": 0,
+  "current_source_snapshot_verified": true,
+  "GP02_GP11_same_group": true
+}

@@ -1,0 +1,678 @@
+{
+  "case_key": "main-selector-imagegen-diverse-v3-20261020:PD05",
+  "slug": "diverse-v3--PD05",
+  "dataset": "main-selector-imagegen-diverse-v3-20261020",
+  "variant": "scene-v1",
+  "image_sha256": "a2b905f1dea12b7dd638ea5d0bc38e18ca2e76bb9bd17378c0669cc305caef65",
+  "selector_seconds": 0.1343948330031708,
+  "decision": {
+    "variant": "scene-v1",
+    "implementation_revision": null,
+    "status": "selected",
+    "width": 1254,
+    "height": 1254,
+    "selected_id": "d27",
+    "reason": "existing_scene_v1_rank",
+    "candidates": [
+      {
+        "id": "d27",
+        "source_index": 27,
+        "kind": "wine bottle",
+        "box": [
+          499,
+          11,
+          907,
+          1212
+        ]
+      },
+      {
+        "id": "d57",
+        "source_index": 57,
+        "kind": "box",
+        "box": [
+          1045,
+          698,
+          1254,
+          913
+        ]
+      },
+      {
+        "id": "d61",
+        "source_index": 61,
+        "kind": "box",
+        "box": [
+          483,
+          271,
+          563,
+          599
+        ]
+      },
+      {
+        "id": "d9",
+        "source_index": 9,
+        "kind": "wine bottle",
+        "box": [
+          1069,
+          283,
+          1183,
+          600
+        ]
+      },
+      {
+        "id": "d19",
+        "source_index": 19,
+        "kind": "wine bottle",
+        "box": [
+          190,
+          125,
+          298,
+          494
+        ]
+      },
+      {
+        "id": "d26",
+        "source_index": 26,
+        "kind": "wine bottle",
+        "box": [
+          978,
+          265,
+          1072,
+          556
+        ]
+      },
+      {
+        "id": "d59",
+        "source_index": 59,
+        "kind": "box",
+        "box": [
+          662,
+          266,
+          703,
+          340
+        ]
+      },
+      {
+        "id": "d54",
+        "source_index": 54,
+        "kind": "box",
+        "box": [
+          610,
+          254,
+          649,
+          325
+        ]
+      },
+      {
+        "id": "d63",
+        "source_index": 63,
+        "kind": "box",
+        "box": [
+          576,
+          249,
+          612,
+          312
+        ]
+      },
+      {
+        "id": "d28",
+        "source_index": 28,
+        "kind": "wine bottle",
+        "box": [
+          842,
+          154,
+          894,
+          366
+        ]
+      },
+      {
+        "id": "d12",
+        "source_index": 12,
+        "kind": "wine bottle",
+        "box": [
+          1166,
+          313,
+          1254,
+          635
+        ]
+      },
+      {
+        "id": "d5",
+        "source_index": 5,
+        "kind": "wine bottle",
+        "box": [
+          1011,
+          0,
+          1119,
+          191
+        ]
+      },
+      {
+        "id": "d55",
+        "source_index": 55,
+        "kind": "box",
+        "box": [
+          667,
+          150,
+          693,
+          221
+        ]
+      },
+      {
+        "id": "d62",
+        "source_index": 62,
+        "kind": "box",
+        "box": [
+          700,
+          151,
+          722,
+          228
+        ]
+      },
+      {
+        "id": "d0",
+        "source_index": 0,
+        "kind": "wine bottle",
+        "box": [
+          1102,
+          0,
+          1227,
+          202
+        ]
+      },
+      {
+        "id": "d1",
+        "source_index": 1,
+        "kind": "wine bottle",
+        "box": [
+          504,
+          57,
+          524,
+          112
+        ]
+      },
+      {
+        "id": "d3",
+        "source_index": 3,
+        "kind": "wine bottle",
+        "box": [
+          913,
+          0,
+          940,
+          127
+        ]
+      },
+      {
+        "id": "d11",
+        "source_index": 11,
+        "kind": "wine bottle",
+        "box": [
+          1062,
+          263,
+          1130,
+          538
+        ]
+      },
+      {
+        "id": "d14",
+        "source_index": 14,
+        "kind": "wine bottle",
+        "box": [
+          596,
+          0,
+          618,
+          38
+        ]
+      },
+      {
+        "id": "d10",
+        "source_index": 10,
+        "kind": "wine bottle",
+        "box": [
+          524,
+          59,
+          545,
+          112
+        ]
+      },
+      {
+        "id": "d32",
+        "source_index": 32,
+        "kind": "wine bottle",
+        "box": [
+          594,
+          55,
+          610,
+          108
+        ]
+      },
+      {
+        "id": "d15",
+        "source_index": 15,
+        "kind": "wine bottle",
+        "box": [
+          673,
+          48,
+          691,
+          108
+        ]
+      },
+      {
+        "id": "d21",
+        "source_index": 21,
+        "kind": "wine bottle",
+        "box": [
+          673,
+          0,
+          690,
+          23
+        ]
+      },
+      {
+        "id": "d6",
+        "source_index": 6,
+        "kind": "wine bottle",
+        "box": [
+          513,
+          145,
+          531,
+          209
+        ]
+      },
+      {
+        "id": "d18",
+        "source_index": 18,
+        "kind": "wine bottle",
+        "box": [
+          530,
+          145,
+          549,
+          209
+        ]
+      },
+      {
+        "id": "d20",
+        "source_index": 20,
+        "kind": "wine bottle",
+        "box": [
+          889,
+          165,
+          921,
+          350
+        ]
+      },
+      {
+        "id": "d29",
+        "source_index": 29,
+        "kind": "wine bottle",
+        "box": [
+          841,
+          0,
+          897,
+          126
+        ]
+      },
+      {
+        "id": "d17",
+        "source_index": 17,
+        "kind": "wine bottle",
+        "box": [
+          619,
+          52,
+          635,
+          110
+        ]
+      },
+      {
+        "id": "d31",
+        "source_index": 31,
+        "kind": "wine bottle",
+        "box": [
+          892,
+          0,
+          922,
+          124
+        ]
+      },
+      {
+        "id": "d8",
+        "source_index": 8,
+        "kind": "wine bottle",
+        "box": [
+          684,
+          144,
+          704,
+          222
+        ]
+      },
+      {
+        "id": "d60",
+        "source_index": 60,
+        "kind": "box",
+        "box": [
+          692,
+          56,
+          718,
+          114
+        ]
+      },
+      {
+        "id": "d24",
+        "source_index": 24,
+        "kind": "wine bottle",
+        "box": [
+          571,
+          144,
+          585,
+          207
+        ]
+      },
+      {
+        "id": "d2",
+        "source_index": 2,
+        "kind": "wine bottle",
+        "box": [
+          735,
+          0,
+          778,
+          47
+        ]
+      },
+      {
+        "id": "d7",
+        "source_index": 7,
+        "kind": "wine bottle",
+        "box": [
+          618,
+          0,
+          633,
+          34
+        ]
+      },
+      {
+        "id": "d23",
+        "source_index": 23,
+        "kind": "wine bottle",
+        "box": [
+          1173,
+          722,
+          1254,
+          793
+        ]
+      },
+      {
+        "id": "d30",
+        "source_index": 30,
+        "kind": "wine bottle",
+        "box": [
+          777,
+          0,
+          841,
+          28
+        ]
+      },
+      {
+        "id": "d16",
+        "source_index": 16,
+        "kind": "wine bottle",
+        "box": [
+          570,
+          60,
+          584,
+          109
+        ]
+      },
+      {
+        "id": "d13",
+        "source_index": 13,
+        "kind": "wine bottle",
+        "box": [
+          1167,
+          261,
+          1226,
+          477
+        ]
+      },
+      {
+        "id": "d56",
+        "source_index": 56,
+        "kind": "box",
+        "box": [
+          567,
+          0,
+          592,
+          43
+        ]
+      },
+      {
+        "id": "d4",
+        "source_index": 4,
+        "kind": "wine bottle",
+        "box": [
+          630,
+          0,
+          647,
+          32
+        ]
+      },
+      {
+        "id": "d25",
+        "source_index": 25,
+        "kind": "wine bottle",
+        "box": [
+          713,
+          46,
+          728,
+          110
+        ]
+      },
+      {
+        "id": "d22",
+        "source_index": 22,
+        "kind": "wine bottle",
+        "box": [
+          1191,
+          0,
+          1254,
+          214
+        ]
+      },
+      {
+        "id": "d58",
+        "source_index": 58,
+        "kind": "box",
+        "box": [
+          498,
+          0,
+          545,
+          43
+        ]
+      }
+    ],
+    "crop_box": [
+      499,
+      11,
+      907,
+      1212
+    ],
+    "label_boxes": [],
+    "rejected": [],
+    "label_views_truncated": false,
+    "selection_mode": "legacy",
+    "fallback_trigger": null,
+    "crop_scope": "subject_region",
+    "tap_candidate_ids": [],
+    "tap_status": "absent",
+    "detection_recovery": null,
+    "detection_refinement": null,
+    "detection_context": null
+  },
+  "crop_path": "crops/diverse-v3--PD05-scene-v1.png",
+  "crop_sha256": "846c5363949ccf43653e1db9a17ef47afab788445ddf17a306f1ed2fe7ddbc8e",
+  "keep_mask_path": "keep-masks/diverse-v3--PD05-scene-v1.png",
+  "keep_mask_sha256": "42eeda5be9f113c805b7f7daf6828ea928768b31e5edea9d1af6cfcc3e6f2005",
+  "label_crop_paths": [],
+  "assessment": {
+    "target": "d27",
+    "accepted_targets": [
+      "d27"
+    ],
+    "target_agreement": true,
+    "cohort": "scene_pending_masks_pending",
+    "human_mask_approved": false,
+    "preserves_full_original_frame": false,
+    "crop_size_px": [
+      408,
+      1201
+    ],
+    "crop_available": true,
+    "crop_usability_review": "pending_human_review",
+    "label_legibility_review": "pending_human_review",
+    "target_retention_proxy": 1.0,
+    "maximum_other_bottle_retention_proxy": 0.0,
+    "isolation_proxy_pass": true,
+    "label_retention_proxies": [
+      {
+        "id": "d38",
+        "retention": 0.9960877765317565,
+        "source_area_px": 156944,
+        "ownership": "unreviewed_geometric_overlap"
+      }
+    ],
+    "other_bottle_retention_proxies": [
+      {
+        "id": "d0",
+        "retention": 0.0
+      },
+      {
+        "id": "d1",
+        "retention": 0.0
+      },
+      {
+        "id": "d2",
+        "retention": 0.0
+      },
+      {
+        "id": "d3",
+        "retention": 0.0
+      },
+      {
+        "id": "d4",
+        "retention": 0.0
+      },
+      {
+        "id": "d5",
+        "retention": 0.0
+      },
+      {
+        "id": "d6",
+        "retention": 0.0
+      },
+      {
+        "id": "d7",
+        "retention": 0.0
+      },
+      {
+        "id": "d8",
+        "retention": 0.0
+      },
+      {
+        "id": "d9",
+        "retention": 0.0
+      },
+      {
+        "id": "d10",
+        "retention": 0.0
+      },
+      {
+        "id": "d11",
+        "retention": 0.0
+      },
+      {
+        "id": "d12",
+        "retention": 0.0
+      },
+      {
+        "id": "d13",
+        "retention": 0.0
+      },
+      {
+        "id": "d14",
+        "retention": 0.0
+      },
+      {
+        "id": "d15",
+        "retention": 0.0
+      },
+      {
+        "id": "d16",
+        "retention": 0.0
+      },
+      {
+        "id": "d17",
+        "retention": 0.0
+      },
+      {
+        "id": "d18",
+        "retention": 0.0
+      },
+      {
+        "id": "d19",
+        "retention": 0.0
+      },
+      {
+        "id": "d20",
+        "retention": 0.0
+      },
+      {
+        "id": "d21",
+        "retention": 0.0
+      },
+      {
+        "id": "d22",
+        "retention": 0.0
+      },
+      {
+        "id": "d23",
+        "retention": 0.0
+      },
+      {
+        "id": "d24",
+        "retention": 0.0
+      },
+      {
+        "id": "d25",
+        "retention": 0.0
+      },
+      {
+        "id": "d26",
+        "retention": 0.0
+      },
+      {
+        "id": "d28",
+        "retention": 0.0
+      },
+      {
+        "id": "d29",
+        "retention": 0.0
+      },
+      {
+        "id": "d30",
+        "retention": 0.0
+      },
+      {
+        "id": "d31",
+        "retention": 0.0
+      },
+      {
+        "id": "d32",
+        "retention": 0.0
+      }
+    ],
+    "best_mask_attribution": {
+      "id": "d27",
+      "iou": 1.0
+    },
+    "minimum_target_label_retention_proxy": 0.9960877765317565
+  },
+  "execution_provenance": "fresh_selector_frozen_primary_plus_RGB_only_context_replay"
+}
