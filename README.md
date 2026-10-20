@@ -49,22 +49,52 @@ the original 75-dish dataset and photographic benchmark remain available separat
 В отдельном диагностическом эксперименте ручная корректировка данных через UI повысила результат до 97/100. Однако изменения были сделаны после выяснения правильных ответов. Такой результат отражает подстройку под известный тест и требует проверки на независимых данных. Поэтому эти изменения не включены в финальный результат: он остаётся 95/100.
 
 
+## Latest engineering measurements
+
+The 2026-10-20 retrieval campaign reports **90.77% R@1** (2,696/2,970),
+**99.83% R@5**, and **100% R@10** on the frozen `my` positive assignments.
+These are the metrics of recipe R011 with SigLIP2 SO400M, custom pooling, axial reference
+views, and bottle–label fusion. The campaign uses no re-ranking.
+Read [the exact recipes and results](RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md).
+
+On the selected hard cohort `my-failed-2`, the best all-budget R@1 is
+**67.37%** (450/668). The best p512 R@1 is **66.17%** (442/668).
+The cohorts were used for development selection. These are research results.
+They do not describe the default matcher or the official hackathon score.
+
+The later [Android 0.3.0 release record](https://github.com/s1mb1o/svoe-vino-lab-dev/blob/6bd4abed8009296dec8cdde4e418103f610a74ba/android/docs/releases/0.3.0.md) reports
+**46.56% Top-1**, **84.58% Top-5**, and **89.67% Top-10** on the same named hard cohort.
+Its complete 668-request Pixel 8 replay has zero errors and a 1,372 ms median.
+That release uses Base NaFlex p512 with DIS-768 and custom pooling.
+It has no full-`my` quality result in that record.
+The earlier separate dual-GPU experiment reached **72.29% Top-1** on full `my`,
+against **69.09%** for its matched full-image control, with greater latency and memory use.
+The Android 0.3.0 source and its release record are on `origin/main` at the linked commit.
+This documentation update does not import that runtime into this checkout.
+
+Read [BENCHMARKS.md](BENCHMARKS.md) for the dataset sizes, complete metric rows,
+timing scopes, negative cases, and source links.
+
 ## Предыдущие инженерные бенчмарки
 
-Текущий standalone matcher использует профиль `siglip2-p512-as-is`.
-На внутреннем наборе он получил **74,15% R@1** и **92,94% R@5** (более 3.5тыс изображений).
+The 2026-09-27 snapshot has 2,228 query rows: 1,644 positive rows and 584 negative constraints.
+It contains 1,851 distinct image digests.
+The committed default `siglip2-p512-as-is` recorded **74.15% R@1** and **92.94% R@5**
+on that snapshot. This default remains separate from the newer research recipes.
 
-Внутренний набор `my` собран проектом из реальных фотографий бутылок из интернета.
-В нём 2 228 queries: 1 644 positive и 584 negative.
+The recorded `cascade-p512-rot5` ranked API run has **90.48% R@1** and **100% R@5**
+on 63 positive and 21 negative organizers' photos, with team labels and no request time budget.
+The later RTX 4090 FP8 VLM run recorded **93.65% R@1** (59/63 positives) with the evaluator
+time budget. Its 84 requests had zero errors and a 1,353 ms median.
+Read [the recorded measurement](workbench/ResearchLog.md).
+These runs use different hardware and request settings.
 
-Prod matcher на gx10 использует pipeline `cascade-p512-rot5`. На официальном наборе
-он получил **90,48% R@1** и **100% R@5** (`POST /v1/match`, без лимита времени).
-Официальный набор содержит 100 фотографий организаторов. В оценку вошли 63 positive
-и 21 negative. Разметку сделала наша команда.
-
-Лучший исследовательский pipeline получил **84,67% R@1** и **97,02% R@5**.
-Он использует barcode, SAM3 crop и cluster re-rank. Эти этапы пока не входят в
-standalone matcher. Методика и ограничения описаны в [BENCHMARKS.md](BENCHMARKS.md).
+The 2026-09-27 workbench leader `barcode-rerank-siglip2-512-crop` recorded
+**84.67% R@1** and **97.02% R@5** on the earlier 1,644-positive snapshot.
+The newer research cohort has 2,970 positive assignments.
+The difference from 84.67% to 90.77% is not a controlled improvement on one fixed testset.
+The `cascade` backend implements code scanning, segmentation, and re-ranking.
+The default `siglip2-p512-as-is` configuration does not enable those stages.
 
 ## Retrieval research without re-ranking
 

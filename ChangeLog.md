@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-20 — Refresh benchmark summaries
+
+- Review the metric references in the current overview documents and the dated evidence.
+- Update `README.md`, `BENCHMARKS.md`, the workbench README, the submission-template context, and the Android implementation comparison.
+- Surface research recipe R011 at 90.77% R@1 on 2,970 positive assignments. Retain the earlier 84.67% score with its separate 1,644-positive cohort.
+- Add the best hard-cohort research scores and the recorded matcher and Android results with exact cohort and pipeline labels.
+- Link the newer Android 0.3.0 evidence at committed `origin/main` revision `6bd4abed`. Keep its 46.56% hard-cohort result separate from the earlier 72.29% full-`my` experiment and the 95/100 server submission.
+- Preserve frozen research reports, predictions, release records, and historical test counts.
+- Pass the portable research checker. Independently recalculate all 668 saved Android 0.3.0 replay assignments: 311/565/599 Top-1/5/10 hits and a 1,372.026 ms median. Run no new inference or device benchmark.
+
 ## 2026-10-20 — Configurable matcher rejection threshold (#79)
 
 - Add the default 0.7 single-image score floor in matcher YAML.

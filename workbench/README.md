@@ -2,6 +2,21 @@
 
 Test data for the Svoe Vino wine scanner.
 
+## Latest retrieval results
+
+The 2026-10-20 campaign records 90.77% R@1 (2,696/2,970), 99.83% R@5,
+and 100% R@10 for recipe R011 on the frozen `my` positive assignments.
+The best hard-cohort R@1 is 67.37% (450/668) across all tested budgets.
+The best p512 hard-cohort R@1 is 66.17% (442/668).
+These recipes use retrieval without re-ranking.
+The earlier 84.67% result uses the 2026-09-27 cohort of 1,644 positives.
+The two cohorts do not establish a controlled before/after comparison.
+Both newer cohorts were used for development selection.
+Read [the exact recipes](../RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md)
+and [the current benchmark summary](../BENCHMARKS.md).
+
+## Data and tools
+
 - `eval/` is the official evaluation set from the organizers. It holds 3 photos.
 - `my/` is a larger set built by this project. It holds real-world photos found on the web.
 - `dataset/test-1/` is an independently labelled 54-photo shop set from a public

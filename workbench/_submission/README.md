@@ -1,5 +1,13 @@
 # Своё Вино Lab
 
+This is the historical submission template with the 2026-09-27 benchmark snapshot.
+The 84.67% R@1 below belongs to that snapshot of 1,644 positive assignments.
+The newer retrieval campaign records 90.77% R@1 on 2,970 positive assignments.
+Its hard-cohort results are 67.37% across all budgets and 66.17% at p512.
+These results use different cohorts and do not establish a controlled before/after gain.
+Use [the current benchmark summary](../../BENCHMARKS.md) for current comparisons and sources.
+The original template and its historical result table remain below.
+
 **Поиск вина по фотографии для каталога «Своё Вино».**
 
 Система принимает фотографию бутылки и возвращает наиболее вероятные карточки вина.

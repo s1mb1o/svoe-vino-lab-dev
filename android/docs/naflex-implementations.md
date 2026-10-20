@@ -1,5 +1,29 @@
 # Android NaFlex implementations
 
+## Latest application measurements
+
+Summary date: 2026-10-20.
+The implementation and benchmark versions below are distinct.
+
+The matched full-`my` experiment records 72.29% Top-1 with DIS and the encoder on GPU.
+Its full-photo control records 69.09% Top-1 on the same 2,970 positive assignments.
+The segmented experiment adds 95 hits and increases client median latency from 924 to 1,319 ms.
+It also uses more sampled memory.
+Read [the full matched comparison](reports/2026-10-19_pixel8-p512-dis-dual-gpu-my.md).
+
+The later [Android 0.3.0 release record](https://github.com/s1mb1o/svoe-vino-lab-dev/blob/6bd4abed8009296dec8cdde4e418103f610a74ba/android/docs/releases/0.3.0.md)
+reports 46.56% Top-1, 84.58% Top-5, and 89.67% Top-10 on 668 `my-failed-2` assignments.
+Its `DIS768_CUSTOM` replay has zero errors and a 1,372/1,832 ms request median/P95.
+The standard full-photo control on that hard cohort has 41.02% Top-1.
+These compare complete pipelines with different preparation and matched reference indexes.
+The hard cohort is not a full-`my` score.
+That release record has no full-`my` quality measurement for version 0.3.0.
+The linked release source is on `origin/main` at `6bd4abed`.
+This documentation update does not change the runtime or model pack in this checkout.
+Read [the current benchmark index](../../BENCHMARKS.md) for sources and timing limits.
+
+## Earlier implementation comparison
+
 Date: 2026-10-19
 
 ## Working copies
@@ -66,9 +90,9 @@ The source reports are in the separate repository:
 - `docs/releases/v0.2.0.md`
 - `docs/android-integration.md`
 
-The current integration uses this library and its matching frozen reference index.
-The current wine pack retains 2,093 wines and one reference for each wine.
-The main query path does not segment the image.
+The 0.2.0 integration measured on 2026-10-19 uses this library and its matching frozen reference index.
+That measured wine pack retains 2,093 wines and one reference for each wine.
+That measured query path does not segment the image.
 The integrated wine application passed the thirty-image Pixel 8 runtime pilot.
 It passed CPU/GPU parity on one reference and desktop parity on fourteen images.
 It also passed UI recognition and history persistence after a cold restart.

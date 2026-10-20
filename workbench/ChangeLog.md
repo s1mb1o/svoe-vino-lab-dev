@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 2026-10-20 — Current benchmark summary links
+
+- Add the 2026-10-20 retrieval leaders to `README.md`: 90.77% R@1 on `my`, 67.37% on the hard cohort, and 66.17% at p512 on the hard cohort.
+- Mark the submission template's 84.67% result as the separate 2026-09-27 cohort. Link the current benchmark summary.
+- Keep historical scores and reports unchanged. Pass the portable research checker.
+
 ## 2026-10-20
 
 - Checked the fixes of 2026-10-20 in a browser (headless Chromium) on a test instance with a

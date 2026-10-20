@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-20 — Versioned benchmark comparison in the implementation guide
+
+- Add the matched 72.29% versus 69.09% full-`my` comparison and its latency tradeoff to `docs/naflex-implementations.md`.
+- Add the separate Android 0.3.0 hard-cohort result from the release record at `origin/main` revision `6bd4abed`.
+- Label the existing no-segmentation integration as the 0.2.0 measurement. Do not change the local runtime, pack, source defaults, or frozen reports.
+- Verify the saved 0.3.0 replay counts and request percentiles from its 668 original records. Start no device or model job.
+
 ## 2026-10-20
 
 ### Rebase onto current GitHub main
