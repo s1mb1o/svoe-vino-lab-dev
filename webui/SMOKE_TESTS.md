@@ -1,5 +1,16 @@
 # Smoke tests
 
+## Original photo-result save and offline copy
+
+1. Sign in and recognize a wine in the pinned F04 snapshot. Press the original result pin before opening alternatives or comparison.
+2. Confirm one saved diary row for the exact recognized ID and «Доступно офлайн на этом устройстве» after the local commit. Confirm no extra recognition request or history change.
+3. Warm the public shell, restart offline, and open the original wine under «Карточки на этом устройстве».
+4. Remove only the device copy. Recognize the saved wine again and use «Сохранить копию на устройстве» on its original pin. Confirm a new device copy and no duplicate diary row.
+5. Repeat with unavailable result metadata. The exact pinned public card must remain available for copying.
+6. Fail or time out the public-card lookup. Deny IndexedDB. Confirm that the diary save remains successful, the copy failure is explicit, and retry does not repeat recognition or create another diary row.
+7. Hold the public-card response, change accounts, then release the response. Confirm that no prior-account card appears on the new account.
+8. Repeat direct save and offline reopening in Chromium and WebKit. Keep physical-phone acceptance separate.
+
 ## Second comparison wine from saved wines
 
 1. Sign in and save a wine. Scan another wine in «Одна бутылка».

@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-20 — Offline copy from the original photo-result pin
+
+- After a successful diary save, copy the original exact wine from the pinned public catalog without opening alternatives or comparison.
+- Offer the existing explicit device-copy action on the original pin for saved wines and failed copies.
+- Bound the public-card lookup to four seconds. Preserve online save success after lookup or storage failure. Reject a delayed copy after an account reset.
+- Keep the public placeholder and the existing 50-card store. Record verification in `ResearchLog.md`.
+
 ## 2026-10-20 — Integrate comparison with current main
 
 - Integrate the F04 journey and saved-wine picker with main `5cd2cecf`, as the owner requested.

@@ -103,7 +103,7 @@ useScannerTools(scanner)
       </section>
 
       <section ref="resultPanel" class="match-panel" :class="{ 'is-empty': !file && !hasResult, 'is-loading': busy }" aria-label="Результат поиска" :aria-busy="busy">
-        <div class="panel-heading"><span class="step-label">02 / ВАШЕ ВИНО</span><span class="panel-heading-end"><span v-if="hasResult && !mock" class="match-badge"><AppIcon name="check" />Совпадение найдено</span><span v-else-if="hasResult && mock" class="demo-badge">ДЕМО</span><PinButton v-if="hasResult && !mock && slug" :key="slug" :slug="slug" source="photo" :wine-name="wine?.name" /></span></div>
+        <div class="panel-heading"><span class="step-label">02 / ВАШЕ ВИНО</span><span class="panel-heading-end"><span v-if="hasResult && !mock" class="match-badge"><AppIcon name="check" />Совпадение найдено</span><span v-else-if="hasResult && mock" class="demo-badge">ДЕМО</span><PinButton v-if="hasResult && !mock && slug" :key="slug" :slug="slug" source="photo" :wine-name="wine?.name" allow-offline-copy /></span></div>
         <div class="result-announcement" role="status" aria-live="polite" aria-atomic="true"><span class="sr-only">{{ hasResult ? `${mock ? 'Демонстрационный результат' : 'Лучшее совпадение'}: ${wine?.name || slug}` : busy ? 'Поиск вина выполняется' : '' }}</span></div>
         <template v-if="hasResult && wine">
           <div class="match-bottle"><WineImage :src="wine.image" :alt="wine.name" width="300" height="300" /></div>

@@ -71,6 +71,7 @@ The `shelfAvailable` field is `false` when matcher readiness fails.
 - `GET /api/config`: return prediction mode, matcher availability, upload limit, catalog mode, and `shelfAvailable`.
 - `GET /api/wines`: return demo wine records.
 - `GET /api/wines/<slug>`: return one exact local or source catalog match, or HTTP 404.
+- `GET /api/wines/<slug>/offline`: return one public card and its pinned catalog version for an explicit device copy.
 - `GET /api/health`: return basic service status.
 
 Catalog routes are portal-specific. They are not part of the evaluator contract.
@@ -125,3 +126,13 @@ Success uses `Cache-Control: no-store`.
 Producer exclusion and explicit filters run before ranking.
 An empty result keeps the constraints.
 Read [the F04 contract](f04-result-journey.md) for comparison and offline storage.
+
+## Public card for a device copy
+
+`GET /api/wines/<slug>/offline` returns `wine` and `version` from the same pinned snapshot as F04 comparison.
+The route returns HTTP 400 for an invalid ID and HTTP 404 for an ID outside the snapshot.
+The response uses `Cache-Control: no-store` and contains only public card fields.
+It contains no account data or uploaded image. The image field is empty for the public placeholder.
+The client requests this card after an explicit successful diary save or an explicit copy action.
+A lookup failure does not undo the server save. The client reports the missing device copy and offers retry.
+The existing IndexedDB store validates and bounds the committed copy.

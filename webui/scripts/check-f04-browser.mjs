@@ -82,6 +82,18 @@ try {
   assert.equal((await fetch(base + '/api/recommendations/alternatives?slug=missing-public-wine')).status, 404)
   assert.equal((await fetch(base + `/api/recommendations/alternatives?slug=${fixtureSlug}&color=unknown`)).status, 400)
   report.checks.independentUploadContract = { exactSlugResponse: true, emptyUpload: 400, badFilter: 400, unknownWine: 404, returnedSlug: prediction.slug }
+  const publicCardUrl = base + `/api/wines/${fixtureSlug}/offline`
+  const publicCardResponse = await fetch(publicCardUrl)
+  assert.equal(publicCardResponse.status, 200)
+  assert.equal(publicCardResponse.headers.get('cache-control'), 'no-store')
+  const publicCard = await publicCardResponse.json()
+  assert.equal(publicCard.wine.slug, fixtureSlug)
+  assert.equal(publicCard.version, data.version)
+  assert.equal(publicCard.wine.image, '')
+  assert(!('producerId' in publicCard.wine) && !('canonicalId' in publicCard.wine))
+  assert.equal((await fetch(base + '/api/wines/missing-public-wine/offline')).status, 404)
+  assert.equal((await fetch(base + '/api/wines/invalid%20id/offline')).status, 400)
+  report.checks.publicCardLookup = { exactID: true, pinnedVersion: true, publicFieldsOnly: true, unknownWine: 404, invalidWine: 400 }
 
   const anchors = JSON.parse(await readFile(resolve(root, 'tests/data/f04-anchors.json')))
   const outcomes = []
@@ -112,6 +124,84 @@ try {
   page.on('pageerror', error => errors.push(error.message))
   await page.goto(base, { waitUntil: 'networkidle' })
   await page.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public-catalog-bottle.webp', mimeType: 'image/webp', buffer: photo })
+  // Save the original before opening alternatives. Lookup failure preserves the diary save.
+  const originalPin = page.locator('.match-panel .pin')
+  const originalHistory = await until(async () => {
+    const history = await context.request.get(base + '/api/account/history').then(r => r.json())
+    return history.items.some(item => item.slug === fixtureSlug) ? history : null
+  }, 'Original recognition history')
+  const recognitionRows = history => history.items.map(({ savedStatus: _savedStatus, ...row }) => row)
+  const directRequests = observedPhotoRequests
+  await page.route(publicCardUrl, route => route.fulfill({ status: 404, json: { statusMessage: 'Outside snapshot' } }))
+  await originalPin.locator('.pin-button').click()
+  await originalPin.getByText('Сохранено в дневнике. Копия для офлайн-открытия недоступна.', { exact: true }).waitFor()
+  const originalSaved = await context.request.get(base + '/api/account/saved').then(r => r.json())
+  assert.equal(originalSaved.items.filter(item => item.slug === fixtureSlug).length, 1)
+  assert.equal(await page.locator('.f04-local-list li').count(), 0)
+  await page.unroute(publicCardUrl)
+  let heldPublicCard
+  await page.route(publicCardUrl, route => { heldPublicCard = route })
+  await originalPin.getByRole('button', { name: 'Сохранить копию на устройстве', exact: true }).click()
+  await until(() => heldPublicCard, 'Held public card lookup')
+  await until(() => originalPin.getByRole('button', { name: 'Сохранить копию на устройстве', exact: true }).isEnabled(), 'Public card lookup timeout')
+  assert.equal(await originalPin.getByText('Доступно офлайн на этом устройстве.', { exact: true }).count(), 0)
+  await heldPublicCard.abort().catch(() => {})
+  await page.unroute(publicCardUrl)
+  await originalPin.getByRole('button', { name: 'Сохранить копию на устройстве', exact: true }).click()
+  await originalPin.getByText('Доступно офлайн на этом устройстве.', { exact: true }).waitFor()
+  assert.equal(await page.locator('.f04-results>li').count(), 0)
+  assert.equal(observedPhotoRequests, directRequests)
+  assert.deepEqual(recognitionRows(await context.request.get(base + '/api/account/history').then(r => r.json())), recognitionRows(originalHistory))
+  await page.evaluate(() => navigator.serviceWorker.ready)
+  await page.reload({ waitUntil: 'networkidle' })
+  await context.setOffline(true)
+  await page.reload({ waitUntil: 'load' })
+  await page.locator('.f04-local-list').getByRole('button', { name: fixtureWine.name, exact: true }).click()
+  await page.locator('.f04-stored-card').waitFor()
+  assert((await page.locator('.f04-stored-card').textContent()).includes(data.version))
+  await page.screenshot({ path: resolve(dir, 'original-save-offline-mobile.png'), fullPage: true })
+  assert.equal(observedPhotoRequests, directRequests)
+  await context.setOffline(false)
+  await page.reload({ waitUntil: 'networkidle' })
+  // An existing saved wine can get a new device copy even when result metadata fails.
+  await page.locator('.f04-local-list').getByRole('button', { name: 'Удалить копию: ' + fixtureWine.name, exact: true }).click()
+  await page.route(base + `/api/wines/${fixtureSlug}`, route => route.fulfill({ status: 503, json: { statusMessage: 'Metadata unavailable' } }))
+  await page.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public-catalog-bottle.webp', mimeType: 'image/webp', buffer: photo })
+  await page.locator('.missing-result').waitFor()
+  await originalPin.locator('.pin-button').click()
+  await originalPin.getByRole('button', { name: 'Сохранить копию на устройстве', exact: true }).click()
+  await originalPin.getByText('Доступно офлайн на этом устройстве.', { exact: true }).waitFor()
+  assert.equal((await context.request.get(base + '/api/account/saved').then(r => r.json())).items.filter(item => item.slug === fixtureSlug).length, 1)
+  await originalPin.getByRole('button', { name: 'Убрать из сохранённых', exact: true }).click()
+  await page.unroute(base + `/api/wines/${fixtureSlug}`)
+  report.checks.originalSaveOffline = { beforeAlternatives: true, exactID: true, lookupFailurePreservesSave: true, boundedTimeout: true, explicitRetry: true, offlineReload: true, unchangedHistory: true, noRepeatRecognition: true, existingSavedCopy: true, unavailableResultMetadata: true }
+
+  // Account reset during the new lookup cannot transfer A's pending copy to B.
+  const snapshotRace = await browser.newContext({ serviceWorkers: 'block', ignoreHTTPSErrors: true })
+  await snapshotRace.addCookies([{ name: '__Host-cv_session', value: sessions.a.token, url: base, secure: true, httpOnly: true, sameSite: 'Lax' }])
+  await snapshotRace.addInitScript(() => localStorage.setItem('svoe-vino.age-confirmed.v1', 'yes'))
+  await snapshotRace.route('https://**', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort())
+  const snapshotPage = await snapshotRace.newPage()
+  await snapshotPage.goto(base, { waitUntil: 'networkidle' })
+  await snapshotPage.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public.webp', mimeType: 'image/webp', buffer: photo })
+  let releaseSnapshot
+  let finishSnapshot
+  const snapshotFinished = new Promise(resolve => { finishSnapshot = resolve })
+  await snapshotPage.route(publicCardUrl, route => { releaseSnapshot = async () => { await route.fulfill({ json: publicCard }); finishSnapshot() } })
+  await snapshotPage.locator('.match-panel .pin-button').click()
+  await until(() => releaseSnapshot, 'Held original public card')
+  await snapshotRace.addCookies([{ name: '__Host-cv_session', value: sessions.b.token, url: base, secure: true, httpOnly: true, sameSite: 'Lax' }])
+  await snapshotPage.getByRole('link', { name: 'Винный дневник', exact: true }).click()
+  await snapshotPage.getByText('f04_b', { exact: true }).waitFor()
+  await releaseSnapshot(); await snapshotFinished
+  await snapshotPage.getByRole('link', { name: 'Что за вино? — поиск по фото', exact: true }).click()
+  await snapshotPage.waitForLoadState('networkidle')
+  assert.equal(await snapshotPage.locator('.f04-local-list li').count(), 0)
+  assert.equal((await snapshotRace.request.get(base + '/api/account/saved').then(r => r.json())).items.length, 0)
+  await context.request.delete(base + `/api/account/saved/${fixtureSlug}`, { headers: { Origin: base } })
+  await snapshotRace.close()
+  report.checks.publicCardLookupAccountSwitch = true
+
   await page.getByRole('button', { name: 'Найти альтернативы', exact: true }).click()
   await page.locator('.f04-results>li').first().waitFor()
   await page.route('**/api/recommendations/alternatives?*', route => route.fulfill({ status: 404, json: { statusMessage: 'Outside snapshot' } }))
@@ -319,6 +409,12 @@ try {
   const deniedPage = await denied.newPage()
   await deniedPage.goto(base, { waitUntil: 'networkidle' })
   await deniedPage.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public.webp', mimeType: 'image/webp', buffer: photo })
+  const deniedOriginal = deniedPage.locator('.match-panel .pin')
+  await deniedOriginal.locator('.pin-button').click()
+  await deniedOriginal.getByText('Сохранено в дневнике. Копия для офлайн-открытия недоступна.', { exact: true }).waitFor()
+  assert((await denied.request.get(base + '/api/account/saved').then(r => r.json())).items.some(item => item.slug === fixtureSlug))
+  await deniedOriginal.getByRole('button', { name: 'Убрать из сохранённых', exact: true }).click()
+  report.checks.originalSaveDeniedStoragePreservesOnlineSave = true
   await deniedPage.getByRole('button', { name: 'Найти альтернативы', exact: true }).click()
   await deniedPage.locator('.f04-results>li').first().locator('.pin-button').click()
   await deniedPage.getByText('Сохранено в дневнике. Копия для офлайн-открытия недоступна.', { exact: true }).waitFor()
@@ -342,6 +438,9 @@ try {
     const safariPage = await safariContext.newPage()
     await safariPage.goto(base, { waitUntil: 'networkidle' })
     await safariPage.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public.webp', mimeType: 'image/webp', buffer: photo })
+    await safariPage.locator('.match-panel .pin-button').click()
+    await safariPage.locator('.match-panel .pin').getByText('Доступно офлайн на этом устройстве.', { exact: true }).waitFor()
+    await safariPage.keyboard.press('Escape')
     await safariPage.getByRole('button', { name: 'Найти альтернативы', exact: true }).click()
     const safariFirst = safariPage.locator('.f04-results>li').first()
     await safariFirst.getByRole('button', { name: 'Сравнить', exact: true }).click()
@@ -365,6 +464,9 @@ try {
     await safariPage.locator('.f04-local-list li').first().waitFor()
     await safariContext.setOffline(true)
     await safariPage.reload({ waitUntil: 'load' })
+    await safariPage.locator('.f04-local-list').getByRole('button', { name: fixtureWine.name, exact: true }).click()
+    await safariPage.locator('.f04-stored-card').waitFor()
+    report.checks.webkitOriginalSaveOffline = true
     await safariPage.locator('.f04-local-list').getByRole('button', { name, exact: true }).click()
     await safariPage.locator('.f04-stored-card').waitFor()
     report.checks.webkitJourney = { comparison: true, escape: true, existingSaveReused: true, explicitOfflineCopy: true, offlineReload: true }
