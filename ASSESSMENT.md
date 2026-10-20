@@ -72,6 +72,8 @@ Some suites need files that are not in Git:
 10. **Two MCP interfaces for AI agents.** WebMCP tools in the portal let an AI agent in a supported browser drive the same scanner and shelf state that a user sees. A local read-only MCP server gives an AI assistant the wine card, filter search, and comparison of the 2,093 Active catalogue wines. See F-77 and F-48.
 11. **Wine for a dish.** The portal mode `/dish` takes a dish photo or a dish name. A separate service recognizes the dish with a local VLM, filters the wines with code rules, and shows editorial choices before embedding results. See F-27 to F-29.
 
+12. **Retrieval algorithm research reference.** A committed document defines 39 pooling profiles and 42 fusion policies. It records 353,188 unique configurations per frozen testset, including p512 leaderboards and exact recipes. The research uses no re-ranking. See F-112.
+
 ## Results summary
 
 | Metric | Value | Dataset | Pipeline | Source |
@@ -254,6 +256,15 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Proof:** [workbench/docs/reports/2026-09-30_competitor-pipeline-ablation.md](workbench/docs/reports/2026-09-30_competitor-pipeline-ablation.md); `workbench/tests/test_competitor_followup.py::test_unusable_acceptance_does_not_inflate_recall`.
 - **Verify:** Read the section "Result" of the report.
 - **Limits:** The benchmark script has a recorded lab defect: it gives `CascadeMatcher` to `Run` ([workbench/ChangeLog.md](workbench/ChangeLog.md) 2026-10-20).
+
+### F-112 Retrieval-only algorithm research reference
+
+- **Claim:** A committed research reference defines custom attention-pooling weights, query geometry, label retrieval, synthetic bottle-axis views, crop margins, patch budgets, wine-score aggregation, and bottle–label fusion without re-ranking. It records 39 pooling profiles, 42 fusion policies, and 53 exact result recipes. The source campaign covers 353,188 unique retrieval configurations on each frozen testset, `my` and `my-failed-2`. On `my-failed-2`, the standard `siglip2-p512-rot5-seg` baseline has R@1 294/668 (44.01%). The best all-budget R@1 is 450/668 (67.37%), and the best p512 R@1 is 442/668 (66.17%). These are different configurations; their other recall values are listed separately in the reference.
+- **Status:** Research-only. The document is committed. The results do not describe the default matcher or the Android Base encoder.
+- **Entry point:** [RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md](RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md).
+- **Proof:** The reference contains the fixed model revision, frozen testset hashes, formulas, complete parameter grids, raw recall counts, baseline deltas, per-family results, all-budget leaderboards, p512 leaderboards, exact recipe JSON, and source audit hashes. Sections 11–14 keep each configuration's metrics together. Section 15 keeps the incomplete RTX4090 replay separate from GX10.
+- **Verify:** Read Sections 4–8 for the algorithms and grids. Read Sections 11–14 for the results and exact recipes. Recompute each recall and percentage-point delta from the printed hit counts and denominators.
+- **Limits:** Both testsets were used for development selection and share 619 images. This is not independent validation or an official jury score. The report uses SigLIP2 SO400M NaFlex, not the Android Base model. The imported file contains local paths to the external lab workspace. The raw metric databases, frozen images, model weights, and campaign scripts are not committed with this reference, so this repository alone cannot rerun the campaign or independently verify every prediction.
 
 ## Criterion 2: post-search features (20/100)
 

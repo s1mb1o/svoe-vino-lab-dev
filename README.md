@@ -66,6 +66,23 @@ Prod matcher на gx10 использует pipeline `cascade-p512-rot5`. На �
 Он использует barcode, SAM3 crop и cluster re-rank. Эти этапы пока не входят в
 standalone matcher. Методика и ограничения описаны в [BENCHMARKS.md](BENCHMARKS.md).
 
+## Retrieval research without re-ranking
+
+[Retrieval algorithms and benchmark results, 20 October 2026](RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md)
+records a separate SigLIP2 SO400M NaFlex research campaign. It compares **353,188 unique
+retrieval configurations per frozen testset** on `my` and `my-failed-2`.
+The reference defines 39 pooling profiles, 42 fusion policies, query alignment,
+label retrieval, synthetic bottle-axis views, crop margins, patch budgets, and
+reference-score aggregation. It includes formulas, exact parameters, baseline
+comparisons, top-five leaderboards, the best p512 variants, and 53 exact result recipes.
+
+On the selected hard set `my-failed-2`, the best R@1 rises from **44.01% to 67.37%**;
+the best p512 R@1 is **66.17%**. These are development-set research results, not
+production matcher scores or official hackathon scores. The reference preserves
+separate GX10 and incomplete RTX4090 results. Its raw inputs, metric databases,
+and source-code links refer to the external lab workspace; they are not copied
+into this repository with the document. See F-112 in [ASSESSMENT.md](ASSESSMENT.md).
+
 ## Быстрый запуск интерфейса
 
 ```bash
@@ -99,6 +116,7 @@ matcher и model endpoint. Полная инструкция находится 
 
 - [Архитектура](ARCHITECTURE.md)
 - [Benchmarks](BENCHMARKS.md)
+- [Retrieval research: algorithms, exact parameters, and p512 results](RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md)
 - [Установка и запуск](SETUP.md)
 - [Matcher API](matcher/README.md)
 - [Проверка организаторов: запуск matcher и `participant_test.sh`](eval/README.md)
