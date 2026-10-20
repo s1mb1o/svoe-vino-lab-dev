@@ -66,11 +66,24 @@ describe('source wine metadata', () => {
     }))
   })
 
-  it('returns no metadata for a missing or invalid slug', async () => {
+  it('loads an exact catalogue identifier with an underscore', async () => {
+    const underscoreSlug = 'perovskih_aligote'
+    const request = vi.fn().mockResolvedValue(Response.json({ ...source, slug: underscoreSlug }))
+    const wine = await fetchSourceWine(underscoreSlug, { fetch: request as typeof fetch })
+
+    expect(wine?.slug).toBe(underscoreSlug)
+    expect(wine?.source).toBe(`https://vino-svoe.ru/wines/${underscoreSlug}`)
+    expect(request).toHaveBeenCalledWith(`https://api.vino-svoe.ru/v1/wines/${underscoreSlug}`, expect.objectContaining({ redirect: 'error' }))
+  })
+
+  it('returns no metadata for a missing slug', async () => {
     const missing = vi.fn().mockResolvedValue(Response.json({}, { status: 404 }))
     await expect(fetchSourceWine('missing-wine', { fetch: missing as typeof fetch })).resolves.toBeNull()
+  })
+
+  it.each(['//evil.example', '../private', 'perovskih/aligote', 'perovskih\\aligote', 'perovskih%2faligote'])('rejects an unsafe identifier before a source request: %s', async invalidSlug => {
     const unused = vi.fn()
-    await expect(fetchSourceWine('//evil.example', { fetch: unused as typeof fetch })).resolves.toBeNull()
+    await expect(fetchSourceWine(invalidSlug, { fetch: unused as typeof fetch })).resolves.toBeNull()
     expect(unused).not.toHaveBeenCalled()
   })
 

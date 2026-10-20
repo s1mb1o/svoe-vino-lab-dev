@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — Resolve catalogue identifiers with underscores
+
+- Accept underscores in source wine identifiers. Preserve the identifier in source API and portal URLs.
+- Add a regression for `perovskih_aligote`. Reject path separators and encoded separators before a source request.
+- Pass 625 tests with 26 existing skips, type checking, the production build, and the producer-map bundle check.
+
 ## 2026-10-20 — Make the hackathon page indexable
 
 - Remove `Disallow: /hackaton` from `robots.txt`.

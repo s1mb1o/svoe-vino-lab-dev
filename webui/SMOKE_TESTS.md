@@ -1,5 +1,12 @@
 # Smoke tests
 
+## Result metadata for an underscore identifier
+
+1. Configure the prediction fixture to return `perovskih_aligote`.
+2. Configure the source metadata fixture to return the same identifier and a complete card.
+3. Submit a valid image. Confirm that the result shows the card and preserves the exact portal identifier.
+4. Request metadata with a path separator or an encoded separator. Confirm that no source request occurs.
+
 ## Android 0.3.0 publication
 
 1. Verify version 0.3.0, code 7, the exact APK byte count, and the SHA-256 in one release contract.

@@ -1,5 +1,18 @@
 # Research log
 
+## 2026-10-20 — Source metadata identifier coverage
+
+The matcher bundle contains 37 underscore identifiers outside the 12-record local result catalogue.
+Of these identifiers, 36 occur in the Active alternative catalogue snapshot.
+The previous source metadata validator excluded underscores before it made an HTTP request.
+The source metadata validator now accepts the same identifier characters as the diary validator.
+The regression uses `perovskih_aligote` with a fixture source response.
+Path separators and encoded separators remain invalid.
+All 36 affected Active identifiers pass the corrected validator.
+The inactive leading-underscore sentinel remains invalid.
+The Web UI suite passes 625 tests with 26 existing skips.
+Type checking, the production build, and the producer-map bundle check pass.
+
 ## 2026-10-20 — Hackathon page indexing
 
 The owner requested removal of the `/hackaton` crawler exclusion and asked to make the page visible.

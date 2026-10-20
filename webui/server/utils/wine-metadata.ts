@@ -4,7 +4,7 @@ import { sourceWineUrl, wineImageUrl, type Wine } from '#shared/catalog'
 
 const SOURCE_API_ORIGIN = 'https://api.vino-svoe.ru'
 const SOURCE_RESPONSE_LIMIT = 256 * 1024
-const SOURCE_SLUG = /^[a-z0-9](?:[a-z0-9-]{0,198}[a-z0-9])?$/
+const SOURCE_SLUG = /^[a-z0-9](?:[a-z0-9_-]{0,198}[a-z0-9])?$/
 
 function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
