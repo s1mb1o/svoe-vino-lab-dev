@@ -25,11 +25,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The packshots of the wines, by slug, from the server: from the address in faces_url.txt in
- * the app's folder ({slug} in it stands for the slug; faces_auth.txt MAY hold "user:password")
- * when a developer put one there, else from the image_url the recognition API gave with the
- * slug. Each is fetched once and kept in faces/, then cut to the bottle (the transparent or
- * white margins off) and kept in memory about 480 px tall.
+ * The packshots of the wines, by slug: from the address in faces_url.txt in the app's folder
+ * when it exists ({slug} in it stands for the slug; faces_auth.txt MAY hold "user:password"),
+ * else from the image_url the recognition API gave. Each is fetched once and kept in faces/,
+ * then cut to the bottle (transparent or white margins off) and kept in memory about 480 px tall.
  */
 final class Faces {
     private static final String TAG = "Faces";

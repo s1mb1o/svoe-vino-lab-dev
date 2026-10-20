@@ -1,5 +1,5 @@
 // Homographies of the shelf plane: projection, the checks of a plausible camera motion,
-// and the registration of two frames from matched points (homography.py).
+// and the registration of two frames from matched points.
 #pragma once
 
 #include <array>
@@ -36,9 +36,9 @@ Mat3 normalized(const Mat3& H);
 
 // Why H is not a plausible camera motion of frame B, or nothing.
 std::optional<std::string> check(const Mat3& H, const Size2& size_b, const HomographyConfig& cfg);
-// The share of the overlap, in frame B, that the convex hull of the inliers of B covers; of
-// `area_b` px at most when the points of B can be in that much of it only (the bottles' boxes):
-// one bottle in view covers a tenth of a frame, all of what it can.
+// The share of the overlap, in frame B, that the convex hull of the inliers of B covers. The
+// overlap counts as at most `area_b` px when the points of B can only be there (the bottles'
+// boxes), so a single bottle in view can still cover all it can.
 double coverage(const Mat3& H, const std::vector<cv::Point2f>& inliers_b, const Size2& size_a,
                 const Size2& size_b, double area_b = 0);
 

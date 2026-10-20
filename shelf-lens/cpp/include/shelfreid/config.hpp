@@ -33,28 +33,28 @@ struct StreamConfig {
     double min_row_height = 0.6;
     double row_gap = 0.2;
     double min_width = 0.6;
-    // A box that wider boxes of its row cover across by this share of its width in all is a
-    // bottle of the back row seen in the gap between two of the front: dropped.
+    // A box that wider boxes beside it overlap by this share of its width in all is a bottle
+    // of the back row seen in a gap of the front row: dropped.
     double peek_overlap = 0.5;
     double height_rate = 0.2;
     double edge_margin = 0.02;
-    // A box cut only at the top of the frame (the neck hidden, the label in view) counts as a
-    // bottle when it shows at least this share of the running bottle height (its top is put
-    // where a bottle of that height would have it). A box cut at a side (its centre is off)
-    // or at the bottom (the label hidden: a bottle is no use without it) never does.
+    // A box cut only at the top of the frame (neck hidden, label in view) counts as a bottle
+    // when it shows at least this share of the running bottle height; its top is then put
+    // where a bottle of that height would have it. A box cut at a side (centre off) or at the
+    // bottom (label hidden) never does.
     double min_visible = 0.8;
     // A box reaching closer than this share of the frame height to its bottom does not start a
-    // bottle, nor refine one's place: the detector stops a box a little short of the edge, so
-    // a bottle top above it (the neck and shoulders, no label) would pass for a whole bottle.
-    // It still takes a bottle met before (edge_margin applies then).
+    // bottle: the detector stops a box a little short of the edge, so a bottle top above it
+    // (neck and shoulders, no label) would pass for a whole bottle. It still takes a bottle
+    // met before.
     double bottom_margin = 0.03;
     double leave_margin = 0.5;
     int settle_hits = 5;
     double keyframe_overlap = 0.6;
     // A new keyframe also where the reference keyframe is too poor to register to (fewer than
-    // 2 x min_loop_inliers points) and the view has richer_ratio times its points, and
-    // richer_points more (the points come from the bottles found: a keyframe made before the
-    // detector saw all the bottles in view, the camera not moving).
+    // 2 x min_loop_inliers points) and the view has richer_ratio times its points and
+    // richer_points more: points come from the bottles' boxes, so a keyframe made before the
+    // detector saw all the bottles in view stays poor while the camera does not move.
     double richer_ratio = 1.5;
     int richer_points = 40;
     int reloc_every = 5;
@@ -65,13 +65,13 @@ struct StreamConfig {
     double min_loop_coverage = 0.2;
     double small_correction = 0.15;
     double max_jump = 2.0;
-    // A registration to the reference keyframe or one registered in the last trust_steps
-    // may move the frame from where the flow puts it by at most this many bottle widths: on
-    // a row of identical bottles a registration shifted by a bottle or more fits as well.
+    // A registration to the reference keyframe or one registered in the last trust_steps may
+    // move the frame from where the flow puts it by at most this many bottle widths: on a row
+    // of identical bottles a registration shifted by a bottle or more fits as well.
     double alias_tolerance = 0.5;
-    // A registration to a keyframe met long ago that moves the frame further is ambiguous (and
-    // dropped) when the place the flow gives fits at least alias_ambiguity as many matches as
-    // the registration's place, a match fitting within alias_support bottle widths.
+    // A registration to a keyframe met long ago that moves the frame further is dropped as
+    // ambiguous when the flow's place fits at least alias_ambiguity as many matches as the
+    // registration's place (a match fits within alias_support bottle widths).
     double alias_support = 0.35;
     double alias_ambiguity = 0.5;
     int strong_inliers = 80;
@@ -86,10 +86,10 @@ struct StreamConfig {
     double duplicate_overlap = 0.6;
     int trust_steps = 30;
     int max_wait = 30;
-    // Lost longer than max_wait steps, start a separate piece of map where the camera is (a
-    // "new ground"), and near the map but not registered to it that long, trust the flow. Off:
-    // the tracker keeps looking for its place on the one map, and the boxes add nothing to it
-    // meanwhile (where they are on it is not known); a new shelf is a new map.
+    // On: lost longer than max_wait steps, the tracker starts a separate piece of map where the
+    // camera is (a "new ground"), and near the map but not registered to it that long, it
+    // trusts the flow. Off: it keeps looking for its place on the one map, and the boxes add
+    // nothing to the map meanwhile; a new shelf is a new map.
     bool new_ground = false;
     int young_steps = 30;
     double adjacent_gap = 1.6;

@@ -80,5 +80,5 @@ class Video:
 
 
 # The robot video of the Lenta hackathon: shot on its side with a wide-angle lens.
-# k is the plumb-line fit of long image edges (-0.46) and of the price-tag rows (-0.50).
+# k is a plumb-line fit of long image edges and of the price-tag rows.
 LENTA_ROBOT = Preprocess(rotate=270, scale=0.5, k=-0.47, zoom=0.7)

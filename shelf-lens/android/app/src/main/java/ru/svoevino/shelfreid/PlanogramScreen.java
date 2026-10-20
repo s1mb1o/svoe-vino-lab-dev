@@ -40,7 +40,7 @@ import java.util.Locale;
 /**
  * The planogram of the map as it is when the screen opens: built in the background, shown to
  * zoom and move, printed (the system's print dialog, one page) or shared (the picture, to any
- * app). The camera and the map go on under it.
+ * app). The camera pauses while it is open; the map stays.
  */
 @SuppressLint("ViewConstructor")
 final class PlanogramScreen extends LinearLayout {

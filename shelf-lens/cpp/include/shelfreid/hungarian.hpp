@@ -1,5 +1,5 @@
 // The one-to-one assignment of rows to columns with the least total distance; only pairs
-// at most `limit` apart count (associate.py, `hungarian`).
+// at most `limit` apart count.
 #pragma once
 
 #include <utility>

@@ -20,9 +20,9 @@ import java.nio.ByteBuffer;
  * paced by the player, to the native side: each frame for the motion, every 3rd frame for
  * the detector and the tracker.
  *
- * The decoder gives byte buffers: its output copied into the app costs CPU (on this phone
- * about one core across the binder threads), but an ImageReader output reads back as a
- * vendor layout (green frames) on the MediaTek decoder. The camera has neither cost.
+ * The decoder gives byte buffers: copying its output into the app costs CPU, but an ImageReader
+ * output can read back in a vendor layout (green frames) on some hardware decoders. The camera
+ * has neither cost.
  */
 final class VideoSource {
     private static final String TAG = "VideoSource";

@@ -11,9 +11,8 @@ time: the first `--photo-train` share of each kind (shelf photos, others) trains
 validates, so near copies of one shelf do not land on both sides.
 
     uv run python scripts/make_detector_dataset.py OUT \
-        --train-video data/phone-2026-10-17/VID_20261017_115611.mp4:out/phone/115611-dets.jsonl \
-        --val-video data/phone-2026-10-17/VID_20261017_115301.mp4:out/phone/115301-dets.jsonl \
-        --photos out/labeling/2026-10-18
+        --train-video VIDEO.mp4:DETS.jsonl[:STRIDE] --val-video VIDEO.mp4:DETS.jsonl \
+        --photos LABELING_DIR
 
 OUT gets images/{train,val}/ (resized to `--width` px wide) with YOLO labels in
 labels/{train,val}/ and bottle.yaml (Ultralytics), COCO annotations/{train,val}.json

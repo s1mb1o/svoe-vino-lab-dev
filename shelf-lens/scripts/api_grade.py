@@ -1,8 +1,8 @@
 """Grade the answers of scripts/api_crops.py against the wines read from the labels
 (OUT/truth.json: bottle -> {"label", "producer", "slug" or null when the catalogue lacks
 the wine, and optionally "slugs": every catalogue entry that is this wine}; bottles missing
-from truth.json are left out) and write OUT/index.html with each crop marked: the right wine, only the right
-producer, a wrong wine, or a wine the catalogue lacks.
+from truth.json are left out) and write OUT/index.html with each crop marked: the right
+wine, only the right producer, a wrong wine, or a wine the catalogue lacks.
 
     uv run python scripts/api_grade.py OUT
 """

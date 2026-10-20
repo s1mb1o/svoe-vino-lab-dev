@@ -1,7 +1,7 @@
-// The bottle detector of the phone: a YOLOX model (ONNX, input 1x3x800x448) on the
-// accelerator through ONNX Runtime and NNAPI, as scripts/detect_onnx.py runs it on a laptop:
-// the frame fitted into the input at the top left (BGR, 0..255, grey padding), the raw
-// output decoded on the strides 8, 16 and 32, the score objectness x class, then NMS.
+// The bottle detector: a YOLOX model (ONNX, input 1x3x800x448) on the accelerator through
+// ONNX Runtime and NNAPI, the same way as scripts/detect_onnx.py: the frame fitted into the
+// input at the top left (BGR, 0..255, grey padding), the raw output decoded on the strides
+// 8, 16 and 32, the score objectness x class, then NMS.
 #pragma once
 
 #include <memory>

@@ -26,14 +26,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sends the crops the native side cuts (pipeline.hpp has the rules: the size gate, the
- * agreement of answers) to the wine recognition API, /v1/match, at most four at a time (the
- * most crops a second, scripts/api_load.py: 1.6 against 1.0 at two, slower at eight, refusals
- * above), with the retries of the API guide after 502, 503 and 504. Each answer goes back to the
- * native side; each answer and each decision go to answers.jsonl in the run's folder, next
- * to the crops.
+ * agreement of answers) to the wine recognition API, /v1/match, at most four at a time, retried
+ * after 502, 503, 504 or a failed connection. Each answer goes back to the native side; each
+ * answer and each decision go to answers.jsonl in the run's folder, next to the crops.
  *
- * The password is read from a file in the app's folder that a developer pushes; it is never
- * in the code or the APK (a build for users needs a server of ours in between).
+ * The password is read from api_password.txt pushed to the app's folder; it is never in the
+ * code or the APK.
  */
 final class Recognizer {
     private static final String TAG = "Recognizer";
@@ -102,7 +100,7 @@ final class Recognizer {
             long dumped = 0, logged = 0;
             while (running) {
                 long now = System.currentTimeMillis();
-                if (now - dumped > 5000) {   // the table of every bottle, for a look afterwards
+                if (now - dumped > 5000) {
                     dumpTable();
                     dumped = now;
                 }
@@ -150,7 +148,7 @@ final class Recognizer {
         }
     }
 
-    /** The wine recognised for a bottle ("?" at the end while one answer stands alone), or null. */
+    /** The wine recognised for a bottle (" ?" at the end while the decision is not sure), or null. */
     String wine(int bottle) {
         return wines.get(bottle);
     }

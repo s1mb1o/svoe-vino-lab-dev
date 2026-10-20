@@ -1,8 +1,7 @@
-// Unique bottles over a video stream, frame by frame (stream.py): the motion of the
-// camera by optical flow, the place on the shelf map by a pose graph of keyframes, the
-// boxes against the bottles of the map, the labels of the bottles and the check of the
-// rows. `step` is the synchronous tracker, the reference; realtime.hpp splits it in two
-// loops.
+// Unique bottles over a video stream, step by step: the motion of the camera by optical
+// flow, the place on the shelf map by a pose graph of keyframes, the boxes against the
+// bottles of the map, the labels of the bottles and the check of the rows. `step` is the
+// synchronous tracker, the reference; realtime.hpp splits it in two loops.
 #pragma once
 
 #include <map>
@@ -54,10 +53,10 @@ struct Bottle {
 };
 
 // Where bottle b stands from bottle a (a < b) in the frames that saw both: the sums of the
-// offsets of b's box from a's, in units of each frame's median box height, and the numbers
-// of frames: dx between the centres (n: boxes not cut, a box cut at the top still has its
-// centre), dy between the bottoms (ny: boxes inside the frame). A frame sees
-// the shelf without the drift of the map, so the planogram lays the bottles out from these.
+// offsets of b's box from a's, in units of each frame's median bottle height, and the
+// numbers of frames. dx is between the centres (n frames; a box cut at the top keeps its
+// centre), dy between the bottoms (ny frames, neither box cut). A frame sees the shelf
+// without the drift of the map, so the planogram lays the bottles out from these.
 struct Offset {
     double dx = 0, dy = 0;
     int n = 0, ny = 0;
@@ -142,7 +141,7 @@ public:
     // The motion of the picture since the last step, current frame -> previous step's frame,
     // from the frame-by-frame motion (FrameMotion) when the caller has it. The flow starts
     // its points where it puts them (so a large move between steps does not lose them), and
-    // takes it when the flow fails, instead of a jump. The step uses and clears it.
+    // the step takes the hint itself when the flow fails, instead of a jump. The step clears it.
     std::optional<Mat3> motion_hint;
     int hinted = 0;   // steps whose flow failed and the hint stood in
     std::map<int, Votes> votes;   // box -> votes of this frame
@@ -194,22 +193,20 @@ protected:
                                  double area_f = 0) const;
     FrameFeatures features_of(const cv::Mat& frame, const std::vector<Detection>& detections) const;
     std::optional<Good> register_to(const FrameFeatures& features, int index) const;
-    // Whether registration `g` of a frame agrees with where the flow put that frame (`frame_ref`,
-    // `frame_P`, at step `step`; `seen`: the steps keyframes were last registered). Within
-    // cfg.alias_tolerance bottle widths of it, always. Further: never for the reference
-    // keyframe or one registered lately (the flow ties them to the frame, a registration only
-    // corrects the drift); for a keyframe met long ago (a loop back, where the drift MAY be
-    // that large), unless the flow's place fits the matches about as well as the
-    // registration's (cfg.alias_support, cfg.alias_ambiguity): then the matches are a row of
-    // one wine matched to a neighbour.
+    // Whether registration `g` agrees with where the flow put the frame (`frame_ref`, `frame_P`
+    // at step `step`; `seen`: the step each keyframe was last registered). Within
+    // cfg.alias_tolerance bottle widths, always. Further off: never for the reference keyframe
+    // or one registered lately (there a registration only corrects drift); for a keyframe met
+    // long ago (a loop back), unless the flow's place fits the matches about as well
+    // (cfg.alias_support, cfg.alias_ambiguity): then a row of one wine matched one bottle off.
     bool agrees(const Good& g, int frame_ref, const Mat3& frame_P, int step, const std::map<int, int>& seen) const;
     std::vector<Good> registrations(const FrameFeatures& features, const std::vector<int>& candidates);
     void relocalize(int number, const FrameFeatures& features);
     int merge_duplicates();
     void absorb(Bottle& earlier, const Bottle& later);
     bool needs_keyframe() const;
-    // The view has much more to register by than the reference keyframe (cfg.richer_*): a
-    // keyframe made before the detector saw all the bottles in view, say, the camera not moving.
+    // The reference keyframe is too poor to register to and the view has much more to
+    // register by (cfg.richer_*).
     bool richer(const FrameFeatures& features) const;
     void add_keyframe(int number, const FrameFeatures& features);
     void jump();
@@ -242,7 +239,7 @@ protected:
     cv::Mat gray_of(const cv::Mat& frame) const;
 };
 
-// Drop weak, wide, thin and contained boxes (detect.py, `clean_bottles`).
+// The detections less the weak, too wide, too thin and contained (mostly inside a larger box) ones.
 std::vector<Detection> clean_bottles(const std::vector<Detection>& detections, double min_score = 0.6,
                                      double max_aspect = 1.0, double min_aspect = 0.15, double contained = 0.5);
 

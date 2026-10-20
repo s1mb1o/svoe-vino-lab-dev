@@ -1,4 +1,4 @@
-// Run the tracker on a video with cached detections and dump each step as JSON lines, in
+// Runs the tracker on a video with cached detections and writes each step as a JSON line, in
 // the format of the Python dumps: [frame, [[x1, y1, x2, y2, status, bottle], ...]].
 //
 //   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N|rt:async OUT.jsonl [--every 3] [--slow-every K] [--pace MS]

@@ -19,11 +19,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The back camera: CameraX shows the preview (every frame, on its own), and its image
- * analysis gives YUV frames of about 1920x1080 to the native side: each frame for the
- * motion, every 3rd frame for the detector and the tracker. The analysis keeps only the
- * latest frame, so a slow step drops frames instead of falling behind. The frames are
- * numbered on from `firstFrame`, so a map goes on over several starts of the camera.
+ * The back camera: CameraX shows the preview on its own, and its image analysis gives YUV frames
+ * of about 1920x1080 to the native side: each frame for the motion, every 3rd for the detector
+ * and the tracker. Only the latest frame is kept, so a slow step drops frames instead of falling
+ * behind. Frames are numbered on from `firstFrame`, so a map goes on over several camera starts.
  */
 final class CameraSource {
     interface Frames {

@@ -225,7 +225,7 @@ void Pipeline::track_loop() {
         bool waiting_box = false;
         for (const auto& s : result_.shown) waiting_box |= s.bottle == kNone && s.status == "pending";
         lost_ = t.lost || (!t.trusted && waiting_box);
-        // The tracker's state once a second in the log, for a look at a shot on the phone.
+        // The tracker's state in the log once a second.
         static Clock::time_point logged{};
         if (ms(logged, now) > 1000) {
             logged = now;
@@ -250,7 +250,7 @@ Pipeline::Result Pipeline::latest() const {
         std::lock_guard<std::mutex> r(result_mutex_);
         result = result_;
     }
-    // Whether each wine is known, as of now: an answer MAY come after the last step (the end
+    // Whether each wine is known, as of now: an answer may come after the last step (the end
     // of a video), and the box turns green all the same.
     std::lock_guard<std::mutex> rl(recognition_mutex_);
     result.recognized.assign(result.shown.size(), 0);
@@ -359,8 +359,8 @@ void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector
         const bool cut = b[0] < 0.01 * W || b[2] > 0.99 * W || b[1] < 0.01 * H || b[3] > 0.99 * H;
         const bool asking_done = rec.answers >= kMaxAttempts || rec.attempts >= kMaxAttempts;
         const bool fit = !rec.sure && !asking_done && h >= kGate * H && !cut;
-        // Offer the crop to the bottle's reserve (a raw copy: the PNG is made when it is sent).
-        // Every other step only: the reserve then spans more time, its crops differ more.
+        // The crop goes to the bottle's reserve (a raw copy: the PNG is made when it is sent),
+        // every other step only: the reserve then spans more time, its crops differ more.
         if (recognition_on_ && fit && track_steps_ % 2 == 0) {
             if (rec.first_fit == Clock::time_point{}) rec.first_fit = Clock::now();
             rec.max_height = std::max(rec.max_height, h);
@@ -441,7 +441,7 @@ std::vector<unsigned char> Pipeline::dispatch() {
     auto chosen = best_of(*pick);
     std::vector<unsigned char> png;
     const int choices = static_cast<int>(pick->kept.size());
-    if (!cv::imencode(".png", chosen->crop, png)) {   // lossless, as in the tests of the server
+    if (!cv::imencode(".png", chosen->crop, png)) {   // lossless
         pick->kept.erase(chosen);
         return {};
     }
@@ -528,7 +528,7 @@ std::string Pipeline::recognition_table() const {
     char line[256];
     for (const auto& [id, rec] : recognitions_) {
         if (out.size() > 1) out += ",";
-        // The state as of now (answers MAY come after the last step); the gate's reason from the
+        // The state as of now (answers may come after the last step); the gate's reason from the
         // last step where it was seen otherwise.
         std::string state = rec.state;
         if (rec.sure) state = "known";

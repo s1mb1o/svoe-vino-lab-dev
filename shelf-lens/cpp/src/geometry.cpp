@@ -119,7 +119,7 @@ Registration estimate(const std::vector<cv::Point2f>& points_a,
     else if (r.inliers < cfg.min_inlier_ratio * count) reason = "inlier ratio";
     else reason = check(Hm, size_b, cfg);
     if (!reason) {
-        // The share of frame A that frame B covers.
+        // Frame B has to overlap frame A.
         const Quad quad = project(Hm, corners(size_b));
         std::vector<cv::Point2f> inter;
         const double overlap_a = cv::intersectConvexConvex(as_float(quad), as_float(corners(size_a)), inter);

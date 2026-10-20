@@ -13,7 +13,7 @@ final class Native {
     /**
      * Loads the detector (seconds: the accelerator compiles the model); 0 on failure.
      * cvThreads: OpenCV's pool (1: serial; 0: its default); cheapSlow: the slow loop's SIFT on
-     * a smaller copy with fewer features (half the time).
+     * a smaller copy with fewer features, for speed.
      */
     static native long create(String modelPath, int cvThreads, boolean cheapSlow);
 
@@ -34,7 +34,8 @@ final class Native {
 
     /**
      * The last processed frame: its number, then six floats a box: x1, y1, x2, y2, state (0 a
-     * bottle whose wine is not known yet, 1 known, 3 no bottle), bottle id (-1 none).
+     * bottle whose wine is not known yet, 1 known, 2 a crop of it waits for the server, 3 not a
+     * bottle the tracker keeps, 4 a bottle not on the map yet), bottle id (-1 none).
      */
     static native float[] latest(long handle);
 
@@ -54,8 +55,8 @@ final class Native {
     static native String answer(long handle, int bottle, int frame, int height, String slug, String name, boolean ok);
 
     /**
-     * Every bottle met, as a JSON array: id, state (known, asking, waiting, eligible, small, cut,
-     * unconfirmed, done asking), height, share, frame, requests, answers, sure, wine.
+     * Every bottle met, as a JSON array: id, state (known, asking, waiting, answered, eligible,
+     * small, cut, unconfirmed, done asking), height, share, frame, requests, answers, sure, kept, wine.
      */
     static native String recognitionTable(long handle);
 

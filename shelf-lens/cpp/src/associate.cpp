@@ -1,6 +1,6 @@
-// The boxes of a frame against the bottles of the map (stream.py, `_associate` and what it
-// calls): tracking, rescue, re-identification, neighbour habits, the check of the rows by
-// labels, conflicts with the map, new bottles, young duplicates.
+// The boxes of a frame against the bottles of the map: tracking, rescue, re-identification,
+// neighbour habits, the check of the rows by labels, conflicts with the map, new bottles,
+// young duplicates.
 #include <algorithm>
 #include <iostream>
 #include <cmath>
@@ -131,7 +131,7 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
     std::map<int, int> ids;
     for (const auto& [i, k] : matched) ids[i] = bottles[k].id;
     auto id_at = [&](int box) { auto it = ids.find(box); return it == ids.end() ? kNone : it->second; };
-    // Veto the re-identifications that the history of the neighbours contradicts.
+    // A re-identification that the history of the neighbours contradicts is vetoed.
     for (const auto& [i, k] : second) {
         const auto [l, r] = neighbours[i];
         if (contradicted(ids[i], l == kNone ? kNone : id_at(l), r == kNone ? kNone : id_at(r))) {
@@ -140,7 +140,7 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
             ++vetoed;
         }
     }
-    // Suggest the habitual neighbours of the neighbours to the boxes left over.
+    // The boxes left over take the habitual neighbours of their neighbours.
     for (int round = 0; round < 3; ++round) {
         std::set<int> taken;
         for (const auto& [i, k] : matched) taken.insert(k);
@@ -166,7 +166,7 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
         if (!changed) break;
     }
     const std::map<int, int> by_habit = matched;
-    // Check every row against the labels of its boxes; the boxes left free take the
+    // Every row is checked against the labels of its boxes; the boxes left free take the
     // released bottles by place.
     const std::set<int> released = lost ? std::set<int>{} : check_rows(number, boxes, matched, centres, spans);
     if (!released.empty()) {
@@ -203,8 +203,8 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
     const size_t count_before = bottles.size();
     for (int i = 0; i < static_cast<int>(detections.size()); ++i) {
         const Detection& det = detections[i];
-        // Cut at the top with most of a bottle: completed. A box that starts a bottle keeps off
-        // the bottom (bottom_margin): a bottle top above the edge has no label.
+        // A box cut at the top but showing most of a bottle is completed. A box that starts a
+        // bottle keeps off the bottom (bottom_margin): a bottle top above the edge has no label.
         auto made_whole = completed(det.box);
         if (made_whole && det.box[3] > size.height * (1 - cfg.bottom_margin)) made_whole.reset();
         auto m = matched.find(i);
@@ -259,8 +259,8 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
 
 void Tracker::learn_offsets(const std::vector<Shown>& shown) {
     const double margin = cfg.edge_margin * size.width;
-    // A box cut at a side or the bottom is no use (completed); one cut at the top still has
-    // its centre, but not its height.
+    // A box cut at a side or the bottom is no use (cut()); one cut at the top still has its
+    // centre, but not its height.
     auto upright = [&](const Box& b) { return b[1] >= margin; };
     std::vector<size_t> seen;
     std::vector<double> heights, widths;
@@ -272,8 +272,8 @@ void Tracker::learn_offsets(const std::vector<Shown>& shown) {
         if (upright(b)) heights.push_back(b[3] - b[1]);
     }
     if (seen.empty()) return;
-    // The unit: the median height of the whole boxes, or, close to a shelf where every box is
-    // cut at the top or bottom, the median width over the shape of a bottle.
+    // The unit: the median height of the boxes not cut at the top, or, close to a shelf where
+    // every box is, the median width over the shape of a bottle.
     const double aspect = bottle_width && bottle_height ? std::clamp(*bottle_width / *bottle_height, 0.2, 0.45) : 0.3;
     const double unit = std::max(heights.empty() ? percentile(widths, 50) / aspect : percentile(heights, 50), 1.0);
     for (size_t i : seen) {

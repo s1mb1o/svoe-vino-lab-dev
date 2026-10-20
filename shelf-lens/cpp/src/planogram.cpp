@@ -234,11 +234,10 @@ Planogram planogram(const std::vector<Placed>& bottles, const std::map<int, std:
         return higher[a] != higher[b] ? higher[a] > higher[b] : mean_y[a] > mean_y[b];   // the bottom one first
     });
 
-    // The map's layout, each shelf from 0: sizes and gaps in bottle heights. The map
-    // stretches unevenly (more one way than the other where keyframe 0 saw the shelf at an
-    // angle), so a height is in units of the heights around and a width or a gap in units of
-    // the widths around, times the shape of a bottle in the frames (`aspect`). It stands in
-    // for the frames' layout below where the frames have nothing.
+    // The map's layout, each shelf from 0, in bottle heights. The map stretches unevenly where
+    // keyframe 0 saw the shelf at an angle, so a height is in units of the heights around and
+    // a width or a gap in units of the widths around, times `aspect`. It stands in for the
+    // frames' layout below where the frames have nothing.
     std::map<int, double> centre_of, width_of, height_of;   // bottle id -> bottle heights
     for (int s : order) {
         const auto& ids = shelves[s];
@@ -270,8 +269,8 @@ Planogram planogram(const std::vector<Placed>& bottles, const std::map<int, std:
 
     // The frames' layout: the centres that fit best (least squares) the offsets of the pairs
     // seen together, a shelf above or below included, so the shelves line up with each other
-    // and the map's drift between passes stays out. A far pair counts less (the perspective
-    // of a frame bends it), a pair seen once not at all.
+    // and the map's drift stays out. A far pair counts less (a frame's perspective bends it),
+    // a pair seen fewer than kMinSeen times not at all.
     if (offsets && !offsets->empty()) {
         std::map<int, int> slot;
         std::vector<int> ids;
@@ -293,10 +292,9 @@ Planogram planogram(const std::vector<Placed>& bottles, const std::map<int, std:
         }
         cv::Mat x;
         if (cv::solve(A, rhs, x, cv::DECOMP_CHOLESKY)) {
-            // The largest group of bottles the frames link sets the layout. Another group (no
-            // frame saw one of its bottles whole with one of the first: an empty place between
-            // them, say) keeps the map's layout on each shelf, moved to the nearest bottles
-            // of the first group on that shelf (the map's gap to them stays).
+            // The largest group of bottles the offsets link sets the layout. Another group (an
+            // empty place between them, say) keeps the map's layout on each shelf, shifted as
+            // the nearest bottles of the largest group on that shelf, or as its median.
             std::map<int, int> size;
             for (int i = 0; i < m; ++i) ++size[top(i)];
             const int main = std::max_element(size.begin(), size.end(),

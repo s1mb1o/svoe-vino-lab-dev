@@ -67,7 +67,7 @@ def make(args):
         for x in shown:
             if x[5] is not None:
                 obs[x[5]].append((number, tuple(x[:4])))
-    # Bottles whose largest view is whole and not at the frame edge, sampled across the clip.
+    # A random sample of the bottles seen in at least 20 frames.
     rng = random.Random(0)
     bottles = sorted(b for b, v in obs.items() if len(v) >= 20)
     bottles = sorted(rng.sample(bottles, min(args.bottles, len(bottles))))
@@ -231,7 +231,7 @@ fetch("selection").then(r => r.json()).then(ids => {
 
 
 def candidates(args):
-    """Every bottle: its sharpest crop in each of up to five size steps, lossless PNG."""
+    """Every bottle: its sharpest crop in each of `--steps` size steps, lossless PNG."""
     out = Path(args.out)
     (out / "candidates").mkdir(parents=True, exist_ok=True)
     obs = defaultdict(list)

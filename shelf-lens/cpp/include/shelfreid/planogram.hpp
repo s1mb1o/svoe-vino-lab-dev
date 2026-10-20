@@ -1,19 +1,13 @@
-// The planogram of a shelf map: its bottles in shelves, each shelf left to right, with the
-// sizes and the gaps in bottle units. The map is a homography of keyframe 0, so it keeps the
-// perspective of that frame (and some drift): rows fan out and bottles grow across it. Only
-// local geometry is used, so that cancels out:
-//  - a bottle's right neighbour is the one the frames saw there most (Tracker::right), or
-//    else the nearest bottle to its right along its own bottom edge, about as low;
-//  - the rows these links make join across gaps (an empty place, a bottle not met) when
-//    one ends where the other starts, about as low;
-//  - where a bottle stands along the shelves comes from the frames: the offsets of the
-//    pairs of bottles seen together (a shelf above or below included), fitted by least
-//    squares, so the shelves line up with each other; sizes are in units of a frame's
-//    median bottle height. Without them (or for bottles no frame links to the rest), from
-//    the map: a height in units of the median height of the bottles around, a width or a
-//    gap in units of their median width, times `aspect`.
-// A bottle a frame never saw alone (provisional) or one that covers most of another (a
-// duplicate of the map: the one with fewer sightings goes) is left out.
+// The planogram of a shelf map: its bottles in shelves, each shelf left to right, with sizes
+// and gaps in bottle units. The map keeps the perspective of keyframe 0 (and some drift), so
+// only local geometry is used:
+//  - a bottle's right neighbour is the one the frames saw there most (Tracker::right), else
+//    the nearest bottle to its right along its own bottom edge, about as low;
+//  - the rows these links make join across gaps when one ends where the other starts;
+//  - positions along the shelves are a least-squares fit of the in-frame offsets of bottle
+//    pairs seen together (a shelf above or below included), in units of a frame's median
+//    bottle height. Bottles no frame links take the map's local sizes and gaps instead.
+// Provisional bottles (`skip`) and duplicates on the map (the one seen less goes) are left out.
 #pragma once
 
 #include <set>
@@ -26,7 +20,7 @@ namespace shelfreid {
 
 struct Facing {
     int bottle = 0;
-    double x = 0, width = 0, height = 0;   // bottle units: the left edge from the shelf's start, the size
+    double x = 0, width = 0, height = 0;   // bottle units: the left edge, the size
 };
 
 struct Shelf {

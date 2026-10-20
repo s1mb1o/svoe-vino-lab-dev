@@ -24,18 +24,15 @@ for tests):
   over the track of the bottle the box carried at t (its last box and motion), and the
   bottle the box carried loses its track; a young bottle that loses its track so (started
   within `young_steps` of frame t) and that no box should carry is a false new one of the
-  latency, and joins the bottle that took its track (at 39 s, 61 s and 67 s of 115611 the
-  fast loop started 109-116, 124-127 and 128-130 for bottles of the first visit while the
-  check of their rows was in flight).
+  latency, and joins the bottle that took its track.
 
 A new bottle is provisional until a slow result has seen it: the fast loop starts it and
 tracks it, but shows it waiting (white), and the check of the rows treats its box as a box
 with no bottle, as the synchronous tracker does in the frame where it would start it. When
 the result lands, a provisional bottle that the labels named an older bottle joins it, and
-the others become new (green). Without this the fast loop started bottles for a row of the
-first visit (39 s of 115611: 109-112 for 24-32, whose places in the map lay two bottles
-off), and the check passed them over: a box whose bottle has no label yet is not checked.
-A frame with provisional bottles in view asks for the slow loop.
+the others become new (green). Otherwise the check of the rows would pass over the bottles
+that the fast loop started: a box whose bottle has no label yet is not checked. A frame
+with provisional bottles in view asks for the slow loop.
 
 A jump (the flow fails) drops the results in flight: their frames lie before the jump.
 """

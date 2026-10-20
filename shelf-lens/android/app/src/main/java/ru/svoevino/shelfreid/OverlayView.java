@@ -12,16 +12,14 @@ import java.util.Locale;
 import java.util.function.IntSupplier;
 
 /**
- * The boxes of the last processed frame over the picture, on every display frame, moved by
- * the motion of the picture since that frame so they stay on their bottles between processed
- * frames. Grey: a bottle found; yellow with an hourglass: a crop of it waits for the server
- * or its answer; green: its wine is known, with the wine's rating in stars along the bottom
- * when the box is wide enough. The frame (frameWidth x frameHeight, upright) fills the view
- * (the camera preview, cut at the sides) or fits into it (a video, in debug).
+ * The boxes of the last processed frame over the picture, on every display frame, moved by the
+ * motion of the picture since that frame so they stay on their bottles. Grey: a bottle found;
+ * yellow with an hourglass: a crop of it waits for the server; green: its wine is known, with its
+ * rating in stars when the box is wide enough. The upright frame fills the view (the camera
+ * preview, cut at the sides) or fits into it (a video, in debug).
  *
- * The boxes vanish when they are too old (MAX_LAG frames behind the screen) or the picture
- * moved more than MAX_SHIFT of the frame width since their frame; the next processed frame
- * brings them back.
+ * The boxes vanish when they are MAX_LAG frames behind the screen or the picture moved more than
+ * MAX_SHIFT of the frame width since their frame; the next processed frame brings them back.
  */
 final class OverlayView extends View {
     private static final int MAX_LAG = 30;
@@ -129,7 +127,7 @@ final class OverlayView extends View {
             int status = (int) result[i + 4];
             int id = (int) result[i + 5];
             if (status == 3 && !debug) continue;   // not a bottle the tracker keeps (cut, too weak)
-            // 4: a bottle found, not on the map yet (the tracker looks for its place): grey, a detection.
+            // 4 (a bottle not on the map yet) is drawn grey, as a detection.
             // The corners moved by the motion; the box spans them.
             double ax = m[0] * result[i] + m[1] * result[i + 1] + m[2], ay = m[3] * result[i] + m[4] * result[i + 1] + m[5];
             double bx = m[0] * result[i + 2] + m[1] * result[i + 3] + m[2], by = m[3] * result[i + 2] + m[4] * result[i + 3] + m[5];
@@ -178,8 +176,8 @@ final class OverlayView extends View {
     }
 
     /**
-     * The rating along the bottom inside the box, when five stars of at least MIN_STAR fit in
-     * its width; a fraction fills a star in part.
+     * The rating along the bottom inside the box, when five stars of at least 7 dp fit in its
+     * width; a fraction fills a star in part.
      */
     private void stars(Canvas canvas, RectF r, double rating) {
         float pad = 4 * dp;

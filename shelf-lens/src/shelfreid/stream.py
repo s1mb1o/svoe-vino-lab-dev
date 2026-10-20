@@ -37,12 +37,10 @@ from .types import Box, Detection
 @dataclass(frozen=True)
 class StreamConfig:
     flow_scale: float = 0.5          # the optical flow runs on a copy of this scale
-    # The model of one step of motion: homography | affine | similarity. On the phone video
-    # (no relocalisation, 33 s) the chain of homographies drifted 590-690 px and 1.23-1.28
-    # in scale: the perspective terms pile up and inflate the map. Affine steps drifted
-    # 200-285 px and 0.92-0.93; similarity steps 515-600 px and 0.83.
-    # But the tracker did worse with affine steps (more bottles lost and started again):
-    # an affine step fits a tilting handheld frame worse inside the frame.
+    # The model of one step of motion: homography | affine | similarity. A chain of
+    # homographies drifts more (the perspective terms pile up and inflate the map), but an
+    # affine step fits a tilting handheld frame worse inside the frame, so more bottles
+    # are lost and started again.
     motion_model: str = "homography"
     # The model of a registration to a keyframe: homography | affine.
     reloc_model: str = "homography"
@@ -60,26 +58,24 @@ class StreamConfig:
     # height (necks above the front bottles, the tops of the next shelf at the frame
     # bottom), and a lone box lower than `min_height` of the bottle height (the neck of a
     # bottle behind). The bottle height is a running 75th percentile of the boxes away
-    # from the top and bottom edges: necks are up to 40% of the boxes of a frame.
+    # from the top and bottom edges, as many boxes of a frame are necks.
     min_height: float = 0.75
     min_row_height: float = 0.6
     row_gap: float = 0.2
     # Likewise a box narrower than this share of the running bottle width, unless the side
-    # of the frame cuts it: a sliver between two bottles (1.6% of the tall boxes).
+    # of the frame cuts it: a sliver between two bottles.
     min_width: float = 0.6
     height_rate: float = 0.2         # the update rate of the running bottle size
     # Of the frame width: a box this close to an edge is cut. A box cut by a side of the
-    # frame is dropped (the user's rule: no box without a small margin from the side); a
-    # box cut by the top or bottom only continues a track.
+    # frame is dropped; a box cut by the top or bottom only continues a track.
     edge_margin: float = 0.02
     leave_margin: float = 0.5        # bottle widths outside the frame: the bottle left the view
     settle_hits: int = 5             # the map box follows the first N whole observations
     keyframe_overlap: float = 0.6    # a new keyframe when no keyframe shares this much
     reloc_every: int = 5             # steps between keyframe registrations
-    # Registration to keyframes. The chain drifts about a frame width in half a minute, so
-    # the keyframes are searched around the predicted place; those that overlap the frame
-    # most are tried first. Keyframes and bottles younger than `recent_steps` belong to
-    # this visit (see `trust_steps`).
+    # Registration to keyframes. The chain drifts, so the keyframes are searched around
+    # the predicted place; those that overlap the frame most are tried first. Keyframes
+    # and bottles younger than `recent_steps` belong to this visit (see `trust_steps`).
     recent_steps: int = 50
     search_radius: float = 1.5       # frame widths around the predicted place
     loop_candidates: int = 3
@@ -98,11 +94,11 @@ class StreamConfig:
     merge_distance: float = 0.5      # bottle widths: a bottle of this visit is an old one
     # Two boxes in one column of one row are one bottle; the weaker box is dropped.
     duplicate_overlap: float = 0.6   # of the narrower width
-    # Trust. On a revisit the chain is off by up to 2-3 bottles until a registration to an
+    # Trust. On a revisit the chain is off by a few bottles until a registration to an
     # old keyframe; old bottles then project to wrong places and take wrong detections,
     # and the leftovers start duplicates. While the place is not trusted (an old keyframe
     # is near, and no registration to an old keyframe for `trust_steps`), the tracker
-    # keeps only its tracks: no re-identification, no new bottles (the boxes wait, grey),
+    # keeps only its tracks: no re-identification, no new bottles (the boxes wait, white),
     # and it tries a registration every step. After `max_wait` untrusted steps it goes on
     # anyway: the ground is new after all.
     trust_steps: int = 30
@@ -114,14 +110,13 @@ class StreamConfig:
     # step registers the frame to all the keyframes until a registration is strong
     # (`strong_inliers`, `strong_coverage`). After `max_wait` lost steps the place is new
     # ground: a keyframe of its own, away from the map. The search near the predicted
-    # place (`search_radius`) never tries the keyframes of a far place: four frames of the
-    # video fed after its end took the ids of the place where the video ended, red.
+    # place (`search_radius`) would never try the keyframes of a far place.
     # Bottles are compared by the projected centre alone, across the shelf, in widths of the
     # detection, and in one row (each centre inside the other's vertical span). Not by the
     # projected box: a bottle is a cylinder, not a part of the shelf plane, so a homography
-    # from an oblique keyframe to a frontal frame stretches its box (1.7-1.9 times the width
-    # at 1:10) while its centre stays right. Normalised by the detection, not by the
-    # projection, an inflated projection does not bring a neighbour close either.
+    # from an oblique keyframe to a frontal frame stretches its box while its centre stays
+    # right. Normalised by the detection, not by the projection, an inflated projection
+    # does not bring a neighbour close either.
     # Young duplicates. A bottle started in the last `young_steps` that turns out to stand
     # where an older bottle stands (column distance below `merge_distance`, one row) is a
     # duplicate: it is merged into the older bottle, which keeps its id.
@@ -131,8 +126,7 @@ class StreamConfig:
     # counted as neighbours over the frames. A bottle has a habitual neighbour on a side
     # when that one stood there in at least `habit_count` frames and `habit_share` of them.
     # A re-identification is vetoed when a neighbour of the box has a habitual neighbour on
-    # that side other than the bottle (bottle 11 of the first frame "found" next to 108,
-    # whose neighbours were 8 and 13). A box left without a bottle takes the habitual
+    # that side other than the bottle. A box left without a bottle takes the habitual
     # neighbour of its neighbour, when that bottle is free in the frame and projects within
     # `habit_reach` bottle widths.
     adjacent_gap: float = 1.6
@@ -146,52 +140,42 @@ class StreamConfig:
     # Visual confirmation. An old bottle is re-identified only where the frame has seen
     # its place: a registration to its anchor keyframe, or to a keyframe at most
     # `anchor_window` keyframes from it (made right before or after it, so tied to it by
-    # direct registrations), in the last `trust_steps`. The map alone is not enough: at
-    # 37 s the chain had carried the first keyframe next to the current view, and bottle
-    # 11 of the first frame was "found" next to bottle 108.
+    # direct registrations), in the last `trust_steps`. The map alone is not enough: the
+    # chain MAY carry an old keyframe next to the current view.
     anchor_window: int = 2
     rescue_radius: float = 3.0
     rescue_support: int = 2
     rescue_distance: float = 0.5
-    # The map of ids keeps the label of each bottle: the SIFT descriptors inside its box
-    # from its first `label_views` whole views on its first pass (frames with keypoints,
-    # `label_gap` steps apart at least; at most `label_size` descriptors a view). On a
-    # frame with keypoints each descriptor of a box votes for the bottle of its nearest
-    # label descriptor among the bottles of the map within `label_reach` bottle widths of
-    # the box (half a bottle height up or down), when it passes the ratio test
-    # `label_ratio` against the nearest descriptor of another of them: two bottles of one
-    # wine side by side cancel each other, and the place decides between them. The label
-    # of a box names a bottle with `label_votes` votes for it and `label_margin` times
-    # more than for any other.
-    # The check of the rows (the ideas of the user: no cell of the frame may contradict
-    # the map; a row holds different wines, so its labelled cells at both ends anchor
-    # it). The ids are given as before (tracking, place, neighbours); then in each row of
-    # the frame the anchors are the boxes whose labels name a bottle. An anchor that
-    # names a bottle other than the one its box holds counts only when the held bottle
-    # has a label (a new bottle has none: its label votes for a bottle of its wine
-    # nearby), and is not a twin of it: two bottles whose labels share `label_twins` of
-    # their descriptors (Lowe matches, the smaller share of the two ways) are one wine,
-    # and the label does not tell them apart (random pairs of the video 0.022 at the
-    # median and 0.094 at p99; two halves of the views of one bottle 0.25 at p10; 39 and
-    # 46, which a check of single cells swapped back and forth at 15-16 s, 0.156; 28 and
-    # 30, 0.27). The shift of an anchor is its box against the place of its bottle in
-    # the map; the shift that most anchors of the row agree on (within
-    # `label_tolerance` widths; a tie goes to the anchors that agree with their boxes)
-    # wins. When an anchor of the winning group disagrees with its box and the group has
-    # `label_support` anchors, the row is off: the anchors take their bottles, and the
-    # other boxes of the row the bottles at their places moved by the shift (the bottles
-    # of the keyframes of the anchors, within `anchor_window`: the map MAY hold two rows
-    # of one frame two bottles apart, 67 s, while the bottles of this pass stand in
-    # place). A single cell would leave the twins: at 67 s it gave 32, 34, 36, 40 for 32,
-    # 34, 36, 38 (36 and 38 are both Fiore). The boxes that lose their bottles are left
-    # free, and the free boxes take the released bottles by place. Two guards, from a row
-    # of six Abrau-Durso 1870 at 20.7 s of 115301, which the check moved two bottles off
-    # while the tracks held it right (a box with no id named 121, a label of 1870, that
-    # another box held): a bottle that two boxes of the row name is a twin, and neither
-    # box is an anchor; a box whose label confirms its bottle keeps it (121, 110 votes).
-    # (A third, no row off by boxes with no id alone, also refused the right names of
-    # the upper row of the first rack at 39.1 s of 115611.) With `label_fix` off the
-    # check only logs.
+    # The map of ids keeps the label of each bottle: the keypoint descriptors inside its
+    # box from its first `label_views` whole views on its first pass (frames with
+    # keypoints, `label_gap` steps apart at least; at most `label_size` descriptors a
+    # view). On a frame with keypoints each descriptor of a box votes for the bottle of
+    # its nearest label descriptor among the bottles of the map within `label_reach`
+    # bottle widths of the box (half a bottle height up or down), when it passes the ratio
+    # test `label_ratio` against the nearest descriptor of another of them: two bottles of
+    # one wine side by side cancel each other, and the place decides between them. The
+    # label of a box names a bottle with `label_votes` votes for it and `label_margin`
+    # times more than for any other.
+    # The check of the rows: no cell of the frame may contradict the map, and a row holds
+    # different wines, so its labelled cells at both ends anchor it. The ids are given as
+    # before (tracking, place, neighbours); then in each row of the frame the anchors are
+    # the boxes whose labels name a bottle. An anchor that names a bottle other than the
+    # one its box holds counts only when the held bottle has a label (a new bottle has
+    # none: its label votes for a bottle of its wine nearby), and is not a twin of it: two
+    # bottles whose labels share `label_twins` of their descriptors (Lowe matches, the
+    # smaller share of the two ways) are one wine, and the label does not tell them apart.
+    # The shift of an anchor is its box against the place of its bottle in the map; the
+    # shift that most anchors of the row agree on (within `label_tolerance` widths; a tie
+    # goes to the anchors that agree with their boxes) wins. When an anchor of the winning
+    # group disagrees with its box and the group has `label_support` anchors, the row is
+    # off: the anchors take their bottles, and the other boxes of the row the bottles at
+    # their places moved by the shift (the bottles of the keyframes of the anchors, within
+    # `anchor_window`: the map MAY hold two rows of one frame two bottles apart, while the
+    # bottles of this pass stand in place). A fix of single cells would leave twins
+    # swapped. The boxes that lose their bottles are left free, and the free boxes take
+    # the released bottles by place. Two guards: a bottle that two boxes of the row name
+    # is a twin, and neither box is an anchor; a box whose label confirms its bottle keeps
+    # it. With `label_fix` off the check only logs.
     label_views: int = 3
     label_gap: int = 5
     label_size: int = 200
@@ -213,7 +197,7 @@ class Bottle:
     """A bottle of the map. Its place is the quadrilateral of its box corners in the pixels
     of its anchor keyframe: it moves with that keyframe when the graph is optimised. A
     quadrilateral, not an axis-aligned box: the axis-aligned box of a sheared
-    quadrilateral projects back into a frame 2-4 times too wide."""
+    quadrilateral projects back into a frame far too wide."""
 
     id: int
     anchor: int                      # the keyframe of the coordinates of `quad`
@@ -227,9 +211,8 @@ class Bottle:
     # The last box of the bottle and the chain of camera motions at that frame: a tracked
     # bottle is predicted from its last box moved by the motions of the camera since, not
     # from the map, whose box MAY carry an early bad box (a neck of a bottle behind in
-    # it), and not through the graph: at 71.4 s the frame passed from keyframe 21 to
-    # keyframe 4, which the graph holds one bottle apart, every tracked bottle of the
-    # upper row moved one box to the right, and 30 left its box to a new 121.
+    # it), and not through the graph, which MAY hold two keyframes of one place a bottle
+    # apart.
     last_box: Box | None = None
     last_M: np.ndarray | None = None
     label: list[np.ndarray] = field(default_factory=list)   # descriptors, one array a view
@@ -591,7 +574,7 @@ class ShelfTracker:
 
     def _registrations(self, features: FrameFeatures, candidates: list[int]):
         """Register the frame to each candidate keyframe. Return [(keyframe, R frame ->
-        keyframe, strong)] of the good ones."""
+        keyframe, strong, inliers)] of the good ones."""
         cfg = self.cfg
         good = []
         for index in candidates:
@@ -1098,8 +1081,8 @@ class ShelfTracker:
                    in_view: np.ndarray) -> tuple[set[int], set[int]]:
         """The boxes left without a bottle that a new bottle would put in conflict with the
         map. A box between two bottles that are habitual neighbours of each other is
-        closed: the map has no place between them (90 s: a bottle deep in the gap between
-        69 and 68). A box that stands on the place of a bottle (within `reid_distance`), or
+        closed: the map has no place between them (a bottle deep in the gap). A box that
+        stands on the place of a bottle (within `reid_distance`), or
         where the habitual neighbour of its neighbour stands, while another box of the
         frame has taken that bottle, is in conflict: it waits, and after `max_wait` steps
         in a row with conflicts it starts a bottle (the map MAY be wrong there)."""
@@ -1166,8 +1149,7 @@ class ShelfTracker:
         """Merge the young bottles that stand where an older bottle stands (see
         `young_steps`). Two bottles both detected now, or seen together before, are two.
         The older bottle passes the tests of a re-identification: its place is confirmed,
-        and the neighbours of the young one do not deny it (an unchecked merge gave the
-        first frame's bottle 18 to a box next to 108 at 36.7 s)."""
+        and the neighbours of the young one do not deny it."""
         cfg = self.cfg
         # Not the bottles of this step: the association has just refused them an old bottle.
         young = [b for b in self.bottles if 0 < self.count - b.first_step <= cfg.young_steps]

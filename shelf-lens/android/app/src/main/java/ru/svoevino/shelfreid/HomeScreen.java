@@ -21,10 +21,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * The start screen, in the look of vino-svoe.ru: the name, what the app does (a shelf drawn
- * with the boxes the camera screen shows), and one button at the bottom, "Сканировать полку".
- * A long press on the name turns the debug mode on or off; in it, the videos of the app's
- * folder play as the camera would give them.
+ * The start screen: the name, what the app does (a shelf drawn with the boxes the camera screen
+ * shows), and the "Сканировать полку" button. A long press on the name turns the debug mode on
+ * or off; in it, the videos of the app's folder play as the camera would give them.
  */
 @SuppressLint("ViewConstructor")
 final class HomeScreen extends LinearLayout {

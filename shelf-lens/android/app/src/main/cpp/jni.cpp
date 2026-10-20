@@ -61,7 +61,7 @@ cv::Mat to_bgr(const cv::Mat& y, const uint8_t* u, const uint8_t* v, int uv_row_
 
 }  // namespace
 
-// Loads the detector (seconds: the accelerator compiles the model); see Pipeline for
+// Loads the detector (slow: the accelerator compiles the model); see Pipeline for
 // `cv_threads` and `cheap_slow`. 0 on failure.
 extern "C" JNIEXPORT jlong JNICALL Java_ru_svoevino_shelfreid_Native_create(JNIEnv* env, jclass, jstring model_path,
                                                                           jint cv_threads, jboolean cheap_slow) {
@@ -164,7 +164,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_takeCr
 }
 
 // The server's answer for a crop; the decision ("slug\tname\tsure|unsure") when this answer
-// settles the wine, else null.
+// changes it, else null.
 extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_answer(JNIEnv* env, jclass, jlong handle,
                                                                             jint bottle, jint frame, jint height,
                                                                             jstring slug, jstring name, jboolean ok) {
@@ -194,8 +194,8 @@ extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_planogram
     return env->NewStringUTF(reinterpret_cast<Pipeline*>(handle)->planogram().c_str());
 }
 
-// The bottles of the map, those whose wine is known, those waiting for the server, and 1
-// while the tracker has lost its place on the map.
+// Four ints (Pipeline::summary): the bottles of the map, those whose wine is known, those
+// waiting for the server, and 1 while the tracker has lost its place on the map.
 extern "C" JNIEXPORT jintArray JNICALL Java_ru_svoevino_shelfreid_Native_summary(JNIEnv* env, jclass, jlong handle) {
     const auto s = reinterpret_cast<Pipeline*>(handle)->summary();
     jintArray out = env->NewIntArray(4);

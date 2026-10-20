@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * The planogram of the map as a picture: the shelves of the tracker (Pipeline::planogram, the
- * bottom one numbered 1), each facing drawn as the packshot of the wine recognised for it (Faces),
- * in a box of its size in bottle heights; neighbours of one wine make a block (a frame around,
- * the bottles alike). A bottle whose wine is not known, or whose wine has no packshot, is a
- * grey bottle with a question mark on its label. The picture and its JSON go to `folder`.
+ * The planogram of the map as a picture: the tracker's shelves (Pipeline::planogram, the bottom
+ * one numbered 1), each facing drawn as its wine's packshot (Faces) in a box of its size in
+ * bottle heights; neighbours of one wine make a block. A bottle with no known wine or no
+ * packshot is a grey stand-in with a question mark. The picture and its JSON go to `folder`.
  */
 final class Planogram {
     private static final int MARGIN = 40, LEFT = 110, BAR = 14, GAP = 48, HEADER = 96;

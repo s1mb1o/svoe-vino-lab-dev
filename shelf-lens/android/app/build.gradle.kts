@@ -38,7 +38,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")   // a test build on our own phone
+            signingConfig = signingConfigs.getByName("debug")   // no release keystore: signed with the debug key
         }
     }
     externalNativeBuild {

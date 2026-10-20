@@ -30,11 +30,11 @@ namespace shelfreid {
 
 class Pipeline {
 public:
-    // Loads the detector: seconds (NNAPI compiles). `cv_threads`: the size of OpenCV's pool (it
-    // runs one parallel region at a time, so the slow loop's SIFT and the fast loop's flow
-    // contend for it; 1 runs every call serially; 0 keeps OpenCV's default). `cheap_slow`: the
-    // slow loop's SIFT on a 960 px copy with 2500 features instead of 1280 px and 4000 (half
-    // the time; 99.1-99.7% the same ids on the test shots).
+    // Loads the detector (slow: NNAPI compiles the model). `cv_threads`: the size of OpenCV's
+    // pool (it runs one parallel region at a time, so the slow loop's SIFT and the fast loop's
+    // flow contend for it; 1 runs every call serially; 0 keeps OpenCV's default).
+    // `cheap_slow`: the slow loop's SIFT on a 960 px copy with 2500 features instead of
+    // 1280 px and 4000.
     Pipeline(const std::string& model_path, int cv_threads, bool cheap_slow);
     ~Pipeline();
 
@@ -64,23 +64,21 @@ public:
     std::string stats() const;
 
     // Recognition of the wines by the server, one bottle crop a request (/v1/match). Every
-    // other tracker step offers, for each bottle not yet sure whose box is at least kGate of
-    // the frame height (the server finds the producer from there) and not cut by the frame,
-    // its crop to the bottle's reserve (from its first sight, before the tracker confirms it:
-    // a bottle in view when the scan starts goes kMatureMs later): at most kKeptPerBottle crops
-    // of different frames, by quality = sharpness x (height / the bottle's largest height)^2
-    // (a large crop first, but a blurred one loses to a sharper slightly smaller one); a new
-    // crop pushes out the worst. At most kKeptCrops crops in all: the worst of the bottles
-    // with more than one go first. A crop is offered every other step, so the reserve spans
-    // more time. One request a bottle (kMaxAttempts), with the best crop of its reserve,
+    // other tracker step (so the reserve spans more time) offers, for each bottle not yet sure
+    // whose box is at least kGate of the frame height (the server finds the producer from
+    // there) and not cut by the frame, its crop to the bottle's reserve, from its first sight
+    // on (before the tracker confirms it): at most kKeptPerBottle crops of different frames,
+    // by quality = sharpness x (height / the bottle's largest height)^2 (a large crop first,
+    // but a blurred one loses to a sharper slightly smaller one); a new crop pushes out the
+    // worst. At most kKeptCrops crops in all: the worst of the bottles with more than one go
+    // first. One request a bottle (kMaxAttempts), with the best crop of its reserve,
     // kMatureMs after the bottle first fit (a borderline first crop does not go when a better
     // one comes a moment later), once the tracker confirmed it (not a duplicate it merges
-    // away). The crops
-    // are sent apart from the steps (take_crop), so the queue drains after a video ends and
-    // for bottles gone from the frame: no more than kMaxInflight requests out, a bottle in
-    // view first (the shelf the user looks at), then the largest crop; the reserve is freed
-    // when its crop goes. The answer decides (kAgree = 1). A
-    // failed request puts its crop back and does not count.
+    // away). The crops are sent apart from the steps (take_crop), so the queue drains after a
+    // video ends and for bottles gone from the frame: no more than kMaxInflight requests out,
+    // a bottle in view first (the shelf the user looks at), then the largest crop; the
+    // reserve is freed when its crop goes. The answer decides (kAgree = 1). A failed request
+    // puts its crop back and does not count.
     static constexpr double kGate = 0.19;
     static constexpr int kSpacingMs = 500, kMaxAttempts = 1, kAgree = 1, kMaxInflight = 4, kKeptPerBottle = 4,
                          kKeptCrops = 80, kMatureMs = 1000;
@@ -92,16 +90,17 @@ public:
     // A server's answer for a crop (`ok` false: no answer; the attempt does not count). The
     // decision when this answer changes it: "slug\tname\tsure|unsure", else empty.
     std::string answer(int bottle, int frame, int height, const std::string& slug, const std::string& name, bool ok);
-    // Every bottle met, as JSON: id, state (known, asking, waiting: a crop kept for a slot,
-    // eligible: recognition off, small, cut, unconfirmed, done asking), box height (px and share of the frame), the frame
-    // last seen, requests, answers, the wine and whether it is sure.
+    // Every bottle met, as a JSON array of {"id", "state", "height" (px), "share" (of the
+    // frame height), "frame" (last seen), "requests", "answers", "sure", "kept" (crops in the
+    // reserve), "wine"}; state: known, asking, waiting (a crop kept for a slot), answered,
+    // done asking, unconfirmed, small, cut, eligible (recognition off).
     std::string recognition_table() const;
     // The bottles of the map (provisional ones left out), those whose wine is known, those
     // with a crop waiting for the server or its answer, and 1 while the tracker has lost its
     // place on the map, or waits to register to it with a box in view waiting for that (the
     // boxes add nothing to the map then), else 0.
     std::array<int, 4> summary() const;
-    // A small JPEG of the bottle's latest crop (renewed about once a second), or empty.
+    // A small JPEG of the bottle's latest crop (renewed every 10 tracker steps), or empty.
     std::vector<unsigned char> thumbnail(int bottle) const;
     // The planogram of the map as it is now (shelfreid/planogram.hpp, provisional bottles
     // left out) as JSON: {"shelves": [{"width", "facings": [{"bottle", "x", "width",

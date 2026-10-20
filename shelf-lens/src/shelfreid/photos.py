@@ -1,25 +1,20 @@
 """Unique bottles over a series of photos: the stream tracker with each photo a jump.
 
-The video tracker (stream.py) stays as it is; the photo tracker changes how a photo finds
-its place and nothing else:
+The photo tracker changes how a photo finds its place in the video tracker (stream.py)
+and nothing else:
 
 - Keypoints: ALIKED of the whole photo, matched by LightGlue. The steps between photos are
-  wide; SIFT inside the bottle boxes (the video) registered 3 of 9 consecutive photos of
-  one series, ALIKED of the whole photo all 9 (the shelf edges and the price tags lie in
-  the shelf plane).
-- The search: at most `tries` keyframes a photo, as a phone has a few seconds a photo (a
-  search of all 29 keyframes took 8.3 s on a laptop). First the keyframe of the photo
-  before, which overlaps a photo most often; a registration to it holds when it is good
-  (`min_loop_inliers`, `min_loop_coverage`), not only strong: two consecutive photos of the
-  racks from afar registered with 95 inliers at coverage 0.28 and 64 at 0.29. Then the
-  keyframes most alike (`_alike`), whose registrations must be strong: with the newest
-  keyframes instead, the first close-up of the racks shot from afar missed them, and its
-  whole series came again, green. With no registration the photo is new ground at once: no
-  other view of its place will come.
-- Then the registration of the video (`_relocalize`): the keyframes that overlap the photo
-  in the map, at most `loop_candidates`, confirm their bottles for this photo and add loop
-  edges. Without it the bottles of an older series (the racks shot from afar) were not
-  confirmed and came again, green, in the close-ups of the same racks.
+  wide, and the shelf edges and the price tags outside the bottle boxes lie in the shelf
+  plane too.
+- The search: at most `tries` keyframes a photo, as a phone has a few seconds a photo.
+  First the keyframe of the photo before, which overlaps a photo most often; a
+  registration to it holds when it is good (`min_loop_inliers`, `min_loop_coverage`), not
+  only strong. Then the keyframes most alike (`_alike`), whose registrations must be
+  strong. With no registration the photo is new ground at once: no other view of its
+  place will come.
+- Then the relocalization of the video tracker (`_relocalize`): the keyframes that overlap
+  the photo in the map, at most `loop_candidates`, confirm their bottles for this photo
+  and add loop edges, so the bottles of an older series are not counted again.
 - A confirmation holds for its photo alone (`trust_steps` 0), nothing waits (`max_wait` 0),
   and every photo is a keyframe (`keyframe_overlap` above 1).
 - A registration of a pair is made once a photo (the keyframe of the photo reuses it).

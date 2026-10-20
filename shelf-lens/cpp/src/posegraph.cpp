@@ -66,7 +66,7 @@ std::pair<double, double> PoseGraph::optimize(int max_iterations) {
     const int params = 8 * (n - 1);
     const int per_edge = 2 * static_cast<int>(grid_.size());
     const int rows = per_edge * static_cast<int>(edges.size()) + 6 * (n - 1);
-    std::vector<std::vector<cv::Point2d>> mapped;   // T @ grid for each edge
+    std::vector<std::vector<cv::Point2d>> mapped;   // the grid mapped by each edge's T
     for (const auto& e : edges) mapped.push_back(project(e.T, grid_));
 
     auto pose = [&](const Eigen::VectorXd& x, int node) -> Mat3 {

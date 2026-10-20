@@ -25,7 +25,7 @@ class PairConfig:
     mask_bottles: bool = False
 
 
-# The best setting on the Lenta robot video (docs/design.md); needs `--extra deep`.
+# DISK keypoints inside the bottle boxes, for close shots; needs `--extra deep`.
 ROBUST = PairConfig(features=FeatureConfig(method="disk", max_features=4096, max_side=1024),
                     mask_bottles=True)
 
@@ -47,8 +47,8 @@ def _features(frame, cfg: FeatureConfig) -> FrameFeatures:
 
 
 def register(frame_a, frame_b, cfg: PairConfig = PairConfig()):
-    """Return (registration, points of A, points of B, timings). A frame is a BGR image
-    or the FrameFeatures of one, so a keyframe is described once."""
+    """Return (registration, points of A, points of B, timings, size of A, size of B). A
+    frame is a BGR image or the FrameFeatures of one, so a keyframe is described once."""
     timings = {}
     started = perf_counter()
     features_a, features_b = _features(frame_a, cfg.features), _features(frame_b, cfg.features)

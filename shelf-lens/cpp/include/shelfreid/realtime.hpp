@@ -1,7 +1,7 @@
-// The tracker in two loops, as on a phone (realtime.py): a fast loop each frame and a slow
-// loop on one frame at a time. Its result lands `latency` steps later (deterministic, for
-// tests), or, with a negative latency, the slow loop runs on a thread of its own and its
-// result lands on the first step after it is done (the phone).
+// The tracker in two loops, as on a phone: a fast loop each step and a slow loop on one
+// frame at a time. Its result lands `latency` steps later (deterministic, for tests), or,
+// with a negative latency, the slow loop runs on a thread of its own and its result lands on
+// the first step after it is done (the phone).
 #pragma once
 
 #include <map>
@@ -38,7 +38,7 @@ struct SlowResult {
     Snapshot snap;
     std::optional<std::pair<int, Mat3>> found;   // keyframe, R: frame t -> keyframe
     std::vector<int> good;
-    std::optional<PoseGraph> graph;              // with the loop edges, optimised
+    std::optional<PoseGraph> graph;              // with the new loop and chain edges
     double worst = 0.0;
     bool optimised = false;
     bool new_ground = false;
@@ -53,7 +53,7 @@ struct SlowResult {
     std::vector<std::pair<int, cv::Mat>> labels;   // bottle id, descriptors
     std::vector<Move> moves;
     std::set<int> confirmed;                       // provisional bottles seen and kept
-    int aliased = 0;                               // registrations off the flow by a bottle or more
+    int aliased = 0;                               // registrations dropped as off the flow (Tracker::agrees)
     double seconds = 0.0;
 };
 

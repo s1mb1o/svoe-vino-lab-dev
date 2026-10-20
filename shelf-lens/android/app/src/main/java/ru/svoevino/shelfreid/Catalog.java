@@ -21,10 +21,9 @@ import java.util.concurrent.Executors;
 
 /**
  * What is known of each wine the server named: the card the recognition API returns with the
- * slug (name, producer, category, sugar, region, grapes, packshot), and the wine's page data
- * on vino-svoe.ru (its open JSON, /api/wines/{slug}): the public rating (0-5, MAY be a
- * fraction), alcohol, serving temperature, the category's full name. The site's data is
- * fetched once a wine and kept in wines/ (the API has no rating).
+ * slug (name, producer, category, sugar, region, grapes, packshot), and the wine's data from
+ * vino-svoe.ru (/api/wines/{slug}): the public rating (0-5, MAY be a fraction; the API has none),
+ * alcohol, serving temperature, the category's full name, fetched once a wine and kept in wines/.
  */
 final class Catalog {
     private static final String TAG = "Catalog";

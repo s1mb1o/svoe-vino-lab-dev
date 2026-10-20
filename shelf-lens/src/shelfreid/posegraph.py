@@ -39,9 +39,8 @@ class PoseGraph:
         self.loss_scale = loss_scale          # map pixels: the scale of the robust loss
         # Map pixels per unit of a change of the scale, rotation, shear, and perspective of
         # a node. The chain gets the shape of each keyframe right and its place wrong; with
-        # no price on shape, a long chain bends its scale and perspective to pay off a loop
-        # (0.93 in scale over 10 nodes in a test at 300; 0.99 at 3000; 1.000 at 30000). The
-        # real chain drifts in scale too, so the shape MAY still move a little.
+        # no price on shape, a long chain bends its scale and perspective to pay off a loop.
+        # The real chain drifts in scale too, so the shape MAY still move a little.
         self.stiffness = stiffness
         self.poses: list[np.ndarray] = []
         self.edges: list[Edge] = []
@@ -88,7 +87,7 @@ class PoseGraph:
             worst = max(bad, key=self.error)
             # By identity: `list.remove` compares edges field by field, and two edges of one
             # pair of keyframes reach their homographies, which an array comparison cannot
-            # decide (a series of photos crashed so).
+            # decide.
             self.edges = [e for e in self.edges if e is not worst]
             dropped += 1
             _, after = self.optimize()

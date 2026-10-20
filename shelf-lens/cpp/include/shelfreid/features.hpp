@@ -1,4 +1,4 @@
-// SIFT keypoints of a frame and the matching of two frames (features.py).
+// SIFT keypoints of a frame and the matching of two frames.
 #pragma once
 
 #include <vector>
@@ -20,8 +20,8 @@ struct FrameFeatures {
 // The keypoints of one BGR or gray frame; `mask` (CV_8U, frame size) MAY be empty.
 FrameFeatures extract(const cv::Mat& image, const FeatureConfig& cfg, const cv::Mat& mask);
 
-// The matched points (points of A, points of B), row by row: the ratio test and mutual
-// nearest neighbours.
+// The matched points (points of A, points of B), row by row: the ratio test and, with
+// cfg.mutual, mutual nearest neighbours.
 void match(const FrameFeatures& a, const FrameFeatures& b, const FeatureConfig& cfg,
            std::vector<cv::Point2f>& points_a, std::vector<cv::Point2f>& points_b);
 

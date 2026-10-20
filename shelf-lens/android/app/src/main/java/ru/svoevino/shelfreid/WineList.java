@@ -39,12 +39,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The wines found on the shelf, as cards: a recognised wine (one card for its bottles side by
- * side or not) with its packshot, name, producer, region, rating and kind; a bottle not
- * recognised with its crop (or a stand-in) and where its recognition stands. Recognised wines
- * first. The strip at the bottom filters by what the server and the site tell of a wine
- * (rating, kind, sugar, region) and resets. The bottles are those of the planogram (the map
- * without duplicates and unconfirmed bottles); the list refreshes while open.
+ * The wines found on the shelf, as cards, recognised wines first: a wine (one card for all its
+ * bottles) with its packshot, name, producer, region, rating and kind; a bottle not recognised
+ * with its crop (or a stand-in) and where its recognition stands. The strip at the bottom filters
+ * by rating, kind, sugar and region. The bottles are those of the planogram (the map without
+ * duplicates and unconfirmed bottles); the list refreshes while open.
  */
 @SuppressLint("ViewConstructor")
 final class WineList extends LinearLayout {

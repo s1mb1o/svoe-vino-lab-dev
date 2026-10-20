@@ -35,16 +35,16 @@ import java.util.List;
  * «Полка вина»: the camera finds the bottles of a shelf live, the server recognises the wine
  * of each, the planogram of the shelf comes out. One activity; its screens are views: the
  * start screen, the camera (the boxes over the picture, the status strip, the side menu), and
- * over the camera the list of wines and the planogram, under which the camera and the map go on.
+ * over the camera the list of wines and the planogram.
  *
- * The map lives until the app closes: back to the start screen, to the background, or to the
- * list and the planogram, the camera finds its place on the map again when it comes back. "Новая
- * полка" starts a new map. In the debug mode (a long press on the name on the start screen) the
- * videos of the app's folder play as the camera would give them, each on a map of its own.
+ * The map lives until the app closes: after the start screen, the background, the list or the
+ * planogram, the camera finds its place on the map again. "Новая полка" starts a new map. In the
+ * debug mode (a long press on the name on the start screen) the videos of the app's folder play
+ * as the camera would give them, each on a map of its own.
  *
- * Files: the detector is in the APK's assets (bottle_yoloxs.onnx; one in the app's external
- * folder takes its place, for tests); the recognition API's password in api_password.txt
- * there (a developer pushes it; a build for users needs a server of ours in between).
+ * The detector is in the APK's assets (bottle_yoloxs.onnx; one in the app's external folder
+ * takes its place). The recognition API's password is read from api_password.txt pushed to that
+ * folder; it is never in the code or the APK.
  */
 public class MainActivity extends ComponentActivity {
     private static final String MODEL = "bottle_yoloxs.onnx";
@@ -112,7 +112,7 @@ public class MainActivity extends ComponentActivity {
         new Thread(this::load, "load").start();
     }
 
-    /** The detector: the APK's copy (or a test one in the external folder), compiled for the accelerator. */
+    /** The detector: the APK's copy (or the one in the external folder), compiled for the accelerator. */
     private void load() {
         File model = new File(getExternalFilesDir(null), MODEL);
         if (!model.exists()) {

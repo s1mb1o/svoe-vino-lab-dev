@@ -1,7 +1,7 @@
 """Bottle-level accuracy of two-frame decisions on a video, against tracks of short steps.
 
 The reference identity of a bottle comes from tracking: the detections of consecutive chain
-frames (every `--step` frames) are associated with the chained short-step homography,
+frames (the `--chain` of eval_overlap.py) are associated with the short-step homography,
 where the motion is small and the association is unambiguous; a track that breaks for up
 to `--bridge` steps (a missed detection) is joined again. For a pair of distant frames
 (A, B), a bottle of B is truly "seen" when its track has a detection in A.

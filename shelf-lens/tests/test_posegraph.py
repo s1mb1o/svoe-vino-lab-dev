@@ -49,7 +49,7 @@ def test_the_first_pose_stays_fixed():
 
 def test_a_bad_loop_is_dropped_beside_another_edge_of_its_pair():
     # Two edges of one pair (a chain and a loop) and a false loop far off: the robust
-    # optimisation drops the false one (a comparison of edges by their fields failed).
+    # optimisation drops the false one by identity, not by comparing the edge fields.
     graph = PoseGraph(SIZE)
     graph.add(np.eye(3))
     node = graph.add(shift(100.0))

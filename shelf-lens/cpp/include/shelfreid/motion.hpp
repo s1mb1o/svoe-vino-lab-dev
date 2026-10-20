@@ -1,9 +1,9 @@
-// The motion between consecutive frames of a shot, frame by frame (30 a second): sparse flow
-// on a quarter-size luma and a similarity (shift, scale, a small turn) fitted with RANSAC.
-// Between neighbouring frames the picture moves little, so this holds where the tracker's
-// flow between its steps (every 3rd frame or rarer) MAY lose the points: close to a shelf a
-// small turn of the phone moves the picture by hundreds of pixels. The app draws its boxes
-// with it, and the tracker takes the motion since its last step as a hint (Tracker::motion_hint).
+// The motion between consecutive frames, every frame: sparse flow on a quarter-size luma and
+// a similarity (shift, scale, a small turn) fitted with RANSAC. Between neighbouring frames
+// the picture moves little, so this holds where the tracker's flow between its steps (every
+// 3rd frame or rarer) MAY lose its points: close to a shelf a small turn of the phone moves
+// the picture a lot. The app draws its boxes with it, and the tracker takes the motion since
+// its last step as a hint (Tracker::motion_hint).
 #pragma once
 
 #include <map>

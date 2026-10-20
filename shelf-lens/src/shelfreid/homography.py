@@ -25,7 +25,7 @@ class HomographyConfig:
     max_w_ratio: float = 3.0     # the largest perspective stretch over frame B
     # The least share of the overlap (in frame B) that the convex hull of the inliers
     # covers. A repeated banner or one price tag can carry a wrong homography with all
-    # its inliers in a thin strip: 0.03 on such a pair, 0.46-0.76 on right real pairs.
+    # its inliers in a thin strip.
     min_coverage: float = 0.10
 
 

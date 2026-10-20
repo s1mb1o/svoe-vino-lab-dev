@@ -1,5 +1,5 @@
 // The tracker: geometry of the map in the frame, motion, keyframes, and the synchronous
-// step (stream.py). The association is in associate.cpp.
+// step. The association is in associate.cpp.
 #include "shelfreid/cv.hpp"
 #include "shelfreid/tracker.hpp"
 
@@ -370,7 +370,7 @@ std::optional<Mat3> Tracker::flow(const cv::Mat& gray_prev, const cv::Mat& gray,
     std::vector<float> err;
     int flags = 0;
     if (hint) {
-        // Start each point where the frame-by-frame motion puts it; the way back starts at the
+        // Each point starts where the frame-by-frame motion puts it; the way back starts at the
         // point itself.
         const Mat3 S(s, 0, 0, 0, s, 0, 0, 0, 1);
         const Mat3 forward = S * hint->inv() * S.inv();   // previous -> current, at the flow's scale
@@ -435,7 +435,7 @@ std::optional<Good> Tracker::register_to(const FrameFeatures& features, int inde
                             r.ok ? "" : ", ", r.reason.c_str());
 #endif
     if (!(r.ok && r.inliers >= cfg.min_loop_inliers && r.coverage >= cfg.min_loop_coverage)) return std::nullopt;
-    // Strong: many inliers, or fewer (a bottle or two in view) of which nearly all matches are.
+    // Strong: many inliers, or fewer (a bottle or two in view) that are nearly all the matches.
     const bool strong = (r.inliers >= cfg.strong_inliers || r.inliers >= cfg.strong_ratio * r.matches) &&
                         r.coverage >= cfg.strong_coverage;
     return Good{index, r.H, strong, r.inliers, std::move(pk), std::move(pf)};
@@ -675,9 +675,8 @@ bool Tracker::trust() {
         return true;
     }
     ++untrusted;
-    // Near what the map has but not registered to it: wait for a registration. With a new
-    // ground allowed, trust the flow after max_wait steps; without, wait as long as it takes
-    // (a box adds nothing to the map while where it is on it is not known).
+    // Near the map but not registered to it: the flow is not trusted until a registration, or,
+    // with cfg.new_ground, until max_wait steps have passed.
     return cfg.new_ground && untrusted > cfg.max_wait;
 }
 

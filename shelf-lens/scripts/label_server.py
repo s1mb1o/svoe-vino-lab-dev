@@ -1,7 +1,7 @@
 """Serve a labeling folder (index.html, images/, boxes.json) on this machine and keep the
 reviews the page sends in reviews.json next to them.
 
-    uv run python scripts/label_server.py out/labeling/2026-10-18 [--port 8765]
+    uv run python scripts/label_server.py LABELING_DIR [--port 8765]
 
 GET /reviews returns every review; POST /reviews/<image> replaces the review of that image.
 """

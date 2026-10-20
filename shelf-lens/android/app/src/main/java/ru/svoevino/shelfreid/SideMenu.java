@@ -13,8 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * The menu that slides in from the left edge over part of the screen (as in the Claude app):
- * a dimmed screen behind it closes it on a tap, a drag to the left closes it too.
+ * The menu that slides in from the left edge over part of the screen: a dimmed screen behind
+ * it closes it on a tap, a drag to the left closes it too.
  */
 @SuppressLint("ViewConstructor")
 final class SideMenu extends FrameLayout {
