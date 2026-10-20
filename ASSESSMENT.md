@@ -4,7 +4,7 @@
 |---|---|
 | Repository | `s1mb1o/svoe-vino-lab-dev` |
 | Branch | `main` |
-| Checked at commit | `db288cc9` |
+| Checked at commit | `06f3b78c` |
 | Date of the last check | 2026-10-20 |
 | Scope | This file describes `main` of this repository only. |
 | Task | Task #10 «Сканер российских вин с описанием на платформе Свое Вино» ([docs/task-10-specification.pdf](docs/task-10-specification.pdf)) |
@@ -32,7 +32,7 @@ Read "Highlights" first. Then read the section for the criterion that you check.
 
 ### Test commands
 
-Each feature refers to the test command of its component. Real inference needs model weights. The weights are not in Git (see F-33).
+Each feature refers to the test command of its component. Matcher inference needs model weights that are not in Git (see F-33). Shelf Lens includes its bottle detector in Git (F-113).
 
 | Component | Command | Source |
 |---|---|---|
@@ -46,6 +46,7 @@ Each feature refers to the test command of its component. Real inference needs m
 | `account/` | `cd account && ./scripts/verify.sh` | [account/README.md](account/README.md) |
 | `dinner-lens/` | `cd dinner-lens && .venv/bin/python -m unittest discover -s tests -v` | [dinner-lens/README.md](dinner-lens/README.md) |
 | `android/` | `cd android && ./gradlew test assembleDebug` | [android/README.md](android/README.md) |
+| `shelf-lens/` | `cd shelf-lens && uv sync && uv run pytest -q` (Python prototype) | [shelf-lens/README.md](shelf-lens/README.md), [shelf-lens/pyproject.toml](shelf-lens/pyproject.toml) |
 | `ios/` | `cd ios && xcodebuild -project ChtoZaVino.xcodeproj -scheme ChtoZaVino -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO test` | [ios/README.md](ios/README.md) |
 | `bootstrap/` | `cd bootstrap && .venv/bin/python -m unittest discover -s tests -v` | [bootstrap/README.md](bootstrap/README.md) |
 | `proxies/` | `cd proxies && .venv/bin/python -m unittest discover -s tests -t .` | [proxies/README.md](proxies/README.md) |
@@ -56,6 +57,7 @@ Some suites need files that are not in Git:
 - The `dinner-lens/` tests need the embedding indexes `dinner-lens/data/index/` and `dinner-lens/data/index.v4/` (F-27).
 - The `android/` build needs `android/app/src/main/assets/default_model_pack.zip` (F-44).
 - The `ios/` build needs the generated Core ML models and the resource pack ([ios/project.yml](ios/project.yml)).
+- The Shelf Lens APK build needs Android SDK, JDK 17, native dependencies, and `CHTOZAVINO_API_PASSWORD`. The build embeds this credential in the APK. The README excludes public APK distribution ([shelf-lens/README.md](shelf-lens/README.md)). The Python tests do not validate the Android application or its C++ tracker.
 - The `workbench/` suite has 14 known failures in 2,567 tests ([workbench/ChangeLog.md](workbench/ChangeLog.md) 2026-10-20). Three come from the open port of the re-rank prompts (F-07). Eleven need files outside this repository or are lab defects.
 
 ## Highlights
@@ -73,6 +75,8 @@ Some suites need files that are not in Git:
 11. **Wine for a dish.** The portal mode `/dish` takes a dish photo or a dish name. A separate service recognizes the dish with a local VLM, filters the wines with code rules, and shows editorial choices before embedding results. See F-27 to F-29.
 
 12. **Retrieval algorithm research reference.** A committed document defines 39 pooling profiles and 42 fusion policies. It records 353,188 unique configurations per frozen testset, including p512 leaderboards and exact recipes. The research uses no re-ranking. See F-112.
+
+13. **Shelf Lens video scan, AR ratings, and a planogram.** Move the camera along a shelf. Spatial ReID links the views of each physical bottle. The phone shows the «Своё Вино» rating over recognized bottles and builds a planogram for the store. The source, phone recording, and planogram example are in `main`. Recognition and rating requests need internet. See F-113 to F-116.
 
 ## Results summary
 
@@ -277,6 +281,33 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Verify:** Read [webui/docs/shelf-mode.md](webui/docs/shelf-mode.md).
 - **Limits:** Shelf mode needs SAM3. The repository has no shelf accuracy benchmark.
 
+### F-113 Shelf Lens video scan and spatial ReID
+
+- **Claim:** Shelf Lens scans a shelf with an Android camera. The on-device YOLOX-s detector finds bottles. A shared C++ tracker maintains one shelf map as the camera moves and returns to a previous view. Optical flow, SIFT registration, and a pose graph link the views. Physical position distinguishes adjacent bottles of the same wine.
+- **Status:** Implemented. The current Android UI calls the application «Полка вина».
+- **Entry point:** [shelf-lens/README.md](shelf-lens/README.md), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/MainActivity.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/MainActivity.java), [shelf-lens/android/app/src/main/cpp/pipeline.cpp](shelf-lens/android/app/src/main/cpp/pipeline.cpp), [shelf-lens/cpp/src/realtime.cpp](shelf-lens/cpp/src/realtime.cpp), [shelf-lens/cpp/src/tracker.cpp](shelf-lens/cpp/src/tracker.cpp)
+- **Proof:** [shelf-lens/docs/design.md](shelf-lens/docs/design.md); `shelf-lens/tests/test_stream.py::test_a_pan_there_and_back_finds_each_bottle_once_and_marks_the_return`, `shelf-lens/tests/test_associate.py::test_one_bottle_of_a_takes_one_bottle_of_b`, `shelf-lens/tests/test_posegraph.py::test_a_loop_closure_spreads_the_drift_over_the_path` (Python prototype tests); [webui/server/assets/shelf-lens/shelf-lens-demo.mp4](webui/server/assets/shelf-lens/shelf-lens-demo.mp4) (recorded Android application).
+- **Verify:** Read the two-loop tracker and map safeguards in [shelf-lens/README.md](shelf-lens/README.md). Play the committed recording.
+- **Limits:** The application needs Android 10 or later and an ARM processor. The tracker models the front plane of a shelf. «Новая полка» starts another map. The prototype tests do not measure tracking accuracy on a phone. The detector [bottle_yoloxs.onnx](shelf-lens/android/app/src/main/assets/bottle_yoloxs.onnx) is in Git. APK build and credential limits are listed under "Test commands".
+
+### F-114 Shelf Lens recognition and rating in the camera view
+
+- **Claim:** The application selects a bottle crop by size and sharpness and queues it for `/v1/match`. It keeps the result with the physical bottle on the map. It retries failed requests with a delay. Gray, yellow, and green frames show detection, pending recognition, and a recognized wine. The application loads `publicRating` from `vino-svoe.ru` and draws rating stars inside the recognized bottle frame. The wine list has filters for rating, type, sugar, and region.
+- **Status:** Implemented.
+- **Entry point:** [shelf-lens/android/app/src/main/cpp/pipeline.hpp](shelf-lens/android/app/src/main/cpp/pipeline.hpp), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Recognizer.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Recognizer.java), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Catalog.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Catalog.java), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/OverlayView.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/OverlayView.java), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/WineList.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/WineList.java)
+- **Proof:** [shelf-lens/README.md](shelf-lens/README.md), section «Распознавание»; [webui/public/shelf-lens/ar-rating.jpg](webui/public/shelf-lens/ar-rating.jpg), [webui/public/shelf-lens/wine-list.jpg](webui/public/shelf-lens/wine-list.jpg), and the full recording in F-113. [webui/docs/assets.md](webui/docs/assets.md) records the media sources and SHA-256 values.
+- **Verify:** Read `Catalog.loadSite` and `OverlayView.stars`. In the recording, inspect the rating at 00:36 and the wine list at 01:24.
+- **Limits:** Detection and tracking run on the phone. Recognition and rating requests need internet. Stars require an available rating and enough room in the frame. This application is separate from the offline Android application in F-80 to F-93.
+
+### F-115 Shelf Lens planogram
+
+- **Claim:** The application converts its bottle map into shelf rows, facings, and adjacent groups of one wine. The C++ layout uses relative bottle offsets from the frames. The Android screen renders the wine images and unknown-position placeholders. Users can zoom, print, and share the planogram as an image.
+- **Status:** Implemented.
+- **Entry point:** [shelf-lens/cpp/src/planogram.cpp](shelf-lens/cpp/src/planogram.cpp), [shelf-lens/cpp/include/shelfreid/planogram.hpp](shelf-lens/cpp/include/shelfreid/planogram.hpp), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Planogram.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/Planogram.java), [shelf-lens/android/app/src/main/java/com/alolalab/shelflens/PlanogramScreen.java](shelf-lens/android/app/src/main/java/com/alolalab/shelflens/PlanogramScreen.java), [shelf-lens/scripts/planogram.py](shelf-lens/scripts/planogram.py)
+- **Proof:** [webui/public/shelf-lens/planogram.png](webui/public/shelf-lens/planogram.png); the planogram section at 01:54 in the recording in F-113; [shelf-lens/README.md](shelf-lens/README.md), section «Планограмма».
+- **Verify:** Open the committed PNG. Read the `share` and `print` actions in `PlanogramScreen.java`.
+- **Limits:** The example shows 3 shelves, 95 facings, and 46 recognized bottles. These counts describe one example. They do not measure accuracy. Unknown positions remain visible. Comparison with a reference planogram and automatic compliance checks remain planned features.
+
 ### F-21 Taste passport
 
 - **Claim:** «Паспорт вкуса» shows six taste meters (1 to 5), aroma families, and one international style analogue. Values from the wine card come first. Grape-level aggregates from the public Wine Reviews dataset fill the gaps, and the UI labels them as estimates.
@@ -377,6 +408,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 | [account/](account/) | Account service of «Винный дневник»: login, messenger links, application tokens |
 | [dinner-lens/](dinner-lens/) | Food-to-wine API (wine for a dish) |
 | [android/](android/) | Offline Android application |
+| [shelf-lens/](shelf-lens/) | Android video shelf scanner, spatial ReID, AR ratings, and planogram |
 | [ios/](ios/) | Offline iPhone application (SwiftUI, Core ML) |
 | [bootstrap/](bootstrap/) | Local model services and their gateway |
 | [proxies/](proxies/) | Model proxy for several inference hosts (lab tool) |
@@ -963,7 +995,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 #### F-105 Public HTML site map
 
-- **Claim:** `/sitemap` lists 13 pages in six groups. [webui/app/data/sitemap.ts](webui/app/data/sitemap.ts) holds the list. A test keeps the list equal to [webui/public/sitemap.xml](webui/public/sitemap.xml). The list omits `/hackaton`, `/account`, `/max`, and the `noindex` map pages. The footer has the link «Карта сайта».
+- **Claim:** `/sitemap` lists 16 pages in six groups, including `/shelf-lens`. [webui/app/data/sitemap.ts](webui/app/data/sitemap.ts) holds the list. A test keeps the list equal to [webui/public/sitemap.xml](webui/public/sitemap.xml). The list omits `/hackaton`, `/account`, `/max`, and the `noindex` map pages. The footer has the link «Карта сайта».
 - **Status:** Implemented. Not deployed: `429d3ecc` is not in release `772a396e`.
 - **Entry point:** [webui/app/pages/sitemap.vue](webui/app/pages/sitemap.vue), [webui/app/data/sitemap.ts](webui/app/data/sitemap.ts)
 - **Proof:** `webui/tests/sitemap.test.ts` ("lists the same pages as the XML sitemap", "omits the direct-access and noindex pages", "links only to existing pages", "is linked from the shared footer").
@@ -986,6 +1018,15 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Proof:** [webui/scripts/check-game-landing-browser.mjs](webui/scripts/check-game-landing-browser.mjs); [webui/SMOKE_TESTS.md](webui/SMOKE_TESTS.md) section "Wine&Dine Merge landing" (local check).
 - **Verify:** Read [webui/docs/game-landing.md](webui/docs/game-landing.md).
 - **Limits:** The game source is not in this repository. The game is a simplified prototype with no expert review.
+
+#### F-116 Shelf Lens landing and committed media
+
+- **Claim:** `/shelf-lens` presents the Android video workflow in Russian. It includes chapter selection, a video dialog, a planogram dialog, and a PNG download. The page reuses the portal header, footer, age gate, and theme. `/ideas`, `/hackaton`, the footer, and both sitemaps link to the page. Two fixed video assets support HTTP byte ranges for chapter seeking. `/shelf` remains the separate photograph scanner in F-20.
+- **Status:** Implemented. The integration is on `main` at `cd8b063e`. No live deployment is recorded.
+- **Entry point:** [webui/app/pages/shelf-lens.vue](webui/app/pages/shelf-lens.vue), [webui/server/routes/shelf-lens-video/[filename].ts](webui/server/routes/shelf-lens-video/[filename].ts), [webui/server/utils/video-range.ts](webui/server/utils/video-range.ts), [webui/app/data/sitemap.ts](webui/app/data/sitemap.ts)
+- **Proof:** [webui/tests/video-range.test.ts](webui/tests/video-range.test.ts), [webui/tests/sitemap.test.ts](webui/tests/sitemap.test.ts); [webui/ResearchLog.md](webui/ResearchLog.md), section "Shelf Lens source integration" (local HTTP and WebKit checks, both themes, 320 to 1280 CSS pixels); [webui/docs/assets.md](webui/docs/assets.md) (media provenance).
+- **Verify:** `cd webui && npm test -- tests/video-range.test.ts tests/sitemap.test.ts`. Run the portal and open `/shelf-lens`.
+- **Limits:** The page plays a recording. It does not run the Android tracker in the browser. The videos are outside the PWA precache. Physical-device playback was not tested in the integration run. Bottle search, AR navigation, and taste highlighting are labeled as future work.
 
 #### F-108 Static wine images with a hash-checked release
 
@@ -1050,7 +1091,7 @@ The branch `android/current` has no Android content that `main` lacks. Its Andro
 
 ### Files that are not in Git
 
-- Model weights. [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists the archives and their SHA-256 values.
+- Recognition model weights. The Shelf Lens bottle detector is a separate in-Git asset (F-113). [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists the archives and their SHA-256 values.
 - The lab catalogue database and the rotated index that the `cascade` pipeline needs. The text export of the lab database is in Git (F-36).
 - The lab snapshot of 2026-10-18 (2,358 wines, 936 new images) (F-36).
 - The Android model pack (F-44).
@@ -1062,5 +1103,7 @@ The branch `android/current` has no Android content that `main` lacks. Its Andro
 - The evidence directories `internal/` of the workbench experiments. [workbench/ChangeLog.md](workbench/ChangeLog.md) names each path.
 
 ### Planned features
+
+Shelf Lens bottle search, AR navigation, taste highlighting, and comparison with a reference planogram are planned. The implemented features are video scanning, spatial ReID, ratings, the wine list, and planogram generation (F-113 to F-115).
 
 The open issues of this repository list the planned features, for example #26, #27, and #29 to #31 (post-search features), #35 (screen reader support), #48 (diary history, ratings, and preferences), and #36 (iPhone release). Issue #28 (Dinner Lens) is open, and F-27 to F-29 describe its current state.

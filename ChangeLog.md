@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — Shelf Lens assessment coverage
+
+- Update `ASSESSMENT.md` against `main` at `06f3b78c`.
+- Add F-113 to F-116 for video scanning, spatial ReID, AR ratings, planograms, and the integrated landing.
+- Link each claim to the committed code, prototype tests, recording, images, or validation record.
+- Separate the Android video workflow from the Web photograph scanner and the offline Android application.
+- Record internet, tracker, APK credential, and benchmark limits. Keep bottle search, AR navigation, taste highlighting, and compliance checks in planned work.
+- Add the Shelf Lens test command and component entry. Update the public sitemap count to 16 pages.
+
 ## 2026-10-20 — F04 Web result journey, issue #73
 
 - Implement strict cross-producer alternatives, factual comparison, existing diary saves, login return, and bounded public offline cards in `webui/`.
