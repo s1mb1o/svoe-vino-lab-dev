@@ -1,8 +1,63 @@
 # Wine catalog MCP
 
-This component provides five read-only catalog tools over local stdio.
+This component provides five read-only catalog tools and two optional account tools over local stdio.
 Issue: [svoe-vino-lab-dev#25](https://github.com/s1mb1o/svoe-vino-lab-dev/issues/25).
 Read [the implementation plan](../docs/plans/02_wine-catalog-mcp.md).
+
+## Completion checklist — 2026-10-20
+
+This checklist records current source completion and the acceptance evidence available on this date.
+The [catalog plan](../docs/plans/02_wine-catalog-mcp.md),
+[producer-map plan](../docs/plans/03_mcp-producer-line-maps.md), and
+[account plan](../docs/plans/04_user-accounts.md#application-tokens-and-mcp-phase-2)
+remain historical records. Use this checklist for current status, including features completed after those plans.
+
+### Implemented functionality
+
+- [x] Five catalog tools: exact cards, typed discovery, fact comparison, producer maps, and approved-audio lookup.
+- [x] Verified producer maps replace the six-node mock. MCP uses the shared Web index and resolver for all 25 producers.
+- [x] Catalog checksums, Active-only discovery, source evidence, stable errors, bounded schemas, and protocol-only stdout.
+- [x] Approved-audio reader checks approval, wine identity, hashes, and local path containment. Missing assets return unavailable.
+- [x] Two optional account tools read the token owner's profile and paginated diary over HTTPS. Without a token, only the five catalog tools exist.
+- [x] Stored preferences, integer ratings from 1 to 5, tasting notes, and the paginated `rated` collection. Private saved-wine notes stay excluded.
+- [x] Account timeouts, response bounds, sanitized errors, and continued catalog access when account reads fail. All seven tools remain read-only.
+- [x] Pinned SDK and lockfile, stdio CLI, SDK client example, regression suite, and CI workflow.
+
+### Remaining implementation work
+
+No missing runtime feature is currently identified for the local stdio catalog, producer-map, and account contracts.
+Preferences and ratings have account storage, portal editing, and MCP reads in source.
+Their production rollout and acceptance remain separate tasks below.
+
+### Production rollout
+
+- [ ] Record production deployment of account schema 007 and the matching portal for preferences, ratings, and `collection=rated`.
+  The existing MCP records establish local acceptance; they do not establish this deployment.
+
+### Acceptance checks
+
+- [x] Local syntax checks, all 53 MCP tests, and the real SDK subprocess demo pass.
+- [x] Local Chromium and WebKit acceptance covers preference and rating writes through the built portal and reads through a real MCP subprocess.
+  It also covers private-note exclusion, account isolation, update, reset, and rating survival after history removal.
+- [x] Production profile and diary reads pass with a real account: 27 unique wines across two pages at the check time.
+  See the [live account record](ResearchLog.md#2026-10-20--live-account-access).
+- [x] Production token revocation blocks both account tools on their next calls and on a repeat check over the same connection.
+  Catalog access continues. See the [revocation record](ResearchLog.md#2026-10-20--production-token-revocation).
+- [ ] Verify stored preferences, ratings, tasting notes, and `rated` pagination against the deployed production account API.
+  Follow [the preferences and ratings procedure](SMOKE_TESTS.md#preferences-and-ratings-acceptance).
+- [ ] Record an interactive run in a third-party MCP host: discovery, a non-fixture card, comparison, account reads, and handling diary text as data.
+  SDK tests establish protocol behavior; interactive host behavior needs its own evidence.
+- [ ] Record a hosted execution of [the MCP CI workflow](../.github/workflows/mcp-tests.yml) for the revision being accepted.
+  Current local results do not establish a hosted CI result.
+
+### Future integrations and content
+
+These are separately scoped extensions or content delivery tasks.
+
+- [ ] Publish approved production audio, its manifest, and a trusted HTTPS media host. The reader is implemented.
+  Acceptance then needs matching hosted bytes, MP3 decoding, pronunciation, and playback checks.
+- [ ] Add a remote MCP transport and host-compatible authentication for hosted assistants. The current server uses local stdio.
+- [ ] Build and validate the Qwen function-calling conversation loop and any Web assistant adapter that reuses `CatalogService`.
 
 ## Requirements and commands
 

@@ -2,6 +2,10 @@
 
 Run commands from `mcp/`.
 
+Use the [current completion checklist](README.md#completion-checklist--2026-10-20) to distinguish
+implemented features, production rollout, pending acceptance, and future integrations.
+The procedures below describe checks to run; the dated records describe checks already completed.
+
 1. Run `npm ci --ignore-scripts` from the lockfile.
 2. Run `npm run check`.
 3. Run `npm test`.
@@ -61,7 +65,10 @@ Read [ResearchLog.md](ResearchLog.md#2026-10-20--production-token-revocation) fo
 
 ## Preferences and ratings acceptance
 
-1. Deploy account schema 007, the matching portal, and the MCP adapter to the test environment.
+Local acceptance has passed as recorded below. Production acceptance remains open until the matching
+account service and portal deployment is recorded and this procedure passes against production.
+
+1. Record the target environment and deployed revision. Confirm account schema 007, the matching portal, and the MCP adapter are available there.
 2. In account settings, save preferences, reload, and confirm that `get_my_profile` returns those exact choices.
 3. Rate a history wine from 1 to 5 and add a tasting note. Confirm the same rating and `note` in `list_my_wines`.
 4. Add a different private note to the saved wine. Confirm that this private note is absent from all MCP results.

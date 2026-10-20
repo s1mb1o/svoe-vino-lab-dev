@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-20 — Current completion checklist
+
+- Add a current README checklist for completed functionality, remaining implementation, production rollout, acceptance, and future integrations.
+- Mark local preferences and ratings support as implemented; retain production rollout and acceptance as open evidence items.
+- Keep successful production account reads and token revocation completed, and link the existing acceptance records.
+- Link smoke procedures to the checklist. Preserve historical plans, earlier results, and runtime behavior.
+
 ## 2026-10-20 — Production token revocation verification
 
 - Record successful application-token revocation through the production account page.

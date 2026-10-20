@@ -1,5 +1,17 @@
 # MCP research log
 
+## 2026-10-20 — Current completion checklist
+
+Reviewed the catalog and producer-map plans, the account MCP contract, current source, and recorded checks.
+The [README checklist](README.md#completion-checklist--2026-10-20) now separates implemented runtime
+features, production rollout, acceptance evidence, and future integrations or content delivery.
+No missing runtime feature was identified in the current local stdio scope.
+Preferences and ratings are implemented and accepted locally; their production deployment and reads
+still need evidence. Production profile, diary, and token-revocation checks remain completed.
+Interactive host acceptance and a recorded hosted CI run remain open. Production audio delivery,
+remote MCP hosting, and the Qwen or Web assistant loop are separately scoped work.
+This documentation review adds no new production test result. Historical plans and dated results remain unchanged.
+
 ## 2026-10-20 — Production token revocation
 
 A real SDK client connected to the local MCP server over stdio with an authorized production
