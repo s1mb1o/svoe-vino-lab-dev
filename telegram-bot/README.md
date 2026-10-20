@@ -299,6 +299,9 @@ Plan `../docs/plans/07_diary-history-and-saved.md`. The same settings turn it on
   sender counts.
 - A selected alternative sends `POST /v1/bot/history` with that wine and `replaces` = the shown
   wine. «Ничего из этого» sends nothing.
+- The undo and the alternative send `at`, the time of the result card (the end of the last
+  `result_delivery` step, else the receipt time). The service changes the Moscow day of the card,
+  not the day of the button press.
 - The account service records a wine only for a linked Telegram user and only when the switch
   «Записывать найденные вина» is on. Otherwise it answers `not_linked` or `off`.
 - Each call runs in the background with one attempt and a 2 s timeout

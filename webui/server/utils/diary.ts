@@ -14,8 +14,8 @@ import {
 } from './account'
 import { fetchSourceWine } from './wine-metadata'
 
-// A history of 2,000 wines is about 600 KB of JSON.
-const LIST_RESPONSE_BYTES = 2 * 1024 * 1024
+// A history of 2,000 wines is about 600 KB of JSON; with full 2 KiB snapshots it is about 4.6 MB.
+const LIST_RESPONSE_BYTES = 8 * 1024 * 1024
 
 /** Finds the wine of a slug: the local catalogue, then the vino-svoe.ru API. */
 export type WineLookup = (slug: string) => Promise<Wine | null>
@@ -203,11 +203,19 @@ export function savedPutRoute(event: H3Event, source: AccountConfigSource, slug:
     const body = await readJson(event)
     if (!isSavedStatus(body.status) || !isSavedSource(body.source)) throw new AccountHttpError(400, 'invalid_request')
     // A status change of a saved wine keeps the stored snapshot: no catalogue request.
-    const snapshot = body.change === true ? null : await snapshotFor(wineSlug, options.lookup ?? defaultWineLookup)
-    const { data } = await callAccount<ServiceSavedItem>(config, 'PUT', `/v1/me/saved/${wineSlug}`, {
-      session, body: { status: body.status, source: body.source, ...(snapshot ? { wine_snapshot: snapshot } : {}) },
+    const lookup = options.lookup ?? defaultWineLookup
+    const snapshot = body.change === true ? null : await snapshotFor(wineSlug, lookup)
+    const put = (wine: DiaryWine | null) => callAccount<ServiceSavedItem>(config, 'PUT', `/v1/me/saved/${wineSlug}`, {
+      session, body: { status: body.status, source: body.source, ...(wine ? { wine_snapshot: wine } : {}) },
     })
-    return savedView(data)
+    let answer = await put(snapshot)
+    // A page with an old state can send a change for a wine that another tab removed: the service
+    // then adds it again (201). Give that new row its snapshot.
+    if (body.change === true && answer.status === 201) {
+      const fresh = await snapshotFor(wineSlug, lookup).catch(() => null)
+      if (fresh) answer = await put(fresh)
+    }
+    return savedView(answer.data)
   })
 }
 

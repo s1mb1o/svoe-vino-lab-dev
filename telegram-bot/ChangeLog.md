@@ -2,6 +2,11 @@
 
 ## 2026-10-20
 
+- Review fix: «❌ Не совпало» and a selected alternative send `at`, the time of the result card:
+  the end of the last successful `result_delivery` step of the request, else its receipt time.
+  The account service then changes the day of the card, not the day of the press. A plain record
+  after delivery sends no `at`. 2 new tests. The account service MUST accept `at` before this bot
+  version is deployed: it refuses unknown fields with HTTP 422.
 - «Винный дневник» history from the chat (plan `../docs/plans/07_diary-history-and-saved.md`,
   issue #71). With `BOT_ACCOUNT_ENDPOINT` set, the bot sends `POST /v1/bot/history` after it
   delivers a result card (also a tentative one) to a person, `POST /v1/bot/history/undo` after the
@@ -16,7 +21,7 @@
 - `_send_result`, `_set_terminal_status`, and `_set_status` return True when the text or the card
   reached the chat. The chat behavior does not change.
 - `PRIVACY.ru.md`, README, the specification (FR 234–237), and `SMOKE_TESTS.md` name the history.
-  New tests: `tests/test_diary_history.py` (16).
+  New tests: `tests/test_diary_history.py` (18 with the review fix).
 
 ## 2026-10-19
 

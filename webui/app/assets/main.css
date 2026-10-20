@@ -850,6 +850,7 @@ body:has(.experience-dialog[open]) { overflow: hidden; }
 .pin-button:disabled { opacity: .6; }
 .pin-panel { position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; width: min(264px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); box-shadow: 0 14px 40px #2c1c1424; font-size: 14px; line-height: 1.45; text-align: left; letter-spacing: normal; text-transform: none; }
 .pin-panel p { margin: 0; }
+.pin-panel:focus { outline: none; }
 .pin-panel-title { font-weight: 600; }
 .pin-statuses { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; border: 0; min-width: 0; }
 .pin-status { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 8px; border-radius: 10px; cursor: pointer; }

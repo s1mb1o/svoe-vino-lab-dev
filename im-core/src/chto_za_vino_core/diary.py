@@ -93,8 +93,8 @@ def wine_snapshot(wine: Wine) -> dict[str, object] | None:
     return snapshot or None
 
 
-def _person(user_id: object) -> bool:
-    return isinstance(user_id, int) and not isinstance(user_id, bool) and user_id > 0
+def _positive_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
 
 
 def _slug(value: object) -> bool:
@@ -131,25 +131,39 @@ class DiaryHistory:
     def __repr__(self) -> str:
         return f"DiaryHistory(endpoint={self._base!r})"
 
-    def record(self, user_id: int, wine: Wine, *, replaces: str | None = None) -> None:
-        """Record a shown wine for today.
+    def record(
+        self,
+        user_id: int,
+        wine: Wine,
+        *,
+        replaces: str | None = None,
+        at: int | None = None,
+    ) -> None:
+        """Record a shown wine.
 
         `replaces` is the wine that the person rejected before they selected this wine. The
-        service removes the date of today of that wine.
+        service removes the date of that wine. `at` is the Unix time of the result card. The
+        service uses its Moscow day when the card is at most 48 hours old, otherwise today.
+        Without `at`, the service uses today.
         """
-        self._spawn("record", self._record(user_id, wine, replaces))
+        self._spawn("record", self._record(user_id, wine, replaces, at))
 
-    def undo(self, user_id: int, slug: str) -> None:
-        """Remove the date of today of a wine that the person rejected."""
-        self._spawn("undo", self._undo(user_id, slug))
+    def undo(self, user_id: int, slug: str, *, at: int | None = None) -> None:
+        """Remove the date of a wine that the person rejected.
+
+        `at` is the Unix time of the result card, as for `record`.
+        """
+        self._spawn("undo", self._undo(user_id, slug, at))
 
     async def join(self) -> None:
         """Wait for the calls that run now."""
         while self._tasks:
             await asyncio.gather(*self._tasks, return_exceptions=True)
 
-    async def _record(self, user_id: int, wine: Wine, replaces: str | None) -> str | None:
-        if not _person(user_id) or not _slug(wine.slug):
+    async def _record(
+        self, user_id: int, wine: Wine, replaces: str | None, at: int | None
+    ) -> str | None:
+        if not _positive_int(user_id) or not _slug(wine.slug):
             return None
         body: dict[str, object] = {"user_id": user_id, "slug": wine.slug}
         snapshot = wine_snapshot(wine)
@@ -157,12 +171,17 @@ class DiaryHistory:
             body["wine_snapshot"] = snapshot
         if replaces != wine.slug and _slug(replaces):
             body["replaces"] = replaces
+        if _positive_int(at):
+            body["at"] = at
         return await self._post(RECORD_PATH, body)
 
-    async def _undo(self, user_id: int, slug: str) -> str | None:
-        if not _person(user_id) or not _slug(slug):
+    async def _undo(self, user_id: int, slug: str, at: int | None) -> str | None:
+        if not _positive_int(user_id) or not _slug(slug):
             return None
-        return await self._post(UNDO_PATH, {"user_id": user_id, "slug": slug})
+        body: dict[str, object] = {"user_id": user_id, "slug": slug}
+        if _positive_int(at):
+            body["at"] = at
+        return await self._post(UNDO_PATH, body)
 
     def _spawn(self, operation: str, work: Coroutine[Any, Any, str | None]) -> None:
         guarded = self._guarded(operation, work)

@@ -284,6 +284,28 @@ def test_snapshot_rules(harness):
     assert item(harness, session, "wine-a").json()["wine"] == fits
 
 
+def test_a_newer_snapshot_merges_into_the_stored_one(harness):
+    session = harness.email_session("anna@example.ru")
+    record(harness, session, "wine-a", snapshot=SNAPSHOT)
+    record(harness, session, "wine-a", snapshot={"name": "Новое имя", "grapes": []})
+    assert item(harness, session, "wine-a").json()["wine"] == SNAPSHOT | {"name": "Новое имя"}
+    harness.clock.advance(86400)
+    record(harness, session, "wine-a", source="shelf", snapshot={"sugar": "Полусухое"})
+    assert item(harness, session, "wine-a").json()["wine"] == SNAPSHOT | {
+        "name": "Новое имя",
+        "sugar": "Полусухое",
+    }
+
+
+def test_a_merge_over_the_size_limit_keeps_the_newer_snapshot(harness):
+    session = harness.email_session("anna@example.ru")
+    old = {key: "я" * 200 for key in ("name", "producer", "color", "sugar")}
+    new = {"region": "я" * 200, "grapes": ["м" * 80] * 3}
+    record(harness, session, "wine-a", snapshot=old)
+    record(harness, session, "wine-a", snapshot=new)
+    assert item(harness, session, "wine-a").json()["wine"] == new
+
+
 def test_an_empty_snapshot_keeps_the_stored_one(harness):
     session = harness.email_session("anna@example.ru")
     record(harness, session, "wine-a", snapshot={"name": "Вино"})

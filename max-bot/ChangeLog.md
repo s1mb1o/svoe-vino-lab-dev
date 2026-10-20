@@ -2,6 +2,11 @@
 
 ## 2026-10-20
 
+- Review fix: «❌ Не совпало» and a selected alternative send `at`, the time of the result card:
+  the end of the last successful `result_delivery` step of the request, else its receipt time.
+  The account service then changes the day of the card, not the day of the press. A plain record
+  after delivery sends no `at`. 2 new tests. The account service MUST accept `at` before this bot
+  version is deployed: it refuses unknown fields with HTTP 422.
 - «Винный дневник» history from the chat (plan `../docs/plans/07_diary-history-and-saved.md`,
   issue #71). New settings `BOT_ACCOUNT_ENDPOINT` (empty: off) and `ACCOUNT_MAX_TOKEN` (required
   with the endpoint, at least 32 characters, not in `repr`, in the log redaction, different from
@@ -17,7 +22,8 @@
   reached the chat. The chat behavior does not change.
 - README, `deploy/README.md`, `.env.example`, `deploy/max-bot.env.example`, `PRIVACY.ru.md`, the
   specification (M23–M26), and `SMOKE_TESTS.md` name the history. New tests:
-  `tests/test_diary_history.py` (15) and 8 settings tests in `tests/test_config.py`.
+  `tests/test_diary_history.py` (17 with the review fix) and 8 settings tests in
+  `tests/test_config.py`.
 
 ## 2026-10-19
 

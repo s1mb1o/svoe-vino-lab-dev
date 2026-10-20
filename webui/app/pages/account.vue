@@ -142,6 +142,8 @@ function fail(error: unknown) {
 
 async function afterLogin() {
   message.value = ''
+  // The pins of the next page must see the new session.
+  diary.reset()
   if (next.value !== ACCOUNT_PATH) {
     await navigateTo(next.value)
     return
@@ -263,6 +265,7 @@ async function logout() {
   tokenFormOpen.value = false
   pending.value = null
   appTokens.value = []
+  diary.reset()
   notice.value = 'Вы вышли из дневника.'
   show('email')
 }
@@ -273,6 +276,7 @@ async function deleteAccount() {
   try {
     await api.deleteAccount()
     user.value = null
+    diary.reset()
     confirmDelete.value = false
     show('deleted')
   } catch (error) {

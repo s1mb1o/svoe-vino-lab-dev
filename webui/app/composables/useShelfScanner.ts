@@ -18,6 +18,8 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
   const phase = ref<'idle' | 'selected' | 'loading' | 'ready' | 'error'>('idle')
   const error = ref('')
   const exampleLoading = ref(false)
+  // True when the shelf photo is an example, not the person's own photo («Винный дневник», plan 07).
+  const exampleResult = ref(false)
   const selectedId = ref('')
   const selectedBottle = computed(() => result.value?.bottles.find(b => b.id === selectedId.value) || null)
   const selectedMatch = computed(() => selectedBottle.value?.match || null)
@@ -69,8 +71,9 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
       phase.value = 'error'
     } finally { clearTimeout(timer); if (current === generation) controller = undefined }
   }
-  async function select(files: File[]) {
+  async function select(files: File[], options: { example?: boolean } = {}) {
     reset()
+    exampleResult.value = options.example === true
     const image = files[0]
     if (files.length !== 1 || !image) error.value = 'Выберите одну фотографию полки.'
     else if (!image.size) error.value = 'Файл пуст. Выберите другой снимок.'
@@ -96,11 +99,11 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
       const response = await request(example.src, { signal: active.signal })
       if (!response.ok) throw new Error('Example unavailable')
       const blob = await response.blob()
-      if (current === generation) await select([new File([blob], example.fileName, { type: 'image/webp' })])
+      if (current === generation) await select([new File([blob], example.fileName, { type: 'image/webp' })], { example: true })
     } catch {
       if (current === generation) { error.value = 'Пример не загрузился. Выберите свою фотографию.'; phase.value = 'error' }
     } finally { clearTimeout(timer); if (current === generation) { exampleLoading.value = false; controller = undefined } }
   }
   onScopeDispose(reset)
-  return { file, preview, result, phase, error, selectedId, selectedBottle, selectedMatch, selectedWine, portalUrl, busy, displayImage, exampleLoading, select, submit, selectBottle, example, closeBottle, cancel, reset }
+  return { file, preview, result, phase, error, selectedId, selectedBottle, selectedMatch, selectedWine, portalUrl, busy, displayImage, exampleLoading, exampleResult, select, submit, selectBottle, example, closeBottle, cancel, reset }
 }

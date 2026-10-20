@@ -31,8 +31,16 @@ def bot_record(harness, slug, user_id=TELEGRAM_USER, token=TELEGRAM_TOKEN, **ext
     return harness.bot("/v1/bot/history", {"user_id": user_id, "slug": slug, **extra}, token=token)
 
 
-def bot_undo(harness, slug, user_id=TELEGRAM_USER, token=TELEGRAM_TOKEN):
-    return harness.bot("/v1/bot/history/undo", {"user_id": user_id, "slug": slug}, token=token)
+def bot_undo(harness, slug, user_id=TELEGRAM_USER, token=TELEGRAM_TOKEN, **extra):
+    body = {"user_id": user_id, "slug": slug, **extra}
+    return harness.bot("/v1/bot/history/undo", body, token=token)
+
+
+def dates(harness, session, slug):
+    response = harness.web("GET", f"/v1/me/history/{slug}", session=session)
+    if response.status_code == 404:
+        return []
+    return [(day["met_on"], day["source"]) for day in response.json()["days"]]
 
 
 def history(harness, session):
@@ -132,6 +140,89 @@ def test_an_alternative_replaces_the_rejected_wine(harness):
     assert [i["slug"] for i in history(harness, session)] == ["wine-right"]
 
 
+def test_undo_removes_the_date_of_the_card(harness):
+    session = harness.email_session("anna@example.ru")
+    link_telegram(harness, session)
+    card = int(harness.clock())
+    bot_record(harness, "wine-a")
+    # The person taps «❌ Не совпало» the next morning.
+    harness.clock.advance(86400)
+    assert bot_undo(harness, "wine-a").json() == {"status": "absent"}
+    assert bot_undo(harness, "wine-a", at=card).json() == {"status": "removed"}
+    assert history(harness, session) == []
+
+
+def test_the_card_time_window(harness):
+    session = harness.email_session("anna@example.ru")
+    link_telegram(harness, session)
+    yesterday = int(harness.clock())
+    bot_record(harness, "wine-a")
+    harness.clock.advance(86400)
+    now = int(harness.clock())
+    bot_record(harness, "wine-a")
+    both = [("2027-01-16", "telegram"), ("2027-01-15", "telegram")]
+    # Older than 48 hours, later than 60 seconds ahead, or not a plausible time: today's date.
+    for at in (now - 48 * 3600 - 1, now + 61, -5, 10**20):
+        response = bot_undo(harness, "wine-a", at=at)
+        assert response.json() == {"status": "removed"}, at
+        assert dates(harness, session, "wine-a") == [("2027-01-15", "telegram")]
+        assert bot_record(harness, "wine-a").json()["status"] == "recorded"
+    assert bot_undo(harness, "wine-a", at=now + 60).json() == {"status": "removed"}
+    bot_record(harness, "wine-a")
+    # 48 hours ago is 2027-01-14 in Moscow: no date then.
+    assert bot_undo(harness, "wine-a", at=now - 48 * 3600).json() == {"status": "absent"}
+    assert dates(harness, session, "wine-a") == both
+    assert bot_undo(harness, "wine-a", at=yesterday).json() == {"status": "removed"}
+    assert dates(harness, session, "wine-a") == [("2027-01-16", "telegram")]
+
+
+def test_a_date_of_another_source_stays(harness):
+    session = harness.email_session("anna@example.ru")
+    link_telegram(harness, session)
+    link_max(harness, session)
+    site = {"slug": "wine-a", "source": "photo"}
+    harness.web("POST", "/v1/me/history", session=session, json=site)
+    assert bot_record(harness, "wine-a").json()["status"] == "already"
+    assert bot_undo(harness, "wine-a").json() == {"status": "absent"}
+    assert dates(harness, session, "wine-a") == [("2027-01-15", "photo")]
+    assert bot_record(harness, "wine-b", replaces="wine-a").json()["status"] == "recorded"
+    assert dates(harness, session, "wine-a") == [("2027-01-15", "photo")]
+    # The MAX chat cannot remove a date of the Telegram chat.
+    bot_record(harness, "wine-c")
+    undo = bot_undo(harness, "wine-c", user_id=MAX_USER, token=MAX_BOT_TOKEN)
+    assert undo.json() == {"status": "absent"}
+    assert dates(harness, session, "wine-c") == [("2027-01-15", "telegram")]
+
+
+def test_replaces_removes_the_date_of_the_card(harness):
+    session = harness.email_session("anna@example.ru")
+    link_telegram(harness, session)
+    card = int(harness.clock())
+    bot_record(harness, "wine-wrong")
+    harness.clock.advance(86400)
+    response = bot_record(harness, "wine-right", replaces="wine-wrong", at=card)
+    assert response.json() == {"status": "recorded", "met_on": "2027-01-16"}
+    assert [i["slug"] for i in history(harness, session)] == ["wine-right"]
+
+
+def test_a_chat_card_does_not_erase_a_richer_snapshot(harness):
+    session = harness.email_session("anna@example.ru")
+    link_telegram(harness, session)
+    full = {
+        "name": "Рислинг",
+        "producer": "Усадьба Дивноморское",
+        "color": "Белое",
+        "sugar": "Сухое",
+        "region": "Геленджик",
+        "grapes": ["Рислинг"],
+    }
+    site = {"slug": "wine-a", "source": "photo", "wine_snapshot": full}
+    harness.web("POST", "/v1/me/history", session=session, json=site)
+    card = {"name": "Рислинг 2022", "color": "Белое"}
+    assert bot_record(harness, "wine-a", wine_snapshot=card).json()["status"] == "already"
+    assert history(harness, session)[0]["wine"] == full | {"name": "Рислинг 2022"}
+
+
 def test_body_rules(harness):
     for body in (
         {"user_id": 0, "slug": "wine-a"},
@@ -147,6 +238,8 @@ def test_body_rules(harness):
         assert "Wine-A" not in response.text
     undo = harness.bot("/v1/bot/history/undo", {"user_id": 5, "slug": "wine-a", "replaces": "b"})
     assert undo.status_code == 422
+    not_a_time = harness.bot("/v1/bot/history/undo", {"user_id": 5, "slug": "wine-a", "at": "x"})
+    assert not_a_time.json() == {"error": "invalid_request", "fields": ["at"]}
 
 
 def test_only_the_bots_can_record_for_a_chat(harness):

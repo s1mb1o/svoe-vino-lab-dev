@@ -117,7 +117,7 @@ def merge(database: str, keep: str, remove: str) -> int:
     for each provider. Back up the database first.
 
     History: the union of the dates. For a date in both accounts, the date with the earlier
-    first time stays. A wine gets the earliest first time and the latest last time, and the
+    first time stays. A wine gets the earliest and the latest time of its dates, and the
     snapshot of `keep` (the snapshot of `remove` when `keep` has none). Saved wines: for a wine
     in both accounts, the row with the later `updated_at` stays. The switch of `keep` stays.
     The history and saved limits apply again at the next record or save.
@@ -185,9 +185,7 @@ def _merge_lists(db: sqlite3.Connection, keep_id: str, remove_id: str) -> tuple[
         "SELECT ?, wine_slug, wine_snapshot, first_met_at, last_met_at FROM history_wines "
         "WHERE user_id = ? "
         "ON CONFLICT (user_id, wine_slug) DO UPDATE SET "
-        "wine_snapshot = COALESCE(history_wines.wine_snapshot, excluded.wine_snapshot), "
-        "first_met_at = MIN(history_wines.first_met_at, excluded.first_met_at), "
-        "last_met_at = MAX(history_wines.last_met_at, excluded.last_met_at)",
+        "wine_snapshot = COALESCE(history_wines.wine_snapshot, excluded.wine_snapshot)",
         (keep_id, remove_id),
     )
     db.execute(
@@ -197,6 +195,18 @@ def _merge_lists(db: sqlite3.Connection, keep_id: str, remove_id: str) -> tuple[
         "source = excluded.source, first_at = excluded.first_at "
         "WHERE excluded.first_at < history_days.first_at",
         (keep_id, remove_id),
+    )
+    # The times of a wine come from its dates, as in the service: after a date clash the
+    # later time of that day is gone, so it cannot stay as the last time.
+    db.execute(
+        "UPDATE history_wines SET "
+        "first_met_at = (SELECT MIN(d.first_at) FROM history_days d "
+        "WHERE d.user_id = history_wines.user_id AND d.wine_slug = history_wines.wine_slug), "
+        "last_met_at = (SELECT MAX(d.first_at) FROM history_days d "
+        "WHERE d.user_id = history_wines.user_id AND d.wine_slug = history_wines.wine_slug) "
+        "WHERE user_id = ? AND EXISTS (SELECT 1 FROM history_days d "
+        "WHERE d.user_id = history_wines.user_id AND d.wine_slug = history_wines.wine_slug)",
+        (keep_id,),
     )
     db.execute(
         "INSERT INTO saved_wines (user_id, wine_slug, status, source, wine_snapshot, added_at, "

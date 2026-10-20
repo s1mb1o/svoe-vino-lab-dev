@@ -24,6 +24,7 @@ from chto_za_vino_bot.app import (
     AlbumReceiptTracker,
     PhotoJob,
     PhotoProcessor,
+    _result_card_time,
     enqueue_photo_message,
     handle_alternative_feedback,
     handle_result_feedback,
@@ -244,7 +245,10 @@ async def test_a_mismatch_removes_the_shown_wine(repository, account):
     await account.history.join()
 
     assert callback.answers == [("Спасибо! Выберите возможный вариант.", False)]
-    assert account.calls == [(UNDO, {"user_id": USER_ID, "slug": "wine-1"}, f"Bearer {TOKEN}")]
+    # The request has no delivery step: the card time is the receipt time.
+    assert account.calls == [
+        (UNDO, {"user_id": USER_ID, "slug": "wine-1", "at": 1000}, f"Bearer {TOKEN}")
+    ]
 
 
 async def test_a_mismatch_of_another_user_sends_nothing(repository, account):
@@ -293,6 +297,7 @@ async def test_a_selected_alternative_replaces_the_shown_wine(repository, accoun
             "slug": "wine-3",
             "wine_snapshot": {"name": "Вино 3"},
             "replaces": "wine-1",
+            "at": 1000,
         },
         f"Bearer {TOKEN}",
     )
@@ -331,3 +336,39 @@ async def test_feedback_answers_as_usual_when_the_account_service_fails(
     assert selection.answers == [("Спасибо! Ответ сохранён.", False)]
     assert [path for path, _, _ in account.calls] == [UNDO, RECORD]
     assert caplog.text.count("HTTP 503 unavailable") == 2
+
+
+async def test_the_card_time_is_the_end_of_the_last_delivery(repository, account):
+    # A card at 23:58 and a press after midnight (Moscow) must change the day of the card.
+    request_id = shown_request(repository)
+    for step, started_at_ms, duration_ms, outcome in (
+        ("result_delivery", 1_792_000_000_000, 900, "ok"),
+        ("result_delivery", 1_792_090_000_000, 1_500, "ok"),
+        ("result_delivery", 1_792_095_000_000, 100, "failed"),
+        ("quality", 1_792_099_000_000, 10, "ok"),
+    ):
+        repository.record_step_timing(
+            request_id=request_id,
+            step=step,
+            started_at_ms=started_at_ms,
+            duration_ms=duration_ms,
+            outcome=outcome,
+        )
+    services = SimpleNamespace(repository=repository, history=account.history)
+
+    await handle_result_feedback(FakeCallback(f"feedback:no:{request_id}", USER_ID), services)
+    await handle_alternative_feedback(
+        FakeCallback(f"alternative:2:{request_id}", USER_ID), services
+    )
+    await account.history.join()
+
+    assert [(path, body["at"]) for path, body, _ in account.calls] == [
+        (UNDO, 1_792_090_001),
+        (RECORD, 1_792_090_001),
+    ]
+
+
+def test_an_unknown_card_time_is_omitted():
+    services = SimpleNamespace(repository=SimpleNamespace(step_timings=lambda request_id: []))
+
+    assert _result_card_time(services, SimpleNamespace(request_id="r", received_at=0)) is None

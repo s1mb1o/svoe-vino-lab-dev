@@ -101,8 +101,8 @@ have the form `{"error": "invalid_request", "fields": [...]}` and never echo the
 | `GET /v1/me/saved/slugs` | web | `{items: [{slug, status}]}` for the pins of a page |
 | `PUT /v1/me/saved/{slug}` | web | `{status, source, wine_snapshot?}` → `SavedItem`: 201 for a new wine, 200 for a change; 409 `saved_full` |
 | `DELETE /v1/me/saved/{slug}` | web | Remove a saved wine; 404 `not_found` |
-| `POST /v1/bot/history` | telegram-bot, max-bot | `{user_id, slug, wine_snapshot?, replaces?}` → `{status: recorded\|already\|off\|not_linked, met_on?}` |
-| `POST /v1/bot/history/undo` | telegram-bot, max-bot | `{user_id, slug}` → `{status: removed\|absent\|not_linked}` |
+| `POST /v1/bot/history` | telegram-bot, max-bot | `{user_id, slug, wine_snapshot?, replaces?, at?}` → `{status: recorded\|already\|off\|not_linked, met_on?}` |
+| `POST /v1/bot/history/undo` | telegram-bot, max-bot | `{user_id, slug, at?}` → `{status: removed\|absent\|not_linked}` |
 | `GET /v1/me/app-tokens` | web | Active application tokens, without secrets |
 | `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only |
 | `DELETE /v1/me/app-tokens/{id}` | web | Revoke a token |
@@ -128,8 +128,13 @@ Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.
 - Wine snapshot: a JSON object with the optional fields `name`, `producer`, `color`, `sugar`,
   `region` (1–200 characters each) and `grapes` (at most 12 strings of 1–80 characters), at
   most 2,048 bytes of compact UTF-8 JSON. Another key, a longer value, or a larger object gets
-  HTTP 422. A newer snapshot replaces the stored one. An empty object or no snapshot keeps it.
-  The service keeps the snapshot so the lists render when the catalog is not available.
+  HTTP 422. The service keeps the snapshot so the lists render when the catalog is not
+  available.
+- Each writer (site history, chat history, saved `PUT`) merges a newer snapshot into the stored
+  one: its keys override, and keys that it does not have keep the stored values. So a chat card
+  without sugar or grapes does not erase the snapshot of the site. An empty object, an empty
+  grape list, or no snapshot changes nothing. When the union is larger than 2,048 bytes, the
+  newer snapshot replaces the stored one.
 - `HistoryItem`: `slug`, `wine` (the snapshot or `null`), `first_met_at`, `last_met_at`,
   `days_count`, `sources` (the distinct sources of the dates, in the order `photo`, `shelf`,
   `telegram`, `max`), `saved_status` (`null` when not saved).
@@ -147,9 +152,14 @@ Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.
   `history`.
 - Bots: the consumer gives the messenger (`telegram-bot` → `telegram`, `max-bot` → `max`).
   `user_id` is the Telegram or MAX user ID of a linked identity. A chat without a linked diary
-  gets `not_linked` with HTTP 200. `undo` removes today's date. `replaces` is the wine that the
-  person rejected before they selected this one: today's date of it goes in the same
-  transaction, also when the switch is off.
+  gets `not_linked` with HTTP 200. The chat records the alternative wine with the date of today.
+- Bot removal: `undo` removes a date of `slug`. `replaces` is the wine that the person rejected
+  before they selected this one: its date goes in the same transaction, also when the switch is
+  off. `at` (integer, Unix seconds UTC) is the time of the result card. The date is the Moscow
+  day of `at`. Without `at`, or with `at` outside [now − 48 h, now + 60 s], the date is today; this
+  is not an error. Only a date with the source of this chat (`telegram` or `max`) goes. A date of
+  another source stays, for example a site match of the same morning; `undo` then answers
+  `absent`.
 - `GET /v1/app/wines` item: `slug`, `name`, `producer`, `color`, `sugar` (from the snapshot or
   `null`), `first_met_at`, `last_met_at`, `days` (the number of dates), `sources`,
   `saved_status`. The cursor is opaque: it holds `last_met_at` and the slug of the last item in
@@ -188,7 +198,7 @@ docker exec svoe-vino-lab-account-prod chto-za-vino-account merge --keep <userna
 The command moves the login methods and the diary lists of `--remove` to `--keep` and deletes
 `--remove` with its sessions. It changes nothing when both accounts have a login method of the
 same provider. History: the union of the dates; for a date in both accounts, the date with the
-earlier time stays; each wine gets the earliest first time, the latest last time, and the
+earlier time stays; each wine gets the earliest and the latest time of its dates, and the
 snapshot of `--keep` (or of `--remove` when `--keep` has none). Saved wines: for a wine in both
 accounts, the row with the later `updated_at` stays. The switch of `--keep` stays. The list
 limits apply again at the next record or save.

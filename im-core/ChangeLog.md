@@ -2,6 +2,11 @@
 
 ## 2026-10-20
 
+- Review fix: `DiaryHistory.undo(..., at=...)` and `DiaryHistory.record(..., replaces=...,
+  at=...)` send the optional `at` (Unix time of the result card). The account service then
+  changes the Moscow day of the card (at most 48 hours back), not the day of the button press.
+  A card at 23:58 and a press at 00:02 no longer answer `absent`. An unknown time is omitted.
+  1 new test (27 in `tests/test_diary.py`).
 - New module `diary.py` for the «Винный дневник» history of both bots (plan
   `../docs/plans/07_diary-history-and-saved.md`, issue #71). `DiaryHistory.record()` sends
   `POST /v1/bot/history` (with `replaces` for a selected alternative) and `DiaryHistory.undo()`

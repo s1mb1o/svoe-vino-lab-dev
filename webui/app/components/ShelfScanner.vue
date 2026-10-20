@@ -17,17 +17,16 @@ const shelfExample = computed(() => SHELF_EXAMPLES[activeExample.value] || SHELF
 let returnFocus: HTMLElement | null = null
 let pendingOpener: HTMLElement | null = null
 
-function choose(event: Event) { const input = event.target as HTMLInputElement; if (input.files?.length) { ownPhoto.value = true; void scanner.select([...input.files]) } input.value = '' }
-function drop(event: DragEvent) { dragging.value = false; if (event.dataTransfer?.files.length) { ownPhoto.value = true; void scanner.select([...event.dataTransfer.files]) } }
-function runExample() { ownPhoto.value = false; void scanner.example(shelfExample.value) }
+function choose(event: Event) { const input = event.target as HTMLInputElement; if (input.files?.length) void scanner.select([...input.files]); input.value = '' }
+function drop(event: DragEvent) { dragging.value = false; if (event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files]) }
+function runExample() { void scanner.example(shelfExample.value) }
 // «Винный дневник» (plan 07): a bottle that the person opens on their own shelf photo goes to the
 // history once per result. An example shelf is not the person's wine.
 const diary = useDiary()
-const ownPhoto = ref(false)
 const recorded = new Set<string>()
 watch(result, () => recorded.clear())
 watch(selectedMatch, match => {
-  if (!match || !ownPhoto.value || recorded.has(match.slug)) return
+  if (!match || scanner.exampleResult.value || recorded.has(match.slug)) return
   recorded.add(match.slug)
   void diary.recordHistory(match.slug, 'shelf')
 })

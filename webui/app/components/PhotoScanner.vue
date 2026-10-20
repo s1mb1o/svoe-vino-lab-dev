@@ -48,7 +48,8 @@ async function undoHistory() {
   historyBusy.value = true
   try {
     await diary.undoHistory(record)
-    historyRecord.value = { ...record, status: 'off' }
+    // A newer match may have replaced the record during the request.
+    if (historyRecord.value === record) historyRecord.value = { ...record, status: 'off' }
   } catch {
     // The note stays; the person can remove the wine on the diary page.
   } finally {

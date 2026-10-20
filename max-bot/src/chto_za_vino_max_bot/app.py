@@ -1690,6 +1690,24 @@ def _diary_history(services: Services) -> DiaryHistory | None:
     return getattr(services, "history", None)
 
 
+def _result_card_time(services: Services, record: AdminRequestRecord) -> int | None:
+    """Return the Unix time of the result card of a request.
+
+    The time is the end of the last successful `result_delivery` step. A request without that
+    step gives its receipt time. The diary removes or replaces the date of this time, not the
+    date of the button press.
+    """
+    deliveries = [
+        item
+        for item in services.repository.step_timings(record.request_id)
+        if item.step == "result_delivery" and item.outcome == "ok"
+    ]
+    if deliveries:
+        last = max(deliveries, key=lambda item: item.started_at_ms)
+        return (last.started_at_ms + last.duration_ms) // 1000
+    return record.received_at or None
+
+
 def _undo_history(services: Services, request_id: str, user_id: int) -> None:
     """Remove the shown wine of a request from «Винный дневник» of its sender."""
     history = _diary_history(services)
@@ -1697,11 +1715,13 @@ def _undo_history(services: Services, request_id: str, user_id: int) -> None:
         return
     try:
         record = services.repository.admin_request(request_id)
+        if record is None or record.user_id != user_id or not record.recognition_slug:
+            return
+        at = _result_card_time(services, record)
     except Exception:
         LOG.exception("Diary history undo skipped")
         return
-    if record is not None and record.user_id == user_id and record.recognition_slug:
-        history.undo(user_id, record.recognition_slug)
+    history.undo(user_id, record.recognition_slug, at=at)
 
 
 def _record_alternative_history(
@@ -1713,16 +1733,17 @@ def _record_alternative_history(
         return
     try:
         record = services.repository.admin_request(request_id)
+        if record is None or record.user_id != user_id:
+            return
         candidates = services.repository.candidates(request_id)
+        at = _result_card_time(services, record)
     except Exception:
         LOG.exception("Diary history record skipped")
-        return
-    if record is None or record.user_id != user_id:
         return
     for candidate in candidates:
         if candidate.rank == rank:
             history.record(
-                user_id, candidate_wine(candidate), replaces=record.recognition_slug
+                user_id, candidate_wine(candidate), replaces=record.recognition_slug, at=at
             )
             return
 

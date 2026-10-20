@@ -129,6 +129,26 @@ async def test_record_of_an_alternative_names_the_rejected_wine(service):
     assert [body.get("replaces") for _, body, _ in service.calls] == ["wine-1", None, None]
 
 
+async def test_the_card_time_is_sent_only_when_it_is_known(service):
+    service.history.record(USER_ID, wine("wine-2"), replaces="wine-1", at=1_792_000_000)
+    service.history.record(USER_ID, wine("wine-3"), replaces="wine-1")
+    service.history.undo(USER_ID, "wine-1", at=1_792_000_000)
+    service.history.undo(USER_ID, "wine-4")
+    service.history.undo(USER_ID, "wine-5", at=0)
+    service.history.undo(USER_ID, "wine-6", at=True)
+    await service.history.join()
+
+    sent = {body["slug"]: body.get("at", "absent") for _, body, _ in service.calls}
+    assert sent == {
+        "wine-2": 1_792_000_000,
+        "wine-3": "absent",
+        "wine-1": 1_792_000_000,
+        "wine-4": "absent",
+        "wine-5": "absent",
+        "wine-6": "absent",
+    }
+
+
 async def test_record_without_a_snapshot(service):
     service.history.record(USER_ID, unknown_wine("old-wine"))
     await service.history.join()

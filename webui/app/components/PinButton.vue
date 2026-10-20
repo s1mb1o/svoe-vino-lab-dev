@@ -17,6 +17,8 @@ const root = ref<HTMLElement>()
 const button = ref<HTMLButtonElement>()
 const panel = ref<HTMLElement>()
 const panelId = useId()
+// A failed status change re-renders the radio buttons, so the checked one shows the saved status.
+const radioKey = ref(0)
 const status = computed<SavedStatus | null>(() => diary.saved.value[props.slug] ?? null)
 const visible = computed(() => diary.state.value === 'in' || diary.state.value === 'out')
 const name = computed(() => props.wineName ? `«${props.wineName}»` : 'вино')
@@ -37,8 +39,8 @@ async function show() {
   open.value = true
   document.addEventListener('pointerdown', outside, true)
   await nextTick()
-  const checked = panel.value?.querySelector<HTMLElement>('input:checked, a, button')
-  checked?.focus()
+  const target = panel.value?.querySelector<HTMLElement>('input:checked, a, button') ?? panel.value
+  target?.focus()
 }
 
 function close(returnFocus = true) {
@@ -53,6 +55,7 @@ function outside(event: Event) {
 }
 
 async function toggle() {
+  if (busy.value) return
   if (open.value) return close()
   if (diary.state.value === 'in' && !status.value && !busy.value) {
     busy.value = true
@@ -69,19 +72,25 @@ async function toggle() {
 }
 
 async function choose(next: SavedStatus) {
-  if (busy.value || next === status.value) return
+  if (next === status.value) return
+  if (busy.value) {
+    radioKey.value++
+    return
+  }
   busy.value = true
   error.value = ''
   try {
     await diary.save(props.slug, props.source, next)
   } catch (reason) {
     error.value = failure(reason)
+    radioKey.value++
   } finally {
     busy.value = false
   }
 }
 
 async function remove() {
+  if (busy.value) return
   busy.value = true
   error.value = ''
   try {
@@ -96,7 +105,7 @@ async function remove() {
 </script>
 
 <template>
-  <div v-if="visible" ref="root" class="pin" @keydown.esc.stop="close()">
+  <div v-if="visible" ref="root" class="pin" @keydown.esc.stop.prevent="close()">
     <button
       ref="button"
       type="button"
@@ -107,19 +116,19 @@ async function remove() {
       aria-haspopup="dialog"
       :aria-expanded="open"
       :aria-controls="open ? panelId : undefined"
-      :disabled="busy && !open"
+      :aria-busy="busy"
       @click="toggle"
     >
       <AppIcon name="pin" :filled="Boolean(status)" />
     </button>
-    <div v-if="open" :id="panelId" ref="panel" class="pin-panel" role="dialog" :aria-label="status ? 'Сохранённое вино' : 'Сохранить вино'">
+    <div v-if="open" :id="panelId" ref="panel" class="pin-panel" role="dialog" tabindex="-1" :aria-label="status ? 'Сохранённое вино' : 'Сохранить вино'">
       <template v-if="diary.state.value === 'out'">
         <p>Сохранять вина можно в «Винном дневнике».</p>
         <NuxtLink class="button primary pin-login" :to="loginHref">Войти</NuxtLink>
       </template>
       <template v-else>
         <p class="pin-panel-title">{{ status ? 'Сохранено в дневнике' : 'Не сохранено' }}</p>
-        <fieldset v-if="status" class="pin-statuses" :disabled="busy">
+        <fieldset v-if="status" :key="radioKey" class="pin-statuses" :aria-busy="busy">
           <legend class="sr-only">Отметка</legend>
           <label v-for="item in SAVED_STATUSES" :key="item" class="pin-status">
             <input type="radio" :name="`${panelId}-status`" :value="item" :checked="status === item" @change="choose(item)">
@@ -127,7 +136,7 @@ async function remove() {
           </label>
         </fieldset>
         <div v-if="status" class="pin-actions">
-          <button type="button" class="account-link" :disabled="busy" @click="remove">Убрать из сохранённых</button>
+          <button type="button" class="account-link" @click="remove">Убрать из сохранённых</button>
           <NuxtLink class="account-link" to="/account?tab=saved">Все сохранённые</NuxtLink>
         </div>
       </template>

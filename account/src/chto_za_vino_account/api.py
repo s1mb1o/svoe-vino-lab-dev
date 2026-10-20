@@ -11,7 +11,6 @@ functions that create_app defines locally.
 import asyncio
 import contextlib
 import ipaddress
-import json
 import logging
 import re
 import time
@@ -27,7 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .config import Settings
 from .db import Database
-from .diary import DAY_PATTERN, SLUG_PATTERN, SNAPSHOT_BYTES, Diary
+from .diary import DAY_PATTERN, SLUG_PATTERN, SNAPSHOT_BYTES, Diary, snapshot_json
 from .mailer import Dispatcher, Mailer, ThreadDispatcher, build_mailer
 from .service import (
     AccountError,
@@ -119,20 +118,20 @@ class WineSnapshot(Strict):
     region: SnapshotText | None = None
     grapes: Annotated[list[Grape], Field(max_length=12)] | None = None
 
-    def stored(self) -> str | None:
-        """Compact JSON text, or None when the snapshot has no field."""
-        data = self.model_dump(exclude_none=True)
-        return json.dumps(data, ensure_ascii=False, separators=(",", ":")) if data else None
+    def fields(self) -> dict[str, Any]:
+        """The fields with a value. An empty grape list counts as no value."""
+        return {key: value for key, value in self.model_dump().items() if value}
 
     @model_validator(mode="after")
     def small_enough(self) -> Self:
-        if len((self.stored() or "").encode("utf-8")) > SNAPSHOT_BYTES:
+        if len(snapshot_json(self.fields()).encode("utf-8")) > SNAPSHOT_BYTES:
             raise ValueError("The wine snapshot is too large")
         return self
 
 
-def stored(snapshot: WineSnapshot | None) -> str | None:
-    return snapshot.stored() if snapshot else None
+def stored(snapshot: WineSnapshot | None) -> dict[str, Any] | None:
+    """The snapshot for the diary, or None when it has no field."""
+    return (snapshot.fields() or None) if snapshot else None
 
 
 class MeUpdate(Strict):
@@ -156,11 +155,15 @@ class BotHistory(Strict):
     slug: Slug
     wine_snapshot: WineSnapshot | None = None
     replaces: Slug | None = None
+    # Unix seconds of the rejected result card. It selects the day of `replaces`.
+    at: int | None = None
 
 
 class BotHistoryUndo(Strict):
     user_id: int = Field(gt=0, lt=2**53)
     slug: Slug
+    # Unix seconds of the result card. A time outside the last 48 hours gives today.
+    at: int | None = None
 
 
 def create_app(
@@ -544,14 +547,14 @@ def create_app(
     @app.post("/v1/bot/history")
     def bot_history(body: BotHistory, bot: Annotated[str, Depends(any_bot)]) -> dict[str, str]:
         return diary.bot_record(
-            bot, body.user_id, body.slug, stored(body.wine_snapshot), body.replaces
+            bot, body.user_id, body.slug, stored(body.wine_snapshot), body.replaces, body.at
         )
 
     @app.post("/v1/bot/history/undo")
     def bot_history_undo(
         body: BotHistoryUndo, bot: Annotated[str, Depends(any_bot)]
     ) -> dict[str, str]:
-        return diary.bot_undo(bot, body.user_id, body.slug)
+        return diary.bot_undo(bot, body.user_id, body.slug, body.at)
 
     return app
 

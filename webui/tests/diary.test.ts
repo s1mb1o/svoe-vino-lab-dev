@@ -231,6 +231,15 @@ describe('saved wine routes', () => {
     expect(JSON.parse(seen[0]!.body)).toEqual({ status: 'liked', source: 'dinner_lens' })
   })
 
+  it('gives a snapshot to a wine that a status change added again', async () => {
+    reply = () => ({ status: 201, body: { slug: SLUG, status: 'liked', source: 'photo' } })
+    const response = await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'photo', change: true }) })
+    expect(response.status).toBe(200)
+    expect(seen).toHaveLength(2)
+    expect(JSON.parse(seen[0]!.body)).toEqual({ status: 'liked', source: 'photo' })
+    expect(JSON.parse(seen[1]!.body)).toMatchObject({ status: 'liked', source: 'photo', wine_snapshot: { name: 'Абрау-Дюрсо Брют' } })
+  })
+
   it.each([
     [{ status: 'favourite', source: 'photo' }],
     [{ status: 'want', source: 'telegram' }],

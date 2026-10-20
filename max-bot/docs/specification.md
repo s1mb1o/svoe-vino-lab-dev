@@ -389,7 +389,8 @@ M23. After the bot delivers a result card to a person, it MUST send `POST /v1/bo
      `../../docs/plans/07_diary-history-and-saved.md`). An HTTP API request MUST NOT record.
 M24. The first «❌ Не совпало» of the source user MUST send `POST /v1/bot/history/undo` for the
      shown wine. A selected alternative MUST send `POST /v1/bot/history` with that wine and
-     `replaces` = the shown wine. «Ничего из этого» MUST NOT send a history call.
+     `replaces` = the shown wine. «Ничего из этого» MUST NOT send a history call. Both calls
+     MUST send `at`, the Unix time of the result card, so the service changes the day of the card.
 M25. A history call MUST run in the background with one attempt and a 2 s timeout. Its failure
      MUST NOT change the chat. Its log MUST NOT contain the user ID or the wine slug.
 M26. An empty `BOT_ACCOUNT_ENDPOINT` MUST turn the history records off. A set endpoint MUST

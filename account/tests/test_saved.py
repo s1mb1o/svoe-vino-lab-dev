@@ -63,6 +63,16 @@ def test_add_change_and_remove(harness):
     assert saved(harness, session) == []
 
 
+def test_a_change_merges_the_snapshot(harness):
+    session = harness.email_session("anna@example.ru")
+    full = {"name": "Вино", "producer": "Завод", "sugar": "Сухое", "grapes": ["Мерло"]}
+    save(harness, session, "wine-a", snapshot=full)
+    changed = save(harness, session, "wine-a", status="liked", snapshot={"name": "Вино 2021"})
+    assert changed.json()["wine"] == full | {"name": "Вино 2021"}
+    kept = save(harness, session, "wine-a", status="want", snapshot={"grapes": []})
+    assert kept.json()["wine"] == full | {"name": "Вино 2021"}
+
+
 def test_list_and_slugs_are_newest_first(harness):
     session = harness.email_session("anna@example.ru")
     save(harness, session, "wine-a", status="want")
@@ -197,7 +207,13 @@ def test_the_operator_merge_moves_both_lists(harness: Harness, env: dict[str, st
     b = harness.web("GET", "/v1/me/history/wine-b", session=keep).json()
     assert [(d["met_on"], d["source"]) for d in b["days"]] == [("2027-01-15", "shelf")]
     assert b["wine"] == {"name": "Б из первого"}
+    # The later visit of keep on that day is gone with its date: the times follow the dates.
     assert b["first_met_at"] == "2027-01-15T08:01:11Z"
+    assert b["last_met_at"] == "2027-01-15T08:01:11Z"
+    for slug in wines:
+        detail = harness.web("GET", f"/v1/me/history/{slug}", session=keep).json()
+        assert detail["last_met_at"] == max(day["first_at"] for day in detail["days"])
+        assert detail["first_met_at"] == min(day["first_at"] for day in detail["days"])
     assert wines["wine-c"]["sources"] == ["shelf"]
     lists = {i["slug"]: i for i in saved(harness, keep)}
     assert {slug: (i["status"], i["source"]) for slug, i in lists.items()} == {

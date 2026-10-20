@@ -5,7 +5,7 @@ site records a photo or shelf match. A linked Telegram or MAX chat records its o
 The saved list (issue #64) is independent: a wine stays saved when it leaves the history.
 
 The API layer checks the slugs, the sources, the statuses, and the wine snapshots. This module
-gets valid values and a snapshot as compact JSON text.
+gets valid values and a snapshot as a dict of the fields that have a value.
 """
 
 from __future__ import annotations
@@ -40,6 +40,10 @@ SLUG_RE = re.compile(SLUG_PATTERN)
 HISTORY_SOURCES = ("photo", "shelf", "telegram", "max")
 # A bot records with its messenger as the source and finds the person by that identity.
 BOT_PROVIDERS = {"telegram-bot": "telegram", "max-bot": "max"}
+# The time of a result card (`at`) that a bot sends with undo and `replaces`. A time outside
+# this window gives today: a wrong bot clock cannot remove an old date.
+CARD_PAST_SECONDS = 48 * 3600
+CARD_FUTURE_SECONDS = 60
 
 # The cursor of GET /v1/app/wines must fit in the 200 characters that the Nuxt server and the
 # MCP server accept. Each slug character is a digit of base 39, so a slug of 200 characters
@@ -63,6 +67,33 @@ MOSCOW = _moscow()
 def moscow_day(timestamp: int) -> str:
     """The calendar day of a time in Europe/Moscow, as YYYY-MM-DD."""
     return datetime.fromtimestamp(timestamp, MOSCOW).date().isoformat()
+
+
+def card_day(at: int | None, now: int) -> str:
+    """The Moscow day of a result card. A missing time or a time outside the window gives today."""
+    if at is None or not now - CARD_PAST_SECONDS <= at <= now + CARD_FUTURE_SECONDS:
+        return moscow_day(now)
+    return moscow_day(at)
+
+
+def snapshot_json(snapshot: dict[str, Any]) -> str:
+    """Compact JSON text of a snapshot, as stored and as measured against SNAPSHOT_BYTES."""
+    return json.dumps(snapshot, ensure_ascii=False, separators=(",", ":"))
+
+
+def merged_snapshot(stored: str | None, new: dict[str, Any] | None) -> str | None:
+    """The stored snapshot updated with a newer one.
+
+    The keys of the newer snapshot override. Keys that it does not have keep the stored values,
+    so a card with less data does not erase a richer snapshot. When the union is larger than
+    SNAPSHOT_BYTES, the newer snapshot replaces the stored one.
+    """
+    if not new:
+        return stored
+    union = snapshot_json((_wine(stored) or {}) | new)
+    if len(union.encode("utf-8")) > SNAPSHOT_BYTES:
+        return snapshot_json(new)
+    return union
 
 
 def encode_cursor(last_met_at: int, slug: str) -> str:
@@ -220,10 +251,19 @@ class Diary:
             (row["first"], row["last"], user_id, slug),
         )
 
-    def _remove_day(self, db: sqlite3.Connection, user_id: str, slug: str, met_on: str) -> bool:
+    def _remove_day(
+        self,
+        db: sqlite3.Connection,
+        user_id: str,
+        slug: str,
+        met_on: str,
+        source: str | None = None,
+    ) -> bool:
+        """Remove one date. With `source`, only a date of that source goes."""
         cursor = db.execute(
-            "DELETE FROM history_days WHERE user_id = ? AND wine_slug = ? AND met_on = ?",
-            (user_id, slug, met_on),
+            "DELETE FROM history_days WHERE user_id = ? AND wine_slug = ? AND met_on = ? "
+            "AND (? IS NULL OR source = ?)",
+            (user_id, slug, met_on, source, source),
         )
         if cursor.rowcount == 0:
             return False
@@ -236,12 +276,13 @@ class Diary:
         user_id: str,
         slug: str,
         source: str,
-        snapshot: str | None,
+        snapshot: dict[str, Any] | None,
         now: int,
     ) -> dict[str, str]:
         met_on = moscow_day(now)
         known = db.execute(
-            "SELECT 1 FROM history_wines WHERE user_id = ? AND wine_slug = ?", (user_id, slug)
+            "SELECT wine_snapshot FROM history_wines WHERE user_id = ? AND wine_slug = ?",
+            (user_id, slug),
         ).fetchone()
         if known is None:
             excess = (
@@ -262,14 +303,14 @@ class Diary:
             db.execute(
                 "INSERT INTO history_wines (user_id, wine_slug, wine_snapshot, first_met_at, "
                 "last_met_at) VALUES (?, ?, ?, ?, ?)",
-                (user_id, slug, snapshot, now, now),
+                (user_id, slug, merged_snapshot(None, snapshot), now, now),
             )
         else:
-            if snapshot is not None:
+            if snapshot:
                 db.execute(
                     "UPDATE history_wines SET wine_snapshot = ? "
                     "WHERE user_id = ? AND wine_slug = ?",
-                    (snapshot, user_id, slug),
+                    (merged_snapshot(known["wine_snapshot"], snapshot), user_id, slug),
                 )
             today = db.execute(
                 "SELECT 1 FROM history_days WHERE user_id = ? AND wine_slug = ? AND met_on = ?",
@@ -338,7 +379,7 @@ class Diary:
         return view
 
     def record(
-        self, user_id: str, slug: str, source: str, snapshot: str | None
+        self, user_id: str, slug: str, source: str, snapshot: dict[str, Any] | None
     ) -> dict[str, str]:
         now = self._now()
         with self.db.transaction() as db:
@@ -388,7 +429,12 @@ class Diary:
         return {"items": [{"slug": row["wine_slug"], "status": row["status"]} for row in rows]}
 
     def save(
-        self, user_id: str, slug: str, status: str, source: str, snapshot: str | None
+        self,
+        user_id: str,
+        slug: str,
+        status: str,
+        source: str,
+        snapshot: dict[str, Any] | None,
     ) -> tuple[dict[str, Any], bool]:
         """Add a wine or change its status. Returns the saved wine and True for a new wine.
 
@@ -397,12 +443,11 @@ class Diary:
         now = self._now()
         with self.db.transaction() as db:
             self._save_history(db, user_id)  # Refuses a deleted account before the insert.
-            cursor = db.execute(
-                "UPDATE saved_wines SET status = ?, updated_at = ?, "
-                "wine_snapshot = COALESCE(?, wine_snapshot) WHERE user_id = ? AND wine_slug = ?",
-                (status, now, snapshot, user_id, slug),
-            )
-            created = cursor.rowcount == 0
+            current = db.execute(
+                "SELECT wine_snapshot FROM saved_wines WHERE user_id = ? AND wine_slug = ?",
+                (user_id, slug),
+            ).fetchone()
+            created = current is None
             if created:
                 count = db.execute(
                     "SELECT COUNT(*) FROM saved_wines WHERE user_id = ?", (user_id,)
@@ -414,7 +459,14 @@ class Diary:
                 db.execute(
                     "INSERT INTO saved_wines (user_id, wine_slug, status, source, wine_snapshot, "
                     "added_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (user_id, slug, status, source, snapshot, now, now),
+                    (user_id, slug, status, source, merged_snapshot(None, snapshot), now, now),
+                )
+            else:
+                merged = merged_snapshot(current["wine_snapshot"], snapshot)
+                db.execute(
+                    "UPDATE saved_wines SET status = ?, updated_at = ?, wine_snapshot = ? "
+                    "WHERE user_id = ? AND wine_slug = ?",
+                    (status, now, merged, user_id, slug),
                 )
             row = db.execute(SAVED_QUERY, {"user": user_id, "slug": slug}).fetchone()
         if created:
@@ -448,13 +500,16 @@ class Diary:
         consumer: str,
         subject: int,
         slug: str,
-        snapshot: str | None,
+        snapshot: dict[str, Any] | None,
         replaces: str | None,
+        at: int | None = None,
     ) -> dict[str, str]:
-        """Record a wine that a chat showed. `replaces` is the wine that the person rejected.
+        """Record a wine that a chat showed today.
 
-        The rejected wine loses its date of today also when the switch is off: a removal is
-        always allowed.
+        `replaces` is the wine that the person rejected before they selected this one. Its date
+        of the card day (`at`, see card_day) goes when the chat recorded that date; a date that
+        another source recorded stays. The removal also runs when the switch is off: a removal
+        is always allowed.
         """
         provider = BOT_PROVIDERS[consumer]
         now = self._now()
@@ -464,7 +519,7 @@ class Diary:
                 result = {"status": "not_linked"}
             else:
                 if replaces is not None and replaces != slug:
-                    self._remove_day(db, user_id, replaces, moscow_day(now))
+                    self._remove_day(db, user_id, replaces, card_day(at, now), provider)
                 if self._save_history(db, user_id):
                     result = self._record(db, user_id, slug, provider, snapshot, now)
                 else:
@@ -476,15 +531,21 @@ class Diary:
             LOG.info("History record for a chat without a linked diary (%s)", provider)
         return result
 
-    def bot_undo(self, consumer: str, subject: int, slug: str) -> dict[str, str]:
-        """Remove today's date of a wine after «❌ Не совпало». The last date removes the wine."""
+    def bot_undo(
+        self, consumer: str, subject: int, slug: str, at: int | None = None
+    ) -> dict[str, str]:
+        """Remove the date of a wine after «❌ Не совпало». The last date removes the wine.
+
+        The date is the Moscow day of the result card (`at`, see card_day). Only a date that
+        this chat recorded goes. A date of another source stays, and the answer is `absent`.
+        """
         provider = BOT_PROVIDERS[consumer]
         now = self._now()
         with self.db.transaction() as db:
             user_id = self._linked_user(db, provider, subject)
             if user_id is None:
                 return {"status": "not_linked"}
-            removed = self._remove_day(db, user_id, slug, moscow_day(now))
+            removed = self._remove_day(db, user_id, slug, card_day(at, now), provider)
         if removed:
             LOG.info("History date removed by the chat (%s)", provider)
         return {"status": "removed" if removed else "absent"}

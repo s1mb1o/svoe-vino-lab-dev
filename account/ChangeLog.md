@@ -1,5 +1,22 @@
 # ChangeLog
 
+## 2026-10-20 — Review fixes for the diary lists
+
+Review of the plan 07 commit `614cc635`. Fixed:
+
+- `POST /v1/bot/history/undo` and `POST /v1/bot/history` (for `replaces`) accept `at`: the time of the
+  result card, integer Unix seconds UTC. The date to remove is the Moscow day of `at`, so a tap after
+  midnight removes the date of the card, not of today. Without `at`, or with `at` outside
+  [now − 48 h, now + 60 s], the date is today (no error).
+- A chat removes only a date of its own source (`telegram` or `max`). A date of another source stays,
+  for example a site match of the same morning; `undo` then answers `absent`.
+- Snapshots merge: the keys of a newer snapshot override, and missing keys keep the stored values, for
+  the site history, the chat history, and saved `PUT`. A chat card without sugar or grapes no longer
+  erases the snapshot of the site. A union above 2,048 bytes takes the newer snapshot.
+- `merge` sets `first_met_at` and `last_met_at` of the kept wines from their dates, so `last_met_at` is
+  never later than the newest date.
+- 8 new tests (152 in total).
+
 ## 2026-10-20 — History and saved wines (plan 07, #71, #64)
 
 Owner request: a history of every wine that a person matched on the site and in the linked chats,
@@ -24,7 +41,7 @@ and a second list «Сохранённые» with four statuses. Plan: `../docs/
   characters, at most 2,048 bytes of JSON; else 422 with the field name only.
 - Without the time zone database, the service uses UTC+3 for Moscow.
 - The operator command `merge` moves both lists.
-- 42 new tests (141 in total).
+- 42 new tests (144 in total after the rebase on the MAX and email fixes).
 
 ## 2026-10-20 — Code email in HTML
 

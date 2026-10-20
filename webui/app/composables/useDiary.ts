@@ -5,8 +5,9 @@ import { DEFAULT_SAVED_STATUS, type HistoryRecordStatus, type SavedSource, type 
 import { AccountRequestError, useAccountApi } from '~/composables/useAccountApi'
 
 // unknown: nothing loaded yet; in: logged in; out: logged out (the pin offers the login);
-// off: the diary is off or unavailable (no pins).
-export type DiaryState = 'unknown' | 'loading' | 'in' | 'out' | 'off'
+// off: the diary is off on this site (no pins); error: the service did not answer (no pins; the
+// next pin or record tries again).
+export type DiaryState = 'unknown' | 'loading' | 'in' | 'out' | 'off' | 'error'
 
 export interface HistoryRecord { slug: string; status: HistoryRecordStatus; metOn?: string }
 
@@ -19,14 +20,15 @@ export function useDiary() {
 
   function load(force = false): Promise<void> {
     if (import.meta.server) return Promise.resolve()
-    if (!force && state.value !== 'unknown') return loading ?? Promise.resolve()
+    if (!force && state.value !== 'unknown' && state.value !== 'error') return loading ?? Promise.resolve()
     state.value = 'loading'
     loading = api.savedSlugs().then(answer => {
       saved.value = Object.fromEntries(answer.items.map(item => [item.slug, item.status]))
       state.value = 'in'
     }).catch((error: unknown) => {
       saved.value = {}
-      state.value = error instanceof AccountRequestError && error.status === 401 ? 'out' : 'off'
+      const status = error instanceof AccountRequestError ? error.status : 0
+      state.value = status === 401 ? 'out' : status === 404 && error instanceof AccountRequestError && error.body.error === 'account_disabled' ? 'off' : 'error'
     }).finally(() => { loading = null })
     return loading
   }
@@ -50,6 +52,12 @@ export function useDiary() {
     saved.value = next
   }
 
+  /** Forgets the state after a login, a logout, or an account deletion. */
+  function reset() {
+    state.value = 'unknown'
+    saved.value = {}
+  }
+
   /** Keeps the shared state equal to a list that the account page loaded. */
   function setSaved(slug: string, status: SavedStatus | null) {
     const next = { ...saved.value }
@@ -66,7 +74,7 @@ export function useDiary() {
     if (import.meta.server || state.value === 'off') return null
     try {
       const answer = await api.recordHistory(slug, source)
-      if (state.value === 'out' || state.value === 'unknown') load(true)
+      if (state.value !== 'in' && state.value !== 'loading') load(true)
       return { slug, status: answer.status, metOn: answer.metOn }
     } catch (error) {
       if (error instanceof AccountRequestError && error.status === 401 && state.value === 'unknown') {
@@ -82,5 +90,5 @@ export function useDiary() {
     await api.deleteHistoryDay(record.slug, record.metOn)
   }
 
-  return { state, saved, load, save, unsave, setSaved, recordHistory, undoHistory }
+  return { state, saved, load, reset, save, unsave, setSaved, recordHistory, undoHistory }
 }
