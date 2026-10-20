@@ -7,6 +7,7 @@ flowchart LR
     U[Пользователь] --> W[Web UI]
     U --> T[Telegram-бот]
     U --> X[MAX-бот]
+    U --> P[Полка вина]
     W --> M[Matcher API]
     W --> G[API «Глобус»]
     T --> S[ShieldGemma 2]
@@ -15,6 +16,8 @@ flowchart LR
     X --> S
     X --> A
     X --> M
+    P --> M
+    P --> V[Рейтинг vino-svoe.ru]
     M --> E[SigLIP2 endpoint]
     M --> B[Embedding bundle]
     L[Workbench] --> B
@@ -45,6 +48,16 @@ quality, matcher client, артефакты, файловые хранилища
 Транспорт, хранилище и настройки MAX-бота написаны для MAX Bot API. На время хакатона
 production получает события через long polling (`updates.mode` в `config.yaml`).
 Подробности: `max-bot/README.md`, `im-core/README.md`.
+
+### Полка вина
+
+`shelf-lens/` содержит Android-приложение «Полка вина». Пользователь ведёт камерой вдоль
+полки. Детектор YOLOX-s на телефоне находит бутылки в кадре. Трекер на C++ (`shelf-lens/cpp/`)
+даёт каждой физической бутылке один номер. Номер зависит от места бутылки на полке, а не от
+её вида. Для каждой бутылки приложение отправляет в `POST /v1/match` одну лучшую вырезку.
+Рейтинг вина приложение берёт из открытых данных vino-svoe.ru. Рамки и рейтинг приложение
+рисует поверх изображения камеры. Из карты полки приложение строит планограмму.
+Подробности: `shelf-lens/README.md`, `shelf-lens/docs/design.md`.
 
 ### Matcher
 

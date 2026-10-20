@@ -11,6 +11,12 @@ The change log of the repository. A project folder can have its own `ChangeLog.m
 
 ## 2026-10-20
 
+- Added `shelf-lens/`, the Android app «Полка вина». It comes from the separate repository
+  `shelf-reid` with its 16 commits. The app films a shelf, finds bottles on the phone, and sends
+  one crop of each bottle to `/v1/match`. It shows frames and the vino-svoe.ru rating over the
+  camera image and builds a planogram. The paths inside the folder do not change. Put
+  `api_password.txt` in `shelf-lens/`. Read `shelf-lens/README.md`.
+
 - Updated `ASSESSMENT.md` to `main` at `db288cc9`. Added Dinner Lens and wine for a dish
   (F-27 to F-29), the workbench research rows (F-14 to F-19), experiment tracking and run
   comparison (F-49), the RTX 4090 cascade run (F-66), the Android 0.2.0 work (F-87 to F-93),

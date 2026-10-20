@@ -88,6 +88,7 @@ matcher и model endpoint. Полная инструкция находится 
 | `telegram-bot/` | Бот [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot), moderation и очередь. |
 | `max-bot/` | Бот MAX «Что за вино?» [@se14697933_bot](https://max.ru/se14697933_bot) с той же функциональностью. |
 | `im-core/` | Общее ядро обработки обоих ботов (пакет `chto_za_vino_core`). |
+| `shelf-lens/` | Android-приложение «Полка вина»: видео полки, поиск бутылок на телефоне, распознавание через matcher, рамки и рейтинг поверх камеры, планограмма. |
 | `matcher/` | FastAPI matcher с Top-1 и ranked API. |
 | `bootstrap/` | Локальные endpoints SigLIP2, SAM3, ShieldGemma 2 и QR scanner. |
 | `matcher-inspector/` | Read-only просмотр запросов и embedding bundles. |
