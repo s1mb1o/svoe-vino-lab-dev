@@ -6,7 +6,8 @@ Date: 2026-10-20, Europe/Moscow.
 
 Review the README, setup instructions, architecture, assessment evidence, service configuration,
 main HTTP paths, account service, MCP server, bot core, bot transports, tests, and packaging.
-Inspect the Android and iPhone source contracts. Do not change application source.
+The initial review inspected the Android and iPhone source contracts.
+The initial review changed no application source.
 
 The checkout changed during the review through other work.
 The initial revision was `d2edf952`.
@@ -171,3 +172,53 @@ Read `workbench/FIX_LATER.md` and `matcher/docs/KNOWN_ISSUES.md` for deferred de
 The review does not report those entries as new findings.
 Passing local tests does not prove recognition accuracy or production security.
 
+## Remediation follow-up
+
+Date: 2026-10-20, Europe/Moscow.
+The owner authorized fixes for all five findings.
+The original findings and test results above describe the initial review.
+The following results describe the corrected working tree.
+
+| Finding | Resolution |
+| --- | --- |
+| R1 | Fixed. Source metadata accepts the 36 affected Active identifiers. A real underscore identifier has a regression. Path separators remain invalid. The inactive `__aaaaa` sentinel remains invalid. |
+| R2 | Fixed. `matcher/config.local.example.yaml` supplies the loopback gateway and archive path. Setup and evaluator instructions select that file. `SAM3_ENDPOINT` now overrides the SAM3 URLs for shelf, hand-selection, and cascade clients. YAML fallback URLs remain available when the variable is absent. |
+| R3 | Fixed. `workbench/requirements-server.txt` declares the five lightweight runtime dependencies, including jsonschema. `requirements-local.txt` includes that list. A fresh environment imports the server and passes the focused route tests. |
+| R4 | Not applicable on `main`. Commit `906bd778` adds `research/android-20261020/`, `ANDROID-RESEARCH-AND-RESULTS-20261020.md`, and `android/docs/releases/0.3.0.md`. All local links in `ASSESSMENT.md` resolve on `main`. The finding describes only the reviewed checkout. The assessment is unchanged. |
+| R5 | Fixed. The README identifies `/dish`, the Web UI proxy routes, and both required private settings. It states the bot integration status separately. |
+
+### Remediation checks
+
+| Check | Result |
+| --- | --- |
+| Web UI type check | Passed |
+| Web UI unit tests | 625 passed; 26 existing skips |
+| Web UI production build and producer-map bundle check | Passed |
+| Isolated matcher suite | 285 passed; 1 optional MLflow integration test skipped |
+| Fresh lightweight Workbench installation | Installed the five declared runtime dependencies from cached packages; server import passed |
+| Workbench production-error tests in the fresh environment | 16 passed |
+| Local matcher example | Loads the committed bundle; selects `http://127.0.0.1:18090/v1/embeddings` and `work/matcher-requests` without inference |
+| Catalogue identifier coverage | All 36 affected Active identifiers pass the corrected validator |
+| Assessment local links on `main` | No missing targets |
+| README, setup, assessment, and evaluator local links | No missing targets |
+| Git whitespace check | Passed |
+
+The first matcher remediation run inherited the real `SAM3_ENDPOINT`.
+Some fixture images reached the configured service instead of the local fake service.
+That run failed 14 assertions.
+The subprocess fixtures now remove the inherited override.
+CI and the documented test command also remove the ambient override.
+The final matcher run used `env -u SAM3_ENDPOINT` and passed.
+Dedicated override tests use their own fixture URLs.
+
+This follow-up does not repeat mobile inference, a recognition benchmark, or a deployment.
+No model weights or APKs were imported.
+
+### Rebase onto main
+
+The fixes were rebased onto `main` at `82fd80fe`.
+R4 was evaluated again on that base. R4 is not applicable there.
+The rebased tree passed the isolated matcher suite: 292 tests ran, and 1 optional test was skipped.
+The rebased tree passed the Web UI type check.
+The Web UI unit tests passed 637 tests with 26 existing skips.
+The Workbench tests were not repeated after the rebase.

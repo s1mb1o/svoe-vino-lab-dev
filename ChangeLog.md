@@ -1,5 +1,19 @@
 # Change log
 
+## 2026-10-20 — Correct the comprehensive review findings
+
+- Accept real underscore wine identifiers in Web UI metadata lookup. Preserve path validation.
+- Add an explicit local matcher configuration. Correct the setup and evaluator instructions.
+- Restore the canonical `SAM3_ENDPOINT` override for all matcher SAM3 clients.
+- Declare the lightweight Workbench server dependencies, including jsonschema.
+- Record R4 as not applicable on `main`. Commit `906bd778` adds the Android evidence, and all local links in `ASSESSMENT.md` resolve.
+- Document the existing Dinner Lens Web UI integration and its required settings.
+- Isolate matcher fixtures and CI from an inherited production SAM3 endpoint.
+- Pass 625 Web UI tests with 26 existing skips, type checking, the production build, and the bundle check.
+- Pass 285 matcher tests with one optional integration skip. Pass 16 focused Workbench tests in a fresh lightweight environment.
+- Verify all local links in the corrected entry documents and in `ASSESSMENT.md`.
+- Mark R1, R2, R3, and R5 resolved and R4 not applicable in `docs/reviews/2026-10-20-comprehensive-review.md`.
+
 ## 2026-10-20 — SEO audit of chtozavino.ru
 
 - Add the SEO audit in `docs/seo-audit/`: technical, performance, content and deployment findings, a prioritised backlog, evidence files, and draft GitHub issues (`github-issues/`, not created yet).
