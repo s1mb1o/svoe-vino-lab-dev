@@ -56,8 +56,8 @@ void keep_last(std::vector<double>& v, size_t n = 300) {
 
 }  // namespace
 
-Pipeline::Pipeline(const std::string& model_path, int cv_threads, bool cheap_slow)
-    : detector_(std::make_unique<BottleDetector>(model_path)), cv_threads_(cv_threads) {
+Pipeline::Pipeline(const std::string& model_path, int cv_threads, bool cheap_slow, bool accelerator)
+    : detector_(std::make_unique<BottleDetector>(model_path, accelerator, accelerator ? 2 : 4)), cv_threads_(cv_threads) {
     if (cv_threads > 0) cv::setNumThreads(cv_threads);
     if (cheap_slow) {
         cfg_.features.max_side = 960;
@@ -231,11 +231,11 @@ void Pipeline::track_loop() {
             logged = now;
             __android_log_print(ANDROID_LOG_INFO, "shelfreid",
                                 "state frame %d step %d lost %d trusted %d untrusted %d registered %d steps ago, keyframes %zu, "
-                                "slow jobs %zu, found %d, jumps %d, lost motion %d, hinted %d, aliased %d, bottles %zu (%zu provisional), "
+                                "slow jobs %zu, found %d, jumps %d, lost motion %d, hinted %d, aliased %d, forgotten %d, bottles %zu (%zu provisional), "
                                 "boxes %zu; recognition: queued %d, out %d, sent %d, answered %d, failed %d%s%s",
                                 job.frame, t.count, t.lost ? 1 : 0, t.trusted ? 1 : 0, t.untrusted, t.count - t.localized,
                                 t.keyframes.size(), t.slow_seconds.size(), t.found, t.jumps, t.lost_motion, t.hinted, t.aliased,
-                                t.bottles.size(), t.provisional.size(), result_.shown.size(), queue[0], queue[1], queue[2], queue[3],
+                                t.forgotten, t.bottles.size(), t.provisional.size(), result_.shown.size(), queue[0], queue[1], queue[2], queue[3],
                                 queue[4],
                                 t.flow_failure.empty() ? "" : ", flow: ", t.flow_failure.c_str());
         }
@@ -269,7 +269,8 @@ std::array<int, 4> Pipeline::summary() const {
         out[3] = lost_ ? 1 : 0;
     }
     std::lock_guard<std::mutex> rl(recognition_mutex_);
-    for (const auto& [id, rec] : recognitions_) {
+    for (const auto& [id, rec] : recognitions_) {   // the bottles of the map only (not one it dropped)
+        if (!rec.confirmed) continue;
         const int colour = rec.colour();
         out[1] += colour == 1;
         out[2] += colour == 2;
@@ -323,6 +324,8 @@ std::string Pipeline::stats() const {
 void Pipeline::set_recognition(bool on) {
     std::lock_guard<std::mutex> r(recognition_mutex_);
     recognition_on_ = on;
+    if (!on)
+        for (auto& [id, rec] : recognitions_) rec.kept.clear();
 }
 
 void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown, const std::set<int>& kept) {
@@ -361,6 +364,7 @@ void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector
         const bool fit = !rec.sure && !asking_done && h >= kGate * H && !cut;
         // The crop goes to the bottle's reserve (a raw copy: the PNG is made when it is sent),
         // every other step only: the reserve then spans more time, its crops differ more.
+        if (fit && track_steps_ % 2 == 0) rec.suitable = true;   // a crop taken, or one would be with recognition off
         if (recognition_on_ && fit && track_steps_ % 2 == 0) {
             if (rec.first_fit == Clock::time_point{}) rec.first_fit = Clock::now();
             rec.max_height = std::max(rec.max_height, h);
@@ -420,7 +424,7 @@ std::vector<unsigned char> Pipeline::dispatch() {
         if (rec.kept.empty() || !rec.confirmed || rec.inflight > 0 || rec.sure || rec.answers >= kMaxAttempts ||
             rec.attempts >= kMaxAttempts)
             continue;
-        if (rec.attempts > 0 && ms(rec.last_sent, now) < kSpacingMs) continue;
+        if (now < rec.retry_at) continue;
         // The bottle fit long enough for its reserve to hold crops of different moments.
         if (ms(rec.first_fit, now) < kMatureMs) continue;
         // A bottle in view first (the shelf the user looks at now), then the fewest attempts,
@@ -454,7 +458,6 @@ std::vector<unsigned char> Pipeline::dispatch() {
     pick->kept.clear();   // the reserve is spent: the next request takes crops of later frames
     pick->kept.shrink_to_fit();
     ++pick->attempts, ++pick->inflight;
-    pick->last_sent = now;
     pick->state = "asking";
     ++out_, ++sent_;
     return packed;
@@ -463,7 +466,7 @@ std::vector<unsigned char> Pipeline::dispatch() {
 int Pipeline::queued() const {
     int n = 0;
     for (const auto& [id, rec] : recognitions_)
-        n += !rec.kept.empty() && rec.inflight == 0 && !rec.sure && rec.attempts < kMaxAttempts;
+        n += rec.confirmed && !rec.kept.empty() && rec.inflight == 0 && !rec.sure && rec.attempts < kMaxAttempts;
     return n;
 }
 
@@ -475,23 +478,27 @@ std::vector<unsigned char> Pipeline::take_crop() {
     return crop;
 }
 
-std::string Pipeline::answer(int bottle, int, int height, const std::string& slug, const std::string& name, bool ok) {
+std::string Pipeline::answer(int bottle, int, int height, const std::string& slug, const std::string& name, int outcome) {
     std::lock_guard<std::mutex> r(recognition_mutex_);
     out_ = std::max(0, out_ - 1);
     auto it = recognitions_.find(bottle);
     if (it == recognitions_.end()) return {};
     Recognition& rec = it->second;
     rec.inflight = std::max(0, rec.inflight - 1);
-    if (!ok || slug.empty()) {
+    if (outcome != kAnswered || slug.empty()) {
         ++failed_;
-        if (!ok) {   // no answer: the crop goes back to the reserve, and the attempt does not count
+        if (outcome == kRetry) {   // no answer: the crop goes back to the reserve, the attempt does not count
             rec.attempts = std::max(0, rec.attempts - 1);
+            const int wait = kRetryMs << std::min(rec.failures, 4);
+            rec.retry_at = Clock::now() + std::chrono::milliseconds(std::min(wait, kRetryMaxMs));
+            ++rec.failures;
             if (rec.kept.empty() && !rec.sent.crop.empty()) rec.kept.push_back(std::move(rec.sent));
         }
         rec.sent = {};
         return {};
     }
     rec.sent = {};
+    rec.failures = 0;
     ++answered_, ++rec.answers;
     ++rec.votes[slug];
     rec.names[slug] = name;
@@ -536,11 +543,12 @@ std::string Pipeline::recognition_table() const {
         else if (rec.answers >= kMaxAttempts || rec.attempts >= kMaxAttempts) state = "done asking";
         else if (!rec.kept.empty()) state = "waiting";
         else if (rec.done) state = "answered";
+        else if (rec.suitable && !recognition_on_) state = "eligible";
         std::snprintf(line, sizeof(line),
                       "{\"id\":%d,\"state\":\"%s\",\"height\":%d,\"share\":%.3f,\"frame\":%d,\"requests\":%d,"
-                      "\"answers\":%d,\"sure\":%s,\"kept\":%d,",
+                      "\"answers\":%d,\"sure\":%s,\"kept\":%d,\"suitable\":%s,",
                       id, state.c_str(), rec.height, rec.share, rec.frame, rec.attempts, rec.answers,
-                      rec.sure ? "true" : "false", static_cast<int>(rec.kept.size()));
+                      rec.sure ? "true" : "false", static_cast<int>(rec.kept.size()), rec.suitable ? "true" : "false");
         out += line;
         out += "\"wine\":" + json_text(rec.done ? rec.name : "") + "}";
     }

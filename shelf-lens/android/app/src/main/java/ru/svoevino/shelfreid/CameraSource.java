@@ -7,6 +7,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
+import androidx.camera.core.UseCase;
 import androidx.camera.core.resolutionselector.AspectRatioStrategy;
 import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.core.resolutionselector.ResolutionStrategy;
@@ -23,6 +24,8 @@ import java.util.concurrent.Executors;
  * of about 1920x1080 to the native side: each frame for the motion, every 3rd for the detector
  * and the tracker. Only the latest frame is kept, so a slow step drops frames instead of falling
  * behind. Frames are numbered on from `firstFrame`, so a map goes on over several camera starts.
+ * A source stopped before CameraX gave the camera never binds it; a stop unbinds only the
+ * source's own preview and analysis.
  */
 final class CameraSource {
     interface Frames {
@@ -43,6 +46,8 @@ final class CameraSource {
         r.run();
     }, "analysis"));
     private ProcessCameraProvider provider;
+    private UseCase[] bound;
+    private boolean stopped;   // start's listener and stop() run on the main thread
     private final int firstFrame;
     private volatile int frame;
     private boolean started;
@@ -59,6 +64,7 @@ final class CameraSource {
     void start(Frames started) {
         ListenableFuture<ProcessCameraProvider> future = ProcessCameraProvider.getInstance(activity);
         future.addListener(() -> {
+            if (stopped) return;
             try {
                 provider = future.get();
             } catch (Exception e) {
@@ -77,8 +83,8 @@ final class CameraSource {
                     .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                     .build();
             frames.setAnalyzer(analysis, image -> analyze(image, started));
-            provider.unbindAll();
-            provider.bindToLifecycle(activity, CameraSelector.DEFAULT_BACK_CAMERA, preview, frames);
+            bound = new UseCase[] {preview, frames};
+            provider.bindToLifecycle(activity, CameraSelector.DEFAULT_BACK_CAMERA, bound);
         }, activity.getMainExecutor());
     }
 
@@ -112,7 +118,8 @@ final class CameraSource {
     }
 
     void stop() {
-        if (provider != null) provider.unbindAll();
+        stopped = true;
+        if (provider != null && bound != null) provider.unbind(bound);
         analysis.shutdown();
     }
 }

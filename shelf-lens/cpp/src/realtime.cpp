@@ -271,7 +271,12 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
             }
         }
     } else if (snap.lost) {
-        result.new_ground = cfg.new_ground && snap.count - lost_since > cfg.max_wait;
+        // A map with no bottle on it yet (a provisional one at most) holds nothing to keep in
+        // place: it starts again here. Its keyframes MAY have no points at all (they are taken
+        // on the boxes), as when the first frame of the camera, still finding its exposure,
+        // showed no bottle; nothing registers to those.
+        const bool empty = bottles.size() <= provisional.size();
+        result.new_ground = (cfg.new_ground && snap.count - lost_since > cfg.max_wait) || empty;
     }
     if (!edges.empty()) {
         PoseGraph copy = graph;

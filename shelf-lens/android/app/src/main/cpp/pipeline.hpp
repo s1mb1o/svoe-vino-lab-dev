@@ -34,8 +34,8 @@ public:
     // pool (it runs one parallel region at a time, so the slow loop's SIFT and the fast loop's
     // flow contend for it; 1 runs every call serially; 0 keeps OpenCV's default).
     // `cheap_slow`: the slow loop's SIFT on a 960 px copy with 2500 features instead of
-    // 1280 px and 4000.
-    Pipeline(const std::string& model_path, int cv_threads, bool cheap_slow);
+    // 1280 px and 4000. `accelerator`: the detector on NNAPI, else on 4 CPU threads.
+    Pipeline(const std::string& model_path, int cv_threads, bool cheap_slow, bool accelerator);
     ~Pipeline();
 
     // A new shot of frames this size (upright); drops the tracker of the last one.
@@ -77,23 +77,31 @@ public:
     // away). The crops are sent apart from the steps (take_crop), so the queue drains after a
     // video ends and for bottles gone from the frame: no more than kMaxInflight requests out,
     // a bottle in view first (the shelf the user looks at), then the largest crop; the
-    // reserve is freed when its crop goes. The answer decides (kAgree = 1). A failed request
-    // puts its crop back and does not count.
+    // reserve is freed when its crop goes. The answer decides (kAgree = 1). A request left
+    // without an answer (no network, the server busy) puts its crop back and does not count;
+    // the bottle goes again kRetryMs later, twice as long after each such failure in a row, up
+    // to kRetryMaxMs. A request refused for good (a bad request) counts: the bottle stays
+    // unknown.
     static constexpr double kGate = 0.19;
-    static constexpr int kSpacingMs = 500, kMaxAttempts = 1, kAgree = 1, kMaxInflight = 4, kKeptPerBottle = 4,
-                         kKeptCrops = 80, kMatureMs = 1000;
+    static constexpr int kMaxAttempts = 1, kAgree = 1, kMaxInflight = 4, kKeptPerBottle = 4, kKeptCrops = 80,
+                         kMatureMs = 1000, kRetryMs = 2000, kRetryMaxMs = 30000;
+    // What became of a request (Recognizer.java has the same numbers).
+    enum Outcome { kAnswered = 0, kRetry = 1, kRefused = 2 };
+    // Off: no more requests, and the crops kept for them go (the boxes turn grey).
     void set_recognition(bool on);
     // The next crop to send, or empty: five little-endian int32 (bottle, frame, box height in
     // px, sharpness x 10, crops it was chosen from), then the PNG. It picks the crop when a
     // slot is free.
     std::vector<unsigned char> take_crop();
-    // A server's answer for a crop (`ok` false: no answer; the attempt does not count). The
-    // decision when this answer changes it: "slug\tname\tsure|unsure", else empty.
-    std::string answer(int bottle, int frame, int height, const std::string& slug, const std::string& name, bool ok);
+    // What came of the request for a crop (an Outcome; slug and name of the first candidate
+    // when answered). The decision when this answer changes it: "slug\tname\tsure|unsure",
+    // else empty.
+    std::string answer(int bottle, int frame, int height, const std::string& slug, const std::string& name, int outcome);
     // Every bottle met, as a JSON array of {"id", "state", "height" (px), "share" (of the
     // frame height), "frame" (last seen), "requests", "answers", "sure", "kept" (crops in the
-    // reserve), "wine"}; state: known, asking, waiting (a crop kept for a slot), answered,
-    // done asking, unconfirmed, small, cut, eligible (recognition off).
+    // reserve), "suitable" (a crop of it went to the reserve), "wine"}; state: known, asking,
+    // waiting (a crop kept for a slot), answered, done asking, unconfirmed, small, cut,
+    // eligible (it passed the gate, recognition off).
     std::string recognition_table() const;
     // The bottles of the map (provisional ones left out), those whose wine is known, those
     // with a crop waiting for the server or its answer, and 1 while the tracker has lost its
@@ -143,6 +151,7 @@ private:
         int attempts = 0, inflight = 0, last_step = -1000, answers = 0;
         bool done = false, sure = false;
         bool confirmed = false;               // the tracker keeps it (its last box was not provisional)
+        bool suitable = false;                // a crop of it went to the reserve (or would have, recognition off)
         std::map<std::string, int> votes;     // slug -> answers naming it first
         std::map<std::string, std::string> names;
         std::string best_slug;                // the answer from the largest crop
@@ -161,7 +170,8 @@ private:
         Candidate sent;                       // the crop out, put back if its request fails
         int max_height = 0;                   // the largest box seen while it fit
         std::chrono::steady_clock::time_point first_fit{};   // when it first fit (zero: not yet)
-        std::chrono::steady_clock::time_point last_sent{};
+        std::chrono::steady_clock::time_point retry_at{};   // not sent again before this
+        int failures = 0;                     // requests in a row left without an answer
         // The colour of its box: 1 green (the wine is known), 2 yellow (a crop waits for the
         // server or its answer), 0 grey.
         int colour() const { return done && !slug.empty() ? 1 : (!kept.empty() || inflight > 0) ? 2 : 0; }

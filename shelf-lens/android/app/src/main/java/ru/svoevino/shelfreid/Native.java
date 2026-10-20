@@ -13,9 +13,10 @@ final class Native {
     /**
      * Loads the detector (seconds: the accelerator compiles the model); 0 on failure.
      * cvThreads: OpenCV's pool (1: serial; 0: its default); cheapSlow: the slow loop's SIFT on
-     * a smaller copy with fewer features, for speed.
+     * a smaller copy with fewer features, for speed; accelerator: the detector on NNAPI (else on
+     * the CPU: the emulator has no NNAPI but a slow reference of it).
      */
-    static native long create(String modelPath, int cvThreads, boolean cheapSlow);
+    static native long create(String modelPath, int cvThreads, boolean cheapSlow, boolean accelerator);
 
     /** A new shot of upright frames this size. */
     static native void begin(long handle, int width, int height);
@@ -49,10 +50,11 @@ final class Native {
     static native byte[] takeCrop(long handle);
 
     /**
-     * The server's answer for a crop (ok false: no answer). Returns the decision when this
-     * answer changes it, "slug\tname\tsure|unsure", else null.
+     * What came of the request for a crop: outcome 0 answered (slug and name of the first
+     * candidate), 1 no answer (sent again later), 2 refused for good. Returns the decision when
+     * this answer changes it, "slug\tname\tsure|unsure", else null.
      */
-    static native String answer(long handle, int bottle, int frame, int height, String slug, String name, boolean ok);
+    static native String answer(long handle, int bottle, int frame, int height, String slug, String name, int outcome);
 
     /**
      * Every bottle met, as a JSON array: id, state (known, asking, waiting, answered, eligible,

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,7 +41,9 @@ import java.util.List;
  * The map lives until the app closes: after the start screen, the background, the list or the
  * planogram, the camera finds its place on the map again. "Новая полка" starts a new map. In the
  * debug mode (a long press on the name on the start screen) the videos of the app's folder play
- * as the camera would give them, each on a map of its own.
+ * as the camera would give them, each on a map of its own. With demo.mp4 in that folder,
+ * "Сканировать полку" plays it in the camera's place, on the screens of the camera (a
+ * demonstration without a phone, on the emulator).
  *
  * The detector is in the APK's assets (bottle_yoloxs.onnx; one in the app's external folder
  * takes its place). The recognition API's password is read from api_password.txt pushed to that
@@ -48,6 +51,7 @@ import java.util.List;
  */
 public class MainActivity extends ComponentActivity {
     private static final String MODEL = "bottle_yoloxs.onnx";
+    private static final String DEMO = "demo.mp4";
     private static final int CAMERA_REQUEST = 1;
     private static final long TICK_MS = 500;
 
@@ -74,6 +78,8 @@ public class MainActivity extends ComponentActivity {
     private PreviewView preview;
     private ImageView still;      // the last frame, while the camera is paused under the menu
     private VideoSource video;
+    private File videoFile;
+    private boolean demo;         // the video is demo.mp4: shown as the camera, without the debug marks
     private OverlayView overlay;
     private StatusStrip strip;
     private SideMenu menu;
@@ -132,7 +138,8 @@ public class MainActivity extends ComponentActivity {
                 return;
             }
         }
-        long h = Native.create(model.getPath(), getIntent().getIntExtra("cv_threads", 0), getIntent().getBooleanExtra("cheap_slow", true));
+        long h = Native.create(model.getPath(), getIntent().getIntExtra("cv_threads", 0), getIntent().getBooleanExtra("cheap_slow", true),
+                !emulator());
         ui.post(() -> {
             handle = h;
             if (h == 0) problem = "Не удалось запустить распознавание бутылок";
@@ -182,7 +189,7 @@ public class MainActivity extends ComponentActivity {
             videos.addAll(Arrays.asList(found));
         }
         home = new HomeScreen(this, debug, videos, this::askCamera, () -> confirmRestart(this::refreshHome), this::toggleDebug,
-                this::runVideo);
+                file -> runVideo(file, false));
         root.addView(home, full());
         applyInsets();
         refreshHome();
@@ -205,6 +212,11 @@ public class MainActivity extends ComponentActivity {
 
     private void askCamera() {
         if (handle == 0) return;
+        File shot = new File(getExternalFilesDir(null), DEMO);
+        if (shot.exists()) {
+            runVideo(shot, true);
+            return;
+        }
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) showScan();
         else requestPermissions(new String[] {Manifest.permission.CAMERA}, CAMERA_REQUEST);
     }
@@ -227,6 +239,7 @@ public class MainActivity extends ComponentActivity {
         root.removeAllViews();
         home = null;
         scanning = true;
+        demo = false;
         FrameLayout screen = new FrameLayout(this);
         screen.setBackgroundColor(Color.BLACK);
         preview = new PreviewView(this);
@@ -245,14 +258,18 @@ public class MainActivity extends ComponentActivity {
      * The camera runs while the camera screen is up and nothing covers it: the menu, the list
      * of wines and the planogram pause it (the last frame stays, the status strip goes), and it
      * goes on when they close, the tracker finding its place on the map again. The
-     * recognition of what was queued goes on meanwhile.
+     * recognition of what was queued goes on meanwhile. A video pauses the same way.
      */
     private void updateCamera() {
-        if (!scanning || video != null || preview == null) return;
+        if (!scanning) return;
         boolean covered = (menu != null && menu.isOpen()) || (list != null && list.isOpen())
                 || (planogram != null && planogram.isOpen());
         boolean wanted = !covered && !paused;
-        if (wanted && camera == null && handle != 0) {
+        if (video != null) {
+            video.hold(!wanted);
+        } else if (preview == null) {
+            return;
+        } else if (wanted && camera == null && handle != 0) {
             still.setVisibility(View.GONE);
             still.setImageDrawable(null);
             startCamera(preview);
@@ -305,7 +322,7 @@ public class MainActivity extends ComponentActivity {
         Native.begin(handle, width, height);
         frameWidth = width;
         frameHeight = height;
-        Recognizer fresh = Recognizer.create(getExternalFilesDir(null), handle, catalog);
+        Recognizer fresh = Recognizer.create(getExternalFilesDir(null), handle, catalog, this::tell);
         if (fresh != null) fresh.start();
         recognizer = fresh;
         mapStarted = true;
@@ -320,13 +337,13 @@ public class MainActivity extends ComponentActivity {
         FrameLayout.LayoutParams at = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 52), Gravity.TOP);
         at.setMargins(Ui.dp(this, 12), Ui.dp(this, 32), Ui.dp(this, 12), 0);
         screen.addView(strip, at);
-        list = new WineList(this, handle, catalog, faces, debug, () -> list.close(), this::updateCamera);
+        list = new WineList(this, handle, catalog, faces, marks(), () -> list.close(), this::updateCamera);
         screen.addView(list, full());
-        planogram = new PlanogramScreen(this, () -> Planogram.build(this, handle, faces, catalog, folder(), debug), () -> planogram.close(),
+        planogram = new PlanogramScreen(this, () -> Planogram.build(this, handle, faces, catalog, folder(), marks()), () -> planogram.close(),
                 this::updateCamera);
         screen.addView(planogram, full());
         table = null;
-        menu = new SideMenu(this, debug, new SideMenu.Actions() {
+        menu = new SideMenu(this, marks(), new SideMenu.Actions() {
             @Override
             public void wines() {
                 list.open();
@@ -352,9 +369,14 @@ public class MainActivity extends ComponentActivity {
         applyInsets();
     }
 
+    /** The debug marks on the screens: in the debug mode, but not over demo.mp4. */
+    private boolean marks() {
+        return debug && !demo;
+    }
+
     /** The debug table of the current recognition, under the menu. */
     private void rebuildTable() {
-        if (!debug || menu == null) return;
+        if (!marks() || menu == null) return;
         FrameLayout screen = (FrameLayout) menu.getParent();
         if (tableHolder != null && tableHolder.getParent() == screen) screen.removeView(tableHolder);
         table = new BottleTable(this, handle, recognizer);
@@ -391,6 +413,10 @@ public class MainActivity extends ComponentActivity {
                     if (planogram != null && planogram.isOpen()) planogram.close();
                     if (camera != null) {
                         restartWanted = true;   // the frames' thread starts the new map between two frames
+                    } else if (video != null) {
+                        File file = videoFile;   // the video from its start, on a new map
+                        boolean shown = demo;
+                        ui.post(() -> runVideo(file, shown));
                     } else {
                         Recognizer old = recognizer;
                         recognizer = null;
@@ -404,7 +430,8 @@ public class MainActivity extends ComponentActivity {
 
     // ---- Debug: a video played as the camera would give it --------------------------------
 
-    private void runVideo(File file) {
+    /** `asCamera`: demo.mp4, which fills the screen as the camera does, without the debug marks. */
+    private void runVideo(File file, boolean asCamera) {
         if (handle == 0) return;
         stopSources();
         MotionTrack motion = new MotionTrack();
@@ -416,6 +443,8 @@ public class MainActivity extends ComponentActivity {
             return;
         }
         video = source;
+        videoFile = file;
+        demo = asCamera;
         Recognizer old = recognizer;
         recognizer = null;
         if (old != null) old.stop();
@@ -434,8 +463,10 @@ public class MainActivity extends ComponentActivity {
         buildOverlays(screen);
         root.addView(screen, full());
         screen.post(() -> {
-            // The picture fitted into the screen at its centre, as the overlay fits the frame.
-            float scale = Math.min(screen.getWidth() / (float) source.width, screen.getHeight() / (float) source.height);
+            // The picture fitted into the screen at its centre, or filling it (cut at the sides) as
+            // the camera's does; the overlay places the boxes the same way.
+            float across = screen.getWidth() / (float) source.width, down = screen.getHeight() / (float) source.height;
+            float scale = asCamera ? Math.max(across, down) : Math.min(across, down);
             picture.setLayoutParams(new FrameLayout.LayoutParams(Math.round(source.width * scale),
                     Math.round(source.height * scale), Gravity.CENTER));
         });
@@ -445,10 +476,10 @@ public class MainActivity extends ComponentActivity {
                 if (video != source) return;
                 try {
                     source.start(holder.getSurface(), () -> {});
-                    Recognizer fresh = Recognizer.create(getExternalFilesDir(null), handle, catalog);
+                    Recognizer fresh = Recognizer.create(getExternalFilesDir(null), handle, catalog, MainActivity.this::tell);
                     if (fresh != null) fresh.start();
                     recognizer = fresh;
-                    overlay.start(handle, source.width, source.height, false, motion, source::shownFrame, recognizer, debug);
+                    overlay.start(handle, source.width, source.height, asCamera, motion, source::shownFrame, recognizer, marks());
                     rebuildTable();
                 } catch (Exception e) {
                     showHome();
@@ -465,6 +496,16 @@ public class MainActivity extends ComponentActivity {
         });
         ui.removeCallbacks(tick);
         ui.post(tick);
+    }
+
+    /** A message for the user, from any thread. */
+    private void tell(String message) {
+        ui.post(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
+    }
+
+    /** The Android emulator (its NNAPI is a slow reference on the CPU). */
+    private static boolean emulator() {
+        return "ranchu".equals(Build.HARDWARE) || "goldfish".equals(Build.HARDWARE) || Build.PRODUCT.startsWith("sdk_");
     }
 
     // ---- Navigation and lifecycle ----------------------------------------------------------

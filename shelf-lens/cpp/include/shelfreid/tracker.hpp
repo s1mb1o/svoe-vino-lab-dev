@@ -46,6 +46,7 @@ struct Bottle {
     int appearance = 1;
     bool left = false;
     int hits = 1;
+    int missed = 0;               // steps its place was wholly in view without a box, while found on few steps
     std::optional<Box> last_box;  // the last box and the chain of motions at that frame
     Mat3 last_M = Mat3::eye();
     std::vector<cv::Mat> label;   // SIFT descriptors, one matrix a view
@@ -151,7 +152,7 @@ public:
     // Counters.
     int dropped_edges = 0, rescued = 0, vetoed = 0, suggested = 0, jumps = 0, found = 0,
         new_grounds = 0, merged_young = 0, dropped = 0, lost_motion = 0, label_checks = 0,
-        label_confirmed = 0, conflicted = 0, conflicts = 0, closed = 0, aliased = 0;
+        label_confirmed = 0, conflicted = 0, conflicts = 0, closed = 0, aliased = 0, forgotten = 0;
     std::vector<Contradiction> contradictions;
 
 protected:
@@ -166,6 +167,8 @@ protected:
     bool contradicted(int bottle_id, int left_id, int right_id) const;
     int habit(const std::map<int, std::map<int, int>>& table, int bottle) const;
     void rename(int old_id, int new_id, const char* why);   // `why`: for SHELFREID_TRACE
+    void forget(int id);   // the bottle and all said of it go
+    bool whole_in_view(const Bottle& b) const;   // its place, edge_margin inside the frame
     double width() const;
     Matrix point_distance(const std::vector<Box>& boxes, const std::vector<cv::Point2d>& centres,
                           const std::vector<cv::Vec2d>& spans) const;

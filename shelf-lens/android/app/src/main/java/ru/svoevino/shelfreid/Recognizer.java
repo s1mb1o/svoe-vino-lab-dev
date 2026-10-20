@@ -22,13 +22,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Sends the crops the native side cuts (pipeline.hpp has the rules: the size gate, the
  * agreement of answers) to the wine recognition API, /v1/match, at most four at a time, retried
- * after 502, 503, 504 or a failed connection. Each answer goes back to the native side; each
- * answer and each decision go to answers.jsonl in the run's folder, next to the crops.
+ * after 408, 429 (as long as Retry-After says), 5xx or a failed connection. Each answer goes back
+ * to the native side; each answer and each decision go to answers.jsonl in the run's folder,
+ * next to the crops; the folders of the last KEPT_RUNS runs stay.
+ *
+ * After stop() no thread of the recognition calls the native side: an answer that comes later
+ * is dropped (it is for a shelf no longer scanned). A refused password turns the recognition
+ * off and is told the user.
  *
  * The password is read from api_password.txt pushed to the app's folder; it is never in the
  * code or the APK.
@@ -37,6 +45,9 @@ final class Recognizer {
     private static final String TAG = "Recognizer";
     private static final String API = "https://api.chtozavino.ru/v1/match?k=5";
     private static final String USER = "evaluator";
+    private static final int KEPT_RUNS = 5;
+    // What came of a request (pipeline.hpp, Pipeline::Outcome).
+    private static final int ANSWERED = 0, RETRY = 1, REFUSED = 2;
 
     private final long handle;
     private final String auth;
@@ -46,6 +57,9 @@ final class Recognizer {
     private final Map<Integer, java.util.List<Sent>> sent = new ConcurrentHashMap<>();
     private final Map<Integer, String> slugs = new ConcurrentHashMap<>();   // bottle -> the wine decided
     private final Catalog catalog;
+    private final Consumer<String> problem;
+    private final Object gate = new Object();   // held by a native call of the recognition's threads, and by stop()
+    private final AtomicBoolean denied = new AtomicBoolean();
 
     /** A crop sent for a bottle and what came back. */
     static final class Sent {
@@ -65,24 +79,25 @@ final class Recognizer {
     private Thread poller;
     private FileWriter log;
 
-    /** Null when the password file is missing: then nothing is recognised. */
-    static Recognizer create(File base, long handle, Catalog catalog) {
+    /** Null when the password file is missing: then nothing is recognised. `problem` tells the user (any thread). */
+    static Recognizer create(File base, long handle, Catalog catalog, Consumer<String> problem) {
         File secret = new File(base, "api_password.txt");
         if (!secret.exists()) return null;
         try {
             String password = new String(java.nio.file.Files.readAllBytes(secret.toPath()), StandardCharsets.UTF_8).trim();
             File folder = new File(base, "recognition/" + new java.text.SimpleDateFormat("yyyyMMdd_HHmmss",
                     java.util.Locale.ROOT).format(new java.util.Date()));
-            return new Recognizer(handle, password, folder, catalog);
+            return new Recognizer(handle, password, folder, catalog, problem);
         } catch (IOException e) {
             Log.e(TAG, "cannot read the password", e);
             return null;
         }
     }
 
-    private Recognizer(long handle, String password, File folder, Catalog catalog) {
+    private Recognizer(long handle, String password, File folder, Catalog catalog, Consumer<String> problem) {
         this.handle = handle;
         this.catalog = catalog;
+        this.problem = problem;
         this.auth = "Basic " + Base64.encodeToString((USER + ":" + password).getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
         this.folder = folder;
     }
@@ -97,20 +112,25 @@ final class Recognizer {
         running = true;
         Native.setRecognition(handle, true);
         poller = new Thread(() -> {
+            prune(folder.getParentFile(), KEPT_RUNS);
             long dumped = 0, logged = 0;
-            while (running) {
+            while (true) {
                 long now = System.currentTimeMillis();
-                if (now - dumped > 5000) {
-                    dumpTable();
-                    dumped = now;
+                byte[] crop;
+                synchronized (gate) {
+                    if (!running) return;
+                    if (now - dumped > 5000) {
+                        dumpTable();
+                        dumped = now;
+                    }
+                    if (now - logged > 2000) {   // the queue in the log, also while the camera is paused
+                        int[] s = Native.summary(handle);
+                        Log.i(TAG, "queue: " + s[2] + " waiting, " + s[1] + " of " + s[0] + " recognised; sent " + sentCount.get()
+                                + ", answered " + answeredCount.get() + ", errors " + errors.get());
+                        logged = now;
+                    }
+                    crop = Native.takeCrop(handle);
                 }
-                if (now - logged > 2000) {   // the queue in the log, also while the camera is paused
-                    int[] s = Native.summary(handle);
-                    Log.i(TAG, "queue: " + s[2] + " waiting, " + s[1] + " of " + s[0] + " recognised; sent " + sentCount.get()
-                            + ", answered " + answeredCount.get() + ", errors " + errors.get());
-                    logged = now;
-                }
-                byte[] crop = Native.takeCrop(handle);
                 if (crop == null) {
                     try {
                         Thread.sleep(40);
@@ -119,15 +139,21 @@ final class Recognizer {
                     }
                     continue;
                 }
-                requests.submit(() -> send(crop));
+                try {
+                    requests.submit(() -> send(crop));
+                } catch (RejectedExecutionException e) {   // stopped meanwhile
+                    return;
+                }
             }
         }, "recognition");
         poller.start();
     }
 
     void stop() {
-        dumpTable();
-        running = false;
+        synchronized (gate) {
+            dumpTable();
+            running = false;
+        }
         Native.setRecognition(handle, false);
         requests.shutdownNow();
         if (poller != null) poller.interrupt();
@@ -141,8 +167,10 @@ final class Recognizer {
     }
 
     private void dumpTable() {
+        String table = Native.recognitionTable(handle);
+        if (table == null) return;
         try (FileWriter out = new FileWriter(new File(folder, "table.json"))) {
-            out.write(Native.recognitionTable(handle));
+            out.write(table);
         } catch (IOException e) {
             Log.w(TAG, "cannot keep the table", e);
         }
@@ -179,6 +207,7 @@ final class Recognizer {
     }
 
     private void send(byte[] crop) {
+        if (!running) return;   // stopped before this crop went
         ByteBuffer header = ByteBuffer.wrap(crop, 0, 20).order(ByteOrder.LITTLE_ENDIAN);
         int bottle = header.getInt(), frame = header.getInt(), height = header.getInt();
         double sharpness = header.getInt() / 10.0;
@@ -197,10 +226,13 @@ final class Recognizer {
         long started = System.currentTimeMillis();
         int status = -1;
         String body = null;
-        for (int wait : new int[] {1000, 2000, 4000, -1}) {
+        int[] waits = {1000, 2000, 4000};
+        for (int attempt = 0; ; attempt++) {
+            long asked = 0;   // Retry-After, ms
             try {
                 HttpURLConnection connection = post(png);
                 status = connection.getResponseCode();
+                asked = connection.getHeaderFieldInt("Retry-After", 0) * 1000L;
                 InputStream in = status < 400 ? connection.getInputStream() : connection.getErrorStream();
                 body = in == null ? "" : read(in);
                 connection.disconnect();
@@ -208,10 +240,9 @@ final class Recognizer {
                 status = -1;
                 body = e.toString();
             }
-            if (status != 502 && status != 503 && status != 504 && status != -1) break;
-            if (wait < 0 || !running) break;
+            if (!retryable(status) || attempt == waits.length || !running) break;
             try {
-                Thread.sleep(wait);
+                Thread.sleep(Math.min(30000, Math.max(waits[attempt], asked)));
             } catch (InterruptedException e) {
                 return;
             }
@@ -247,7 +278,18 @@ final class Recognizer {
         record.answer = ok ? (top.length() > 0 ? name + String.format(java.util.Locale.ROOT, "  score %.3f",
                 top.optJSONObject(0) == null ? 0 : top.optJSONObject(0).optDouble("score")) : "no candidates")
                 : "no answer (HTTP " + status + ")";
-        String decision = Native.answer(handle, bottle, frame, height, slug, name, ok);
+        boolean refusedAccess = status == 401 || status == 403;
+        int outcome = ok ? ANSWERED : retryable(status) ? RETRY : REFUSED;
+        String decision;
+        synchronized (gate) {
+            if (!running) return;
+            if (refusedAccess) Native.setRecognition(handle, false);
+            decision = Native.answer(handle, bottle, frame, height, slug, name, outcome);
+        }
+        if (refusedAccess && denied.compareAndSet(false, true)) {
+            Log.e(TAG, "the server refused the password (HTTP " + status + "): recognition off");
+            if (problem != null) problem.accept("Сервер распознавания не принял пароль API, распознавание выключено");
+        }
         try {
             JSONObject line = new JSONObject().put("bottle", bottle).put("frame", frame).put("box_height", height)
                     .put("sharpness", sharpness).put("chosen_of", choices)
@@ -264,6 +306,25 @@ final class Recognizer {
         } catch (Exception e) {
             Log.w(TAG, "cannot log", e);
         }
+    }
+
+    /** No answer yet, but one may come: a timeout, too many requests, a server error, no connection. */
+    private static boolean retryable(int status) {
+        return status == -1 || status == 408 || status == 429 || status >= 500;
+    }
+
+    /** All but the newest `keep` run folders (yyyyMMdd_HHmmss, they sort by time) under `runs` deleted. */
+    private static void prune(File runs, int keep) {
+        File[] found = runs.listFiles(f -> f.isDirectory() && f.getName().matches("\\d{8}_\\d{6}"));
+        if (found == null || found.length <= keep) return;
+        java.util.Arrays.sort(found);
+        for (int i = 0; i < found.length - keep; i++) delete(found[i]);
+    }
+
+    private static void delete(File file) {
+        File[] inside = file.listFiles();
+        if (inside != null) for (File f : inside) delete(f);
+        if (!file.delete()) Log.w(TAG, "cannot delete " + file);
     }
 
     private synchronized void write(JSONObject line) throws IOException {

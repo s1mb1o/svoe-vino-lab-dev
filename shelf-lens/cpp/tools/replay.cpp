@@ -4,10 +4,12 @@
 //   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N|rt:async OUT.jsonl [--every 3] [--slow-every K] [--pace MS]
 //          [--min-score S] [--new-score S] [--max-side PX] [--max-features N] [--loop-candidates N]
 //          [--cv-threads N] [--keep-steps 1] [--hints 1] [--map MAP.json] [--planogram PLANOGRAM.json]
-//          [--poses POSES.jsonl] [--interrupt FRAME]
+//          [--poses POSES.jsonl] [--interrupt FRAME] [--skip FROM-TO]
 //
 // --interrupt breaks the picture before that frame, as the app does when the camera comes
-// back after a pause (rt only): the tracker finds its place on the map again.
+// back after a pause (rt only): the tracker finds its place on the map again. --skip gives the
+// tracker no frame from FROM to TO and breaks the picture at TO: the camera paused and moved
+// meanwhile.
 //
 // --map writes the map at the end: the frame size, each bottle's corners in map coordinates
 // (keyframe 0's pixels) and whether it is still provisional; --planogram the planogram of
@@ -62,8 +64,13 @@ int main(int argc, char** argv) {
     bool keep_steps = false;   // --every without rescaling the parameters in steps, as the app drops frames
     bool hints = false;        // the frame-by-frame motion as the tracker's hint, as the app gives it
     std::string map_path, planogram_path, poses_path;
-    int interrupt_at = -1;
+    int interrupt_at = -1, skip_from = -1, skip_to = -1;
     for (int a = 5; a + 1 < argc; ++a) {
+        if (std::string(argv[a]) == "--skip") {
+            const std::string span = argv[a + 1];
+            skip_from = std::stoi(span.substr(0, span.find('-')));
+            skip_to = interrupt_at = std::stoi(span.substr(span.find('-') + 1));
+        }
         if (std::string(argv[a]) == "--every") every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--slow-every") slow_every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--pace") pace_ms = std::stoi(argv[a + 1]);
@@ -166,7 +173,7 @@ int main(int argc, char** argv) {
             const bool found = frame_motion.step(grey, 0, m);
             chain.add(number, m, found);
         }
-        if (number % every == 0) {
+        if (number % every == 0 && !(number >= skip_from && number < skip_to)) {
             auto it = dets.find(number);
             if (it == dets.end()) break;
             if (number > 0 && from_dir && !frame_at(number, frame)) break;
@@ -219,7 +226,7 @@ int main(int argc, char** argv) {
     }
     std::cout << mode << " bottles " << tracker->bottles.size() << " ids " << tracker->next_id << " white steps "
               << pending_steps << " jumps " << tracker->jumps << " found " << tracker->found << " merged young "
-              << tracker->merged_young << " aliased " << tracker->aliased << " | step p50 " << pct(step_seconds, 50) * 1000 << " p95 " << pct(step_seconds, 95) * 1000
+              << tracker->merged_young << " aliased " << tracker->aliased << " forgotten " << tracker->forgotten << " | step p50 " << pct(step_seconds, 50) * 1000 << " p95 " << pct(step_seconds, 95) * 1000
               << " ms";
     if (rt)
         std::cout << " | fast p50 " << pct(rt->fast_seconds, 50) * 1000 << " p95 " << pct(rt->fast_seconds, 95) * 1000

@@ -2619,6 +2619,8 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "opencv-python-headless" },
+    { name = "pillow" },
+    { name = "requests" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
@@ -2652,7 +2654,9 @@ requires-dist = [
     { name = "onnxruntime", marker = "extra == 'detect'", specifier = ">=1.31.0" },
     { name = "onnxslim", marker = "extra == 'detect'", specifier = ">=0.1.98" },
     { name = "opencv-python-headless", specifier = ">=4.10" },
+    { name = "pillow", specifier = ">=10" },
     { name = "pycocotools", marker = "extra == 'detect'", specifier = ">=2.0.11" },
+    { name = "requests", specifier = ">=2.31" },
     { name = "rfdetr", marker = "extra == 'detect'", specifier = ">=1.11.2" },
     { name = "scipy", specifier = ">=1.11" },
     { name = "torch", marker = "extra == 'deep'", specifier = ">=2.14.1" },

@@ -43,7 +43,8 @@ import java.util.concurrent.Executors;
  * bottles) with its packshot, name, producer, region, rating and kind; a bottle not recognised
  * with its crop (or a stand-in) and where its recognition stands. The strip at the bottom filters
  * by rating, kind, sugar and region. The bottles are those of the planogram (the map without
- * duplicates and unconfirmed bottles); the list refreshes while open.
+ * duplicates and unconfirmed bottles); one not recognised is listed once it had a crop to send
+ * (its box large and whole enough). The list refreshes while open.
  */
 @SuppressLint("ViewConstructor")
 final class WineList extends LinearLayout {
@@ -64,6 +65,7 @@ final class WineList extends LinearLayout {
     private final Map<Integer, Bitmap> crops = new HashMap<>();
     private String shownSignature = "";
     private List<Entry> entries = new ArrayList<>();
+    private int total;   // the bottles of the planogram (the list shows those with a crop to send)
     private boolean open;
 
     // The filters: null is any.
@@ -183,12 +185,17 @@ final class WineList extends LinearLayout {
         work.submit(() -> {
             List<Entry> fresh = new ArrayList<>();
             Map<Integer, Bitmap> newCrops = new HashMap<>();
+            int count = 0;   // the bottles of the planogram, listed or not
             try {
                 JSONObject plan = new JSONObject(Native.planogram(handle));
                 Map<Integer, String> states = new HashMap<>();
+                java.util.Set<Integer> suitable = new java.util.HashSet<>();
                 JSONArray table = new JSONArray(Native.recognitionTable(handle));
-                for (int i = 0; i < table.length(); i++)
-                    states.put(table.getJSONObject(i).optInt("id"), table.getJSONObject(i).optString("state"));
+                for (int i = 0; i < table.length(); i++) {
+                    JSONObject row = table.getJSONObject(i);
+                    states.put(row.optInt("id"), row.optString("state"));
+                    if (row.optBoolean("suitable")) suitable.add(row.optInt("id"));
+                }
                 Map<String, Entry> bySlug = new LinkedHashMap<>();
                 List<Entry> unknown = new ArrayList<>();
                 JSONArray shelves = plan.getJSONArray("shelves");
@@ -197,6 +204,7 @@ final class WineList extends LinearLayout {
                     for (int i = 0; i < facings.length(); i++) {
                         JSONObject f = facings.getJSONObject(i);
                         int bottle = f.optInt("bottle");
+                        count++;
                         String slug = f.optString("slug");
                         Catalog.Wine wine = slug.isEmpty() ? null : catalog.get(slug);
                         if (wine == null && !slug.isEmpty()) wine = catalog.put(slug, null);
@@ -210,7 +218,7 @@ final class WineList extends LinearLayout {
                                 bySlug.put(slug, e);
                             }
                             e.bottles.add(bottle);
-                        } else {
+                        } else if (suitable.contains(bottle)) {
                             Entry e = new Entry();
                             e.bottles.add(bottle);
                             e.state = states.getOrDefault(bottle, "small");
@@ -234,7 +242,8 @@ final class WineList extends LinearLayout {
                 // the map is being reset: show what there was
                 return;
             }
-            StringBuilder sig = new StringBuilder();
+            final int shelf = count;
+            StringBuilder sig = new StringBuilder().append(shelf).append(';');
             for (Entry e : fresh)
                 sig.append(e.wine == null ? e.state + e.bottles : e.wine.slug + e.bottles.size() + e.wine.siteLoaded).append(newCrops.containsKey(e.bottles.get(0)) ? "c" : "").append(';');
             String signature = sig.toString();
@@ -244,6 +253,7 @@ final class WineList extends LinearLayout {
                 crops.putAll(newCrops);
                 if (!signature.equals(shownSignature)) {
                     entries = fresh;
+                    total = shelf;
                     shownSignature = signature;
                     render();
                 }
@@ -266,11 +276,9 @@ final class WineList extends LinearLayout {
         Context c = getContext();
         int scrollY = scroll.getScrollY();
         cards.removeAllViews();
-        int bottles = 0, known = 0;
-        for (Entry e : entries) {
-            bottles += e.bottles.size();
+        int bottles = total, known = 0;
+        for (Entry e : entries)
             if (e.wine != null) known += e.bottles.size();
-        }
         subtitle.setText(bottles == 0 ? "Пока ничего не найдено" : String.format(new Locale("ru"), "Бутылок на полке: %d · распознано: %d",
                 bottles, known));
         boolean filtering = minRating != null || kind != null || sugar != null || region != null;
@@ -281,7 +289,8 @@ final class WineList extends LinearLayout {
             shown++;
         }
         if (shown == 0) cards.addView(empty(c, bottles == 0 ? "Наведите камеру на полку — найденные вина появятся здесь."
-                : "Нет вин, подходящих под фильтр."));
+                : filtering ? "Нет вин, подходящих под фильтр."
+                : "Подойдите к полке ближе, чтобы этикетки заняли больше кадра."));
         filterStrip();
         reset.setEnabled(filtering);
         reset.setAlpha(filtering ? 1f : 0.4f);

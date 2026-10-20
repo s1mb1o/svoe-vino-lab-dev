@@ -254,6 +254,21 @@ std::vector<Shown> Tracker::associate(int number, const std::vector<Detection>& 
         }
     }
     learn_offsets(shown);
+    // A bottle found on fewer than min_steps steps whose place has since been wholly in view
+    // for track_gap steps without a box was a false box of the detector: a bottle in view is
+    // found step after step. (One that came and went at the edge of a pan stays.)
+    if (trusted_now) {
+        std::set<int> found_now;
+        for (const auto& s : shown)
+            if (s.bottle != kNone) found_now.insert(s.bottle);
+        std::vector<int> noise;
+        for (auto& b : bottles) {
+            if (found_now.count(b.id) || b.last_seen - b.first_step + 1 >= cfg.min_steps || !whole_in_view(b)) continue;
+            if (++b.missed >= cfg.track_gap) noise.push_back(b.id);
+        }
+        for (int id : noise) forget(id);
+        forgotten += static_cast<int>(noise.size());
+    }
     return shown;
 }
 

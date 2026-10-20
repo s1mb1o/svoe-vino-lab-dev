@@ -98,6 +98,16 @@ final class VideoSource {
         return (int) Math.round(playerMs / 1000.0 * fps);
     }
 
+    /** Paused (the picture and the frames stop) or going on again. */
+    void hold(boolean on) {
+        if (player == null || ended) return;
+        try {
+            if (on && player.isPlaying()) player.pause();
+            else if (!on && !player.isPlaying()) player.start();
+        } catch (IllegalStateException ignored) {
+        }
+    }
+
     void stop() {
         running = false;
         if (decoder != null) {

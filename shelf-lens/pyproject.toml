@@ -8,6 +8,8 @@ dependencies = [
     "numpy>=1.26",
     "scipy>=1.11",
     "opencv-python-headless>=4.10",
+    "pillow>=10",
+    "requests>=2.31",
 ]
 
 [project.scripts]

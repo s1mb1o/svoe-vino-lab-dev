@@ -181,6 +181,26 @@ void Tracker::rename(int old_id, int new_id, const char* why) {
     }
 }
 
+bool Tracker::whole_in_view(const Bottle& b) const {
+    const Quad quad = project(H().inv() * graph.poses[b.anchor], b.quad);
+    const double m = cfg.edge_margin * size.width;
+    for (const auto& p : quad)
+        if (p.x < m || p.x > size.width - m || p.y < m || p.y > size.height - m) return false;
+    return true;
+}
+
+void Tracker::forget(int id) {
+    if (std::getenv("SHELFREID_TRACE")) std::cerr << "forget " << id << " step " << count << "\n";
+    for (auto* table : {&right, &left}) {
+        table->erase(id);
+        for (auto& [owner, cs] : *table) cs.erase(id);
+    }
+    for (auto it = offsets.begin(); it != offsets.end();)
+        it = it->first.first == id || it->first.second == id ? offsets.erase(it) : std::next(it);
+    shapes.erase(id);
+    bottles.erase(std::remove_if(bottles.begin(), bottles.end(), [&](const Bottle& b) { return b.id == id; }), bottles.end());
+}
+
 double Tracker::width() const { return bottle_width.value_or(0.1 * size.width); }
 
 Matrix Tracker::point_distance(const std::vector<Box>& boxes, const std::vector<cv::Point2d>& centres,
@@ -643,7 +663,8 @@ void Tracker::find(int number, const FrameFeatures& features) {
         return;
     }
     verified = saved;
-    if (++lost_steps > cfg.max_wait && cfg.new_ground) {
+    // A map with no bottle on it yet holds nothing to keep in place: it starts again here.
+    if ((++lost_steps > cfg.max_wait && cfg.new_ground) || bottles.empty()) {
         double far_right = -1e300;
         for (int k = 0; k < static_cast<int>(keyframes.size()); ++k)
             for (const auto& p : keyframe_quad(k)) far_right = std::max(far_right, p.x);

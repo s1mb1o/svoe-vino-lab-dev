@@ -50,6 +50,10 @@ struct StreamConfig {
     double bottom_margin = 0.03;
     double leave_margin = 0.5;
     int settle_hits = 5;
+    // A bottle found on fewer tracker steps than this whose place was then wholly in view for
+    // track_gap steps without a box goes as a false box of the detector: a bottle in view is
+    // found step after step.
+    int min_steps = 3;
     double keyframe_overlap = 0.6;
     // A new keyframe also where the reference keyframe is too poor to register to (fewer than
     // 2 x min_loop_inliers points) and the view has richer_ratio times its points and
@@ -89,7 +93,8 @@ struct StreamConfig {
     // On: lost longer than max_wait steps, the tracker starts a separate piece of map where the
     // camera is (a "new ground"), and near the map but not registered to it that long, it
     // trusts the flow. Off: it keeps looking for its place on the one map, and the boxes add
-    // nothing to the map meanwhile; a new shelf is a new map.
+    // nothing to the map meanwhile; a new shelf is a new map. Either way a map lost before any
+    // bottle is on it starts again where the camera is.
     bool new_ground = false;
     int young_steps = 30;
     double adjacent_gap = 1.6;
