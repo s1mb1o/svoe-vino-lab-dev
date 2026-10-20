@@ -1,0 +1,281 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "sources/campaign/my-matrix-20261017/manifest.json",
+      "upstream_path": "campaign/my-matrix-20261017/manifest.json",
+      "source_sha256": "47517d29149b0a689dd13a8e4375cc16be5f17c386367e932cdf993af8c7bc18",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/geometry.py",
+      "upstream_path": "campaign/geometry.py",
+      "source_sha256": "cfa5b080a019df94afc06de65df4956e46e54ec580b5af81a163854cdeabf6ee",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/workbench/pipeline/bottle_orientation.py",
+      "upstream_path": "workbench/pipeline/bottle_orientation.py",
+      "source_sha256": "8cef3a36a9622ef958163c4b484b618f55600681009865d404385e96beb3006e",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/prepare.py",
+      "upstream_path": "campaign/prepare.py",
+      "source_sha256": "bb9ff9a57df5193648c0571d01e15b37994c85d0ffd39d1da45dcc6258acccd9",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/labels-20261017/protocol.json",
+      "upstream_path": "campaign/labels-20261017/protocol.json",
+      "source_sha256": "e990f177c73a162cb2e50c96ef013aafe95c28864a30e6d1cde04f844f4f06ec",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/labels-20261017/support.py",
+      "upstream_path": "campaign/labels-20261017/support.py",
+      "source_sha256": "6a8afff61d49e1141a5e01be19c6572518cf7156e8dd6e9dcce7fead5cc4359d",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/fusion-20261017/protocol.json",
+      "upstream_path": "campaign/fusion-20261017/protocol.json",
+      "source_sha256": "bf8519f841ff3a0de207119ec69cf067ba8e4bdfa2014fad7e0831df44a1a80a",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/my-matrix-20261017/core.py",
+      "upstream_path": "campaign/my-matrix-20261017/core.py",
+      "source_sha256": "8d92493d62561d26f1fd50f92edb5383a05914d72a81381178cafa60edfb91b4",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-matrix-20261018/PROTOCOL.md",
+      "upstream_path": "campaign/axial-matrix-20261018/PROTOCOL.md",
+      "source_sha256": "baa02b3b43e6a6bf7829fb15108bc654fc5affcbf9b2f3efbc668c318430a6be",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-20261018/render.py",
+      "upstream_path": "campaign/axial-20261018/render.py",
+      "source_sha256": "262a5c89bec0b6e33d3bba59651975796e71f48ac7f702a6f4d850e39460c97c",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-20261018/rotate_bottle.py",
+      "upstream_path": "campaign/axial-20261018/rotate_bottle.py",
+      "source_sha256": "d29adc5aae5fb1214eba6794db7d6fc8b57a0a8dcbde292be4a59928e11c2170",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/protocol.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/protocol.json",
+      "source_sha256": "e822f7a60004ec7c7a3a5276c1fe6e13387945903ef5cf010f31f567afb51427",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/enumeration.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/enumeration.json",
+      "source_sha256": "35b89907a4da62008b94e4a9a08c6b801bda3d4a7f4c0ce873ccae9c4640521d",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/enumerate.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/enumerate.py",
+      "source_sha256": "12688af934667866716bbbb815db5eb9a48b7d97ca15c25b6e8f76499c605428",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/settings.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/settings.py",
+      "source_sha256": "d6a0c6ae5c297c8b215efbaa9b6747dfd0aa24d93e6c849043501a366eaf2e19",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/native_worker.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/native_worker.py",
+      "source_sha256": "d5d0103ccb2263b7edba3b862612b72edb1201573594db9bdf9d628269b87664",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/native_worker_explicit_mask.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/native_worker_explicit_mask.py",
+      "source_sha256": "4bbc2408db4a13ad42d403dc9a00cef5da71651f054c7f03d5656c3a3fe4c4ec",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/attention-mask-recovery.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/attention-mask-recovery.json",
+      "source_sha256": "023398083c4cfac0a073a57e16497e2f8169d76b38affd9e7e579e3d09189d51",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/native_score.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/native_score.py",
+      "source_sha256": "fdbeeedc190b96140369cdfcffe542393b76fe1fab6e0e186ddd6ed84aa18cf8",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/scoring.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/scoring.py",
+      "source_sha256": "658f33b9fe901e5c069e4dd736487d54854064b75fd25faba7564d1b0e1f52c7",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/complete.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/complete.json",
+      "source_sha256": "9e53b1e588b9e7ccaa29cb5ad46f8209f772021705058a826ae58f8385ae841c",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/rtx4090-20261019/EXPERIMENT.md",
+      "upstream_path": "campaign/retrieval-extensions-20261018/rtx4090-20261019/EXPERIMENT.md",
+      "source_sha256": "6d2480b4506074daf413a83abc4411325f37724e57313333d5126952d8e21c08",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/common.py",
+      "upstream_path": "campaign/common.py",
+      "source_sha256": "dcdc432fa8ebb12f5d21328ed1cba02330377a37180bbfb688c7cad1ee6daab1",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/gpu_pooling.py",
+      "upstream_path": "campaign/gpu_pooling.py",
+      "source_sha256": "96c0ced5f7c75efa6da2a5c6afa6eefc55844630ad4ea2d576d13d196e8c17b3",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/native_worker.py",
+      "upstream_path": "campaign/native_worker.py",
+      "source_sha256": "b4e41b1bf3b29c063f8ee91fd833bb60ac2618b77bc2d8aaf47f13b1cb60b3c0",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/my-matrix-20261017/plan.py",
+      "upstream_path": "campaign/my-matrix-20261017/plan.py",
+      "source_sha256": "b4245e84329f9bb021e76a33c285cd374f4ca6606d40a716f918b2b7c4685422",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/my-matrix-20261017/audit.json",
+      "upstream_path": "campaign/my-matrix-20261017/audit.json",
+      "source_sha256": "e4b4e84039726c02cdaf93bba616e6eda299a5f6f1e1d465915e4bccacadcaf9",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/matrix-20261017/audit.json",
+      "upstream_path": "campaign/matrix-20261017/audit.json",
+      "source_sha256": "771874693e847281853422a54d1eae1fa6605361b6266f9f598b7fe77d7d19e1",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/labels-20261017/run.py",
+      "upstream_path": "campaign/labels-20261017/run.py",
+      "source_sha256": "4b949030c67498509cb9d004ce8f4987d68d54a762e3d827205e2d746a6152bf",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/labels-20261017/profiles.json",
+      "upstream_path": "campaign/labels-20261017/profiles.json",
+      "source_sha256": "541988e3b78a83d251d4f5a1c05c4f3b2dddbaa6da5b27d463f41a5180743d49",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/fusion-20261017/fusion.py",
+      "upstream_path": "campaign/fusion-20261017/fusion.py",
+      "source_sha256": "fcc4961961470716c11c0e920157a626f7fc6603c78adc5e1dad78c8f6d8f211",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-matrix-20261018/fast_topk.py",
+      "upstream_path": "campaign/axial-matrix-20261018/fast_topk.py",
+      "source_sha256": "ce2c8c42d4aae9115785151162ce147b3f6c990a4869123369ef76df789fc302",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-matrix-20261018/my/combined-manifest.json",
+      "upstream_path": "campaign/axial-matrix-20261018/my/combined-manifest.json",
+      "source_sha256": "877ba9374d8ad9d041253e9d74ecc10e5c904b52edc538f3e9c1c47e8bf16b5c",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-matrix-20261018/my/audit.json",
+      "upstream_path": "campaign/axial-matrix-20261018/my/audit.json",
+      "source_sha256": "c4bc16fb02d491776f0e011999e1bce83f665f31ab602ef2c0b7cf6603412405",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-matrix-20261018/my-failed-2/audit.json",
+      "upstream_path": "campaign/axial-matrix-20261018/my-failed-2/audit.json",
+      "source_sha256": "636c0f3bc38f5c3c8e24723dc66a5f96f4d630556cca2e9bea884a38bfb522f9",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/axial-20261018/summary.json",
+      "upstream_path": "campaign/axial-20261018/summary.json",
+      "source_sha256": "f230c70647b1b7496bcf0b206f2c8cebcf5c408fe9083fb339587470a92f6f8f",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/plan.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/plan.py",
+      "source_sha256": "20cd9d7d6b85c12f6c68e469db7d4f1ca8b24e3533c49840639ba4d6fcaaad30",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/cached.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/cached.py",
+      "source_sha256": "48396ad2aeaf65aa688ca537f5f7eed605476453379ae983cf7336caf13a7efd",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/work_order.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/work_order.py",
+      "source_sha256": "2d18efde9e8bd023cb341fec60b66af197bc722253627b95e2ed59079608e0d2",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/campaign/retrieval-extensions-20261018/audit.py",
+      "upstream_path": "campaign/retrieval-extensions-20261018/audit.py",
+      "source_sha256": "fe120389ddcefaf8045d6829afffe670b775452ea3acf81a485e31ff849e9db6",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/workbench/pipeline/derive.py",
+      "upstream_path": "workbench/pipeline/derive.py",
+      "source_sha256": "384039a65a71285770793125b8d6ba405ad3ff92920fde023bda90841ea95995",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/workbench/pipeline/alternatives.py",
+      "upstream_path": "workbench/pipeline/alternatives.py",
+      "source_sha256": "2f692d5387081ebea327815dcb4c60359b1bf99b30efc6e4ccd2b26fe3bf6ebe",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/workbench/pipeline/embedding_run.py",
+      "upstream_path": "workbench/pipeline/embedding_run.py",
+      "source_sha256": "160e8a09b4c1b57e2e6ae1857a2048be61198fac402310def5a4948d7d8b158b",
+      "kind": "snapshot"
+    },
+    {
+      "path": "sources/workbench/pipeline/embeddings.py",
+      "upstream_path": "workbench/pipeline/embeddings.py",
+      "source_sha256": "3174c54962be0cb5865e77ba8ab5936c1ab66ec80bae89ff1b8164770e1f9571",
+      "kind": "snapshot"
+    },
+    {
+      "path": "summaries/input-manifest-summary.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/native-inputs.json",
+      "source_sha256": "fd7c79ad14e14a5b908795928bfc137dbd7073b1e092ffd0ec48b993df2413a6",
+      "kind": "derived_summary"
+    },
+    {
+      "path": "summaries/gx10-completion-summary.json",
+      "upstream_path": "campaign/retrieval-extensions-20261018/gx10-completion-20261020/coverage.json",
+      "source_sha256": "5309d9c4fd8fe8395c9e42181ad441d52ba6976a8bb12defe03f5409b5bf3474",
+      "kind": "derived_summary"
+    }
+  ]
+}

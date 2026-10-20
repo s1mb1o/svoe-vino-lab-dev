@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "variants": 148323,
+  "pairs": 3528,
+  "singles": 147,
+  "files": 3675,
+  "independent_case_rank_check": true,
+  "all_metrics_recomputed": true,
+  "image_metrics_recomputed": true,
+  "baseline_fix_regression_check": true,
+  "f3_replays": 6054,
+  "axial_union_monotonic_components": 147,
+  "cohort_frozen": true,
+  "completed_at": "2026-10-18T11:20:00+03:00"
+}

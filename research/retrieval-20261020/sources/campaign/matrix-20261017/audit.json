@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "variants": 148347,
+  "pairs": 3528,
+  "assignments": 668,
+  "distinct_images": 627,
+  "all_per_case_ranks_and_metrics": "verified",
+  "all_top10_wine_identities": "finite, valid, unique",
+  "frozen_images_bytes_and_times": "verified",
+  "frozen_database_catalogue_and_queries": "verified",
+  "original_26_fusion_replays": "identical",
+  "manifest_sha256": "19be7bad32eea1ab09dbdc733fbfba6fa0729ac4dc29f66b9f63ddc4e4391ab0",
+  "seconds": 126.60576104198117
+}

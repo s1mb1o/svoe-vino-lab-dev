@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "source": "campaign/retrieval-extensions-20261018/native-inputs.json",
+  "source_sha256": "fd7c79ad14e14a5b908795928bfc137dbd7073b1e092ffd0ec48b993df2413a6",
+  "source_bytes": 50124660,
+  "original_bundled": false,
+  "checkpoint": "cc24074f717b612951c2dead130904ab9b65a81e",
+  "reference_sources": 3058,
+  "prepared_query_sources": 4949,
+  "query_image_lookup_count": 3039,
+  "axial_sources": 2265,
+  "hashed_input_files": 80571,
+  "total_input_bytes": 13547728352,
+  "priority_query_sources": 913,
+  "profile_count": 39,
+  "omitted": [
+    "image file paths",
+    "individual file records",
+    "query lookup",
+    "source image records"
+  ]
+}

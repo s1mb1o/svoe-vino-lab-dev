@@ -1,0 +1,1311 @@
+{
+  "version": 1,
+  "created_at": "2026-10-17T23:17:49+03:00",
+  "assignments": 3409,
+  "distinct_images": 3031,
+  "positive_assignments": 2970,
+  "negative_assignments": 430,
+  "no_match_assignments": 9,
+  "query_sha256": "a41cdc14704046c380df8a41a484529ed0608b573f1ac42543b8332025b7441d",
+  "pooling": {
+    "u": "Uniform",
+    "5a": "Fractional whitespace 0.1",
+    "5b": "Fractional whitespace 0",
+    "6a": "Fractional whitespace 0.1; label 2",
+    "6b": "Fractional whitespace 0; label 2",
+    "6c": "Whole empty patch 0.1; label 2",
+    "6d": "Whole empty patch 0; label 2"
+  },
+  "query_geometry": {
+    "original": "Original segmented query",
+    "iou": "Maximum-IoU rotation",
+    "min5": "Skip rotations below 5 degrees",
+    "card5": "Skip rotations near a cardinal angle",
+    "crop": "Tight crop without rotation",
+    "mean-iou": "Normalized mean of original and IoU vectors",
+    "mean-card5": "Normalized mean of original and cardinal-guard vectors"
+  },
+  "reference_angles": {
+    "zero": [
+      0
+    ],
+    "cardinal": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "rot5": [
+      0,
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100,
+      105,
+      110,
+      115,
+      120,
+      125,
+      130,
+      135,
+      140,
+      145,
+      150,
+      155,
+      160,
+      165,
+      170,
+      175,
+      180,
+      185,
+      190,
+      195,
+      200,
+      205,
+      210,
+      215,
+      220,
+      225,
+      230,
+      235,
+      240,
+      245,
+      250,
+      255,
+      260,
+      265,
+      270,
+      275,
+      280,
+      285,
+      290,
+      295,
+      300,
+      305,
+      310,
+      315,
+      320,
+      325,
+      330,
+      335,
+      340,
+      345,
+      350,
+      355
+    ]
+  },
+  "label_geometry": {
+    "7a": {
+      "reference_rotation": false,
+      "bottle_rotation": false,
+      "label_rotation": false
+    },
+    "7b": {
+      "reference_rotation": false,
+      "bottle_rotation": true,
+      "label_rotation": false
+    },
+    "7c": {
+      "reference_rotation": false,
+      "bottle_rotation": false,
+      "label_rotation": true
+    },
+    "7d": {
+      "reference_rotation": true,
+      "bottle_rotation": false,
+      "label_rotation": true
+    },
+    "7e": {
+      "reference_rotation": false,
+      "bottle_rotation": true,
+      "label_rotation": true
+    },
+    "7f": {
+      "reference_rotation": true,
+      "bottle_rotation": false,
+      "label_rotation": false
+    },
+    "7g": {
+      "reference_rotation": true,
+      "bottle_rotation": true,
+      "label_rotation": false
+    },
+    "7h": {
+      "reference_rotation": true,
+      "bottle_rotation": true,
+      "label_rotation": true
+    }
+  },
+  "bottles": {
+    "b-u-original-zero": {
+      "pool": "u",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-u-original-cardinal": {
+      "pool": "u",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-u-original-rot5": {
+      "pool": "u",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-u-iou-zero": {
+      "pool": "u",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-u-iou-cardinal": {
+      "pool": "u",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-u-iou-rot5": {
+      "pool": "u",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-u-min5-zero": {
+      "pool": "u",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-u-min5-cardinal": {
+      "pool": "u",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-u-min5-rot5": {
+      "pool": "u",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-u-card5-zero": {
+      "pool": "u",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-u-card5-cardinal": {
+      "pool": "u",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-u-card5-rot5": {
+      "pool": "u",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-u-crop-zero": {
+      "pool": "u",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-u-crop-cardinal": {
+      "pool": "u",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-u-crop-rot5": {
+      "pool": "u",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-u-mean-iou-zero": {
+      "pool": "u",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-u-mean-iou-cardinal": {
+      "pool": "u",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-u-mean-iou-rot5": {
+      "pool": "u",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-u-mean-card5-zero": {
+      "pool": "u",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-u-mean-card5-cardinal": {
+      "pool": "u",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-u-mean-card5-rot5": {
+      "pool": "u",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-5a-original-zero": {
+      "pool": "5a",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-5a-original-cardinal": {
+      "pool": "5a",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-5a-original-rot5": {
+      "pool": "5a",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-5a-iou-zero": {
+      "pool": "5a",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-5a-iou-cardinal": {
+      "pool": "5a",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-5a-iou-rot5": {
+      "pool": "5a",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-5a-min5-zero": {
+      "pool": "5a",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-5a-min5-cardinal": {
+      "pool": "5a",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-5a-min5-rot5": {
+      "pool": "5a",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-5a-card5-zero": {
+      "pool": "5a",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-5a-card5-cardinal": {
+      "pool": "5a",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-5a-card5-rot5": {
+      "pool": "5a",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-5a-crop-zero": {
+      "pool": "5a",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-5a-crop-cardinal": {
+      "pool": "5a",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-5a-crop-rot5": {
+      "pool": "5a",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-5a-mean-iou-zero": {
+      "pool": "5a",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-5a-mean-iou-cardinal": {
+      "pool": "5a",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-5a-mean-iou-rot5": {
+      "pool": "5a",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-5a-mean-card5-zero": {
+      "pool": "5a",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-5a-mean-card5-cardinal": {
+      "pool": "5a",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-5a-mean-card5-rot5": {
+      "pool": "5a",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-5b-original-zero": {
+      "pool": "5b",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-5b-original-cardinal": {
+      "pool": "5b",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-5b-original-rot5": {
+      "pool": "5b",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-5b-iou-zero": {
+      "pool": "5b",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-5b-iou-cardinal": {
+      "pool": "5b",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-5b-iou-rot5": {
+      "pool": "5b",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-5b-min5-zero": {
+      "pool": "5b",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-5b-min5-cardinal": {
+      "pool": "5b",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-5b-min5-rot5": {
+      "pool": "5b",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-5b-card5-zero": {
+      "pool": "5b",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-5b-card5-cardinal": {
+      "pool": "5b",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-5b-card5-rot5": {
+      "pool": "5b",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-5b-crop-zero": {
+      "pool": "5b",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-5b-crop-cardinal": {
+      "pool": "5b",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-5b-crop-rot5": {
+      "pool": "5b",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-5b-mean-iou-zero": {
+      "pool": "5b",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-5b-mean-iou-cardinal": {
+      "pool": "5b",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-5b-mean-iou-rot5": {
+      "pool": "5b",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-5b-mean-card5-zero": {
+      "pool": "5b",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-5b-mean-card5-cardinal": {
+      "pool": "5b",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-5b-mean-card5-rot5": {
+      "pool": "5b",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-6a-original-zero": {
+      "pool": "6a",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-6a-original-cardinal": {
+      "pool": "6a",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-6a-original-rot5": {
+      "pool": "6a",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-6a-iou-zero": {
+      "pool": "6a",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-6a-iou-cardinal": {
+      "pool": "6a",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-6a-iou-rot5": {
+      "pool": "6a",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-6a-min5-zero": {
+      "pool": "6a",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-6a-min5-cardinal": {
+      "pool": "6a",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-6a-min5-rot5": {
+      "pool": "6a",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-6a-card5-zero": {
+      "pool": "6a",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-6a-card5-cardinal": {
+      "pool": "6a",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-6a-card5-rot5": {
+      "pool": "6a",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-6a-crop-zero": {
+      "pool": "6a",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-6a-crop-cardinal": {
+      "pool": "6a",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-6a-crop-rot5": {
+      "pool": "6a",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-6a-mean-iou-zero": {
+      "pool": "6a",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-6a-mean-iou-cardinal": {
+      "pool": "6a",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-6a-mean-iou-rot5": {
+      "pool": "6a",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-6a-mean-card5-zero": {
+      "pool": "6a",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-6a-mean-card5-cardinal": {
+      "pool": "6a",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-6a-mean-card5-rot5": {
+      "pool": "6a",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-6b-original-zero": {
+      "pool": "6b",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-6b-original-cardinal": {
+      "pool": "6b",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-6b-original-rot5": {
+      "pool": "6b",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-6b-iou-zero": {
+      "pool": "6b",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-6b-iou-cardinal": {
+      "pool": "6b",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-6b-iou-rot5": {
+      "pool": "6b",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-6b-min5-zero": {
+      "pool": "6b",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-6b-min5-cardinal": {
+      "pool": "6b",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-6b-min5-rot5": {
+      "pool": "6b",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-6b-card5-zero": {
+      "pool": "6b",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-6b-card5-cardinal": {
+      "pool": "6b",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-6b-card5-rot5": {
+      "pool": "6b",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-6b-crop-zero": {
+      "pool": "6b",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-6b-crop-cardinal": {
+      "pool": "6b",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-6b-crop-rot5": {
+      "pool": "6b",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-6b-mean-iou-zero": {
+      "pool": "6b",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-6b-mean-iou-cardinal": {
+      "pool": "6b",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-6b-mean-iou-rot5": {
+      "pool": "6b",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-6b-mean-card5-zero": {
+      "pool": "6b",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-6b-mean-card5-cardinal": {
+      "pool": "6b",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-6b-mean-card5-rot5": {
+      "pool": "6b",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-6c-original-zero": {
+      "pool": "6c",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-6c-original-cardinal": {
+      "pool": "6c",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-6c-original-rot5": {
+      "pool": "6c",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-6c-iou-zero": {
+      "pool": "6c",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-6c-iou-cardinal": {
+      "pool": "6c",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-6c-iou-rot5": {
+      "pool": "6c",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-6c-min5-zero": {
+      "pool": "6c",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-6c-min5-cardinal": {
+      "pool": "6c",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-6c-min5-rot5": {
+      "pool": "6c",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-6c-card5-zero": {
+      "pool": "6c",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-6c-card5-cardinal": {
+      "pool": "6c",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-6c-card5-rot5": {
+      "pool": "6c",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-6c-crop-zero": {
+      "pool": "6c",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-6c-crop-cardinal": {
+      "pool": "6c",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-6c-crop-rot5": {
+      "pool": "6c",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-6c-mean-iou-zero": {
+      "pool": "6c",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-6c-mean-iou-cardinal": {
+      "pool": "6c",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-6c-mean-iou-rot5": {
+      "pool": "6c",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-6c-mean-card5-zero": {
+      "pool": "6c",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-6c-mean-card5-cardinal": {
+      "pool": "6c",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-6c-mean-card5-rot5": {
+      "pool": "6c",
+      "query": "mean-card5",
+      "angles": "rot5"
+    },
+    "b-6d-original-zero": {
+      "pool": "6d",
+      "query": "original",
+      "angles": "zero"
+    },
+    "b-6d-original-cardinal": {
+      "pool": "6d",
+      "query": "original",
+      "angles": "cardinal"
+    },
+    "b-6d-original-rot5": {
+      "pool": "6d",
+      "query": "original",
+      "angles": "rot5"
+    },
+    "b-6d-iou-zero": {
+      "pool": "6d",
+      "query": "iou",
+      "angles": "zero"
+    },
+    "b-6d-iou-cardinal": {
+      "pool": "6d",
+      "query": "iou",
+      "angles": "cardinal"
+    },
+    "b-6d-iou-rot5": {
+      "pool": "6d",
+      "query": "iou",
+      "angles": "rot5"
+    },
+    "b-6d-min5-zero": {
+      "pool": "6d",
+      "query": "min5",
+      "angles": "zero"
+    },
+    "b-6d-min5-cardinal": {
+      "pool": "6d",
+      "query": "min5",
+      "angles": "cardinal"
+    },
+    "b-6d-min5-rot5": {
+      "pool": "6d",
+      "query": "min5",
+      "angles": "rot5"
+    },
+    "b-6d-card5-zero": {
+      "pool": "6d",
+      "query": "card5",
+      "angles": "zero"
+    },
+    "b-6d-card5-cardinal": {
+      "pool": "6d",
+      "query": "card5",
+      "angles": "cardinal"
+    },
+    "b-6d-card5-rot5": {
+      "pool": "6d",
+      "query": "card5",
+      "angles": "rot5"
+    },
+    "b-6d-crop-zero": {
+      "pool": "6d",
+      "query": "crop",
+      "angles": "zero"
+    },
+    "b-6d-crop-cardinal": {
+      "pool": "6d",
+      "query": "crop",
+      "angles": "cardinal"
+    },
+    "b-6d-crop-rot5": {
+      "pool": "6d",
+      "query": "crop",
+      "angles": "rot5"
+    },
+    "b-6d-mean-iou-zero": {
+      "pool": "6d",
+      "query": "mean-iou",
+      "angles": "zero"
+    },
+    "b-6d-mean-iou-cardinal": {
+      "pool": "6d",
+      "query": "mean-iou",
+      "angles": "cardinal"
+    },
+    "b-6d-mean-iou-rot5": {
+      "pool": "6d",
+      "query": "mean-iou",
+      "angles": "rot5"
+    },
+    "b-6d-mean-card5-zero": {
+      "pool": "6d",
+      "query": "mean-card5",
+      "angles": "zero"
+    },
+    "b-6d-mean-card5-cardinal": {
+      "pool": "6d",
+      "query": "mean-card5",
+      "angles": "cardinal"
+    },
+    "b-6d-mean-card5-rot5": {
+      "pool": "6d",
+      "query": "mean-card5",
+      "angles": "rot5"
+    }
+  },
+  "labels": {
+    "l-7a-zero": {
+      "geometry": "7a",
+      "angles": "zero"
+    },
+    "l-7a-cardinal": {
+      "geometry": "7a",
+      "angles": "cardinal"
+    },
+    "l-7a-rot5": {
+      "geometry": "7a",
+      "angles": "rot5"
+    },
+    "l-7b-zero": {
+      "geometry": "7b",
+      "angles": "zero"
+    },
+    "l-7b-cardinal": {
+      "geometry": "7b",
+      "angles": "cardinal"
+    },
+    "l-7b-rot5": {
+      "geometry": "7b",
+      "angles": "rot5"
+    },
+    "l-7c-zero": {
+      "geometry": "7c",
+      "angles": "zero"
+    },
+    "l-7c-cardinal": {
+      "geometry": "7c",
+      "angles": "cardinal"
+    },
+    "l-7c-rot5": {
+      "geometry": "7c",
+      "angles": "rot5"
+    },
+    "l-7d-zero": {
+      "geometry": "7d",
+      "angles": "zero"
+    },
+    "l-7d-cardinal": {
+      "geometry": "7d",
+      "angles": "cardinal"
+    },
+    "l-7d-rot5": {
+      "geometry": "7d",
+      "angles": "rot5"
+    },
+    "l-7e-zero": {
+      "geometry": "7e",
+      "angles": "zero"
+    },
+    "l-7e-cardinal": {
+      "geometry": "7e",
+      "angles": "cardinal"
+    },
+    "l-7e-rot5": {
+      "geometry": "7e",
+      "angles": "rot5"
+    },
+    "l-7f-zero": {
+      "geometry": "7f",
+      "angles": "zero"
+    },
+    "l-7f-cardinal": {
+      "geometry": "7f",
+      "angles": "cardinal"
+    },
+    "l-7f-rot5": {
+      "geometry": "7f",
+      "angles": "rot5"
+    },
+    "l-7g-zero": {
+      "geometry": "7g",
+      "angles": "zero"
+    },
+    "l-7g-cardinal": {
+      "geometry": "7g",
+      "angles": "cardinal"
+    },
+    "l-7g-rot5": {
+      "geometry": "7g",
+      "angles": "rot5"
+    },
+    "l-7h-zero": {
+      "geometry": "7h",
+      "angles": "zero"
+    },
+    "l-7h-cardinal": {
+      "geometry": "7h",
+      "angles": "cardinal"
+    },
+    "l-7h-rot5": {
+      "geometry": "7h",
+      "angles": "rot5"
+    }
+  },
+  "policies": {
+    "always-mean25": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "always",
+      "bottle_threshold": null,
+      "label_threshold": null
+    },
+    "always-mean50": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "always",
+      "bottle_threshold": null,
+      "label_threshold": null
+    },
+    "always-mean75": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "always",
+      "bottle_threshold": null,
+      "label_threshold": null
+    },
+    "always-max": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "always",
+      "bottle_threshold": null,
+      "label_threshold": null
+    },
+    "always-rrf": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "always",
+      "bottle_threshold": null,
+      "label_threshold": null
+    },
+    "gate-mean25-005": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.005
+    },
+    "gate-mean50-005": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.005
+    },
+    "gate-mean75-005": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.005
+    },
+    "gate-max-005": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.005
+    },
+    "gate-rrf-005": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.005
+    },
+    "gate-mean25-010": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "gate-mean50-010": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "gate-mean75-010": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "gate-max-010": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "gate-rrf-010": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "gate-mean25-020": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.02
+    },
+    "gate-mean50-020": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.02
+    },
+    "gate-mean75-020": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.02
+    },
+    "gate-max-020": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.02
+    },
+    "gate-rrf-020": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.02
+    },
+    "gate-mean50-b0.005-l0.010": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.01
+    },
+    "gate-max-b0.005-l0.010": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.01
+    },
+    "gate-mean50-b0.005-l0.020": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.02
+    },
+    "gate-max-b0.005-l0.020": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.005,
+      "label_threshold": 0.02
+    },
+    "gate-mean50-b0.010-l0.005": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.005
+    },
+    "gate-max-b0.010-l0.005": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.005
+    },
+    "gate-mean50-b0.010-l0.020": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.02
+    },
+    "gate-max-b0.010-l0.020": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.02
+    },
+    "gate-mean50-b0.020-l0.005": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.005
+    },
+    "gate-max-b0.020-l0.005": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.005
+    },
+    "gate-mean50-b0.020-l0.010": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.01
+    },
+    "gate-max-b0.020-l0.010": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "gate",
+      "bottle_threshold": 0.02,
+      "label_threshold": 0.01
+    },
+    "conflict-mean25-010": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "conflict",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "conflict-mean50-010": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "conflict",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "conflict-mean75-010": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "conflict",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "conflict-max-010": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "conflict",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "conflict-rrf-010": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "conflict",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "pin-mean25-010": {
+      "merge": "mean",
+      "bottle_weight": 0.25,
+      "mode": "pin",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "pin-mean50-010": {
+      "merge": "mean",
+      "bottle_weight": 0.5,
+      "mode": "pin",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "pin-mean75-010": {
+      "merge": "mean",
+      "bottle_weight": 0.75,
+      "mode": "pin",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "pin-max-010": {
+      "merge": "max",
+      "bottle_weight": null,
+      "mode": "pin",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    },
+    "pin-rrf-010": {
+      "merge": "rrf",
+      "bottle_weight": null,
+      "mode": "pin",
+      "bottle_threshold": 0.01,
+      "label_threshold": 0.01
+    }
+  },
+  "counts": {
+    "bottle": 147,
+    "label": 24,
+    "fusion_policies": 42,
+    "pairs": 3528,
+    "fusion_variants": 148176,
+    "single_space_controls": 171,
+    "total_variants": 148347
+  },
+  "scope": "Cross all listed bottle configurations, standard-pooling label configurations, and the fixed fusion policies. This finite matrix contains every level listed here. Label pooling stays standard as in experiment 7. Bottle pooling varies as in experiment 9.",
+  "label_reference_augmentation": "Apply each reference angle after the selected original or IoU label preparation. Include the cached zero-degree vectors. Rotate RGB on white with expanded canvases. Preserve source pixels and close-up resize rules.",
+  "query_means": "Normalize the sum of the two unit query vectors within each pooling profile.",
+  "wine_score": "Take the maximum cosine across all source images and retained angles for each wine.",
+  "mean": "Use the listed bottle weight and its complement for label scores. A candidate absent from one reference space keeps its available score.",
+  "max": "Merge unchanged scores. Deduplicate wine_slug and keep its larger original cosine.",
+  "rrf": "Sum 1/(60+rank) from both complete wine lists.",
+  "confidence": "Use unrounded top-1 minus top-2 wine cosine. A gap at least its space threshold passes. If both pass, compare gap/threshold. A tie uses the bottle space.",
+  "conflict": "If both confident spaces have different winners, use the selected merge rule.",
+  "pin": "If a space is selected by confidence, place its winner first. Fill positions 2 to 10 from the merged ranking. Store explicit ordinal ranks. Scores can be non-monotonic across the pinned winner and tail.",
+  "missing_label": "Use the bottle list. Keep all assignments in the denominator. Label-only controls return no answer.",
+  "ties": "Use wine_slug in ascending order.",
+  "storage": "Store full metrics and per-case Top-10 wine identities for every variant in compact pair files. Store accepted ranks for all 3409 assignments. Export the leading 100 variants to Workbench Runs at completion.",
+  "timing": "Accuracy sweep. Cached matrix operations do not measure end-to-end or parallel inference latency.",
+  "reserve": "Keep 20 GiB available on GX10. A new model load needs 28 GiB available. Keep the native worker within an 8 GiB CUDA allocation. Preserve 6c/6d and all resident services.",
+  "plan_sha256": "b4245e84329f9bb021e76a33c285cd374f4ca6606d40a716f918b2b7c4685422"
+}

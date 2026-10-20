@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "variants": 148347,
+  "pairs": 3528,
+  "assignments": 3409,
+  "distinct_images": 3031,
+  "positive": 2970,
+  "negative": 430,
+  "no_match": 9,
+  "all_per_case_ranks_and_metrics": "verified",
+  "all_top10_wine_identities": "Valid unique wine identities or no answer.",
+  "frozen_images_bytes_and_times": "verified",
+  "frozen_database_catalogue_and_queries": "verified",
+  "standard_benchmark_scoring_controls": "passed",
+  "manifest_sha256": "47517d29149b0a689dd13a8e4375cc16be5f17c386367e932cdf993af8c7bc18",
+  "seconds": 1703.2434954580385
+}

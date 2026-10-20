@@ -1,0 +1,563 @@
+{
+  "version": 1,
+  "created_at": "2026-10-18T21:07:17+03:00",
+  "owner_request": "do it all",
+  "cohorts": {
+    "my": {
+      "context_sha256": "b09b74a231db69c207d2c8d439299aee4d8030ba10238def663b82a9bffff9be",
+      "queries_sha256": "a41cdc14704046c380df8a41a484529ed0608b573f1ac42543b8332025b7441d"
+    },
+    "my-failed-2": {
+      "context_sha256": "ba10329117f578b0068bb643d89724bab0c1cc1e7457f60236a24f6d8ceefb9f",
+      "queries_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a"
+    }
+  },
+  "checkpoint": "cc24074f717b612951c2dead130904ab9b65a81e",
+  "model": "google/siglip2-so400m-patch16-naflex",
+  "baseline": "siglip2-p512-rot5-seg",
+  "local_reranking": false,
+  "families": [
+    {
+      "id": "1",
+      "name": "Independent reference and query pooling",
+      "reference_pools": [
+        "u",
+        "5a",
+        "5b",
+        "6a",
+        "6b",
+        "6c",
+        "6d"
+      ],
+      "query_pools": [
+        "u",
+        "5a",
+        "5b",
+        "6a",
+        "6b",
+        "6c",
+        "6d"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false,
+        true
+      ],
+      "conditions": 2058,
+      "same_pool_controls": 294
+    },
+    {
+      "id": "2",
+      "name": "Nonlinear foreground weights",
+      "gamma": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "background": [
+        0.0,
+        0.1
+      ],
+      "label_boost": [
+        1.0,
+        2.0
+      ],
+      "coverage": [
+        "legacy",
+        "exact"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false,
+        true
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Label boost",
+      "gamma": [
+        1.0
+      ],
+      "background": [
+        0.0,
+        0.1
+      ],
+      "label_boost": [
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        3.0
+      ],
+      "coverage": [
+        "legacy",
+        "exact"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false,
+        true
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Crop margins and exact NaFlex coverage",
+      "reference_margin": [
+        0.0,
+        0.02,
+        0.05,
+        0.1
+      ],
+      "query_margin": [
+        0.0,
+        0.02,
+        0.05,
+        0.1
+      ],
+      "pools": [
+        "u",
+        "6b"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false
+      ],
+      "margin_unit": "Fraction of the tight foreground width and height on each edge. Add white pixels outside the source canvas.",
+      "coverage_control": "Compare every fractional profile with float masks processed by the same NaFlex resize and patchify steps as RGB."
+    },
+    {
+      "id": "5",
+      "name": "Axial and cardinal Cartesian views",
+      "pools": [
+        "u",
+        "5a",
+        "5b",
+        "6a",
+        "6b",
+        "6c",
+        "6d"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "axial_angles": [
+        -30,
+        -25,
+        -20,
+        -15,
+        -10,
+        -5,
+        0,
+        5,
+        10,
+        15,
+        20,
+        25,
+        30
+      ],
+      "in_plane_angles": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "galleries": [
+        "cartesian",
+        "rot5-plus-cartesian"
+      ],
+      "note": "Reuse existing yaw-zero cardinal views and nonzero-yaw zero-degree views. Build the 36 missing pairs per renderable source. Retain original gallery coverage."
+    },
+    {
+      "id": "6",
+      "name": "NaFlex patch budgets",
+      "reference_budget": [
+        256,
+        512,
+        1024
+      ],
+      "query_budget": [
+        256,
+        512,
+        1024
+      ],
+      "pools": [
+        "u",
+        "6b"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false,
+        true
+      ],
+      "pilot": "Require finite normalized vectors, exact mask geometry, padding exclusion, memory limits, and uniform-head agreement at every budget before the full pass.",
+      "latency": "Record preprocessing, vision and pooling time, batch throughput, and serial warmed model latency on fixed pilot inputs."
+    },
+    {
+      "id": "7",
+      "name": "Reference score aggregation",
+      "pools": [
+        "u",
+        "5a",
+        "5b",
+        "6a",
+        "6b",
+        "6c",
+        "6d"
+      ],
+      "query_modes": [
+        "original",
+        "iou",
+        "min5",
+        "card5",
+        "crop",
+        "mean-iou",
+        "mean-card5"
+      ],
+      "galleries": [
+        "zero",
+        "cardinal",
+        "rot5"
+      ],
+      "axial_union": [
+        false,
+        true
+      ],
+      "aggregation": [
+        "max",
+        "top2-mean",
+        "top3-mean"
+      ],
+      "definition": "Aggregate vector scores within each wine across the full reference gallery. Use the available vector count when it is below k. Apply lexical wine ties."
+    }
+  ],
+  "profiles": {
+    "u": {
+      "uniform": true
+    },
+    "g0.5-bg010-l1-legacy": {
+      "background": 0.1,
+      "gamma": 0.5,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g0.5-bg010-l1-exact": {
+      "background": 0.1,
+      "gamma": 0.5,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g0.5-bg010-l2-legacy": {
+      "background": 0.1,
+      "gamma": 0.5,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g0.5-bg010-l2-exact": {
+      "background": 0.1,
+      "gamma": 0.5,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "g1-bg010-l1-legacy": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g1-bg010-l1-exact": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g1-bg010-l1.25-legacy": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.25,
+      "coverage": "legacy"
+    },
+    "g1-bg010-l1.25-exact": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.25,
+      "coverage": "exact"
+    },
+    "g1-bg010-l1.5-legacy": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.5,
+      "coverage": "legacy"
+    },
+    "g1-bg010-l1.5-exact": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 1.5,
+      "coverage": "exact"
+    },
+    "g1-bg010-l2-legacy": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g1-bg010-l2-exact": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "g1-bg010-l3-legacy": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 3.0,
+      "coverage": "legacy"
+    },
+    "g1-bg010-l3-exact": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 3.0,
+      "coverage": "exact"
+    },
+    "g2-bg010-l1-legacy": {
+      "background": 0.1,
+      "gamma": 2.0,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g2-bg010-l1-exact": {
+      "background": 0.1,
+      "gamma": 2.0,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g2-bg010-l2-legacy": {
+      "background": 0.1,
+      "gamma": 2.0,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g2-bg010-l2-exact": {
+      "background": 0.1,
+      "gamma": 2.0,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "g0.5-bg000-l1-legacy": {
+      "background": 0.0,
+      "gamma": 0.5,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g0.5-bg000-l1-exact": {
+      "background": 0.0,
+      "gamma": 0.5,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g0.5-bg000-l2-legacy": {
+      "background": 0.0,
+      "gamma": 0.5,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g0.5-bg000-l2-exact": {
+      "background": 0.0,
+      "gamma": 0.5,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "g1-bg000-l1-legacy": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g1-bg000-l1-exact": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g1-bg000-l1.25-legacy": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.25,
+      "coverage": "legacy"
+    },
+    "g1-bg000-l1.25-exact": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.25,
+      "coverage": "exact"
+    },
+    "g1-bg000-l1.5-legacy": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.5,
+      "coverage": "legacy"
+    },
+    "g1-bg000-l1.5-exact": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 1.5,
+      "coverage": "exact"
+    },
+    "g1-bg000-l2-legacy": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g1-bg000-l2-exact": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "g1-bg000-l3-legacy": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 3.0,
+      "coverage": "legacy"
+    },
+    "g1-bg000-l3-exact": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 3.0,
+      "coverage": "exact"
+    },
+    "g2-bg000-l1-legacy": {
+      "background": 0.0,
+      "gamma": 2.0,
+      "boost": 1.0,
+      "coverage": "legacy"
+    },
+    "g2-bg000-l1-exact": {
+      "background": 0.0,
+      "gamma": 2.0,
+      "boost": 1.0,
+      "coverage": "exact"
+    },
+    "g2-bg000-l2-legacy": {
+      "background": 0.0,
+      "gamma": 2.0,
+      "boost": 2.0,
+      "coverage": "legacy"
+    },
+    "g2-bg000-l2-exact": {
+      "background": 0.0,
+      "gamma": 2.0,
+      "boost": 2.0,
+      "coverage": "exact"
+    },
+    "6c": {
+      "background": 0.1,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "whole"
+    },
+    "6d": {
+      "background": 0.0,
+      "gamma": 1.0,
+      "boost": 2.0,
+      "coverage": "whole"
+    }
+  },
+  "aliases": {
+    "u": "u",
+    "5a": "g1-bg010-l1-legacy",
+    "5b": "g1-bg000-l1-legacy",
+    "6a": "g1-bg010-l2-legacy",
+    "6b": "g1-bg000-l2-legacy",
+    "6c": "6c",
+    "6d": "6d"
+  },
+  "fixed_fusion_anchors": {
+    "labels": [
+      "l-7f-rot5",
+      "l-7g-cardinal"
+    ],
+    "policies": [
+      "always-mean50",
+      "always-mean75",
+      "gate-mean50-010",
+      "pin-max-010",
+      "always-rrf"
+    ]
+  },
+  "source_files_immutable": true,
+  "score_full_catalogue": true,
+  "scope": "Enumerate each stated family. Do not multiply unrelated new axes. Publish every bottle condition and ten fixed label-fusion anchors.",
+  "validation": "Use a fresh validation cohort only after checking image overlap against saved benchmark inputs. Keep prior-evaluated complements separate."
+}

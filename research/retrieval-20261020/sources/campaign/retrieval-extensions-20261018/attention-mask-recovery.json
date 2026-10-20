@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "at": 1792443353.8334396,
+  "stages": [
+    "p256-query",
+    "p256-reference",
+    "p256-axial",
+    "p1024-query",
+    "p1024-reference",
+    "p1024-axial"
+  ],
+  "original_worker_sha256": "d5d0103ccb2263b7edba3b862612b72edb1201573594db9bdf9d628269b87664",
+  "worker_sha256": "4bbc2408db4a13ad42d403dc9a00cef5da71651f054c7f03d5656c3a3fe4c4ec",
+  "input_sha256": "fd7c79ad14e14a5b908795928bfc137dbd7073b1e092ffd0ec48b993df2413a6",
+  "controls": {
+    "p256-query": {
+      "passed": true,
+      "batch_equivalence_max_delta": 0.0,
+      "uniform_delta": 0.0,
+      "frozen_pool_deltas": [
+        null,
+        null,
+        null
+      ]
+    },
+    "p1024-query": {
+      "passed": true,
+      "batch_equivalence_max_delta": 0.0,
+      "uniform_delta": 0.0,
+      "frozen_pool_deltas": [
+        null,
+        null,
+        null
+      ]
+    },
+    "p512-reference": {
+      "passed": true,
+      "batch_equivalence_max_delta": 0.0,
+      "uniform_delta": 0.0,
+      "frozen_pool_deltas": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  },
+  "frozen_p512_control_passed": true,
+  "original_p512_worker_unchanged": true,
+  "completed_vectors_unchanged": true,
+  "threshold_unchanged": 2e-05,
+  "diagnostic_directory": "/home/ashmelev/.cache/codex-bench/my-failed2-eight-20261017-01a148d5/explicit-mask-controls-6j0p1b5k",
+  "archived_metadata": "/home/ashmelev/.cache/codex-bench/my-failed2-eight-20261017-01a148d5/retrieval-extensions-20261018/native/.pre-explicit-mask-1792443353829896205",
+  "policy": "Use explicit encoder masks only for previously unbuilt budgets 256 and 1024."
+}

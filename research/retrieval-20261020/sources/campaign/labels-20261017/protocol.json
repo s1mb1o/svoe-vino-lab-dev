@@ -1,0 +1,59 @@
+{
+  "testset": "my-failed-2",
+  "assignments": 668,
+  "distinct_images": 627,
+  "profiles": {
+    "7a": {
+      "reference_rotation": false,
+      "bottle_rotation": false,
+      "label_rotation": false
+    },
+    "7b": {
+      "reference_rotation": false,
+      "bottle_rotation": true,
+      "label_rotation": false
+    },
+    "7c": {
+      "reference_rotation": false,
+      "bottle_rotation": false,
+      "label_rotation": true
+    },
+    "7d": {
+      "reference_rotation": true,
+      "bottle_rotation": false,
+      "label_rotation": true
+    },
+    "7e": {
+      "reference_rotation": false,
+      "bottle_rotation": true,
+      "label_rotation": true
+    },
+    "7f": {
+      "reference_rotation": true,
+      "bottle_rotation": false,
+      "label_rotation": false
+    },
+    "7g": {
+      "reference_rotation": true,
+      "bottle_rotation": true,
+      "label_rotation": false
+    },
+    "7h": {
+      "reference_rotation": true,
+      "bottle_rotation": true,
+      "label_rotation": true
+    }
+  },
+  "query_bottle": "Reuse the exact full-resolution package cut from the frozen baseline. Verify its resized RGB pixels against the frozen baseline input. Segment the label inside that cut. For bottle rotation, use the existing unrestricted maximum-IoU angle before label segmentation.",
+  "query_label": "Use the existing SAM3 label selection and mask union rule inside the package. Rotate the extracted label only in the selected conditions. A missing label gives no answer. Do not use a bottle fallback.",
+  "label_angle": "Minimize the enclosing crop area of the alpha>=128 foreground hull. Use the same 0.05-degree refinement as condition 2. Select the smallest absolute turn among orientations that differ by 90 degrees. Preserve the complete soft alpha for image rotation. Use no bottle-neck heuristic for a label.",
+  "reference": "Use the same 3440 label reference sources and wine ownerships as the frozen baseline. Build original and maximum-IoU label galleries with the same batch schedule. Preserve coverage. Use one vector per label. Do not add 5-degree reference rotations.",
+  "embedding": "Use the existing SigLIP2 SO400M NaFlex service with max_num_patches=512 and standard pooling. Use catalogue batches of 36 in fixed source order. Use single-image query batches. Cache complete batches by exact image bytes and model identity.",
+  "comparability": "Re-encode the original label gallery with the matched label-only batch schedule. The old gallery used mixed batches. Its known BF16 batch differences can otherwise confound the reference rotation comparison.",
+  "selection": "Fix all conditions before scoring. Use no accepted answer or candidate score for geometry, segmentation, or vector preparation.",
+  "services": "Use existing SAM3 and SigLIP2 services on the owner GX10. Send serial requests. Start no separate model process. Preserve at least 20 GiB available and the active 6c and 6d worker.",
+  "artifacts": "Build two private label embedding indexes and cluster artifacts. Export eight Workbench runs. Preserve all shared indexes.",
+  "timing": "Accuracy experiment. Reused model answers and component times do not measure production latency.",
+  "reference_resize": "Preserve each frozen reference resize rule. Label close-ups bypass the 1024-pixel resize. Verify every original gallery input against the frozen index image.",
+  "geometry_renderer": "Rotate label RGB pixels and the foreground mask together. Use the rotated mask to crop. RGB is already on white. Do not apply its soft alpha a second time."
+}

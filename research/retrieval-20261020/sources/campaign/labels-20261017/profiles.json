@@ -1,0 +1,42 @@
+{
+  "7a": {
+    "reference_rotation": false,
+    "bottle_rotation": false,
+    "label_rotation": false
+  },
+  "7b": {
+    "reference_rotation": false,
+    "bottle_rotation": true,
+    "label_rotation": false
+  },
+  "7c": {
+    "reference_rotation": false,
+    "bottle_rotation": false,
+    "label_rotation": true
+  },
+  "7d": {
+    "reference_rotation": true,
+    "bottle_rotation": false,
+    "label_rotation": true
+  },
+  "7e": {
+    "reference_rotation": false,
+    "bottle_rotation": true,
+    "label_rotation": true
+  },
+  "7f": {
+    "reference_rotation": true,
+    "bottle_rotation": false,
+    "label_rotation": false
+  },
+  "7g": {
+    "reference_rotation": true,
+    "bottle_rotation": true,
+    "label_rotation": false
+  },
+  "7h": {
+    "reference_rotation": true,
+    "bottle_rotation": true,
+    "label_rotation": true
+  }
+}

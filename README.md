@@ -79,9 +79,12 @@ comparisons, top-five leaderboards, the best p512 variants, and 53 exact result 
 On the selected hard set `my-failed-2`, the best R@1 rises from **44.01% to 67.37%**;
 the best p512 R@1 is **66.17%**. These are development-set research results, not
 production matcher scores or official hackathon scores. The reference preserves
-separate GX10 and incomplete RTX4090 results. Its raw inputs, metric databases,
-and source-code links refer to the external lab workspace; they are not copied
-into this repository with the document. See F-112 in [ASSESSMENT.md](ASSESSMENT.md).
+separate GX10 and incomplete RTX4090 results. The [portable research package](research/retrieval-20261020/README.md)
+includes source snapshots, frozen specifications, compact benchmark summaries,
+and an offline checker. Run `python3 research/retrieval-20261020/verify.py` to check
+the package without model weights or network access. Full benchmark images, masks,
+accepted answers, and complete result databases are not bundled. See F-112 in
+[ASSESSMENT.md](ASSESSMENT.md).
 
 ## Быстрый запуск интерфейса
 

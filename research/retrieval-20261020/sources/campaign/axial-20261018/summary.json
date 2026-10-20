@@ -1,0 +1,480 @@
+{
+  "state": "Complete",
+  "updated_at": "2026-10-18T05:30:20+03:00",
+  "reference_sources": 2265,
+  "rendered_sources": 2262,
+  "skipped_sources": 3,
+  "new_unique_vectors": 27144,
+  "wine_rows": 27252,
+  "skip_reasons": {
+    "no label mask": 2,
+    "Use a transparent bottle cutout, or supply an explicit profile": 1
+  },
+  "angles": [
+    0,
+    -30,
+    -25,
+    -20,
+    -15,
+    -10,
+    -5,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30
+  ],
+  "cohorts": {
+    "my-failed-2": {
+      "assignments": 668,
+      "images": 627,
+      "positive": 668,
+      "negative": 0,
+      "no_match": 0,
+      "results": [
+        {
+          "id": "original-axial-only",
+          "query": "original",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 668,
+            "top1": 303,
+            "top5": 629,
+            "top10": 659,
+            "mrr": 0.673999619808003,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 348,
+            "top5": 640,
+            "top10": 661,
+            "mrr": 0.7124400009504799,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 45,
+            "top5": 11,
+            "top10": 2,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 75,
+          "top1_losses": 30,
+          "details": "my-failed-2/original-axial-only.json"
+        },
+        {
+          "id": "original-rot5-plus-axial",
+          "query": "original",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 668,
+            "top1": 294,
+            "top5": 645,
+            "top10": 666,
+            "mrr": 0.6712533266799734,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 342,
+            "top5": 648,
+            "top10": 666,
+            "mrr": 0.7106435937648512,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 48,
+            "top5": 3,
+            "top10": 0,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 71,
+          "top1_losses": 23,
+          "details": "my-failed-2/original-rot5-plus-axial.json"
+        },
+        {
+          "id": "iou-axial-only",
+          "query": "iou",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 668,
+            "top1": 308,
+            "top5": 638,
+            "top10": 663,
+            "mrr": 0.6807141669042867,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 352,
+            "top5": 640,
+            "top10": 663,
+            "mrr": 0.7179201121566391,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 44,
+            "top5": 2,
+            "top10": 0,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 72,
+          "top1_losses": 28,
+          "details": "my-failed-2/iou-axial-only.json"
+        },
+        {
+          "id": "iou-rot5-plus-axial",
+          "query": "iou",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 668,
+            "top1": 307,
+            "top5": 646,
+            "top10": 666,
+            "mrr": 0.6833131356334949,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 345,
+            "top5": 646,
+            "top10": 666,
+            "mrr": 0.7157625225738998,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 38,
+            "top5": 0,
+            "top10": 0,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 64,
+          "top1_losses": 26,
+          "details": "my-failed-2/iou-rot5-plus-axial.json"
+        },
+        {
+          "id": "mean-iou-axial-only",
+          "query": "mean-iou",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 668,
+            "top1": 306,
+            "top5": 636,
+            "top10": 661,
+            "mrr": 0.6788553844691568,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 349,
+            "top5": 642,
+            "top10": 663,
+            "mrr": 0.7143581883851345,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 43,
+            "top5": 6,
+            "top10": 2,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 71,
+          "top1_losses": 28,
+          "details": "my-failed-2/mean-iou-axial-only.json"
+        },
+        {
+          "id": "mean-iou-rot5-plus-axial",
+          "query": "mean-iou",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 668,
+            "top1": 304,
+            "top5": 648,
+            "top10": 668,
+            "mrr": 0.6812280201501758,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "axial": {
+            "n": 668,
+            "top1": 346,
+            "top5": 649,
+            "top10": 668,
+            "mrr": 0.7159187577226499,
+            "negative_false1": 0,
+            "negative_false10": 0,
+            "no_match_false1": 0
+          },
+          "delta": {
+            "top1": 42,
+            "top5": 1,
+            "top10": 0,
+            "negative_false1": 0,
+            "no_match_false1": 0
+          },
+          "top1_gains": 66,
+          "top1_losses": 24,
+          "details": "my-failed-2/mean-iou-rot5-plus-axial.json"
+        }
+      ]
+    },
+    "my": {
+      "assignments": 3409,
+      "images": 3031,
+      "positive": 2970,
+      "negative": 430,
+      "no_match": 9,
+      "results": [
+        {
+          "id": "original-axial-only",
+          "query": "original",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 2970,
+            "top1": 2536,
+            "top5": 2925,
+            "top10": 2961,
+            "mrr": 0.913167521778633,
+            "negative_false1": 72,
+            "negative_false10": 339,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2588,
+            "top5": 2938,
+            "top10": 2963,
+            "mrr": 0.9242249211693656,
+            "negative_false1": 67,
+            "negative_false10": 340,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 52,
+            "top5": 13,
+            "top10": 2,
+            "negative_false1": -5,
+            "no_match_false1": 0
+          },
+          "top1_gains": 115,
+          "top1_losses": 63,
+          "details": "my/original-axial-only.json"
+        },
+        {
+          "id": "original-rot5-plus-axial",
+          "query": "original",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 2970,
+            "top1": 2582,
+            "top5": 2946,
+            "top10": 2968,
+            "mrr": 0.9232523649190316,
+            "negative_false1": 69,
+            "negative_false10": 338,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2602,
+            "top5": 2950,
+            "top10": 2968,
+            "mrr": 0.927649644594089,
+            "negative_false1": 66,
+            "negative_false10": 343,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 20,
+            "top5": 4,
+            "top10": 0,
+            "negative_false1": -3,
+            "no_match_false1": 0
+          },
+          "top1_gains": 75,
+          "top1_losses": 55,
+          "details": "my/original-rot5-plus-axial.json"
+        },
+        {
+          "id": "iou-axial-only",
+          "query": "iou",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 2970,
+            "top1": 2532,
+            "top5": 2937,
+            "top10": 2963,
+            "mrr": 0.9131917054139277,
+            "negative_false1": 73,
+            "negative_false10": 337,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2587,
+            "top5": 2943,
+            "top10": 2966,
+            "mrr": 0.9248979210090321,
+            "negative_false1": 66,
+            "negative_false10": 342,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 55,
+            "top5": 6,
+            "top10": 3,
+            "negative_false1": -7,
+            "no_match_false1": 0
+          },
+          "top1_gains": 113,
+          "top1_losses": 58,
+          "details": "my/iou-axial-only.json"
+        },
+        {
+          "id": "iou-rot5-plus-axial",
+          "query": "iou",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 2970,
+            "top1": 2575,
+            "top5": 2947,
+            "top10": 2967,
+            "mrr": 0.9226165090053979,
+            "negative_false1": 71,
+            "negative_false10": 338,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2596,
+            "top5": 2947,
+            "top10": 2968,
+            "mrr": 0.9270950243172463,
+            "negative_false1": 66,
+            "negative_false10": 344,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 21,
+            "top5": 0,
+            "top10": 1,
+            "negative_false1": -5,
+            "no_match_false1": 0
+          },
+          "top1_gains": 77,
+          "top1_losses": 56,
+          "details": "my/iou-rot5-plus-axial.json"
+        },
+        {
+          "id": "mean-iou-axial-only",
+          "query": "mean-iou",
+          "gallery": "Zero + axial",
+          "baseline_gallery": "Zero",
+          "baseline": {
+            "n": 2970,
+            "top1": 2539,
+            "top5": 2933,
+            "top10": 2961,
+            "mrr": 0.914440302495858,
+            "negative_false1": 74,
+            "negative_false10": 338,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2587,
+            "top5": 2944,
+            "top10": 2965,
+            "mrr": 0.9244783817006038,
+            "negative_false1": 68,
+            "negative_false10": 340,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 48,
+            "top5": 11,
+            "top10": 4,
+            "negative_false1": -6,
+            "no_match_false1": 0
+          },
+          "top1_gains": 110,
+          "top1_losses": 62,
+          "details": "my/mean-iou-axial-only.json"
+        },
+        {
+          "id": "mean-iou-rot5-plus-axial",
+          "query": "mean-iou",
+          "gallery": "Rot5 + axial",
+          "baseline_gallery": "Rot5",
+          "baseline": {
+            "n": 2970,
+            "top1": 2583,
+            "top5": 2949,
+            "top10": 2970,
+            "mrr": 0.92409291325958,
+            "negative_false1": 69,
+            "negative_false10": 339,
+            "no_match_false1": 9
+          },
+          "axial": {
+            "n": 2970,
+            "top1": 2601,
+            "top5": 2951,
+            "top10": 2970,
+            "mrr": 0.9279270215381327,
+            "negative_false1": 67,
+            "negative_false10": 343,
+            "no_match_false1": 9
+          },
+          "delta": {
+            "top1": 18,
+            "top5": 2,
+            "top10": 0,
+            "negative_false1": -2,
+            "no_match_false1": 0
+          },
+          "top1_gains": 73,
+          "top1_losses": 55,
+          "details": "my/mean-iou-rot5-plus-axial.json"
+        }
+      ]
+    }
+  }
+}

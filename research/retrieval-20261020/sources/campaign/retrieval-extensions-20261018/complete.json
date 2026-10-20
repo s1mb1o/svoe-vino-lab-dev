@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-20T12:44:34+03:00",
+  "passed": true,
+  "cohorts": {
+    "my": {
+      "variants": 59752,
+      "bottle_conditions": 5432,
+      "positive_assignments": 2970,
+      "positive_images": 2808
+    },
+    "my-failed-2": {
+      "variants": 59752,
+      "bottle_conditions": 5432,
+      "positive_assignments": 668,
+      "positive_images": 627
+    }
+  },
+  "independent_metric_rows": 119504,
+  "unchanged_historical_control_rows": 6468,
+  "coverage_complete": true,
+  "saved_top10_checked": true,
+  "case_metric_counts_recomputed": true,
+  "source_image_hashes_preserved": true,
+  "frozen_cohorts_preserved": true,
+  "native_stages_verified": true,
+  "local_reranking": false,
+  "cohort_scope": "all"
+}

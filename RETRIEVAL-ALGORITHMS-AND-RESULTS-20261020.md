@@ -4,7 +4,10 @@ Snapshot: 2026-10-20T19:57:11+03:00.
 
 Scope: retrieval without re-ranking.
 
-Campaign root: `/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017`.
+Repository package: [research/retrieval-20261020](research/retrieval-20261020/README.md).
+
+This is the GitHub publication edition. The benchmark tables and exact result recipes are unchanged.
+The original report checksum is recorded in [report-origin.json](research/retrieval-20261020/provenance/report-origin.json).
 
 This document defines the retrieval algorithms in one place.
 It records the exact tested parameter grids.
@@ -22,7 +25,8 @@ No re-ranking experiment, model, score, or result is included.
 
 The parameter grids define all tested recipes.
 The document does not print all 706,376 per-variant metric rows.
-The source table links the complete databases and CSV files.
+The source table links committed scripts, specifications, and compact benchmark summaries.
+A dataset inventory records the hashes and sizes of the unbundled complete databases.
 Each reported winner has its parameters inside this document.
 
 ## Contents
@@ -4274,53 +4278,96 @@ All selected exact recipes resolve to stored definitions.
 
 ## 17. Source files
 
-The links below identify the source files used by this document.
-SHA-256 values identify the specifications and audit receipts at document generation time.
-The database and CSV files contain the complete per-variant results.
-The benchmark input files remain unchanged.
+All links in this section are repository-relative.
+The committed source snapshots preserve the original file bytes.
+The original native input manifest is 50 MB and is not bundled.
+Its compact summary records the original checksum, size, and input counts.
+The GX10 handoff summary omits the long variant-ID list and records its checksum.
+The source SHA-256 column identifies the original source, not a derived summary.
+The package manifest records the checksum of every committed package file.
 
-| Source | File | SHA-256 |
-| --- | --- | --- |
-| Original matrix definitions | [manifest.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/my-matrix-20261017/manifest.json) | `47517d29149b0a689dd13a8e4375cc16be5f17c386367e932cdf993af8c7bc18` |
-| Original query implementation | [geometry.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/geometry.py) | `cfa5b080a019df94afc06de65df4956e46e54ec580b5af81a163854cdeabf6ee` |
-| Bottle orientation helper | [bottle_orientation.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/pipeline/bottle_orientation.py) | `8cef3a36a9622ef958163c4b484b618f55600681009865d404385e96beb3006e` |
-| Frozen image and mask preparation | [prepare.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/prepare.py) | `bb9ff9a57df5193648c0571d01e15b37994c85d0ffd39d1da45dcc6258acccd9` |
-| Initial label specification | [protocol.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/labels-20261017/protocol.json) | `e990f177c73a162cb2e50c96ef013aafe95c28864a30e6d1cde04f844f4f06ec` |
-| Label alignment implementation | [support.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/labels-20261017/support.py) | `6a8afff61d49e1141a5e01be19c6572518cf7156e8dd6e9dcce7fead5cc4359d` |
-| Original fusion specification | [protocol.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/fusion-20261017/protocol.json) | `bf8519f841ff3a0de207119ec69cf067ba8e4bdfa2014fad7e0831df44a1a80a` |
-| Vectorized fusion and evaluator | [core.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/my-matrix-20261017/core.py) | `8d92493d62561d26f1fd50f92edb5383a05914d72a81381178cafa60edfb91b4` |
-| Axial matrix specification | [PROTOCOL.md](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-matrix-20261018/PROTOCOL.md) | `baa02b3b43e6a6bf7829fb15108bc654fc5affcbf9b2f3efbc668c318430a6be` |
-| Axial renderer calibration | [render.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-20261018/render.py) | `262a5c89bec0b6e33d3bba59651975796e71f48ac7f702a6f4d850e39460c97c` |
-| Axial cylinder renderer | [rotate_bottle.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-20261018/rotate_bottle.py) | `d29adc5aae5fb1214eba6794db7d6fc8b57a0a8dcbde292be4a59928e11c2170` |
-| Extension specification | [protocol.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/protocol.json) | `e822f7a60004ec7c7a3a5276c1fe6e13387945903ef5cf010f31f567afb51427` |
-| Extension recipe enumeration | [enumeration.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/enumeration.json) | `35b89907a4da62008b94e4a9a08c6b801bda3d4a7f4c0ce873ccae9c4640521d` |
-| Frozen native input manifest | [native-inputs.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/native-inputs.json) | `fd7c79ad14e14a5b908795928bfc137dbd7073b1e092ffd0ec48b993df2413a6` |
-| Extension enumerator | [enumerate.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/enumerate.py) | `12688af934667866716bbbb815db5eb9a48b7d97ca15c25b6e8f76499c605428` |
-| Pooling profile definitions | [settings.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/settings.py) | `d6a0c6ae5c297c8b215efbaa9b6747dfd0aa24d93e6c849043501a366eaf2e19` |
-| Native pooling, margins, and views | [native_worker.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/native_worker.py) | `d5d0103ccb2263b7edba3b862612b72edb1201573594db9bdf9d628269b87664` |
-| Explicit encoder-mask worker | [native_worker_explicit_mask.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/native_worker_explicit_mask.py) | `4bbc2408db4a13ad42d403dc9a00cef5da71651f054c7f03d5656c3a3fe4c4ec` |
-| Numerical recovery receipt | [attention-mask-recovery.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/attention-mask-recovery.json) | `023398083c4cfac0a073a57e16497e2f8169d76b38affd9e7e579e3d09189d51` |
-| Native scoring implementation | [native_score.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/native_score.py) | `fdbeeedc190b96140369cdfcffe542393b76fe1fab6e0e186ddd6ed84aa18cf8` |
-| Wine aggregation implementation | [scoring.py](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/scoring.py) | `658f33b9fe901e5c069e4dd736487d54854064b75fd25faba7564d1b0e1f52c7` |
-| Final extension audit | [complete.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/complete.json) | `9e53b1e588b9e7ccaa29cb5ad46f8209f772021705058a826ae58f8385ae841c` |
-| GX10 completion of RTX4090-pending recipes | [coverage.json](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/gx10-completion-20261020/coverage.json) | `5309d9c4fd8fe8395c9e42181ad441d52ba6976a8bb12defe03f5409b5bf3474` |
-| RTX4090 campaign specification | [EXPERIMENT.md](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/rtx4090-20261019/EXPERIMENT.md) | `6d2480b4506074daf413a83abc4411325f37724e57313333d5126952d8e21c08` |
+| Source | Committed file | Original source SHA-256 | Form |
+| --- | --- | --- | --- |
+| Original matrix definitions | [manifest.json](research/retrieval-20261020/sources/campaign/my-matrix-20261017/manifest.json) | `47517d29149b0a689dd13a8e4375cc16be5f17c386367e932cdf993af8c7bc18` | Byte-identical snapshot |
+| Original query implementation | [geometry.py](research/retrieval-20261020/sources/campaign/geometry.py) | `cfa5b080a019df94afc06de65df4956e46e54ec580b5af81a163854cdeabf6ee` | Byte-identical snapshot |
+| Bottle orientation helper | [bottle_orientation.py](research/retrieval-20261020/sources/workbench/pipeline/bottle_orientation.py) | `8cef3a36a9622ef958163c4b484b618f55600681009865d404385e96beb3006e` | Byte-identical snapshot |
+| Frozen image and mask preparation | [prepare.py](research/retrieval-20261020/sources/campaign/prepare.py) | `bb9ff9a57df5193648c0571d01e15b37994c85d0ffd39d1da45dcc6258acccd9` | Byte-identical snapshot |
+| Initial label specification | [protocol.json](research/retrieval-20261020/sources/campaign/labels-20261017/protocol.json) | `e990f177c73a162cb2e50c96ef013aafe95c28864a30e6d1cde04f844f4f06ec` | Byte-identical snapshot |
+| Label alignment implementation | [support.py](research/retrieval-20261020/sources/campaign/labels-20261017/support.py) | `6a8afff61d49e1141a5e01be19c6572518cf7156e8dd6e9dcce7fead5cc4359d` | Byte-identical snapshot |
+| Original fusion specification | [protocol.json](research/retrieval-20261020/sources/campaign/fusion-20261017/protocol.json) | `bf8519f841ff3a0de207119ec69cf067ba8e4bdfa2014fad7e0831df44a1a80a` | Byte-identical snapshot |
+| Vectorized fusion and evaluator | [core.py](research/retrieval-20261020/sources/campaign/my-matrix-20261017/core.py) | `8d92493d62561d26f1fd50f92edb5383a05914d72a81381178cafa60edfb91b4` | Byte-identical snapshot |
+| Axial matrix specification | [PROTOCOL.md](research/retrieval-20261020/sources/campaign/axial-matrix-20261018/PROTOCOL.md) | `baa02b3b43e6a6bf7829fb15108bc654fc5affcbf9b2f3efbc668c318430a6be` | Byte-identical snapshot |
+| Axial renderer calibration | [render.py](research/retrieval-20261020/sources/campaign/axial-20261018/render.py) | `262a5c89bec0b6e33d3bba59651975796e71f48ac7f702a6f4d850e39460c97c` | Byte-identical snapshot |
+| Axial cylinder renderer | [rotate_bottle.py](research/retrieval-20261020/sources/campaign/axial-20261018/rotate_bottle.py) | `d29adc5aae5fb1214eba6794db7d6fc8b57a0a8dcbde292be4a59928e11c2170` | Byte-identical snapshot |
+| Extension specification | [protocol.json](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/protocol.json) | `e822f7a60004ec7c7a3a5276c1fe6e13387945903ef5cf010f31f567afb51427` | Byte-identical snapshot |
+| Extension recipe enumeration | [enumeration.json](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/enumeration.json) | `35b89907a4da62008b94e4a9a08c6b801bda3d4a7f4c0ce873ccae9c4640521d` | Byte-identical snapshot |
+| Frozen native input manifest | [native-inputs.json](research/retrieval-20261020/summaries/input-manifest-summary.json) | `fd7c79ad14e14a5b908795928bfc137dbd7073b1e092ffd0ec48b993df2413a6` | Compact summary; original omitted |
+| Extension enumerator | [enumerate.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/enumerate.py) | `12688af934667866716bbbb815db5eb9a48b7d97ca15c25b6e8f76499c605428` | Byte-identical snapshot |
+| Pooling profile definitions | [settings.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/settings.py) | `d6a0c6ae5c297c8b215efbaa9b6747dfd0aa24d93e6c849043501a366eaf2e19` | Byte-identical snapshot |
+| Native pooling, margins, and views | [native_worker.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/native_worker.py) | `d5d0103ccb2263b7edba3b862612b72edb1201573594db9bdf9d628269b87664` | Byte-identical snapshot |
+| Explicit encoder-mask worker | [native_worker_explicit_mask.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/native_worker_explicit_mask.py) | `4bbc2408db4a13ad42d403dc9a00cef5da71651f054c7f03d5656c3a3fe4c4ec` | Byte-identical snapshot |
+| Numerical recovery receipt | [attention-mask-recovery.json](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/attention-mask-recovery.json) | `023398083c4cfac0a073a57e16497e2f8169d76b38affd9e7e579e3d09189d51` | Byte-identical snapshot |
+| Native scoring implementation | [native_score.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/native_score.py) | `fdbeeedc190b96140369cdfcffe542393b76fe1fab6e0e186ddd6ed84aa18cf8` | Byte-identical snapshot |
+| Wine aggregation implementation | [scoring.py](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/scoring.py) | `658f33b9fe901e5c069e4dd736487d54854064b75fd25faba7564d1b0e1f52c7` | Byte-identical snapshot |
+| Final extension audit | [complete.json](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/complete.json) | `9e53b1e588b9e7ccaa29cb5ad46f8209f772021705058a826ae58f8385ae841c` | Byte-identical snapshot |
+| GX10 completion of RTX4090-pending recipes | [coverage.json](research/retrieval-20261020/summaries/gx10-completion-summary.json) | `5309d9c4fd8fe8395c9e42181ad441d52ba6976a8bb12defe03f5409b5bf3474` | Compact summary; original omitted |
+| RTX4090 campaign specification | [EXPERIMENT.md](research/retrieval-20261020/sources/campaign/retrieval-extensions-20261018/rtx4090-20261019/EXPERIMENT.md) | `6d2480b4506074daf413a83abc4411325f37724e57313333d5126952d8e21c08` | Byte-identical snapshot |
 
-| Testset | Complete results | File |
-| --- | --- | --- |
-| my-failed-2 | Earlier original+axial metrics | [combined.sqlite3](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-matrix-20261018/my-failed-2/combined.sqlite3) |
-| my-failed-2 | Earlier metrics CSV | [combined-metrics.csv](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-matrix-20261018/my-failed-2/combined-metrics.csv) |
-| my-failed-2 | Extension metrics CSV | [results-my-failed-2.csv](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/results-my-failed-2.csv) |
-| my | Earlier original+axial metrics | [combined.sqlite3](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-matrix-20261018/my/combined.sqlite3) |
-| my | Earlier metrics CSV | [combined-metrics.csv](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/axial-matrix-20261018/my/combined-metrics.csv) |
-| my | Extension metrics CSV | [results-my.csv](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/results-my.csv) |
-| both | Complete extension database | [metrics.sqlite3](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/my-failed2-six-variants-20261017/retrieval-extensions-20261018/metrics.sqlite3) |
+### Compact benchmark summaries
 
-### Existing HTML reports
+The compact exports cover every reported result table and every exact result recipe.
+They contain 281 metric rows with raw counts, including the named historical controls.
+They do not contain the complete 706,376-row result universe.
+The full databases, per-image predictions, accepted answers, images, masks, and model weights remain outside this package.
+The dataset inventory identifies the full source databases by checksum, size, and row count.
 
-- [Complete GX10 report](http://127.0.0.1:59998/complete-report-20261018/report.html)
-- [Seven-family extension report](http://127.0.0.1:59998/retrieval-extensions-20261018/report.html)
-- [Final hard-set all-budget top-five tables](http://127.0.0.1:59998/leaderboards-final-20261020/report.html)
-- [GX10 coverage for the RTX4090-pending recipes](http://127.0.0.1:59998/retrieval-extensions-20261018/gx10-completion-20261020/report.html)
+| Evidence | Repository file |
+| --- | --- |
+| Human-readable leaderboards | [Compact benchmark results](research/retrieval-20261020/summaries/README.md) |
+| Counts, baselines, and leaderboard membership | [benchmark-summary.json](research/retrieval-20261020/summaries/benchmark-summary.json) |
+| All 53 exact result recipes | [configurations.json](research/retrieval-20261020/summaries/configurations.json) |
+| Raw counts for reported configurations and controls | [metrics.csv](research/retrieval-20261020/summaries/metrics.csv) |
+| Every report table before this source section | [report-tables.json](research/retrieval-20261020/summaries/report-tables.json) |
+| Historical named comparisons | [named-results.json](research/retrieval-20261020/summaries/named-results.json) |
+| Unbundled dataset identity and scope | [dataset-inventory.json](research/retrieval-20261020/summaries/dataset-inventory.json) |
+| Snapshot and derived-summary provenance | [source-manifest.json](research/retrieval-20261020/provenance/source-manifest.json) |
+| Published package checksums | [package-manifest.json](research/retrieval-20261020/package-manifest.json) |
+
+### Offline verification
+
+Run this command from the repository root with Python 3.9 or later.
+The checker uses only the Python standard library.
+It also works from another working directory when given by absolute script path.
+It starts no model, service, SSH connection, or GPU job.
+
+```sh
+python3 research/retrieval-20261020/verify.py
+```
+
+The checker verifies package hashes and the original source snapshot hashes.
+It regenerates all 5,432 bottle recipes and their family memberships.
+It checks all 39 pooling profiles against the archived profile factory.
+It checks the 53 exact result recipes and their IDs.
+It checks compact CSV counts against the report, recall arithmetic, baseline deltas, leaderboard ordering, p512 budgets, and repository links.
+This check does not reproduce model predictions or independently establish global optimality without the full source datasets.
+
+### Source export with the private campaign assets
+
+The optional exporter reads existing SQLite databases in read-only mode.
+It exports aggregate counts and exact parameter records.
+It does not export images, masks, per-image predictions, or accepted answers.
+A complete source campaign is required for this command.
+
+```sh
+python3 research/retrieval-20261020/tools/export_results.py \
+  --campaign-root /path/to/frozen-campaign \
+  --report RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md \
+  --output /tmp/retrieval-summary-check
+```
+
+The archived GPU scripts preserve their historical path and service settings.
+They are source evidence for the algorithms.
+Full inference needs the original runtime configuration and private benchmark assets.
+Use the offline checker to inspect this package without that environment.
 
 End of retrieval-only reference.

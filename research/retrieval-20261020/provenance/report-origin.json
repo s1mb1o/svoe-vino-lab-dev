@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "original_report_sha256": "7f295653a1aea6761da54e3463422573d370f97bdfa156bf4e2c7b9561f374a9",
+  "original_report_bytes": 172284,
+  "original_report_name": "RETRIEVAL-ALGORITHMS-AND-RESULTS-20261020.md",
+  "publication_changes": [
+    "Repository-relative links",
+    "Packaged source index",
+    "Compact evidence links",
+    "Portable verification instructions"
+  ],
+  "metric_tables_changed": false,
+  "exact_result_recipes_changed": false
+}

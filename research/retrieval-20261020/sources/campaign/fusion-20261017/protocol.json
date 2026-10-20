@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "created_at": "2026-10-17T22:13:05+03:00",
+  "assignments": 668,
+  "distinct_images": 627,
+  "query_manifest_sha256": "1b8fb97a08b08fe8d9c7a422c142e316e5f853cd827219236ca5504840cce93a",
+  "pairs": {
+    "original": {
+      "bottle": "baseline",
+      "label": "7a",
+      "label_query": "a",
+      "label_reference": "original",
+      "description": "Original segmented bottle and label geometry"
+    },
+    "iou": {
+      "bottle": "iou",
+      "label": "7h",
+      "label_query": "e",
+      "label_reference": "iou",
+      "description": "Maximum-IoU query bottle, query label, and reference label"
+    }
+  },
+  "conditions": {
+    "8a": {
+      "pair": "original",
+      "merge": "mean",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; average cosine fallback"
+    },
+    "8b": {
+      "pair": "original",
+      "merge": "max",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; unchanged cosine merge fallback"
+    },
+    "8c": {
+      "pair": "original",
+      "merge": "rrf",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; reciprocal rank fusion fallback"
+    },
+    "8d": {
+      "pair": "original",
+      "merge": "mean",
+      "threshold": 0.01,
+      "conflict_fallback": true,
+      "description": "Gap gate; average on a confident conflict"
+    },
+    "8e": {
+      "pair": "original",
+      "merge": "mean",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always average cosine"
+    },
+    "8f": {
+      "pair": "original",
+      "merge": "max",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always merge unchanged cosine"
+    },
+    "8g": {
+      "pair": "original",
+      "merge": "rrf",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always reciprocal rank fusion"
+    },
+    "8a-iou": {
+      "pair": "iou",
+      "merge": "mean",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; average cosine fallback"
+    },
+    "8b-iou": {
+      "pair": "iou",
+      "merge": "max",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; unchanged cosine merge fallback"
+    },
+    "8c-iou": {
+      "pair": "iou",
+      "merge": "rrf",
+      "threshold": 0.01,
+      "conflict_fallback": false,
+      "description": "Gap gate; reciprocal rank fusion fallback"
+    },
+    "8d-iou": {
+      "pair": "iou",
+      "merge": "mean",
+      "threshold": 0.01,
+      "conflict_fallback": true,
+      "description": "Gap gate; average on a confident conflict"
+    },
+    "8e-iou": {
+      "pair": "iou",
+      "merge": "mean",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always average cosine"
+    },
+    "8f-iou": {
+      "pair": "iou",
+      "merge": "max",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always merge unchanged cosine"
+    },
+    "8g-iou": {
+      "pair": "iou",
+      "merge": "rrf",
+      "threshold": null,
+      "conflict_fallback": false,
+      "description": "Always reciprocal rank fusion"
+    },
+    "8a-gap005": {
+      "pair": "original",
+      "merge": "mean",
+      "threshold": 0.005,
+      "conflict_fallback": false,
+      "description": "Gap 0.005; average cosine fallback"
+    },
+    "8a-gap020": {
+      "pair": "original",
+      "merge": "mean",
+      "threshold": 0.02,
+      "conflict_fallback": false,
+      "description": "Gap 0.02; average cosine fallback"
+    },
+    "8b-gap005": {
+      "pair": "original",
+      "merge": "max",
+      "threshold": 0.005,
+      "conflict_fallback": false,
+      "description": "Gap 0.005; unchanged cosine merge fallback"
+    },
+    "8b-gap020": {
+      "pair": "original",
+      "merge": "max",
+      "threshold": 0.02,
+      "conflict_fallback": false,
+      "description": "Gap 0.02; unchanged cosine merge fallback"
+    }
+  },
+  "model": "siglip2-so400m-patch16-naflex",
+  "max_num_patches": 512,
+  "bottle_reference": "gx10-siglip2-so400m-patch16-naflex-p512-rot5",
+  "label_reference": "Fresh matched label galleries from experiment 7",
+  "top_k": 10,
+  "candidate_identity": "wine_slug",
+  "within_space_score": "Maximum cosine across all reference sources and angles for a wine.",
+  "gap": "Use unrounded top-1 minus top-2 wine cosine. A gap at least the fixed threshold passes.",
+  "gate": "If one space passes, use its complete Top-10. If both pass, use the larger gap. A gap tie uses the bottle space.",
+  "conflict_control": "8d uses average fusion when both confident spaces choose different wines.",
+  "average": "Use both complete per-wine score arrays. Average all available scores for each wine. Do not insert zero for an absent reference.",
+  "unchanged_merge": "Merge both ranked lists. Deduplicate wine_slug. Keep the larger original cosine for a repeated wine. Return the highest 10 unchanged scores.",
+  "rrf": "Sum 1/(60+rank) from both complete per-wine ranked lists. Deduplicate wine_slug. Return the highest 10 rank scores.",
+  "missing_query_label": "Return the bottle list. Keep the case in the full denominator.",
+  "ties": "Sort equal final scores by wine_slug.",
+  "new_encoder_requests": 0,
+  "new_segmentation_requests": 0,
+  "timing": "Offline accuracy evaluation. Ranking time excludes model inference and segmentation.",
+  "interpretation": "Raw cosine scores and gaps are trial heuristics. They are not calibrated probabilities. Thresholds and geometry pairs are fixed before fusion scoring. This is the selected failure cohort.",
+  "implementation_sha256": {
+    "fusion.py": "fcc4961961470716c11c0e920157a626f7fc6603c78adc5e1dad78c8f6d8f211",
+    "plan.py": "0d6d878ed4325e7bc0e56674c3d02a45de004c2a781e8d6f286e08fd0c108113",
+    "run.py": "dcd65a0578d6559a141b22b22c3f3d368e44c1837a2354e3953bc550ea706393"
+  }
+}
