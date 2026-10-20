@@ -2,6 +2,16 @@
 
 ## 2026-10-20
 
+- Fixed `Export expected.jsonl` of `/runs` (`GET /api/run-expected`). It answered HTTP 409
+  "truth MUST be a list with at most one slug" for each run made after the manual accepted
+  answers of 2026-10-14: an image with more positive assignments in one test set has more
+  accepted slugs in `truth` (152 queries of `my`, 34 of `my-failed-2`). Such a row now
+  exports the `slug` of the query itself, which is one of the accepted slugs, so each
+  assignment keeps its own expected answer. A truth with more slugs that does not hold the
+  query `slug` is still refused. Found by the workbench test of 2026-10-20
+  (`reports/workbench-test-2026-10-20/` of the workspace). Tests: `test_run_routes` 25 (1
+  new); a real run of `my` exports 3,409 rows.
+
 - Removed from `AGENTS.md` the rules for `docs/owner-messages.md` and `ACTIVE_WORK.md`
   (owner message of 2026-10-20): the section "Messages of the project owner" (rules 1 to 8),
   the section "Work of the sessions" (rules 13 to 21), and the `ACTIVE_WORK.md` steps of

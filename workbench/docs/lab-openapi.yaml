@@ -1456,7 +1456,8 @@ paths:
       description: >-
         Each line contains query_id, image_path, image_sha256, predicted_slug, and
         latency_ms in that order. predicted_slug is the saved query truth, or null for
-        an expected no-match answer. latency_ms is always 0. Page filters do not affect
+        an expected no-match answer. A truth with more than one accepted slug gives the
+        slug of the query itself. latency_ms is always 0. Page filters do not affect
         the export. The official-test-2026-10-01 set uses eval_photo_NNN.webp names and
         query IDs from the photo numbers. Other sets retain their saved IDs and paths.
       parameters:

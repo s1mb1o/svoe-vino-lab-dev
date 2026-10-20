@@ -312,15 +312,20 @@ def predictions_view(runs_dir, query):
 
 
 def _expected_row(saved):
-    """Return one prediction-format row from one saved query."""
+    """Return one prediction-format row from one saved query. A truth with more than one
+    accepted slug (an image with more positive assignments) gives the slug of the query
+    itself, which MUST be one of the accepted slugs."""
     truth = saved["truth"]
-    if not isinstance(truth, list) or len(truth) > 1:
-        raise ValueError("truth MUST be a list with at most one slug")
-    if truth and (not isinstance(truth[0], str) or not truth[0]):
-        raise ValueError("the truth slug MUST be a non-empty string")
+    if not isinstance(truth, list):
+        raise ValueError("truth MUST be a list")
+    if any(not isinstance(slug, str) or not slug for slug in truth):
+        raise ValueError("each truth slug MUST be a non-empty string")
+    if len(truth) > 1 and saved.get("slug") not in truth:
+        raise ValueError("a truth with more than one slug MUST hold the slug of the query")
+    expected = saved["slug"] if len(truth) > 1 else (truth[0] if truth else None)
     return {"query_id": saved["query_id"], "image_path": saved["image_path"],
             "image_sha256": saved["image_sha256"],
-            "predicted_slug": truth[0] if truth else None, "latency_ms": 0}
+            "predicted_slug": expected, "latency_ms": 0}
 
 
 def expected_view(runs_dir, query):
