@@ -1,5 +1,18 @@
 # Smoke tests
 
+## Second comparison wine from saved wines
+
+1. Sign in and save a wine. Scan another wine in «Одна бутылка».
+2. Press «Сравнить с сохранённым» below the scan result. Confirm the first wine name and the saved list.
+3. Search by name, producer, or region. Confirm an explicit empty search state. The first exact wine must not appear as a candidate.
+4. Choose a saved wine from the same producer or a different style. Confirm both exact cards and eight factual rows.
+5. Press «Выбрать из сохранённых» on the second card. Cancel and confirm the existing pair. Open the picker again and choose a different wine.
+6. Use Escape, close, and browser Back. Confirm focus returns to the scan-result button or the original alternative button.
+7. Test a saved list with no other wine, a saved ID absent from the snapshot, service failure with retry, and expired login.
+8. Sign out, start the saved picker, and follow «Войти». Complete normal login. Press «Продолжить сравнение» and confirm the picker returns without a new recognition or automatic save.
+9. Confirm selection does not change saved rows, statuses, notes, or history. Private notes must not appear in picker responses, device storage, or session storage.
+10. Check 320, 390, and 1280 CSS pixels in both themes and in Chromium and WebKit. Check phone screen readers separately.
+
 ## Bottle preview on `/dish`
 
 1. Open `/dish` and get recommendations for a dish. Confirm the zoom cursor on a card bottle image.

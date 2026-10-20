@@ -1,5 +1,20 @@
 # Research log
 
+## 2026-10-20 — Saved wine as the second comparison card
+
+Owner request: choose the second wine from saved wines.
+The initial F04 entry accepted only a ranked alternative.
+The new entry uses the authenticated saved-slug endpoint of the existing account service.
+The Web server resolves those IDs and the first ID against the same pinned comparison snapshot.
+The selector does not apply alternative ranking, producer exclusion, or style filters.
+An unsupported exact ID remains visible with an explicit unavailable state.
+The response contains no note, personal status, account token, or uploaded photo.
+The saved list remains in component memory and is cleared when the picker closes or the account resets.
+Login continuation stores only the first public slug in session storage.
+The existing pair-return format and public offline-card format remain unchanged.
+No account schema or service change is required.
+Read `docs/f04-saved-comparison-2026-10-20.md` for the validation of this change.
+
 ## 2026-10-20 — F04 identities, persistence, and acceptance
 
 The existing diary already stores saved statuses and private notes. F04 reuses that backend.

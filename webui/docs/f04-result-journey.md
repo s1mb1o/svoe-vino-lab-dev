@@ -25,6 +25,18 @@ The source check compares the Web classifications with the MCP classifications.
 The runtime Web server does not call MCP.
 The comparison does not select a quality winner.
 
+The real single-bottle result also exposes «Сравнить с сохранённым».
+This action opens a searchable list from the existing saved wines.
+The second comparison card exposes «Выбрать из сохранённых» to replace the second wine.
+The first exact ID is excluded. Other styles and the same producer are allowed.
+The server resolves both cards against the same comparison snapshot.
+A saved ID outside that snapshot is visible but unavailable for comparison.
+An empty list and a failed lookup have explicit states. A failed lookup offers retry.
+The private list remains in the mounted picker only. The response contains no notes or saved statuses.
+Selection does not save a wine or add a recognition-history event.
+An anonymous person can return to the picker after login. Session storage holds only the first public slug.
+Read [the saved-comparison validation](f04-saved-comparison-2026-10-20.md).
+
 The cards reuse `PinButton`, `useDiary`, and the existing account service.
 The selected candidate supplies the saved slug.
 The initiating photo flow supplies the existing `photo` saved source.

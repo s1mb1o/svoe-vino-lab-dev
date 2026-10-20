@@ -123,5 +123,5 @@ export function useDiary() {
     await api.deleteHistoryDay(record.slug, record.metOn)
   }
 
-  return { state, saved, load, reset, save, unsave, setSaved, recordHistory, undoHistory }
+  return { state, saved, owner, load, reset, save, unsave, setSaved, recordHistory, undoHistory }
 }

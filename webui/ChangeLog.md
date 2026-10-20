@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — Choose the second comparison wine from saved wines
+
+- Add «Сравнить с сохранённым» below a real single-bottle result. Add «Выбрать из сохранённых» to the second comparison card.
+- Search the existing saved list by wine name, producer, region, or exact ID. Permit different styles and the same producer. Exclude the first exact ID.
+- Resolve both cards from the same public catalog snapshot. Label saved IDs outside that snapshot as unavailable.
+- Keep the saved list in the open picker only. Return no notes or saved statuses. Preserve only the first public slug through login.
+- Reuse the comparison dialog, diary, and account service. Selection does not save a wine or add a recognition-history event.
+- Record validation in `docs/f04-saved-comparison-2026-10-20.md`. Keep the original F04 acceptance report as historical evidence.
+
 ## 2026-10-20 — F04 result journey, issue #73
 
 - Add strict alternatives from another confirmed producer. Use a server-only snapshot from the existing MCP catalog loader. Preserve exact source IDs and verified aliases. Apply hard filters before ranking.

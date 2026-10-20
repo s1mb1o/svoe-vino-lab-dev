@@ -1,4 +1,5 @@
 import type { AccountErrorBody } from '#shared/account'
+import type { SavedComparisonAnswer } from '#shared/alternatives'
 import type { HistoryItem, HistoryRecordStatus, HistorySource, SavedItem, SavedSource, SavedStatus } from '#shared/diary'
 
 export interface AccountIdentity { provider: string; linked_at?: string; email?: string }
@@ -71,6 +72,7 @@ export function useAccountApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
     setSaveHistory: (saveHistory: boolean) => request<{ user: AccountUser }>('PATCH', '/api/account/me', { saveHistory }),
     saved: () => request<{ items: SavedItem[] }>('GET', '/api/account/saved'),
     savedSlugs: () => request<{ items: Array<{ slug: string; status: SavedStatus }> }>('GET', '/api/account/saved/slugs'),
+    savedComparison: (base: string) => request<SavedComparisonAnswer>('GET', `/api/account/saved/comparison?${new URLSearchParams({ base })}`),
     putSaved: (slug: string, status: SavedStatus, source: SavedSource, change = false, note?: string) =>
       request<SavedItem>('PUT', `/api/account/saved/${encodeURIComponent(slug)}`, { status, source, ...(change ? { change: true } : {}), ...(note === undefined ? {} : { note }) }),
     deleteSaved: (slug: string) => request<{ status: string }>('DELETE', `/api/account/saved/${encodeURIComponent(slug)}`),

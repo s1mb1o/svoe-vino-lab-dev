@@ -176,6 +176,7 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
 | `DELETE /api/account/history/[slug]/days/[day]` | `DELETE /v1/me/history/{slug}/days/{met_on}` | `{status: 'removed'}` |
 | `GET /api/account/saved` | `GET /v1/me/saved` | `{items: [SavedItem]}` |
 | `GET /api/account/saved/slugs` | `GET /v1/me/saved/slugs` | `{items: [{slug, status}]}` |
+| `GET /api/account/saved/comparison?base=<exact-id>` | `GET /v1/me/saved/slugs` | `{base, items: [{slug, wine}], version}`; public snapshot facts for up to 500 saved IDs, no notes or statuses; source ID excluded; unsupported candidate has `wine: null`; 404 `unknown_wine` for an unsupported source |
 | `PUT /api/account/saved/[slug]` | `PUT /v1/me/saved/{slug}` | `SavedItem` (with `note`); body `{status, source, change?, note?}` up to 12 KiB; note at most 2,000 characters, `''` clears it; 400 `invalid_note`, 409 `saved_full` |
 | `DELETE /api/account/saved/[slug]` | `DELETE /v1/me/saved/{slug}` | `{status: 'removed'}` |
 | `GET /api/app/v1/profile` | `GET /v1/app/profile` | Bearer application token; profile |

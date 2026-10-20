@@ -38,6 +38,11 @@ export function rankAlternatives(base: AlternativeWine, wines: readonly Alternat
 }
 
 export interface ComparisonPair { base: Wine; candidate: Wine; version: string }
+export interface SavedComparisonAnswer {
+  base: Wine
+  items: Array<{ slug: string; wine: Wine | null }>
+  version: string
+}
 export interface ComparisonRow { key: string; label: string; left: string; right: string; kind: 'shared' | 'different' | 'unknown' }
 export function compareWineFacts(left: Wine, right: Wine): ComparisonRow[] {
   if (left.slug === right.slug) throw new Error('Comparison requires distinct exact wine IDs')

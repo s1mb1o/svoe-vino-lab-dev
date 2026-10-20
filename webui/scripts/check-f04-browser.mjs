@@ -347,6 +347,16 @@ try {
     await safariFirst.getByRole('button', { name: 'Сравнить', exact: true }).click()
     await safariPage.locator('.f04-dialog[open]').waitFor()
     await safariPage.keyboard.press('Escape')
+    const savedWhiteSlug = 'mont-blanc-blanc-de-blancs'
+    const safariSaved = await safariContext.request.put(base + `/api/account/saved/${savedWhiteSlug}`, { headers: { Origin: base }, data: { status: 'liked', source: 'lineup' } })
+    assert.equal(safariSaved.status(), 200)
+    await safariPage.getByRole('button', { name: 'Сравнить с сохранённым', exact: true }).click()
+    await safariPage.getByRole('searchbox', { name: 'Поиск в сохранённых' }).fill('Mont Blanc')
+    await safariPage.locator('.f04-saved-options button').click()
+    assert.equal(await safariPage.locator('.f04-dialog[open] .f04-facts>div').count(), 8)
+    assert((await safariPage.locator('.f04-compare-cards').textContent()).includes(data.wines.find(wine => wine.slug === savedWhiteSlug).name))
+    await safariPage.keyboard.press('Escape')
+    report.checks.webkitSavedComparison = true
     await safariFirst.locator('.pin-button').click()
     await safariFirst.getByRole('button', { name: 'Сохранить копию на устройстве', exact: true }).click()
     await safariFirst.getByText('Доступно офлайн на этом устройстве.', { exact: true }).waitFor()
@@ -389,6 +399,115 @@ try {
   await restored.locator('.pin-button').last().click()
   await restored.getByText('Доступно офлайн на этом устройстве.', { exact: true }).waitFor()
   await signupPage.getByRole('button', { name: 'Закрыть сравнение', exact: true }).click()
+
+  // Use the actual saved list. This choice is independent of alternative ranking and saving.
+  const savedWhiteSlug = 'mont-blanc-blanc-de-blancs'
+  const savedWhite = data.wines.find(wine => wine.slug === savedWhiteSlug)
+  for (const slug of [fixtureSlug, savedWhiteSlug]) {
+    const saved = await signup.request.put(base + `/api/account/saved/${slug}`, { headers: { Origin: base }, data: { status: 'liked', source: 'lineup', note: 'Private saved comparison note' } })
+    assert.equal(saved.status(), 200)
+  }
+  // A retired exact ID stays visible with an explicit unavailable state.
+  const signupSession = (await signup.cookies(base)).find(cookie => cookie.name === '__Host-cv_session').value
+  const retired = await fetch(`http://127.0.0.1:${accountPort}/v1/me/saved/retired-comparison-wine`, { method: 'PUT', headers: { Authorization: 'Bearer f04-local-web-' + 'w'.repeat(40), 'X-Session-Token': signupSession, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'want', source: 'lineup' }) })
+  assert.equal(retired.status, 201)
+  await signupPage.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public.webp', mimeType: 'image/webp', buffer: photo })
+  await signupPage.locator('.history-note').waitFor()
+  const savedBefore = await signup.request.get(base + '/api/account/saved').then(r => r.json())
+  const historyBefore = await signup.request.get(base + '/api/account/history').then(r => r.json())
+  const requestsBeforeSaved = observedPhotoRequests
+  const savedEntry = signupPage.getByRole('button', { name: 'Сравнить с сохранённым', exact: true })
+  const savedDialog = signupPage.locator('.f04-dialog[open]')
+  await savedEntry.click()
+  await signupPage.getByRole('searchbox', { name: 'Поиск в сохранённых' }).waitFor()
+  assert.equal(await savedDialog.locator('.f04-saved-options li').count(), 3)
+  await savedDialog.getByText('Этого вина нет в снимке каталога. Сравнение пока недоступно.', { exact: true }).waitFor()
+  const savedAnswer = await signup.request.get(base + `/api/account/saved/comparison?base=${fixtureSlug}`).then(r => r.json())
+  assert(!savedAnswer.items.some(item => item.slug === fixtureSlug))
+  assert(!JSON.stringify(savedAnswer).includes('Private saved comparison note'))
+  for (const theme of ['light', 'dark']) {
+    await signupPage.emulateMedia({ colorScheme: theme })
+    await until(async () => await signupPage.locator('html').getAttribute('data-theme') === theme, `Saved picker ${theme} theme`)
+    for (const width of [320, 390, 1280]) {
+      await signupPage.setViewportSize({ width, height: 844 })
+      assert(await savedDialog.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'Saved picker overflows horizontally')
+    }
+    await signupPage.setViewportSize({ width: 390, height: 844 })
+    await savedDialog.screenshot({ path: resolve(dir, `saved-picker-${theme}-mobile.png`) })
+  }
+  const savedSearch = signupPage.getByRole('searchbox', { name: 'Поиск в сохранённых' })
+  await savedSearch.fill('no matching saved name')
+  await savedDialog.getByText('Ничего не найдено. Измените поиск.', { exact: true }).waitFor()
+  await savedSearch.fill('Mont Blanc')
+  await savedDialog.getByRole('button', { name: `Сравнить с «${savedWhite.name}»`, exact: true }).click()
+  assert.equal(await savedDialog.locator('.f04-facts>div').count(), 8)
+  assert.deepEqual(await savedDialog.locator('.f04-compare-cards h3').allTextContents(), [fixtureWine.name, savedWhite.name])
+  await savedDialog.getByRole('button', { name: 'Выбрать из сохранённых', exact: true }).click()
+  await savedSearch.waitFor()
+  await savedDialog.getByRole('button', { name: 'Вернуться к сравнению', exact: true }).click()
+  assert.deepEqual(await savedDialog.locator('.f04-compare-cards h3').allTextContents(), [fixtureWine.name, savedWhite.name])
+  await savedDialog.screenshot({ path: resolve(dir, 'saved-comparison-dark-mobile.png') })
+  await savedDialog.getByRole('button', { name: 'Выбрать из сохранённых', exact: true }).click()
+  await savedSearch.waitFor()
+  await savedDialog.getByRole('button', { name: `Сравнить с «${name}»`, exact: true }).click()
+  assert.deepEqual(await savedDialog.locator('.f04-compare-cards h3').allTextContents(), [fixtureWine.name, name])
+  await signupPage.keyboard.press('Escape')
+  await until(() => savedEntry.evaluate(el => document.activeElement === el), 'Saved comparison returns original focus')
+  await savedEntry.click()
+  await savedSearch.waitFor()
+  await signupPage.goBack()
+  await until(async () => !(await savedDialog.count()), 'Back closes saved picker')
+  await signupPage.route('**/api/account/saved/comparison?*', route => route.fulfill({ status: 503, json: { error: 'account_unavailable' } }))
+  await savedEntry.click()
+  await savedDialog.getByRole('alert').waitFor()
+  await signupPage.unroute('**/api/account/saved/comparison?*')
+  await savedDialog.getByRole('button', { name: 'Повторить', exact: true }).click()
+  await savedSearch.waitFor()
+  await signupPage.keyboard.press('Escape')
+  await signupPage.route('**/api/account/saved/comparison?*', route => route.fulfill({ json: { ...savedAnswer, items: [] } }))
+  await savedEntry.click()
+  await savedDialog.getByText('В сохранённых пока нет другого вина. Сохраните вино значком булавки в его карточке.', { exact: true }).waitFor()
+  await signupPage.keyboard.press('Escape')
+  await signupPage.unroute('**/api/account/saved/comparison?*')
+  assert.deepEqual(await signup.request.get(base + '/api/account/saved').then(r => r.json()), savedBefore)
+  assert.deepEqual(await signup.request.get(base + '/api/account/history').then(r => r.json()), historyBefore)
+  assert.equal(observedPhotoRequests, requestsBeforeSaved, 'Saved picker must not repeat recognition')
+  report.checks.savedComparison = { savedExactChoice: true, otherStylesAndSameProducerAllowed: true, sourceExcluded: true, retiredWineExplicit: true, privateNotesExcluded: true, search: true, cancelPreservesPair: true, back: true, escape: true, focusReturn: true, bothThemes: true, widths: [320, 390, 1280], retry: true, empty: true, savedAndHistoryUnchanged: true, noExtraRecognition: true }
+
+  // An anonymous picker preserves only the first public slug across the normal email login.
+  const pickerLogin = await browser.newContext({ serviceWorkers: 'block', ignoreHTTPSErrors: true })
+  await pickerLogin.addInitScript(() => localStorage.setItem('svoe-vino.age-confirmed.v1', 'yes'))
+  await pickerLogin.route('https://**', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort())
+  const pickerLoginPage = await pickerLogin.newPage()
+  await pickerLoginPage.goto(base, { waitUntil: 'networkidle' })
+  await pickerLoginPage.locator('input[aria-label="Выбрать фотографию этикетки"]').setInputFiles({ name: 'public.webp', mimeType: 'image/webp', buffer: photo })
+  await pickerLoginPage.getByRole('button', { name: 'Сравнить с сохранённым', exact: true }).click()
+  await pickerLoginPage.locator('.f04-dialog[open]').getByRole('link', { name: 'Войти', exact: true }).click()
+  await pickerLoginPage.locator('#account-email').fill('f04-b@example.invalid')
+  async function startPickerLogin() {
+    const pending = pickerLoginPage.waitForResponse(response => response.url() === base + '/api/account/email/start' && response.request().method() === 'POST')
+    await pickerLoginPage.getByRole('button', { name: 'Получить код', exact: true }).click()
+    return pending
+  }
+  let pickerStart = await startPickerLogin()
+  if (pickerStart.status() === 429) {
+    const limit = await pickerStart.json()
+    assert(Number.isInteger(limit.retryAfter) && limit.retryAfter >= 0 && limit.retryAfter <= 60)
+    // Respect the actual email cooldown. Do not weaken authentication for this browser check.
+    for (let second = 0; second <= limit.retryAfter; second++) await sleep(1000)
+    pickerStart = await startPickerLogin()
+  }
+  assert.equal(pickerStart.status(), 200)
+  const pickerCode = await until(async () => JSON.parse(await readFile(resolve(accountDir, 'outbox.json')))['f04-b@example.invalid'], 'picker email challenge')
+  await pickerLoginPage.locator('#account-code').fill(pickerCode)
+  await pickerLoginPage.getByRole('button', { name: 'Войти', exact: true }).click()
+  await pickerLoginPage.getByRole('button', { name: 'Продолжить сравнение', exact: true }).click()
+  await pickerLoginPage.getByRole('searchbox', { name: 'Поиск в сохранённых' }).waitFor()
+  assert.equal(await pickerLoginPage.locator('.match-badge').count(), 0)
+  assert.equal(await pickerLoginPage.locator('.f04-saved-options li').count(), 2)
+  report.checks.savedPickerLoginReturn = true
+  await pickerLogin.close()
+
   const otherTab = await signup.newPage()
   await otherTab.goto(base, { waitUntil: 'networkidle' })
   await otherTab.locator('.f04-local-list li').first().waitFor()

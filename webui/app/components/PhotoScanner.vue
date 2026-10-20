@@ -29,6 +29,7 @@ function dropped(event: DragEvent) {
 // «Винный дневник» (plan 07): a logged-in person's match goes to the history, in the background.
 // The result never waits for the diary. A demo result is not the person's wine.
 const diary = useDiary()
+const comparison = useWineComparison()
 const historyRecord = ref<HistoryRecord | null>(null)
 const historyBusy = ref(false)
 const historyNote = computed(() => {
@@ -114,6 +115,7 @@ useScannerTools(scanner)
       </section>
     </div>
     <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span><NuxtLink to="/privacy#site">Фото хранится 30 дней</NuxtLink></span></div>
+    <div v-if="hasResult && !mock && slug" class="f04-saved-entry"><button class="button secondary" @click="comparison.openSaved(slug, $event.currentTarget as HTMLElement)">Сравнить с сохранённым</button></div>
     <WineAlternatives v-if="hasResult && !mock && slug" :key="`alternatives-${slug}`" :slug="slug" />
     <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" :recognized="!mock" />
   </section>

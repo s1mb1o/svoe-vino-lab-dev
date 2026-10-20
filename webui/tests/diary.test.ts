@@ -5,7 +5,7 @@ import type { Wine } from '../shared/catalog'
 import { accountConfig, maxHostDecision, type AccountConfigSource } from '../server/utils/account'
 import {
   historyClearRoute, historyDeleteDayRoute, historyDeleteWineRoute, historyItemRoute, historyListRoute, historyRecordRoute,
-  savedDeleteRoute, savedListRoute, savedPutRoute, savedSlugsRoute, settingsRoute, type WineLookup,
+  savedComparisonRoute, savedDeleteRoute, savedListRoute, savedPutRoute, savedSlugsRoute, settingsRoute, type WineLookup,
 } from '../server/utils/diary'
 import { colorKey, diarySnapshot, matchesFilter, sugarKey, wineStyleLine } from '../shared/diary'
 
@@ -60,6 +60,7 @@ beforeAll(async () => {
     '/api/account/me': event => settingsRoute(event, source),
     '/api/account/saved': event => savedListRoute(event, source),
     '/api/account/saved/slugs': event => savedSlugsRoute(event, source),
+    '/api/account/saved/comparison': event => savedComparisonRoute(event, source),
     [`/api/account/saved/${SLUG}`]: event => event.method === 'DELETE' ? savedDeleteRoute(event, source, SLUG) : savedPutRoute(event, source, SLUG, { lookup: counted }),
   }
   const router = createRouter()
@@ -208,6 +209,48 @@ describe('diary history routes', () => {
 })
 
 describe('saved wine routes', () => {
+  it('compares with saved exact IDs without alternative filters or private fields', async () => {
+    const base = 'cantiani-cabernet-sauvignon'
+    const candidate = 'mont-blanc-blanc-de-blancs'
+    reply = () => ({ status: 200, body: { items: [
+      { slug: base, status: 'liked' },
+      { slug: candidate, status: 'want', note: 'private note', wine: { name: 'forged' } },
+      { slug: candidate, status: 'want' },
+      { slug: 'no-longer-in-snapshot', status: 'liked' },
+      { slug: '../me', status: 'liked' },
+      { slug: 'invalid-status', status: 'bad' },
+    ] } })
+    const response = await call(`/api/account/saved/comparison?base=${base}`)
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    const result = await response.json()
+    expect(result.base.slug).toBe(base)
+    expect(result.items.map((item: { slug: string }) => item.slug)).toEqual([candidate, 'no-longer-in-snapshot'])
+    expect(result.items[0].wine).toMatchObject({ slug: candidate, producer: result.base.producer, sweetness: 'brut', color: 'Белое' })
+    expect(result.items[1].wine).toBe(null)
+    expect(result.version).toMatch(/^[a-f0-9]{64}$/)
+    expect(JSON.stringify(result)).not.toMatch(/private note|forged|"note"|"status"/)
+    expect(seen).toHaveLength(1)
+    expect(seen[0]).toMatchObject({ method: 'GET', url: '/v1/me/saved/slugs' })
+    expect(lookups).toEqual([])
+  })
+
+  it('requires a current session and validates the comparison query', async () => {
+    const path = '/api/account/saved/comparison?base=cantiani-cabernet-sauvignon'
+    expect((await call(path, { cookie: null })).status).toBe(401)
+    for (const query of ['', '?base=../me', '?base=x&base=y', '?base=x&other=y']) {
+      expect((await call(`/api/account/saved/comparison${query}`)).status).toBe(400)
+    }
+    expect(seen).toEqual([])
+    reply = () => ({ status: 401, body: { error: 'session_invalid' } })
+    expect((await call(path)).status).toBe(401)
+    reply = () => ({ status: 200, body: { items: [] } })
+    const unknown = await call('/api/account/saved/comparison?base=unknown-wine')
+    expect(unknown.status).toBe(404)
+    expect(await unknown.json()).toEqual({ error: 'unknown_wine' })
+    expect((await (await call(path)).json()).items).toEqual([])
+  })
+
   it('lists the saved wines and the pin states', async () => {
     reply = request => request.url === '/v1/me/saved/slugs'
       ? { status: 200, body: { items: [{ slug: SLUG, status: 'liked' }, { slug: 'x', status: 'bad' }] } }

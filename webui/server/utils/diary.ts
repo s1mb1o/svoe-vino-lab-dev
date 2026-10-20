@@ -1,10 +1,10 @@
 // Server side of the «Винный дневник» lists: the history of found wines and the saved wines.
 // Plan: docs/plans/07_diary-history-and-saved.md. The rules of /api/account/* apply
 // (docs/account.md): Origin on writes, no-store, a 2 s timeout, no retry.
-import type { H3Event } from 'h3'
+import { getQuery, type H3Event } from 'h3'
 import type { Wine } from '#shared/catalog'
-import { alternativeWine } from './alternative-catalog'
-import { ALTERNATIVE_SUGAR } from '#shared/alternatives'
+import { alternativeVersion, alternativeWine } from './alternative-catalog'
+import { ALTERNATIVE_SUGAR, publicWine, type SavedComparisonAnswer } from '#shared/alternatives'
 import {
   DIARY_DAY_PATTERN, DIARY_SLUG_PATTERN, SAVED_NOTE_MAX, SITE_HISTORY_SOURCES, diarySnapshot, isSavedSource, isSavedStatus, normalizeNote,
   type DiaryWine, type HistoryDay, type HistoryItem, type SavedItem,
@@ -201,6 +201,31 @@ export function savedSlugsRoute(event: H3Event, source: AccountConfigSource) {
         .filter(item => typeof item.slug === 'string' && isSavedStatus(item.status))
         .map(item => ({ slug: item.slug as string, status: item.status })),
     }
+  })
+}
+
+/** Resolves the current account's saved IDs against one public comparison snapshot. */
+export function savedComparisonRoute(event: H3Event, source: AccountConfigSource) {
+  return accountJson(event, source, async config => {
+    const session = sessionOf(event)
+    const query = getQuery(event)
+    if (Object.keys(query).some(key => key !== 'base') || typeof query.base !== 'string' || !DIARY_SLUG_PATTERN.test(query.base)) {
+      throw new AccountHttpError(400, 'invalid_request')
+    }
+    const { data } = await callAccount<{ items?: Array<{ slug?: string; status?: string }> }>(config, 'GET', '/v1/me/saved/slugs', {
+      session, maxBytes: LIST_RESPONSE_BYTES,
+    })
+    const base = alternativeWine(query.base)
+    if (!base) throw new AccountHttpError(404, 'unknown_wine')
+    const slugs = [...new Set((data.items ?? [])
+      .filter(item => typeof item.slug === 'string' && DIARY_SLUG_PATTERN.test(item.slug) && isSavedStatus(item.status))
+      .map(item => item.slug as string))].slice(0, 500)
+    return {
+      base: publicWine(base)!,
+      // The exact source cannot be its own second wine. Other producers and styles are allowed.
+      items: slugs.filter(slug => slug !== base.slug).map(slug => ({ slug, wine: publicWine(alternativeWine(slug)) })),
+      version: alternativeVersion,
+    } satisfies SavedComparisonAnswer
   })
 }
 
