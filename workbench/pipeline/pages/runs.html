@@ -2479,6 +2479,16 @@ scheduleRunProgress(0);
   const cut = hash.indexOf("/");                 // `#<run>/<slug>/<file>` opens the popup
   const want = cut < 0 ? hash : hash.slice(0, cut);
   const photo = cut < 0 ? "" : hash.slice(cut + 1);
+  // A link of Charts or Compare names its run. When a stored filter hides that run, clear
+  // the filter, so that the page opens the named run and not another one.
+  const linked = RUNS.find(r => r.id === want);
+  if (linked && !(inConfig(linked) && inSet(linked))) {
+    if (!inConfig(linked)) CONF = "";
+    if (!inSet(linked)) TSET = "";
+    renderConfigs();
+    renderSets();
+    saveHeader();
+  }
   const shown = visibleRuns();
   const first = shown.find(r => r.id === want) ||
                 shown.find(r => r.has_metrics && !r.dry_run) || shown[0];

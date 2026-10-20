@@ -2,6 +2,12 @@
 
 ## 2026-10-20
 
+- Fixed the links into `/runs` (`Open run` and the bars of `/runs/charts`, `Inspect steps` of
+  `/runs/compare`). When the stored filter `Pipeline` or `Testset` of `/runs` hid the linked
+  run, the page opened another run, rewrote the hash, and opened no step popup. The page now
+  clears the filter that hides the linked run and stores the header. Found by the workbench
+  test of 2026-10-20.
+
 - Fixed `Export expected.jsonl` of `/runs` (`GET /api/run-expected`). It answered HTTP 409
   "truth MUST be a list with at most one slug" for each run made after the manual accepted
   answers of 2026-10-14: an image with more positive assignments in one test set has more
