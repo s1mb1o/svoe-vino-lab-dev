@@ -3,6 +3,8 @@
 // (docs/account.md): Origin on writes, no-store, a 2 s timeout, no retry.
 import type { H3Event } from 'h3'
 import type { Wine } from '#shared/catalog'
+import { alternativeWine } from './alternative-catalog'
+import { ALTERNATIVE_SUGAR } from '#shared/alternatives'
 import {
   DIARY_DAY_PATTERN, DIARY_SLUG_PATTERN, SAVED_NOTE_MAX, SITE_HISTORY_SOURCES, diarySnapshot, isSavedSource, isSavedStatus, normalizeNote,
   type DiaryWine, type HistoryDay, type HistoryItem, type SavedItem,
@@ -22,7 +24,11 @@ export type WineLookup = (slug: string) => Promise<Wine | null>
 
 export const defaultWineLookup: WineLookup = async slug => {
   const local = (wines as Wine[]).find(wine => wine.slug === slug)
-  return local ?? fetchSourceWine(slug)
+  if (local) return local
+  const pinned = alternativeWine(slug)
+  // The existing diary stores sweetness in sugar, through Wine.category.
+  if (pinned) return { ...pinned, category: ALTERNATIVE_SUGAR[pinned.sweetness || ''] || pinned.category }
+  return fetchSourceWine(slug)
 }
 
 /**

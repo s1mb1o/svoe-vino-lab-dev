@@ -6,9 +6,14 @@ import { SAVED_STATUSES, SAVED_STATUS_LABELS, type SavedSource, type SavedStatus
 import { accountErrorMessage } from '#shared/account'
 import { AccountRequestError } from '~/composables/useAccountApi'
 import { useDiary } from '~/composables/useDiary'
+import type { Wine } from '#shared/catalog'
+import type { ComparisonPair } from '#shared/alternatives'
 
-const props = defineProps<{ slug: string; source: SavedSource; wineName?: string }>()
+const props = defineProps<{ slug: string; source: SavedSource; wineName?: string; offlineCard?: { wine: Wine; version: string }; returnPair?: ComparisonPair }>()
 const diary = useDiary()
+const offline = useOfflineCards()
+const comparison = useWineComparison()
+const offlineNote = ref('')
 const route = useRoute()
 const open = ref(false)
 const busy = ref(false)
@@ -62,6 +67,7 @@ async function toggle() {
     error.value = ''
     try {
       await diary.save(props.slug, props.source)
+      await saveOffline()
     } catch (reason) {
       error.value = failure(reason)
     } finally {
@@ -69,6 +75,22 @@ async function toggle() {
     }
   }
   await show()
+}
+
+async function saveOffline() {
+  if (!props.offlineCard) return
+  try {
+    await offline.save(props.offlineCard.wine, props.offlineCard.version)
+    offlineNote.value = 'Доступно офлайн на этом устройстве.'
+  } catch {
+    offlineNote.value = 'Сохранено в дневнике. Копия для офлайн-открытия недоступна.'
+  }
+}
+
+async function retryOffline() {
+  if (busy.value) return
+  busy.value = true
+  try { await saveOffline() } finally { busy.value = false }
 }
 
 async function choose(next: SavedStatus) {
@@ -81,6 +103,7 @@ async function choose(next: SavedStatus) {
   error.value = ''
   try {
     await diary.save(props.slug, props.source, next)
+    await saveOffline()
   } catch (reason) {
     error.value = failure(reason)
     radioKey.value++
@@ -124,7 +147,7 @@ async function remove() {
     <div v-if="open" :id="panelId" ref="panel" class="pin-panel" role="dialog" tabindex="-1" :aria-label="status ? 'Сохранённое вино' : 'Сохранить вино'">
       <template v-if="diary.state.value === 'out'">
         <p>Сохранять вина можно в «Винном дневнике».</p>
-        <NuxtLink class="button primary pin-login" :to="loginHref">Войти</NuxtLink>
+        <NuxtLink class="button primary pin-login" :to="loginHref" @click="comparison.remember(returnPair)">Войти</NuxtLink>
       </template>
       <template v-else>
         <p class="pin-panel-title">{{ status ? 'Сохранено в дневнике' : 'Не сохранено' }}</p>
@@ -141,6 +164,8 @@ async function remove() {
         </div>
       </template>
       <p v-if="error" class="pin-error" role="alert">{{ error }}</p>
+      <p v-if="offlineNote" role="status">{{ offlineNote }}</p>
+      <button v-if="status && offlineCard" class="text-button" :disabled="busy" @click="retryOffline">Сохранить копию на устройстве</button>
     </div>
   </div>
 </template>

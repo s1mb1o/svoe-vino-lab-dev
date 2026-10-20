@@ -35,6 +35,8 @@ onBeforeUnmount(() => modeTools?.abort())
     <LazyDinnerScanner v-else-if="mode === 'dish'" :available="config?.dinnerAvailable === true" />
     <ShelfScanner v-else-if="config?.shelfAvailable" />
     <ShelfUnavailable v-else @choose-bottle="chooseBottle" />
+    <OfflineWineCards v-if="mode === 'bottle'" />
+    <WineComparison v-if="mode === 'bottle'" />
     <section v-if="mode === 'bottle'" class="photo-tips" aria-label="Как сделать хороший снимок">
       <div><span class="tip-number">01</span><p><strong>Этикетка целиком</strong><span>Снимайте бутылку спереди</span></p></div>
       <div><span class="tip-number">02</span><p><strong>Мягкий свет</strong><span>Без бликов и размытия</span></p></div>

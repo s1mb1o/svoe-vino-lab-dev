@@ -19,6 +19,22 @@
 2. Confirm that the link to the current page has `aria-current="page"`.
 3. At 320 px, confirm that each link is on its own row with no horizontal overflow.
 
+## F04 alternatives, comparison, save, and offline reopening
+
+1. Use the selected upstream build. Upload a permitted real bottle image. Confirm one exact result.
+2. Open «Найти альтернативы». Confirm another known producer and a sourced common grape.
+3. Change each hard filter. Confirm valid results or an explicit empty state. Do not relax the producer rule.
+4. Compare two exact cards. Check eight factual fields, unknowns, Back, Escape, and focus return.
+5. Save the candidate with the existing pin. Confirm one server row and no additional recognition-history row.
+6. Change its status and private note in the diary. Reload and confirm both values.
+7. Confirm «Доступно офлайн» only after a local commit. Fail local storage and confirm that server save success remains separate.
+8. Warm the public shell online. Restart offline. Open the public device copy. Confirm the placeholder, source date, and network-dependent links.
+9. Check the 50-copy bound, eviction, denied storage, quota failure, saved-list full, and expired session.
+10. Check logout, deletion, two accounts, another tab, and a delayed write. Prior-account copies must not return.
+11. Check login continuation without a saved photo or automatic save.
+12. Test physical iPhone Safari and Android Chrome. Check native camera/gallery selection, screen readers, 320 px, 200% text, both themes, and focus.
+13. Keep test fixtures, actual matcher requests, browser-engine checks, and physical-phone results separate.
+
 ## «Винный дневник»: history and saved wines
 
 1. Log in on `/account`. Confirm the tabs «Сохранённые» (open), «История», «Настройки» and that

@@ -5,6 +5,61 @@
   font-weight: 400 900;
   font-display: swap;
 }
+/* F04: shared result actions and public device snapshots. All colors follow the portal theme. */
+.f04-alternatives, .f04-device-cards, .f04-resume { margin: 24px 0; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); color: var(--ink); }
+.f04-alternatives h2, .f04-device-cards h2 { font-size: 26px; margin-bottom: 10px; }
+.f04-alternatives p, .f04-device-cards p, .f04-dialog p { line-height: 1.55; }
+.f04-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.f04-section-head>div { flex: 1; min-width: 220px; }
+.f04-filters { display: flex; flex-wrap: wrap; gap: 14px; margin: 20px 0; }
+.f04-filters label { display: grid; gap: 8px; flex: 1; min-width: 180px; font-size: 14px; }
+.f04-filters select { color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; width: 100%; min-height: 44px; font: inherit; }
+.f04-results { display: grid; gap: 16px; list-style: none; padding: 0; margin: 20px 0; }
+.f04-results>li { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; padding: 18px; background: var(--cream); border-radius: 14px; }
+.f04-results>li>img, .f04-results>li>.wine-image-placeholder { width: 80px; height: 130px; object-fit: contain; }
+.f04-results h3 { margin: 0 0 10px; font-size: 19px; }
+.f04-results ul { padding-left: 18px; line-height: 1.6; font-size: 14px; }
+.f04-results p { font-size: 14px; }
+.f04-results>li, .f04-compare-cards { position: relative; }
+.f04-actions .pin, .f04-compare-cards .pin { position: static; }
+.f04-actions .pin-panel, .f04-compare-cards .pin-panel { left: 8px; right: 8px; top: calc(100% + 4px); width: auto; }
+.f04-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.f04-actions a, .f04-compare-cards a, .f04-stored-card a { text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; }
+.f04-offline-ready { color: var(--ink); margin-top: 12px; }
+.f04-version { font-size: 12px; overflow-wrap: anywhere; margin-top: 16px; }
+.f04-version summary { cursor: pointer; min-height: 44px; padding: 12px 0; }
+.f04-version summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.f04-dialog { width: min(850px, calc(100% - 24px)); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
+.f04-dialog::backdrop { background: #0009; }
+.f04-dialog-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+.f04-dialog-head h2 { font-size: 27px; }
+.f04-dialog-head button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
+.f04-compare-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 20px 0; }
+.f04-compare-cards article { min-width: 0; padding: 14px; background: var(--cream); border-radius: 12px; }
+.f04-compare-cards h3 { margin: 0 0 8px; font-size: 17px; }
+.f04-compare-cards code { display: block; overflow-wrap: anywhere; font-size: 11px; margin-bottom: 12px; }
+.f04-compare-cards a { font-size: 12px; }
+.f04-facts { margin: 16px 0; }
+.f04-facts>div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; padding: 12px 0; border-top: 1px solid var(--line); }
+.f04-facts dt { grid-column: 1 / -1; font-weight: 600; }
+.f04-facts dt small { font-weight: 400; margin-left: 10px; }
+.f04-facts dd { margin: 0; overflow-wrap: anywhere; line-height: 1.5; }
+.f04-local-list { padding: 0; list-style: none; display: grid; gap: 14px; margin: 20px 0; }
+.f04-local-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.f04-local-list .button { text-align: left; }
+.f04-stored-card { background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.f04-stored-card h3 { font-size: 21px; }
+.f04-stored-card p { margin: 10px 0; }
+.f04-offline-image { width: 60px; height: 100px; float: right; margin: 0 0 12px 12px; }
+@media (max-width: 480px) {
+  .f04-alternatives, .f04-device-cards { padding: 16px; }
+  .f04-results>li { grid-template-columns: 50px minmax(0, 1fr); gap: 12px; padding: 12px; }
+  .f04-results>li>img, .f04-results>li>.wine-image-placeholder { width: 50px; height: 100px; }
+  .f04-actions { margin-left: -62px; }
+  .f04-dialog { padding: 16px; }
+  .f04-compare-cards { gap: 8px; }
+  .f04-compare-cards article { padding: 10px; }
+}
 :root {
   color-scheme: light;
   --ink: #2c2a28;

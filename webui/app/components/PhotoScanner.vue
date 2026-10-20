@@ -114,6 +114,7 @@ useScannerTools(scanner)
       </section>
     </div>
     <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span><NuxtLink to="/privacy#site">Фото хранится 30 дней</NuxtLink></span></div>
+    <WineAlternatives v-if="hasResult && !mock && slug" :key="`alternatives-${slug}`" :slug="slug" />
     <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" :recognized="!mock" />
   </section>
 </template>

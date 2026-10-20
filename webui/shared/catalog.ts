@@ -6,6 +6,7 @@ export interface Wine {
   grapes: string[]
   color: string
   category: string
+  sweetness?: string | null
   rating: number
   image: string
   alcohol: string | null

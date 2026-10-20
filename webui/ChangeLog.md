@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — F04 result journey, issue #73
+
+- Add strict alternatives from another confirmed producer. Use a server-only snapshot from the existing MCP catalog loader. Preserve exact source IDs and verified aliases. Apply hard filters before ranking.
+- Add factual comparison with eight fields, explicit unknowns, Back, Escape, focus return, mobile layouts, and both themes.
+- Reuse `PinButton`, `useDiary`, the existing saved statuses, and private notes. Save the selected candidate without adding a recognition-history event. Resolve known candidate metadata from the pinned snapshot.
+- Add at most 50 public device copies in IndexedDB. Keep notes, photos, account responses, and tokens outside the store. Invalidate pending writes on account reset. Separate server success from local failure.
+- Preserve the public comparison pair through login. Require an explicit save after return.
+- Add source, anchor, failure, browser, and physical Android checks. Read `docs/f04-acceptance-2026-10-20.md` for evidence and remaining release gates. No deployment or main merge is included.
+
 ## 2026-10-20 — Bottle preview on `/dish`; Android link in the footer
 
 - Owner request: a click on the bottle image of a Dinner Lens card opens a popup with the large

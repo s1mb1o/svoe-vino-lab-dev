@@ -113,3 +113,13 @@ Do not use `:global([data-theme='dark']) .component-class`.
 In the current compiler, that form can reduce the selector to the root element and change the whole portal.
 Check rendered backgrounds and text contrast in both themes.
 A `data-theme` attribute check alone is not sufficient.
+
+## F04 result journey
+
+Read `docs/f04-result-journey.md` and `docs/plans/06_f04-result-journey.md`.
+Reuse `PinButton` and `useDiary`. Do not add another online collection store.
+Keep `server/data/alternative-catalog.json` server-only.
+Run `npm run alternatives:check` after catalog or producer-map changes.
+Keep public device copies separate from private account responses and notes.
+Run `npm run test:f04` on the final build with the documented disposable services.
+Keep browser fixtures, real matcher smoke tests, and physical-device acceptance separate.

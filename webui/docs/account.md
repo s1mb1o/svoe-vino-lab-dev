@@ -209,3 +209,17 @@ Accepted, with the reason:
 - `/terms` and `/privacy` do not exist yet (#37). They MUST exist before people other than the
   owner sign up.
 - The public route: the web server reaches the gx10 service through a reverse SSH tunnel.
+
+## F04 diary reuse, 2026-10-20
+
+Alternative and comparison cards use the existing `PinButton`, `useDiary`, saved API, and statuses.
+The saved candidate has its own exact slug and the initiating `photo` source.
+Saving it does not create a recognition-history event.
+The server can resolve accepted candidates from the same pinned catalog.
+The adapter supplies known sweetness through the existing diary snapshot contract.
+The client verifies the current account before it activates a device-copy owner.
+Account reset, deletion, or logout clears the separate public-card cache.
+Generation checks reject stale save results after an account change.
+A 401 write response clears stale state and exposes the existing login offer.
+The cache does not contain the account response, statuses, private notes, or credentials.
+Read [the F04 storage and acceptance contract](f04-result-journey.md).

@@ -109,3 +109,19 @@ An empty `bottles` array is a valid result.
 Selecting a bottle does not send another prediction request.
 The route returns 400 for an invalid upload, 503 for missing configuration, 502 for invalid matcher output, and 504 for timeout.
 Responses use `Cache-Control: no-store`.
+
+## Strict alternatives
+
+`GET /api/recommendations/alternatives` accepts `slug` and optional `color`, `sweetness`, and `sparkle`.
+`slug` is an exact Active ID of the pinned catalog.
+`color` uses the Russian labels in `ALTERNATIVE_COLORS`.
+`sweetness` uses the keys in `ALTERNATIVE_SUGAR`.
+`sparkle` is `still` or `sparkling`.
+Unknown query keys, repeated values, and unsupported filters return HTTP 400.
+An absent exact ID returns HTTP 404.
+Success returns `base`, up to five `results`, `version`, and `explanation`.
+Each result contains a public card, supported `reasons`, and explicit `missing` facts.
+Success uses `Cache-Control: no-store`.
+Producer exclusion and explicit filters run before ranking.
+An empty result keeps the constraints.
+Read [the F04 contract](f04-result-journey.md) for comparison and offline storage.

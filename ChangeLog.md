@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — F04 Web result journey, issue #73
+
+- Implement strict cross-producer alternatives, factual comparison, existing diary saves, login return, and bounded public offline cards in `webui/`.
+- Base the separate `codex/issue-73-f04` branch on current main `a30827d6`. Keep the protected validation checkout unchanged.
+- Add source checks, twenty-anchor coverage, failure checks, Chromium/WebKit acceptance, and a physical Pixel 8 journey with the running matcher. Read `webui/docs/f04-acceptance-2026-10-20.md` for limits and remaining human acceptance. No backend migration, main merge, or deployment is included.
+
 The change log of the repository. A project folder can have its own `ChangeLog.md`, for example
 `telegram-bot/`, `max-bot/`, and `im-core/`.
 

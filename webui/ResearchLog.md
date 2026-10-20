@@ -1,5 +1,26 @@
 # Research log
 
+## 2026-10-20 — F04 identities, persistence, and acceptance
+
+The existing diary already stores saved statuses and private notes. F04 reuses that backend.
+`SavedSource` has no `alternatives` value. This photo-result journey uses `photo`.
+Saving a candidate must not record another recognized photo.
+The existing MCP loader provides the checked Active IDs and comparison semantics.
+A server-only generated asset removes runtime dependence on MCP, source exports, and model files.
+Exact map aliases provide producer identities. A slug prefix cannot prove identity.
+Missing still/sparkling data stays unknown. The filter cannot infer still wine.
+The selected twenty-anchor manifest yields eighteen strict results and two explained empty results.
+A same-transaction owner/epoch check prevents delayed writes from restoring a cleared device cache.
+An IndexedDB quota exception can occur inside an asynchronous success callback. Catch that exception and abort the transaction before reporting a result.
+The existing `__Host-` cookie contract requires a secure context in tests. Desktop checks use a disposable local TLS proxy. The physical Pixel 8 check uses Chrome's localhost secure context.
+Memory-mail code verification with `ACCOUNT_TEST_CODE` disabled does not establish real SMTP delivery.
+WebKit automation does not establish physical iPhone acceptance.
+Read `docs/f04-acceptance-2026-10-20.md` for source identity, commands, test boundaries, and human gates.
+
+Decision: reuse the existing catalog and diary. Add only a bounded public-card cache.
+Alternative: merge the complete legacy PWA. Rejected because that would restore an independent online collection and unrelated paths.
+Consequence: public cards can open offline after warm-up. Notes, status mutations, new recognition, and source links still require the network.
+
 ## 2026-10-20 — Android artifact identity
 
 - The release APK uses `com.alolalab.chtozavino`, not the old reverse-order ID.

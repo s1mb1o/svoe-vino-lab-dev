@@ -5,6 +5,13 @@ The UI uses the visual identity of [Свое Вино](https://vino-svoe.ru/).
 The home page is «Найти вино по фото». It does not reproduce the catalog UX.
 The current release uses a mock prediction service and local result metadata.
 
+## Alternatives and offline cards
+
+A real photo result can open strict alternatives from another producer, factual comparison, and the existing diary save control.
+An explicit save can keep a bounded public-card copy for offline reopening on this device.
+Read [the F04 contract and checks](docs/f04-result-journey.md).
+Source integration does not establish current deployment or physical-device acceptance.
+
 ## Wine Crocodile
 
 The physical card-game landing is at `/crocodile`. Open it from `/ideas`.
@@ -373,3 +380,5 @@ npm run dev -- --port 18553
 
 The local review process can use the configured upstream matcher through `NUXT_PREDICTION_MODE` and `NUXT_PREDICTION_ENDPOINT`.
 The product-line preview does not require the matcher.
+
+F04 verification evidence: [20 October acceptance report](docs/f04-acceptance-2026-10-20.md).
