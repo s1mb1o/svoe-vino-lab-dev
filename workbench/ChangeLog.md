@@ -2,6 +2,13 @@
 
 ## 2026-10-20
 
+- Checked the fixes of 2026-10-20 in a browser (headless Chromium) on a test instance with a
+  copy of the lab database and outbound HTTP blocked: 20 of 20 checks pass, one for each
+  fix (for example the 9-photo grid is 636 px with no scroll bar, a photo row is 170 px, and
+  4 rows are 698 px), plus all pages in light and dark mode with no page error. The full
+  suite: 2,573 tests, 12 failures and errors that do not come from these fixes (9 also on a
+  clean copy of the lab, and the 3 re-rank parity failures of the port).
+
 - Fixed four tests that failed on a clean checkout or when run alone.
   `test_describe_images.DetailPromptTest` read `../internal/owner-messages.md`, which the lab
   keeps out of git; the test now skips when the file is absent (the template test checks the
