@@ -1001,20 +1001,6 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </div>
   </section>
 </div>
-<div class="modal" id="detail-failures-modal" role="dialog" aria-modal="true"
-  aria-labelledby="detail-failures-title" hidden>
-  <section class="validation-dialog">
-    <div class="validation-head">
-      <h2 id="detail-failures-title">Failed details</h2>
-      <button id="detail-failures-x" type="button" aria-label="Close">×</button>
-    </div>
-    <p class="validation-intro" id="detail-failures-intro"></p>
-    <div class="validation-results" id="detail-failures-body"></div>
-    <div class="validation-actions">
-      <button id="detail-failures-close" type="button">Close</button>
-    </div>
-  </section>
-</div>
 <div class="modal" id="vlm-modal" role="dialog" aria-modal="true" aria-labelledby="vlm-title"
   hidden>
   <section class="validation-dialog">
@@ -1034,6 +1020,22 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </div>
     <div class="validation-actions">
       <button id="vlm-close" type="button">Close</button>
+    </div>
+  </section>
+</div>
+<!-- The dialog of the failed details opens from the VLM watcher dialog, so it comes after
+     that dialog: modals have one z-index, and the later one is on top. -->
+<div class="modal" id="detail-failures-modal" role="dialog" aria-modal="true"
+  aria-labelledby="detail-failures-title" hidden>
+  <section class="validation-dialog">
+    <div class="validation-head">
+      <h2 id="detail-failures-title">Failed details</h2>
+      <button id="detail-failures-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro" id="detail-failures-intro"></p>
+    <div class="validation-results" id="detail-failures-body"></div>
+    <div class="validation-actions">
+      <button id="detail-failures-close" type="button">Close</button>
     </div>
   </section>
 </div>
@@ -5221,8 +5223,9 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
   if (event.key === "Escape" && !$("#wine-modal").hidden) closeWineForm();
   if (event.key === "Escape" && !$("#describe-modal").hidden) closeDescribe();
+  // The failed details lie on top of the VLM watcher dialog: Escape closes the top one.
   if (event.key === "Escape" && !$("#detail-failures-modal").hidden) closeDetailFailures();
-  if (event.key === "Escape" && !$("#vlm-modal").hidden) closeVlm();
+  else if (event.key === "Escape" && !$("#vlm-modal").hidden) closeVlm();
 });
 window.addEventListener("beforeunload", event => {
   if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_VINTAGES.size && !DRAFT_BARCODES.size

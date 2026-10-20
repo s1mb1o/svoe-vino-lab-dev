@@ -2,6 +2,13 @@
 
 ## 2026-10-20
 
+- Fixed the dialog `Failed details` of the Dataset page. Opened from the VLM watcher dialog
+  (`View N failed details`), it lay behind that dialog: both modals have `z-index: 50`, and
+  the watcher dialog came later in the page. The focus went into the hidden dialog, its
+  links could not be clicked, and one Escape closed both dialogs. The markup of `Failed
+  details` now comes after the watcher dialog and before the image preview, and Escape
+  closes the top dialog alone. Tests: `test_lab_pages` (1 new), `test_lab_server` 71.
+
 - Fixed the patch slot of the Dataset page. While a patch upload or a `Clear` ran (with
   SAM3, up to a minute), the slot still showed "Drop an image here", with no candidate, no
   file name, and no `Processing…` or `Clearing…`. `applyPendingPatch` called `render()`,

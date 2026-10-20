@@ -66,5 +66,17 @@ class RealPagesTest(unittest.TestCase):
                 self.assertNotIn(mark, text, name)
 
 
+class DatasetDialogOrderTest(unittest.TestCase):
+    """The modals of the Dataset page share one z-index, so the later one is on top."""
+
+    def test_failed_details_lie_above_the_vlm_dialog_and_below_the_image_preview(self):
+        text = lab_pages.page("dataset.html")
+        places = [text.index('id="%s"' % name)
+                  for name in ("vlm-modal", "detail-failures-modal", "image-preview-modal")]
+        self.assertEqual(places, sorted(places))
+        self.assertRegex(text, r'closeDetailFailures\(\);\s*else if \(event\.key === "Escape" '
+                               r'&& !\$\("#vlm-modal"\)\.hidden\) closeVlm\(\);')
+
+
 if __name__ == "__main__":
     unittest.main()
