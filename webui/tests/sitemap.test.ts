@@ -40,7 +40,7 @@ describe('public site map', () => {
     expect(legal?.pages.map(page => page.path)).toEqual(legalPaths)
   })
 
-  it('omits the direct-access and noindex pages', async () => {
+  it('omits the noindex pages', async () => {
     const patterns = await noindexPatterns()
     expect(patterns.some(pattern => pattern.test('/lineup/abrau-durso'))).toBe(true)
     expect(patterns.some(pattern => pattern.test('/account'))).toBe(true)

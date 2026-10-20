@@ -163,11 +163,11 @@ The screen-reader checks on physical devices are not done yet.
 - Open `/sitemap` in a new profile. Confirm the age gate. Confirm the page after age confirmation.
 - Confirm one H1 «Карта сайта», one canonical URL, and the page title «Карта сайта — Что за вино?».
 - Confirm the groups «Поиск вина», «Каталог», «Приложения», «Игры», «О проекте», and «Правовая информация».
-- Follow each of the 15 page links. Confirm that each destination opens.
+- Follow each of the 17 page links. Confirm that each destination opens.
 - Follow «Карта сайта» in the shared footer. Confirm client navigation to `/sitemap` and updated page metadata.
 - Confirm that `/sitemap/` opens with the canonical URL `https://chtozavino.ru/sitemap`.
-- Open the XML link. Confirm the `/sitemap` entry and the same 15 destinations.
-- Confirm that the HTML site map and XML sitemap omit `/hackaton`, `/account`, and `/max`.
+- Open the XML link. Confirm the `/sitemap` entry and the same 17 destinations.
+- Confirm that the HTML site map and XML sitemap list `/hackaton` and omit `/account` and `/max`.
 - Check 320, 390, 768, and 1440 pixel widths in both system themes. Confirm no horizontal overflow.
 - Use Tab to reach the page links. Confirm the visible focus indicator.
 - With VoiceOver on iPhone and TalkBack on Android, swipe through the cards. Confirm that each card is read as one link with its title and description.
@@ -534,19 +534,15 @@ Check their full outlines on light and dark backgrounds. Compare bottle height i
 7. Repeat in light and dark themes. Check the 320 px layout and desktop side card.
 8. Run `npm run test:line-map` and `npm run test:producer-maps` with `PORTAL_ORIGIN` and `PLAYWRIGHT_MODULE` set.
 
-## Hackathon direct URL
+## Hackathon page indexing
 
-Release `0c2f964` passed the checks below on staging and production on 2026-09-29.
-All 169 existing tests, type checks, and the Linux build passed.
+Since 2026-10-20, `/hackaton` is indexable. The 2026-09-29 crawler block is removed.
 
 - Request `/hackaton`, `/hackaton/`, and `/hackaton?source=organizers`. Confirm HTTP 200.
-- Confirm the `X-Robots-Tag` header and HTML robots metadata contain `noindex, nofollow, noarchive`.
-- Confirm `robots.txt` contains `Disallow: /hackaton` and still advertises the sitemap.
-- Confirm `sitemap.xml` omits `/hackaton` and keeps the other public pages.
-- Confirm `/`, `/android`, `/ideas`, and `/presentation` have no links to `/hackaton`.
-- Confirm those public pages do not receive the hackathon noindex header or metadata.
+- Confirm that the responses have no `X-Robots-Tag` header and no HTML robots metadata.
+- Confirm that `robots.txt` has no `/hackaton` rule and still advertises the sitemap.
+- Confirm that `sitemap.xml` and `/sitemap` list `/hackaton`.
 - Open `/hackaton` directly, confirm the age gate, and check the platform anchors and links.
-- Navigate from `/hackaton` to `/ideas`. Confirm the robots metadata is removed after navigation.
 
 ## Hackathon publication verification, 2026-09-29
 
@@ -615,7 +611,7 @@ The check saves local review screenshots in the ignored `reports/presentation/` 
 - Confirm that WebApp and Telegram show their internet requirement.
 - Confirm that the page tells visitors to install Android before going offline.
 - Confirm that the page has one canonical URL, `https://chtozavino.ru/hackaton`.
-- Confirm that `/sitemap.xml` omits `/hackaton`.
+- Confirm that `/sitemap.xml` lists `/hackaton`.
 
 ## Android landing page
 

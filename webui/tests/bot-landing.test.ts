@@ -57,7 +57,7 @@ describe('bot landing pages', () => {
   it('publishes both routes in the site map, the XML sitemap, and the header', async () => {
     const [app, xml] = await Promise.all([source('app/app.vue'), source('public/sitemap.xml')])
     const applications = sitemapSections.find(section => section.id === 'applications')
-    expect(applications?.pages.map(page => page.path)).toEqual(['/shelf-lens', '/android', '/iphone', '/telegram-bot', '/max-bot'])
+    expect(applications?.pages.map(page => page.path)).toEqual(['/hackaton', '/shelf-lens', '/android', '/iphone', '/telegram-bot', '/max-bot'])
     for (const path of ['/telegram-bot', '/max-bot']) expect(xml).toContain(`<loc>https://chtozavino.ru${path}</loc>`)
     expect(app).toContain("isTelegramBotPage ? 'Бот в Telegram' : isMaxBotPage ? 'Бот в MAX'")
   })
