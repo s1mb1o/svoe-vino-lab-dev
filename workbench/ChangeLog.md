@@ -2,6 +2,12 @@
 
 ## 2026-10-20
 
+- Fixed the height of `Alternative photos` (SMOKE AH1, AH2). The move buttons `→M` and `→P`
+  of plan 95 made each photo about 172 px high, but the grid kept `max-height: 620px`: a
+  wine with 9 photos got a scroll bar of 21 px, and a wine with many photos showed about 3.5
+  rows instead of 4. The type and move buttons are now 18 px high, and the limit is 4 rows
+  of card, type buttons, and move buttons (698 px).
+
 - Fixed the first click on a card of `Similar wines` in the dialog `Add wine`. After an edit
   of a field, the press on a card took the focus from the field; its `change` event called
   a new search, which emptied the list at once, so the click did not land and the card
