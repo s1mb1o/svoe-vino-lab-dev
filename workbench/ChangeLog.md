@@ -2,6 +2,12 @@
 
 ## 2026-10-20
 
+- Removed from `AGENTS.md` the rules for `docs/owner-messages.md` and `ACTIVE_WORK.md`
+  (owner message of 2026-10-20): the section "Messages of the project owner" (rules 1 to 8),
+  the section "Work of the sessions" (rules 13 to 21), and the `ACTIVE_WORK.md` steps of
+  rules 25 and 26. The port of the lab commits deleted both files. The other rules keep
+  their numbers, because other files refer to them, for example "rules 22 to 24".
+
 - Ported the workbench work of the GitLab lab repository `drink-atlas/svoe-vino-lab` (owner
   request and answers of 2026-10-19 and 2026-10-20). The lab and this repository share the
   commit `e8787cf41` (2026-09-29). The port holds 46 lab commits of 2026-09-30 to 2026-10-18.
