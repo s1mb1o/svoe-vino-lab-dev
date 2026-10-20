@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — Move implemented ideas on `/ideas`
+
+- Move four live features to «Реализовано»: «Что расскажет этикетка», «Путеводитель по линейке», «Винный дневник», and Wine&Dine Merge.
+- Remove the label and line-map items from the demos. Remove the game, «Личный паспорт предпочтений», and «Полка как система» from the mockups.
+- Add reference-planogram comparison as the next step on the Shelf Lens card. Keep «Искать по вкусу» as a mockup.
+- Take the line-map producer count from the generated index. Update the section counts, the section copy, and the page description.
+- Use two columns for the mock grid. Remove the unused game, shelf, and profile sketch markup and CSS.
+- Type checks, 610 tests (26 skipped), and the production build passed. A local preview passed at 1440 and 360 pixels in both themes without console errors or horizontal overflow.
+
 ## 2026-10-20 — Center the email code input
 
 - Center the six code boxes within the account form with automatic inline margins.

@@ -311,10 +311,10 @@ The 2026-10-19 checks pass in Chromium and WebKit. Read `docs/validation/burnier
 9. Run `test:dinner`, `test:dinner-uploads`, and `scripts/check-dinner-picker.mjs` with the configured local Playwright module.
 
 
-## Game link in the former quiz position
+## Game card in the implemented section
 
-1. On `/ideas`, find Wine&Dine Merge in the final card grid. Confirm the game image, working-prototype badge, and «Подробнее об игре» link.
-2. Confirm that the blind-style quiz title, quiz tags, and unavailable quiz explanation are absent.
+1. On `/ideas`, find Wine&Dine Merge in the implemented section. Confirm the «Реализовано» badge and the «Знакомство с игрой» link.
+2. Confirm that the mock section has no game card, no blind-style quiz title, and no quiz tags.
 3. Follow the card link to `/game`. Confirm the landing heading and the existing game entry URLs.
 4. Check the card at desktop, 390-pixel, and 320-pixel widths in both themes. Keep the remaining mock cards labeled as mockups.
 
@@ -571,8 +571,11 @@ Public service health and upstream availability passed.
 
 - Open `/ideas` in a new profile. Confirm that the age gate blocks interaction.
 - Confirm one H1 and the section order: implemented, demo, mock.
-- Check the section links and counts: 3 implemented, 4 demos, 6 mockups.
+- Check the section links and counts: 9 implemented, 2 demos, 2 mockups.
 - Confirm that implemented cards identify the relevant application.
+- Confirm the implemented cards «Что расскажет этикетка» (`/`), «Путеводитель по линейке» (`/lineup`), «Винный дневник» (`/account`), and Wine&Dine Merge (`/game`).
+- Confirm that the line-map card shows the producer count of `/lineup`.
+- Confirm that «Полка как система» and «Личный паспорт предпочтений» are absent. Confirm that the Shelf Lens card names reference-planogram comparison as the next step.
 - Open all four example dialogs. Close them with Escape, the close button, and a backdrop click.
 - Confirm that focus returns to the dialog opener.
 - Change the example wine. Confirm that the taste and label dialogs use that wine.
