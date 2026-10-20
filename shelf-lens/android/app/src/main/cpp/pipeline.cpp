@@ -90,6 +90,7 @@ void Pipeline::begin(int width, int height) {
         recognitions_.clear();
         outbox_.clear();
         out_ = track_steps_ = sent_ = answered_ = failed_ = accepted_ = 0;
+        shown_frame_ = -1;
     }
     {
         std::lock_guard<std::mutex> r(result_mutex_);
@@ -97,7 +98,8 @@ void Pipeline::begin(int width, int height) {
         detect_ms_.clear(), latency_ms_.clear(), fast_ms_.clear(), slow_ms_.clear(), landed_.clear();
         done_.clear();
         submitted_ = dropped_ = 0;
-        bottles_ = keyframes_ = 0;
+        bottles_ = keyframes_ = provisional_ = 0;
+        lost_ = false;
         ids_ = 0;
     }
     stop_ = false;
@@ -188,13 +190,19 @@ void Pipeline::track_loop() {
             last_tracked_ = job.frame;
             shown = tracker_->step(job.frame, job.bgr, std::move(job.detections));
         }
-        plan_recognition(job.frame, job.bgr, shown);
+        std::set<int> kept;   // the bottles the map keeps for good (this thread alone changes the tracker)
+        for (const auto& b : tracker_->bottles)
+            if (!tracker_->provisional.count(b.id)) kept.insert(b.id);
+        plan_recognition(job.frame, job.bgr, shown, kept);
         std::vector<int> recognized;
+        int queue[5];   // for the log: queued, out, sent, answered, failed
         {
             std::lock_guard<std::mutex> rl(recognition_mutex_);
+            shown_frame_ = job.frame;
+            queue[0] = queued(), queue[1] = out_, queue[2] = sent_, queue[3] = answered_, queue[4] = failed_;
             for (const auto& item : shown) {
                 const auto it = item.bottle == kNone ? recognitions_.end() : recognitions_.find(item.bottle);
-                recognized.push_back(it != recognitions_.end() && it->second.done ? 1 : 0);
+                recognized.push_back(it == recognitions_.end() ? 0 : it->second.colour());
             }
         }
         const auto now = Clock::now();
@@ -211,6 +219,26 @@ void Pipeline::track_loop() {
         done_.push_back(now);
         while (!done_.empty() && ms(done_.front(), now) > 3000) done_.pop_front();
         bottles_ = t.bottles.size();
+        provisional_ = t.provisional.size();
+        // The boxes add nothing to the map now: the tracker lost its place, or it waits to
+        // register to the map and a box in view waits for it (bottles it follows keep their boxes).
+        bool waiting_box = false;
+        for (const auto& s : result_.shown) waiting_box |= s.bottle == kNone && s.status == "pending";
+        lost_ = t.lost || (!t.trusted && waiting_box);
+        // The tracker's state once a second in the log, for a look at a shot on the phone.
+        static Clock::time_point logged{};
+        if (ms(logged, now) > 1000) {
+            logged = now;
+            __android_log_print(ANDROID_LOG_INFO, "shelfreid",
+                                "state frame %d step %d lost %d trusted %d untrusted %d registered %d steps ago, keyframes %zu, "
+                                "slow jobs %zu, found %d, jumps %d, lost motion %d, hinted %d, aliased %d, bottles %zu (%zu provisional), "
+                                "boxes %zu; recognition: queued %d, out %d, sent %d, answered %d, failed %d%s%s",
+                                job.frame, t.count, t.lost ? 1 : 0, t.trusted ? 1 : 0, t.untrusted, t.count - t.localized,
+                                t.keyframes.size(), t.slow_seconds.size(), t.found, t.jumps, t.lost_motion, t.hinted, t.aliased,
+                                t.bottles.size(), t.provisional.size(), result_.shown.size(), queue[0], queue[1], queue[2], queue[3],
+                                queue[4],
+                                t.flow_failure.empty() ? "" : ", flow: ", t.flow_failure.c_str());
+        }
         keyframes_ = t.keyframes.size();
         ids_ = t.next_id;
     }
@@ -228,9 +256,48 @@ Pipeline::Result Pipeline::latest() const {
     result.recognized.assign(result.shown.size(), 0);
     for (size_t i = 0; i < result.shown.size(); ++i) {
         const auto it = result.shown[i].bottle == kNone ? recognitions_.end() : recognitions_.find(result.shown[i].bottle);
-        result.recognized[i] = it != recognitions_.end() && it->second.done ? 1 : 0;
+        result.recognized[i] = it == recognitions_.end() ? 0 : it->second.colour();
     }
     return result;
+}
+
+std::array<int, 4> Pipeline::summary() const {
+    std::array<int, 4> out{};
+    {
+        std::lock_guard<std::mutex> r(result_mutex_);
+        out[0] = static_cast<int>(bottles_ - std::min(provisional_, bottles_));
+        out[3] = lost_ ? 1 : 0;
+    }
+    std::lock_guard<std::mutex> rl(recognition_mutex_);
+    for (const auto& [id, rec] : recognitions_) {
+        const int colour = rec.colour();
+        out[1] += colour == 1;
+        out[2] += colour == 2;
+    }
+    out[1] = std::min(out[1], out[0]);
+    return out;
+}
+
+void Pipeline::interrupt() {
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        to_detect_.reset();
+        to_track_.reset();
+    }
+    frame_motion_.reset();
+    {
+        std::lock_guard<std::mutex> chain_lock(chain_mutex_);
+        chain_.reset();
+    }
+    {
+        std::lock_guard<std::mutex> t(tracker_mutex_);
+        last_tracked_ = -1;   // no motion hint across the break
+        if (tracker_) tracker_->interrupt();
+    }
+    std::lock_guard<std::mutex> r(result_mutex_);
+    result_.frame = -1;   // the old boxes belong to the old picture
+    result_.shown.clear();
+    result_.recognized.clear();
 }
 
 std::string Pipeline::stats() const {
@@ -258,9 +325,12 @@ void Pipeline::set_recognition(bool on) {
     recognition_on_ = on;
 }
 
-void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown) {
+void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown, const std::set<int>& kept) {
     std::lock_guard<std::mutex> r(recognition_mutex_);
     ++track_steps_;
+    // Confirmed: the map keeps the bottle, in view or not (one confirmed after it left the view
+    // goes too; a duplicate the tracker merged away never does).
+    for (auto& [id, rec] : recognitions_) rec.confirmed = kept.count(id) > 0;
     const double W = bgr.cols, H = bgr.rows;
     auto crop_of = [&](const Box& b) {
         const double mx = 0.06 * (b[2] - b[0]), my = 0.06 * (b[3] - b[1]);
@@ -288,7 +358,7 @@ void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector
         }
         const bool cut = b[0] < 0.01 * W || b[2] > 0.99 * W || b[1] < 0.01 * H || b[3] > 0.99 * H;
         const bool asking_done = rec.answers >= kMaxAttempts || rec.attempts >= kMaxAttempts;
-        const bool fit = !rec.sure && !asking_done && item.status != "pending" && h >= kGate * H && !cut;
+        const bool fit = !rec.sure && !asking_done && h >= kGate * H && !cut;
         // Offer the crop to the bottle's reserve (a raw copy: the PNG is made when it is sent).
         // Every other step only: the reserve then spans more time, its crops differ more.
         if (recognition_on_ && fit && track_steps_ % 2 == 0) {
@@ -311,8 +381,8 @@ void Pipeline::plan_recognition(int frame, const cv::Mat& bgr, const std::vector
         if (rec.sure) rec.state = "known";
         else if (rec.inflight > 0) rec.state = "asking";
         else if (asking_done) rec.state = "done asking";
-        else if (!rec.kept.empty()) rec.state = "waiting";   // a crop kept, waiting for a slot
-        else if (item.status == "pending") rec.state = "unconfirmed";
+        else if (!rec.kept.empty()) rec.state = rec.confirmed ? "waiting" : "unconfirmed";   // a crop kept
+        else if (!rec.confirmed) rec.state = "unconfirmed";
         else if (h < kGate * H) rec.state = "small";
         else if (cut) rec.state = "cut";
         else rec.state = recognition_on_ ? "waiting" : "eligible";
@@ -347,14 +417,24 @@ std::vector<unsigned char> Pipeline::dispatch() {
     Recognition* pick = nullptr;
     int pick_id = kNone;
     for (auto& [id, rec] : recognitions_) {
-        if (rec.kept.empty() || rec.inflight > 0 || rec.sure || rec.answers >= kMaxAttempts || rec.attempts >= kMaxAttempts)
+        if (rec.kept.empty() || !rec.confirmed || rec.inflight > 0 || rec.sure || rec.answers >= kMaxAttempts ||
+            rec.attempts >= kMaxAttempts)
             continue;
         if (rec.attempts > 0 && ms(rec.last_sent, now) < kSpacingMs) continue;
         // The bottle fit long enough for its reserve to hold crops of different moments.
         if (ms(rec.first_fit, now) < kMatureMs) continue;
-        if (pick && (rec.attempts > pick->attempts ||
-                     (rec.attempts == pick->attempts && best_of(rec)->height <= best_of(*pick)->height)))
-            continue;
+        // A bottle in view first (the shelf the user looks at now), then the fewest attempts,
+        // then the largest crop.
+        const bool in_view = rec.frame >= shown_frame_;
+        if (pick) {
+            const bool pick_in_view = pick->frame >= shown_frame_;
+            if (in_view != pick_in_view) {
+                if (!in_view) continue;
+            } else if (rec.attempts > pick->attempts ||
+                       (rec.attempts == pick->attempts && best_of(rec)->height <= best_of(*pick)->height)) {
+                continue;
+            }
+        }
         pick = &rec, pick_id = id;
     }
     if (!pick) return {};
@@ -378,6 +458,13 @@ std::vector<unsigned char> Pipeline::dispatch() {
     pick->state = "asking";
     ++out_, ++sent_;
     return packed;
+}
+
+int Pipeline::queued() const {
+    int n = 0;
+    for (const auto& [id, rec] : recognitions_)
+        n += !rec.kept.empty() && rec.inflight == 0 && !rec.sure && rec.attempts < kMaxAttempts;
+    return n;
 }
 
 std::vector<unsigned char> Pipeline::take_crop() {

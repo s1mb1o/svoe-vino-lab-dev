@@ -51,6 +51,12 @@ struct StreamConfig {
     double leave_margin = 0.5;
     int settle_hits = 5;
     double keyframe_overlap = 0.6;
+    // A new keyframe also where the reference keyframe is too poor to register to (fewer than
+    // 2 x min_loop_inliers points) and the view has richer_ratio times its points, and
+    // richer_points more (the points come from the bottles found: a keyframe made before the
+    // detector saw all the bottles in view, the camera not moving).
+    double richer_ratio = 1.5;
+    int richer_points = 40;
     int reloc_every = 5;
     int recent_steps = 50;
     double search_radius = 1.5;
@@ -69,6 +75,8 @@ struct StreamConfig {
     double alias_support = 0.35;
     double alias_ambiguity = 0.5;
     int strong_inliers = 80;
+    // Or at least min_loop_inliers inliers that are this share of the matches.
+    double strong_ratio = 0.75;
     double strong_coverage = 0.3;
     double loop_weight = 2.0;
     double chain_weight = 0.5;
@@ -78,6 +86,11 @@ struct StreamConfig {
     double duplicate_overlap = 0.6;
     int trust_steps = 30;
     int max_wait = 30;
+    // Lost longer than max_wait steps, start a separate piece of map where the camera is (a
+    // "new ground"), and near the map but not registered to it that long, trust the flow. Off:
+    // the tracker keeps looking for its place on the one map, and the boxes add nothing to it
+    // meanwhile (where they are on it is not known); a new shelf is a new map.
+    bool new_ground = false;
     int young_steps = 30;
     double adjacent_gap = 1.6;
     int habit_count = 3;

@@ -125,14 +125,17 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
         if (d.score >= cfg.min_score) scored.push_back(d);
     detections = whole_bottles(scored);
     if (previous) {
-        auto step_H = flow(previous->first, gray, previous->second, motion_hint);
-        if (!step_H && motion_hint) {
-            step_H = motion_hint;   // the picture moved continuously: no jump
-            ++hinted;
-            flow_failure += " (the motion hint stood in)";
+        std::optional<Mat3> step_H;
+        if (!broken_) {
+            step_H = flow(previous->first, gray, previous->second, motion_hint);
+            if (!step_H && motion_hint) {
+                step_H = motion_hint;   // the picture moved continuously: no jump
+                ++hinted;
+                flow_failure += " (the motion hint stood in)";
+            }
         }
         if (!step_H) {
-            ++lost_motion;
+            if (!broken_) ++lost_motion;
             jump();
             lost_since = count;
             inflight.reset();   // its frame lies before the jump
@@ -142,6 +145,7 @@ std::vector<Shown> RealtimeTracker::step(int number, const cv::Mat& frame, std::
             M = M * *step_H;
         }
     }
+    broken_ = false;
     if (keyframes.empty()) add_keyframe(number, features_of(frame, detections));   // the first frame
     land();
     trusted = trust();
@@ -267,7 +271,7 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
             }
         }
     } else if (snap.lost) {
-        result.new_ground = snap.count - lost_since > cfg.max_wait;
+        result.new_ground = cfg.new_ground && snap.count - lost_since > cfg.max_wait;
     }
     if (!edges.empty()) {
         PoseGraph copy = graph;
@@ -291,7 +295,7 @@ SlowResult RealtimeTracker::slow(const Snapshot& snap) {
     ref = result.found ? result.found->first : snap.ref;
     P = result.found ? result.found->second : snap.P;
     trusted = snap.trusted && !snap.lost;
-    if (!snap.lost && needs_keyframe()) {
+    if (!snap.lost && (needs_keyframe() || richer(features))) {
         SlowResult::NewKeyframe kf{features, ref, Mat3::eye(), 0.0, ""};
         if (result.found) {
             kf.T = result.found->second, kf.weight = cfg.loop_weight, kf.kind = "odometry";

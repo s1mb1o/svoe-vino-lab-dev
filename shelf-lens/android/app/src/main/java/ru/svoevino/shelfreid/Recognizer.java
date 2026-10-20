@@ -46,7 +46,8 @@ final class Recognizer {
     private final ExecutorService requests = Executors.newFixedThreadPool(4);
     private final Map<Integer, String> wines = new ConcurrentHashMap<>();
     private final Map<Integer, java.util.List<Sent>> sent = new ConcurrentHashMap<>();
-    private final Map<String, String> faces = new ConcurrentHashMap<>();   // slug -> its packshot (image_url)
+    private final Map<Integer, String> slugs = new ConcurrentHashMap<>();   // bottle -> the wine decided
+    private final Catalog catalog;
 
     /** A crop sent for a bottle and what came back. */
     static final class Sent {
@@ -61,28 +62,29 @@ final class Recognizer {
             this.height = height;
         }
     }
-    private final AtomicInteger errors = new AtomicInteger();
+    private final AtomicInteger errors = new AtomicInteger(), sentCount = new AtomicInteger(), answeredCount = new AtomicInteger();
     private volatile boolean running;
     private Thread poller;
     private FileWriter log;
 
     /** Null when the password file is missing: then nothing is recognised. */
-    static Recognizer create(File base, long handle) {
+    static Recognizer create(File base, long handle, Catalog catalog) {
         File secret = new File(base, "api_password.txt");
         if (!secret.exists()) return null;
         try {
             String password = new String(java.nio.file.Files.readAllBytes(secret.toPath()), StandardCharsets.UTF_8).trim();
             File folder = new File(base, "recognition/" + new java.text.SimpleDateFormat("yyyyMMdd_HHmmss",
                     java.util.Locale.ROOT).format(new java.util.Date()));
-            return new Recognizer(handle, password, folder);
+            return new Recognizer(handle, password, folder, catalog);
         } catch (IOException e) {
             Log.e(TAG, "cannot read the password", e);
             return null;
         }
     }
 
-    private Recognizer(long handle, String password, File folder) {
+    private Recognizer(long handle, String password, File folder, Catalog catalog) {
         this.handle = handle;
+        this.catalog = catalog;
         this.auth = "Basic " + Base64.encodeToString((USER + ":" + password).getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
         this.folder = folder;
     }
@@ -97,12 +99,18 @@ final class Recognizer {
         running = true;
         Native.setRecognition(handle, true);
         poller = new Thread(() -> {
-            long dumped = 0;
+            long dumped = 0, logged = 0;
             while (running) {
                 long now = System.currentTimeMillis();
                 if (now - dumped > 5000) {   // the table of every bottle, for a look afterwards
                     dumpTable();
                     dumped = now;
+                }
+                if (now - logged > 2000) {   // the queue in the log, also while the camera is paused
+                    int[] s = Native.summary(handle);
+                    Log.i(TAG, "queue: " + s[2] + " waiting, " + s[1] + " of " + s[0] + " recognised; sent " + sentCount.get()
+                            + ", answered " + answeredCount.get() + ", errors " + errors.get());
+                    logged = now;
                 }
                 byte[] crop = Native.takeCrop(handle);
                 if (crop == null) {
@@ -153,9 +161,14 @@ final class Recognizer {
         return list == null ? java.util.Collections.emptyList() : new java.util.ArrayList<>(list);
     }
 
-    /** The packshot of a wine the server named (the image_url of its answers), or null. */
-    String face(String slug) {
-        return faces.get(slug);
+    /** The slug of the wine decided for a bottle, or null. */
+    String slug(int bottle) {
+        return slugs.get(bottle);
+    }
+
+    /** The wine decided for a bottle, or null. */
+    Catalog.Wine info(int bottle) {
+        return catalog.get(slugs.get(bottle));
     }
 
     /** The run's folder: the crops, answers.jsonl, table.json. */
@@ -182,6 +195,7 @@ final class Recognizer {
         Sent record = new Sent(new File(folder, file), frame, height);
         record.chosen = String.format(java.util.Locale.ROOT, "резкость %.0f, лучшая из %d", sharpness, choices);
         sent.computeIfAbsent(bottle, b -> java.util.Collections.synchronizedList(new java.util.ArrayList<>())).add(record);
+        sentCount.incrementAndGet();
         long started = System.currentTimeMillis();
         int status = -1;
         String body = null;
@@ -217,8 +231,7 @@ final class Recognizer {
                     top.put(new JSONObject().put("slug", c.getString("slug")).put("score", c.getDouble("score"))
                             .put("name", wine.optString("name")).put("producer", wine.optString("producer"))
                             .put("image_url", wine.optString("image_url")));
-                    if (!wine.isNull("image_url") && !wine.optString("image_url").isEmpty())
-                        faces.put(c.getString("slug"), wine.optString("image_url"));
+                    if (i == 0) catalog.put(c.getString("slug"), wine);   // the card of the wine named first
                 }
                 if (candidates.length() > 0) {
                     JSONObject first = candidates.getJSONObject(0);
@@ -232,6 +245,7 @@ final class Recognizer {
             }
         }
         if (!ok) errors.incrementAndGet();
+        else answeredCount.incrementAndGet();
         record.answer = ok ? (top.length() > 0 ? name + String.format(java.util.Locale.ROOT, "  score %.3f",
                 top.optJSONObject(0) == null ? 0 : top.optJSONObject(0).optDouble("score")) : "no candidates")
                 : "no answer (HTTP " + status + ")";
@@ -245,6 +259,7 @@ final class Recognizer {
             if (decision != null) {
                 String[] parts = decision.split("\t");
                 wines.put(bottle, parts[1] + ("sure".equals(parts[2]) ? "" : " ?"));
+                slugs.put(bottle, parts[0]);
                 write(new JSONObject().put("bottle", bottle).put("accepted", parts[0]).put("name", parts[1])
                         .put("sure", "sure".equals(parts[2])));
             }

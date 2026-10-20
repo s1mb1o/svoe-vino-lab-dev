@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
 #include <iostream>
 #include <cmath>
 #include <numeric>
@@ -408,8 +411,8 @@ std::optional<Mat3> Tracker::flow(const cv::Mat& gray_prev, const cv::Mat& gray,
 }
 
 Registration Tracker::register_points(const std::vector<cv::Point2f>& points_k,
-                                      const std::vector<cv::Point2f>& points_f) const {
-    return estimate(points_k, points_f, size, size, cfg.homography);
+                                      const std::vector<cv::Point2f>& points_f, double area_f) const {
+    return estimate(points_k, points_f, size, size, cfg.homography, area_f);
 }
 
 FrameFeatures Tracker::features_of(const cv::Mat& frame, const std::vector<Detection>& detections) const {
@@ -421,9 +424,20 @@ FrameFeatures Tracker::features_of(const cv::Mat& frame, const std::vector<Detec
 std::optional<Good> Tracker::register_to(const FrameFeatures& features, int index) const {
     std::vector<cv::Point2f> pk, pf;
     match(keyframes[index].features, features, cfg.features, pk, pf);
-    const Registration r = register_points(pk, pf);
+    const Registration r = register_points(pk, pf, features.area);
+    if (std::getenv("SHELFREID_TRACE_REG"))
+        std::cerr << "register to keyframe " << index << ": " << features.points.size() << " points, " << r.matches
+                  << " matches, " << r.inliers << " inliers, coverage " << r.coverage << (r.ok ? "" : ", " + r.reason) << "\n";
+#ifdef __ANDROID__
+    if (lost)   // why the tracker does not find its place again, in the phone's log
+        __android_log_print(ANDROID_LOG_INFO, "shelfreid", "relocalize to keyframe %d: %zu points (keyframe %zu), %d matches, %d inliers, coverage %.2f%s%s",
+                            index, features.points.size(), keyframes[index].features.points.size(), r.matches, r.inliers, r.coverage,
+                            r.ok ? "" : ", ", r.reason.c_str());
+#endif
     if (!(r.ok && r.inliers >= cfg.min_loop_inliers && r.coverage >= cfg.min_loop_coverage)) return std::nullopt;
-    const bool strong = r.inliers >= cfg.strong_inliers && r.coverage >= cfg.strong_coverage;
+    // Strong: many inliers, or fewer (a bottle or two in view) of which nearly all matches are.
+    const bool strong = (r.inliers >= cfg.strong_inliers || r.inliers >= cfg.strong_ratio * r.matches) &&
+                        r.coverage >= cfg.strong_coverage;
     return Good{index, r.H, strong, r.inliers, std::move(pk), std::move(pf)};
 }
 
@@ -564,6 +578,13 @@ void Tracker::absorb(Bottle& earlier, const Bottle& later) {
     }
 }
 
+bool Tracker::richer(const FrameFeatures& f) const {
+    if (ref == kNone || !trusted) return false;
+    const double have = static_cast<double>(keyframes[ref].features.points.size()), now = static_cast<double>(f.points.size());
+    // A keyframe too poor to register to (a registration needs min_loop_inliers of its points).
+    return have < 2.0 * cfg.min_loop_inliers && now >= cfg.richer_ratio * have && now >= have + cfg.richer_points;
+}
+
 bool Tracker::needs_keyframe() const {
     if (keyframes.empty()) return true;
     if (!trusted) return false;
@@ -622,7 +643,7 @@ void Tracker::find(int number, const FrameFeatures& features) {
         return;
     }
     verified = saved;
-    if (++lost_steps > cfg.max_wait) {
+    if (++lost_steps > cfg.max_wait && cfg.new_ground) {
         double far_right = -1e300;
         for (int k = 0; k < static_cast<int>(keyframes.size()); ++k)
             for (const auto& p : keyframe_quad(k)) far_right = std::max(far_right, p.x);
@@ -654,7 +675,10 @@ bool Tracker::trust() {
         return true;
     }
     ++untrusted;
-    return untrusted > cfg.max_wait;
+    // Near what the map has but not registered to it: wait for a registration. With a new
+    // ground allowed, trust the flow after max_wait steps; without, wait as long as it takes
+    // (a box adds nothing to the map while where it is on it is not known).
+    return cfg.new_ground && untrusted > cfg.max_wait;
 }
 
 void Tracker::observe(Bottle& bottle, const Box& box) {
@@ -710,7 +734,7 @@ std::vector<Shown> Tracker::step(int number, const cv::Mat& frame, std::vector<D
     trusted = trust();
     std::vector<Shown> shown = associate(number, detections, trusted);
     learn_labels(shown, descriptors);
-    if (needs_keyframe()) add_keyframe(number, features ? *features : features_of(frame, detections));
+    if (needs_keyframe() || (features && richer(*features))) add_keyframe(number, features ? *features : features_of(frame, detections));
     previous = std::make_pair(gray, boxes);
     ++count;
     motion_hint.reset();

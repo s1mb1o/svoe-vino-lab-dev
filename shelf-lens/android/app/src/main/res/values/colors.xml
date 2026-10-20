@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The palette of vino-svoe.ru. -->
+    <color name="wine">#8F3D42</color>
+    <color name="wine_dark">#723135</color>
+    <color name="ink">#2C2A28</color>
+    <color name="muted">#857E79</color>
+    <color name="cream">#FEFDFA</color>
+    <color name="blush">#F9F1F1</color>
+    <color name="gold">#F3E0A5</color>
+    <color name="launcher_background">#8F3D42</color>
+</resources>

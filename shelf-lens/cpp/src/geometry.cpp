@@ -76,7 +76,7 @@ std::optional<std::string> check(const Mat3& H0, const Size2& size_b, const Homo
 }
 
 double coverage(const Mat3& H, const std::vector<cv::Point2f>& inliers_b, const Size2& size_a,
-                const Size2& size_b) {
+                const Size2& size_b, double area_b) {
     if (inliers_b.size() < 3) return 0.0;
     const Quad a_in_b = project(H.inv(), corners(size_a));
     std::vector<cv::Point2f> inter;
@@ -84,12 +84,13 @@ double coverage(const Mat3& H, const std::vector<cv::Point2f>& inliers_b, const 
     if (overlap <= 0) return 0.0;
     std::vector<cv::Point2f> hull;
     cv::convexHull(inliers_b, hull);
-    return std::min(1.0, cv::contourArea(hull) / overlap);
+    const double room = area_b > 0 ? std::min(overlap, area_b) : overlap;
+    return std::min(1.0, cv::contourArea(hull) / room);
 }
 
 Registration estimate(const std::vector<cv::Point2f>& points_a,
                       const std::vector<cv::Point2f>& points_b, const Size2& size_a,
-                      const Size2& size_b, const HomographyConfig& cfg) {
+                      const Size2& size_b, const HomographyConfig& cfg, double area_b) {
     Registration r;
     const int count = static_cast<int>(points_a.size());
     r.matches = count;
@@ -125,7 +126,7 @@ Registration estimate(const std::vector<cv::Point2f>& points_a,
         if (overlap_a <= 0) reason = "no overlap";
     }
     if (!reason) {
-        r.coverage = coverage(Hm, inliers_b, size_a, size_b);
+        r.coverage = coverage(Hm, inliers_b, size_a, size_b, area_b);
         if (r.coverage < cfg.min_coverage) reason = "inliers cover too little of the overlap";
     }
     r.ok = !reason;

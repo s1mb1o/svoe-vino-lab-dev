@@ -65,6 +65,15 @@ final class Native {
     /** The planogram of the map as it is now, as JSON (Pipeline::planogram). */
     static native String planogram(long handle);
 
+    /**
+     * The bottles of the map, those whose wine is known, those waiting for the server, and 1
+     * while the tracker has lost its place on the map (the boxes add nothing to it then).
+     */
+    static native int[] summary(long handle);
+
+    /** The frames start again after a break (the camera was off): the map stays. */
+    static native void interrupt(long handle);
+
     static native String stats(long handle);
 
     static native void destroy(long handle);

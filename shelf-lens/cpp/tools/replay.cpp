@@ -4,7 +4,10 @@
 //   replay VIDEO|FRAMES_DIR DETS.jsonl sync|rt:N|rt:async OUT.jsonl [--every 3] [--slow-every K] [--pace MS]
 //          [--min-score S] [--new-score S] [--max-side PX] [--max-features N] [--loop-candidates N]
 //          [--cv-threads N] [--keep-steps 1] [--hints 1] [--map MAP.json] [--planogram PLANOGRAM.json]
-//          [--poses POSES.jsonl]
+//          [--poses POSES.jsonl] [--interrupt FRAME]
+//
+// --interrupt breaks the picture before that frame, as the app does when the camera comes
+// back after a pause (rt only): the tracker finds its place on the map again.
 //
 // --map writes the map at the end: the frame size, each bottle's corners in map coordinates
 // (keyframe 0's pixels) and whether it is still provisional; --planogram the planogram of
@@ -59,6 +62,7 @@ int main(int argc, char** argv) {
     bool keep_steps = false;   // --every without rescaling the parameters in steps, as the app drops frames
     bool hints = false;        // the frame-by-frame motion as the tracker's hint, as the app gives it
     std::string map_path, planogram_path, poses_path;
+    int interrupt_at = -1;
     for (int a = 5; a + 1 < argc; ++a) {
         if (std::string(argv[a]) == "--every") every = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--slow-every") slow_every = std::stoi(argv[a + 1]);
@@ -66,6 +70,7 @@ int main(int argc, char** argv) {
         if (std::string(argv[a]) == "--map") map_path = argv[a + 1];
         if (std::string(argv[a]) == "--planogram") planogram_path = argv[a + 1];
         if (std::string(argv[a]) == "--poses") poses_path = argv[a + 1];
+        if (std::string(argv[a]) == "--interrupt") interrupt_at = std::stoi(argv[a + 1]);
         if (std::string(argv[a]) == "--min-score") min_score = std::stod(argv[a + 1]);
         if (std::string(argv[a]) == "--new-score") new_score = std::stod(argv[a + 1]);
         if (std::string(argv[a]) == "--max-side") max_side = std::stoi(argv[a + 1]);
@@ -167,6 +172,11 @@ int main(int argc, char** argv) {
             if (number > 0 && from_dir && !frame_at(number, frame)) break;
             const auto t = std::chrono::steady_clock::now();
             if (hints && last_step >= 0) tracker->motion_hint = chain.back(last_step, number);
+            if (rt && interrupt_at >= 0 && number >= interrupt_at) {
+                rt->interrupt();
+                tracker->motion_hint.reset();
+                interrupt_at = -1;
+            }
             last_step = number;
             const auto shown = tracker->step(number, frame, it->second);
             step_seconds.push_back(std::chrono::duration<double>(std::chrono::steady_clock::now() - t).count());

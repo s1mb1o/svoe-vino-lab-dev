@@ -1,118 +1,88 @@
 package ru.svoevino.shelfreid;
 
-import android.app.Activity;
-import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.util.Base64;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.graphics.Typeface;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
- * The planogram of the run's map: the shelves of the tracker (Pipeline::planogram, the
- * bottom one numbered 1), each facing drawn as the packshot of the wine recognised for it, in
- * a box of its size in bottle heights; neighbours of one wine make a block (a frame around,
+ * The planogram of the map as a picture: the shelves of the tracker (Pipeline::planogram, the
+ * bottom one numbered 1), each facing drawn as the packshot of the wine recognised for it (Faces),
+ * in a box of its size in bottle heights; neighbours of one wine make a block (a frame around,
  * the bottles alike). A bottle whose wine is not known, or whose wine has no packshot, is a
- * grey bottle with a question mark on its label.
- *
- * The packshot of a wine comes from the server by its slug: from the address in
- * faces_url.txt in the app's folder ({slug} in it stands for the slug; faces_auth.txt MAY
- * hold "user:password" for it) when a developer put one there, else from the image_url the
- * recognition API gave with the slug. Each is kept in faces/ and fetched once.
- *
- * The picture and its JSON go to the run's folder (next to the crops).
+ * grey bottle with a question mark on its label. The picture and its JSON go to `folder`.
  */
 final class Planogram {
-    private static final String TAG = "Planogram";
-    private static final int MARGIN = 40, LEFT = 110, BAR = 14, GAP = 48;
-    private static final int MAX_WIDTH = 4096;   // a bitmap the screen can draw at once
-    private static final float UNIT = 220;       // px per bottle height, when it fits
+    private static final int MARGIN = 40, LEFT = 110, BAR = 14, GAP = 48, HEADER = 96;
+    private static final int MAX_WIDTH = 4096;    // a bitmap the screen can draw at once
+    private static final float UNIT = 220;        // px per bottle height, when it fits
     private static final double BLOCK_GAP = 0.3;  // neighbours of one wine further apart than this share of a width: two blocks
 
-    private final Activity activity;
-    private final long handle;
-    private final Recognizer recognizer;   // MAY be null: recognition off
-    private final File base;
-    private final Map<String, Bitmap> faces = new HashMap<>();
+    static final class Result {
+        final Bitmap picture;
+        final File png;
+        final int shelves, facings, known, blanks;
 
-    Planogram(Activity activity, long handle, Recognizer recognizer) {
-        this.activity = activity;
-        this.handle = handle;
-        this.recognizer = recognizer;
-        this.base = activity.getExternalFilesDir(null);
+        Result(Bitmap picture, File png, int shelves, int facings, int known, int blanks) {
+            this.picture = picture;
+            this.png = png;
+            this.shelves = shelves;
+            this.facings = facings;
+            this.known = known;
+            this.blanks = blanks;
+        }
     }
 
-    /** A button at the bottom left of the run's screen that builds and shows the planogram. */
-    void attach(FrameLayout root) {
-        Button button = new Button(activity);
-        button.setText("Планограмма");
-        button.setOnClickListener(v -> build(button));
-        FrameLayout.LayoutParams at = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.START);
-        at.setMargins(32, 0, 0, 48);
-        root.addView(button, at);
-    }
+    private Planogram() {}
 
-    private void build(Button button) {
-        button.setEnabled(false);
-        button.setText("Строю…");
-        new Thread(() -> {
-            String note;
-            Bitmap picture = null;
-            try {
-                JSONObject plan = new JSONObject(Native.planogram(handle));
-                int[] counts = new int[3];
-                picture = render(plan, counts);
-                note = String.format(Locale.ROOT, "Полок %d, фейсингов %d, распознано %d, заглушек %d",
-                        plan.getJSONArray("shelves").length(), counts[0], counts[1], counts[2]);
-                note += "\nсохранена: " + save(plan, picture);
-            } catch (Exception e) {
-                Log.e(TAG, "cannot build", e);
-                note = "Планограмма не построена: " + e.getMessage();
+    /** Builds, draws and keeps the planogram of the map as it is now (not on the main thread). */
+    static Result build(Context context, long handle, Faces faces, Catalog catalog, File folder, boolean ids) throws Exception {
+        JSONObject plan = new JSONObject(Native.planogram(handle));
+        JSONArray shelves = plan.getJSONArray("shelves");
+        if (shelves.length() == 0) throw new IllegalStateException("На полке пока не найдено ни одной бутылки");
+        int[] counts = new int[3];
+        Bitmap picture = render(context, shelves, faces, counts, ids);
+        folder.mkdirs();
+        String name = "planogram_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ROOT).format(new Date());
+        File png = new File(folder, name + ".png");
+        try (OutputStream out = new FileOutputStream(png)) {
+            picture.compress(Bitmap.CompressFormat.PNG, 100, out);
+        }
+        JSONObject wines = new JSONObject();
+        for (int k = 0; k < shelves.length(); k++) {
+            JSONArray facings = shelves.getJSONObject(k).getJSONArray("facings");
+            for (int i = 0; i < facings.length(); i++) {
+                Catalog.Wine w = catalog.get(facings.getJSONObject(i).optString("slug"));
+                if (w != null) wines.put(w.slug, new JSONObject().put("name", w.name).put("producer", w.producer)
+                        .put("image_url", w.imageUrl).put("page_url", w.pageUrl).put("rating", w.rating));
             }
-            final Bitmap shown = picture;
-            final String text = note;
-            activity.runOnUiThread(() -> {
-                button.setEnabled(true);
-                button.setText("Планограмма");
-                show(shown, text);
-            });
-        }, "planogram").start();
+        }
+        plan.put("wines", wines);
+        Files.write(new File(folder, name + ".json").toPath(), plan.toString(1).getBytes(StandardCharsets.UTF_8));
+        return new Result(picture, png, shelves.length(), counts[0], counts[1], counts[2]);
     }
 
     /** counts: facings, facings with a wine, stand-ins. */
-    private Bitmap render(JSONObject plan, int[] counts) throws Exception {
-        JSONArray shelves = plan.getJSONArray("shelves");
-        if (shelves.length() == 0) throw new IllegalStateException("на карте ещё нет бутылок");
+    private static Bitmap render(Context context, JSONArray shelves, Faces faces, int[] counts, boolean ids) throws Exception {
         double widest = 0;
         double[] tallest = new double[shelves.length()];
         for (int k = 0; k < shelves.length(); k++) {
@@ -124,33 +94,43 @@ final class Planogram {
         }
         float unit = (float) Math.min(UNIT, (MAX_WIDTH - LEFT - MARGIN) / Math.max(widest, 0.1));
         int[] bands = new int[shelves.length()];
-        int height = 2 * MARGIN + 40;
+        int height = HEADER + MARGIN + 56;
         for (int k = 0; k < bands.length; k++) height += bands[k] = Math.round((float) tallest[k] * unit) + GAP + BAR;
-        Bitmap picture = Bitmap.createBitmap(Math.round(LEFT + (float) widest * unit + MARGIN), height, Bitmap.Config.ARGB_8888);
+        int width = Math.max(Math.round(LEFT + (float) widest * unit + MARGIN), 900);
+        Bitmap picture = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(picture);
-        canvas.drawColor(Color.WHITE);
-        Paint bar = fill(0xffa7adb3), box = stroke(0xffd0d4d8, 1), frame = stroke(0xff5f6368, 2), group = stroke(0xff80868b, 2);
-        Paint number = text(30, 0xff202124), id = text(15, 0xff80868b), filter = new Paint(Paint.FILTER_BITMAP_FLAG);
-        float y = MARGIN;
+        canvas.drawColor(Ui.CREAM);
+        Paint title = text(44, Ui.INK);
+        title.setTypeface(Ui.serif(context, true));
+        title.setTextAlign(Paint.Align.LEFT);
+        canvas.drawText("Планограмма", LEFT - 90, 66, title);
+        Paint date = text(22, Ui.MUTED);
+        date.setTextAlign(Paint.Align.RIGHT);
+        canvas.drawText(new SimpleDateFormat("d MMMM yyyy, HH:mm", new Locale("ru")).format(new Date()), width - MARGIN, 64, date);
+        Paint bar = fill(0xffd7d4d2), box = stroke(0xffe4e1df, 1.5f), group = stroke(Ui.WINE, 2.5f);
+        Paint number = text(28, Color.WHITE), id = text(15, Ui.FAINT), filter = new Paint(Paint.FILTER_BITMAP_FLAG);
+        number.setTypeface(Ui.serif(context, true));
+        float y = HEADER;
         for (int k = shelves.length() - 1; k >= 0; k--) {   // the top shelf at the top, numbered from the bottom
             JSONObject shelf = shelves.getJSONObject(k);
             float floor = y + bands[k] - BAR;
-            canvas.drawRect(LEFT - 8, floor, LEFT + (float) widest * unit + 8, floor + BAR, bar);   // the shelves span the whole shot
-            canvas.drawRect(20, floor - 60, 70, floor - 10, frame);
-            centred(canvas, String.valueOf(k + 1), 45, floor - 35, number);
+            canvas.drawRoundRect(new RectF(LEFT - 8, floor, LEFT + (float) widest * unit + 8, floor + BAR), 4, 4, bar);
+            canvas.drawRoundRect(new RectF(22, floor - 58, 70, floor - 10), 12, 12, fill(Ui.WINE));
+            centred(canvas, String.valueOf(k + 1), 46, floor - 34, number);
             for (List<JSONObject> block : blocks(shelf.getJSONArray("facings"))) {
                 if (block.size() > 1) {   // one wine side by side: a frame around, the bottles alike
                     JSONObject first = block.get(0), last = block.get(block.size() - 1);
                     float x0 = LEFT + (float) first.getDouble("x") * unit;
                     float x1 = LEFT + (float) (last.getDouble("x") + last.getDouble("width")) * unit;
-                    canvas.drawRect(x0 - 2, floor - (float) first.getDouble("height") * unit - 4, x1 + 2, floor - 1, group);
+                    canvas.drawRoundRect(new RectF(x0 - 2, floor - (float) first.getDouble("height") * unit - 4, x1 + 2, floor - 1),
+                            8, 8, group);
                 }
                 for (JSONObject f : block) {
                     float x0 = LEFT + (float) f.getDouble("x") * unit, x1 = x0 + (float) f.getDouble("width") * unit;
                     float y0 = floor - (float) f.getDouble("height") * unit;
-                    if (block.size() == 1) canvas.drawRect(x0 + 1, y0, x1 - 1, floor - 1, box);
+                    if (block.size() == 1) canvas.drawRoundRect(new RectF(x0 + 1, y0, x1 - 1, floor - 1), 6, 6, box);
                     String slug = f.optString("slug");
-                    Bitmap face = slug.isEmpty() ? null : face(slug);
+                    Bitmap face = slug.isEmpty() ? null : faces.get(slug);
                     counts[0]++;
                     if (!slug.isEmpty()) counts[1]++;
                     if (face != null) {
@@ -161,15 +141,15 @@ final class Planogram {
                         standIn(canvas, x0 + 3, y0 + 3, x1 - 3, floor - 1);
                         counts[2]++;
                     }
-                    centred(canvas, f.optString("bottle"), (x0 + x1) / 2, floor + BAR + 14, id);
+                    if (ids) centred(canvas, f.optString("bottle"), (x0 + x1) / 2, floor + BAR + 14, id);
                 }
             }
             y += bands[k];
         }
-        Paint footer = text(20, 0xff5f6368);
+        Paint footer = text(22, Ui.MUTED);
         footer.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText(String.format(Locale.ROOT, "Полок %d, фейсингов %d, распознано %d, заглушек %d",
-                shelves.length(), counts[0], counts[1], counts[2]), LEFT, y + 34, footer);
+        canvas.drawText(String.format(new Locale("ru"), "Полок: %d · фейсингов: %d · распознано: %d", shelves.length(), counts[0],
+                counts[1]), LEFT - 90, y + 42, footer);
         return picture;
     }
 
@@ -213,13 +193,13 @@ final class Planogram {
         return out;
     }
 
-    /** A grey bottle with a question mark on its label. */
-    private static void standIn(Canvas canvas, float x0, float y0, float x1, float y1) {
+    /** A grey bottle with a question mark on its label, in (x0, y0)-(x1, y1). */
+    static void standIn(Canvas canvas, float x0, float y0, float x1, float y1) {
         float w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2;
         float body = Math.min(0.4f * w, 0.14f * h), neck = Math.min(0.13f * w, 0.045f * h);
         float top = y0 + 0.02f * h, shoulder = y0 + 0.40f * h, waist = y0 + 0.30f * h, cap = top + 0.09f * h;
         canvas.drawRoundRect(new RectF(cx - neck - 2, top, cx + neck + 2, cap), 3, 3, fill(0xff9aa0a6));
-        Paint grey = fill(0xffbdc1c6);
+        Paint grey = fill(0xffc9c5c2);
         Path shoulders = new Path();
         shoulders.moveTo(cx - neck, cap);
         shoulders.lineTo(cx + neck, cap);
@@ -231,174 +211,10 @@ final class Planogram {
         canvas.drawPath(shoulders, grey);
         float r = Math.max(2, body * 0.25f);
         canvas.drawRoundRect(new RectF(cx - body, shoulder - 2, cx + body, y1 - 1), r, r, grey);
-        RectF label = new RectF(cx - body + 3, y0 + 0.55f * h, cx + body - 3, y0 + 0.82f * h);
-        canvas.drawRect(label, fill(0xffeceef0));
-        centred(canvas, "?", label.centerX(), label.centerY(), text(Math.min(30, 0.9f * label.width()), 0xff5f6368));
-    }
-
-    /** The packshot of a wine, cut to the bottle, or null. */
-    private Bitmap face(String slug) {
-        if (faces.containsKey(slug)) return faces.get(slug);
-        Bitmap face = null;
-        File kept = new File(base, "faces/" + slug.replaceAll("[^A-Za-z0-9._-]", "_"));
-        try {
-            if (!kept.exists()) fetch(slug, kept);
-            if (kept.exists()) face = trim(decode(kept));
-        } catch (Exception e) {
-            Log.w(TAG, "no face for " + slug, e);
-        }
-        faces.put(slug, face);
-        return face;
-    }
-
-    private void fetch(String slug, File kept) throws IOException {
-        File template = new File(base, "faces_url.txt");
-        if (template.exists()) {
-            String url = new String(Files.readAllBytes(template.toPath()), StandardCharsets.UTF_8).trim().replace("{slug}", slug);
-            File secret = new File(base, "faces_auth.txt");
-            String auth = secret.exists() ? "Basic " + Base64.encodeToString(
-                    new String(Files.readAllBytes(secret.toPath()), StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8),
-                    Base64.NO_WRAP) : null;
-            if (download(url, auth, kept)) return;
-        }
-        String url = recognizer == null ? null : recognizer.face(slug);
-        if (url != null) download(url, null, kept);
-    }
-
-    private static boolean download(String url, String auth, File kept) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(20000);
-        if (auth != null) connection.setRequestProperty("Authorization", auth);
-        try {
-            if (connection.getResponseCode() != 200) {
-                Log.w(TAG, "HTTP " + connection.getResponseCode() + " for " + url);
-                return false;
-            }
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            try (InputStream in = connection.getInputStream()) {
-                byte[] buffer = new byte[16384];
-                for (int n; (n = in.read(buffer)) > 0; ) bytes.write(buffer, 0, n);
-            }
-            if (BitmapFactory.decodeByteArray(bytes.toByteArray(), 0, bytes.size()) == null) return false;   // not a picture
-            kept.getParentFile().mkdirs();
-            try (OutputStream out = new FileOutputStream(kept)) {
-                bytes.writeTo(out);
-            }
-            return true;
-        } finally {
-            connection.disconnect();
-        }
-    }
-
-    /** A packshot about 600 px tall: plenty for a facing. */
-    private static Bitmap decode(File file) {
-        BitmapFactory.Options bounds = new BitmapFactory.Options();
-        bounds.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(file.getPath(), bounds);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        options.inSampleSize = 1;
-        while (bounds.outHeight / (options.inSampleSize * 2) >= 600) options.inSampleSize *= 2;
-        return BitmapFactory.decodeFile(file.getPath(), options);
-    }
-
-    /**
-     * The bottle of a packshot without the margins around it: the opaque part, or on a white
-     * picture the part that is not white; a line thinner than 9 px (a frame along an edge)
-     * does not count.
-     */
-    private static Bitmap trim(Bitmap image) {
-        if (image == null) return null;
-        int w = image.getWidth(), h = image.getHeight();
-        int[] px = new int[w * h];
-        image.getPixels(px, 0, w, 0, 0, w, h);
-        boolean clear = Color.alpha(px[0]) < 128 || Color.alpha(px[w - 1]) < 128 || Color.alpha(px[(h - 1) * w]) < 128
-                || Color.alpha(px[w * h - 1]) < 128;
-        boolean[] mask = new boolean[w * h];
-        for (int i = 0; i < px.length; i++) {
-            int p = px[i];
-            mask[i] = clear ? Color.alpha(p) > 16
-                    : 0.299 * Color.red(p) + 0.587 * Color.green(p) + 0.114 * Color.blue(p) < 235;
-        }
-        mask = erode(mask, w, h, 4);
-        int left = w, top = h, right = -1, bottom = -1;
-        for (int yy = 0; yy < h; yy++)
-            for (int xx = 0; xx < w; xx++)
-                if (mask[yy * w + xx]) {
-                    left = Math.min(left, xx);
-                    right = Math.max(right, xx);
-                    top = Math.min(top, yy);
-                    bottom = Math.max(bottom, yy);
-                }
-        if (right < 0) return image;
-        left = Math.max(0, left - 4);   // the erosion took 4 px from each side
-        top = Math.max(0, top - 4);
-        right = Math.min(w - 1, right + 4);
-        bottom = Math.min(h - 1, bottom + 4);
-        return Bitmap.createBitmap(image, left, top, right - left + 1, bottom - top + 1);
-    }
-
-    /** A pixel stays where the (2r+1)-square around it is all set: across, then down. */
-    private static boolean[] erode(boolean[] mask, int w, int h, int r) {
-        boolean[] across = new boolean[mask.length], down = new boolean[mask.length];
-        int[] run = new int[Math.max(w, h) + 1];
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) run[x + 1] = run[x] + (mask[y * w + x] ? 1 : 0);
-            for (int x = r; x < w - r; x++) across[y * w + x] = run[x + r + 1] - run[x - r] == 2 * r + 1;
-        }
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) run[y + 1] = run[y] + (across[y * w + x] ? 1 : 0);
-            for (int y = r; y < h - r; y++) down[y * w + x] = run[y + r + 1] - run[y - r] == 2 * r + 1;
-        }
-        return down;
-    }
-
-    private String save(JSONObject plan, Bitmap picture) throws Exception {
-        File folder = recognizer != null ? recognizer.folder() : new File(base, "planogram");
-        folder.mkdirs();
-        String name = "planogram_" + new java.text.SimpleDateFormat("HHmmss", Locale.ROOT).format(new java.util.Date());
-        try (OutputStream out = new FileOutputStream(new File(folder, name + ".png"))) {
-            picture.compress(Bitmap.CompressFormat.PNG, 100, out);
-        }
-        JSONObject urls = new JSONObject();
-        JSONArray shelves = plan.getJSONArray("shelves");
-        for (int k = 0; k < shelves.length(); k++) {
-            JSONArray facings = shelves.getJSONObject(k).getJSONArray("facings");
-            for (int i = 0; i < facings.length(); i++) {
-                String slug = facings.getJSONObject(i).optString("slug");
-                if (!slug.isEmpty() && recognizer != null && recognizer.face(slug) != null) urls.put(slug, recognizer.face(slug));
-            }
-        }
-        plan.put("faces", urls);
-        Files.write(new File(folder, name + ".json").toPath(), plan.toString(1).getBytes(StandardCharsets.UTF_8));
-        return folder.getName() + "/" + name + ".png";
-    }
-
-    private void show(Bitmap picture, String note) {
-        Dialog dialog = new Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        FrameLayout box = new FrameLayout(activity);
-        box.setBackgroundColor(0xfff1f3f4);
-        if (picture != null)
-            box.addView(new ZoomView(activity, picture), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-        TextView caption = new TextView(activity);
-        caption.setText(note);
-        caption.setTextSize(14);
-        caption.setTextColor(0xff202124);
-        caption.setBackgroundColor(0xddffffff);
-        caption.setPadding(24, 120, 24, 16);
-        box.addView(caption, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP));
-        Button close = new Button(activity);
-        close.setText("Закрыть");
-        close.setOnClickListener(v -> dialog.dismiss());
-        FrameLayout.LayoutParams at = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.END);
-        at.setMargins(0, 0, 32, 48);
-        box.addView(close, at);
-        dialog.setContentView(box);
-        dialog.show();
+        RectF label = new RectF(cx - body + Math.max(2, 0.06f * body * 2), y0 + 0.55f * h, cx + body - Math.max(2, 0.06f * body * 2),
+                y0 + 0.82f * h);
+        canvas.drawRect(label, fill(0xffeeebe9));
+        centred(canvas, "?", label.centerX(), label.centerY(), text(Math.min(30, 0.9f * label.width()), Ui.MUTED));
     }
 
     private static void centred(Canvas canvas, String s, float x, float y, Paint paint) {
@@ -423,6 +239,7 @@ final class Planogram {
         Paint p = fill(colour);
         p.setTextSize(size);
         p.setTextAlign(Paint.Align.CENTER);
+        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         return p;
     }
 }

@@ -14,6 +14,7 @@ struct FrameFeatures {
     Size2 size;
     std::vector<cv::Point2f> points;   // pixels of the full-resolution frame
     cv::Mat descriptors;               // CV_32F, one row a point
+    double area = 0;                   // px of the frame where points can be (the mask); 0: all of it
 };
 
 // The keypoints of one BGR or gray frame; `mask` (CV_8U, frame size) MAY be empty.

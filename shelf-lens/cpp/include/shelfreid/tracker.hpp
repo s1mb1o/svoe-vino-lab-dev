@@ -190,7 +190,8 @@ protected:
     // Motion and keyframes.
     std::optional<Mat3> flow(const cv::Mat& gray_prev, const cv::Mat& gray, const std::vector<Box>& boxes_prev,
                              const std::optional<Mat3>& hint = std::nullopt) const;
-    Registration register_points(const std::vector<cv::Point2f>& points_k, const std::vector<cv::Point2f>& points_f) const;
+    Registration register_points(const std::vector<cv::Point2f>& points_k, const std::vector<cv::Point2f>& points_f,
+                                 double area_f = 0) const;
     FrameFeatures features_of(const cv::Mat& frame, const std::vector<Detection>& detections) const;
     std::optional<Good> register_to(const FrameFeatures& features, int index) const;
     // Whether registration `g` of a frame agrees with where the flow put that frame (`frame_ref`,
@@ -207,6 +208,9 @@ protected:
     int merge_duplicates();
     void absorb(Bottle& earlier, const Bottle& later);
     bool needs_keyframe() const;
+    // The view has much more to register by than the reference keyframe (cfg.richer_*): a
+    // keyframe made before the detector saw all the bottles in view, say, the camera not moving.
+    bool richer(const FrameFeatures& features) const;
     void add_keyframe(int number, const FrameFeatures& features);
     void jump();
     void find(int number, const FrameFeatures& features);

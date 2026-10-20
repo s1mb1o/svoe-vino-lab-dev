@@ -53,21 +53,28 @@ final class BottleTable {
         view.setVisibility(android.view.View.GONE);
     }
 
-    /** The table over the run's screen, and a button that opens and closes it. */
+    /** The table over the run's screen, closed; the debug menu opens it, its button closes it. */
     void attach(FrameLayout root) {
         root.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        Button toggle = new Button(context);
-        toggle.setText("Бутылки");
-        toggle.setOnClickListener(v -> {
-            open = !open;
-            view.setVisibility(open ? android.view.View.VISIBLE : android.view.View.GONE);
-            toggle.setText(open ? "Закрыть" : "Бутылки");
-            if (open) refresh();
-        });
-        FrameLayout.LayoutParams at = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.END);
-        at.setMargins(0, 0, 32, 48);
-        root.addView(toggle, at);
+        Button close = new Button(context);
+        close.setText("Закрыть");
+        close.setOnClickListener(v -> close());
+        ((LinearLayout) view.getChildAt(0)).addView(close, 0);
+    }
+
+    boolean isOpen() {
+        return open;
+    }
+
+    void open() {
+        open = true;
+        view.setVisibility(android.view.View.VISIBLE);
+        refresh();
+    }
+
+    void close() {
+        open = false;
+        view.setVisibility(android.view.View.GONE);
     }
 
     private static String state(String state) {

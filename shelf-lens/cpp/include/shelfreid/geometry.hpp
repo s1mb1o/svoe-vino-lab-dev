@@ -36,9 +36,11 @@ Mat3 normalized(const Mat3& H);
 
 // Why H is not a plausible camera motion of frame B, or nothing.
 std::optional<std::string> check(const Mat3& H, const Size2& size_b, const HomographyConfig& cfg);
-// The share of the overlap, in frame B, that the convex hull of the inliers of B covers.
+// The share of the overlap, in frame B, that the convex hull of the inliers of B covers; of
+// `area_b` px at most when the points of B can be in that much of it only (the bottles' boxes):
+// one bottle in view covers a tenth of a frame, all of what it can.
 double coverage(const Mat3& H, const std::vector<cv::Point2f>& inliers_b, const Size2& size_a,
-                const Size2& size_b);
+                const Size2& size_b, double area_b = 0);
 
 struct Registration {
     bool ok = false;
@@ -49,9 +51,9 @@ struct Registration {
     double coverage = 0.0;
 };
 
-// The homography B -> A from matched points (MAGSAC), and its checks.
+// The homography B -> A from matched points (MAGSAC), and its checks (`area_b`: as coverage's).
 Registration estimate(const std::vector<cv::Point2f>& points_a,
                       const std::vector<cv::Point2f>& points_b, const Size2& size_a,
-                      const Size2& size_b, const HomographyConfig& cfg);
+                      const Size2& size_b, const HomographyConfig& cfg, double area_b = 0);
 
 }  // namespace shelfreid

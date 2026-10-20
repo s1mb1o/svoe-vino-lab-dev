@@ -7,6 +7,8 @@
 // replaces the waiting one (the latest frame wins, as a camera drops frames).
 #pragma once
 
+#include <array>
+#include <set>
 #include <chrono>
 #include <condition_variable>
 #include <deque>
@@ -48,32 +50,40 @@ public:
     // An upright BGR frame for the detector and the tracker.
     void submit(int frame, cv::Mat bgr);
 
+    // The frames stopped and start again from elsewhere (the camera was off): the motion
+    // and the tracker's flow start over, the tracker finds its place on the map again, the
+    // map and the recognition stay.
+    void interrupt();
+
     struct Result {
         int frame = -1;
         std::vector<Shown> shown;
-        std::vector<int> recognized;   // a box: 1 when its bottle's wine is known, else 0
+        std::vector<int> recognized;   // a box: 1 its wine is known, 2 a crop waits for the server or its answer, else 0
     };
     Result latest() const;
     std::string stats() const;
 
     // Recognition of the wines by the server, one bottle crop a request (/v1/match). Every
-    // tracker step (every other one) offers, for each bottle not yet sure whose box is at least kGate of the
-    // frame height (the server finds the producer from there), not cut by the frame and
-    // confirmed by the tracker, its crop to the bottle's reserve: at most kKeptPerBottle crops
+    // other tracker step offers, for each bottle not yet sure whose box is at least kGate of
+    // the frame height (the server finds the producer from there) and not cut by the frame,
+    // its crop to the bottle's reserve (from its first sight, before the tracker confirms it:
+    // a bottle in view when the scan starts goes kMatureMs later): at most kKeptPerBottle crops
     // of different frames, by quality = sharpness x (height / the bottle's largest height)^2
     // (a large crop first, but a blurred one loses to a sharper slightly smaller one); a new
     // crop pushes out the worst. At most kKeptCrops crops in all: the worst of the bottles
     // with more than one go first. A crop is offered every other step, so the reserve spans
     // more time. One request a bottle (kMaxAttempts), with the best crop of its reserve,
     // kMatureMs after the bottle first fit (a borderline first crop does not go when a better
-    // one comes a moment later). The crops
+    // one comes a moment later), once the tracker confirmed it (not a duplicate it merges
+    // away). The crops
     // are sent apart from the steps (take_crop), so the queue drains after a video ends and
-    // for bottles gone from the frame: no more than kMaxInflight requests out, the largest
-    // crop first; the reserve is freed when its crop goes. The answer decides (kAgree = 1). A
+    // for bottles gone from the frame: no more than kMaxInflight requests out, a bottle in
+    // view first (the shelf the user looks at), then the largest crop; the reserve is freed
+    // when its crop goes. The answer decides (kAgree = 1). A
     // failed request puts its crop back and does not count.
     static constexpr double kGate = 0.19;
     static constexpr int kSpacingMs = 500, kMaxAttempts = 1, kAgree = 1, kMaxInflight = 4, kKeptPerBottle = 4,
-                         kKeptCrops = 80, kMatureMs = 2000;
+                         kKeptCrops = 80, kMatureMs = 1000;
     void set_recognition(bool on);
     // The next crop to send, or empty: five little-endian int32 (bottle, frame, box height in
     // px, sharpness x 10, crops it was chosen from), then the PNG. It picks the crop when a
@@ -86,6 +96,11 @@ public:
     // eligible: recognition off, small, cut, unconfirmed, done asking), box height (px and share of the frame), the frame
     // last seen, requests, answers, the wine and whether it is sure.
     std::string recognition_table() const;
+    // The bottles of the map (provisional ones left out), those whose wine is known, those
+    // with a crop waiting for the server or its answer, and 1 while the tracker has lost its
+    // place on the map, or waits to register to it with a box in view waiting for that (the
+    // boxes add nothing to the map then), else 0.
+    std::array<int, 4> summary() const;
     // A small JPEG of the bottle's latest crop (renewed about once a second), or empty.
     std::vector<unsigned char> thumbnail(int bottle) const;
     // The planogram of the map as it is now (shelfreid/planogram.hpp, provisional bottles
@@ -121,12 +136,14 @@ private:
     std::vector<double> detect_ms_, latency_ms_, fast_ms_, slow_ms_, landed_;
     std::deque<std::chrono::steady_clock::time_point> done_;
     int submitted_ = 0, dropped_ = 0;
-    size_t bottles_ = 0, keyframes_ = 0;
+    size_t bottles_ = 0, keyframes_ = 0, provisional_ = 0;
+    bool lost_ = false;
     int ids_ = 0;
 
     struct Recognition {
         int attempts = 0, inflight = 0, last_step = -1000, answers = 0;
         bool done = false, sure = false;
+        bool confirmed = false;               // the tracker keeps it (its last box was not provisional)
         std::map<std::string, int> votes;     // slug -> answers naming it first
         std::map<std::string, std::string> names;
         std::string best_slug;                // the answer from the largest crop
@@ -146,19 +163,25 @@ private:
         int max_height = 0;                   // the largest box seen while it fit
         std::chrono::steady_clock::time_point first_fit{};   // when it first fit (zero: not yet)
         std::chrono::steady_clock::time_point last_sent{};
+        // The colour of its box: 1 green (the wine is known), 2 yellow (a crop waits for the
+        // server or its answer), 0 grey.
+        int colour() const { return done && !slug.empty() ? 1 : (!kept.empty() || inflight > 0) ? 2 : 0; }
         double quality(const Candidate& c) const {
             const double size = max_height > 0 ? static_cast<double>(c.height) / max_height : 1.0;
             return c.sharpness * size * size;
         }
     };
     std::vector<unsigned char> dispatch();   // under recognition_mutex_
-    void plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown);
+    int queued() const;                      // bottles with a crop to send, unsent: under recognition_mutex_
+    // `kept`: the bottles the map keeps for good (not provisional), in view or not.
+    void plan_recognition(int frame, const cv::Mat& bgr, const std::vector<Shown>& shown, const std::set<int>& kept);
     mutable std::mutex recognition_mutex_;
     bool recognition_on_ = false;
     std::map<int, Recognition> recognitions_;
     std::deque<std::vector<unsigned char>> outbox_;
     int out_ = 0;                  // crops queued or in flight
     int track_steps_ = 0, sent_ = 0, answered_ = 0, failed_ = 0, accepted_ = 0;
+    int shown_frame_ = -1;         // the frame of the last step: a bottle seen there is in view
 
     FrameMotion frame_motion_;
     mutable std::mutex chain_mutex_;

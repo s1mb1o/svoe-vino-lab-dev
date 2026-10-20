@@ -18,8 +18,8 @@ android {
         applicationId = "ru.svoevino.shelfreid"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = 2
+        versionName = "1.0"
         ndk { abiFilters += "arm64-v8a" }
         externalNativeBuild {
             cmake {
@@ -45,6 +45,9 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
             version = "3.22.1"
         }
+    }
+    androidResources {
+        noCompress += listOf("onnx")   // the detector, copied out of the APK as it is
     }
     packaging {
         jniLibs { pickFirsts += "**/libonnxruntime.so" }   // the Maven package and the linked copy are one version

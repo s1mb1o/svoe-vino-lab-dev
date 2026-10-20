@@ -70,6 +70,10 @@ public:
     SlowResult slow(const Snapshot& snap);
     void apply(SlowResult& result);
 
+    // The next frame does not follow the last one (the camera stopped and started again):
+    // its step takes no flow from the last frame and finds its place on the map again.
+    void interrupt() { broken_ = true; }
+
     int latency;             // steps; negative: a thread of its own
     int slow_every = 0;      // the least steps between two slow jobs (0: whenever asked)
     int last_slow = kNever;
@@ -91,6 +95,7 @@ private:
     // (the graph, the keyframes, the bottles; the descriptors are shared and only read).
     std::shared_ptr<SlowWorker> worker_;
     int generation_ = 0;   // a jump drops the results of the frames before it
+    bool broken_ = false;  // interrupt(): the next step is a jump
 };
 
 }  // namespace shelfreid

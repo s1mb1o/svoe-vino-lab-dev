@@ -11,6 +11,7 @@ namespace shelfreid {
 FrameFeatures extract(const cv::Mat& image, const FeatureConfig& cfg, const cv::Mat& mask_in) {
     FrameFeatures out;
     out.size = {static_cast<double>(image.cols), static_cast<double>(image.rows)};
+    if (!mask_in.empty()) out.area = cv::countNonZero(mask_in);
     cv::Mat gray;
     if (image.channels() == 3) cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
     else gray = image;

@@ -121,14 +121,17 @@ extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_pushF
 }
 
 // The last processed frame: its number, then six floats a box: x1, y1, x2, y2, state
-// (0 a bottle whose wine is not known yet, 1 known, 3 no bottle), bottle id (-1 none).
+// (0 a bottle whose wine is not known yet, 1 known, 2 a crop of it waits for the server or
+// its answer, 3 not a bottle the tracker keeps (cut, too weak), 4 a bottle found but not on
+// the map yet: the tracker waits to know where it is), bottle id (-1 none).
 extern "C" JNIEXPORT jfloatArray JNICALL Java_ru_svoevino_shelfreid_Native_latest(JNIEnv* env, jclass, jlong handle) {
     const auto result = reinterpret_cast<Pipeline*>(handle)->latest();
     std::vector<float> out{static_cast<float>(result.frame)};
     out.reserve(1 + result.shown.size() * 6);
     for (size_t i = 0; i < result.shown.size(); ++i) {
         const auto& s = result.shown[i];
-        const int state = s.bottle == kNone ? 3 : (i < result.recognized.size() ? result.recognized[i] : 0);
+        const int state = s.bottle == kNone ? (s.status == "pending" ? 4 : 3)
+                                            : (i < result.recognized.size() ? result.recognized[i] : 0);
         out.insert(out.end(), {float(s.box[0]), float(s.box[1]), float(s.box[2]), float(s.box[3]), float(state),
                                float(s.bottle)});
     }
@@ -189,4 +192,19 @@ extern "C" JNIEXPORT jbyteArray JNICALL Java_ru_svoevino_shelfreid_Native_thumbn
 // The planogram of the map as it is now, as JSON (Pipeline::planogram).
 extern "C" JNIEXPORT jstring JNICALL Java_ru_svoevino_shelfreid_Native_planogram(JNIEnv* env, jclass, jlong handle) {
     return env->NewStringUTF(reinterpret_cast<Pipeline*>(handle)->planogram().c_str());
+}
+
+// The bottles of the map, those whose wine is known, those waiting for the server, and 1
+// while the tracker has lost its place on the map.
+extern "C" JNIEXPORT jintArray JNICALL Java_ru_svoevino_shelfreid_Native_summary(JNIEnv* env, jclass, jlong handle) {
+    const auto s = reinterpret_cast<Pipeline*>(handle)->summary();
+    jintArray out = env->NewIntArray(4);
+    const jint values[4] = {s[0], s[1], s[2], s[3]};
+    env->SetIntArrayRegion(out, 0, 4, values);
+    return out;
+}
+
+// The frames start again after a break (the camera was off): the map stays.
+extern "C" JNIEXPORT void JNICALL Java_ru_svoevino_shelfreid_Native_interrupt(JNIEnv*, jclass, jlong handle) {
+    reinterpret_cast<Pipeline*>(handle)->interrupt();
 }
