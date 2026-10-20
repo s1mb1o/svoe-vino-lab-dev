@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-20 — Android 0.3.0 release preparation
+
+- Updated the Android release contract to the signed dual-pipeline 0.3.0 APK.
+- Described default DIS-768 cropped custom and the selectable full-image standard alternative.
+- Preserved the historical screenshot labels and the existing offline, QR, and barcode claims.
+- Made the download route reject a configured file with the wrong release byte count.
+- Kept the generated APK outside Git. Public deployment and final download verification are pending.
+
 ## 2026-10-20 — Integrate the Shelf Lens landing
 
 - Add the Russian `/shelf-lens` page to the main Nuxt portal.

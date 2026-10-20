@@ -52,7 +52,7 @@ const benefits = [
 
 const recognitionSteps = [
   { number: '01', title: 'Добавьте фотографию', copy: 'Используйте камеру или галерею. Лучше всего работает снимок одной бутылки спереди.', image: '/screenshots/android/03_bottle_selected_dark.webp', alt: 'Бутылка Пино Нуар выбрана в приложении Что за вино' },
-  { number: '02', title: 'Выберите обработку', copy: 'По умолчанию используется весь кадр без сегментации. DIS и YOLO можно включить в настройках; здесь показан пример DIS.', image: '/screenshots/android/05_processing_pipeline_dark.webp', alt: 'Пример дополнительной обработки DIS в версии 0.1.4' },
+  { number: '02', title: 'Доверьте обработку телефону', copy: 'Основной режим выделяет главный объект с DIS-768, обрезает кадр и делает фон белым. В настройках доступен поиск по полному фото без сегментации.', image: '/screenshots/android/05_processing_pipeline_dark.webp', alt: 'Пример обработки DIS в версии 0.1.4' },
   { number: '03', title: 'Получите совпадения', copy: 'SigLIP2 Base NaFlex p512 создаёт вектор, а локальный поиск сравнивает его со встроенным каталогом.', image: '/screenshots/android/04_recognition_result_dark.webp', alt: 'Результат распознавания Пино Нуар со сходством 91 процент в версии 0.1.4' },
 ]
 </script>
@@ -110,7 +110,7 @@ const recognitionSteps = [
       <div class="android-section-heading left">
         <p class="android-kicker"><span />ПОИСК ПО ФОТОГРАФИИ</p>
         <h2 id="recognition-title">Три шага до <span>нужного вина</span></h2>
-        <p>Скриншоты ниже сделаны в версии 0.1.4 на Google Pixel 8: «Пино Нуар» найден со сходством 91%. Версия 0.2.0 использует новую модель SigLIP2 Base NaFlex p512 и по умолчанию не применяет сегментацию.</p>
+        <p>Скриншоты ниже сделаны в версии 0.1.4 на Google Pixel 8: «Пино Нуар» найден со сходством 91%. Версия 0.3.0 использует SigLIP2 Base NaFlex p512. Основной режим DIS-768 обрезает главный объект и уменьшает вес фона при сравнении. В настройках можно выбрать стандартный поиск по полному фото.</p>
       </div>
       <div class="recognition-grid">
         <article v-for="step in recognitionSteps" :key="step.number" class="recognition-card">
@@ -151,6 +151,8 @@ const recognitionSteps = [
         <dl class="technology-facts">
           <div><dt>Каталог</dt><dd>2 093 вина</dd></div>
           <div><dt>Вектор</dt><dd>768 значений</dd></div>
+          <div><dt>Основной режим</dt><dd>DIS-768 + p512 custom</dd></div>
+          <div><dt>Сравнение в настройках</dt><dd>Полное фото + p512 standard</dd></div>
           <div><dt>Минимальная версия</dt><dd>Android 9</dd></div>
           <div><dt>Интернет для поиска</dt><dd>Не требуется</dd></div>
         </dl>

@@ -1,6 +1,6 @@
 # Android landing page specification
 
-Date: 2026-09-29
+Date: 2026-10-20
 Status: Implemented and verified
 
 ## Objective
@@ -44,13 +44,18 @@ The page MUST NOT describe cosine similarity as a probability or calibrated conf
 The page MUST show the application version and the APK size.
 The download button MUST use the public runtime value `androidApkUrl`.
 The environment variable is `NUXT_PUBLIC_ANDROID_APK_URL`.
-The default URL MUST be `/downloads/chtozavino-0.1.4-debug.apk`.
+The default URL MUST be `/downloads/chtozavino-0.3.0-release-test-signed.apk`.
+Version 0.3.0 MUST describe DIS-768 cropped custom as the default pipeline.
+It MUST describe the standard full-image pipeline as a Settings alternative.
+The page MUST distinguish the historical version 0.1.4 screenshots from the current release.
+The public release MUST omit optional YOLO weights.
+The release contract MUST contain the signed APK byte count and SHA-256.
 
 The Web UI MUST NOT store the generated APK in Git.
 The local server route MUST stream the APK from `androidApkPath`.
 The environment variable is `NUXT_ANDROID_APK_PATH`.
 The local default path MUST point to the versioned Android build output.
-The route MUST return HTTP 404 when the configured file is not available.
+The route MUST return HTTP 404 when the configured file is not available or has the wrong byte count.
 The route MUST set the Android package content type.
 The route MUST set the versioned attachment file name.
 

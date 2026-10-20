@@ -29,28 +29,31 @@ describe('Android landing page', () => {
 
   it('keeps one versioned release contract for the page and download route', async () => {
     expect(ANDROID_RELEASE).toMatchObject({
-      version: '0.2.0',
-      versionCode: 6,
+      version: '0.3.0',
+      versionCode: 7,
       applicationId: 'com.alolalab.chtozavino',
       minAndroid: 9,
       catalogueSize: 2093,
-      apkFileName: 'chtozavino-0.2.0-release-test-signed.apk',
-      apkBytes: 414_941_197,
-      sha256: '6c9ba0c364f762023818cd6d6885e16359c146e23bc84d8316343a9836c34cb3',
+      apkFileName: 'chtozavino-0.3.0-release-test-signed.apk',
+      apkBytes: 753_111_053,
+      sha256: '89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a',
     })
-    expect(DEFAULT_ANDROID_APK_URL).toBe('/downloads/chtozavino-0.2.0-release-test-signed.apk')
+    expect(DEFAULT_ANDROID_APK_URL).toBe('/downloads/chtozavino-0.3.0-release-test-signed.apk')
     const route = await source('server/routes/downloads/[filename].get.ts')
     expect(route).toContain("filename !== ANDROID_RELEASE.apkFileName")
     expect(route).toContain("'Content-Type': 'application/vnd.android.package-archive'")
     expect(route).toContain("'Content-Length': String(apkStat.size)")
     expect(route).toContain('attachment; filename=')
     expect(route).toContain('createReadStream(apkPath)')
+    expect(route).toContain('apkStat.size !== ANDROID_RELEASE.apkBytes')
   })
 
   it('distinguishes the new encoder and package from historical screenshots', async () => {
     const page = await source('app/pages/android.vue')
     expect(page).toContain('SigLIP2 Base NaFlex p512')
-    expect(page).toContain('весь кадр без сегментации')
+    expect(page).toContain('по полному фото без сегментации')
+    expect(page).toContain('DIS-768 + p512 custom')
+    expect(page).not.toContain('YOLO можно включить')
     expect(page).toContain('Скриншоты ниже сделаны в версии 0.1.4')
     expect(page).toContain('история автоматически не переносится')
   })

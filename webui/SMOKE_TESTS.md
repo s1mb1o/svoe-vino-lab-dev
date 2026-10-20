@@ -1,5 +1,14 @@
 # Smoke tests
 
+## Android 0.3.0 publication
+
+1. Verify version 0.3.0, code 7, the exact APK byte count, and the SHA-256 in one release contract.
+2. Verify the default DIS-768 custom description and the standard Settings alternative.
+3. Keep the existing screenshots labeled as version 0.1.4 examples.
+4. Reject a missing or wrong-size configured APK. Reject an unknown download filename.
+5. Verify the staged and public APK body hash, attachment filename, package content type, and byte count.
+6. Check `/android` in both themes at phone and desktop widths. Preserve other portal routes.
+
 ## Shelf Lens landing
 
 1. Open `/shelf-lens` without an age confirmation. Confirm the shared age gate.

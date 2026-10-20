@@ -1,5 +1,14 @@
 # Research log
 
+## 2026-10-20 — Android dual-pipeline release
+
+The two complete encoder/index pairs use one shared catalogue image archive.
+The signed APK contains 753111053 bytes. Its display size is 718 MiB.
+The public versioned filename and physical configured file MUST identify the same artifact.
+A byte-count guard prevents the route from serving an older APK under the new release name.
+The existing screenshots remain version 0.1.4 evidence. They do not measure version 0.3.0 quality.
+The Android measurement record provides the separate Pixel retrieval results.
+
 ## 2026-10-20 — Shelf Lens source integration
 
 The owner requested integration into the main checkout after choosing local-only delivery.

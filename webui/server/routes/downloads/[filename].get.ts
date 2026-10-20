@@ -16,7 +16,7 @@ export default defineEventHandler(async event => {
   } catch {
     throw createError({ statusCode: 404, statusMessage: 'APK is not available' })
   }
-  if (!apkStat.isFile()) {
+  if (!apkStat.isFile() || apkStat.size !== ANDROID_RELEASE.apkBytes) {
     throw createError({ statusCode: 404, statusMessage: 'APK is not available' })
   }
 
