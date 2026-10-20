@@ -43,7 +43,8 @@ The pages MUST describe these functions of both bots:
 - The queue receipt with the position and the approximate wait.
 - «✅ Совпало» and «❌ Не совпало» for a single photo, three alternatives after «❌ Не совпало».
 - The tentative answer when the confidence is low.
-- The «Винный дневник» history records when the messenger is linked and recording is on.
+- Linking each messenger to the website account, with one shared «Винный дневник» history for
+  the site, Telegram, and MAX linked to that account. Only new finds are recorded, when recording is on.
 - The automatic safety check and the 30-day deletion of photos and request data.
 - The 18+ confirmation. A photo sent before the confirmation is processed after it.
 - The commands `/start`, `/help`, `/stats`, and `/privacy`.
@@ -51,6 +52,11 @@ The pages MUST describe these functions of both bots:
 
 The Telegram page MUST also describe the one-time diary link and `/unlink`.
 The MAX page MUST describe the link in the MAX mini app. The MAX page MUST NOT list `/unlink`.
+The MAX instructions use the email connected to the existing website account and keep history
+viewing on the website: the mini app provides settings only.
+Both pages explain «Настройки» → «Связанные мессенджеры» → «Привязать мессенджер» and the
+«Записывать найденные вина» switch. The linking action opens `/account?tab=settings`.
+The hero introduces shared history and links to its explanation in `#bot-diary`.
 
 ## Production gap
 

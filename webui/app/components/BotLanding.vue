@@ -60,6 +60,7 @@ useHead({
         <p class="bot-kicker"><AppIcon :name="bot.icon" />БОТ В {{ bot.platform.toUpperCase() }}</p>
         <h1 id="bot-title">Вино в кадре.<br><span>Ответ в {{ bot.platform }}.</span></h1>
         <p class="bot-lead">Отправьте боту фотографию бутылки. Он найдёт российское вино в каталоге и пришлёт карточку в этот же чат.</p>
+        <p class="bot-account-intro">Привяжите {{ bot.platform }} к аккаунту на сайте, чтобы новые находки из чата и веб-сканера сохранялись в <a href="#bot-diary">общей истории вин</a>.</p>
         <div class="bot-actions">
           <a class="button primary" :href="bot.url" target="_blank" rel="noopener noreferrer" data-testid="bot-open"><AppIcon :name="bot.icon" />Открыть {{ bot.handle }}</a>
           <NuxtLink class="button secondary" to="/"><AppIcon name="scan" />Открыть веб-сканер</NuxtLink>
@@ -138,11 +139,13 @@ useHead({
       </ol>
     </section>
 
-    <section class="bot-section bot-diary-section" aria-labelledby="bot-diary-title">
+    <section id="bot-diary" class="bot-section bot-diary-section" aria-labelledby="bot-diary-title">
       <div class="bot-diary-copy">
         <p class="bot-kicker"><span />ВИННЫЙ ДНЕВНИК</p>
-        <h2 id="bot-diary-title">Находки из чата&nbsp;—<br><span>в вашем дневнике</span></h2>
+        <h2 id="bot-diary-title">Один аккаунт&nbsp;—<br><span>общая история вин</span></h2>
         <p>{{ bot.diaryCopy }}</p>
+        <p>Записью управляет переключатель «Записывать найденные вина» в «Настройках». «❌ Не совпало» уберёт находку из истории за день распознавания, а выбранный другой вариант заменит её.</p>
+        <NuxtLink class="bot-diary-overview" to="/diary">Сохранённые вина, статусы и заметки — о «Винном дневнике»<AppIcon name="arrow" /></NuxtLink>
         <dl class="bot-diary-facts">
           <div v-for="fact in bot.diaryFacts" :key="fact.term"><dt>{{ fact.term }}</dt><dd>{{ fact.value }}</dd></div>
         </dl>
@@ -153,7 +156,7 @@ useHead({
           <li v-for="(step, index) in bot.diarySteps" :key="step"><span>{{ index + 1 }}</span>{{ step }}</li>
         </ol>
         <p class="bot-diary-note"><AppIcon name="info" />{{ bot.diaryNote }}</p>
-        <NuxtLink class="button secondary" to="/account"><AppIcon name="book" />Открыть «Винный дневник»</NuxtLink>
+        <NuxtLink class="button secondary" to="/account?tab=settings"><AppIcon name="book" />Привязать {{ bot.platform }}</NuxtLink>
       </div>
     </section>
 
@@ -193,6 +196,8 @@ useHead({
 .bot-hero h1 { max-width: 620px; margin: 18px 0 22px; font-size: clamp(50px, 5.3vw, 76px); line-height: 1.06; letter-spacing: -.052em; }
 .bot-hero h1 span, .bot-heading h2 span, .bot-diary-copy h2 span, .bot-commands-copy h2 span, .bot-final h2 span { color: var(--accent); }
 .bot-lead { max-width: 555px; color: var(--bot-soft); font-size: 17px; line-height: 1.72; }
+.bot-account-intro { max-width: 555px; margin-top: 14px; color: var(--bot-soft); font-size: 14px; line-height: 1.7; }
+.bot-account-intro a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .bot-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 31px; }
 .bot-actions .button { width: auto; min-height: 54px; padding-inline: 24px; }
 .bot-facts { display: flex; flex-wrap: wrap; gap: 7px; margin: 21px 0 0; padding: 0; list-style: none; }
@@ -253,8 +258,12 @@ useHead({
 .bot-step-card h3 { margin: 20px 0 8px; font: 500 21px/1.25 'Playfair Display', Georgia, serif; }
 .bot-step-card p { color: var(--bot-soft); font-size: 11px; line-height: 1.65; }
 .bot-step-arrow { position: absolute; z-index: 2; width: 22px; height: 22px; right: -17px; top: 50%; padding: 5px; border-radius: 50%; color: var(--accent); background: var(--paper); transform: translateY(-50%); box-sizing: content-box; }
-.bot-diary-section { display: grid; grid-template-columns: 1.18fr minmax(300px, .82fr); gap: clamp(48px, 7vw, 100px); align-items: center; padding: 60px clamp(40px, 7vw, 92px); border-radius: 34px; background: var(--cream); }
+.bot-diary-section { display: grid; grid-template-columns: 1.18fr minmax(300px, .82fr); gap: clamp(48px, 7vw, 100px); align-items: center; padding: 60px clamp(40px, 7vw, 92px); border-radius: 34px; background: var(--cream); scroll-margin-top: 100px; }
 .bot-diary-copy h2 { font-size: clamp(40px, 4.5vw, 62px); }
+.bot-diary-copy>p + p { margin-top: 14px; }
+.bot-diary-overview { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; margin-top: 14px; color: var(--accent); font-size: 13px; line-height: 1.6; }
+.bot-diary-overview:hover { text-decoration: underline; text-underline-offset: 4px; }
+.bot-diary-overview .icon { width: 18px; height: 18px; }
 .bot-diary-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 30px 0 0; overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--line); }
 .bot-diary-facts div { padding: 17px; background: var(--paper); }
 .bot-diary-facts dt { color: var(--bot-soft); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }

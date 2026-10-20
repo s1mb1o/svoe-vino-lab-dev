@@ -35,6 +35,12 @@ export const sitemapSections: { id: string; title: string; pages: SitemapPage[] 
     ],
   },
   {
+    id: 'diary', title: 'Личный дневник',
+    pages: [
+      { path: '/diary', label: 'Винный дневник', icon: 'book', description: 'Общая история сайта, Telegram и MAX. Сохранённые вина, статусы и личные заметки.' },
+    ],
+  },
+  {
     id: 'games', title: 'Игры',
     pages: [
       { path: '/game', label: 'Wine&Dine Merge', icon: 'game', description: 'Игра в браузере: собирайте блюда и подбирайте к ним российское вино.' },
