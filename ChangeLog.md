@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-20 — Russian README
+
+- Translate all README descriptions, headings, and link labels into Russian.
+- Preserve commands, technical identifiers, link targets, metrics, and measurement limits.
+
 ## 2026-10-20 — Correct the comprehensive review findings
 
 - Accept real underscore wine identifiers in Web UI metadata lookup. Preserve path validation.
