@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-20 — Shelf Lens dataset link
+
+- Add the Google Drive link to the Shelf Lens dataset (`shelf-bottles-dataset.zip`) in `shelf-lens/README.md`.
+
 ## 2026-10-20 — Shelf Lens assessment coverage
 
 - Update `ASSESSMENT.md` against `main` at `06f3b78c`.

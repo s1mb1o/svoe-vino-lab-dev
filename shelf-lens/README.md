@@ -168,7 +168,9 @@ uv run python scripts/planogram.py render planogram.json planogram.png --labels 
 | `docs/` | Дизайн и история решений. |
 
 Данные (видео, кадры, фото) лежат в `data/`, результаты — в `out/`, скачанные
-зависимости — в `third_party/`. Эти папки не попадают в git.
+зависимости — в `third_party/`. Эти папки не попадают в git. Датасет лежит на
+[Google Drive](https://drive.google.com/drive/folders/16aGxOgjwPqlmdHVZpDB9tCEyx1jrXctF)
+(архив `shelf-bottles-dataset.zip`).
 
 ## Документация
 
