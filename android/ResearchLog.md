@@ -23,7 +23,8 @@
 - The DIS-512 campaign finished at 21:16 MSK with 668 assignments and zero errors.
   Its saved audit passes: Top-1/5/10 46.56/82.34/87.72%, median/P95 1324/1665 ms.
   The DIS-768 default has the same Top-1 and higher Top-5/10 on this cohort.
-- Device validation and website publication remain pending. Do not attribute benchmark results to the new APK before parity checks pass.
+- Device parity and signed-release UI acceptance passed. The complete public APK download matches the archive hash.
+  The standard choice, history, and age consent survived a same-key update.
 
 ### DIS resolution specialization
 

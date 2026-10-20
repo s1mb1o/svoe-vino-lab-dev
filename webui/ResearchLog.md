@@ -6,6 +6,13 @@ The six-box grid keeps its existing 384 px maximum width and uses automatic inli
 
 ## 2026-10-20 — Android dual-pipeline release
 
+Published website `40a54074` at 19:22:28 UTC.
+All 622 deployed website tests, type checking, and Linux build passed.
+The complete staged and public GET downloads match all 753111053 APK bytes and the release SHA-256.
+Public browser checks passed at 320, 390, and 1440 pixels in both system themes.
+The existing download route is GET-only. HEAD returns 404. Browser GET downloads pass.
+The previous website and APK remain preserved. Caddy and matcher services did not change.
+
 The two complete encoder/index pairs use one shared catalogue image archive.
 The signed APK contains 753111053 bytes. Its display size is 718 MiB.
 The public versioned filename and physical configured file MUST identify the same artifact.

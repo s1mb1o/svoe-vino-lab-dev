@@ -12,6 +12,13 @@ Read `docs/releases/2026-10-20-main.md` for the exact source checkpoints.
 
 ## Two production pipelines
 
+Executed on 2026-10-20: 668 custom replay assignments, 30 standard replay assignments,
+and the original 100-image Eval.zip cohort completed without transport errors.
+Both replay checks preserve every sampled Top-1 result. Eval.zip accepted 86/100 predictions.
+The signed release passed actual gallery recognition, Settings switching, same-key update,
+history retention, and release HTTP absence on Pixel 8.
+Read `docs/releases/0.3.0.md` for exact identities and quality limitations.
+
 - Default to DIS-768 cropped custom on first start and format 6 upgrade.
 - Switch to standard and back in Settings. Preserve the selected choice after restart.
 - Select each graph, model manifest, candidate mapping, DIS graph, and index as one unit.

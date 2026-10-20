@@ -28,7 +28,10 @@
 - Preserved history and accelerator preferences during automatic pack migration.
 - Passed the first debug/release builds, Android unit tests, release lint, and ten pack-export tests.
 - Started Pixel validation only after both DIS resolution runs completed and cleaned up.
-- Release publication and final device validation remain pending.
+- Installed the signed 0.3.0 release on Pixel 8. Verified gallery recognition, Settings switching,
+  persisted pipeline choice, history after a same-key update, and absence of debug HTTP.
+- Published the exact verified APK at `https://chtozavino.ru/android`.
+  Full public download SHA-256 and both-theme browser checks passed.
 
 ### DIS input-resolution experiment
 

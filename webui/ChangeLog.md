@@ -25,7 +25,9 @@
 - Described default DIS-768 cropped custom and the selectable full-image standard alternative.
 - Preserved the historical screenshot labels and the existing offline, QR, and barcode claims.
 - Made the download route reject a configured file with the wrong release byte count.
-- Kept the generated APK outside Git. Public deployment and final download verification are pending.
+- Published `40a54074` after Linux checks and complete staged/public APK hash verification.
+- Passed public browser checks at three widths in both themes. Preserved the concurrent alternatives fix.
+- Kept the generated APK outside Git.
 
 ## 2026-10-20 — Integrate the Shelf Lens landing
 
