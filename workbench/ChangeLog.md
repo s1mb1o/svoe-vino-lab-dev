@@ -2,6 +2,10 @@
 
 ## 2026-10-20
 
+- Fixed the statistics line of `/testset` for a set with no verdict and no mark. It showed
+  an empty separator: `labelled 0/2 photos ·  · 0/2 wines done`. The separator of the stat
+  chips now stands only when there is a chip.
+
 - Fixed two error texts with Python internals. An upload that Pillow cannot identify (for
   example a PDF dropped on the Drawer) answered "Pillow cannot read the image: cannot
   identify image file <_io.BytesIO object at 0x…>"; the test-set upload, the patch,
