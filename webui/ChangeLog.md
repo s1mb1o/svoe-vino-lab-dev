@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — Preserve original photos on slow mobile uploads
+
+- Give interactive photo search 120 seconds for upload and recognition, instead of aborting after ten seconds.
+- Allow 30 seconds for the portal's upstream request after the upload completes. Keep the evaluator proxy's eight-second limit separate.
+- Send the original file unchanged. Do not resize, recompress, or strip image data to fit the old deadline.
+- Preserve cancellation, replacement, the separate metadata budget, and the 10 MiB upload limit.
+- Add regressions for delayed completion, finite timeout, exact forwarded image bytes, and the separate upstream budgets.
+- Validation: 620 tests pass, with 26 existing optional skips; type check and production build pass. Physical realme uploads preserve both original-file hashes at 4 Mbit/s and 1 Mbit/s. Cancellation and retry pass. Read `ResearchLog.md`.
+
 ## 2026-10-20 — Handle matcher score rejection (#79)
 
 - Preserve a normal empty-slug prediction response instead of turning it into HTTP 502.

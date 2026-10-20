@@ -1597,3 +1597,23 @@ In scoped Vue CSS, keep the full theme descendant selector inside `:global(...)`
 The split form affected the HTML root in this build.
 The final browser check verifies photo proportions, theme background luminance, and main text and button contrast.
 See `docs/validation/crocodile-landing.md` for the final evidence.
+
+### Original-photo upload budget, 2026-10-20
+
+The owner requested a timeout fix without reducing recognition quality, followed by a USB retest on the realme.
+The earlier reproduction sent a 9,023,122-byte JPEG and aborted after ten seconds on an explicit 4 Mbit/s upload limit.
+Its 1600 px copy changed the selected wine. The fix preserves the original file and its pixels.
+Interactive photo search now has a 120-second total request budget and a 30-second upstream budget after upload.
+The evaluator proxy keeps its eight-second upstream budget. Both routes share validation and byte-preserving forwarding.
+Metadata still has a separate four-second browser budget. Cancellation and replacement retain their existing abort behavior.
+All 620 unit tests pass, with 26 existing optional catalog skips. Type check and production build pass.
+A compiled HTTP check accepts a nine-second matcher reply on `/api/predict` and retains evaluator timeout behavior.
+Both compiled routes forward exactly the source image SHA-256.
+The local production build used the unchanged live matcher through SSH forwarding.
+Physical realme Chrome, through USB reverse forwarding, uploaded two full-resolution JPEGs of 9.0 MB and 8.7 MB.
+At 4 Mbit/s they completed in 20.49 and 19.57 seconds with the expected original wine identities.
+At 1 Mbit/s the 9.0 MB file completed in 73.98 seconds. Every outgoing file hash matched its source.
+Cancellation after twelve seconds and an immediate unthrottled retry passed.
+These are diagnostic controls and transport checks, not new benchmark scores or universal accuracy claims.
+The matcher, models and prompts were not changed. The checked code remains on a local fix branch until publication is authorized.
+The workspace report is `reports/original-photo-timeout-fix-2026-10-20/README.md`.

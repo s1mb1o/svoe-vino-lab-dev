@@ -1,5 +1,6 @@
 import { computed, onScopeDispose, ref, shallowRef, type Ref } from 'vue'
 import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isNoMatch, isHeicFile, sourceWineUrl, type Wine } from '#shared/catalog'
+import { PORTAL_PREDICTION_TIMEOUT_MS } from '#shared/prediction'
 
 type Mode = 'mock' | 'upstream' | undefined
 type Phase = 'idle' | 'selected' | 'loading' | 'resolving' | 'matched' | 'unmatched' | 'error'
@@ -69,7 +70,7 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
     const current = generation
     const activeController = new AbortController()
     controller = activeController
-    let timer = setTimeout(() => activeController.abort(), dependencies.predictionTimeout ?? 10000)
+    let timer = setTimeout(() => activeController.abort(), dependencies.predictionTimeout ?? PORTAL_PREDICTION_TIMEOUT_MS)
     phase.value = 'loading'
     try {
       const body = new FormData()

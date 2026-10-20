@@ -3,6 +3,7 @@ import { effectScope, ref, type EffectScope } from 'vue'
 import { useWineScanner } from '../app/composables/useWineScanner'
 import wines from '../server/data/wines.json'
 import { MAX_IMAGE_BYTES, MOCK_SLUG, sourceWineUrl } from '../shared/catalog'
+import { PORTAL_PREDICTION_TIMEOUT_MS } from '../shared/prediction'
 
 const scopes: EffectScope[] = []
 const photo = (name = 'label.webp') => new File(['example image content'], name, { type: 'image/webp' })
@@ -15,7 +16,7 @@ function setup(request: ReturnType<typeof vi.fn>, mode: 'mock' | 'upstream' | un
   const scanner = scope.run(() => useWineScanner(ref(mode), { fetch: request as typeof fetch, createObjectURL: () => `blob:test-${++sequence}`, revokeObjectURL: release, metadataTimeout }))!
   return { scanner, release }
 }
-afterEach(() => { scopes.splice(0).forEach(scope => scope.stop()) })
+afterEach(() => { scopes.splice(0).forEach(scope => scope.stop()); vi.useRealTimers() })
 
 describe('automatic photo search', () => {
   it('shows no match without fetching metadata and can retry the same photo', async () => {
@@ -45,6 +46,43 @@ describe('automatic photo search', () => {
     await previous
     expect(scanner.phase.value).toBe('matched')
     expect(scanner.slug.value).toBe(MOCK_SLUG)
+  })
+
+  it('keeps the original large photo while a slow upload and prediction exceed ten seconds', async () => {
+    vi.useFakeTimers()
+    const original = new File([new Uint8Array(9 * 1024 * 1024)], 'phone-original.jpg', { type: 'image/jpeg' })
+    const request = vi.fn()
+      .mockImplementationOnce(() => new Promise(resolve => setTimeout(() => resolve(response({ slug: MOCK_SLUG })), 20_000)))
+      .mockResolvedValueOnce(response(wines[0]))
+    const { scanner } = setup(request, 'upstream')
+    const pending = scanner.select([original])
+    const options = request.mock.calls[0]![1]
+    expect(options.body.get('image')).toBe(original)
+    await vi.advanceTimersByTimeAsync(10_001)
+    expect(options.signal.aborted).toBe(false)
+    expect(scanner.phase.value).toBe('loading')
+    await vi.advanceTimersByTimeAsync(9_999)
+    await pending
+    expect(scanner.phase.value).toBe('matched')
+    expect(scanner.slug.value).toBe(MOCK_SLUG)
+    expect(scanner.file.value).toBe(original)
+    expect(request.mock.calls.filter(call => call[0] === '/api/predict')).toHaveLength(1)
+  })
+
+  it('still aborts a stalled original-photo request at the finite interactive deadline', async () => {
+    vi.useFakeTimers()
+    const request = vi.fn((_url, options) => new Promise<Response>((_resolve, reject) => {
+      options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+    }))
+    const { scanner } = setup(request, 'upstream')
+    const pending = scanner.select([photo()])
+    await vi.advanceTimersByTimeAsync(PORTAL_PREDICTION_TIMEOUT_MS - 1)
+    expect(request.mock.calls[0]![1].signal.aborted).toBe(false)
+    await vi.advanceTimersByTimeAsync(1)
+    await pending
+    expect(scanner.phase.value).toBe('error')
+    expect(scanner.error.value).toContain('Время ожидания истекло')
+    expect(request.mock.calls[0]![1].signal.aborted).toBe(true)
   })
 
   it('submits exactly once on selection and shows one source-linked bottle', async () => {

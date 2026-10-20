@@ -11,7 +11,8 @@ Checked: 2026-09-28.
 
 The official evaluator uses this route.
 The browser uses the equivalent portal route `POST /api/predict`.
-Both routes use the same handler and response contract.
+Both routes share upload validation, forwarding and the response contract.
+Their time budgets differ: the interactive portal allows a slow original-photo upload.
 
 Send `multipart/form-data` with one file field named `image`.
 Let the HTTP client set the multipart boundary.
@@ -59,7 +60,9 @@ Set `NUXT_PREDICTION_MODE=upstream` to enable real prediction.
 Set `NUXT_PREDICTION_ENDPOINT` to the complete prediction URL.
 The proxy sends one `image` file to this URL.
 The proxy allows HTTP 200 or 201 and validates `slug`.
-The proxy uses an 8-second upstream timeout.
+The evaluator route uses an 8-second upstream timeout.
+The interactive `/api/predict` route allows 30 seconds for the upstream request.
+This upstream budget starts after the complete client upload has been read.
 The proxy rejects redirects and does not substitute mock output for errors.
 
 In upstream mode, `GET /api/config` derives the matcher readiness URL from `NUXT_PREDICTION_ENDPOINT`.
@@ -89,6 +92,10 @@ The portal validates the returned slug and image path before it returns the norm
 ## Photo search page
 
 The browser automatically submits a valid selected image.
+It sends the original file without resizing, recompressing, or changing its bytes.
+Its prediction request has a 120-second total budget for upload and recognition.
+This supports the 10 MiB limit on slower mobile connections while keeping a finite deadline.
+Cancel, replacement and route disposal still abort pending work immediately.
 The app preserves the returned slug before fetching `/api/wines/<slug>`.
 Metadata lookup has a separate 4-second timeout.
 Metadata failure does not remove a successful prediction or its source link.

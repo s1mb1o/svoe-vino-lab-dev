@@ -1,6 +1,7 @@
-import { createError, getHeader, type H3Event } from 'h3'
+import { createError, getHeader, setHeader, type H3Event } from 'h3'
 import { Buffer } from 'node:buffer'
 import { MAX_IMAGE_BYTES, MOCK_SLUG, extractSlug, isNoMatch } from '#shared/catalog'
+import { EVALUATOR_UPSTREAM_TIMEOUT_MS } from '#shared/prediction'
 
 const MAX_BODY_BYTES = MAX_IMAGE_BYTES + 64 * 1024
 // A HEIF (HEIC) file starts with an ISO BMFF "ftyp" box. The matcher decodes the image (issue #24).
@@ -82,7 +83,7 @@ export async function readImage(event: H3Event): Promise<File> {
   return new File([file], `image.${type.split('/')[1]}`, { type })
 }
 
-export async function predict(file: File, mode: PredictionMode, endpoint: string, timeoutMs = 8000, requestSignal?: AbortSignal): Promise<{ slug: string }> {
+export async function predict(file: File, mode: PredictionMode, endpoint: string, timeoutMs = EVALUATOR_UPSTREAM_TIMEOUT_MS, requestSignal?: AbortSignal): Promise<{ slug: string }> {
   if (mode === 'mock') return { slug: MOCK_SLUG }
   let url: URL
   try {
@@ -123,4 +124,18 @@ export async function predict(file: File, mode: PredictionMode, endpoint: string
     if (error && typeof error === 'object' && 'statusCode' in error) throw error
     throw upstreamError()
   }
+}
+
+export async function handlePrediction(event: H3Event, config: { predictionMode: unknown; predictionEndpoint: string }, timeoutMs = EVALUATOR_UPSTREAM_TIMEOUT_MS) {
+  const mode = predictionMode(config.predictionMode)
+  setHeader(event, 'Cache-Control', 'no-store')
+  setHeader(event, 'X-Prediction-Mode', mode)
+  const file = await readImage(event)
+  // The upstream timer starts after upload. A slow mobile connection must not
+  // consume the matcher's processing budget or force image recompression.
+  const controller = new AbortController()
+  const disconnect = () => { if (!event.node.res.writableEnded) controller.abort() }
+  event.node.res.once('close', disconnect)
+  try { return await predict(file, mode, config.predictionEndpoint, timeoutMs, controller.signal) }
+  finally { event.node.res.off('close', disconnect) }
 }

@@ -2,14 +2,17 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createServer, type Server } from 'node:http'
 import { readFileSync } from 'node:fs'
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import { createApp, eventHandler, toNodeListener } from 'h3'
-import { imageType, predict, readImage, predictionMode } from '../server/utils/prediction'
+import { handlePrediction, imageType, predict, readImage, predictionMode } from '../server/utils/prediction'
 import { predictionApiAvailable, predictionHealthUrl } from '../server/utils/upstream-health'
 import { MOCK_SLUG } from '../shared/catalog'
+import { EVALUATOR_UPSTREAM_TIMEOUT_MS, PORTAL_UPSTREAM_TIMEOUT_MS } from '../shared/prediction'
 
 let server: Server
 let origin: string
 let received: { key: string; type: string; size: number }[] = []
+let receivedSha256 = ''
 const fixture = readFileSync('public/wines/priboj-marchenko-beloe-polusuhoe.webp')
 const file = () => new File([fixture], 'label.webp', { type: 'image/webp' })
 
@@ -19,8 +22,10 @@ beforeAll(async () => {
     const uploaded = await readImage(event)
     return predict(uploaded, 'mock', '')
   }))
+  app.use('/portal-photo', eventHandler(event => handlePrediction(event, { predictionMode: 'upstream', predictionEndpoint: origin + '/valid' }, PORTAL_UPSTREAM_TIMEOUT_MS)))
+  app.use('/evaluator-photo', eventHandler(event => handlePrediction(event, { predictionMode: 'upstream', predictionEndpoint: origin + '/valid' })))
   server = createServer((req, res) => {
-    if (req.url?.startsWith('/upload')) { toNodeListener(app)(req, res); return }
+    if (['/upload', '/portal-photo', '/evaluator-photo'].some(path => req.url?.startsWith(path))) { toNodeListener(app)(req, res); return }
     if (req.url === '/timeout') return
     if (req.url === '/redirect') { res.writeHead(302, { location: '/valid' }); res.end(); return }
     if (req.url === '/fail') { res.writeHead(500); res.end(); return }
@@ -30,6 +35,8 @@ beforeAll(async () => {
     req.on('end', async () => {
       const form = await new Response(Buffer.concat(chunks), { headers: { 'content-type': req.headers['content-type']! } }).formData()
       received = [...form.entries()].map(([key, value]) => ({ key, type: typeof value === 'string' ? 'text' : value.type, size: typeof value === 'string' ? value.length : value.size }))
+      const image = form.get('image')
+      if (image instanceof File) receivedSha256 = createHash('sha256').update(new Uint8Array(await image.arrayBuffer())).digest('hex')
       res.setHeader('Content-Type', 'application/json')
       if (req.url?.startsWith('/status-')) { res.writeHead(Number(req.url.slice('/status-'.length))); res.end() }
       else if (req.url === '/bad-json') res.end('not json')
@@ -129,6 +136,20 @@ describe('image signatures', () => {
 })
 
 describe('upload validation over HTTP', () => {
+  it.each([['/portal-photo', PORTAL_UPSTREAM_TIMEOUT_MS], ['/evaluator-photo', EVALUATOR_UPSTREAM_TIMEOUT_MS]])('forwards original image bytes through %s with its own upstream budget', async (path, budget) => {
+    const timeout = vi.spyOn(AbortSignal, 'timeout')
+    try {
+      const body = new FormData(); body.set('image', file())
+      const result = await fetch(origin + path, { method: 'POST', body })
+      expect(result.status).toBe(200)
+      expect(await result.json()).toEqual({ slug: 'Exact-Slug_2024' })
+      expect(receivedSha256).toBe(createHash('sha256').update(fixture).digest('hex'))
+      expect(received).toEqual([{ key: 'image', type: 'image/webp', size: fixture.length }])
+      expect(timeout).toHaveBeenCalledWith(budget)
+      expect(result.headers.get('Cache-Control')).toBe('no-store')
+    } finally { timeout.mockRestore() }
+  })
+
   it('accepts a real WebP with the official field name', async () => {
     const body = new FormData(); body.set('image', file())
     const response = await fetch(origin + '/upload', { method: 'POST', body })
