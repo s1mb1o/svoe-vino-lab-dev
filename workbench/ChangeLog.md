@@ -2,6 +2,12 @@
 
 ## 2026-10-20
 
+- Fixed the check of the name field `New testset name` of `/runs/compare`. The browser
+  compiles a `pattern` attribute with the flag `v`, which refuses `[a-z0-9_-]` (a hyphen
+  at the end of a class), so the console showed "not a valid regular expression" and the
+  browser skipped the check. The pattern is now `[a-z0-9_\-]+`; the server check was and is
+  the same. New test: each `pattern` attribute of each page compiles with the flag `v`.
+
 - Fixed the default baseline of `/runs/compare`. The link `Compare runs →` of `/runs` gives
   the open run as `b` alone; with the `Testset` filter `All`, the page took the newest run of
   any test set as baseline A, so the comparison often opened with "Dataset snapshots

@@ -76,7 +76,7 @@ dialog .actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20
     <label>Copy annotations from<select id="new-source"><option value="b">B · candidate</option><option value="a">A · baseline</option></select></label>
     <p id="new-preview" role="status" aria-live="polite"></p>
     <p class="note">Keeps wine slugs, labels, boxes, proposals, provenance, photo comments, and relevant variant groups. Image tags remain shared.</p>
-    <label>New testset name<input id="new-name" required pattern="[a-z0-9_-]+" maxlength="200" autocomplete="off"></label>
+    <label>New testset name<input id="new-name" required pattern="[a-z0-9_\-]+" maxlength="200" autocomplete="off"></label>
     <p id="new-error" role="alert"></p>
     <div class="actions"><button id="new-refresh" type="button">Refresh preview</button><button id="new-cancel" type="button">Cancel</button><button id="new-create" type="submit" disabled>Create testset</button></div>
   </form>
