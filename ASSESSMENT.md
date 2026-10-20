@@ -3,10 +3,11 @@
 | Field | Value |
 |---|---|
 | Repository | `s1mb1o/svoe-vino-lab-dev` |
-| Branch | `main` |
-| Checked at commit | `06f3b78c` |
+| Branch | `codex/fix-alternatives-sweetness` |
+| Checked at commit | `7cb1044c1338f32b714e63c47b9b341872e51f37`, plus the existing working-tree changes described below |
+| Account test follow-up | `121c7f081eccd6289e8824d992d7251711c797e4`; 159 tests passed on 2026-10-20 |
 | Date of the last check | 2026-10-20 |
-| Scope | This file describes `main` of this repository only. |
+| Scope | The local checkout at review time. The review includes the existing MCP and alternatives changes. It does not establish the state of remote `main` or a running service. |
 | Task | Task #10 «Сканер российских вин с описанием на платформе Свое Вино» ([docs/task-10-specification.pdf](docs/task-10-specification.pdf)) |
 
 ## About this file
@@ -16,7 +17,7 @@ This file is an index of the features in this repository. It is for the hackatho
 - Each row states one fact about the repository.
 - Each fact has at least one proof. A proof is a file, a test, a command, or an artifact that you can open in this repository.
 - This file contains facts only. It does not contain opinions, rankings, or marketing statements.
-- The status of each feature is `Deployed`, `Implemented`, or `Research-only`. The section "Known gaps and work outside `main`" lists what is partial or missing.
+- Each feature has a status from the table below. The section "Known gaps and evidence limits" lists partial features and missing evidence.
 
 Read "Highlights" first. Then read the section for the criterion that you check. Use the "Verify" line for a fast check. Live URLs are secondary proofs, because a review can run without network access.
 
@@ -25,10 +26,59 @@ Read "Highlights" first. Then read the section for the criterion that you check.
 | Status | Meaning |
 |---|---|
 | `Deployed` | A ChangeLog, ResearchLog, SMOKE_TESTS, or report file in this repository records a live deployment and a live check. |
-| `Implemented` | The code and its tests are on `main`. No live deployment is recorded in this repository. |
+| `Implemented` | The code and tests are in the reviewed source. The row states any uncommitted part. No live check of that exact implementation is recorded. |
 | `Research-only` | The workbench contains the feature or experiment. The default matcher configuration does not use it. |
 | `Partial` | A part of the feature works. The "Limits" line states the missing part. |
 | `Demo` | The UI shows the feature with fixed or sample data, and the UI labels it as a demo. |
+
+### Review scope and executed checks
+
+This review reads the source, configuration, tests, and saved evidence in this checkout.
+The feature identifiers remain stable.
+Historical measurements keep their original dataset and pipeline.
+A saved deployment record describes the recorded release only.
+This review does not repeat a live deployment check or a recognition benchmark.
+
+The full source review used local `main` at `7cb1044c` and the then-existing working-tree changes.
+Those changes affected MCP catalogue facts and alternative recommendations.
+The category snapshot, its fetch script, and `f04-anchors-v2.json` were untracked during that review.
+F-48 and F-117 record their source status at that time.
+The Web UI, MCP, and alternatives results below include those files.
+Commit `121c7f08` now contains those changes.
+The account-only follow-up uses that commit.
+The follow-up does not repeat the earlier component tests.
+
+| Check executed on 2026-10-20 | Result | Evidence or boundary |
+|---|---|---|
+| `cd webui && npm test` | 31 files passed; 616 tests passed; 26 tests skipped | [webui/package.json](webui/package.json), [webui/tests/](webui/tests/). Skipped tests are not passes. |
+| `cd mcp && npm test` | 51 tests passed; no skips | [mcp/tests/](mcp/tests/). Uses local fixtures and temporary loopback servers. |
+| `cd account && ./scripts/verify.sh` with the temporary environment below | Lockfile check passed; Ruff passed; 159 tests passed in 9.70 s; no failures, errors, or skips | [account/scripts/verify.sh](account/scripts/verify.sh), [account/uv.lock](account/uv.lock), [account/tests/](account/tests/). Account source at `121c7f08`. |
+| `cd webui && npm run alternatives:check` | Passed; 2,025 Active IDs; 90 comparison pairs agree with MCP | [webui/scripts/generate-alternative-catalog.mjs](webui/scripts/generate-alternative-catalog.mjs). Checks the local source snapshot. |
+| `cd workbench && python3 -m unittest discover -s tests -p 'test_db_export.py' -v` | 8 tests passed | [workbench/tests/test_db_export.py](workbench/tests/test_db_export.py). |
+| `cd workbench && python3 -m unittest discover -s tests -p 'test_production_error*.py' -v` | 16 tests passed | [workbench/tests/test_production_errors.py](workbench/tests/test_production_errors.py), [workbench/tests/test_production_error_routes.py](workbench/tests/test_production_error_routes.py). |
+| Restore `workbench/db-export/` into a temporary SQLite file | Passed; schema 36; 29 tables; 90,661 rows | F-36. The restored catalogue has 2,366 wines. |
+| Compare the matcher bundle files with `manifest.json` | All 5 payload SHA-256 values matched | F-32. This checks stored files without model inference. |
+| `python3 research/retrieval-20261020/verify.py` | Passed | 58 file hashes; 5,432 recipes; 39 profiles; 53 exact recipes; 281 compact metric rows; 930 printed recalls. F-112 states the limits. |
+
+The account follow-up installed the locked runtime and development dependencies in a separate virtual environment.
+The environment uses Python 3.13.7, pytest 9.1.1, httpx2 2.14.0, and Ruff 0.17.1.
+The verification script passed `uv lock --check`, `uv sync --frozen --extra dev`, `uv run ruff check .`, and `uv run pytest -q`.
+The full account suite passed all 159 tests.
+The account source and lockfile remained unchanged.
+This result replaces the earlier missing-`pytest` limitation.
+The tests use isolated databases, memory mail, and provider fixtures.
+They do not verify live SMTP delivery, live provider access, or a deployed account service.
+
+The installed environment can be reused from `account/`:
+
+```sh
+UV_PROJECT_ENVIRONMENT=/private/tmp/wine-account-assessment-20261020/.venv \
+RUFF_CACHE_DIR=/private/tmp/wine-account-assessment-20261020/ruff-cache \
+PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS="-p no:cacheprovider" ./scripts/verify.sh
+```
+
+This review does not repeat the complete matcher, workbench, Dinner Lens, bot, mobile, or browser acceptance suites.
+Use the component commands below to repeat those checks with their prerequisites.
 
 ### Test commands
 
@@ -58,12 +108,12 @@ Some suites need files that are not in Git:
 - The `android/` build needs `android/app/src/main/assets/default_model_pack.zip` (F-44).
 - The `ios/` build needs the generated Core ML models and the resource pack ([ios/project.yml](ios/project.yml)).
 - The Shelf Lens APK build needs Android SDK, JDK 17, native dependencies, and `CHTOZAVINO_API_PASSWORD`. The build embeds this credential in the APK. The README excludes public APK distribution ([shelf-lens/README.md](shelf-lens/README.md)). The Python tests do not validate the Android application or its C++ tracker.
-- The `workbench/` suite has 14 known failures in 2,567 tests ([workbench/ChangeLog.md](workbench/ChangeLog.md) 2026-10-20). Three come from the open port of the re-rank prompts (F-07). Eleven need files outside this repository or are lab defects.
+- The latest saved full `workbench/` run has 2,573 tests and 12 failures or errors ([workbench/ChangeLog.md](workbench/ChangeLog.md), 2026-10-20). Nine also occur in a clean lab copy. Three are re-rank parity failures of the port (F-07). The log also records one expected skip when private owner-message evidence is absent. This review repeats only the focused suites listed above.
 
 ## Highlights
 
 1. **Offline recognition on an Android phone.** The phone encodes the full photo with SigLIP2 Base NaFlex p512 and searches 2,093 wines without network. On a Pixel 8, the internal set `my` gave Top-1 69.09% with a median client time of 924 ms. The release manifest has no `INTERNET` permission. See F-80 to F-83 and F-89. A native iPhone app with on-device Core ML recognition is on `main` too (F-94).
-2. **A cascade matcher with a fixed answer time.** Barcode and QR scan, SAM3 package crop, and a VLM cluster re-rank run in parallel. The matcher answers at 2.9 s and cancels the remaining model calls. See F-04 and F-61.
+2. **A cascade matcher with an answer budget.** Barcode and QR scan, SAM3 package crop, and a VLM cluster re-rank overlap. With `fast_answer`, `/v1/eval/predict` returns an available answer by the configured 2.9 s cutoff and cancels pending calls. If no answer exists, the hard limit is 9.5 s. `/v1/match` has no such budget. See F-04 and F-61.
 3. **Recognition of a full shelf in one request.** One photo gives a mask, a box, and a wine card for each bottle. A production check recorded 93 matched bottles in one response. See F-20.
 4. **Image moderation before the first disk write.** ShieldGemma 2 checks each photo. Unsafe photos go to a closed quarantine, and the admin UI shows only a blurred preview. See F-73.
 5. **Two messengers on one shared core.** The Telegram bot and the MAX bot share `im-core/`. A drift test guards the copied modules. See F-31, F-70, and F-71.
@@ -71,12 +121,16 @@ Some suites need files that are not in Git:
 7. **A taste passport and regional dishes after the result.** Each value shows its source: the wine card or a labeled dataset estimate. See F-21 and F-22.
 8. **A verifiable matcher build.** The embedding bundle is in Git and the matcher checks its SHA-256 at load. Dependencies are hash-locked. CI fails when any test is skipped. See F-32 and F-33.
 9. **Committed benchmark artifacts.** Run directories with queries and predictions are in Git. A reviewer can recompute R@1 offline. See F-10 and F-11.
-10. **Two MCP interfaces for AI agents.** WebMCP tools in the portal let an AI agent in a supported browser drive the same scanner and shelf state that a user sees. A local read-only MCP server gives an AI assistant the wine card, filter search, and comparison of the 2,093 Active catalogue wines. See F-77 and F-48.
+10. **Two MCP interfaces for AI agents.** WebMCP tools in the portal let an AI agent in a supported browser drive the same scanner and shelf state that a user sees. A local read-only MCP server gives an AI assistant wine cards, filter search, and comparison over 2,025 Active catalogue wines in the reviewed snapshot. See F-77 and F-48.
 11. **Wine for a dish.** The portal mode `/dish` takes a dish photo or a dish name. A separate service recognizes the dish with a local VLM, filters the wines with code rules, and shows editorial choices before embedding results. See F-27 to F-29.
 
 12. **Retrieval algorithm research reference.** A committed document defines 39 pooling profiles and 42 fusion policies. It records 353,188 unique configurations per frozen testset, including p512 leaderboards and exact recipes. The research uses no re-ranking. See F-112.
 
 13. **Shelf Lens video scan, AR ratings, and a planogram.** Move the camera along a shelf. Spatial ReID links the views of each physical bottle. The phone shows the «Своё Вино» rating over recognized bottles and builds a planogram for the store. The source, phone recording, and planogram example are in `main`. Recognition and rating requests need internet. See F-113 to F-116.
+
+14. **A result journey with alternatives and comparison.** The portal selects wines from another confirmed producer, compares eight facts, and reuses the diary save action. A second comparison wine can come from the saved list. See F-117 and F-118.
+15. **Diary history, saved wines, and public device copies.** The account stores recognition dates, four saved statuses, and private notes. A separate device store keeps at most 50 public cards for a warmed offline launch. See F-119 to F-121.
+16. **A source-based label guide.** The result explains supplied grape, sweetness, region, and alcohol facts with local references. It replaces the old fixed label example. See F-122.
 
 ## Results summary
 
@@ -107,16 +161,16 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-02 Ranked candidates with wine cards
 
-- **Claim:** `POST /v1/match?k=1..20` returns ranked candidates with full wine cards. Rank 1 always equals the answer of `/v1/eval/predict`.
+- **Claim:** `POST /v1/match?k=1..20` returns ranked candidates with wine cards. The default SigLIP2 pipeline uses the same ranking for `/v1/eval/predict`. The cascade can return a different Top-1 when the evaluator cutoff stops a stage that the unbounded ranked request completes.
 - **Status:** Deployed.
 - **Entry point:** [matcher/app.py](matcher/app.py), [matcher/openapi.yaml](matcher/openapi.yaml)
-- **Proof:** `matcher/tests/test_match.py::test_the_first_ranked_wine_is_the_top1_wine`, `matcher/tests/test_match.py::test_match_returns_ranked_candidates_with_cards`.
+- **Proof:** `matcher/tests/test_match.py::test_the_first_ranked_wine_is_the_top1_wine`, `matcher/tests/test_match.py::test_match_returns_ranked_candidates_with_cards`; [matcher/service.py](matcher/service.py) (`CascadeMatcher.predict_async` and `match_async` use different budgets).
 - **Verify:** Read [matcher/openapi.yaml](matcher/openapi.yaml).
 
 ### F-03 Default pipeline with an in-Git bundle
 
 - **Claim:** The default pipeline `siglip2-p512-as-is` embeds the whole photo with SigLIP2 so400m NaFlex p512 and ranks wines by the maximum cosine over the `full` view. The bundle in Git has 2,094 wines and 4,642 vectors.
-- **Status:** Deployed.
+- **Status:** Implemented. This is the default in the committed YAML. The production pipeline named in [README.md](README.md) is `cascade-p512-rot5`. That statement does not establish a deployment of this default configuration.
 - **Entry point:** [matcher/config.yaml](matcher/config.yaml), [matcher/siglip2.py](matcher/siglip2.py), [matcher/bundle.py](matcher/bundle.py), [matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json](matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/manifest.json)
 - **Proof:** `matcher/tests/test_siglip2.py::test_the_default_config_selects_the_siglip2_pipeline`, `matcher/tests/test_siglip2.py::test_the_best_full_view_cosine_wins_and_label_vectors_are_ignored`.
 - **Verify:** Read the counts in the bundle `manifest.json`.
@@ -386,11 +440,38 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Verify:** `python3 -c "import json;d=json.load(open('dinner-lens/data/pairing-dataset.v4.validation.json'));r=d['results'];print(d['passed'],len(r),sum(x['passed'] for x in r),d['pages'])"` prints `True 320 320 1696`.
 - **Limits:** The links and the style families are editorial judgments. No taste panel checked them. The repository has no photo recognition accuracy result and no blind-audit score. The benchmark ground truth and the audit directory are not in Git.
 
+### F-117 Alternatives from another producer
+
+- **Claim:** A real single-bottle result exposes «Найти альтернативы». The server uses an exact slug from a server-only catalogue of 2,025 Active wines. It excludes the source wine, verified aliases, and the source producer before ranking. It requires a known producer, colour, sweetness, and at least one shared grape. Explicit colour, sweetness, and still/sparkling filters are hard constraints. A user can supply a colour or sweetness filter when the source fact is absent. The rank is the number of shared grapes, with a deterministic slug tie-break. The response contains at most five wines. An empty result never relaxes the producer rule.
+- **Status:** Implemented. F04 is in the committed baseline. The sweetness provenance, refreshed asset, filter handling, and v2 anchors include existing uncommitted changes. No live deployment check covers that exact source.
+- **Entry point:** [webui/shared/alternatives.ts](webui/shared/alternatives.ts), [webui/server/api/recommendations/alternatives.get.ts](webui/server/api/recommendations/alternatives.get.ts), [webui/server/data/alternative-catalog.json](webui/server/data/alternative-catalog.json), [webui/scripts/generate-alternative-catalog.mjs](webui/scripts/generate-alternative-catalog.mjs).
+- **Proof:** [webui/tests/alternatives.test.ts](webui/tests/alternatives.test.ts) checks producer exclusion, aliases, hard filters, source facts, and all accepted IDs. [webui/docs/f04-acceptance-2026-10-20.md](webui/docs/f04-acceptance-2026-10-20.md) records historical browser and Pixel 8 acceptance. [webui/docs/f04-main-integration-2026-10-20.md](webui/docs/f04-main-integration-2026-10-20.md) records integration checks. The current source check passes with 2,025 IDs.
+- **Verify:** `cd webui && npm run alternatives:check && npx vitest run tests/alternatives.test.ts`.
+- **Limits:** This is a metadata rule. It is not a taste model, a quality ranking, or a price comparison. Missing still/sparkling evidence stays unknown. A slug outside the snapshot returns HTTP 404. The historical acceptance report used 2,093 Active IDs. Its coverage counts do not describe the refreshed catalogue. The untracked category snapshot and v2 anchors are required to reproduce the local check.
+
+### F-118 Factual comparison and comparison with a saved wine
+
+- **Claim:** The comparison shows two exact wine cards and eight fields: producer, region, category, colour, grapes, sweetness, alcohol, and serving temperature. Each field is shared, different, or unknown. A user can select the second wine from alternatives or from the saved list. The saved picker permits the same producer and different styles. It excludes the first exact ID. Both cards resolve from the same public snapshot. The selected candidate reuses the existing diary save action. Comparison and save do not create another recognition event. Login continuation stores only bounded public comparison data and requires an explicit save after return.
+- **Status:** Implemented. The current comparison tests and source parity check pass. No live deployment check is recorded for this exact checkout.
+- **Entry point:** [webui/app/composables/useWineComparison.ts](webui/app/composables/useWineComparison.ts), [webui/shared/alternatives.ts](webui/shared/alternatives.ts), [webui/app/components/PinButton.vue](webui/app/components/PinButton.vue), [webui/docs/f04-result-journey.md](webui/docs/f04-result-journey.md).
+- **Proof:** [webui/tests/alternatives.test.ts](webui/tests/alternatives.test.ts) (known and unknown facts, bounded public copies); [webui/tests/diary.test.ts](webui/tests/diary.test.ts) (saved comparison without private fields); [webui/docs/f04-saved-comparison-2026-10-20.md](webui/docs/f04-saved-comparison-2026-10-20.md). The current generator checks 90 comparison pairs against MCP.
+- **Verify:** `cd webui && npx vitest run tests/alternatives.test.ts tests/diary.test.ts`. Use `npm run test:f04` with the documented disposable services for browser acceptance.
+- **Limits:** The comparison does not select a quality winner. A saved ID outside the snapshot stays visible but cannot be compared. The private saved list stays in the mounted picker. Physical iPhone, native camera/gallery, screen-reader, and OS airplane-mode acceptance remain separate release checks in the F04 report.
+
+### F-122 Label guide from the resolved wine card
+
+- **Claim:** «Рассказать об этикетке» opens `WineLabelGuide` for the resolved wine. Local rules select sourced explanations for grapes, sweetness category, region, and an explicit alcohol value. Each supplied grape has a separate note. The guide preserves source spelling and percentages. Missing fields produce no section. Unknown varieties receive a general field explanation. Sweetness comes from an unambiguous category. The guide sends no request to a model or a reference service.
+- **Status:** Implemented. This replaces the earlier fixed Syrah/Viognier example. The current Web UI suite covers the guide.
+- **Entry point:** [webui/app/components/WineLabelGuide.vue](webui/app/components/WineLabelGuide.vue), [webui/shared/label.ts](webui/shared/label.ts), [webui/shared/label-reference.ts](webui/shared/label-reference.ts), [webui/docs/label-guide-sources.md](webui/docs/label-guide-sources.md).
+- **Proof:** [webui/tests/label.test.ts](webui/tests/label.test.ts) checks all twelve preview wines, exact aliases, distinct varieties, percentages, missing facts, sweetness, alcohol ranges, and the publisher list. [webui/scripts/check-label-browser.mjs](webui/scripts/check-label-browser.mjs) covers the real dialog and focus recovery.
+- **Verify:** `cd webui && npx vitest run tests/label.test.ts`.
+- **Limits:** The notes explain wine-card facts. They do not perform OCR, identify artwork, or taste the selected bottle. The reference dictionary is finite. No independent wine-editor acceptance is claimed.
+
 ## Criterion 3: architecture and reproducibility (15/100)
 
 ### F-30 Component layout
 
-- **Claim:** Each top-level directory owns one function. Most components have their own README, ChangeLog, SMOKE_TESTS, and tests.
+- **Claim:** The repository separates the matcher, portal, account service, Dinner Lens, bots, mobile clients, local model services, and workbench. Most components have their own README, ChangeLog, SMOKE_TESTS, and tests. The portal and MCP share catalogue modules and producer-map data.
 - **Status:** Implemented.
 - **Entry point:** [ARCHITECTURE.md](ARCHITECTURE.md), [SETUP.md](SETUP.md), [COMMANDS.md](COMMANDS.md)
 - **Proof:** The table below.
@@ -405,7 +486,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 | [max-bot/](max-bot/) | MAX messenger bot |
 | [im-core/](im-core/) | Shared core of the two bots |
 | [mcp/](mcp/) | Read-only MCP server of the wine catalogue |
-| [account/](account/) | Account service of «Винный дневник»: login, messenger links, application tokens |
+| [account/](account/) | Account service of «Винный дневник»: login, messenger links, history, saved wines, private notes, and application tokens |
 | [dinner-lens/](dinner-lens/) | Food-to-wine API (wine for a dish) |
 | [android/](android/) | Offline Android application |
 | [shelf-lens/](shelf-lens/) | Android video shelf scanner, spatial ReID, AR ratings, and planogram |
@@ -440,7 +521,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [matcher/Dockerfile](matcher/Dockerfile), [matcher/tests/run_ci.sh](matcher/tests/run_ci.sh), [.github/workflows/matcher-tests.yml](.github/workflows/matcher-tests.yml)
 - **Proof:** The same files.
 - **Verify:** Read [matcher/tests/run_ci.sh](matcher/tests/run_ci.sh).
-- **Limits:** The workflow uses a self-hosted runner. Model weights (about 20 GiB) are not in Git. [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists them with SHA-256 values. The test `matcher/tests/test_mlflow_integration.py::test_real_store_export_retry_and_artifact_hashes` runs only with `MLFLOW_TEST_INTEGRATION=1`. The workflow does not set this variable, so the test is skipped and `run_ci.sh` fails. The last matcher workflow run on `main` (commit `ddcf2c52`) failed with `discovered=282 run=282 skipped=1`.
+- **Limits:** The workflow needs a self-hosted Linux runner with Docker. Model weights are not in Git. [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists model archives with SHA-256 values. The test `matcher/tests/test_mlflow_integration.py::test_real_store_export_retry_and_artifact_hashes` runs only with `MLFLOW_TEST_INTEGRATION=1`. The committed workflow does not set this variable. The test therefore skips, and the no-skip check in `run_ci.sh` fails. This is a source-level conflict. This review does not query the latest remote workflow result.
 
 ### F-34 Local model services
 
@@ -460,12 +541,12 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-36 Lab database in Git
 
-- **Claim:** The lab SQLite database uses numbered schema migrations. A text export in Git restores the same database.
+- **Claim:** The lab SQLite database uses numbered schema migrations. The text export at `a6a7e3e7` restores schema 36 with 29 tables and 90,661 rows. It contains 2,366 catalogue wines: 2,279 Active, 81 Removed, and 6 Disabled. It also contains 2,351 `image_attribute_facts` rows and 564 `wine_atlas_binding` rows.
 - **Status:** Implemented.
 - **Entry point:** [workbench/pipeline/db_export.py](workbench/pipeline/db_export.py), [workbench/pipeline/labdb.py](workbench/pipeline/labdb.py), [workbench/db-export/](workbench/db-export/)
-- **Proof:** `workbench/tests/test_db_export.py::test_restore_gives_the_same_database`.
-- **Verify:** `git log --stat -- workbench/db-export`
-- **Limits:** The export in Git is from 2026-09-29: schema 32, 22 tables, 35,368 rows, 2,123 catalogue wines. The code has schema migrations up to `036`. The lab snapshot of 2026-10-18 (2,358 wines, 936 new images) is not in this repository. Of that commit, only the cluster file `clusters.json` is in Git.
+- **Proof:** `workbench/tests/test_db_export.py::test_restore_gives_the_same_database`; [workbench/db-export/after-rows.sql](workbench/db-export/after-rows.sql), [workbench/db-export/rows/wine_catalog.jsonl](workbench/db-export/rows/wine_catalog.jsonl), [workbench/db-export/rows/image_attribute_facts.jsonl](workbench/db-export/rows/image_attribute_facts.jsonl). This review restored the export into a temporary SQLite file and checked schema and catalogue counts.
+- **Verify:** `python3 workbench/pipeline/db_export.py restore --from workbench/db-export --db /tmp/svoe-vino-assessment.sqlite3`. Use a new destination file. The command refuses an existing file.
+- **Limits:** The text export contains database rows. It does not contain image bodies or generated embedding vectors. The standalone matcher bundle still has its earlier 2,094 IDs (F-03). The catalogue export and that bundle are different snapshots. The full working SQLite file and the rotated index are not in Git.
 
 ### F-37 Content-addressed embedding index
 
@@ -543,7 +624,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-46 Workbench web UI with an OpenAPI contract
 
-- **Claim:** The workbench has a local web UI for the dataset, embeddings, clusters, test sets, runs, run comparison, recognition, website import, and health. A checked-in OpenAPI 3.1 file describes 136 operations on 118 paths. A test compares the operations of the file with a fixed list of operations in the test.
+- **Claim:** The workbench has a local web UI for the dataset, embeddings, clusters, test sets, runs, run comparison, recognition, website import, production-error review, and health. The committed OpenAPI 3.1 file describes 142 operations on 124 paths. A test compares the operations with a fixed inventory. F-124 describes production-error review.
 - **Status:** Implemented.
 - **Entry point:** [workbench/pipeline/lab_server.py](workbench/pipeline/lab_server.py), [workbench/docs/lab-openapi.yaml](workbench/docs/lab-openapi.yaml)
 - **Proof:** `workbench/tests/test_lab_openapi.py::test_document_has_exact_route_inventory`, `workbench/tests/test_lab_openapi.py::test_operations_have_unique_ids_summaries_and_success_responses`.
@@ -559,12 +640,12 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-48 Read-only catalogue MCP server
 
-- **Claim:** `mcp/` is a local stdio MCP server with five read-only catalogue tools: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, and `get_audio`. Each tool has strict input and output schemas. `get_producer_line` reads the 25 producer maps of F-24 through the same module as the Web UI. The server reads the matcher bundle of F-32 and stops when the SHA-256 of `wines.jsonl` differs from the manifest. Discovery uses the 2,093 Active wines of the 2,094 bundle IDs. Each result has the catalogue version and the source hashes. The server has no write, command, SQL, or URL fetch tool. With the optional variable `CHTOZAVINO_ACCOUNT_TOKEN` (an application token of F-103), the server adds two read-only tools: `get_my_profile` and `list_my_wines`. These tools send HTTPS `GET` requests to `/api/app/v1/profile` and `/api/app/v1/wines` with no redirects, a 5 s timeout, and a 256 KiB answer limit. Without the token, the server registers no account tools and makes no network request. A GitHub workflow runs the tests on Node.js 22.19.0 and 26.4.0.
-- **Status:** Implemented.
+- **Claim:** `mcp/` is a local stdio MCP server with five read-only catalogue tools: `get_wine`, `find_wines`, `compare_wines`, `get_producer_line`, and `get_audio`. Each tool has strict input and output schemas. `get_producer_line` reads the 25 producer maps of F-24 through the shared Web module. The loader checks the bundle hash and preserves all 2,094 exact bundle IDs. It reads status from the current export. Discovery includes 2,025 Active IDs and excludes 67 Removed IDs and 2 Disabled IDs. Each result has the catalogue version and source hashes. The local category snapshot supplies sweetness evidence for the 2,025 Active IDs. If category evidence is absent, a name-based value retains the `source_name` basis. With `CHTOZAVINO_ACCOUNT_TOKEN`, the server adds `get_my_profile` and `list_my_wines`. These tools use bounded HTTPS GET requests with no redirects. Without the token, the server registers no account tools and makes no account request.
+- **Status:** Implemented. The category-provenance loader, schema field, tests, and workflow edits are uncommitted in the reviewed checkout. `webui/docs/catalog-category-provenance.json` is untracked. The local suite passes with that file present.
 - **Entry point:** [mcp/src/server.mjs](mcp/src/server.mjs), [mcp/src/catalog.mjs](mcp/src/catalog.mjs), [mcp/src/account.mjs](mcp/src/account.mjs), [mcp/README.md](mcp/README.md), [.github/workflows/mcp-tests.yml](.github/workflows/mcp-tests.yml)
-- **Proof:** `mcp/tests/protocol.test.mjs` ("real SDK client discovers and calls all tools repeatedly over one stdio connection"); `mcp/tests/catalog.test.mjs` ("uses all matcher IDs and excludes non-Active records from discovery", "every Active ID resolves to its exact map node or to unavailable"); `mcp/tests/account.test.mjs` ("account tools read the diary with the bearer token; notes stay data", "without a token the server has the five catalog tools and the old instructions"); [mcp/ChangeLog.md](mcp/ChangeLog.md).
+- **Proof:** [mcp/tests/protocol.test.mjs](mcp/tests/protocol.test.mjs) (real SDK over stdio); [mcp/tests/catalog.test.mjs](mcp/tests/catalog.test.mjs) (Active filtering, exact IDs, map resolution, category provenance, unknown facts); [mcp/tests/account.test.mjs](mcp/tests/account.test.mjs) (optional account tools). The current full MCP suite has 51 passes and no skips.
 - **Verify:** `cd mcp && npm ci --ignore-scripts && npm test && npm run demo`
-- **Limits:** `get_producer_line` covers only the 25 producers of F-24. Other producers return `unavailable`. `get_audio` returns `unavailable`, because the repository has no approved audio files. The server uses local stdio only. No interactive AI assistant and no Qwen dialogue have been tested with it. `list_my_wines` returns an empty list, and `get_my_profile` returns `null` preferences, until the diary history of issue #48 exists. The account tools were checked on a local stack only ([mcp/ResearchLog.md](mcp/ResearchLog.md)).
+- **Limits:** `get_producer_line` covers the 25 producers of F-24. Other producers return `unavailable`. `get_audio` returns `unavailable` without an approved audio manifest. The server uses local stdio. The catalogue is a versioned snapshot. It does not verify current prices, stock, or wine quality. The history endpoint now supplies `list_my_wines` (F-119). Preferences remain `null`. The account tools have local-stack evidence only. This review does not test an interactive AI assistant or a Qwen dialogue.
 
 ### F-49 Experiment tracking and saved-run comparison
 
@@ -612,7 +693,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-54 Installable PWA
 
-- **Claim:** The portal is an installable PWA with a manifest, regular and maskable icons, and screenshots. The service worker caches pages and never caches `/api` or `/v1` responses.
+- **Claim:** The portal is an installable PWA with a manifest, icons, and screenshots. The service worker caches public pages. It excludes account routes, `/api` responses, and `/v1` responses. F-121 uses a separate IndexedDB store for explicit public-card copies.
 - **Status:** Deployed ([webui/ResearchLog.md](webui/ResearchLog.md) 2026-09-29).
 - **Entry point:** [webui/nuxt.config.ts](webui/nuxt.config.ts)
 - **Proof:** [webui/tests/pwa.test.ts](webui/tests/pwa.test.ts); [webui/scripts/check-pwa-browser.mjs](webui/scripts/check-pwa-browser.mjs).
@@ -630,7 +711,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 
 ### F-61 Answer time budget
 
-- **Claim:** With `fast_answer`, the cascade answers at 2.9 s when it has an answer, cancels the remaining model calls, and returns an empty slug at 9.5 s. The clock starts when the request headers arrive.
+- **Claim:** With `fast_answer`, the cascade applies a 2.9 s answer cutoff to `POST /v1/eval/predict` when an answer exists. It can finish earlier. It cancels pending model calls after the decision. If no answer exists, it returns an empty slug at the 9.5 s hard limit. The clock starts when request headers arrive. `POST /v1/match` uses no time budget ([matcher/service.py](matcher/service.py)).
 - **Status:** Implemented. [matcher/config.yaml](matcher/config.yaml) has the settings as a comment, together with `pipeline: cascade-p512-rot5`.
 - **Entry point:** [matcher/cascade.py](matcher/cascade.py) (`answer_at_seconds`, `timeout_seconds`), [matcher/cascade_run.py](matcher/cascade_run.py)
 - **Proof:** `matcher/tests/test_cascade.py::test_slow_sam3_gives_the_whole_answer_at_answer_at`, `matcher/tests/test_cascade.py::test_a_slow_vlm_is_cut_at_answer_at_and_its_connection_closes`, `matcher/tests/test_cascade.py::test_everything_slow_gives_an_empty_slug_at_the_hard_limit`; `matcher/tests/test_cascade_api.py::test_the_time_budget_counts_from_the_request_headers`; [matcher/ResearchLog.md](matcher/ResearchLog.md) (81 of 81 photos within 3 s).
@@ -682,7 +763,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 ### F-70 Telegram bot
 
 - **Claim:** `@ChtoZaVinoBot` accepts one photo, an album, or an image file (JPEG, PNG, WebP, HEIC, HEIF). Each photo becomes its own request. HEIC files become JPEG files without EXIF data.
-- **Status:** Deployed for photos and albums. Implemented for files and HEIC.
+- **Status:** Deployed for photos and albums. [webui/docs/bot-landing.md](webui/docs/bot-landing.md) records Telegram revision `014654bf` with the diary endpoint enabled on 2026-10-20 at 10:50 MSK. That document records no live HEIC upload result. The file and HEIC handlers are implemented and have tests.
 - **Entry point:** [telegram-bot/src/chto_za_vino_bot/app.py](telegram-bot/src/chto_za_vino_bot/app.py), [im-core/src/chto_za_vino_core/image_types.py](im-core/src/chto_za_vino_core/image_types.py)
 - **Proof:** `telegram-bot/tests/test_album.py::test_album_photos_create_separate_ordered_jobs`; `telegram-bot/tests/test_image_document.py::test_heic_document_is_recognized_and_stored_as_jpeg`.
 - **Verify:** Read [telegram-bot/README.md](telegram-bot/README.md). Live: <https://t.me/ChtoZaVinoBot>.
@@ -752,11 +833,11 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [webui/nuxt.config.ts](webui/nuxt.config.ts), [webui/public/robots.txt](webui/public/robots.txt), [webui/public/sitemap.xml](webui/public/sitemap.xml)
 - **Proof:** [webui/tests/seo.test.ts](webui/tests/seo.test.ts).
 - **Verify:** Read [webui/public/sitemap.xml](webui/public/sitemap.xml).
-- **Limits:** `sitemap.xml` on `main` lists 14 URLs. Five of them have no recorded release: `/terms`, `/privacy`, `/contacts`, `/sitemap`, and `/iphone`.
+- **Limits:** The current XML sitemap contains 17 URLs. The HTML sitemap lists the other 16 URLs and omits its own page (F-105). Some routes have source and local validation evidence only. Sitemap inclusion does not establish a deployment.
 
 ### F-79 Project pages
 
-- **Claim:** The portal has the pages `/ideas` (feature ideas with their status), `/android` (APK download), `/hackaton`, and `/presentation`. `/ideas` has four implemented scenarios, including «Dinner Lens — вино к блюду» with a link to `/dish` (F-28). It links to `/crocodile` (F-106) and `/game` (F-107). Other portal pages are `/lineup` (F-24), `/iphone` (F-98), the legal pages (F-104), and `/sitemap` (F-105).
+- **Claim:** The portal has `/ideas`, `/android`, `/hackaton`, and `/presentation`. It also has `/lineup` (F-24), `/dish` (F-28), `/iphone` (F-98), legal pages (F-104), `/sitemap` (F-105), game landings (F-106 and F-107), `/shelf-lens` (F-116), and bot landings (F-123). The `/ideas` page labels implemented scenarios, demonstrations, and future scenarios separately.
 - **Status:** Deployed ([webui/ChangeLog.md](webui/ChangeLog.md) 2026-09-29). The `/ideas` changes of 2026-10-19 are in release `e2e36bfa`. Its live check opens `/ideas` and follows the link to `/crocodile` ([webui/docs/validation/crocodile-landing.md](webui/docs/validation/crocodile-landing.md)).
 - **Entry point:** [webui/app/pages/ideas.vue](webui/app/pages/ideas.vue), [webui/app/pages/android.vue](webui/app/pages/android.vue), [webui/app/pages/hackaton.vue](webui/app/pages/hackaton.vue), [webui/app/pages/presentation.vue](webui/app/pages/presentation.vue)
 - **Proof:** [webui/tests/android-landing.test.ts](webui/tests/android-landing.test.ts); [webui/scripts/check-presentation-browser.mjs](webui/scripts/check-presentation-browser.mjs).
@@ -944,7 +1025,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [account/src/chto_za_vino_account/api.py](account/src/chto_za_vino_account/api.py), [account/src/chto_za_vino_account/service.py](account/src/chto_za_vino_account/service.py), [account/src/chto_za_vino_account/yandex.py](account/src/chto_za_vino_account/yandex.py), [webui/app/pages/account.vue](webui/app/pages/account.vue), [webui/server/utils/account.ts](webui/server/utils/account.ts), [webui/docs/account.md](webui/docs/account.md)
 - **Proof:** `account/tests/test_email.py::test_new_email_signs_up_and_gets_a_session`, `account/tests/test_email.py::test_wrong_codes_lock_the_challenge`, `account/tests/test_email.py::test_session_does_not_expire`; `account/tests/test_yandex.py::test_authorize_url_uses_pkce_and_state`; `account/tests/test_account.py::test_an_old_session_can_delete_the_account`, `account/tests/test_account.py::test_unlink_keeps_one_login_method`; `webui/tests/account.test.ts` ("sets the session cookie after a correct code and keeps the token away from the browser", "lists only email and Yandex ID as login methods", "deletes the account without a re-login and clears the session cookie").
 - **Verify:** `cd account && ./scripts/verify.sh`
-- **Limits:** The diary data does not exist yet: searches, photos, ratings, and preferences ([account/README.md](account/README.md)). MAX login is off by default (`MAX_LOGIN_ENABLED`). [account/MANUAL_TESTS.md](account/MANUAL_TESTS.md) has no recorded run, including test 8.4 (VoiceOver and TalkBack).
+- **Limits:** History, saved wines, and private notes are implemented (F-119 and F-120). Taste preferences and numeric personal ratings remain absent. MAX login is off by default (`MAX_LOGIN_ENABLED`). The configuration also has an optional `ACCOUNT_TEST_CODE` login override for temporary tests. The F04 acceptance report disables that override. This review does not inspect a running service configuration or verify email delivery.
 
 #### F-100 Same-email account join
 
@@ -962,7 +1043,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [account/src/chto_za_vino_account/max_launch.py](account/src/chto_za_vino_account/max_launch.py), [webui/app/utils/max-bridge.ts](webui/app/utils/max-bridge.ts), [webui/server/middleware/max-host.ts](webui/server/middleware/max-host.ts), [webui/server/api/account/max/link.post.ts](webui/server/api/account/max/link.post.ts), [docs/plans/05_max-authorization.md](docs/plans/05_max-authorization.md)
 - **Proof:** `account/tests/test_max.py::test_signature_check`, `account/tests/test_max.py::test_launch_checks`, `account/tests/test_max.py::test_launch_date_in_milliseconds`, `account/tests/test_max.py::test_launch_forms_of_max_clients`, `account/tests/test_max.py::test_max_login_is_off_by_default`; `webui/tests/account.test.ts` ("sends the launch data with the session and the client address", "serves the QR code of the fixed link only when it is set", "sets and clears the email and session cookies with SameSite=None and Partitioned").
 - **Verify:** Read the section "MAX link" in [webui/docs/account.md](webui/docs/account.md).
-- **Limits:** The MAX bot does not save searches to the diary ([docs/plans/05_max-authorization.md](docs/plans/05_max-authorization.md)). MAX login stays off.
+- **Limits:** Both bot implementations can record history when their account integration is configured (F-119). [webui/docs/bot-landing.md](webui/docs/bot-landing.md) records that the production MAX revision `3e7c20d2` lacks that integration. MAX login stays off by default.
 
 #### F-102 Telegram link
 
@@ -971,7 +1052,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [account/src/chto_za_vino_account/service.py](account/src/chto_za_vino_account/service.py), [telegram-bot/src/chto_za_vino_bot/account.py](telegram-bot/src/chto_za_vino_bot/account.py), [telegram-bot/src/chto_za_vino_bot/profile.py](telegram-bot/src/chto_za_vino_bot/profile.py), [webui/server/api/account/links/telegram.post.ts](webui/server/api/account/links/telegram.post.ts)
 - **Proof:** `account/tests/test_telegram.py::test_link_telegram_with_confirmation`, `account/tests/test_telegram.py::test_a_code_belongs_to_the_first_claimer`, `account/tests/test_telegram.py::test_a_new_code_replaces_the_open_one`, `account/tests/test_telegram.py::test_bot_unlink`; `telegram-bot/tests/test_account_link.py::test_start_link_asks_for_confirmation`, `telegram-bot/tests/test_account_link.py::test_link_only_in_a_private_chat`; `telegram-bot/tests/test_profile.py::test_menu_shows_unlink_only_with_the_account_link`.
 - **Verify:** Read [telegram-bot/tests/test_account_link.py](telegram-bot/tests/test_account_link.py).
-- **Limits:** The bot does not save searches to the diary yet. [account/MANUAL_TESTS.md](account/MANUAL_TESTS.md) test 8.3 has no recorded run.
+- **Limits:** The Telegram implementation records delivered result cards in the diary when recording is enabled (F-119). The saved deployment record names Telegram revision `014654bf` with the diary endpoint enabled. This review does not repeat a live link or history check.
 
 #### F-103 Application tokens for MCP clients
 
@@ -980,9 +1061,45 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [account/src/chto_za_vino_account/service.py](account/src/chto_za_vino_account/service.py) (`APP_TOKEN_PATTERN`), [webui/server/api/app/v1/profile.get.ts](webui/server/api/app/v1/profile.get.ts), [webui/server/api/app/v1/wines.get.ts](webui/server/api/app/v1/wines.get.ts), [mcp/src/account.mjs](mcp/src/account.mjs)
 - **Proof:** `account/tests/test_app_tokens.py::test_create_shows_the_token_once_and_stores_only_its_hash`, `account/tests/test_app_tokens.py::test_refusals_are_the_same_401`, `account/tests/test_app_tokens.py::test_a_token_is_not_a_session_and_cannot_manage_tokens`, `account/tests/test_app_tokens.py::test_a_sixth_active_token_is_refused`, `account/tests/test_app_tokens.py::test_the_61st_request_in_a_minute_is_limited`; `webui/tests/account.test.ts` ("creates a token with the site origin and returns the secret once", "passes the bearer token on as X-App-Token and keeps no cookie or cache").
 - **Verify:** Read [account/README.md](account/README.md).
-- **Limits:** The preferences are `null` and the wine list is empty until the diary part of issue #48 exists. Public use of `/api/app/*` needs a change of the reverse proxy. The end-to-end check ran on a local stack only.
+- **Limits:** Preferences remain `null`. The wine endpoint now pages through recognition history (F-119). It does not expose private saved notes. The saved-list API remains a separate session API. Public proxy routing, token access, and deployment are not checked in this review.
+
+#### F-119 Recognition history across the portal and linked chats
+
+- **Claim:** The account stores recognition history from `photo`, `shelf`, `telegram`, and `max`. Each wine has at most one date per calendar day in `Europe/Moscow`. A repeated match updates the snapshot and preserves that day's first source. The user can disable recording or delete a date, a wine, or the full history. The limits are 2,000 wines and 366 dates per wine. The oldest history record is removed at a limit. The portal records real photo results and opened shelf results in the background. Both bots record delivered wine cards through `DiaryHistory`. Negative feedback can remove or replace the rejected result's date. The application-token endpoint pages through this history with an opaque cursor.
+- **Status:** Implemented. Schema `005_diary_lists.sql` is in the baseline. [webui/docs/bot-landing.md](webui/docs/bot-landing.md) records Telegram revision `014654bf` with diary integration. The same record says the deployed MAX revision lacks diary history. No new live check was made in this review.
+- **Entry point:** [account/src/chto_za_vino_account/diary.py](account/src/chto_za_vino_account/diary.py), [account/src/chto_za_vino_account/schema/005_diary_lists.sql](account/src/chto_za_vino_account/schema/005_diary_lists.sql), [webui/app/composables/useDiary.ts](webui/app/composables/useDiary.ts), [im-core/src/chto_za_vino_core/diary.py](im-core/src/chto_za_vino_core/diary.py).
+- **Proof:** `account/tests/test_history.py::test_a_new_moscow_day_is_a_new_date`, `account/tests/test_history.py::test_each_person_sees_only_their_history`, `account/tests/test_history.py::test_app_wines_pages_through_the_history`; `account/tests/test_bot_history.py::test_a_date_of_another_source_stays`; [telegram-bot/tests/test_diary_history.py](telegram-bot/tests/test_diary_history.py), [max-bot/tests/test_diary_history.py](max-bot/tests/test_diary_history.py), [webui/tests/diary.test.ts](webui/tests/diary.test.ts).
+- **Verify:** Use the account, Web UI, shared-core, and bot test commands above. The Web UI suite passed in the full review. The account follow-up passed all 159 tests, including history, bot-history routes, and application-token pagination. The shared-core and bot suites were not repeated.
+- **Limits:** A bot needs a linked identity and an enabled account integration. Bot history uses one attempt with a two-second timeout. Failure does not block the chat result and can leave the history incomplete. The diary stores metadata and dates. It does not store the uploaded photo in the history row. Recording history does not automatically save a wine.
+
+#### F-120 Saved wines and private notes
+
+- **Claim:** «Сохранённые» is the default account tab. The separate saved list supports `not_tasted`, `want`, `liked`, and `disliked`. A pin on a photo result, shelf result, producer map, Dinner Lens card, or history row saves a wine. Removing history does not remove saved wines. A saved wine can have a private note of at most 2,000 characters. The page saves notes after one second without input and on blur. The server normalizes line endings and rejects disallowed control characters. Account deletion removes both lists and their notes. The saved-list limit is 500 wines. A full list returns HTTP 409.
+- **Status:** Implemented. Schema `005_diary_lists.sql` and schema `006_saved_notes.sql` are in the baseline. The F04 acceptance report records local persistence checks with an isolated account database.
+- **Entry point:** [account/src/chto_za_vino_account/diary.py](account/src/chto_za_vino_account/diary.py), [account/src/chto_za_vino_account/schema/006_saved_notes.sql](account/src/chto_za_vino_account/schema/006_saved_notes.sql), [webui/app/pages/account.vue](webui/app/pages/account.vue), [webui/app/components/PinButton.vue](webui/app/components/PinButton.vue), [webui/shared/diary.ts](webui/shared/diary.ts).
+- **Proof:** `account/tests/test_saved.py::test_add_change_and_remove`, `account/tests/test_saved.py::test_a_note_on_a_saved_wine`, `account/tests/test_saved.py::test_note_normalization_and_length`, `account/tests/test_history.py::test_account_deletion_removes_both_lists`; [webui/tests/diary.test.ts](webui/tests/diary.test.ts), [webui/docs/f04-acceptance-2026-10-20.md](webui/docs/f04-acceptance-2026-10-20.md).
+- **Verify:** `cd webui && npx vitest run tests/diary.test.ts`. The account follow-up passed all 159 tests, including saved statuses, note validation, account deletion, and list limits. Use the account verification command above to repeat the database checks.
+- **Limits:** The four statuses are not numeric ratings. The implementation does not infer taste preferences or personalized recommendations. Private notes are excluded from the application-token wine endpoint and the public offline copies.
+
+#### F-121 Public wine-card copies on the device
+
+- **Claim:** After an explicit server save, the portal can store a separate public wine-card copy in IndexedDB. The store keeps at most 50 cards. It evicts the oldest copy. Each card contains its exact slug, bounded public metadata, catalogue version, and saved time. The copy uses an image placeholder. It excludes private notes, account responses, tokens, email, and uploaded photos. Logout, account deletion, or account reset clears the copies and invalidates pending writes. Owner and epoch checks protect each write. Other tabs receive clear notifications. A local copy failure preserves a successful server save and reports local unavailability.
+- **Status:** Implemented. The source is in the baseline. Historical Chromium, WebKit, warmed PWA, and Pixel 8 checks are recorded in the F04 reports.
+- **Entry point:** [webui/shared/offline-cards.ts](webui/shared/offline-cards.ts), [webui/app/composables/useOfflineCards.ts](webui/app/composables/useOfflineCards.ts), [webui/app/components/PinButton.vue](webui/app/components/PinButton.vue), [webui/docs/f04-result-journey.md](webui/docs/f04-result-journey.md).
+- **Proof:** [webui/tests/alternatives.test.ts](webui/tests/alternatives.test.ts) checks bounded public records and rejects private fields. [webui/scripts/check-f04-browser.mjs](webui/scripts/check-f04-browser.mjs) and [webui/docs/f04-acceptance-2026-10-20.md](webui/docs/f04-acceptance-2026-10-20.md) cover quota failure, eviction, invalid records, owner changes, pending writes, logout, and account deletion.
+- **Verify:** Run `npm run test:f04` and the PWA browser check with the documented local services. The current unit suite passed. This review does not repeat browser or device acceptance.
+- **Limits:** Offline launch needs an earlier online warm-up. New recognition, portal links, status edits, and note edits need a network. Offline writes are not queued. The store is separate from the server diary. The saved Pixel 8 check uses network emulation. Literal OS airplane mode and physical iPhone acceptance remain pending in the report.
 
 ### Portal pages and shared assets
+
+#### F-123 Telegram and MAX landing pages
+
+- **Claim:** `/telegram-bot` and `/max-bot` use a shared `BotLanding` component. Each page describes the recognition flow, queue, feedback, diary link, and commands. Each page has its own metadata and bot link. The example chat is HTML and is labeled as an example. `/max` remains the diary mini app. Both landing pages appear in the sitemaps.
+- **Status:** Implemented. [webui/ChangeLog.md](webui/ChangeLog.md) records local browser checks in both themes at five widths. No live deployment check is recorded for these pages.
+- **Entry point:** [webui/app/components/BotLanding.vue](webui/app/components/BotLanding.vue), [webui/app/data/botLandings.ts](webui/app/data/botLandings.ts), [webui/app/pages/telegram-bot.vue](webui/app/pages/telegram-bot.vue), [webui/app/pages/max-bot.vue](webui/app/pages/max-bot.vue), [webui/docs/bot-landing.md](webui/docs/bot-landing.md).
+- **Proof:** [webui/tests/bot-landing.test.ts](webui/tests/bot-landing.test.ts), [webui/tests/sitemap.test.ts](webui/tests/sitemap.test.ts). Both files pass in the current Web UI suite.
+- **Verify:** `cd webui && npx vitest run tests/bot-landing.test.ts tests/sitemap.test.ts`.
+- **Limits:** The pages describe source capabilities. The deployment record names an older MAX bot without diary history. The example chat does not prove a live messenger run.
 
 #### F-104 Shared legal pages
 
@@ -1055,7 +1172,7 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Entry point:** [workbench/pipeline/wine_draft.py](workbench/pipeline/wine_draft.py), [workbench/pipeline/attribute_compare.py](workbench/pipeline/attribute_compare.py), [workbench/pipeline/wine_vintages.py](workbench/pipeline/wine_vintages.py), [workbench/docs/testing/wine-draft.md](workbench/docs/testing/wine-draft.md), [workbench/docs/testing/attribute-comparison.md](workbench/docs/testing/attribute-comparison.md), [workbench/docs/testing/wine-vintages.md](workbench/docs/testing/wine-vintages.md)
 - **Proof:** `workbench/tests/test_wine_draft.py::test_different_vintage_and_one_missing_vintage`; `workbench/tests/test_attribute_compare.py::test_partial_blend_does_not_establish_conflict`; `workbench/tests/test_wine_vintages.py::test_an_undated_entry_can_link_to_multiple_years`, `workbench/tests/test_wine_vintage_clusters.py::test_a_pair_merges_two_clusters_in_each_view`.
 - **Verify:** Read [workbench/docs/testing/wine-draft.md](workbench/docs/testing/wine-draft.md).
-- **Limits:** The attribute facts need a VLM service. The database export in Git has no attribute facts (F-36).
+- **Limits:** The attribute comparison needs a VLM service to generate new facts. The current export already contains 2,351 `image_attribute_facts` rows (F-36). The `wine_vintage` export has no rows. The presence of these tools does not establish complete catalogue review.
 
 #### F-111 Workbench read caches and operator tools
 
@@ -1066,15 +1183,26 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 - **Verify:** Read the 2026-10-06 entries of [workbench/ChangeLog.md](workbench/ChangeLog.md).
 - **Limits:** All timings are local lab measurements under host load. The evidence files are in the lab `internal/` directory and are not in Git.
 
-## Known gaps and work outside `main`
+#### F-124 Review of production recognition errors
 
-### Work on other branches of this repository
+- **Claim:** `/production-errors` imports request images, candidates, and feedback into a local review queue. The import verifies the image SHA-256 and excludes user identity from the stored feedback. Feedback alone does not label an image or publish it. An operator supplies an identity, a purpose, and a review note. Publication can add a reviewed reference image or a benchmark case. The code prevents an image family, including known derivatives, from serving both purposes. Repeated import and publication are idempotent. A failed publication rolls back its transaction.
+- **Status:** Implemented. The current focused suite has 16 passes. The committed export contains zero `production_error` and zero `production_error_review` rows.
+- **Entry point:** [workbench/pipeline/production_errors.py](workbench/pipeline/production_errors.py), [workbench/pipeline/production_error_routes.py](workbench/pipeline/production_error_routes.py), [workbench/docs/lab-openapi.yaml](workbench/docs/lab-openapi.yaml).
+- **Proof:** `workbench/tests/test_production_errors.py::test_feedback_does_not_label_or_publish`, `workbench/tests/test_production_errors.py::test_linked_derivative_cannot_cross_reference_benchmark_purposes`, `workbench/tests/test_production_error_routes.py::test_failed_publish_rolls_back_new_test_set`.
+- **Verify:** `cd workbench && python3 -m unittest discover -s tests -p 'test_production_error*.py' -v`.
+- **Limits:** A review is an operator action. The implementation does not automatically retrain a model, rebuild all indexes, or establish a recognition-accuracy gain. Empty exported tables provide no historical reviewed cases.
 
-| Branch | Content | Issue |
-|---|---|---|
-| `issue-34-review-assets-v2` | Review assets of the main bottle selector semantic-v2: 216 cases of the frozen set `main-selector-hardcases-v2` with masks, crops, and expected results. The branch has no shared history with `main`. | #34 |
+## Known gaps and evidence limits
 
-The branch `android/current` has no Android content that `main` lacks. Its Android commits are on `main` as rebased copies.
+### Source publication and historical records
+
+The full source review used `7cb1044c` and local MCP and alternatives changes.
+Commit `121c7f08` contains those changes.
+The account follow-up verifies the account source at `121c7f08`.
+It does not reassess the other component feature rows.
+This file does not assess other branches or verify the state of remote `main`.
+Historical branch and release names inside linked reports identify the source of those checks.
+They do not establish that the same source is deployed now.
 
 ### Open parts of the workbench port
 
@@ -1086,14 +1214,13 @@ The branch `android/current` has no Android content that `main` lacks. Its Andro
 
 ### Demo features
 
-- «Рассказать об этикетке» in the Web UI shows a fixed sample explanation. The UI states that the text is not about the matched wine.
-- The `/ideas` page shows ideas with the status of each idea. Four ideas are static mockups with the badge «Макет · не подключено».
+- The result label guide now uses the resolved wine card (F-122). The `/ideas` page still contains preview demonstrations. A preview selection is not recognition evidence.
+- The `/ideas` page labels mockups and prototypes. Audio playback, free-text taste discovery, personal taste preferences, and planogram compliance remain separate future scenarios. The linked game has its own prototype status (F-107).
 
 ### Files that are not in Git
 
 - Recognition model weights. The Shelf Lens bottle detector is a separate in-Git asset (F-113). [bootstrap/artifacts/model-bundles/manifest.json](bootstrap/artifacts/model-bundles/manifest.json) lists the archives and their SHA-256 values.
-- The lab catalogue database and the rotated index that the `cascade` pipeline needs. The text export of the lab database is in Git (F-36).
-- The lab snapshot of 2026-10-18 (2,358 wines, 936 new images) (F-36).
+- The working lab SQLite file and the rotated index that the `cascade` pipeline needs. The current schema-36 text export restores database rows (F-36). A database restore does not rebuild the image bodies or embedding index.
 - The Android model pack (F-44).
 - The iPhone Core ML models and resource pack (F-94).
 - The Dinner Lens embedding indexes, the benchmark ground truth, and the audit directory (F-27, F-29).
@@ -1106,4 +1233,10 @@ The branch `android/current` has no Android content that `main` lacks. Its Andro
 
 Shelf Lens bottle search, AR navigation, taste highlighting, and comparison with a reference planogram are planned. The implemented features are video scanning, spatial ReID, ratings, the wine list, and planogram generation (F-113 to F-115).
 
-The open issues of this repository list the planned features, for example #26, #27, and #29 to #31 (post-search features), #35 (screen reader support), #48 (diary history, ratings, and preferences), and #36 (iPhone release). Issue #28 (Dinner Lens) is open, and F-27 to F-29 describe its current state.
+The issue numbers in this file are traceability references.
+This review does not query their current tracker status.
+Diary history and saved wines already exist (F-119 and F-120).
+Numeric personal ratings, taste preferences, personalized recommendations, approved audio, broader taste discovery, and the iPhone release remain outside the implemented scope described here.
+F-27 to F-29 describe the implemented Dinner Lens service and portal integration.
+The remaining F04 release checks are in [the acceptance report](webui/docs/f04-acceptance-2026-10-20.md).
+Passing local tests does not establish those release checks or a production deployment.

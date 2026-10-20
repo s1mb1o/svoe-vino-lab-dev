@@ -1,5 +1,22 @@
 # Change log
 
+## 2026-10-20 — Account test verification for the assessment
+
+- Install the account runtime and development dependencies from `account/uv.lock` in a separate temporary environment.
+- Run `account/scripts/verify.sh` against account source at `121c7f08` with Python 3.13.7.
+- Pass the lockfile check and Ruff check. Pass all 159 account tests in 9.70 seconds with no failures, errors, or skips.
+- Update `ASSESSMENT.md` with the result, dependency versions, repeat command, and test limits. Replace the missing-`pytest` limitation.
+- Preserve the earlier component results. Leave the account source and lockfile unchanged.
+
+## 2026-10-20 — Source assessment refresh
+
+- Review `ASSESSMENT.md` against committed source `7cb1044c` and the existing local MCP and alternatives changes.
+- Add evidence for alternatives, factual comparison, diary history, saved wines, private notes, device copies, the label guide, bot landings, and production-error review.
+- Correct the database export, Active catalogue count, OpenAPI inventory, sitemap count, evaluator time budget, and stale missing-feature claims.
+- Mark uncommitted source and untracked evidence. Keep historical acceptance, local tests, and deployment records separate.
+- Verify 616 Web UI tests (26 skipped), 51 MCP tests, 8 database-export tests, and 16 production-error tests. Verify the alternatives source check, schema-36 restore, all 5 matcher payload hashes, and the portable retrieval checker.
+- Record that account tests could not start without `pytest`. Do not claim a new full-suite, model, mobile, browser, or live-service check.
+
 ## 2026-10-20 — Shelf Lens dataset link
 
 - Add the Google Drive link to the Shelf Lens dataset (`shelf-bottles-dataset.zip`) in `shelf-lens/README.md`.
