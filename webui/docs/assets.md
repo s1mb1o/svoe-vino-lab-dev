@@ -95,6 +95,15 @@ The public WebP derivatives use quality 88 and contain no generated marketing co
 - `public/screenshots/iphone/01-main.webp`: SHA-256 `493703485ce6df2ec96fe24f373799fd6d1d70af12c4ba10bfa0239a83babd25`.
 - `public/screenshots/iphone/02-settings.webp`: SHA-256 `df1dc8adaf06765fd67195ae9e93f5f90b5bc6dea4c591d82576dd59ecd8bbd3`.
 
+## Bot landing example chat
+
+Date: 2026-10-20
+
+The example chat on `/telegram-bot` and `/max-bot` adds no new image files.
+It reuses `public/line-wines/abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13.webp`
+(see «Product-line bottle images») and `public/icons/product-logo.svg`.
+The chat is HTML. It is not a screenshot of Telegram or MAX.
+
 ## Sources
 
 - [PlayfairDisplay-VariableFont_wght.woff2](https://vino-svoe.ru/fonts/Playfair/PlayfairDisplay-VariableFont_wght.woff2)

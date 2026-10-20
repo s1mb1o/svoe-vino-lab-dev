@@ -1,5 +1,24 @@
 # Change log
 
+## 2026-10-20 — Telegram and MAX bot landing pages
+
+- Owner request: landing pages for both bots with feature lists, in the style of `/android` and `/iphone`.
+- New routes `/telegram-bot` and `/max-bot`. `/max` stays the MAX mini app of «Винный дневник»
+  (owner choice of the paths).
+- `BotLanding.vue` uses the `/iphone` layout: hero, 8 features, 4 steps, «Винный дневник»,
+  commands, final action. `app/data/botLandings.ts` holds the content of both bots.
+- The hero shows an example chat in HTML, labeled «Пример переписки · не снимок экрана». It uses
+  the real bot texts and the existing «Абрау-Дюрсо Пино Нуар» image. Screen readers get one text
+  alternative.
+- The features are those of GitHub `main` (owner choice). The production MAX bot (`3e7c20d2`) does
+  not send diary history records yet. See `docs/bot-landing.md`.
+- Secondary text uses `--ink` 75 % on `--paper` instead of `--muted` (3.93:1 in the light theme).
+- `/sitemap` and `public/sitemap.xml` list both pages in «Приложения». The header and the footer
+  name the bot on its page. New icon `message` for MAX.
+- `tests/bot-landing.test.ts`. 572 tests pass, 26 skipped; type checks and the build pass.
+  Chromium: 385 checks at 320, 390, 768, 1024, and 1440 px in both themes.
+- Codex review (gpt-6.1-sol, xhigh reasoning): no actionable defects.
+
 ## 2026-10-20 — Bottle preview on `/dish`; Android link in the footer
 
 - Owner request: a click on the bottle image of a Dinner Lens card opens a popup with the large

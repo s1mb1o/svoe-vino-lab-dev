@@ -1,5 +1,35 @@
 # Research log
 
+## 2026-10-20 — Bot landing pages
+
+- `/max` is the MAX mini app (`definePageMeta({ alias: ['/max'] })` in `pages/account.vue`).
+  On the main host, `maxHostGuard` redirects `/max` to `/account`. The earlier guide commit
+  `b087d387` on `feature/im-bot` used `/max` and never reached `main` for this reason.
+  The owner chose `/telegram-bot` and `/max-bot`.
+- Feature sources: `telegram-bot/README.md`, `max-bot/README.md`, both `profile.py` files,
+  `im-core/.../result_card.py` (caption labels), the `_queue_receipt_text` function of
+  `telegram-bot/.../app.py` (receipt text), `docs/account.md` (diary links), and plan 07 (history).
+- Both bots: photo, album, image file (JPEG, PNG, WebP, HEIC, HEIF), HEIC to JPEG without EXIF,
+  one result for each photo, «✅ Совпало» and «❌ Не совпало» for a single photo, three
+  alternatives and «Ничего из этого», tentative answers, the 18+ confirmation with the held
+  photo, 50 photos per hour, deletion after 30 days, and diary history records.
+- Telegram links to the diary with a one-time `t.me/ChtoZaVinoBot?start=link_<code>` link and has
+  `/unlink`. MAX links only in the mini app: MAX forbids a one-time code in a bot message.
+- Production on 2026-10-20 at 10:50 MSK (container labels on gx10): Telegram runs `014654bf`
+  of GitHub `main` with `BOT_ACCOUNT_ENDPOINT`. MAX runs `3e7c20d2` (2026-10-18), which has no
+  diary history records. The `chtozavino-deploy` record still states Telegram `874fbd6`.
+- Plan 07 notes an open risk: no source confirms that the MAX mini-app user ID equals the MAX Bot
+  API user ID. If they differ, MAX history records get `not_linked`.
+- The catalog record of the example wine has no sugar field. The page uses «Сухое» from the
+  catalog slug `…-pino-nuar-krasnoe-suhoe-13`.
+- `--muted` has 3.93:1 on `--paper` and 3.59:1 on `--cream` in the light theme.
+  `color-mix(in srgb, var(--ink) 75%, var(--paper))` has 6.28:1 and 5.73:1 (light) and 8.0:1 and
+  6.84:1 (dark).
+- Container query units (`cqw`) resolve against an ancestor container, not against the element
+  itself. The chat font size is therefore on `.chat-screen` inside the `.bot-device` container.
+- In a grid cell with an auto row, an image with `height: 86%` kept its natural height and spilled
+  out of the chat bubble. The chat images use `em` heights.
+
 ## 2026-10-20 — Android artifact identity
 
 - The release APK uses `com.alolalab.chtozavino`, not the old reverse-order ID.

@@ -1,5 +1,27 @@
 # Smoke tests
 
+## Telegram and MAX bot landing pages
+
+1. Open `/telegram-bot` in a new browser profile. Confirm that the 18+ gate blocks interaction.
+2. Accept the age confirmation. Confirm one H1 «Вино в кадре. Ответ в Telegram.».
+3. Confirm the example chat: bottle photo, queue receipt, wine card, «Открыть страницу вина»,
+   «✅ Совпало», «❌ Не совпало», and the caption «Пример переписки · не снимок экрана Telegram».
+4. Confirm 8 feature cards, 4 steps, the «Винный дневник» block, and the commands with `/unlink`.
+5. Follow «Открыть @ChtoZaVinoBot». Confirm that `https://t.me/ChtoZaVinoBot` opens in a new tab.
+6. Follow «Открыть веб-сканер», «Открыть «Винный дневник»», and «политике конфиденциальности».
+   Confirm `/`, `/account`, and `/privacy#telegram`.
+7. Repeat steps 1–6 on `/max-bot` with `https://max.ru/se14697933_bot`, «Ответ в MAX.»,
+   `/privacy#max`, and no `/unlink`.
+8. Open `/max` on chtozavino.ru. Confirm the redirect to `/account` (the mini-app path is unchanged).
+9. Confirm the header section «Бот в Telegram» or «Бот в MAX» and the same text in the footer.
+10. Open `/sitemap`. Confirm «Бот в Telegram» and «Бот в MAX» after «iPhone» in «Приложения».
+11. Check 320, 390, 768, 1024, and 1440 px in both themes. Confirm no horizontal overflow.
+12. With VoiceOver on iPhone and TalkBack on Android, confirm that the example chat is read as one
+    image with its description, and that each feature card and step is read in order.
+
+The local production build passed these checks in Chromium on 2026-10-20 (385 checks).
+The screen-reader checks on physical devices are not done yet.
+
 ## Bottle preview on `/dish`
 
 1. Open `/dish` and get recommendations for a dish. Confirm the zoom cursor on a card bottle image.
@@ -69,10 +91,10 @@
 - Open `/sitemap` in a new profile. Confirm the age gate. Confirm the page after age confirmation.
 - Confirm one H1 «Карта сайта», one canonical URL, and the page title «Карта сайта — Что за вино?».
 - Confirm the groups «Поиск вина», «Каталог», «Приложения», «Игры», «О проекте», and «Правовая информация».
-- Follow each of the 13 page links. Confirm that each destination opens.
+- Follow each of the 15 page links. Confirm that each destination opens.
 - Follow «Карта сайта» in the shared footer. Confirm client navigation to `/sitemap` and updated page metadata.
 - Confirm that `/sitemap/` opens with the canonical URL `https://chtozavino.ru/sitemap`.
-- Open the XML link. Confirm the `/sitemap` entry and the same 13 destinations.
+- Open the XML link. Confirm the `/sitemap` entry and the same 15 destinations.
 - Confirm that the HTML site map and XML sitemap omit `/hackaton`, `/account`, and `/max`.
 - Check 320, 390, 768, and 1440 pixel widths in both system themes. Confirm no horizontal overflow.
 - Use Tab to reach the page links. Confirm the visible focus indicator.

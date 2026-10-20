@@ -2,7 +2,7 @@
 import { sitemapSections } from '~/data/sitemap'
 
 const title = 'Карта сайта — Что за вино?'
-const description = 'Все разделы «Что за вино?»: поиск вина по фото, полки и вина к блюду, карты линеек производителей, приложения для Android и iPhone, игры, идеи, презентация проекта и правовая информация.'
+const description = 'Все разделы «Что за вино?»: поиск вина по фото, полки и вина к блюду, карты линеек производителей, приложения для Android и iPhone, боты в Telegram и MAX, игры, идеи, презентация проекта и правовая информация.'
 const canonical = 'https://chtozavino.ru/sitemap'
 const sections = sitemapSections
 

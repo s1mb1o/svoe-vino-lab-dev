@@ -29,6 +29,8 @@ export const sitemapSections: { id: string; title: string; pages: SitemapPage[] 
     pages: [
       { path: '/android', label: 'Android', icon: 'android', description: 'Приложение для Android. Распознавание без интернета, QR-коды и штрихкоды.' },
       { path: '/iphone', label: 'iPhone', icon: 'phone', description: 'Нативное приложение для iPhone. Распознавание на устройстве, QR-коды и штрихкоды.' },
+      { path: '/telegram-bot', label: 'Бот в Telegram', icon: 'telegram', description: 'Бот @ChtoZaVinoBot. Отправьте фото или альбом в чат и получите карточку вина.' },
+      { path: '/max-bot', label: 'Бот в MAX', icon: 'message', description: 'Бот «Что за вино?» в MAX. Отправьте фото или альбом в чат и получите карточку вина.' },
     ],
   },
   {

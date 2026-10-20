@@ -8,6 +8,8 @@ const ageConfirmed = ref(false)
 const route = useRoute()
 const isAndroidPage = computed(() => route.path.startsWith('/android'))
 const isIphonePage = computed(() => route.path.startsWith('/iphone'))
+const isTelegramBotPage = computed(() => route.path === '/telegram-bot' || route.path === '/telegram-bot/')
+const isMaxBotPage = computed(() => route.path === '/max-bot' || route.path === '/max-bot/')
 const isHackatonPage = computed(() => route.path === '/hackaton' || route.path === '/hackaton/')
 const isIdeasPage = computed(() => route.path === '/ideas' || route.path === '/ideas/')
 const isGamePage = computed(() => route.path === '/game' || route.path === '/game/')
@@ -38,7 +40,7 @@ onMounted(() => {
     </header>
     <header v-else-if="!isPresentationPage" class="site-header">
       <NuxtLink to="/" class="logo" aria-label="Что за вино? — поиск по фото"><ProductBrand /></NuxtLink>
-      <span class="header-section"><AppIcon :name="(isCrocodilePage || isGamePage) ? 'game' : isIdeasPage ? 'book' : isSitemapPage ? 'map' : isLegalPage ? 'shield' : isAndroidPage ? 'android' : isIphonePage ? 'phone' : 'scan'" />{{ isCrocodilePage ? 'Винный крокодил' : isGamePage ? 'Wine&Dine Merge' : isIdeasPage ? 'Больше, чем фото' : isHackatonPage ? 'Все приложения' : isSitemapPage ? 'Карта сайта' : isLegalPage ? 'Правовая информация' : isAndroidPage ? 'Android-приложение' : isIphonePage ? 'iPhone-приложение' : 'Сканер вина' }}</span>
+      <span class="header-section"><AppIcon :name="(isCrocodilePage || isGamePage) ? 'game' : isIdeasPage ? 'book' : isSitemapPage ? 'map' : isLegalPage ? 'shield' : isAndroidPage ? 'android' : isIphonePage ? 'phone' : isTelegramBotPage ? 'telegram' : isMaxBotPage ? 'message' : 'scan'" />{{ isCrocodilePage ? 'Винный крокодил' : isGamePage ? 'Wine&Dine Merge' : isIdeasPage ? 'Больше, чем фото' : isHackatonPage ? 'Все приложения' : isSitemapPage ? 'Карта сайта' : isLegalPage ? 'Правовая информация' : isAndroidPage ? 'Android-приложение' : isIphonePage ? 'iPhone-приложение' : isTelegramBotPage ? 'Бот в Telegram' : isMaxBotPage ? 'Бот в MAX' : 'Сканер вина' }}</span>
       <div class="header-actions">
         <NuxtLink v-if="accountEnabled" class="product-navigation account-navigation" to="/account" aria-label="Винный дневник"><span>Дневник</span><AppIcon name="book" /></NuxtLink>
         <NuxtLink class="product-navigation" :to="(isAndroidPage || isIphonePage) ? '/' : '/android'" :aria-label="(isAndroidPage || isIphonePage) ? 'Открыть веб-сканер' : 'Открыть страницу Android-приложения'"><span>{{ (isAndroidPage || isIphonePage) ? 'Веб-сканер' : 'Android' }}</span><AppIcon :name="(isAndroidPage || isIphonePage) ? 'scan' : 'android'" /></NuxtLink>
@@ -53,7 +55,7 @@ onMounted(() => {
     </footer>
     <footer v-else-if="!isPresentationPage" class="site-footer">
       <nav class="legal-navigation" aria-label="Правовая информация"><NuxtLink v-for="link in legalLinks" :key="link.path" :to="link.path" :aria-current="route.path.replace(/\/$/, '') === link.path ? 'page' : undefined">{{ link.label }}</NuxtLink></nav>
-      <div><span>Что за вино? · {{ isCrocodilePage ? 'Винный крокодил' : isGamePage ? 'Wine&Dine Merge' : isIdeasPage ? 'Больше, чем распознавание' : isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : isIphonePage ? 'Приложение для iPhone' : 'Поиск по фотографии' }}</span><NuxtLink :to="isIdeasPage ? '/' : '/ideas'">{{ isIdeasPage ? 'Веб-сканер' : 'Идеи за пределами распознавания' }}<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/android">Android<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/iphone">iPhone<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/sitemap">Карта сайта<AppIcon name="map" /></NuxtLink><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
+      <div><span>Что за вино? · {{ isCrocodilePage ? 'Винный крокодил' : isGamePage ? 'Wine&Dine Merge' : isIdeasPage ? 'Больше, чем распознавание' : isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : isIphonePage ? 'Приложение для iPhone' : isTelegramBotPage ? 'Бот в Telegram' : isMaxBotPage ? 'Бот в MAX' : 'Поиск по фотографии' }}</span><NuxtLink :to="isIdeasPage ? '/' : '/ideas'">{{ isIdeasPage ? 'Веб-сканер' : 'Идеи за пределами распознавания' }}<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/android">Android<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/iphone">iPhone<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/sitemap">Карта сайта<AppIcon name="map" /></NuxtLink><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
       <p>Чрезмерное употребление алкоголя вредит вашему здоровью</p>
     </footer>
   </div>
