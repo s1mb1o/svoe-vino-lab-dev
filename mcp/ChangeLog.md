@@ -1,5 +1,24 @@
 # Change log
 
+## 2026-10-20 — Richer account data
+
+- Read versioned stated preferences and integer ratings from 1 to 5 with bounded tasting notes.
+- Add `collection=rated` to `list_my_wines`; preserve history as the default and forward the collection through HTTPS.
+- Validate known account fields and the structured response size. Treat note text as data; exclude unexpected private fields.
+- Keep seven read-only tools. Existing saved-wine private notes remain outside application-token access.
+- Add protocol checks for stored preferences, rated wines, invalid collections, Unicode notes, and invalid output fields.
+- Pass all 53 MCP tests, JavaScript syntax checks, and the SDK demo on Node.js 26.4.0.
+
+## 2026-10-20 — Live account verification record
+
+- Record a real SDK client check through local stdio against the production account API on `https://chtozavino.ru`.
+- Confirm seven read-only tools, a successful profile response, and 27 unique diary wines across two pages in newest-first order.
+- Record `preferences: null`, `photo` and `shelf` sources, and null saved statuses for all 27 wines.
+- Confirm continued catalog access, empty captured server stderr, and no token in the checked tool results or captured stderr.
+- Update the README, research log, and smoke checks without saving the token or raw account responses.
+  Production token revocation and interactive third-party assistant acceptance were not checked in this run.
+- Keep runtime behavior unchanged.
+
 ## 2026-10-20 — History fields in `list_my_wines`
 
 - The account service fills `GET /v1/app/wines` from the diary history (plan 07). The tool description and

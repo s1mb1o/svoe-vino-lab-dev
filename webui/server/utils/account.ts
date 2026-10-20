@@ -540,6 +540,10 @@ export async function appReadRoute(event: H3Event, source: AccountConfigSource, 
       if (!Number.isInteger(limit) || limit < 1 || limit > 50) return refuse(400, 'invalid_request')
       params.set('limit', String(limit))
     }
+    if (query.collection !== undefined) {
+      if (query.collection !== 'history' && query.collection !== 'rated') return refuse(400, 'invalid_request')
+      params.set('collection', query.collection)
+    }
     if (query.cursor !== undefined) {
       if (typeof query.cursor !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(query.cursor)) return refuse(400, 'invalid_request')
       params.set('cursor', query.cursor)
@@ -547,7 +551,7 @@ export async function appReadRoute(event: H3Event, source: AccountConfigSource, 
     path = params.size ? `/v1/app/wines?${params}` : '/v1/app/wines'
   }
   try {
-    const { data } = await callAccount(config, 'GET', path, { appToken: match[1], clientIp: clientIp(event) })
+    const { data } = await callAccount(config, 'GET', path, { appToken: match[1], clientIp: clientIp(event), maxBytes: 256 * 1024 })
     return data
   } catch (error) {
     if (error instanceof AccountHttpError) {

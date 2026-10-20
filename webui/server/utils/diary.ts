@@ -59,12 +59,13 @@ function wineView(value: unknown): DiaryWine | null {
 }
 
 type ServiceHistoryItem = {
+  rating?: number | null; tasting_note?: string | null; rated_at?: string | null
   slug?: string; wine?: unknown; first_met_at?: string; last_met_at?: string; days_count?: number
   sources?: unknown; saved_status?: string | null; days?: Array<{ met_on?: string; source?: string; first_at?: string }>
 }
 type ServiceSavedItem = {
   slug?: string; wine?: unknown; status?: string; source?: string; added_at?: string; updated_at?: string; in_history?: boolean
-  note?: string | null
+  note?: string | null; rating?: number | null; tasting_note?: string | null; rated_at?: string | null
 }
 // A note of 2,000 Cyrillic characters is about 4 KB of UTF-8, more than the default 4 KiB body.
 const SAVED_PUT_BYTES = 12 * 1024
@@ -78,6 +79,7 @@ function historyView(item: ServiceHistoryItem): HistoryItem {
     daysCount: typeof item.days_count === 'number' ? item.days_count : 0,
     sources: Array.isArray(item.sources) ? item.sources.filter((source): source is string => typeof source === 'string') : [],
     savedStatus: isSavedStatus(item.saved_status) ? item.saved_status : null,
+    rating: item.rating ?? null, tastingNote: item.tasting_note ?? null, ratedAt: item.rated_at ?? null,
   }
   if (Array.isArray(item.days)) {
     view.days = item.days.map((day): HistoryDay => ({ metOn: text(day.met_on), source: text(day.source), firstAt: text(day.first_at) }))
@@ -95,6 +97,7 @@ function savedView(item: ServiceSavedItem): SavedItem {
     updatedAt: text(item.updated_at),
     inHistory: item.in_history === true,
     note: typeof item.note === 'string' && item.note ? item.note : null,
+    rating: item.rating ?? null, tastingNote: item.tasting_note ?? null, ratedAt: item.rated_at ?? null,
   }
 }
 

@@ -6,6 +6,15 @@
 - Reduce the file from 171,311 bytes to 2,810 bytes. Keep the URL, colors, and 640 by 640 view box.
 - Check in `tests/pwa.test.ts` that the public logo equals the shared SVG, has no embedded bitmap, and stays below 10 KiB.
 
+## 2026-10-20 — Account preferences and tasting ratings
+
+- Add editable stated preferences and the independent rating list to account settings.
+- Add 1–5 rating and tasting-note controls to history and saved wines; explain connected-application access at entry.
+- Keep existing saved-wine private notes separate. Require an owner session and same-site Origin for writes.
+- Forward the rated collection through the public read-only application API and update the privacy description.
+- Pass 619 web tests (26 existing skips), type checking, the production build, and the bundle check.
+- Pass Chromium and WebKit browser-to-MCP acceptance with an actual disposable account service.
+
 ## 2026-10-20 — Shelf Lens Android download
 
 - Add APK download actions to `/shelf-lens`. Keep the video demonstration.

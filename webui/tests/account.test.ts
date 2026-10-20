@@ -544,6 +544,11 @@ describe('application tokens', () => {
       expect(bad.status).toBe(400)
     }
     expect(seen).toHaveLength(1)
+    const rated = await call('/api/app/v1/wines?collection=rated&limit=2', { headers: { authorization: `Bearer ${secret}` } })
+    expect(rated.status).toBe(200)
+    expect(seen[1].url).toBe('/v1/app/wines?limit=2&collection=rated')
+    expect((await call('/api/app/v1/wines?collection=unknown', { headers: { authorization: `Bearer ${secret}` } })).status).toBe(400)
+    expect(seen).toHaveLength(2)
   })
   it('builds the MCP client configuration with the token in env', () => {
     const config = JSON.parse(mcpClientConfig(secret))

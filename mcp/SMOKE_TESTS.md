@@ -7,19 +7,55 @@ Run commands from `mcp/`.
 3. Run `npm test`.
 4. Run `npm run demo`.
 5. Confirm that the demo lists five read-only tools and two selected IDs.
-6. Confirm catalog count 2,094 and Active count 2,093 for the current snapshot.
+6. Confirm catalog count 2,094 and Active count 2,025 for the current snapshot.
 7. Confirm the producer-line result is `ok` with resolution `alias`. Confirm that audio is `unavailable` without approved assets.
 8. Check one non-fixture card and a comparison in a compatible MCP host.
 9. Create a token on `/account` → «Токены приложений». Set `CHTOZAVINO_ACCOUNT_TOKEN` in the host configuration. Confirm seven tools and that `get_my_profile` returns your username.
 10. Revoke the token on the site. Confirm that the next `get_my_profile` call returns `unauthorized` and that the catalog tools still work.
 11. Set a malformed token. Confirm exit code 1 and a stderr message without the value.
-9. Check an unknown ID, an unknown region, and a limit of 11.
-10. Confirm a valid call still works after a rejected call.
-11. Close the client. Confirm that its server subprocess exits.
+12. Check an unknown ID, an unknown region, and a limit of 11.
+13. Confirm a valid call still works after a rejected call.
+14. Close the client. Confirm that its server subprocess exits.
 
 The automated suite covers damaged sources, source joins, inactive records, product-line map resolution, map registry defects, and audio integrity failures.
 The automated SDK example does not replace a later interactive Qwen or external-host acceptance run.
 
 The 2026-10-19 map expansion has 25 registered producers and 1,203 products.
-The pinned Active-ID checks expect 1,127 exact map nodes, three aliases and 963 unavailable IDs.
+The pinned Active-ID checks expect 1,074 exact map nodes, three aliases and 948 unavailable IDs.
 The loader and schema checks cover every registered map, including the six new producers.
+
+## Recorded live account check — 2026-10-20
+
+A real SDK client connected over stdio to the local MCP server with an authorized account on
+`https://chtozavino.ru`. The run used Node.js 26.4.0 and the pinned SDK at 2.3.1.
+
+- Discover seven tools with `readOnlyHint: true`: passed.
+- Read the profile with `get_my_profile`: passed; username and creation date returned, preferences null.
+- Read all diary pages with `list_my_wines`: passed; 27 unique wines across two pages, newest first.
+  The first request used `limit: 2`; the next used the returned cursor and `limit: 50`.
+- Observe diary sources and saved status: `photo` and `shelf`; all 27 saved statuses null.
+- Read the catalog with `find_wines` while account access is enabled: passed.
+- Check server output: stderr empty; no token in the checked tool results or captured stderr.
+
+The token was supplied in memory and was not saved to a file or configuration.
+Production token revocation and interactive third-party assistant acceptance remain unchecked by this run.
+The diary count is an observation at the check time, not a required count for future runs.
+Read [ResearchLog.md](ResearchLog.md#2026-10-20--live-account-access) for the detailed record.
+
+
+## Preferences and ratings acceptance
+
+1. Deploy account schema 007, the matching portal, and the MCP adapter to the test environment.
+2. In account settings, save preferences, reload, and confirm that `get_my_profile` returns those exact choices.
+3. Rate a history wine from 1 to 5 and add a tasting note. Confirm the same rating and `note` in `list_my_wines`.
+4. Add a different private note to the saved wine. Confirm that this private note is absent from all MCP results.
+5. Remove the wine from history. Confirm that `collection=rated` still returns the rating and tasting note.
+6. Page through `rated` using its returned cursor. Confirm newest rating updates first and no duplicates.
+7. Change the rating, clear the tasting note, delete the rating, and reset preferences. Confirm each change through MCP.
+8. Confirm another account sees none of these values, and an application token cannot call owner write routes.
+
+These checks use disposable accounts. Do not save a real application token or raw personal responses in the repository.
+
+The 2026-10-20 local acceptance run passed in Chromium and WebKit through
+`webui/scripts/check-account-taste.mjs`: actual account service, built portal, and real stdio MCP.
+All 53 MCP tests also passed. These results do not claim a production deployment of schema 007.

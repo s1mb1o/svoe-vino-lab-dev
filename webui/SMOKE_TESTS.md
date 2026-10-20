@@ -968,3 +968,29 @@ Check the Formula Q, Blanc de Blancs and Ice Wine groups.
 Repeat in group previews, expanded nodes, desktop details and the mobile popup.
 Check both themes. Confirm that no cap, base, box or label is clipped.
 Check a gray product and an image HTTP 404. The placeholder and portal rules MUST remain correct.
+
+
+## Account preferences and ratings
+
+- With a disposable account, save colors, sparkling choice, sweetness, body, freshness, and grapes in settings. Reload and reset them.
+- Rate a history and a saved wine from 1 to 5; add, change, clear, and delete a tasting note and rating.
+- Confirm that tasting notes explain connected-application access and private saved-wine notes remain separate.
+- Clear history and remove a saved wine. Confirm its rating remains under account settings until explicitly deleted.
+- Confirm account deletion removes preferences and ratings, and logged-out or foreign-Origin writes fail.
+- Verify `get_my_profile` and both `list_my_wines` collections through a local MCP client with a disposable token.
+
+
+Automated local stack check (built portal, actual account service, disposable database, real stdio MCP):
+
+```sh
+PLAYWRIGHT_MODULE=<path-to-playwright>/index.mjs \
+ACCOUNT_TASTE_PYTHON=<account-python> \
+ACCOUNT_TASTE_REPORT_DIR=<temporary-report-directory> \
+node scripts/check-account-taste.mjs
+```
+
+Set `ACCOUNT_TASTE_BROWSER=webkit` for WebKit; Chromium is the default.
+The script edits preferences and ratings through the browser, reads them through MCP, checks account
+isolation and private-note exclusion, and verifies update, reset, and deletion. It captures desktop and
+375 px mobile screenshots and removes its disposable database and credentials on exit.
+It never uses a real account token. Run it against the final build.

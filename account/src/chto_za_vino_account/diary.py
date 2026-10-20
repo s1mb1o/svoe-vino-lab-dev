@@ -170,10 +170,12 @@ def _sources(text: str | None) -> list[str]:
 HISTORY_QUERY = (
     "SELECT w.wine_slug, COALESCE(w.wine_snapshot, s.wine_snapshot) AS snapshot, "
     "w.first_met_at, w.last_met_at, s.status AS saved_status, "
+    "r.rating, r.note AS tasting_note, r.updated_at AS rated_at, "
     "COUNT(d.met_on) AS days_count, GROUP_CONCAT(DISTINCT d.source) AS sources "
     "FROM history_wines w "
     "LEFT JOIN history_days d ON d.user_id = w.user_id AND d.wine_slug = w.wine_slug "
     "LEFT JOIN saved_wines s ON s.user_id = w.user_id AND s.wine_slug = w.wine_slug "
+    "LEFT JOIN wine_ratings r ON r.user_id = w.user_id AND r.wine_slug = w.wine_slug "
     "WHERE w.user_id = :user AND (:slug IS NULL OR w.wine_slug = :slug) "
     "AND (:after_at IS NULL OR w.last_met_at < :after_at "
     "OR (w.last_met_at = :after_at AND w.wine_slug > :after_slug)) "
@@ -185,9 +187,11 @@ HISTORY_QUERY = (
 # The history snapshot fills in when the saved wine has none.
 SAVED_QUERY = (
     "SELECT s.wine_slug, COALESCE(s.wine_snapshot, w.wine_snapshot) AS snapshot, s.status, "
-    "s.source, s.added_at, s.updated_at, w.wine_slug IS NOT NULL AS in_history, s.note "
+    "s.source, s.added_at, s.updated_at, w.wine_slug IS NOT NULL AS in_history, s.note, "
+    "r.rating, r.note AS tasting_note, r.updated_at AS rated_at "
     "FROM saved_wines s "
     "LEFT JOIN history_wines w ON w.user_id = s.user_id AND w.wine_slug = s.wine_slug "
+    "LEFT JOIN wine_ratings r ON r.user_id = s.user_id AND r.wine_slug = s.wine_slug "
     "WHERE s.user_id = :user AND (:slug IS NULL OR s.wine_slug = :slug) "
     "ORDER BY s.updated_at DESC, s.wine_slug"
 )
@@ -242,6 +246,9 @@ class Diary:
             "days_count": row["days_count"],
             "sources": _sources(row["sources"]),
             "saved_status": row["saved_status"],
+            "rating": row["rating"],
+            "tasting_note": row["tasting_note"],
+            "rated_at": iso(row["rated_at"]) if row["rated_at"] is not None else None,
         }
 
     @staticmethod
@@ -255,6 +262,9 @@ class Diary:
             "updated_at": iso(row["updated_at"]),
             "in_history": bool(row["in_history"]),
             "note": row["note"],
+            "rating": row["rating"],
+            "tasting_note": row["tasting_note"],
+            "rated_at": iso(row["rated_at"]) if row["rated_at"] is not None else None,
         }
 
     @staticmethod
@@ -589,33 +599,68 @@ class Diary:
 
     # --------------------------------------------------- application tokens
 
-    def app_wines(self, user_id: str, cursor: str | None, limit: int) -> dict[str, Any]:
+    def app_wines(
+        self, user_id: str, cursor: str | None, limit: int, collection: str = "history"
+    ) -> dict[str, Any]:
         """The history for an MCP client, newest first, with an opaque cursor."""
         after = decode_cursor(cursor) if cursor else None
         with self.db.transaction() as db:
             user = db.execute("SELECT 1 FROM users WHERE id = ?", (user_id,)).fetchone()
             if user is None:
                 raise AccountError("app_token_invalid", 401, "The application token is not valid")
-            rows = self._history_rows(db, user_id, after=after, limit=limit + 1)
+            if collection == "rated":
+                after_at, after_slug = after if after else (None, None)
+                rows = db.execute(
+                    "SELECT r.wine_slug, COALESCE(w.wine_snapshot, s.wine_snapshot, "
+                    "r.wine_snapshot) AS snapshot, w.first_met_at, w.last_met_at, "
+                    "s.status AS saved_status, r.rating, r.note AS tasting_note, "
+                    "r.updated_at AS rated_at, r.updated_at AS page_at, "
+                    "COUNT(d.met_on) AS days_count, GROUP_CONCAT(DISTINCT d.source) AS sources "
+                    "FROM wine_ratings r "
+                    "LEFT JOIN history_wines w ON w.user_id = r.user_id "
+                    "AND w.wine_slug = r.wine_slug "
+                    "LEFT JOIN saved_wines s ON s.user_id = r.user_id "
+                    "AND s.wine_slug = r.wine_slug "
+                    "LEFT JOIN history_days d ON d.user_id = r.user_id "
+                    "AND d.wine_slug = r.wine_slug "
+                    "WHERE r.user_id = ? AND (? IS NULL OR r.updated_at < ? "
+                    "OR (r.updated_at = ? AND r.wine_slug > ?)) "
+                    "GROUP BY r.user_id, r.wine_slug "
+                    "ORDER BY r.updated_at DESC, r.wine_slug LIMIT ?",
+                    (user_id, after_at, after_at, after_at, after_slug, limit + 1),
+                ).fetchall()
+            else:
+                rows = self._history_rows(db, user_id, after=after, limit=limit + 1)
         page = rows[:limit]
         items = []
+        page_bytes = 64
         for row in page:
             wine = _wine(row["snapshot"]) or {}
-            items.append(
-                {
-                    "slug": row["wine_slug"],
-                    "name": wine.get("name"),
-                    "producer": wine.get("producer"),
-                    "color": wine.get("color"),
-                    "sugar": wine.get("sugar"),
-                    "first_met_at": iso(row["first_met_at"]),
-                    "last_met_at": iso(row["last_met_at"]),
-                    "days": row["days_count"],
-                    "sources": _sources(row["sources"]),
-                    "saved_status": row["saved_status"],
-                }
-            )
+            item = {
+                "slug": row["wine_slug"],
+                "name": wine.get("name"),
+                "producer": wine.get("producer"),
+                "color": wine.get("color"),
+                "sugar": wine.get("sugar"),
+                "first_met_at": iso(row["first_met_at"])
+                if row["first_met_at"] is not None
+                else None,
+                "last_met_at": iso(row["last_met_at"]) if row["last_met_at"] is not None else None,
+                "days": row["days_count"],
+                "sources": _sources(row["sources"]),
+                "saved_status": row["saved_status"],
+                "rating": row["rating"],
+                "note": row["tasting_note"],
+                "rated_at": iso(row["rated_at"]) if row["rated_at"] is not None else None,
+            }
+            item_bytes = len(snapshot_json(item).encode("utf-8")) + 2
+            if items and page_bytes + item_bytes > 96 * 1024:
+                break
+            items.append(item)
+            page_bytes += item_bytes
         next_cursor = None
-        if len(rows) > limit:
-            next_cursor = encode_cursor(page[-1]["last_met_at"], page[-1]["wine_slug"])
+        if len(rows) > len(items):
+            key = "page_at" if collection == "rated" else "last_met_at"
+            last = page[len(items) - 1]
+            next_cursor = encode_cursor(last[key], last["wine_slug"])
         return {"items": items, "next_cursor": next_cursor}

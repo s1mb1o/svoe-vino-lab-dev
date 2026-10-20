@@ -52,7 +52,9 @@ export interface DiaryWine {
 
 export interface HistoryDay { metOn: string; source: HistorySource | string; firstAt: string }
 
-export interface HistoryItem {
+export interface TastingFields { rating?: number | null; tastingNote?: string | null; ratedAt?: string | null }
+
+export interface HistoryItem extends TastingFields {
   slug: string
   wine: DiaryWine | null
   firstMetAt: string
@@ -63,7 +65,7 @@ export interface HistoryItem {
   days?: HistoryDay[]
 }
 
-export interface SavedItem {
+export interface SavedItem extends TastingFields {
   slug: string
   wine: DiaryWine | null
   status: SavedStatus

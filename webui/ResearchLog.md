@@ -14,6 +14,22 @@ The owner then requested the same file for the shared `assets/product-logo-640x6
 Raster consumers use `assets/product-logo-640x640.png`, which is unchanged. The PNG install icons are unchanged.
 The PWA precache revision follows the file content, so installed apps fetch the new file.
 
+## 2026-10-20 — Richer account data
+
+`AccountTaste` edits the versioned owner preferences and lists ratings independent of recognition history.
+`TastingRating` edits an integer 1–5 rating with a separate note of up to 500 Unicode characters.
+The controls explain that connected applications can read tasting notes; saved-wine notes remain private.
+The server routes require the existing session cookie and Origin check and return no-store responses.
+The public application route accepts only `history` or `rated` and keeps bearer credentials on the server.
+No preference, rating, or tasting note enters the public offline-card cache.
+The web suite passes 619 tests with 26 existing skips. Type checking, the production build, and
+the producer-map bundle check pass.
+`check-account-taste.mjs` passes in Chromium and WebKit with desktop and 375 px mobile views.
+It edits and reloads preferences, creates a rating and tasting note, and reads the same values through
+the actual built portal and a real stdio MCP subprocess. It checks isolation, private-note exclusion,
+rating survival after history removal, note clearing, rating deletion, and preference reset.
+The account database and credentials are disposable; no real user token is used or saved.
+
 ## 2026-10-20 — Shelf Lens APK publication input
 
 The owner supplied `/Users/ashmelev/Downloads/shelf-lens-1.0.apk`.

@@ -1,3 +1,4 @@
+import type { TastePreferences, WineRating } from '#shared/account-taste'
 import type { AccountErrorBody } from '#shared/account'
 import type { SavedComparisonAnswer } from '#shared/alternatives'
 import type { HistoryItem, HistoryRecordStatus, HistorySource, SavedItem, SavedSource, SavedStatus } from '#shared/diary'
@@ -61,6 +62,12 @@ export function useAccountApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
     appTokens: () => request<{ tokens: AppToken[] }>('GET', '/api/account/app-tokens'),
     createAppToken: (name: string, lifetimeDays: number) => request<{ token: string; appToken: AppToken }>('POST', '/api/account/app-tokens', { name, lifetimeDays }),
     revokeAppToken: (id: string) => request<{ status: string }>('DELETE', `/api/account/app-tokens/${encodeURIComponent(id)}`),
+    preferences: () => request<{ preferences: TastePreferences | null }>('GET', '/api/account/preferences'),
+    putPreferences: (value: TastePreferences) => request<{ preferences: TastePreferences }>('PUT', '/api/account/preferences', value),
+    clearPreferences: () => request<{ preferences: null }>('DELETE', '/api/account/preferences'),
+    ratings: () => request<{ items: WineRating[] }>('GET', '/api/account/ratings'),
+    putRating: (slug: string, rating: number, note: string | null) => request<WineRating>('PUT', `/api/account/ratings/${encodeURIComponent(slug)}`, { rating, note }),
+    deleteRating: (slug: string) => request<{ status: string }>('DELETE', `/api/account/ratings/${encodeURIComponent(slug)}`),
     // «История» and «Сохранённые» (plan 07). Slugs go only into API paths, never into page URLs.
     history: () => request<{ items: HistoryItem[]; saveHistory: boolean }>('GET', '/api/account/history'),
     historyItem: (slug: string) => request<HistoryItem>('GET', `/api/account/history/${encodeURIComponent(slug)}`),

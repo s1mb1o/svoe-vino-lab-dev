@@ -137,6 +137,7 @@ defineExpose({ reload: load })
               <p v-if="wineStyleLine(item.wine)" class="diary-row-style">{{ wineStyleLine(item.wine) }}</p>
               <p class="diary-row-meta">Встреч: {{ item.daysCount }} · последний раз {{ diaryDate(item.lastMetAt) }}<template v-if="item.daysCount > 1"> · впервые {{ diaryDate(item.firstMetAt) }}</template></p>
               <p class="diary-row-tags"><span v-for="key in item.sources" :key="key" class="diary-tag">{{ sourceLabel(key) }}</span><span v-if="item.savedStatus" class="diary-tag diary-tag-saved">Сохранено</span></p>
+            <TastingRating :slug="item.slug" :rating="item.rating" :note="item.tastingNote" @saved="item.rating = $event?.rating ?? null; item.tastingNote = $event?.note ?? null" />
               <div class="diary-row-actions">
                 <button type="button" class="account-link" :aria-expanded="Boolean(openDays[item.slug])" @click="toggleDays(item)">{{ openDays[item.slug] ? 'Скрыть даты' : 'Даты' }}</button>
                 <a class="account-link ym-disable-tracklink" :href="sourceWineUrl(item.slug)" target="_blank" rel="noopener noreferrer">На «Свое Вино»</a>

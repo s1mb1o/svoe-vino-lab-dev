@@ -224,3 +224,17 @@ Generation checks reject stale save results after an account change.
 A 401 write response clears stale state and exposes the existing login offer.
 The cache does not contain the account response, statuses, private notes, or credentials.
 Read [the F04 storage and acceptance contract](f04-result-journey.md).
+
+
+## Preferences and tasting ratings (2026-10-20)
+
+The main-site settings include stated preferences and all ratings. History and saved cards have an explicit
+rating editor. Ratings use integers 1–5 and a separate tasting note of up to 500 characters.
+The editor explains that owner application tokens can read this note. Existing saved-wine notes stay private.
+Preferences can be replaced or reset; all choices can be skipped. No preferences are inferred from saved status.
+
+Session-only routes: `GET/PUT/DELETE /api/account/preferences`, `GET /api/account/ratings`, and
+`PUT/DELETE /api/account/ratings/{slug}`. Writes keep the existing same-origin guard and no-store policy.
+The application API adds rating fields and supports `collection=rated` for ratings outside history.
+Account schema 007, the portal, and the MCP adapter must be deployed together. The local implementation
+and tests do not imply a new production deployment.

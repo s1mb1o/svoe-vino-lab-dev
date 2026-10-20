@@ -49,6 +49,7 @@ def test_add_change_and_remove(harness):
         "updated_at": "2027-01-15T08:01:01Z",
         "in_history": False,
         "note": None,
+        "rating": None, "tasting_note": None, "rated_at": None,
     }
     harness.clock.advance(60)
     changed = save(harness, session, "wine-a", status="liked", source="dinner_lens")

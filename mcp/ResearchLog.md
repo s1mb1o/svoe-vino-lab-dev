@@ -1,5 +1,51 @@
 # MCP research log
 
+## 2026-10-20 — Preferences and rating contract
+
+The account service stores stated preferences instead of returning a fixed null value.
+Ratings and tasting notes have separate storage from history and saved wines, so deletion of either list
+cannot erase a rating. The existing saved-wine notes remain private to the site.
+The new tasting notes are explicitly shared with owner application tokens.
+`list_my_wines` keeps its default history behavior and accepts `collection=rated` for all ratings.
+That collection sorts by rating update and uses the existing bounded cursor; missing history dates are null.
+The account API shortens long pages below 100 KiB; MCP validates a 128 KiB structured-output bound.
+Local validation passes all 53 MCP tests. The built-portal check also passes in Chromium and WebKit:
+actual account service, disposable SQLite, browser writes, and a real stdio MCP subprocess.
+It verifies stored preferences, rating and note reads, private-note exclusion, rating survival after
+history removal, account isolation, update, clearing, deletion, and preference reset.
+Local validation uses disposable accounts and synthetic tokens. It does not establish deployment or a new
+production-account check of the richer fields. The earlier live acceptance record below remains unchanged.
+
+
+## 2026-10-20 — Live account access
+
+At 22:11 MSK (19:11 UTC), a real SDK client connected to the local MCP server over stdio.
+The run used Node.js 26.4.0 and the pinned MCP client and server packages at 2.3.1.
+The account client used the default production origin, `https://chtozavino.ru`.
+The account owner supplied the token. It entered through stdin with terminal echo disabled and
+was passed to the MCP subprocess in memory through `CHTOZAVINO_ACCOUNT_TOKEN`.
+No token was saved to a file or configuration. The record omits the username, account creation
+timestamp, wine names, and raw account responses.
+
+| Check | Observed result |
+| --- | --- |
+| Tool discovery | Seven tools; all advertised `readOnlyHint: true`. |
+| `get_my_profile` | `status: ok`; username and creation timestamp returned; `preferences: null`. |
+| `list_my_wines` | `status: ok`; 27 records with 27 unique slugs. |
+| Pagination | First request used `limit: 2`; the next used the returned cursor and `limit: 50`. Two pages exhausted the history without duplicates or a repeated cursor. |
+| Ordering | All records were ordered by `last_met_at`, newest first. |
+| Diary fields | `slug`, `name`, `producer`, `color`, `sugar`, `first_met_at`, `last_met_at`, `days`, `sources`, and `saved_status` were present in the first item. Some descriptive values were null. |
+| Sources and saved status | Observed sources were `photo` and `shelf`; all 27 records had `saved_status: null`. |
+| Catalog access | `find_wines` with `limit: 1` still returned `status: ok`. |
+| Output checks | Captured server stderr was empty. The checked tool results and captured stderr did not contain the token. |
+
+Both production account endpoints worked with bearer authentication. The HTTP Basic blocker
+described in the 2026-10-19 entry did not reproduce for these requests; the run did not inspect Caddy configuration.
+The check read the profile and diary. It did not revoke the token or modify diary entries.
+Production revocation, failure modes, and an interactive third-party assistant were not checked in this run.
+The automated loopback tests cover refused tokens, service outages, and oversized responses separately.
+The 27-record count describes this account at the check time; it is not a fixed acceptance expectation.
+
 ## 2026-10-19 — Six more producer maps
 
 The expanded Web registry has 25 producers and 1,203 products.

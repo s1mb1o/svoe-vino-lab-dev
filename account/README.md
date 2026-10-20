@@ -7,7 +7,7 @@ Plans: [`../docs/plans/04_user-accounts.md`](../docs/plans/04_user-accounts.md) 
 (issues #71 and #64). Telegram linking: issue #51. Email login: issue #52.
 
 The service also keeps application tokens for MCP clients (#65) and two diary lists: the history
-of found wines and «Сохранённые». Photos, ratings, and preferences come later.
+of found wines and «Сохранённые», stated taste preferences, and numeric tasting ratings. Photos come later.
 
 ## What it does
 
@@ -106,7 +106,7 @@ have the form `{"error": "invalid_request", "fields": [...]}` and never echo the
 | `GET /v1/me/app-tokens` | web | Active application tokens, without secrets |
 | `POST /v1/me/app-tokens` | web | `{name, lifetime_days}` → `{token, app_token}`; the token is in this answer only |
 | `DELETE /v1/me/app-tokens/{id}` | web | Revoke a token |
-| `GET /v1/app/profile` | web + `X-App-Token` | Username, creation date, preferences (`null` until #48) |
+| `GET /v1/app/profile` | web + `X-App-Token` | Username, creation date, stored preferences (`null` until set or after reset) |
 | `GET /v1/app/wines?cursor=&limit=` | web + `X-App-Token` | The history, newest first, `limit` 1–50 → `{items, next_cursor}`; 400 `invalid_cursor` |
 
 Application tokens (#65) give an MCP client read-only access to its owner's diary. The format is
@@ -140,7 +140,8 @@ answers are ISO 8601 UTC.
   `days_count`, `sources` (the distinct sources of the dates, in the order `photo`, `shelf`,
   `telegram`, `max`), `saved_status` (`null` when not saved).
 - `SavedItem`: `slug`, `wine`, `status`, `source`, `added_at`, `updated_at`, `in_history`,
-  `note` (a string or `null`). `GET /v1/me/saved/slugs` and `GET /v1/app/wines` have no notes.
+  `note` (a string or `null`). `GET /v1/me/saved/slugs` and `GET /v1/app/wines` exclude private saved-wine notes.
+  The application API exposes only the separate tasting note.
 - Note of a saved wine (`note` in `PUT`): the service changes `\r\n` and `\r` to `\n`, then
   refuses a control character other than `\n` and `\t`, then removes the whitespace at the
   ends. At most 2,000 characters after this. No `note` key keeps the stored note. `""`, only
@@ -225,3 +226,39 @@ The command uses the SQLite online backup API. It writes a unique temporary file
 overwrites a file, also when two backups run at the same time. Keep backups 7 days (plan 04):
 `-mmin +10080` is exactly 7 days (`-mtime +7` would keep files up to 9 days). Run the cleanup
 at least once a day. Deleted accounts then leave the backups within 8 days at most.
+
+
+## Stated preferences and tasting ratings
+
+Schema `007_taste_data.sql` adds `users.preferences` and `wine_ratings`.
+Back up the database before deployment; the service applies the migration at startup.
+Existing accounts keep null preferences and no ratings. No value is inferred from scans or saved statuses.
+
+Owner-session routes:
+
+- `GET`, `PUT`, `DELETE /v1/me/preferences`: read, replace, or reset preferences.
+- `GET /v1/me/ratings`: all owner ratings, newest update first.
+- `PUT /v1/me/ratings/{slug}`: replace one integer rating from 1 to 5 and its optional tasting note
+  (at most 500 Unicode characters). An absent or null note clears the tasting note.
+  An optional `wine_snapshot` uses the existing bounded snapshot contract.
+- `DELETE /v1/me/ratings/{slug}`: remove the owner's rating and tasting note, idempotently.
+
+Preference schema version 1: `schema_version: 1`, `colors` (unique choices from `white`, `red`,
+`rose`, `orange`), `sparkling` (boolean or null), `sweetness` (`dry`, `semi_dry`, `semi_sweet`,
+`sweet`), `body` (`light`, `medium`, `full`, `any`), `freshness` (`fresh`, `soft`, `any`),
+and at most 16 distinct grape names of 1–80 characters. Empty choices and `any` make no preference claim.
+Unknown fields, invalid enums, duplicate choices, and invalid note contents are refused without echoing input.
+
+Application tokens remain read-only. `GET /v1/app/profile` now returns stored preferences.
+`GET /v1/app/wines` adds `rating`, `note` (the tasting note), and `rated_at` to history records.
+`collection=rated` returns all rated wines by `rated_at` descending, then slug, including wines
+removed from history and saved lists. History dates are null when no history remains.
+`collection=history` is the default. Both collections accept `limit` 1–50 and `cursor`;
+reuse a cursor with its collection. A page may contain fewer records to keep JSON below 100 KiB.
+At most 5,000 ratings belong to one account; updates and deletion still work at that limit.
+
+Saved-wine private notes remain separate and are never sent to application tokens.
+Tasting notes are intentionally shared with the owner's connected applications and are data, not instructions.
+No note contents are logged. Ratings survive history and saved-list deletion; account deletion cascades them.
+Operator merge keeps the target preferences when set, otherwise the source preferences; the later rating
+wins for a shared slug. A tie keeps the target rating and its note together.

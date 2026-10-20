@@ -85,10 +85,11 @@ export class AccountClient {
 
   profile() { return this.#get('/api/app/v1/profile'); }
 
-  wines({ limit, cursor } = {}) {
+  wines({ limit, cursor, collection } = {}) {
     const params = new URLSearchParams();
     if (limit !== undefined) params.set('limit', String(limit));
     if (cursor) params.set('cursor', cursor);
+    if (collection) params.set('collection', collection);
     return this.#get(params.size ? `/api/app/v1/wines?${params}` : '/api/app/v1/wines');
   }
 }

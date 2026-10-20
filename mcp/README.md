@@ -68,8 +68,8 @@ Create the token on `https://chtozavino.ru/account` → «Токены прил�
 
 | Tool | Arguments | Behavior |
 | --- | --- | --- |
-| `get_my_profile` | none | Username, account creation date, and preferences (`null` until the diary has them). |
-| `list_my_wines` | `limit` 1–50 (default 20), `cursor` | The diary history, newest first: `slug`, `name`, `producer`, `color`, `sugar`, `first_met_at`, `last_met_at`, `days`, `sources` (`photo`, `shelf`, `telegram`, `max`), `saved_status` (`not_tasted`, `want`, `liked`, `disliked`, or `null`). Ratings and notes come later (#48). |
+| `get_my_profile` | none | Username, account creation date, and stored preferences (`null` until set or after reset). |
+| `list_my_wines` | `limit` 1–50 (default 20), `cursor`, `collection` (`history` or `rated`) | The diary history, newest first: `slug`, `name`, `producer`, `color`, `sugar`, `first_met_at`, `last_met_at`, `days`, `sources` (`photo`, `shelf`, `telegram`, `max`), `saved_status` (`not_tasted`, `want`, `liked`, `disliked`, or `null`). Also returns `rating` (1–5 or null), `note` (tasting note or null), and `rated_at`. `rated` lists all rated wines by rating update, including wines outside history; their history dates can be null. |
 
 - Read-only (`readOnlyHint`). A token cannot write, open a web session, or manage tokens.
 - HTTPS `GET /api/app/v1/profile` and `/api/app/v1/wines` with `Authorization: Bearer`, `redirect: 'error'`,
@@ -79,9 +79,27 @@ Create the token on `https://chtozavino.ru/account` → «Токены прил�
 - The token never appears in a result, an error, stdout, or stderr. Rating notes are text that the
   person wrote: the tool descriptions and the server instructions call them data, not instructions.
 - Without a token the server instructions are the same as before.
+- Preferences use schema version 1: colors, sparkling, sweetness, body, freshness, and up to 16 grape names.
+  They describe stated choices; scans and saved statuses do not create preferences or ratings.
+- The account page edits preferences and ratings. MCP tools only read them.
+- `note` is a tasting note, at most 500 Unicode characters. Saved-wine private notes are excluded.
+- Follow `next_cursor` with the same collection. Pages may be shorter than `limit` to enforce the response bound.
+- Deploy the account service with schema 007 and the updated portal before using the new fields and `rated` collection.
+
+#### Live account check — 2026-10-20
+
+A real SDK client connected to the local stdio server with an authorized production account on
+`https://chtozavino.ru`. The server registered seven tools, all with `readOnlyHint: true`.
+`get_my_profile` returned the username, account creation date, and `preferences: null`.
+`list_my_wines` returned 27 unique wines across two pages, newest first, with `photo` and `shelf`
+sources. All 27 records had `saved_status: null`. `find_wines` still worked with account access enabled.
+The captured server stderr was empty. No token appeared in the checked tool results or captured stderr.
+The token was supplied in memory and was not saved to a file or configuration.
+This run did not check production token revocation or an interactive third-party assistant.
+Read [ResearchLog.md](ResearchLog.md#2026-10-20--live-account-access) for the method and limits.
 
 The SDK client example is in `examples/client.mjs`.
-It discovers tools, finds two wines, reads a card, compares the wines, reads the line mock, and checks audio availability.
+It discovers tools, finds two wines, reads a card, compares the wines, reads a producer-line map, and checks audio availability.
 It uses a real MCP subprocess. It does not call a model provider.
 The pinned SDK supports modern and legacy MCP clients.
 Integration acceptance currently uses the pinned SDK client.
@@ -145,7 +163,8 @@ Run `npm run alternatives:categories` in `webui/` to explicitly refresh these pu
 then `npm run alternatives:catalog` and review the versioned anchor fixture before building.
 Runtime catalog reads and builds do not fetch source categories over the network.
 The current food filter uses source pairing categories from existing Web provenance.
-Its coverage is reported. Missing pairings do not establish a negative pairing.
+The current snapshot has pairing categories for 4 of 2,025 Active IDs. This coverage is reported.
+Missing pairings do not establish a negative pairing.
 The service does not infer numeric sugar, vintage, oak, price, stock, quality, or a taste score.
 Source text is untrusted data. An MCP host must preserve this boundary when it calls an LLM.
 The static tool registry contains no write, shell, arbitrary SQL, URL fetch, or generation tool.
@@ -164,8 +183,8 @@ After a map change, run `npm run line-maps:index` in `webui/` and commit the ind
 Read `../docs/plans/03_mcp-producer-line-maps.md` for the decisions.
 
 The current registry has 25 producers and 1,203 products.
-1,130 Active IDs are map nodes: 1,127 exact slugs and 3 verified aliases.
-The other 963 Active IDs return unavailable.
+1,077 Active IDs are map nodes: 1,074 exact slugs and 3 verified aliases.
+The other 948 Active IDs return unavailable.
 These counts use the MCP bundle and its Active records. The Web coverage report uses the separate 2,103-card catalog snapshot.
 
 Resolution follows the Web UI:

@@ -46,6 +46,7 @@ from .service import (
     iso,
     normalize_ip,
 )
+from .taste import Preferences, TasteData
 from .tokens import equal
 from .yandex import YandexClient
 
@@ -170,6 +171,22 @@ class SavedPut(Strict):
         return self.note or ""
 
 
+class RatingPut(Strict):
+    rating: int = Field(strict=True, ge=1, le=5)
+    note: str | None = Field(default=None, repr=False)
+    wine_snapshot: WineSnapshot | None = None
+
+    @field_validator("note")
+    @classmethod
+    def clean_note(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        text = normalize_note(value)
+        if len(text) > 500:
+            raise ValueError("The tasting note has more than 500 characters")
+        return text or None
+
+
 class BotHistory(Strict):
     user_id: int = Field(gt=0, lt=2**53)
     slug: Slug
@@ -200,6 +217,7 @@ def create_app(
     yandex = YandexClient(settings.yandex, http) if settings.yandex else None
     service = AccountService(settings, db, dispatcher, yandex, clock)
     diary = Diary(db, clock)
+    taste = TasteData(db, clock)
     networks = tuple(ipaddress.ip_network(item, strict=False) for item in settings.allowed_networks)
 
     @asynccontextmanager
@@ -514,6 +532,41 @@ def create_app(
         diary.unsave(session.user_id, slug)
         return Response(status_code=204)
 
+    # Preferences and ratings need an authenticated owner session. App tokens only read.
+    @app.get("/v1/me/preferences", dependencies=[web])
+    def preferences(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return {"preferences": taste.preferences(session.user_id)}
+
+    @app.put("/v1/me/preferences", dependencies=[web])
+    def put_preferences(
+        body: Preferences, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, Any]:
+        value = body.model_dump()
+        taste.set_preferences(session.user_id, value)
+        return {"preferences": value}
+
+    @app.delete("/v1/me/preferences", dependencies=[web], status_code=204)
+    def clear_preferences(session: Annotated[Session, Depends(current_session)]) -> Response:
+        taste.set_preferences(session.user_id, None)
+        return Response(status_code=204)
+
+    @app.get("/v1/me/ratings", dependencies=[web])
+    def ratings(session: Annotated[Session, Depends(current_session)]) -> dict[str, Any]:
+        return {"items": taste.ratings(session.user_id)}
+
+    @app.put("/v1/me/ratings/{slug}", dependencies=[web])
+    def put_rating(
+        slug: SlugPath, body: RatingPut, session: Annotated[Session, Depends(current_session)]
+    ) -> dict[str, Any]:
+        return taste.rate(session.user_id, slug, body.rating, body.note, stored(body.wine_snapshot))
+
+    @app.delete("/v1/me/ratings/{slug}", dependencies=[web], status_code=204)
+    def remove_rating(
+        slug: SlugPath, session: Annotated[Session, Depends(current_session)]
+    ) -> Response:
+        taste.remove_rating(session.user_id, slug)
+        return Response(status_code=204)
+
     # ---------------------------------------------------- application tokens (#65)
 
     @app.get("/v1/me/app-tokens", dependencies=[web])
@@ -550,8 +603,9 @@ def create_app(
         user_id: Annotated[str, Depends(app_user)],
         cursor: Annotated[str | None, Query(max_length=200, pattern=r"^[A-Za-z0-9_-]+$")] = None,
         limit: Annotated[int, Query(ge=1, le=50)] = 20,
+        collection: Literal["history", "rated"] = "history",
     ) -> dict[str, Any]:
-        return diary.app_wines(user_id, cursor, limit)
+        return diary.app_wines(user_id, cursor, limit, collection)
 
     # ------------------------------------------------------------------ bots
 

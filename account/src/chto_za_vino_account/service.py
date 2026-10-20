@@ -8,6 +8,7 @@ are linked identities. A MAX launch can open a session only when MAX_LOGIN_ENABL
 from __future__ import annotations
 
 import ipaddress
+import json
 import logging
 import re
 import sqlite3
@@ -822,15 +823,14 @@ class AccountService:
         """Profile for an MCP client: no email, identities, sessions, or consent records."""
         with self.db.transaction() as db:
             user = db.execute(
-                "SELECT username, created_at FROM users WHERE id = ?", (user_id,)
+                "SELECT username, created_at, preferences FROM users WHERE id = ?", (user_id,)
             ).fetchone()
         if user is None:
             raise AccountError("app_token_invalid", 401, "The application token is not valid")
-        # Preferences come with the diary part of #48; until then the field is null.
         return {
             "username": user["username"],
             "created_at": iso(user["created_at"]),
-            "preferences": None,
+            "preferences": json.loads(user["preferences"]) if user["preferences"] else None,
         }
 
     # -------------------------------------------------------------------- max

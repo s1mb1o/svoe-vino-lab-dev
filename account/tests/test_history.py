@@ -63,6 +63,7 @@ def test_the_first_match_is_recorded(harness):
             "days_count": 1,
             "sources": ["photo"],
             "saved_status": None,
+            "rating": None, "tasting_note": None, "rated_at": None,
         }
     ]
     detail = item(harness, session, "kaberne-taman-2021").json()
@@ -422,6 +423,7 @@ def test_app_wines_pages_through_the_history(harness):
             "days": 2,
             "sources": ["photo", "shelf"],
             "saved_status": "liked",
+            "rating": None, "note": None, "rated_at": None,
         }
     ]
     plain = app_get(harness, "/v1/app/wines?limit=50", token).json()["items"][1]

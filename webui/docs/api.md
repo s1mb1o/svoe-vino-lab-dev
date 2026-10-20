@@ -151,3 +151,24 @@ It contains no account data or uploaded image. The image field is empty for the 
 The client requests this card after an explicit successful diary save or an explicit copy action.
 A lookup failure does not undo the server save. The client reports the missing device copy and offers retry.
 The existing IndexedDB store validates and bounds the committed copy.
+
+
+## Account taste data
+
+These same-origin routes require the existing owner session cookie and return `Cache-Control: no-store`.
+All writes check Origin. Application tokens cannot call them.
+
+| Route | Behavior |
+| --- | --- |
+| `GET /api/account/preferences` | `{preferences: object or null}` |
+| `PUT /api/account/preferences` | Replace schema-version-1 colors, sparkling, sweetness, body, freshness, and grapes. |
+| `DELETE /api/account/preferences` | Reset to null. |
+| `GET /api/account/ratings` | List all owner ratings and tasting notes, newest update first. |
+| `PUT /api/account/ratings/{slug}` | Replace `{rating: integer 1–5, note: string or null}`. Note: at most 500 Unicode characters. |
+| `DELETE /api/account/ratings/{slug}` | Remove one rating and tasting note. |
+
+The public read-only `GET /api/app/v1/profile` returns stored preferences.
+`GET /api/app/v1/wines?collection=history` (default) adds `rating`, `note`, and `rated_at`.
+Use `collection=rated` to read all ratings, including wines removed from history. Keep the same collection
+when following `next_cursor`; pages may be shorter than `limit` to stay below the response bound.
+Saved-wine private notes remain excluded. Read [account.md](account.md#preferences-and-tasting-ratings-2026-10-20).

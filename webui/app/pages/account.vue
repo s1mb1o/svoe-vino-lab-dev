@@ -590,6 +590,7 @@ onBeforeUnmount(() => {
         </div>
         <div v-else :id="maxApp ? undefined : 'account-panel-settings'" :role="maxApp ? undefined : 'tabpanel'" :aria-labelledby="maxApp ? undefined : 'account-tab-settings'" class="account-tabpanel">
         <template v-if="!maxApp">
+          <AccountTaste />
           <h2 class="account-subheading">История находок</h2>
           <label class="account-check"><input type="checkbox" :checked="saveHistory" :disabled="busy" @change="setSaveHistory"> <span>Записывать найденные вина</span></label>
           <p class="account-hint">Поиск по фото на сайте и в привязанных Telegram и MAX добавляет вино и дату в историю. Выключение не удаляет уже записанное: очистить историю можно на вкладке «История».</p>

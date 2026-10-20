@@ -157,6 +157,7 @@ defineExpose({ reload: load })
                 <option v-for="key in SAVED_STATUSES" :key="key" :value="key">{{ SAVED_STATUS_LABELS[key] }}</option>
               </select>
             </div>
+            <TastingRating :slug="item.slug" :rating="item.rating" :note="item.tastingNote" @saved="item.rating = $event?.rating ?? null; item.tastingNote = $event?.note ?? null" />
             <div class="diary-row-actions">
               <a class="account-link ym-disable-tracklink" :href="sourceWineUrl(item.slug)" target="_blank" rel="noopener noreferrer">На «Свое Вино»</a>
               <button type="button" class="account-link account-danger" :disabled="busy === item.slug" @click="remove(item)">Убрать из сохранённых</button>

@@ -1,5 +1,13 @@
 # ChangeLog
 
+## 2026-10-20 — Preferences and tasting ratings
+
+- Add schema 007 for stated preferences and independent per-wine ratings from 1 to 5 with tasting notes up to 500 characters.
+- Add session-only read, replace, reset, and delete routes. Keep application tokens read-only.
+- Return stored preferences and rating fields through the application API. Add a paginated `rated` collection for ratings outside the recognition history.
+- Preserve private saved-wine notes, account isolation, bounded pages, deletion cascades, and operator merge behavior.
+- Pass `scripts/verify.sh`: frozen dependencies, Ruff, and all 186 account tests.
+
 ## 2026-10-20 — Notes on saved wines
 
 Owner request: a personal note for each saved wine.

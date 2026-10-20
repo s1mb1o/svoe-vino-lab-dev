@@ -76,6 +76,8 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
       return 'Заметка: не больше 2000 символов.'
     case 'saved_full':
       return 'В сохранённых уже 500 вин. Уберите лишние.'
+    case 'ratings_limit':
+      return 'У вас уже 5000 оценок. Удалите одну, чтобы добавить новую.'
     case 'too_many_tokens':
       return 'Можно иметь не больше 5 активных токенов. Отзовите ненужный токен.'
     case 'invalid_name':

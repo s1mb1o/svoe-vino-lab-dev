@@ -121,7 +121,8 @@ def merge(database: str, keep: str, remove: str) -> int:
     snapshot of `keep` (the snapshot of `remove` when `keep` has none). Saved wines: for a wine
     in both accounts, the row with the later `updated_at` stays with its note; when that row has
     no note, it gets the note of the other row. The switch of `keep` stays. The history and
-    saved limits apply again at the next record or save.
+    saved limits apply again at the next record or save. Target preferences stay when set;
+    otherwise source preferences move. The later tasting rating and its note move together.
     """
     path = Path(database)
     if not path.is_file():
@@ -154,6 +155,21 @@ def merge(database: str, keep: str, remove: str) -> int:
             return 1
         db.execute("UPDATE identities SET user_id = ? WHERE user_id = ?", (keep_id, remove_id))
         wines, saved = _merge_lists(db, keep_id, remove_id)
+        db.execute(
+            "UPDATE users SET preferences = COALESCE(preferences, "
+            "(SELECT preferences FROM users WHERE id = ?)) WHERE id = ?",
+            (remove_id, keep_id),
+        )
+        db.execute(
+            "INSERT INTO wine_ratings (user_id, wine_slug, rating, note, "
+            "wine_snapshot, updated_at) "
+            "SELECT ?, wine_slug, rating, note, wine_snapshot, updated_at FROM wine_ratings "
+            "WHERE user_id = ? ON CONFLICT (user_id, wine_slug) DO UPDATE SET "
+            "rating = excluded.rating, note = excluded.note, "
+            "wine_snapshot = COALESCE(excluded.wine_snapshot, wine_ratings.wine_snapshot), "
+            "updated_at = excluded.updated_at WHERE excluded.updated_at > wine_ratings.updated_at",
+            (keep_id, remove_id),
+        )
         db.execute("DELETE FROM users WHERE id = ?", (remove_id,))
         db.execute("COMMIT")
     except sqlite3.Error as error:
