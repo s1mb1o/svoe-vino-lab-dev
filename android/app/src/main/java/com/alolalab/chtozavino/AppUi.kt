@@ -76,6 +76,7 @@ data class AppActions(
     val clearHistory: () -> Unit,
     val dismissError: () -> Unit,
     val setSegmenterMode: (SegmenterMode) -> Unit,
+    val setRecognitionPipeline: (RecognitionPipeline) -> Unit,
     val setDisAcceleratorMode: (AcceleratorMode) -> Unit,
     val setSigLip2AcceleratorMode: (AcceleratorMode) -> Unit,
     val setDebugHttpServerEnabled: (Boolean) -> Unit,
@@ -459,7 +460,20 @@ private fun SettingsPage(
                             "SigLIP2 NaFlex p${pack.maxNumPatches}. Вектор: ${pack.vectorDimension} значений."
                         else -> "SigLIP2 Base/224. Вектор: 768 значений."
                     })
-                    SegmenterPicker(state.segmenterMode, actions.setSegmenterMode)
+                    Text("Конвейер распознавания", fontWeight = FontWeight.Bold)
+                    RecognitionPipeline.entries.forEach { pipeline ->
+                        FilterChip(
+                            selected = state.recognitionPipeline == pipeline,
+                            onClick = { actions.setRecognitionPipeline(pipeline) },
+                            enabled = !state.isBusy && !state.debugHttpServerEnabled,
+                            label = { Text(pipeline.label) },
+                        )
+                    }
+                    Text(if (state.recognitionPipeline == RecognitionPipeline.DIS768_CUSTOM)
+                        "DIS 768×768 → обрезка и белый фон → p512. Вес объекта 1, фона 0,1."
+                        else "Исходное фото без сегментации → p512. Стандартный pooling.",
+                        style = MaterialTheme.typography.bodySmall)
+                    if (state.debugHttpServerEnabled) Text("Для смены конвейера выключите HTTP-сервер для тестов.")
                     if (state.segmenterMode == SegmenterMode.DIS) {
                         AcceleratorPicker(
                             title = "DIS",

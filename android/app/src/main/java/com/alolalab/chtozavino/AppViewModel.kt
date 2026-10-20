@@ -29,7 +29,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var engine: RecognitionEngine? = null
     private var acceleratorCheckRunning = false
 
-    private var segmenterMode = if (needsBuiltInPack) SegmenterMode.NONE else SegmenterMode.fromPreference(
+    private var recognitionPipeline = savedRecognitionPipeline(application)
+    private var segmenterMode = if (needsBuiltInPack || installedPack?.hasDualPipelines() == true) {
+        if (recognitionPipeline == RecognitionPipeline.DIS768_CUSTOM) SegmenterMode.DIS else SegmenterMode.NONE
+    } else SegmenterMode.fromPreference(
         preferences.getString(KEY_SEGMENTER_MODE, null),
     )
 
@@ -56,6 +59,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         UiState(
             ageAccepted = preferences.getBoolean("age_accepted", false),
             modelPack = installedPack?.info,
+            recognitionPipeline = recognitionPipeline,
             segmenterMode = segmenterMode,
             disAcceleratorMode = disAcceleratorMode,
             sigLip2AcceleratorMode = sigLip2AcceleratorMode,
@@ -107,10 +111,30 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setSegmenterMode(mode: SegmenterMode) {
+        if (installedPack?.hasDualPipelines() == true) return
         segmenterMode = mode
         preferences.edit().putString(KEY_SEGMENTER_MODE, mode.name).apply()
         replaceEngine(null)
         mutableState.update { it.copy(segmenterMode = mode) }
+    }
+
+    fun setRecognitionPipeline(selected: RecognitionPipeline) {
+        val current = mutableState.value
+        if (current.isBusy || current.debugHttpServerEnabled || selected == recognitionPipeline) return
+        val pack = installedPack?.takeIf { it.hasDualPipelines() } ?: return
+        replaceEngine(null)
+        recognitionPipeline = selected
+        segmenterMode = if (selected == RecognitionPipeline.DIS768_CUSTOM) SegmenterMode.DIS else SegmenterMode.NONE
+        installedPack = pack.forPipeline(selected)
+        automaticDisAccelerator = null
+        automaticSigLip2Accelerator = null
+        preferences.edit().putString(KEY_RECOGNITION_PIPELINE, selected.name)
+            .putString(KEY_SEGMENTER_MODE, segmenterMode.name)
+            .remove(KEY_AUTOMATIC_DIS_ACCELERATOR).remove(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR).apply()
+        mutableState.update { it.copy(recognitionPipeline = selected, segmenterMode = segmenterMode,
+            modelPack = installedPack?.info, matches = emptyList(), technicalText = null,
+            automaticDisAccelerator = null, automaticSigLip2Accelerator = null) }
+        viewModelScope.launch { runAcceleratorCheck(checkNotNull(installedPack)) }
     }
 
     fun setDisAcceleratorMode(mode: AcceleratorMode) {
@@ -616,9 +640,10 @@ private fun InstalledModelPack.acceleratorCheckKey(): String {
         else -> LEGACY_SIGLIP_MODEL_FILE
     }
     return listOf(
+        pipeline.name,
         manifest.sigLip2Runtime,
         manifest.maxNumPatches ?: 0,
-        manifest.files.getValue("dis.tflite").sha256,
-        manifest.files.getValue(sigLipFile).sha256,
+        manifest.files.getValue(file("dis.tflite").name).sha256,
+        manifest.files.getValue(file(sigLipFile).name).sha256,
     ).joinToString(":")
 }

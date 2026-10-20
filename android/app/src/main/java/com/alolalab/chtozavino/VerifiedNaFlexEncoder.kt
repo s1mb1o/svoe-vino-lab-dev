@@ -56,6 +56,10 @@ internal class VerifiedNaFlexEncoder(
         check(Thread.currentThread() === owner)
         check(!closed)
         val image = preprocessor.prepare(bitmap, positions, budget = 512, dimension = 768)
+        val weights = if (pack.isCustomPipeline()) {
+            val mask = foregroundMask ?: throw ImageRecognitionException("DIS-768 custom требует маску объекта.")
+            CustomPooling.logWeights(CustomPooling.coverage(mask.values, mask.width, mask.height, image.width, image.height))
+        } else null
         fun run(): FloatArray {
             val contract = metadata.getJSONArray("inputs")
             for (index in inputs.indices) {
@@ -63,6 +67,7 @@ internal class VerifiedNaFlexEncoder(
                     "patch_pixels" -> image.pixels
                     "position_values" -> image.positions
                     "valid_patches" -> image.mask
+                    "pooling_log_weights" -> checkNotNull(weights)
                     else -> throw ImageRecognitionException("Неизвестный вход Base NaFlex p512.")
                 })
             }

@@ -16,7 +16,7 @@ private const val PACK_VERSION_WITH_YOLO = 3
 private const val PACK_VERSION_WITH_NAFLEX = 4
 private const val PACK_VERSION_WITH_BASE_NAFLEX = 5
 internal const val PACK_VERSION_WITH_COMPLETE_NAFLEX = 6
-private val SUPPORTED_PACK_VERSIONS = 1..PACK_VERSION_WITH_COMPLETE_NAFLEX
+private val SUPPORTED_PACK_VERSIONS = 1..DUAL_PIPELINE_PACK_VERSION
 internal const val LEGACY_SIGLIP_RUNTIME = "fixed-224"
 internal const val NAFLEX_SIGLIP_RUNTIME = "naflex-exact-split"
 internal const val COMPLETE_NAFLEX_RUNTIME = "naflex-complete"
@@ -78,7 +78,7 @@ private const val YOLO_MODEL_FILE = "yolo26n-seg_w8a32.tflite"
 private const val IMAGE_ARCHIVE = "images.zip"
 private const val BUILT_IN_PACK = "default_model_pack.zip"
 private val ALLOWED_ENTRIES = COMMON_PAYLOADS + LEGACY_SIGLIP_PAYLOADS +
-    NAFLEX_SIGLIP_PAYLOADS + COMPLETE_NAFLEX_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
+    NAFLEX_SIGLIP_PAYLOADS + COMPLETE_NAFLEX_PAYLOADS + CUSTOM_PAYLOADS + IMAGE_ARCHIVE + YOLO_MODEL_FILE + "manifest.json"
 private const val MAX_PACK_BYTES = 2L * 1024L * 1024L * 1024L
 private const val MAX_IMAGE_BYTES = 512L * 1024L * 1024L
 private const val MAX_IMAGE_COUNT = 5_000
@@ -107,7 +107,7 @@ internal fun parseModelPackContract(json: JSONObject): ModelPackContract {
     }
     val isNaFlex = formatVersion >= PACK_VERSION_WITH_NAFLEX
     val isBaseNaFlex = formatVersion >= PACK_VERSION_WITH_BASE_NAFLEX
-    val isComplete = formatVersion == PACK_VERSION_WITH_COMPLETE_NAFLEX
+    val isComplete = formatVersion >= PACK_VERSION_WITH_COMPLETE_NAFLEX
     val expectedPipeline = when {
         isComplete -> COMPLETE_NAFLEX_PIPELINE
         isNaFlex -> NAFLEX_PIPELINE_ID
@@ -223,6 +223,7 @@ data class ModelPackManifest(
 data class InstalledModelPack(
     val directory: File,
     val manifest: ModelPackManifest,
+    val pipeline: RecognitionPipeline = RecognitionPipeline.STANDARD,
 ) {
     val info: ModelPackInfo
         get() = ModelPackInfo(
@@ -235,7 +236,20 @@ data class InstalledModelPack(
             maxNumPatches = manifest.maxNumPatches,
         )
 
-    fun file(name: String): File = File(directory, name)
+    fun file(name: String): File = File(directory, selectedPayload(name, isCustomPipeline()))
+
+    fun hasDualPipelines(): Boolean = manifest.formatVersion >= DUAL_PIPELINE_PACK_VERSION
+
+    fun isCustomPipeline(): Boolean = hasDualPipelines() && pipeline == RecognitionPipeline.DIS768_CUSTOM
+
+    fun allowsCustomDualGpu(): Boolean = isCustomPipeline() &&
+        verifiedDualGpuDevice(android.os.Build.MANUFACTURER, android.os.Build.MODEL)
+
+    fun forPipeline(selected: RecognitionPipeline): InstalledModelPack {
+        val effective = if (hasDualPipelines()) selected else RecognitionPipeline.STANDARD
+        return copy(pipeline = effective, manifest = manifest.copy(poolingMode =
+            if (effective == RecognitionPipeline.DIS768_CUSTOM) FOREGROUND_POOLING_MODE else STANDARD_POOLING_MODE))
+    }
 
     fun hasYolo(): Boolean = manifest.formatVersion >= PACK_VERSION_WITH_YOLO &&
         file(YOLO_MODEL_FILE).isFile
@@ -244,8 +258,7 @@ data class InstalledModelPack(
 
     fun isCompleteNaFlex(): Boolean = manifest.sigLip2Runtime == COMPLETE_NAFLEX_RUNTIME
 
-    fun needsBuiltInUpgrade(): Boolean = !hasYolo() ||
-        manifest.formatVersion < PACK_VERSION_WITH_COMPLETE_NAFLEX
+    fun needsBuiltInUpgrade(): Boolean = manifest.formatVersion < DUAL_PIPELINE_PACK_VERSION
 
     fun allowsNaFlexGpuPilot(): Boolean = manifest.gpuCompatible
 }
@@ -256,7 +269,8 @@ class ModelPackManager(private val context: Context) {
 
     fun current(): InstalledModelPack? {
         if (!currentDir.isDirectory) return null
-        return runCatching { validateDirectory(currentDir, verifyHashes = false) }.getOrNull()
+        return runCatching { validateDirectory(currentDir, verifyHashes = false)
+            .forPipeline(savedRecognitionPipeline(context)) }.getOrNull()
     }
 
     fun install(uri: Uri): InstalledModelPack {
@@ -281,6 +295,9 @@ class ModelPackManager(private val context: Context) {
             materializeImages(installed)
             // Parse all catalogue payloads before replacing a working pack.
             CatalogueIndex.load(installed)
+            if (installed.hasDualPipelines()) {
+                CatalogueIndex.load(installed.forPipeline(RecognitionPipeline.DIS768_CUSTOM))
+            }
 
             val previous = File(modelRoot, ".previous")
             if (previous.exists()) previous.deleteRecursively()
@@ -293,6 +310,7 @@ class ModelPackManager(private val context: Context) {
             }
             previous.deleteRecursively()
             return validateDirectory(currentDir, verifyHashes = false)
+                .forPipeline(savedRecognitionPipeline(context))
         } catch (error: Exception) {
             staging.deleteRecursively()
             throw error
@@ -370,18 +388,19 @@ class ModelPackManager(private val context: Context) {
             setOf(IMAGE_ARCHIVE)
         } else {
             emptySet()
-        } + if (formatVersion >= PACK_VERSION_WITH_YOLO) setOf(YOLO_MODEL_FILE) else emptySet()
-        if (fileJson.keys().asSequence().toSet() != requiredPayloads) {
+        } + if (formatVersion in PACK_VERSION_WITH_YOLO..PACK_VERSION_WITH_COMPLETE_NAFLEX) setOf(YOLO_MODEL_FILE) else emptySet()
+        val expectedPayloads = requiredPayloads + if (formatVersion >= DUAL_PIPELINE_PACK_VERSION) CUSTOM_PAYLOADS else emptySet()
+        if (fileJson.keys().asSequence().toSet() != expectedPayloads) {
             throw ModelPackException("Список файлов в manifest.json не совпадает с контрактом.")
         }
         val actualPayloads = directory.listFiles().orEmpty()
             .filter(File::isFile)
             .map(File::getName)
             .toSet()
-        if (actualPayloads != requiredPayloads + "manifest.json") {
+        if (actualPayloads != expectedPayloads + "manifest.json") {
             throw ModelPackException("Файлы пакета не совпадают с manifest.json.")
         }
-        val files = requiredPayloads.associateWith { name ->
+        val files = expectedPayloads.associateWith { name ->
             val record = fileJson.optJSONObject(name)
                 ?: throw ModelPackException("В manifest.json нет записи $name.")
             val bytes = record.optLong("bytes", -1)
@@ -436,12 +455,13 @@ class ModelPackManager(private val context: Context) {
             }
         }
         if (
-            formatVersion >= PACK_VERSION_WITH_YOLO &&
+            formatVersion in PACK_VERSION_WITH_YOLO..PACK_VERSION_WITH_COMPLETE_NAFLEX &&
             files.getValue(YOLO_MODEL_FILE).sha256 != YOLO_MODEL_SHA256
         ) {
             throw ModelPackException("Пакет содержит другую модель YOLO26n-seg.")
         }
         val installedAt = json.optLong("created_at_epoch_ms", manifestFile.lastModified())
+        if (formatVersion >= DUAL_PIPELINE_PACK_VERSION) validateCustomContract(json, files)
         return InstalledModelPack(
             directory,
             ModelPackManifest(

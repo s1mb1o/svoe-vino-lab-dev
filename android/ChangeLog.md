@@ -14,6 +14,162 @@
 - Preserved the original checkout, installed APK, and active Pixel benchmark.
 - Recorded source and artifact checks in `docs/releases/2026-10-20-main.md`.
 
+### Two complete production pipelines
+
+- Made DIS-768 cropped custom the default and retained full-image standard p512.
+- Added a Russian Settings selector and pipeline-specific accelerator rechecks.
+- Added format 7 with both matched graph/index pairs and shared catalogue images.
+- Preserved measured fractional patch coverage, crop rendering, and FP32 GPU policies.
+- Omitted optional YOLO weights from the public pack by owner choice.
+- Preserved history and accelerator preferences during automatic pack migration.
+- Passed the first debug/release builds, Android unit tests, release lint, and ten pack-export tests.
+- Started Pixel validation only after both DIS resolution runs completed and cleaned up.
+- Release publication and final device validation remain pending.
+
+### DIS input-resolution experiment
+
+- Completed and independently audited all 668 DIS-768 assignments with zero errors.
+- Measured Top-1/5/10 at 46.56/84.58/89.67%, request median/P95 at 1637/2052 ms.
+- Recorded 37.22% lower median and 40.15% lower P95 than DIS 1024, with three fewer Top-1 hits.
+- Recorded stable Pixel PID 7960, successful cleanup, and no transport error or fallback.
+- Preserved the DIS-1024 USB-continuation caveat and differing thermal conditions.
+- Left DIS 512 running through its cooling gate. Kept production and all raw evidence unchanged.
+
+- Passed all 115 DIS-768 device numerical checks and its 30-image pilot with zero errors.
+- Measured pilot median/P95 at 1358/1468 ms. Started the full 668-assignment DIS-768 run.
+- Kept DIS 512 queued behind the first full run. Complete-cohort results remain pending.
+
+- Added fixed-shape 768 and 512 DIS exports with unchanged learned weights and operator options.
+- Verified exact 1024 CPU identity, fixed padding, finite masks, and every candidate tensor shape.
+- Added a separate resolution-test application and metadata-checked input dimensions.
+- Preserved p512 encoders, position data, reference vectors, crop rendering, and FP32 GPU policies.
+- Passed 54 host tests, 33 Android tests, lint, signing, and alignment checks.
+- Froze the new APK, packs, and 105 source files. Started the gated Pixel workflow at 20:21 MSK.
+- Kept re-ranking off and all previous results intact. Device quality and speed remain pending.
+
+### Isolated DIS p512 custom-pooling comparison
+
+- Recorded a speedup assessment from the existing 668 traces. Added an additive timing budget.
+- Identified CPU mask/image work as the first optimization candidate. No runtime or model changed.
+
+- Completed cropped DIS on all 668 assignments with zero inference errors at 19:33 MSK.
+- Measured Top-1/5/10 at 47.01/84.58/89.82%, median/P95 at 2607/3429 ms.
+- Verified a 5.99-point Top-1 gain over default and a 3.29-point gain over full-image DIS.
+- Recomputed all five quality/latency results. Verified identical assignments and custom reference bytes.
+- Confirmed exact prefix preservation and successful final cleanup. Recorded the USB-interruption caveat.
+- Kept the production default unchanged. Saved the final five-pipeline comparison in the measurement record.
+
+- Added strict host-only continuation after the cropped run lost USB at assignment 190.
+- Preserved raw v3 data and exact JSONL prefixes. Required the same Pixel process, APK, and pack.
+- Passed all 46 host tests and the real-prefix dry audit. Resumed at assignment 191 in a new v4 directory.
+- Kept re-ranking disabled. Reported interrupted stability separately from quality and latency.
+
+- Completed and audited full-image DIS on all 668 assignments with zero errors at 18:27 MSK.
+- Measured Top-1/5/10 at 43.71/83.23/88.92%, median/P95 at 2283/5351 ms.
+- Confirmed the fresh standard control reproduces all production Top-1 predictions.
+- Recorded improved quality and a failed full-run latency target. Kept both findings separate.
+- Left cropped DIS queued behind the unchanged cooling gate. The full comparison remains pending.
+
+- Validated FP32 DIS with automatic storage in v3. Kept the original strict mask threshold.
+- Passed all 440 numerical checks and three independent 30-image pilots without errors.
+- Measured pilot median/P95 at 2025/3351 ms for full-image custom and 1949/2204 ms for cropped custom.
+- Started the full 668-query standard control. Both full DIS runs follow exact control agreement.
+- Passed all 36 host tests, 31 Android tests, lint, signing, and alignment for test version 0.1.6.
+
+- Preserved v2 after production-default DIS GPU options failed the strict mask-agreement gate.
+- Recorded maximum raw/normalized mask errors 0.007584095/0.032568038 and successful cleanup.
+- Added FP32 DIS with automatic GPU storage for a separate v3 test. Kept every threshold unchanged.
+
+- Preserved the first DIS pilot after 21 successful requests with median latency 4179 ms.
+- Corrected test DIS GPU options to the production defaults. Kept encoder options unchanged.
+- Added a regression test that prevents applying encoder-only GPU overrides to DIS.
+- Stopped only the owned pilot runner. Verified HTTP-off and process-stop cleanup.
+- Kept all numerical and smoothness gates unchanged for a separate v2 attempt.
+
+- Added a separate DIS experiment package with a standard control and two custom query frames.
+- Reused the pinned production DIS graph and unchanged p512 encoder/index bytes.
+- Added GPU DIS inference, production min-max mask normalization, and raw mask captures.
+- Added independent DIS mask projection checks for full-image and cropped/white queries.
+- Added a strict standard-control dependency before full custom runs.
+- Passed 36 host tests. Device validation and full quality measurements remain pending.
+- Passed 30 Android tests, debug lint, API 28 signing verification, and 16-KiB alignment.
+- Froze the APK, unchanged model/index files, source snapshot, and finite workflow.
+- Started the isolated Pixel numerical gates at 17:04 MSK with default-off HTTP verified.
+- Kept re-ranking disabled, previous artifacts preserved, and production unchanged.
+
+### Full-image p512 custom-pooling experiment
+
+- Completed both repaired 668-assignment runs at 16:11 MSK. Fresh audits match saved results.
+- Reproduced production Top-1 on 668/668 control assignments after the decoder repair.
+- Measured full-image custom Top-1/5/10 at 38.92/77.54/84.43%, median/P95 1554/3002 ms.
+- Recorded a 1.95-point Top-1 gain over cropped custom and a 2.10-point loss to the default.
+- Confirmed both retained no-bottle failures, a stable process, and successful HTTP-off cleanup.
+- Kept the current default unchanged. Saved final results in the dedicated report.
+
+- Matched the isolated full-image decoder to production source-colour and alpha handling.
+- Added raw-RGB preprocessing captures and all four affected ICC/alpha parity inputs.
+- Added exact installed-APK and private-pack checks before an isolated APK update.
+- Preserved the stopped v1 attempt. Prepared version 0.1.3 for a separate v2 attempt.
+- Passed all 29 host tests. Kept the exact full-control gate and re-ranking disabled.
+- Passed all 25 Android tests, debug lint, signing, and alignment for the repaired build.
+- Passed 310 numerical checks and both 30-image pilots on Pixel 8.
+- Confirmed restored production rankings on all four affected ICC/alpha inputs.
+- Resumed the full 668-query standard control into preserved attempt v2 at 15:35 MSK.
+
+- Recorded the stopped first attempt after its 668-request control failed exact agreement.
+- Preserved all records and four changed Top-1 cases. Confirmed successful final cleanup.
+- Recorded decoder colour/alpha differences. The full custom run remains unstarted.
+
+- Added isolated package `com.alolalab.chtozavino.fullpoolbench`, version 0.1.2.
+- Preserved full-image RGB and geometry. Used the bottle mask only for patch weights.
+- Kept previous custom references and production control references byte-identical.
+- Added full-source pixel, released preprocessing, and production-control parity gates.
+- Added a finite detached two-condition workflow with numerical checks and 30-image pilots.
+- Passed 27 host tests, 23 Android tests, debug build, lint, signing, and alignment checks.
+- Started the gated Pixel workflow. Full-run quality remains pending.
+- Kept the production application and all previous measurement artifacts unchanged.
+
+### Pixel Base pooling comparison completed
+
+- Completed all four 668-assignment `my-failed-2` runs on Pixel 8 at 13:08 MSK.
+- Passed 240 numerical checks, four smoothness pilots, and all four full-run audits.
+- Saved all 2,672 predictions and the paired standard/custom comparison.
+- Measured p512 custom Top-1/5/10 at 36.98/68.86/73.95% and median/P95 at 1769/2428 ms.
+- Recorded thermal conditions that limit latency interpretation.
+- Disabled the isolated HTTP server and stopped the test app after successful cleanup.
+- Kept re-ranking disabled and the production pipeline unchanged.
+- Recorded the full results in `docs/reports/2026-10-20_base-naflex-p224-custom-pooling.md`.
+
+### Interrupted Pixel benchmark recovery
+
+- Added recovery-copy finalization from saved telemetry without editing the raw run.
+- Verified all 536 saved assignments and exact prediction bytes with the frozen audit.
+- Passed a dry resume-prefix check and all 23 host tests.
+- Resumed the unchanged full benchmark from assignment 537 into a new v4 directory.
+- Added a finite detached workflow for the continuation and gated four-condition comparison.
+- Kept the installed APK, model pack, GPU policy, recipes, and re-ranking unchanged.
+
+### Isolated Base NaFlex p224 pooling experiment
+
+- Extended the comparison to p224 standard/custom and p512 standard/custom.
+- Added a separate p512 custom graph, matching index, and budget-specific validation.
+- Preserved the three initial indexes and all v1 artifacts.
+- Superseded only the waiting v1 host coordinator before any device use.
+- Added paired standard/custom comparisons at both budgets and cross-budget comparisons.
+- Passed 19 Python tests, 19 Android tests, debug lint, and the p512 graph-rewrite gate.
+- Prepared all 8,372 vectors and queued the frozen four-condition v2 comparison.
+
+- Added a separate `com.alolalab.chtozavino.basepoolbench` debug application.
+- Added Base p224 standard and fractional bottle-coverage pooling with a matched p512 control.
+- Preserved native aspect ratio, 768 dimensions, and one encoder pass per query.
+- Added matching 2,093-wine reference preparation, checksums, and numerical gates.
+- Added a finite Pixel comparison with 30-image pilots and gated 668-assignment runs.
+- Kept the active full-v3 benchmark and production default unchanged.
+- Passed 16 host tests and the same-weight graph rewrite checks.
+- Passed 17 Android tests, debug lint, API 28 signing verification, and ZIP alignment.
+- Queued the frozen-source comparison after successful full-v3 completion and cleanup.
+- Initial device quality and latency were pending. Read the final dated pooling measurement record.
+
 ### Release signed with the previous APK key
 
 - Verified that the local signing certificate matches the published 0.1.4 release.

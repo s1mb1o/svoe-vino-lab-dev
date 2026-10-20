@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-val applicationVersionName = "0.2.0"
+val applicationVersionName = "0.3.0"
 val naFlexAar = layout.projectDirectory.file("libs/naflex-0.2.0.aar")
 val verifyNaFlexLibrary by tasks.registering {
     inputs.file(naFlexAar)
@@ -31,13 +31,13 @@ val verifyBuiltInModelPack by tasks.registering {
             val manifest = archive.getInputStream(archive.getEntry("manifest.json")).reader().use {
                 JsonSlurper().parse(it) as Map<*, *>
             }
-            check(manifest["format_version"] == 6 &&
+            check(manifest["format_version"] == 7 && manifest["default_pipeline"] == "DIS768_CUSTOM" &&
                 manifest["siglip2_runtime"] == "naflex-complete" &&
                 manifest["pipeline"] == "raw-native-naflex-base-p512-v1" &&
                 manifest["vector_dim"] == 768 && manifest["max_num_patches"] == 512 &&
                 manifest["profile_sha256"] ==
                 "1ac1a7a3a88074c04fc1559c9d0ae350820a8f681bc84f6176ef2aaed786683c") {
-                "Build the verified format 6 Base NaFlex p512 pack before APK assembly."
+                "Build the verified dual-pipeline format 7 pack before APK assembly."
             }
         }
     }
@@ -52,7 +52,7 @@ android {
         applicationId = "com.alolalab.chtozavino"
         minSdk = 28
         targetSdk = 36
-        versionCode = 6
+        versionCode = 7
         versionName = applicationVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

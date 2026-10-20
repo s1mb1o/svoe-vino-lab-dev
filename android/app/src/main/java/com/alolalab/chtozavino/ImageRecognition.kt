@@ -61,11 +61,17 @@ private class LiteRtRunner private constructor(
                 ModelAccelerator.CPU -> openCpu(path, environment)
             }
 
-        fun openGpu(path: String, environment: Environment? = null): LiteRtRunner = try {
+        fun openGpu(path: String, environment: Environment? = null, exactDis: Boolean = false): LiteRtRunner = try {
             LiteRtRunner(
                 CompiledModel.create(
                     path,
-                    CompiledModel.Options(Accelerator.GPU),
+                    CompiledModel.Options(Accelerator.GPU).apply {
+                        if (exactDis) gpuOptions = CompiledModel.GpuOptions(
+                            precision = CompiledModel.GpuOptions.Precision.FP32,
+                            bufferStorageType = CompiledModel.GpuOptions.BufferStorageType.DEFAULT,
+                            serializeProgramCache = false, serializeExternalTensors = false,
+                        )
+                    },
                     environment,
                 ),
                 "GPU",
@@ -117,32 +123,33 @@ private class DisSegmenter(
     accelerator: ModelAccelerator,
     private val allowCpuFallback: Boolean,
     private val environment: Environment? = null,
+    private val size: Int = DIS_SIZE,
 ) : AutoCloseable {
-    private var runner = openRunner(
-        modelPath,
-        accelerator,
-        allowCpuFallback,
-        "DIS",
-        environment,
-    )
+    private var runner = try {
+        if (accelerator == ModelAccelerator.GPU) LiteRtRunner.openGpu(modelPath, environment, size == 768)
+        else LiteRtRunner.openCpu(modelPath, environment)
+    } catch (error: Exception) {
+        if (!allowCpuFallback || accelerator != ModelAccelerator.GPU) throw error
+        LiteRtRunner.openCpu(modelPath, environment)
+    }
     val accelerator: String get() = runner.accelerator
 
     fun mask(bitmap: Bitmap): FloatArray {
-        val resized = Bitmap.createBitmap(DIS_SIZE, DIS_SIZE, Bitmap.Config.ARGB_8888)
+        val resized = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(resized)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         canvas.drawBitmap(
             bitmap,
             null,
-            RectF(0f, 0f, DIS_SIZE.toFloat(), DIS_SIZE.toFloat()),
+            RectF(0f, 0f, size.toFloat(), size.toFloat()),
             paint,
         )
-        val pixels = IntArray(DIS_SIZE * DIS_SIZE)
-        resized.getPixels(pixels, 0, DIS_SIZE, 0, 0, DIS_SIZE, DIS_SIZE)
+        val pixels = IntArray(size * size)
+        resized.getPixels(pixels, 0, size, 0, 0, size, size)
         resized.recycle()
 
-        val input = FloatArray(3 * DIS_SIZE * DIS_SIZE)
-        val plane = DIS_SIZE * DIS_SIZE
+        val input = FloatArray(3 * size * size)
+        val plane = size * size
         for (index in pixels.indices) {
             val pixel = pixels[index]
             input[index] = ((pixel ushr 16) and 0xff) / 255f - 0.5f
@@ -546,24 +553,37 @@ private fun openRunner(
 
 object AcceleratorDetector {
     fun detect(pack: InstalledModelPack): AcceleratorProbeResult {
-        val disInput = createDisProbeInput()
+        val size = if (pack.isCustomPipeline()) 768 else DIS_SIZE
+        val disInput = createDisProbeInput(size)
         val disPath = pack.file("dis.tflite").absolutePath
         var disGpuFailure: String? = null
         val dis = try {
-            LiteRtRunner.openGpu(disPath).use { runner ->
-                validateDisOutput(runner.run(disInput), DIS_SIZE * DIS_SIZE)
+            val gpu = LiteRtRunner.openGpu(disPath, exactDis = pack.isCustomPipeline()).use { runner ->
+                validateDisOutput(runner.run(disInput), size * size)
+            }
+            if (pack.isCustomPipeline()) {
+                val cpu = LiteRtRunner.openCpu(disPath).use { runner ->
+                    validateDisOutput(runner.run(disInput), size * size)
+                }
+                require(gpu.indices.maxOf { kotlin.math.abs(gpu[it] - cpu[it]) } <= .001f) {
+                    "DIS GPU не совпадает с CPU."
+                }
             }
             ModelAccelerator.GPU
         } catch (error: Exception) {
             disGpuFailure = probeMessage(error)
             LiteRtRunner.openCpu(disPath).use { runner ->
-                validateDisOutput(runner.run(disInput), DIS_SIZE * DIS_SIZE)
+                validateDisOutput(runner.run(disInput), size * size)
             }
             ModelAccelerator.CPU
         }
 
         var sigLip2GpuFailure: String? = null
-        val sigLip2 = if (pack.isNaFlex() && !pack.allowsNaFlexGpuPilot()) {
+        val sigLip2 = if (pack.isCustomPipeline() && !pack.allowsCustomDualGpu() && dis == ModelAccelerator.GPU) {
+            sigLip2GpuFailure = "Одновременный DIS GPU и SigLIP2 GPU проверен только на Pixel 8."
+            probeSigLip2(pack, ModelAccelerator.CPU)
+            ModelAccelerator.CPU
+        } else if (pack.isNaFlex() && !pack.allowsNaFlexGpuPilot()) {
             // The Pixel 8 LiteRT GPU delegate returns a finite but incompatible vector.
             // The pack must declare a completed compatibility test before Auto can probe GPU.
             sigLip2GpuFailure = NAFLEX_GPU_UNSUPPORTED_MESSAGE
@@ -603,21 +623,24 @@ object AcceleratorDetector {
                 accelerator = accelerator,
                 allowCpuFallback = false,
                 environment = null,
-            ).use { encoder -> encoder.encode(bitmap) }
+            ).use { encoder -> encoder.encode(bitmap,
+                if (pack.isCustomPipeline()) NaFlexForegroundMask(FloatArray(64 * 128) {
+                    (it % 64).toFloat() / 63
+                }, 64, 128) else null) }
         } finally {
             bitmap.recycle()
         }
     }
 
-    private fun createDisProbeInput(): FloatArray {
-        val plane = DIS_SIZE * DIS_SIZE
+    private fun createDisProbeInput(size: Int): FloatArray {
+        val plane = size * size
         val input = FloatArray(3 * plane)
-        for (y in 0 until DIS_SIZE) {
-            for (x in 0 until DIS_SIZE) {
-                val index = y * DIS_SIZE + x
-                input[index] = x.toFloat() / (DIS_SIZE - 1) - 0.5f
-                input[plane + index] = y.toFloat() / (DIS_SIZE - 1) - 0.5f
-                input[2 * plane + index] = (x + y).toFloat() / (2 * (DIS_SIZE - 1)) - 0.5f
+        for (y in 0 until size) {
+            for (x in 0 until size) {
+                val index = y * size + x
+                input[index] = x.toFloat() / (size - 1) - 0.5f
+                input[plane + index] = y.toFloat() / (size - 1) - 0.5f
+                input[2 * plane + index] = (x + y).toFloat() / (2 * (size - 1)) - 0.5f
             }
         }
         return input
@@ -779,7 +802,8 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
         limit: Int = 5,
         referenceAggregation: ReferenceAggregation? = null,
     ): RecognitionOutput = worker.call {
-        recognizeOnWorker(bitmap, accelerators, segmenterMode, limit, referenceAggregation)
+        recognizeOnWorker(bitmap, accelerators,
+            if (pack.isCustomPipeline()) SegmenterMode.DIS else segmenterMode, limit, referenceAggregation)
     }
 
     private fun recognizeOnWorker(
@@ -848,16 +872,27 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
         } else {
             closeYoloSegmenter()
             val dis = getDisSegmenter(accelerators)
-            mask = SegmentationMask(dis.mask(bitmap), DIS_SIZE, DIS_SIZE)
+            val size = if (pack.isCustomPipeline()) 768 else DIS_SIZE
+            mask = SegmentationMask(dis.mask(bitmap), size, size)
             segmenterName = SegmenterMode.DIS.name
             actualSegmentationAccelerator = dis.accelerator
         }
-        val prepared = ForegroundImageProcessor.prepare(bitmap, mask, segmenterName)
+        val prepared = if (pack.isCustomPipeline()) {
+            val frame = customCrop(bitmap, mask)
+            val preview = Bitmap.createBitmap(mask.width, mask.height, Bitmap.Config.ARGB_8888)
+            preview.setPixels(IntArray(mask.values.size) { index ->
+                val value = (mask.values[index] * 255).roundToInt().coerceIn(0, 255)
+                Color.rgb(value, value, value)
+            }, 0, mask.width, 0, 0, mask.width, mask.height)
+            val white = frame.image.copy(Bitmap.Config.ARGB_8888, false)
+            PreparedImage(DebugImages(preview, frame.crop, white, "DIS"), white, frame.image,
+                NaFlexForegroundMask(frame.foreground, frame.image.width, frame.image.height))
+        } else ForegroundImageProcessor.prepare(bitmap, mask, segmenterName)
         val segmentationMs = elapsedMs(segmentationStart)
 
         val embeddingStart = System.nanoTime()
         val effectiveEmbeddingAccelerator = if (
-            segmenterMode == SegmenterMode.DIS &&
+            !pack.allowsCustomDualGpu() && segmenterMode == SegmenterMode.DIS &&
             actualSegmentationAccelerator == ModelAccelerator.GPU.name &&
             accelerators.sigLip2 == ModelAccelerator.GPU
         ) {
@@ -879,7 +914,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
         val embedding = try {
             activeEncoder.encode(
                 modelInput,
-                if (pack.isNaFlex()) prepared.nativeForegroundMask else null,
+                if (pack.isNaFlex() || pack.isCustomPipeline()) prepared.nativeForegroundMask else null,
             )
         } finally {
             prepared.nativeModelInput.recycle()
@@ -916,7 +951,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
             disAllowsFallback != accelerators.allowDisCpuFallback
         ) {
             closeDisSegmenter()
-            if (accelerators.dis == ModelAccelerator.GPU && encoder?.accelerator == "GPU") {
+            if (!pack.allowsCustomDualGpu() && accelerators.dis == ModelAccelerator.GPU && encoder?.accelerator == "GPU") {
                 closeEncoder()
             }
             disSegmenter = DisSegmenter(
@@ -924,6 +959,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) : AutoCloseable {
                 accelerator = accelerators.dis,
                 allowCpuFallback = accelerators.allowDisCpuFallback,
                 environment = environment,
+                size = if (pack.isCustomPipeline()) 768 else DIS_SIZE,
             )
             disAccelerator = accelerators.dis
             disAllowsFallback = accelerators.allowDisCpuFallback

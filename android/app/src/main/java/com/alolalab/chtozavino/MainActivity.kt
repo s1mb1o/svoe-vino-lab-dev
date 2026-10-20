@@ -61,6 +61,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val state = viewModel.state.collectAsStateWithLifecycle().value
+            androidx.compose.runtime.DisposableEffect(BuildConfig.DEBUG && state.debugHttpServerEnabled) {
+                if (BuildConfig.DEBUG && state.debugHttpServerEnabled) {
+                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
+                onDispose { window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+            }
             ChtoZaVinoApp(
                 state = state,
                 actions = AppActions(
@@ -78,6 +84,7 @@ class MainActivity : ComponentActivity() {
                     clearHistory = viewModel::clearHistory,
                     dismissError = viewModel::dismissError,
                     setSegmenterMode = viewModel::setSegmenterMode,
+                    setRecognitionPipeline = viewModel::setRecognitionPipeline,
                     setDisAcceleratorMode = viewModel::setDisAcceleratorMode,
                     setSigLip2AcceleratorMode = viewModel::setSigLip2AcceleratorMode,
                     setDebugHttpServerEnabled = viewModel::setDebugHttpServerEnabled,

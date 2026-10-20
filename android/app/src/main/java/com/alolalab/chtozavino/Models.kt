@@ -66,6 +66,7 @@ data class HistoryEntry(
 data class UiState(
     val ageAccepted: Boolean = false,
     val modelPack: ModelPackInfo? = null,
+    val recognitionPipeline: RecognitionPipeline = RecognitionPipeline.DIS768_CUSTOM,
     val segmenterMode: SegmenterMode = SegmenterMode.NONE,
     val disAcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
     val sigLip2AcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,

@@ -121,6 +121,7 @@ private class AndroidMatcherServer(
             .put("vector_dim", pack?.manifest?.vectorDimension ?: 0)
             .put("max_num_patches", pack?.manifest?.maxNumPatches ?: JSONObject.NULL)
             .put("pooling_mode", pack?.manifest?.poolingMode ?: JSONObject.NULL)
+            .put("recognition_pipeline", pack?.pipeline?.name ?: JSONObject.NULL)
             .put("reference_aggregation", pack?.manifest?.referenceAggregation ?: JSONObject.NULL)
             .put("segmenter", savedSegmenterMode(context).name)
         return json(if (pack == null) Response.Status.SERVICE_UNAVAILABLE else Response.Status.OK, body)
@@ -165,7 +166,7 @@ private class AndroidMatcherServer(
                     ?: return error(Response.Status.SERVICE_UNAVAILABLE, "model pack is not ready")
                 val segmenterMode = savedSegmenterMode(context)
                 pipelineName = debugPipelineName(pack, segmenterMode)
-                val key = "${pack.directory.absolutePath}:${pack.manifest.versionName}:${pack.manifest.installedAt}"
+                val key = "${pack.directory.absolutePath}:${pack.manifest.versionName}:${pack.manifest.installedAt}:${pack.pipeline.name}"
                 if (engine == null || engineKey != key) {
                     engine?.close()
                     engine = RecognitionEngine(pack)
@@ -279,6 +280,7 @@ private class AndroidMatcherServer(
 }
 
 private fun debugPipelineName(pack: InstalledModelPack, segmenterMode: SegmenterMode): String {
+    if (pack.isCustomPipeline()) return "android-dis768-cropped-custom-base-naflex-p512"
     if (pack.isCompleteNaFlex()) {
         return "android-${segmenterMode.name.lowercase()}-siglip2-base-naflex-p512-complete"
     }

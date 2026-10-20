@@ -1,10 +1,29 @@
 # Model-pack contract
 
 The application reads one ZIP file.
-The application supports format versions 1 through 6.
-The application uses the built-in format version 6 pack on the first start.
-An update replaces an older installed format with the built-in format 6 pack.
+The application supports format versions 1 through 7.
+The application uses the built-in format version 7 pack on the first start.
+An update replaces an older installed format with the built-in format 7 pack.
 The production user interface does not expose pack installation or replacement.
+
+## Format 7: two complete pipelines
+
+Format 7 MUST preserve every format 6 payload except optional YOLO weights.
+It MUST omit `yolo26n-seg_w8a32.tflite` in the public release.
+Its root model, profile, and standard reference metadata MUST retain the format 6 contract below.
+It MUST set `default_pipeline` to `DIS768_CUSTOM`.
+It MUST also contain `base-p512-weighted.tflite`, `base-p512-weighted.manifest.json`,
+`dis768.tflite`, `custom_vectors.f32`, and `custom_candidates.jsonl`.
+The two indexes MUST cover the same 2093 wine slugs.
+Each index MUST keep its own row mapping. Metadata, codes, images, and positions are shared.
+Custom payloads MUST match the pinned hashes in `ProductionPipeline.kt`.
+The custom graph MUST accept `pooling_log_weights` in addition to the three standard inputs.
+The custom pipeline MUST use fractional foreground coverage with background 0.1 and foreground 1.0.
+The loader MUST verify both indexes before it activates an upgrade.
+The selected pipeline MUST determine its model, model manifest, index, candidate map, and DIS file together.
+Switching MUST NOT reuse an encoder or search index from the previous pipeline.
+The built-in archive is generated with `python3 -m tools.build_dual_pipeline_pack`.
+The previous format 6 ZIP and all frozen experiment sources MUST remain unchanged.
 
 ## Root payloads
 

@@ -1,5 +1,284 @@
 # Research log
 
+## 2026-10-20
+
+### Production promotion
+
+- The owner selected both complete pipelines, with DIS-768 cropped custom as the default.
+  The alternative retains the original standard graph and original reference bytes.
+  Format 7 shares catalogue images and position data. It keeps separate candidate mappings.
+- The measured crop permits margins outside the original frame and caps the rendered long side at 1024 pixels.
+  The previous production crop clamps source bounds. Reusing that path would change the measured pipeline.
+- The new custom path uses fractional mask coverage on the actual NaFlex grid.
+  It does not identify whitespace from RGB values. White bottle labels remain foreground.
+- The owner selected omission of optional YOLO weights for public distribution.
+  Barcode and QR functionality does not require those weights.
+- The DIS-512 campaign finished at 21:16 MSK with 668 assignments and zero errors.
+  Its saved audit passes: Top-1/5/10 46.56/82.34/87.72%, median/P95 1324/1665 ms.
+  The DIS-768 default has the same Top-1 and higher Top-5/10 on this cohort.
+- Device validation and website publication remain pending. Do not attribute benchmark results to the new APK before parity checks pass.
+
+### DIS resolution specialization
+
+- DIS 768 completed all 668 assignments at 20:47 MSK with zero inference errors.
+  The saved audit, fresh audit, and direct accepted-alternative calculations agree.
+  Top-1/5/10 is 46.56/84.58/89.67%. Request median/P95 is 1637/2052 ms.
+  Against DIS 1024, paired Top-1 gains/losses are 36/39: net -3 hits (-0.45 points).
+  Request median decreases 37.22%; P95 decreases 40.15%. Reference bytes are unchanged.
+  Peak sampled PSS is 1647703 KiB. Maximum thermal status is 2; battery temperature is 42.6 C.
+  Pixel PID 7960 stayed stable. No transport error, process restart, fallback, or cleanup error occurred.
+  The DIS 1024 baseline required USB continuation. Its peak PSS is 1751076 KiB and battery maximum is 43.8 C.
+  Different start temperatures limit a strictly causal speed comparison. Full `my` quality remains unmeasured.
+  All 105 frozen source files remain unchanged. Re-ranking remains disabled.
+  DIS 512 continues through its cooling gate. The production default remains unchanged.
+
+- DIS 768 passed all 115 device checks and its 30-image pilot at 20:25 MSK.
+  Maximum raw/normalized mask errors are 0.000001550/0.000006735.
+  Maximum encoder component error is 0.000002906. No threshold changed.
+  Pilot median/P95 is 1358/1468 ms, zero errors, maximum thermal status 0.
+  The full 668-assignment run started. Do not compare pilot quality with full baseline quality.
+
+- The pinned DIS export has 247 operators and fixed bilinear-resize sizes.
+  A smaller input bitmap alone does not reduce the graph's internal spatial sizes.
+- Specialize spatial activation shapes and shape constants for 768 and 512.
+  Preserve every learned-weight buffer, channel dimension, interpolation flag, and operator option.
+  Preserve explicit padding in pixels. Do not scale the 1026 padded activation as a whole.
+- The identity 1024 export matches source CPU output exactly.
+  Both smaller candidates pass finite-output and complete static-shape checks.
+  These checks do not establish retrieval quality or device speed.
+- Use separate disresbench packs with the same p512 graph and reference bytes.
+  Compare each candidate mask with its own CPU graph, not with the 1024 mask.
+  Keep the same strict parity thresholds and independent 30-image pilots.
+- All 54 host and 33 Android tests pass. The finite Pixel workflow started at 20:21 MSK.
+  Read `docs/reports/2026-10-20_dis-input-resolution.md` for identities and pending measurements.
+
+### Cropped DIS speedup assessment
+
+- Derived an additive timing budget from all 668 saved cropped DIS responses.
+  Mean client time is 2608 ms. Mean device time is 2218 ms.
+  Do not add stage medians to explain the whole-request median.
+- Mean DIS inference/readback is 575 ms. Mean encoder inference/readback is 483 ms.
+  Mean DIS post-processing is 412 ms. Other uninstrumented device work is 494 ms.
+  DIS preprocessing, encoder preprocessing, and search add 254 ms on average.
+  Outside-device benchmark work adds 390 ms. This is not pure network time.
+- The source repeatedly validates and scans the 1024-square mask.
+  The zero-angle crop computes a general convex hull before it calculates bounds.
+  The source allocates image and float arrays per request.
+  These are optimization candidates, not measured speedups.
+- First preserve the 1024 DIS graph, p512 encoder, FP32 policies, and reference bytes.
+  Add detailed crop/decode/normalization timers. Reuse scratch buffers.
+  Test fused mask loops, an exact zero-angle bounding-box path, and native image loops.
+  Require unchanged masks, patch weights, vectors, and rankings within existing numerical gates.
+- A second option is a separate DIS export at 768 or 512 input pixels.
+  The current graph has fixed 1024 input tensors. Resizing the source alone does not change that graph.
+  Reduced input changes masks and needs a fresh numerical and retrieval-quality experiment.
+- Reduced GPU precision is higher risk. The earlier default-precision DIS run failed mask parity.
+  Do not restore that policy or lower the existing numerical threshold to obtain a speedup.
+  Models already remain compiled between requests. Cosine search averages only 21 ms.
+- Follow the official LiteRT guidance to profile application work and remove redundant copies.
+  Sources: [performance guidance](https://developers.google.com/edge/litert/conversion/tensorflow/build/best_practices)
+  and [GPU precision API](https://developers.google.com/edge/api/litert/kotlin/com/google/ai/edge/litert/CompiledModel.GpuOptions.Precision).
+- Saved evidence: `android-dis-p512-pooling-20261020/cropped-speedup-analysis-20261020.json`.
+  No implementation, model export, device request, or new benchmark occurred.
+  Recommend the exact-output CPU path before a lower-resolution or lower-precision model.
+
+### DIS p512 comparison design
+
+- All three DIS comparison conditions are complete. Cropped DIS finished at 19:33 MSK.
+  Fresh audits match all five saved cohorts. Direct metric calculations also match.
+- Cropped DIS has 314/668 Top-1 hits and Top-1/5/10 of 47.01/84.58/89.82%.
+  It gains 5.99 points over default and 3.29 over full-image DIS.
+  Paired gains/regressions are 115/75 against default and 73/51 against full-image DIS.
+- Cropped DIS median/P95 is 2607/3429 ms. Maximum is 5323 ms.
+  The request-latency targets pass. USB continuation prevents an uninterrupted-stability claim.
+  Both measured segments used Pixel PID 22646. All inherited records remain byte-identical.
+- All custom conditions use the same reference vectors. No re-ranking or fallback was enabled.
+  The default is fastest. Keep whole-pipeline, thermal, and decoder differences explicit.
+  The failure-cohort result does not establish quality on the full `my` dataset.
+- Final HTTP-off and isolated-process-stop cleanup passed. The USB forward is absent.
+  The production default remains unchanged. No device state changed in the final read-only audit.
+
+- USB disconnected during cropped DIS after 190 saved assignments. The host controller exited.
+  Pixel PID 22646 survived. Exact APK/pack hashes and all saved records passed recovery checks.
+  No received but unsaved assignment existed. Do not classify this USB loss as a native crash.
+- The host-only continuation preserves the raw attempt and exact response/prediction prefixes.
+  It requires the same process. It excludes the disconnected interval from request latency.
+  It records the original cleanup failures and does not claim uninterrupted stability.
+  All 46 host tests pass. The new finite workflow resumed at 19:08 MSK.
+
+- Full-image DIS completed 668 assignments at 18:27 MSK with zero errors.
+  Fresh audits match saved results. Top-1/5/10 is 43.71/83.23/88.92%.
+  The fresh standard control reproduces all 668 production Top-1 predictions at 41.02%.
+- Full-image DIS gains 2.69 Top-1 points over default and 4.79 over full-image YOLO.
+  Paired gains/regressions are 81/63 against default and 53/21 against full-image YOLO.
+- Full-image DIS median/P95 is 2283/5351 ms. Maximum is 15784 ms.
+  It fails the full-cohort latency targets despite passing numerical and accuracy audits.
+  Maximum thermal status is 3 versus 1 for control. The same Pixel PID remained stable.
+- Cropped DIS has not started at 18:28 MSK. The phone is cooling from 43.4 C.
+  Keep the 40 C gate and re-ranking disabled. The complete comparison remains pending.
+
+- V3 FP32 arithmetic with automatic storage passed all mask and vector checks.
+  Full-image maximum raw/normalized mask errors are 0.000001789/0.000007749.
+  The first DIS inference was 536 ms. Forced BUFFER was 2877 ms; default precision was 263 ms.
+  Keep these model-specific runtime choices separate from the encoder's FP32/BUFFER policy.
+- All 440 numerical checks and three 30-image pilots pass without errors.
+  DIS full-image median/P95 is 2025/3351 ms. DIS cropped median/P95 is 1949/2204 ms.
+  The standard pilot is 872/1091 ms. These are pilot values, not full-cohort results.
+- The full standard control is running at 17:33 MSK. Full DIS quality remains pending.
+  Keep re-ranking off and the production default unchanged.
+
+- V2 production-default DIS GPU options reduced first replay inference to 263 ms.
+  Strict experimental CPU/GPU mask errors reached 0.007584095 raw and 0.032568038 normalized.
+  Same-input encoder agreement passed. No invalid output or native failure occurred.
+  The unchanged mask gate stopped the workflow before full tests.
+  Test FP32 arithmetic with automatic storage next. Do not weaken thresholds to bypass this result.
+- V1 passed 165 control and 160 DIS numerical checks, including raw masks and source projection.
+  Its first 21 DIS pilot requests had median latency 4179 ms with no inference error.
+  The test incorrectly applied encoder-only FP32/BUFFER settings to DIS.
+  Production DIS uses default GPU options. Keep those model-specific policies separate.
+  Preserve v1. Repeat unchanged gates with the production-equivalent DIS configuration.
+- The owner selected full-image custom and cropped/white custom with DIS plus a fresh control.
+- Keep the previous matched custom reference vectors unchanged for both custom queries.
+  This comparison tests query preparation. It does not test a rebuilt DIS reference index.
+- Reuse the production DIS graph and its per-image min-max output normalization.
+  DIS predicts salient foreground, not a bottle or label class.
+- Use GPU DIS and GPU p512 in an isolated package, with no CPU or no-mask fallback.
+  Prior dual-GPU testing supports this policy. New numerical and stability gates remain required.
+- YOLO used CPU segmentation. Compare end-to-end quality and latency, not segmenter-only latency.
+- All 36 host and 30 Android tests pass. Encoder and reference bytes remain unchanged.
+  The new workflow started at 17:04 MSK. Full quality remains pending.
+  Read `docs/reports/2026-10-20_dis-p512-pooling.md` for progress and artifact identities.
+
+### Completed full-image p512 custom comparison
+
+- Both repaired full runs completed at 16:11 MSK. Fresh audits match both saved audits.
+- Standard control reproduces all 668 production Top-1 predictions. The decoder repair passes.
+- Full-image custom has 260/668 Top-1 hits. Cropped custom has 247. Standard has 274.
+  Full-image custom improves cropped custom by 1.95 points but loses 2.10 points to standard.
+- Full-image custom improves cropped Top-5/10 by 8.68/10.48 points.
+  Custom remains below standard Top-5/10 by 0.30/0.15 points.
+- Standard median/P95 is 878/1252 ms. Full-image custom is 1554/3002 ms.
+  Both full runs have maximum thermal status 1 and the same stable Pixel PID.
+- Keep standard no-segmentation p512 as the Pixel 8 default.
+  These are whole-pipeline results. Index differences and the decoder repair limit causal attribution.
+- Both no-bottle errors remain counted. HTTP-off and process-stop cleanup passed.
+  Read `docs/reports/2026-10-20_full-image-p512-custom-pooling.md` for full evidence.
+
+### Full-image control agreement failure
+
+- The owner authorized a test-only decoder repair and a preserved v2 attempt.
+  The repaired decoder follows production source-colour and alpha handling.
+  Raw RGB captures avoid a second colour conversion during host validation.
+  The new parity cohort includes all four affected images and one opaque control.
+  All 29 host and 25 Android regression tests pass.
+  Controlled device replay confirms restored production Top-20 on all four affected images.
+  All 30 production-vector/ranking checks pass across GPU/CPU/GPU recreations.
+  Both variants pass raw-RGB preprocessing, numerical checks, and independent pilots.
+  The new full control is running. Complete-cohort custom quality remains pending.
+- The full-image workflow stopped at 14:17 MSK after the standard control audit.
+  All 668 requests completed without errors. Four Top-1 predictions differ from production.
+  Top-1 fell from 274 to 272 hits. Full custom inference was not started.
+- The test forces sRGB and uses ordinary alpha decoding.
+  Production retains the source colour space and unpremultiplied RGB, then discards alpha.
+- All four changed Top-1 inputs have embedded colour profiles. Three use RGBA PNG.
+  All 601 unprofiled RGB assignments retain Top-1 and agree within 0.000002244 in scores.
+- The original three parity inputs missed this decoder boundary.
+  Match production decoding and add the affected inputs before another full comparison.
+  Confirm the cause with a controlled device replay. Do not weaken the identity gate.
+- The workflow performed successful HTTP-off and process-stop cleanup.
+  All raw records remain preserved. No runtime repair or restart occurred during the status check.
+
+### Full-image custom-pooling isolation
+
+- The earlier four-condition test changed query crop and background treatment.
+  Its custom weights therefore did not isolate a full-image pooling policy.
+- The owner selected the previous matched custom reference index unchanged.
+  The new query keeps source RGB and uses the bottle mask only for attention weights.
+- The control reuses the exact production standard reference bytes.
+  It must reproduce all previous control Top-1 predictions before comparison succeeds.
+- Pixel capture checks compare source and frame pixel hashes, native dimensions,
+  released NaFlex preprocessing, mask coverage, CPU/GPU vectors, and reference scores.
+- Do not infer a pooling-only effect when the control and custom reference indexes differ.
+  Read `docs/reports/2026-10-20_full-image-p512-custom-pooling.md` for new measurements.
+
+### Pixel 8 default recommendation
+
+- Compared the four-condition result with the existing no-segmentation control.
+  The query manifests and all 668 accepted-answer assignments are identical.
+- Fresh scoring reproduces no-segmentation Top-1/5/10 at 41.02/77.84/84.58%.
+  The recorded median/P95 is 662/956 ms, with zero request errors.
+- Experimental segmented p512 custom is lower at 36.98/68.86/73.95% and 1769/2428 ms.
+- Recommend the existing p512 standard, no-segmentation GPU pipeline as the default.
+  This compares whole pipelines. It does not isolate a pooling effect.
+  No code or device setting changed for this recommendation.
+- Read `docs/reports/2026-10-20_base-naflex-p224-custom-pooling.md` for the evidence.
+
+### Final Pixel Base pooling results
+
+- All four conditions passed their numerical gates, pilots, and 668-assignment audits.
+- Standard/custom p224 Top-1 is 27.84/28.44%. Standard/custom p512 Top-1 is 33.83/36.98%.
+- The p512 custom paired comparison has 37 Top-1 gains and 16 regressions over p512 standard.
+- Custom p512 has the best quality in this experiment. Its median/P95 is 1769/2428 ms.
+- Do not attribute its shorter measured latency to pooling alone.
+  Standard p512 reached thermal status 3. Custom p512 reached thermal status 1.
+  The independent pilot medians were 1310/1395 ms, in standard/custom order.
+- The study uses one segmented bottle view and a matched 2,093-wine catalogue.
+  It does not establish a win over the unchanged production no-segmentation pipeline.
+- Read `docs/reports/2026-10-20_base-naflex-p224-custom-pooling.md` for the final comparison.
+
+### Recovery-copy and host lifecycle decisions
+
+- Finalized only a separate copy of the interrupted 536-assignment run.
+  Derived thermal and memory maxima from saved telemetry. Preserved every raw source file.
+- Recorded the copy's metadata finalization time explicitly.
+  The original worker exit time and cause remain unknown.
+- The frozen audit and dry resume-prefix check pass all 536 assignments.
+  The continuation retains both no-bottle failures and all accepted alternative slugs.
+- `launchctl submit` keeps failed jobs alive. A test submission exited with `EX_CONFIG`
+  before it created the workflow logs or sent a device request. Removed that submission.
+- Selected a double-fork standalone process with a separate session and ignored `SIGHUP`.
+  The workflow's parent PID is 1. No permanent service or automatic restart was installed.
+- Transferred the abandoned ADB forward to the new runner.
+  The new runner owns forward removal before the comparison starts.
+
+### Overnight host-worker interruption
+
+- At 08:58 MSK, the full-v3 host runner and both coordinators are absent.
+- The last response was saved at 04:34 MSK. All ten prediction files retain 536 rows.
+- The Pixel app still has PID 9424. HTTP health is OK and idle. No native process restart
+  is indicated by these observations. The host termination cause is not established.
+- The saved waiting JSON does not prove that the comparison coordinator is alive.
+- Abrupt termination bypassed final metadata and cleanup. The normal partial audit
+  raises `KeyError: maximum_thermal_status`. Preserve the raw run and use a separate
+  audited recovery copy if the owner requests continuation. Do not edit frozen tools.
+
+### Base p224 fractional bottle coverage
+
+- The owner extended the experiment to p512 custom pooling.
+  Use the same coverage formula and the same fixed catalogue for all four conditions.
+  A p512 standard/custom pair separates the pooling effect from the patch-budget effect.
+  Preserve the original three reference indexes byte-for-byte in the v2 comparison.
+- The modified p512 graph has zero error with zero log bias on four synthetic cases.
+  Its independent attention oracle differs by less than 0.000000019.
+  Added padding bias has zero output effect. Original FP16 payload bytes stay unchanged.
+
+- The existing NaFlex library contains a complete Base model with a 224-patch budget.
+  This is not the fixed 224 by 224 model. The model preserves image proportions.
+- The report's `5a` profile assigns 0.1 to whitespace and 1.0 to bottle coverage.
+  The report uses SO400M and desktop masks. Do not transfer its accuracy to Android.
+- Selected one mobile bottle mask and one encoder pass as the Android-fit candidate.
+  Label fusion and augmented reference views need separate latency and memory budgets.
+- Added log weights only to the original attention-pooling logits.
+  Original FP16 weight bytes remain unchanged. Zero bias reproduces the original output
+  exactly on four synthetic inputs. The independent attention oracle differs by less
+  than 0.00000004. Modified padding bias does not change the output.
+- Use matching indexes for standard p224, custom p224, and standard p512.
+  The same 2,093 original catalogue cuts prevent a catalogue-coverage confound.
+- Keep the production p512 no-segmentation result as context only.
+  A different segmentation policy cannot measure a pooling-only effect.
+- Pixel CPU/GPU agreement and retrieval measurements passed in the final comparison.
+  Read `docs/reports/2026-10-20_base-naflex-p224-custom-pooling.md`.
+
 ## 2026-10-19
 
 ### Rebuild verification boundary

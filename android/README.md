@@ -26,12 +26,12 @@ original IDs.
 - A product website link on the settings page.
 - Independent `Авто`, `GPU`, and `CPU` settings for DIS and SigLIP2.
 - A first-start GPU compatibility check with a saved safe selection.
-- A `Без сегментации / DIS / YOLO` setting.
+- A settings selector for `DIS-768 · обрезка · custom` and `Полное фото · standard`.
 - DIS foreground segmentation.
-- YOLO26n-seg bottle segmentation with COCO class `bottle` on CPU.
+- Legacy YOLO pack support. The public 0.3.0 pack omits optional YOLO weights.
 - White-background crop.
 - SigLIP2 Base NaFlex p512 embedding through the verified v0.2.0 complete graph.
-- Native aspect ratio, standard attention pooling, and 768-dimensional vectors.
+- Native aspect ratio and 768-dimensional vectors with matched custom or standard attention pooling.
 - FP16 model weights with FP32 GPU execution and automatic CPU fallback.
 - Optional exact split runtime for `google/siglip2-so400m-patch16-naflex`.
 - Desktop-compatible 1,152-dimensional NaFlex vectors.
@@ -47,17 +47,25 @@ original IDs.
 - A light or dark theme that follows the system setting.
 - The shared `svoe-vino-lab` product logo as the launcher icon.
 
-`Без сегментации` is the default mode.
-The main pipeline encodes the full original image with Base NaFlex p512.
-It does not apply the legacy square crop or the 2,048-pixel decode limit.
+`DIS-768 · обрезка · custom` is the default pipeline.
+It runs the measured DIS graph at 768 by 768 pixels.
+It crops the foreground with a four-percent margin and composites the crop on white.
+It limits the prepared crop to a 1024-pixel long side.
+It uses fractional bottle coverage for each actual NaFlex patch.
+Attention weights are foreground 1.0 and background 0.1.
+The complete weighted Base p512 graph uses its matching frozen custom index.
+`Полное фото · standard` retains the previous original-image graph and original index.
+Switch between these complete pipelines in Settings. Switching repeats accelerator checks.
+Disable debug HTTP before switching. The application closes the previous recognition resources.
+Neither pipeline applies the legacy square crop or the 2,048-pixel source decode limit.
 It uses the released Pillow-compatible preprocessing code.
 The application verifies GPU agreement against the same CPU graph on first start.
 It selects CPU when cosine is below `0.99999` or maximum error exceeds `0.001`.
 All encoder creation, inference, and cleanup run on one dedicated thread.
-Use YOLO for photographs that show a complete bottle.
-Use DIS only as an explicit alternative.
-The catalogue references remain the frozen p512 package-cut references in these modes.
-Their accuracy needs a separate device evaluation.
+The Pixel 8 custom path can keep DIS and the encoder on GPU in one shared environment.
+Unmeasured phones retain the dual-GPU guard and safe CPU selection.
+The public pack omits optional YOLO weights by owner choice.
+Read [the production integration plan](docs/plans/13_dual-production-pipelines.md).
 
 The application processes multi-shot photographs in sequence.
 This behavior limits peak LiteRT memory use.
@@ -74,8 +82,45 @@ The technical result text reports this early exit.
 
 ## Build
 
-Use JDK 17 and Android SDK 36.
-Export the format version 6 catalogue pack before you build the APK.
+The separate [Base NaFlex p224 experiment](tools/base_p224_experiment/README.md)
+compares standard and fractional bottle-aware pooling at both p224 and p512 budgets.
+It uses a separate package. It does not change the production default.
+Read its [measurement record](docs/reports/2026-10-20_base-naflex-p224-custom-pooling.md)
+for completed gates and pending device measurements.
+
+The separate [full-image p512 pooling experiment](tools/full_image_pooling/README.md)
+uses the bottle mask only for attention weights. It keeps the complete query RGB image.
+It compares unchanged matched custom references with the exact production standard control.
+Read its [measurement record](docs/reports/2026-10-20_full-image-p512-custom-pooling.md).
+This test does not change the main application or its default pipeline.
+
+The separate [DIS p512 pooling experiment](tools/dis_pooling/README.md) repeats both
+custom query frames with DIS and a fresh standard control.
+It preserves the previous reference indexes and keeps re-ranking disabled.
+Read its [measurement record](docs/reports/2026-10-20_dis-p512-pooling.md).
+Its [USB continuation plan](docs/plans/11_resume-dis-usb-interruption.md) preserves interrupted results.
+The separate [DIS resolution experiment](docs/reports/2026-10-20_dis-input-resolution.md)
+tests 768 and 512 inputs without changing the p512 encoder or production default.
+
+Use JDK 17 or 21 and Android SDK 36.
+Export the format version 7 dual-pipeline pack before you build the APK.
+Keep the original format 6 source and the audited DIS-768 experiment pack outside Git.
+
+```text
+python3 -m tools.build_dual_pipeline_pack \
+  --standard-pack /path/to/verified-format6-standard.zip \
+  --custom-dir /path/to/audited-dis-768-device-pack \
+  --out /path/to/new/dual-pipeline.zip
+cp /path/to/new/dual-pipeline.zip app/src/main/assets/default_model_pack.zip
+```
+
+The exporter verifies the source hashes and every generated payload.
+It preserves both graph/index pairs. It shares catalogue cards, codes, positions, and display images.
+It omits YOLO weights. It rejects existing output and missing catalogue wines.
+The built-in pack has 2093 reference vectors per pipeline.
+
+### Previous standard pack reconstruction
+
 Use the released model directory and its matching frozen index:
 
 ```text
@@ -252,12 +297,13 @@ Read [the main integration record](docs/releases/2026-10-20-main.md) for the reb
 source, repeat tests, same-key release contract, and publication requirements.
 
 The APK installs the built-in pack on the first start.
-An update replaces an old format 1 through 5 pack with the built-in format 6 pack.
+An update replaces an old format 1 through 6 pack with the built-in format 7 pack.
 The update preserves history, the 18+ choice, and accelerator preferences.
-It selects `Без сегментации` and repeats accelerator detection for the new model.
+It defaults to DIS-768 custom and repeats accelerator detection for the new model.
+Subsequent starts preserve the saved pipeline choice.
 The application uses this pack without a replacement action in the user interface.
 Model files, catalogue images, vectors, and generated packs stay outside Git.
-The format 6 pack is approximately 384 MiB with one reference per wine.
+The dual pack is approximately 707 MiB. Each pipeline has one reference per wine.
 Keep sufficient free storage for the APK, the extracted pack, and the temporary upgrade.
 The old pack remains recoverable until the new pack passes validation.
 

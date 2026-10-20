@@ -10,6 +10,111 @@ The website contract passed 530 tests with 26 skipped tests and passed type chec
 The original device benchmark was not restarted or changed.
 Read `docs/releases/2026-10-20-main.md` for the exact source checkpoints.
 
+## Two production pipelines
+
+- Default to DIS-768 cropped custom on first start and format 6 upgrade.
+- Switch to standard and back in Settings. Preserve the selected choice after restart.
+- Select each graph, model manifest, candidate mapping, DIS graph, and index as one unit.
+- Compare custom crops, fractional weights, vectors, and rankings with the frozen DIS-768 run.
+- Compare standard rankings with the unchanged production index.
+- Reject changed custom payload hashes, missing wines, non-finite vectors, and existing exporter output.
+- Preserve history, age consent, and explicit accelerator settings during upgrade.
+- Close old GPU resources before switching. Recheck GPU/CPU agreement for each pipeline.
+- Use dual GPU only on the measured Pixel 8 path. Retain the guard on unmeasured phones.
+- Verify no YOLO weights in the public pack. Verify HTTP is absent from release and off by default in debug.
+- Save a complete Eval.zip regression run on Pixel after DIS-512 cleanup.
+
+## DIS input resolution
+
+- Reject an unpinned source graph or unsupported input size.
+- Preserve learned-weight hashes, channel dimensions, operator options, and explicit padding.
+- Verify all declared static tensor shapes against CPU-inferred shapes.
+- Require exact source output from the identity 1024 specialization.
+- Verify the separate `com.alolalab.chtozavino.disresbench` package and default-off HTTP.
+- Reject mismatched DIS input/output shapes, resolution, or graph hash.
+- Project masks at 512, 768, and 1024 without changing the 1024-pixel crop-render limit.
+- Keep p512 encoder, custom references, pooling formula, FP32 policies, and queries unchanged.
+- Require numerical parity and a 30-image pilot before each complete quality run.
+- Preserve the previous private pack before switching the isolated app to another resolution.
+- Keep re-ranking and fallback off. Verify final HTTP-off and process-stop cleanup.
+
+## DIS p512 custom pooling
+
+- Audit all 668 cropped assignments after continuation. Recompute quality and request latency directly.
+- Require identical accepted answers and custom reference vectors across all five compared pipelines.
+- Verify HTTP-off, absent isolated process, absent host workers, and removal of the owned USB forward.
+
+- Resume only a finalized incomplete full run into a new directory.
+- Reject changed prefix length, assignment order, accepted answers, candidates, or identity fields.
+- Reject partial JSONL records and received but unsaved responses.
+- Verify exact prefix bytes and raw source inventory before and after continuation.
+- Require the same Pixel process. Report resumed quality separately from uninterrupted stability.
+
+- Build with `-PdisPooling=true`. Require `com.alolalab.chtozavino.dispoolbench`.
+- Reject an incorrect DIS model hash, tensor shape, segmenter selection, or accelerator.
+- Require FP32 DIS arithmetic with automatic storage. Do not apply the encoder's BUFFER setting to DIS.
+- Preserve failed runtime candidates. Do not relax mask or latency thresholds to hide a failure.
+- Compare DIS raw and normalized masks with the same captured-input host CPU graph.
+- Verify source-mask projection and fractional patch weights independently.
+- Preserve RGB and geometry for full-image custom. Use the frozen crop renderer for cropped custom.
+- Keep both custom indexes byte-identical. Keep the production index for control.
+- Require all 668 standard Top-1 predictions to match production before any full custom run.
+- Require numerical checks and 30-image smoothness pilots for all three conditions.
+- Keep re-ranking, barcode, CPU fallback, and no-mask fallback disabled.
+- Preserve previous packages and results. Verify default-off HTTP and final cleanup.
+
+## Full-image p512 custom pooling
+
+- Build with `-PfullImagePooling=true`. Verify the separate fullpoolbench application ID.
+- Require default-off HTTP and the same isolated foreground-service lifecycle.
+- Keep production and prior custom reference vectors byte-identical to their sources.
+- Reject full-image profiles that request cropping or the wrong reference-index policy.
+- Preserve decoded source dimensions and pixel hashes before the NaFlex resize.
+- Verify captured full-image patch pixels against the released host preprocessing.
+- Use raw RGB captures for ICC/alpha inputs. Do not use a PNG display conversion as the oracle.
+- Replay q-000029, q-000171, q-000380, q-000567, and one opaque control on GPU/CPU/GPU.
+- Require production vector and candidate agreement for every standard parity request.
+- Reject an APK update unless the installed isolated APK and every private pack file match.
+- Preserve the stopped attempt. Do not clear application data or overwrite frozen sources.
+- Verify the bottle mask uses full-image coordinates and does not depend on RGB whiteness.
+- Require GPU/CPU/GPU numerical agreement and independent 30-image smoothness pilots.
+- Require all new standard-control Top-1 predictions to reproduce the original control.
+- Keep all 668 accepted-alternative assignments and any no-bottle failures.
+- Keep re-ranking disabled. Preserve prior artifacts. Disable HTTP after final cleanup.
+
+## Interrupted benchmark recovery
+
+- Preserve the raw run and recover only into a new directory.
+- Reject completed runs, missing telemetry, and changed optional-recognition settings.
+- Verify 536 copied rows in the response file and each of the ten prediction files.
+- Require the frozen independent audit and exact-byte dry resume check.
+- Require matching APK, pack, query hashes, Android user, PID, and foreground protection.
+- Observe a newly saved resumed assignment without restarting the Android model session.
+- Verify detached host-process ownership and explicit log paths.
+- Start the four-condition comparison only after full continuation and cleanup pass.
+
+## Base NaFlex p224 pooling experiment
+
+- Verify all four condition identities: p224 standard/custom and p512 standard/custom.
+- Require passed graph-rewrite reports for both patch budgets before device use.
+- Verify that p512 custom uses its own matching index and the same weight formula.
+- Report p512 standard/custom and custom p224/p512 paired gains and regressions.
+
+- Build the separate debug APK. Verify its application ID and API 28 minimum.
+- Verify that first-launch HTTP is off. Enable it through the observed settings switch.
+- Verify the notification and foreground service while HTTP runs.
+- Reject a model, index, or effective pooling profile that does not match its condition.
+- Check fractional mask coverage, white labels, empty background, and excluded padding.
+- Run zero-bias and independent attention-oracle checks before device inference.
+- Check three captured images in GPU, CPU, and GPU blocks for each condition.
+- Verify all 2,093 reference scores against an independent host dot product.
+- Run the same 30 distinct images for all four independent condition pilots.
+- Keep re-ranking, barcode, label fusion, and full-image fallback disabled.
+- Keep segmentation failures in `predictions.jsonl` and the accuracy denominator.
+- Reject incomplete runs as complete-cohort quality evidence.
+- Do not install the APK before the existing full-v3 run and cleanup finish.
+- Keep the production p512 default unchanged.
+
 ## October 20 main release rebuild
 
 The fresh main release rebuild passed 65 debug tests, 62 release tests, and 16 Python

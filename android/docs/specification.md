@@ -1,6 +1,6 @@
 # Android application specification
 
-Date: 2026-10-19
+Date: 2026-10-20
 
 ## Purpose
 
@@ -49,9 +49,16 @@ Historical reports and archived APKs MUST keep their original IDs.
 
 ## Image recognition
 
-The settings page MUST provide `Без сегментации`, `DIS`, and `YOLO` modes.
-The default mode MUST be `Без сегментации`.
-The main pipeline MUST use format 6 and the complete Base NaFlex p512 graph:
+The settings page MUST select `DIS-768 · обрезка · custom` or `Полное фото · standard`.
+The default MUST be DIS-768 cropped custom in a format 7 dual-pipeline pack.
+The custom pipeline MUST apply DIS at 768 by 768 pixels.
+It MUST use a four-percent foreground crop margin and white compositing.
+It MUST limit the rendered crop to a 1024-pixel long side.
+It MUST calculate fractional foreground coverage after the actual NaFlex resize.
+It MUST apply attention weights `0.1 * (1 - foreground) + foreground`.
+It MUST use the complete weighted p512 graph and its matching custom reference index.
+The public pack MUST omit optional YOLO weights by owner choice.
+The standard pipeline MUST retain the previous format 6 complete graph and index:
 
 1. Decode the original image without an intermediate long-side resize.
 2. Apply image orientation during decoding.
@@ -70,9 +77,10 @@ The application MUST create, run, and close model resources on one dedicated thr
 The first-start check MUST compare a gradient-image GPU vector with the CPU vector.
 It MUST reject GPU when cosine is below `0.99999` or maximum error exceeds `0.001`.
 The `Авто` mode MUST retry a failed GPU inference on CPU.
-DIS and YOLO MUST remain explicit optional query modes.
-They MUST apply the native white-background crop before the complete NaFlex encoder.
-They MUST NOT replace the frozen catalogue vectors with legacy Base/224 vectors.
+Switching MUST select the model and index together and close previous inference resources.
+Switching MUST repeat accelerator checks with a pipeline-specific identity.
+The debug server MUST be off before a settings switch.
+Legacy packs MAY retain the previous DIS and YOLO query modes.
 
 ### Legacy image pipelines
 
@@ -158,7 +166,8 @@ The user interface MUST NOT describe the cosine score as confidence.
 
 Legacy steps 9 and 10 reproduce the timm image processor with `crop_pct=0.9`.
 
-DIS MUST use a 1,024 by 1,024 input.
+The main custom DIS pipeline MUST use a 768 by 768 input.
+Legacy DIS packs MUST use a 1024 by 1024 input.
 YOLO MUST use the official `yolo26n-seg` w8a32 LiteRT model.
 YOLO MUST use a 640 by 640 letterbox input.
 YOLO MUST keep only COCO class 39, `bottle`.
@@ -184,7 +193,8 @@ rule does not select CPU.
 The explicit `CPU` mode MUST not load the model on GPU.
 The recognition engine MUST reuse the LiteRT environment, compiled models, and tensor
 buffers across requests.
-The recognition engine MUST not keep two GPU compiled models open at the same time.
+The measured custom Pixel 8 pipeline MAY keep DIS and SigLIP2 on GPU in one shared environment.
+Other devices and legacy pipelines MUST retain the dual-GPU safety rule.
 When DIS and SigLIP2 both resolve to GPU, the engine MUST keep DIS on GPU and use
 SigLIP2 on CPU.
 
@@ -201,7 +211,7 @@ The application MUST not upload a scanned value.
 
 ## Model pack
 
-The APK MUST contain a built-in format version 6 model pack.
+The APK MUST contain a built-in format version 7 model pack with both complete pipelines.
 The built-in pack MUST use the verified complete Base NaFlex p512 index.
 The current frozen pack contains one unrotated package-cut reference for each wine.
 It MUST declare the actual reference count.
@@ -211,15 +221,16 @@ Those vectors MUST NOT be reused with the complete Base NaFlex p512 graph.
 The query image MUST produce one vector.
 The application MUST use the maximum score across the available reference vectors of each wine.
 The built-in pack MUST contain one transparent package cut for each included wine.
-The built-in pack MUST contain the verified YOLO26n-seg LiteRT file.
+The public built-in pack MUST NOT contain YOLO weights.
 The package cut MUST be WebP with a long side of 1,024 pixels or less.
 The built-in pack MUST NOT contain the large `main_patched` or `main` source image.
 The source image MUST identify the selected vector and package cut only.
 The application MUST install the built-in pack on the first start.
 The application MUST show progress during this operation.
-An update MUST replace an installed format 1 through 5 pack with the built-in format 6 pack.
+An update MUST replace an installed format 1 through 6 pack with the built-in format 7 pack.
 The update MUST preserve history, the 18+ choice, and accelerator preferences.
-It MUST select no segmentation and repeat detection for the new model identity.
+It MUST default to DIS-768 custom and repeat detection for the new model identity.
+Later starts MUST preserve the saved pipeline choice.
 
 The application MUST also accept an external format version 4 pack.
 The format version 4 pack MUST use `google/siglip2-so400m-patch16-naflex`.

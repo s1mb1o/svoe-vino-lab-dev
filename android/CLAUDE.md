@@ -13,7 +13,11 @@ The application MUST reject a model pack when its SigLIP2 model or vector dimens
 not match the application contract.
 
 Do not add model weights or generated model packs to Git.
-Use `tools/build_verified_naflex_pack.py` for the default format 6 pack.
+Use `tools/build_dual_pipeline_pack.py` for the default format 7 pack.
+Keep both complete Base p512 model/index pairs. Default to DIS-768 cropped custom.
+The standard profile MUST retain its original model and reference bytes.
+The public format 7 pack MUST omit optional YOLO weights, as the owner selected.
+Use `tools/build_verified_naflex_pack.py` only to reconstruct the previous format 6 source.
 Use `tools/build_model_pack.py` only for legacy fixed Base/224 packs.
 Write generated packs outside the Android source directory.
 Use the pinned `app/libs/naflex-0.2.0.aar` for the complete p512 runtime.

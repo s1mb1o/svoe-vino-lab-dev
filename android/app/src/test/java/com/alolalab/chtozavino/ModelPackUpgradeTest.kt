@@ -13,10 +13,10 @@ class ModelPackUpgradeTest {
     fun `old fixed and split packs require the new built in pack`() {
         val directory = temporary.newFolder()
         directory.resolve("yolo26n-seg_w8a32.tflite").writeText("fixture")
-        for (version in 1..5) {
+        for (version in 1..6) {
             assertTrue(InstalledModelPack(directory, manifest(version)).needsBuiltInUpgrade())
         }
-        assertFalse(InstalledModelPack(directory, manifest(6)).needsBuiltInUpgrade())
+        assertFalse(InstalledModelPack(directory, manifest(7)).needsBuiltInUpgrade())
     }
 
     @Test
