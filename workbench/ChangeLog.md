@@ -2,6 +2,15 @@
 
 ## 2026-10-20
 
+- Fixed four tests that failed on a clean checkout or when run alone.
+  `test_describe_images.DetailPromptTest` read `../internal/owner-messages.md`, which the lab
+  keeps out of git; the test now skips when the file is absent (the template test checks the
+  prompts against plan 29). `test_recognize_routes` searched `<nav class="nav">`, but the
+  navigation now has `aria-label="Main navigation"`. `test_run_compare` and
+  `test_testset_from_compare` imported the lab modules before `pipeline/` was on the import
+  path, so they passed only after another test module. Tests: the four files pass alone
+  (29, 15, 12, and 75 tests, 1 skipped).
+
 - Added the production error review routes to `docs/lab-openapi.yaml`: the page
   `/production-errors`, `GET /api/production-errors`, `GET /api/production-errors/image`,
   and `POST /api/production-errors/{import,review,publish}`, with the tag

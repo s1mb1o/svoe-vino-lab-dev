@@ -1,7 +1,9 @@
 """Check complete filtered copies, annotation fidelity, and atomic HTTP writes."""
 
 import json
+from pathlib import Path
 import sqlite3
+import sys
 import threading
 from contextlib import closing
 from unittest import mock
@@ -9,11 +11,15 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-import benchmark
-import labdb
-import lab_server
-import testset_from_compare as copy
-from test_run_compare import RunFixture, query
+# The modules of the lab are in `pipeline/`. Another test module adds it too, but this
+# module also runs alone (`-p test_testset_from_compare.py`).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "pipeline"))
+
+import benchmark  # noqa: E402
+import labdb  # noqa: E402
+import lab_server  # noqa: E402
+import testset_from_compare as copy  # noqa: E402
+from test_run_compare import RunFixture, query  # noqa: E402
 
 
 class CompareTestsetTest(RunFixture):
