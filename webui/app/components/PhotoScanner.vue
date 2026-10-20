@@ -96,6 +96,7 @@ useScannerTools(scanner)
           <div v-if="busy" class="upload-progress" role="status"><span class="spinner" /><span>{{ phase === 'resolving' ? 'Открываем карточку вина…' : 'Ищем вино по этикетке…' }}</span><button class="text-button" @click="scanner.cancel()">Отменить</button></div>
           <div v-else class="upload-actions selected-actions"><button class="button secondary" @click="fileInput?.click()"><AppIcon name="upload" />Другое фото</button><button v-if="phase === 'error' || phase === 'selected'" class="button primary" @click="scanner.submit()">{{ phase === 'error' ? 'Повторить поиск' : 'Найти вино' }}</button><button v-else class="text-button" @click="cameraInput?.click()"><AppIcon name="camera" />Сделать фото</button></div>
         </template>
+        <p class="upload-network-note">Скорость распознавания зависит от скорости интернета.</p>
         <div v-if="error" class="inline-error" role="alert"><AppIcon name="info" /><span>{{ error }}</span></div>
         <button v-if="!file && mode === 'mock'" class="example-button" :disabled="exampleLoading" @click="scanner.example()"><span v-if="exampleLoading" class="spinner" /><AppIcon v-else name="image" />{{ exampleLoading ? 'Загружаем пример…' : 'Попробовать на примере' }}<AppIcon name="arrow" /></button>
       </section>

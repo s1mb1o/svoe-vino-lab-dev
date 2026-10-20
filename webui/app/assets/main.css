@@ -159,6 +159,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .button>.icon { width: 19px; height: 19px; }
 .upload-actions { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .upload-hint { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 14px 0 0; }
+.upload-network-note { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 12px 0 0; }
 .example-button { align-self: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent); font-size: 12px; margin-top: auto; padding: 18px 10px 0; }
 .example-button .icon { width: 16px; height: 16px; }
 .example-button:hover { text-decoration: underline; text-underline-offset: 4px; }

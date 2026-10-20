@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-20 — Explain mobile recognition speed
+
+- Show an internet-speed notice beside photo upload controls before selection and during recognition.
+- Keep the original image and the interactive timeout fix. Preserve the current no-match behavior from main.
+
 ## 2026-10-20 — Preserve original photos on slow mobile uploads
 
 - Give interactive photo search 120 seconds for upload and recognition, instead of aborting after ten seconds.
