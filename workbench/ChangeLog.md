@@ -2,6 +2,14 @@
 
 ## 2026-10-20
 
+- Fixed the patch slot of the Dataset page. While a patch upload or a `Clear` ran (with
+  SAM3, up to a minute), the slot still showed "Drop an image here", with no candidate, no
+  file name, and no `Processing…` or `Clearing…`. `applyPendingPatch` called `render()`,
+  and `render()` keeps a card with a pending patch or the focus as it is (since the card
+  deferral of 2026-10-06, commit `104cc292`). The function now replaces the card of the
+  wine with `renderCard` at the start and at the end. Tests: `test_dataset_dom_rendering` 5
+  (1 new; it fails with the old code).
+
 - Fixed the links into `/runs` (`Open run` and the bars of `/runs/charts`, `Inspect steps` of
   `/runs/compare`). When the stored filter `Pipeline` or `Testset` of `/runs` hid the linked
   run, the page opened another run, rewrote the hash, and opened no step popup. The page now

@@ -13,7 +13,8 @@ const acorn = require(require.resolve('acorn', {paths: [process.argv[2] + '/webu
 const source = [...fs.readFileSync(process.argv[1], 'utf8').matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
   .map(m=>m[1]).find(s=>s.includes('function applyView()'));
 const functions = new Set(['esc','keepCardMounted','deferredCardHtml','replaceObservedCard',
-  'mountCard','observeCards','render','renderCard','scrollToCard','openSimilarCard']);
+  'mountCard','observeCards','render','renderCard','scrollToCard','openSimilarCard',
+  'applyPendingPatch','clearPendingPatch']);
 const variables = new Set(['CARD_HEIGHTS','CARD_RECORDS','CARD_OBSERVER','DEFER_CARDS']);
 const code = acorn.parse(source,{ecmaVersion:'latest'}).body.filter(n=>
   n.type==='FunctionDeclaration' && functions.has(n.id.name) ||
@@ -39,7 +40,9 @@ const document = {activeElement:{}, getElementById: id=>list.children.find(c=>c.
   createElement(tag) {assert.equal(tag,'template'); const t={content:{}};
     Object.defineProperty(t,'innerHTML',{set:html=>t.content.firstElementChild=parse(html)[0]}); return t;}};
 const ctx = vm.createContext({document, DATA:{records:[]}, ROWS:[], CODE_USERS:null, EMPTY_VIEW:'empty',
-  $:s=>{assert.equal(s,'#list');return list;}, recordHtml:r=>{fullCalls++;return `<article class="wine" id="${r.slug}">${r.name}</article>`},
+  BUSY_PATCHES:new Set(),
+  $:s=>{assert.equal(s,'#list');return list;}, recordHtml:r=>{fullCalls++;
+    return `<article class="wine" id="${r.slug}">${r.name}${ctx.BUSY_PATCHES.has(r.slug) ? ' busy' : ''}</article>`},
   renderHead:()=>{}, inStateView:r=>r.state!=='Removed', inTypeView:()=>true,
   applyView:()=>ctx.ROWS=ctx.DATA.records.filter(r=>r.state!=='Removed'), requestAnimationFrame:f=>f()});
 if(process.argv[3]!=='fallback') ctx.IntersectionObserver=class {
@@ -75,6 +78,22 @@ if(process.argv[3]==='mount') {
   ctx.DATA.records[100].state='Removed';ctx.renderCard('wine-100');assert.equal(list.children.length,2132);
   const newRecord={slug:'hidden-wine',name:'Hidden'};ctx.DATA.records.push(newRecord);
   ctx.openSimilarCard('wine-0','hidden-wine');assert.equal(list.children[1].id,'hidden-wine');assert(list.children[1].scrolled);
+} else if(process.argv[3]==='patch') {
+  // A card with a pending patch and the focus stays mounted in `render()`. The patch
+  // upload replaces it on its own: the card shows the busy state and then the result.
+  enter(list.children[5]); const card=list.children[5]; card.focus=document.activeElement;
+  Object.assign(ctx, {alert:()=>{}, URL:{revokeObjectURL(){}}});
+  ctx.DATA.patch_editor=true;
+  let answer; ctx.fetch=()=>new Promise(resolve=>answer=resolve);
+  ctx.PENDING_PATCHES.set(card.id,{action:'set',file:{name:'p.jpg',type:'image/jpeg'},url:'blob:p'});
+  const done=ctx.applyPendingPatch(card.id);
+  assert(list.children[5].html.includes('busy'));
+  answer({ok:true, json:async()=>({patched:true, patches:1, record:{name:'patched name'}})});
+  done.then(()=>{
+    assert(!list.children[5].html.includes('busy'));
+    assert(list.children[5].html.includes('patched name'));
+    assert.equal(ctx.PENDING_PATCHES.size,0);
+  }).catch(error=>{console.error(error);process.exit(1);});
 }
 '''
 
@@ -99,6 +118,9 @@ class DatasetDomRenderingTest(unittest.TestCase):
 
     def test_browser_without_intersection_observer_renders_every_card(self):
         self.check_scenario('fallback')
+
+    def test_patch_upload_shows_busy_state_and_result_on_a_kept_card(self):
+        self.check_scenario('patch')
 
 
 if __name__ == '__main__':

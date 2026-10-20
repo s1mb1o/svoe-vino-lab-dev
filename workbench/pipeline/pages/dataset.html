@@ -3474,7 +3474,9 @@ async function applyPendingPatch(slug) {
   const pending = PENDING_PATCHES.get(slug);
   if (!pending || BUSY_PATCHES.has(slug)) return;
   BUSY_PATCHES.add(slug);
-  render();
+  // `render()` keeps a card with a pending patch or the focus as it is, so the card is
+  // replaced on its own: it shows `Processing…` or `Clearing…` and then the result.
+  renderCard(slug);
   try {
     const query = `?slug=${encodeURIComponent(slug)}` +
       (pending.action === "set" ? `&name=${encodeURIComponent(pending.file.name)}` : "");
@@ -3501,6 +3503,7 @@ async function applyPendingPatch(slug) {
   } finally {
     BUSY_PATCHES.delete(slug);
     render();
+    renderCard(slug);
   }
 }
 function clearPendingAlternatives(slug) {
