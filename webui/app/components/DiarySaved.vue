@@ -102,7 +102,7 @@ defineExpose({ reload: load })
       <p v-if="notice" class="account-notice" role="status">{{ notice }}</p>
       <ul v-if="shown.length" class="diary-list">
         <li v-for="item in shown" :key="item.slug" class="diary-row">
-          <div class="diary-row-image"><WineImage :src="wineImageUrl(item.slug, 400)" alt="" width="72" height="96" loading="lazy" /></div>
+          <div class="diary-row-image"><WineImage :src="wineImageUrl(item.slug, 400)" alt="" width="64" height="128" loading="lazy" /></div>
           <div class="diary-row-body">
             <h3 class="diary-row-title">{{ wineName(item) }}</h3>
             <p v-if="item.wine?.producer" class="diary-row-producer">{{ item.wine.producer }}</p>
