@@ -38,8 +38,10 @@
 - Fixed the arrow keys in the dialogs `New testset`, `Re-run`, and `Merge wine` of `/runs`.
   Their key handlers stopped each key but did not prevent its default action, so ↓, ↑,
   Page Down, and the other scroll keys scrolled the page behind the dialog. A scroll key
-  now stays in the dialog, unless a text field, a radio button, or a list of the dialog
-  uses it; Space still presses a button. Tests: `test_runs_loading` (1 new).
+  now stays in the dialog, unless a field of the dialog uses it: a text field, a list, or
+  an editable area uses each scroll key, a radio button uses the arrow keys alone (the Codex
+  review found that Page Down on a radio button still scrolled the page), and a checkbox or
+  a button uses none. Space still presses a button. Tests: `test_runs_loading` (1 new).
 
 - Fixed the height of `Alternative photos` (SMOKE AH1, AH2). The move buttons `→M` and `→P`
   of plan 95 made each photo about 172 px high, but the grid kept `max-height: 620px`: a

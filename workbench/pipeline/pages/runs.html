@@ -1111,12 +1111,18 @@ $("#wm-dlg").addEventListener("click", ev => {
 });
 /* The key handlers of the dialogs stop each key, so the keys of the page do not act. A key
    that scrolls MUST NOT scroll the page behind the dialog either, unless a field of the
-   dialog uses it (a text field, a radio button, a list). Space stays: it presses a button. */
+   dialog uses it: a text field, a list, and an editable area use each of these keys, a
+   radio button uses the arrow keys alone, a checkbox or a button uses none. Space stays:
+   it presses a button. */
 const PAGE_SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
   "PageUp", "PageDown", "Home", "End"]);
+const KEYLESS_INPUTS = new Set(["checkbox", "button", "submit", "reset", "file", "color", "image"]);
 function keepScrollInDialog(ev) {
-  if (PAGE_SCROLL_KEYS.has(ev.key)
-      && !ev.target.closest?.("input, select, textarea, [contenteditable]")) ev.preventDefault();
+  if (!PAGE_SCROLL_KEYS.has(ev.key)) return;
+  const field = ev.target.closest?.("input, select, textarea, [contenteditable]");
+  const type = field && field.matches("input") ? field.type : "";
+  const uses = !!field && (type === "radio" ? ev.key.startsWith("Arrow") : !KEYLESS_INPUTS.has(type));
+  if (!uses) ev.preventDefault();
 }
 document.addEventListener("keydown", ev => {
   if (!WM) return;

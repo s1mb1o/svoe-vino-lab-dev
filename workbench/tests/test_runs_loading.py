@@ -75,15 +75,22 @@ const source=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
   .map(m=>m[1]).find(s=>s.includes('function keepScrollInDialog('));
 const code=acorn.parse(source,{ecmaVersion:'latest'}).body.filter(n=>
   n.type==='FunctionDeclaration'&&n.id.name==='keepScrollInDialog'||
-  n.type==='VariableDeclaration'&&n.declarations.some(d=>d.id.name==='PAGE_SCROLL_KEYS'))
+  n.type==='VariableDeclaration'&&n.declarations.some(d=>['PAGE_SCROLL_KEYS','KEYLESS_INPUTS'].includes(d.id.name)))
   .map(n=>source.slice(n.start,n.end)).join('\n')+'\nthis.keep=keepScrollInDialog;';
 const ctx=vm.createContext({Set});vm.runInContext(code,ctx);
-const press=(key,field)=>{const ev={key,prevented:false,preventDefault(){this.prevented=true;},
-  target:{closest:selector=>field&&selector.includes(field)?{}:null}};ctx.keep(ev);return ev.prevented;};
+// `field` is null (the dialog itself), a tag name, or `input:<type>`.
+const press=(key,field)=>{const [tag,type]=(field||'').split(':');
+  const element=field?{type:type||'text',matches:s=>s===tag}:null;
+  const ev={key,prevented:false,preventDefault(){this.prevented=true;},
+    target:{closest:selector=>element&&selector.split(', ').includes(tag)?element:null}};
+  ctx.keep(ev);return ev.prevented;};
 for(const key of ['ArrowDown','ArrowUp','PageDown','End']) assert(press(key,null),key);
 assert(!press(' ',null),'Space presses a button');assert(!press('Enter',null));assert(!press('a',null));
-assert(!press('ArrowDown','input'),'a radio button or a text field keeps its arrow keys');
-assert(!press('End','textarea'));
+assert(!press('ArrowDown','input:text'),'a text field keeps its keys');assert(!press('End','input:text'));
+assert(!press('End','textarea'));assert(!press('PageDown','select'));
+assert(!press('ArrowDown','input:radio'),'a radio button keeps its arrow keys');
+assert(press('PageDown','input:radio'),'a radio button does not use Page Down');
+assert(press('ArrowDown','input:checkbox'),'a checkbox uses no scroll key');
 '''
         node = shutil.which("node")
         if node is None:
