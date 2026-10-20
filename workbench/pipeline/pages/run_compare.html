@@ -257,7 +257,9 @@ $("#new-form").addEventListener("submit",async event=>{
     $("#testset").innerHTML='<option value="">All testsets</option>'+sets.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");
     const requested=[state.a,state.b].filter(Boolean);
     const left=runs.find(r=>r.id===state.a),right=runs.find(r=>r.id===state.b);
-    let wanted=initial.has("set")?initial.get("set"):left&&right&&left.set!==right.set?"":left?.set||runs[0]?.set;
+    // One requested run (the `Compare runs` link of /runs gives `b`) sets the test set, so
+    // the default baseline comes from the same test set.
+    let wanted=initial.has("set")?initial.get("set"):left&&right&&left.set!==right.set?"":(left||right)?.set||runs[0]?.set;
     if([left,right].some(r=>r&&wanted&&r.set!==wanted))wanted="";
     if(wanted===""||sets.includes(wanted))$("#testset").value=wanted;
     $("#rank").value=String(state.k);$("#search").value=state.q;

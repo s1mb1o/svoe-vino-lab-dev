@@ -2,6 +2,13 @@
 
 ## 2026-10-20
 
+- Fixed the default baseline of `/runs/compare`. The link `Compare runs →` of `/runs` gives
+  the open run as `b` alone; with the `Testset` filter `All`, the page took the newest run of
+  any test set as baseline A, so the comparison often opened with "Dataset snapshots
+  differ" and 0 differences. One requested run now sets the test set, so A is the newest
+  other run of the same test set. Tests: `test_run_compare_ui` 26 (1 new; it fails with the
+  old code).
+
 - Fixed the dialog `Failed details` of the Dataset page. Opened from the VLM watcher dialog
   (`View N failed details`), it lay behind that dialog: both modals have `z-index: 50`, and
   the watcher dialog came later in the page. The focus went into the hidden dialog, its
