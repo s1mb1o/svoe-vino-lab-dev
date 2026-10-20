@@ -1,5 +1,26 @@
 # Asset provenance
 
+## Shelf Lens landing, 2026-10-20
+
+The owner supplied `/Users/ashmelev/Downloads/polka-vina-demo.mp4`.
+The source video is 131.904 seconds long. The source frame size is 1080 × 1920.
+The owner supplied the planogram as `codex-clipboard-ba687eca-b5f2-428f-80a4-15b8102474ef.png`.
+The integration copies the verified derivatives from the local Shelf Lens landing.
+`ar-rating.jpg` uses video time 00:40. `scanning.jpg` uses 00:18. `wine-list.jpg` uses 01:26.
+The silent hero loop uses 18 seconds from 00:36 at 480 pixels wide.
+The full demonstration uses H.264 at 540 × 960 with AAC audio.
+The PNG keeps the supplied planogram at 1280 × 615.
+The page reuses the portal font. No duplicate font or external image host is added.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `public/shelf-lens/ar-rating.jpg` | 139,126 | `f52968f0fad6606acfcdeda149e49dc2cb8172c2d3aecfb0bbeaa792c128a771` |
+| `public/shelf-lens/scanning.jpg` | 110,305 | `39cd90c42fdbbbd8e7b616880ead720afdb92244fb1da413714c126e8307ca15` |
+| `public/shelf-lens/wine-list.jpg` | 53,002 | `23acb5123663cc82b7911ab942e132d0a273b7ea585e4d5c009cad4429262357` |
+| `public/shelf-lens/planogram.png` | 575,233 | `7e7d6f3a3852db0523d42d1480a40976c15707e921d046d8e4aa1bc9c9dd4183` |
+| `server/assets/shelf-lens/hero-loop.mp4` | 2,278,786 | `0f9c73b6f11d25199bc86b2049b96158c212a2dd4d2fc98cf103b587cd663df1` |
+| `server/assets/shelf-lens/shelf-lens-demo.mp4` | 16,880,750 | `58fd1f992f89c178e2d0eecaedf9d62280c3c1940885efa27d167a6759ca0d60` |
+
 ## Wine&Dine Merge landing, 2026-10-19
 
 `public/game-art/` contains seven standalone SVG illustrations.

@@ -1,5 +1,48 @@
 # Research log
 
+## 2026-10-20 — Shelf Lens source integration
+
+The owner requested integration into the main checkout after choosing local-only delivery.
+The standalone source is `drink-atlas-workspace/sites/shelf-lens-landing-ru/dist`.
+The existing `/shelf` route scans a photograph. The new `/shelf-lens` route presents the Android video workflow.
+The page uses the existing Nuxt shell, `Playfair Display` font, theme storage, and age gate.
+All page classes and custom properties use the `sl-` prefix. Dark theme selectors follow the scoped CSS rule.
+Vue refs replace the standalone DOM listeners. Route exit pauses both videos, removes listeners, and releases the body scroll lock.
+
+The installed Nitro static handler returns HTTP 200 for a video Range request.
+This prevents a direct jump to a late chapter in WebKit before the full download.
+The page now uses `/shelf-lens-video/<filename>` for two allowlisted server assets.
+The handler supports GET, HEAD, single ranges, open ranges, suffix ranges, and HTTP 416.
+It reads one bounded compressed asset into memory per request. The largest asset is 16,880,750 bytes.
+A large video catalog would need a streaming media server. This page has two fixed assets.
+The remaining images stay under `public/shelf-lens/`.
+The existing service worker does not precache these media paths.
+
+The displayed 3 shelves, 95 facings, and 46 recognized bottles describe the supplied example.
+These counts do not measure recognition accuracy.
+The current implementation supports ratings from «Своё Вино».
+Bottle search, AR navigation, and taste highlighting remain future scenarios.
+
+Validation on 2026-10-20:
+
+- `npm run typecheck`: passed.
+- `npm test`: 31 files passed. 610 tests passed. 26 existing tests skipped.
+- `npm run build`: passed.
+- `npm run test:bundle`: passed. `/` uses 165.5 KB gzip. `/shelf` uses 165.7 KB gzip. All 25 producer maps remain lazy.
+- HTTP checks passed for both video assets. The checks compare exact byte ranges, suffix ranges, and open ranges with the source bytes. HEAD, HTTP 416, unknown-file HTTP 404, and method HTTP 405 checks passed.
+- The in-app WebKit browser passed the shared age gate, both rendered themes, chapter selection, video playback, and a direct seek to 114 seconds.
+- Escape paused the full video, restored body scrolling, and returned focus to the opener.
+- The phone planogram used an 880-pixel image inside a 320-pixel scroll viewport.
+- Both themes fit at 320, 390, 768, and 1280 CSS pixels without horizontal page overflow.
+- Nuxt navigation passed from the scanner to `/ideas`, through the Shelf Lens card, and back to the page. The three scanner modes remain available.
+- The browser reported no warnings or errors during these checks.
+
+Evidence is under `/private/tmp/shelf-lens-integration/`.
+`http-results.json` records HTTP checks. `desktop-light.jpg` and `mobile-dark.jpg` record the integrated page.
+Reduced-motion emulation and physical-device playback were not tested in this integration run.
+The source includes reduced-motion handling. Physical-device acceptance remains separate.
+No production service or hosting configuration changed.
+
 ## 2026-10-20 — Original result pin and public device copy
 
 Main `969b58eb` supplied an offline card only to alternative and comparison pins.

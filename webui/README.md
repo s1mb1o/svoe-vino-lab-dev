@@ -18,6 +18,17 @@ The physical card-game landing is at `/crocodile`. Open it from `/ideas`.
 The page includes rules, six illustrated card examples, photo-based artwork, and print files.
 Read [the page contract](docs/crocodile-landing.md).
 
+## Shelf Lens
+
+The Russian landing is at `/shelf-lens`.
+It presents the Android video scanner, AR ratings from «Своё Вино», spatial ReID, and the planogram example.
+Open it from `/ideas`, `/hackaton`, the shared footer, or `/sitemap`.
+The `/shelf` photograph scanner remains a separate route.
+The new page uses the shared theme and age gate. It does not start recognition requests.
+Videos are fixed server assets with byte-range support. Images are under `public/shelf-lens/`.
+Search, AR navigation, and taste highlighting are labeled as future scenarios.
+This integration does not publish a release.
+
 ## Scope
 
 - Select a label photo, use the mobile camera input, or drop a file.

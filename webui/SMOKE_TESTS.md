@@ -1,5 +1,20 @@
 # Smoke tests
 
+## Shelf Lens landing
+
+1. Open `/shelf-lens` without an age confirmation. Confirm the shared age gate.
+2. Open the page from `/ideas`, `/hackaton`, the footer, and `/sitemap`.
+3. Check both themes at 320, 390, 768, and 1280 CSS pixels. Confirm readable text and no horizontal page overflow.
+4. Switch all three demonstration chapters. Confirm the image, label, pressed state, and matching video chapter.
+5. Open the full video. Jump to 00:12, 00:36, 01:24, and 01:54 before a full download. Confirm playback from each chapter.
+6. Close with Escape, close, and backdrop. Confirm video pause, body scroll restoration, and focus return.
+7. Open the planogram. Confirm horizontal image scrolling on a phone and the PNG download.
+8. Pause the hero loop. Scroll away, hide the tab, and open a dialog. Confirm the loop pauses. Check reduced motion separately.
+9. Navigate to the scanner and back through Nuxt links. Confirm no duplicate listeners, stale dialog, or body scroll lock.
+10. Confirm that `/` and `/shelf` retain the three scanner modes and their original styles.
+11. Check byte, suffix, invalid, and HEAD requests to the two video routes. Unknown filenames MUST return HTTP 404.
+12. Confirm that future bottle search, AR navigation, and taste highlighting remain labeled as future work.
+
 ## Original photo-result save and offline copy
 
 1. Sign in and recognize a wine in the pinned F04 snapshot. Press the original result pin before opening alternatives or comparison.

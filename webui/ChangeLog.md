@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-20 — Integrate the Shelf Lens landing
+
+- Add the Russian `/shelf-lens` page to the main Nuxt portal.
+- Retain the real phone demonstration, AR rating, spatial ReID explanation, and planogram example.
+- Reuse the shared header, footer, theme, and age gate. Isolate page styles and clean up media listeners on navigation.
+- Add entry points in `/ideas`, `/hackaton`, the footer, and both sitemaps. Preserve the three scanner modes.
+- Serve the two fixed videos with bounded HTTP byte ranges. Keep video assets outside the PWA precache.
+- Mark bottle search, AR navigation, and taste highlighting as future scenarios.
+- Prepare the initial delivery locally. The owner then authorized Git publication to `origin/main`. Website deployment remains separate.
+
 ## 2026-10-20 — Offline copy from the original photo-result pin
 
 - After a successful diary save, copy the original exact wine from the pinned public catalog without opening alternatives or comparison.
