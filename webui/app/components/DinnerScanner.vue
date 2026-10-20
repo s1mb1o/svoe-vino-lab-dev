@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { wineImageUrl } from '#shared/catalog'
-import { DINNER_NODES, dinnerNode, type DinnerSelection } from '#shared/dinner'
+import { DINNER_NODES, dinnerNode, type DinnerSelection, type DinnerWine } from '#shared/dinner'
 import { DISH_CAMERA_ACCEPT, DISH_IMAGE_ACCEPT } from '#shared/dish-image'
 
 const props = defineProps<{ available: boolean }>()
@@ -8,6 +8,8 @@ const scanner = useDinnerLens()
 const { dish, preview, phase, page, wines, error, question, busy, file, failedAction } = scanner
 const upload = ref<HTMLInputElement>(); const camera = ref<HTMLInputElement>(); const dishInput = ref<{ focus: () => void; close: () => void; showCategories: () => void }>()
 const uploadButton = ref<HTMLButtonElement>(); const resultRegion = ref<HTMLElement>()
+const bottlePreview = ref<{ open: (wine: { slug: string; name: string; producer?: string | null }, control?: HTMLElement | null) => void }>()
+function openBottle(wine: DinnerWine, event: MouseEvent) { bottlePreview.value?.open({ slug: wine.wine_slug, name: wine.name, producer: wine.producer }, event.currentTarget as HTMLElement) }
 const announcement = ref('')
 const settings = reactive({ heat: '', cream: '', acidity: '', sweetSauce: '' })
 const tastePresets = [
@@ -145,7 +147,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
       <p v-else-if="page?.needs_clarification && question" class="dinner-field-hint">{{ question }}</p>
       <div class="dinner-wines"><article v-for="wine in wines" :key="wine.wine_slug" class="dinner-wine">
         <div class="dinner-wine-top"><AppIcon :name="wine.facts.wine_kind === 'sparkling' ? 'sparkling' : wine.facts.color === 'red' ? 'wine-red' : wine.facts.color === 'white' ? 'wine-white' : 'taste'" /><span class="dinner-wine-top-end"><span>{{ wine.selection_source === 'curated' ? 'Подборка к блюду' : 'Ещё один вариант' }}</span><PinButton :slug="wine.wine_slug" source="dinner_lens" :wine-name="wine.name" /></span></div>
-        <div class="dinner-wine-image"><WineImage :src="wineImageUrl(wine.wine_slug, 400)" alt="" width="400" height="400" loading="lazy" /></div>
+        <button class="dinner-wine-image" type="button" :aria-label="`Показать бутылку крупнее: ${wine.name}`" aria-haspopup="dialog" @click="openBottle(wine, $event)"><WineImage :src="wineImageUrl(wine.wine_slug, 400)" alt="" width="400" height="400" loading="lazy" /></button>
         <p class="dinner-producer">{{ wine.producer }}</p><h3 tabindex="-1">{{ wine.name }}</h3>
         <p class="dinner-wine-facts">{{ labels[wine.facts.color] }} · {{ labels[wine.facts.sweetness] }} · {{ labels[wine.facts.wine_kind] }}<template v-if="wine.facts.alcohol_percent !== null"> · {{ wine.facts.alcohol_percent }}%</template></p>
         <p v-if="wine.facts.reported_grapes.length" class="dinner-grapes">{{ wine.facts.reported_grapes.join(', ') }}</p>
@@ -155,6 +157,7 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
       <p v-else-if="wines.length" class="dinner-field-hint dinner-end">Все подходящие варианты из текущей подборки показаны.</p>
       <p v-if="wines.length" class="dinner-field-hint dinner-end">Сочетания основаны на данных карточек и правилах подбора. Наличие и цены уточняйте отдельно.</p>
     </section>
+    <WinePreviewDialog ref="bottlePreview" />
   </section>
 </template>
 
@@ -207,7 +210,8 @@ const selectedLabel = computed(() => dinnerNode(page.value?.resolved_node_id)?.l
 .dinner-wine-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--accent); font-size: 10px; margin-bottom: 24px; }
 .dinner-wine-top .icon { width: 30px; height: 30px; }
 .dinner-wine-top-end { display: inline-flex; align-items: center; gap: 6px; }
-.dinner-wine-image { height: 200px; margin-bottom: 22px; padding: 12px; border-radius: 14px; background: var(--card); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.dinner-wine-image { width: 100%; height: 200px; margin-bottom: 22px; padding: 12px; border-radius: 14px; background: var(--card); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in; }
+@media (hover: hover) { .dinner-wine-image:hover { box-shadow: inset 0 0 0 1px var(--accent); } }
 /* Many catalogue images have a white background. `multiply` keeps the tile colour around the bottle. */
 .dinner-wine-image>img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 :global([data-theme='dark'] .dinner-wine-image) { background: #e8e2da; }

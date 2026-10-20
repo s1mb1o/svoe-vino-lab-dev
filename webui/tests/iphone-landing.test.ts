@@ -43,7 +43,7 @@ describe('iPhone landing page', () => {
     expect(page).toContain("href: 'https://chtozavino.ru/iphone'")
     expect(page).toContain("'@type': 'SoftwareApplication'")
     expect(app).toContain("route.path.startsWith('/iphone')")
-    expect(app).toContain("isIphonePage ? '/android' : '/iphone'")
+    expect(app).toContain('<NuxtLink to="/android">Android<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/iphone">iPhone<AppIcon name="arrow-up-right" /></NuxtLink>')
     expect(sitemap).toContain('<loc>https://chtozavino.ru/iphone</loc>')
     expect(config).toContain("'/screenshots/iphone/**'")
   })

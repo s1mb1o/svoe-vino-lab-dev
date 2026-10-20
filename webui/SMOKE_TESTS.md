@@ -1,5 +1,24 @@
 # Smoke tests
 
+## Bottle preview on `/dish`
+
+1. Open `/dish` and get recommendations for a dish. Confirm the zoom cursor on a card bottle image.
+2. Click the bottle image. Confirm a dialog with the producer, the wine name as the heading, and
+   the 1600 px image `/img/wines/1600/<slug>.webp`.
+3. Press Escape. Confirm that the dialog closes and focus is on the same bottle image.
+4. Open the dialog again. Close it with the close button, then with a click outside the dialog.
+   Confirm that the page does not scroll while the dialog is open.
+5. Open the dialog for a wine with no image. Confirm the bottle placeholder.
+6. With VoiceOver on iPhone and TalkBack on Android, confirm that the card image is read as the button
+   «Показать бутылку крупнее: <wine name>» and that the dialog is read with the wine name.
+7. Check 320, 390, and 1440 px in both themes. Confirm that the dialog fits in the viewport.
+
+## Footer application links
+
+1. Open `/`, `/android`, and `/iphone`. Confirm the footer links «Android» and «iPhone», in this order.
+2. Confirm that the link to the current page has `aria-current="page"`.
+3. At 320 px, confirm that each link is on its own row with no horizontal overflow.
+
 ## «Винный дневник»: history and saved wines
 
 1. Log in on `/account`. Confirm the tabs «Сохранённые» (open), «История», «Настройки» and that

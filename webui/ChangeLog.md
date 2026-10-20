@@ -1,5 +1,16 @@
 # Change log
 
+## 2026-10-20 — Bottle preview on `/dish`; Android link in the footer
+
+- Owner request: a click on the bottle image of a Dinner Lens card opens a popup with the large
+  bottle. New component `WinePreviewDialog.vue`: a native modal `<dialog>` with the producer, the wine
+  name as the heading, and the 1600 px static image. A wine with no image shows the placeholder.
+  Escape, the close button, and a click outside close the dialog. Focus goes back to the bottle image.
+  The card image is now a button «Показать бутылку крупнее: <wine name>». `npm run test:dinner` checks
+  the dialog in all seven layouts.
+- Owner request: the footer shows «Android» and then «iPhone» on every page. Before, it showed one
+  link: «iPhone», or «Android» on `/iphone`.
+
 ## 2026-10-20 — Diary: «Сохранённые» first, notes, full bottle thumbnails
 
 - Owner request «use right part for keeping notes»: the right half of a saved wine card is a private
