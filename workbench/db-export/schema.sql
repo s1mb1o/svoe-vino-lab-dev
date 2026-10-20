@@ -129,7 +129,8 @@ CREATE TABLE image_description (
     vlm_answer    TEXT CHECK (vlm_answer IS NULL OR json_valid(vlm_answer)),
     vlm_error     TEXT,
     vlm_attempts  INTEGER NOT NULL DEFAULT 0 CHECK (vlm_attempts >= 0), presentation_mode TEXT
-    CHECK (presentation_mode IN ('on_package', 'flat_surface', 'other', 'unknown')),
+    CHECK (presentation_mode IN ('on_package', 'flat_surface', 'other', 'unknown')), generate_label INTEGER
+    CHECK (generate_label IN (0, 1)),
     CHECK ((vlm_at IS NULL) = (vlm_answer IS NULL))
 ) STRICT;
 
@@ -267,5 +268,79 @@ CREATE TABLE image_tag (
     created_at TEXT NOT NULL CHECK (created_at GLOB
         '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
     PRIMARY KEY (sha256, tag)
+) STRICT;
+
+CREATE TABLE production_error (
+    source TEXT NOT NULL,
+    request_id TEXT NOT NULL,
+    image_sha256 TEXT NOT NULL CHECK (length(image_sha256) = 64),
+    extension TEXT NOT NULL,
+    candidates_json TEXT NOT NULL CHECK (json_valid(candidates_json)),
+    feedback_json TEXT NOT NULL CHECK (json_valid(feedback_json)),
+    imported_at TEXT NOT NULL,
+    state TEXT NOT NULL DEFAULT 'pending' CHECK (state IN ('pending','reviewed','rejected','published')),
+    identity TEXT,
+    purpose TEXT CHECK (purpose IN ('reference','benchmark')),
+    reviewer TEXT,
+    review_note TEXT,
+    destination TEXT,
+    PRIMARY KEY (source, request_id)
+) STRICT;
+
+CREATE TABLE production_error_review (
+    id INTEGER PRIMARY KEY,
+    source TEXT NOT NULL,
+    request_id TEXT NOT NULL,
+    at TEXT NOT NULL,
+    review_json TEXT NOT NULL CHECK (json_valid(review_json)),
+    FOREIGN KEY(source, request_id) REFERENCES production_error(source, request_id)
+) STRICT;
+
+CREATE TABLE wine_vintage (
+    wine_slug_a TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    wine_slug_b TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    created_at  TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    PRIMARY KEY (wine_slug_a, wine_slug_b),
+    CHECK (wine_slug_a < wine_slug_b)
+) STRICT;
+
+CREATE TABLE image_attribute_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    active_version TEXT NOT NULL DEFAULT 'attributes-v1',
+    heartbeat_at TEXT,
+    paused INTEGER NOT NULL DEFAULT 0 CHECK (paused IN (0,1))
+) STRICT;
+
+CREATE TABLE image_attribute_baseline (
+    sha256 TEXT NOT NULL REFERENCES image(sha256),
+    input_sha256 TEXT NOT NULL,
+    PRIMARY KEY(sha256,input_sha256)
+) STRICT;
+
+CREATE TABLE image_attribute_facts (
+    id INTEGER PRIMARY KEY,
+    sha256 TEXT NOT NULL REFERENCES image(sha256),
+    input_sha256 TEXT NOT NULL,
+    extractor_version TEXT NOT NULL,
+    facts TEXT NOT NULL CHECK (json_valid(facts) AND json_type(facts) = 'object'),
+    source TEXT NOT NULL CHECK (source IN ('description', 'vlm')),
+    model TEXT,
+    created_at TEXT NOT NULL
+) STRICT;
+
+CREATE TABLE image_attribute_job (
+    sha256 TEXT NOT NULL REFERENCES image(sha256),
+    input_sha256 TEXT NOT NULL,
+    extractor_version TEXT NOT NULL,
+    mode TEXT NOT NULL CHECK (mode IN ('cached','image')),
+    state TEXT NOT NULL CHECK (state IN ('pending','running','ready','failed')),
+    generation INTEGER NOT NULL DEFAULT 1,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    facts_id INTEGER REFERENCES image_attribute_facts(id),
+    error TEXT,
+    requested_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY(sha256,input_sha256,extractor_version)
 ) STRICT;
 

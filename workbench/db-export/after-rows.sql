@@ -66,4 +66,12 @@ SELECT w.wine_slug, COALESCE(w.name_patched, w.name) AS name, w.producer, w.cate
 FROM wine_catalog w
 WHERE w.state = 'Active';
 
-PRAGMA user_version = 32;
+CREATE INDEX production_error_image ON production_error(image_sha256);
+
+CREATE INDEX wine_vintage_b ON wine_vintage (wine_slug_b);
+
+CREATE INDEX image_attribute_observation ON image_attribute_facts(sha256,input_sha256,extractor_version,id);
+
+CREATE INDEX image_attribute_job_pending ON image_attribute_job(extractor_version,state,requested_at);
+
+PRAGMA user_version = 36;
