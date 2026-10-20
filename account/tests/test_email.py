@@ -29,6 +29,11 @@ def test_test_code_opens_the_email_login_of_any_address(env, caplog):
             assert harness.last_code() != "111111"
             result = verify(harness, challenge, "111111").json()
         assert result["status"] == "signup_required"
+        assert result["email"] == "anna@example.ru"
+        # Registration of a new address completes with the test code alone.
+        created = harness.signup(result["signup_ticket"], "anna_test").json()
+        assert created["status"] == "session"
+        assert created["user"]["username"] == "anna_test"
         assert "Email login with ACCOUNT_TEST_CODE" in caplog.text
         assert "anna@example.ru" not in caplog.text.lower()
         challenge = start(harness, email="boris@example.ru").json()["challenge_id"]
