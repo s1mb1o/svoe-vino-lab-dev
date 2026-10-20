@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-10-20 — Center the email code input
+
+- Center the six code boxes within the account form with automatic inline margins.
+
 ## 2026-10-20 — Android 0.3.0 release preparation
 
 - Updated the Android release contract to the signed dual-pipeline 0.3.0 APK.

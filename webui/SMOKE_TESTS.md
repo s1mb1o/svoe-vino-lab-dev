@@ -50,8 +50,8 @@
 
 ## Email code boxes
 
-1. Open `/account` and request an email code. Confirm six separate rounded boxes, the
-   existing theme colors, and the label «Код из 6 цифр».
+1. Open `/account` and request an email code. Confirm six separate rounded boxes centered
+   within the form, the existing theme colors, and the label «Код из 6 цифр».
 2. Click the first box and type three digits. Confirm one digit per box and the accent
    focus border and caret on the fourth box. Confirm «Войти» is disabled.
 3. Enter all six digits. Confirm «Войти» is enabled. Click a filled box and replace its

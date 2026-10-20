@@ -88,7 +88,7 @@ function paste(event: ClipboardEvent) {
 </template>
 
 <style scoped>
-.email-code { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(6px, 2vw, 12px); width: 100%; max-width: 384px; }
+.email-code { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(6px, 2vw, 12px); width: 100%; max-width: 384px; margin-inline: auto; }
 .email-code-input { position: absolute; inset: 0; width: 100%; opacity: 0; }
 .email-code-digit { position: relative; display: grid; place-items: center; min-width: 0; height: 64px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font-size: 28px; font-variant-numeric: tabular-nums; line-height: 1; cursor: text; }
 .email-code-digit.is-active { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }

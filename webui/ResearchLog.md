@@ -1,5 +1,9 @@
 # Research log
 
+## 2026-10-20 — Email code input alignment
+
+The six-box grid keeps its existing 384 px maximum width and uses automatic inline margins to center within the account form. Narrow layouts retain the full available width. Vue style compilation passed; browser verification remains manual.
+
 ## 2026-10-20 — Android dual-pipeline release
 
 The two complete encoder/index pairs use one shared catalogue image archive.
