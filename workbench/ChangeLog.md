@@ -16,7 +16,11 @@
   and `POST /api/production-errors/{import,review,publish}`, with the tag
   `production-errors` and the request schemas. The server served them since the port of
   2026-10-20, but the document and the inventory of `test_lab_openapi` did not list them.
-  The document now has 124 paths and 142 operations.
+  The document now has 124 paths and 142 operations. After the Codex review: the review
+  schema requires `identity` and `purpose` unless `reject` is true, as the route does; the
+  image answer lists GIF and BMP too; and `HEAD` of the three GET routes now answers as
+  `GET`, as the document promises for each GET route (before, HEAD answered HTTP 405 after
+  it opened a write connection). Tests: `test_production_error_routes` (1 new).
 
 - Fixed the rank histograms of `/runs` ("How far from R@1", "Where the slug of a negative
   photo landed"). The box had a fixed height of 74 px, but the highest column (count, bar

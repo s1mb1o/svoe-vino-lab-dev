@@ -1946,7 +1946,14 @@ paths:
         - { name: source, in: query, required: true, schema: { type: string } }
         - { name: request_id, in: query, required: true, schema: { type: string } }
       responses:
-        "200": { $ref: "#/components/responses/Image" }
+        "200":
+          description: The image bytes in the format of the import.
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+            image/gif: { schema: { type: string, format: binary } }
+            image/bmp: { schema: { type: string, format: binary } }
         default: { $ref: "#/components/responses/Error" }
 
   /api/production-errors/import:
@@ -2483,6 +2490,13 @@ components:
     ProductionErrorReview:
       type: object
       required: [source, request_id, reviewer, note]
+      # A review needs an explicit identity (null after a no-match review) and a purpose.
+      # A rejection (reject true) needs neither.
+      if:
+        required: [reject]
+        properties: { reject: { const: true } }
+      else:
+        required: [identity, purpose]
       properties:
         source: { type: string }
         request_id: { type: string }
