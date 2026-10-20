@@ -2,6 +2,13 @@
 
 ## 2026-10-20
 
+- Fixed the first click on a card of `Similar wines` in the dialog `Add wine`. After an edit
+  of a field, the press on a card took the focus from the field; its `change` event called
+  a new search, which emptied the list at once, so the click did not land and the card
+  opened only at the second click. A `change` now starts a search only when the value
+  differs from the value that the `input` events of the field already searched. Tests:
+  `test_wine_draft_ui` (new steps; they fail with the old code), `test_wine_draft`.
+
 - Fixed the check of the name field `New testset name` of `/runs/compare`. The browser
   compiles a `pattern` attribute with the flag `v`, which refuses `[a-z0-9_-]` (a hyphen
   at the end of a class), so the console showed "not a valid regular expression" and the
