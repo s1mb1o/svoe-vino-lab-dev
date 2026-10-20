@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-10-20 — Russian README
+
+- Translate all README descriptions, headings, and link labels into Russian.
+- Preserve commands, technical identifiers, link targets, metrics, and measurement limits.
+
 ## 2026-10-20 — SEO audit of chtozavino.ru
 
 - Add the SEO audit in `docs/seo-audit/`: technical, performance, content and deployment findings, a prioritised backlog, evidence files, and draft GitHub issues (`github-issues/`, not created yet).
