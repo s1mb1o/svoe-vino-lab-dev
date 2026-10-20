@@ -20,7 +20,8 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "1.0"
-        ndk { abiFilters += "arm64-v8a" }
+        // 64- and 32-bit ARM phones; a store build goes as an App Bundle, split by ABI there.
+        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
         externalNativeBuild {
             cmake {
                 arguments += listOf(

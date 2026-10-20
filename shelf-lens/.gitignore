@@ -18,5 +18,3 @@ android/app/build/
 android/app/.cxx/
 android/local.properties
 
-# The detector model, copied into the APK assets from out/detectors/bottle (36 MB).
-android/app/src/main/assets/*.onnx
