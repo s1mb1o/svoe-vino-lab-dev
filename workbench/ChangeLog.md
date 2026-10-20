@@ -1,5 +1,12 @@
 # ChangeLog
 
+## 2026-10-20 — Declare the complete lightweight server dependencies
+
+- Add `requirements-server.txt` with PyYAML, NumPy, Pillow, requests, and jsonschema.
+- Include this list from `requirements-local.txt`. Remove the obsolete four-package claim.
+- Add installation and server-import checks to `COMMANDS.md` and `SMOKE_TESTS.md`.
+- Install the lightweight list in a fresh temporary Python environment from cached packages. Pass the server import and all 16 focused production-error tests.
+
 ## 2026-10-20 — Testset Run minimum score
 
 - Added an editable Minimum score field to Testset Run, with a default of 0.7.

@@ -2,6 +2,17 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-10-20 — Lightweight lab server dependencies
+
+`lab_server` imports `describe_images` before it starts a listener.
+`describe_images` requires `jsonschema` at import time.
+The previous four-package instructions did not install this dependency.
+`requirements-server.txt` now declares the complete lightweight runtime list.
+`requirements-local.txt` includes the same list before its model dependencies.
+The server import check does not start inference or open the catalogue.
+The five runtime dependencies install in a fresh temporary Python 3.13 environment.
+The server import and all 16 focused production-error tests pass in that environment.
+
 ## 2026-10-03 — Android fixed-square reference rotation
 
 The existing Android `CatalogueIndex.search` already takes the maximum score for each

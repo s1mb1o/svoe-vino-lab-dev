@@ -1,3 +1,20 @@
+## Lab server dependencies
+
+Run these commands from the Workbench root in an activated Python virtual environment.
+Installation changes that environment. The lightweight server does not require model packages.
+
+```sh
+python -m pip install -r requirements-server.txt
+```
+
+This read-only check imports the server without starting a listener or opening the catalogue:
+
+```sh
+python -c "import sys; sys.path.insert(0, 'pipeline'); import lab_server"
+```
+
+`requirements-local.txt` includes these dependencies and adds local model packages.
+
 Стереть базу данных:
 ```
 cd svoe-vino-lab/workbench

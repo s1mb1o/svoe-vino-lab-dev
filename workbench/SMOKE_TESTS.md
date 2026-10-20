@@ -2,6 +2,13 @@
 
 Manual test cases. Run them after a change to the tool.
 
+## Lightweight server installation
+
+1. Create and activate a fresh Python virtual environment.
+2. Install `requirements-server.txt` as specified in `COMMANDS.md`.
+3. Run the server import check from `COMMANDS.md`. Confirm that it exits without an import error.
+4. Confirm that the check starts no listener and creates no catalogue database.
+
 ## Drawer removal
 
 1. Run `python3 -m unittest discover -s tests -p 'test_testsets.py'` and the corresponding
