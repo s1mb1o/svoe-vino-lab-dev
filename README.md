@@ -16,7 +16,10 @@
 
 Food-to-wine recommendations for #28 run as a separate backend: [Dinner Lens](dinner-lens/README.md)
 documents code-enforced filters, curated choices, embedding discovery and the authenticated API.
-The existing web UI and bots are not connected to it yet.
+The Web UI connects to Dinner Lens through `/dish` and the same-origin `/api/dinner/*` routes.
+Set `NUXT_DINNER_LENS_ENDPOINT` and `NUXT_DINNER_LENS_API_TOKEN` on the Web UI server.
+Read [the integration guide](webui/docs/dinner-lens.md) for configuration and limits.
+The Telegram bot and the MAX bot are not connected to Dinner Lens yet.
 The current Dinner Lens JSON covers 200 dishes and 120 fallback/intermediate classes;
 the original 75-dish dataset and photographic benchmark remain available separately.
 
