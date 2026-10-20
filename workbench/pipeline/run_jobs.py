@@ -7,7 +7,7 @@ docs/plans/34_pipeline-section.md.
                                              count of the queries of the set
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
-                                             "limit", "workers", "use_cache",
+                                             "limit", "workers", "min_score", "use_cache",
                                              "use_barcode", "device_ip", "endpoint",
                                              "repeat_failed"}, or the self-test of one
                                              embedding: {"selftest", "limit",
@@ -45,6 +45,7 @@ import urllib.parse
 import benchmark
 import embeddings
 import pipelines
+import score_threshold
 from job_status_cache import STATUS_CACHE
 from settings_cache import SETTINGS_CACHE
 
@@ -332,6 +333,7 @@ def start(settings, jobs_dir, body, runs_dir=None):
     try:
         limit = _whole(body.get("limit"), 1, 10 ** 7, "limit")
         workers = _whole(body.get("workers"), 1, MAX_WORKERS, "workers")
+        min_score = score_threshold.checked(body.get("min_score"))
     except ValueError as exc:
         return 400, {"error": str(exc)}
     # The checkbox `Use caches` of the dialog; a missing key is the default, on. Off gives
@@ -392,7 +394,7 @@ def start(settings, jobs_dir, body, runs_dir=None):
         return 404, {"error": str(exc)}
     directory = job_dir(jobs_dir, name)
     command = [python, RUNNER, "--config", settings.config_path, "--name", name,
-               "--set", set_name, "--jobs-dir", jobs_dir]
+               "--set", set_name, "--jobs-dir", jobs_dir, "--min-score", str(min_score)]
     if drawer_only:
         command.append("--drawer-only")
     if limit:
@@ -423,7 +425,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
         _PROCESSES[directory] = process
     return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid,
                  "device_ip": device_ip, "endpoint": endpoint,
-                 "repeat_failed": repeat_failed, "drawer_only": drawer_only}
+                 "repeat_failed": repeat_failed, "drawer_only": drawer_only,
+                 "min_score": min_score}
 
 
 def start_selftest(settings, jobs_dir, body, runs_dir=None):

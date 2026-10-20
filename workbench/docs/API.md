@@ -1,5 +1,19 @@
 # The agent API of the review tool
 
+## Testset Run minimum score
+
+`POST /api/run-jobs` accepts `min_score`, a finite JSON number from 0 to 1.
+The default is 0.7, also shown in the Run dialog. A Top-1 result below this
+score becomes an empty answer before benchmark scoring. Equality passes; 0
+turns off this floor. Backends without numeric scores keep their answers.
+
+The run records the value in `run.json` as `backend.min_score`. Rejected
+candidates remain in `trace.score_threshold.raw_candidates`. Repeat last failed
+reuses a run only when its floor is the same. Historical runs without the key
+used 0. Existing run files and self-test defaults stay unchanged.
+
+## Review tool API
+
 `scripts/review_server.py` answers an HTTP API under `/api/v1/`. An agent uses it to
 read the wines, to look at the pictures, and to propose a photo for a wine.
 

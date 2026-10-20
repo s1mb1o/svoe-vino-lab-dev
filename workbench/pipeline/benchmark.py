@@ -216,11 +216,13 @@ def same_query(row, rec):
     return all(rec.get(key) == row[key] for key in SAME_QUERY_KEYS)
 
 
-def last_run(runs_dir, configuration, set_name, use_barcode):
+def last_run(runs_dir, configuration, set_name, use_barcode, min_score=None):
     """Return the directory of the newest run of the pipeline `configuration` on the set
     `set_name` with the same `use_barcode` (None: the pipeline has no barcode step), or
     None. The directory MUST hold `run.json` and `results.jsonl`. The name of a run
-    directory starts with its UTC time, so the name order is the time order."""
+    directory starts with its UTC time, so the name order is the time order.
+    When min_score is given, only the same recorded floor is eligible. A historical
+    run without this setting used no floor and is eligible only for 0."""
     try:
         names = sorted(os.listdir(runs_dir), reverse=True)
     except FileNotFoundError:
@@ -236,7 +238,9 @@ def last_run(runs_dir, configuration, set_name, use_barcode):
             continue
         if (meta.get("configuration") == configuration
                 and (meta.get("options") or {}).get("set") == set_name
-                and meta.get("use_barcode") == use_barcode):
+                and meta.get("use_barcode") == use_barcode
+                and (min_score is None or
+                     (meta.get("backend") or {}).get("min_score", 0) == min_score)):
             return run_dir
     return None
 

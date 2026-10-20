@@ -1,5 +1,17 @@
 # ChangeLog
 
+## 2026-10-20 — Testset Run minimum score
+
+- Added an editable Minimum score field to Testset Run, with a default of 0.7.
+  The API and runner validate the value from 0 to 1; 0 disables the floor.
+- Apply the floor to scored Top-1 answers before benchmark scoring. Save the
+  threshold in run metadata and preserve rejected candidates in the trace.
+  Answers without numeric scores and self-test defaults stay unchanged.
+- Repeat last failed reuses only runs with the same floor. Historical runs
+  without the setting count as 0; existing benchmark files are unchanged.
+- Verification: 86 focused threshold, Run dialog, job runner, benchmark, and
+  lab OpenAPI checks passed. API tests used a temporary jsonschema dependency.
+
 ## 2026-10-20 — Current benchmark summary links
 
 - Add the 2026-10-20 retrieval leaders to `README.md`: 90.77% R@1 on `my`, 67.37% on the hard cohort, and 66.17% at p512 on the hard cohort.

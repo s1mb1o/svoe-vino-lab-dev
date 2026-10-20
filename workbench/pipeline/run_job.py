@@ -3,7 +3,7 @@ the lab server.
 
 Usage:
     python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
-        [--workers N] [--no-cache] [--no-barcode] [--device-ip ADDRESS]
+        [--workers N] [--min-score SCORE] [--no-cache] [--no-barcode] [--device-ip ADDRESS]
         [--endpoint URL] [--repeat-failed] [--drawer-only] [--config PATH] [--jobs-dir DIR]
         [--runs-dir DIR]
     python3 pipeline/run_job.py --selftest --name <embedding> [--limit N] [--workers N]
@@ -74,6 +74,7 @@ import pipelines
 import rebuild_on_run
 import remote_run
 import run_jobs
+import score_threshold
 
 
 def _line(event, fields):
@@ -148,6 +149,8 @@ def main(argv=None):
     parser.add_argument("--limit", type=int, default=None, help="the first N queries alone")
     parser.add_argument("--workers", type=int, default=None,
                         help="requests at a time; the default is the value of the entry")
+    parser.add_argument("--min-score", type=float, default=None,
+                        help="minimum Top-1 score for Testset Run (default: 0.7; 0 disables)")
     parser.add_argument("--no-cache", dest="use_cache", action="store_false",
                         help="read no answer of data/cache/models/: each model call goes to its "
                              "service, so the latency is real time; the fresh answers are "
@@ -168,6 +171,11 @@ def main(argv=None):
     parser.add_argument("--jobs-dir", default=run_jobs.JOBS_DIR, help="the directory of the jobs")
     parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
     args = parser.parse_args(argv)
+    try:
+        args.min_score = score_threshold.checked(args.min_score, default=0 if args.selftest else 0.7)
+    except ValueError as exc:
+        emit("failed", message=str(exc))
+        return 2
     for value, what in ((args.limit, "--limit"), (args.workers, "--workers")):
         if value is not None and value < 1:
             emit("failed", message="%s MUST be 1 or more" % what)
@@ -245,7 +253,8 @@ def main(argv=None):
         # Plan 96: the checkbox `Repeat last failed` of the dialog.
         repeat_of = None
         if args.repeat_failed:
-            repeat_of = benchmark.last_run(args.runs_dir, name, set_name, use_barcode)
+            repeat_of = benchmark.last_run(args.runs_dir, name, set_name, use_barcode,
+                                           min_score=args.min_score)
             if repeat_of is None:
                 emit("log", message="no earlier run of %s on %s: a full run"
                      % (name, set_name))
@@ -257,11 +266,13 @@ def main(argv=None):
         model_cache.READ = args.use_cache
         backend, state, seed = build(entry, settings.db_path, set_name,
                                      settings.config_path)
+        if not args.selftest:
+            backend = score_threshold.ScoreThreshold(backend, args.min_score)
         emit("start", pid=os.getpid(), configuration=name, set=set_name,
              todo=todo, limit=args.limit,
              workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
              use_cache=args.use_cache, use_barcode=use_barcode, device_ip=device_ip,
-             endpoint=endpoint,
+             endpoint=endpoint, min_score=args.min_score,
              drawer_only=args.drawer_only,
              repeat_of=os.path.basename(repeat_of) if repeat_of else None)
         counting = Counting(backend, todo)

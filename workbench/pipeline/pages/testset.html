@@ -1093,6 +1093,8 @@ tbody tr.cat-only { background: var(--panel-2); }
       <label>first N queries <input id="run-limit" type="number" min="1" step="1"
              placeholder="all"></label>
       <label>workers <input id="run-workers" type="number" min="1" max="32" step="1"></label>
+      <label title="Reject a scored result below this value. Equality passes. 0 disables the floor. Backends without scores keep their result.">Minimum score <input
+             id="run-min-score" type="number" min="0" max="1" step="0.01" value="0.7"></label>
       <label id="run-device-label" hidden>device IPv4 <input id="run-device-ip" type="text"
              inputmode="decimal" autocomplete="off" spellcheck="false"
              placeholder="192.168.86.123"></label>
@@ -4254,6 +4256,9 @@ function runRenderList(names) {
 }
 function runSyncFields() {
   const chosen = runChosen();
+  const minScore = Number($("#run-min-score").value || "0.7");
+  const validScore = Number.isFinite(minScore) && minScore >= 0 && minScore <= 1;
+  $("#run-min-score").setAttribute("aria-invalid", validScore ? "false" : "true");
   const needsDevice = chosen.some(c => c.device_ip);
   const validDevice = !needsDevice || runValidIpv4($("#run-device-ip").value);
   const endpoints = [...new Set(chosen.map(c => c.endpoint).filter(Boolean))];
@@ -4267,7 +4272,7 @@ function runSyncFields() {
   $("#run-endpoint").placeholder = endpoints.length === 1 ? endpoints[0] : "configured base URL";
   if (!canOverrideEndpoint) $("#run-endpoint").value = "";
   $("#run-endpoint").setAttribute("aria-invalid", validEndpoint ? "false" : "true");
-  $("#run-start").disabled = !chosen.length || !validDevice || !validEndpoint
+  $("#run-start").disabled = !chosen.length || !validDevice || !validEndpoint || !validScore
     || RUN_QUERY_TOTAL === 0;
   $("#run-start").textContent = chosen.length > 1 ? `Start ${chosen.length} runs` : "Start";
   const barcode = chosen.filter(c => c.barcode);
@@ -4292,6 +4297,7 @@ async function openRunDialog(scope = "set") {
   $("#run-start").disabled = true;
   $("#run-device-ip").value = runStoredDeviceIp();
   $("#run-endpoint").value = "";
+  $("#run-min-score").value = "0.7";
   const state = runStoredDialog();
   for (const k of ["whole", "crop", "seg"]) $("#run-f-" + k).checked = !!state[k];
   $("#run-f-text").value = String(state.text || "");
@@ -4327,6 +4333,11 @@ async function startRun() {
   const limit = $("#run-limit").value.trim(), workers = $("#run-workers").value.trim();
   const address = $("#run-device-ip").value.trim();
   const endpoint = $("#run-endpoint").value.trim();
+  const minScore = Number($("#run-min-score").value || "0.7");
+  if (!Number.isFinite(minScore) || minScore < 0 || minScore > 1) {
+    $("#run-error").textContent = "Minimum score MUST be a number from 0 to 1";
+    return;
+  }
   if (chosen.some(c => c.device_ip) && !runValidIpv4(address)) {
     $("#run-error").textContent = "device IPv4 MUST be a valid IPv4 address";
     return;
@@ -4341,7 +4352,7 @@ async function startRun() {
   for (const c of chosen) {
     const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
                    workers: workers ? Number(workers) : null,
-                   use_cache: $("#run-cache").checked };
+                   use_cache: $("#run-cache").checked, min_score: minScore };
     if (RUN_SCOPE === "drawer") body.drawer_only = true;
     if (c.device_ip) body.device_ip = address;
     if (c.endpoint && endpoint) body.endpoint = endpoint;
@@ -4788,6 +4799,7 @@ $("#run-list").addEventListener("change", runSyncFields);
 $("#run-filter").addEventListener("input", runApplyFilter);
 $("#run-parallel").addEventListener("change", () => runRenderList(runChosen().map(c => c.name)));
 $("#run-device-ip").addEventListener("input", runSyncFields);
+$("#run-min-score").addEventListener("input", runSyncFields);
 $("#run-endpoint").addEventListener("input", runSyncFields);
 $("#run-dlg").addEventListener("click", ev => { if (ev.target === $("#run-dlg")) closeRunDialog(); });
 // While the dialog is open, the keys of the page do not act. Esc closes the dialog.
