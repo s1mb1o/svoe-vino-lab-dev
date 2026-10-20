@@ -160,6 +160,12 @@ GET /api/recognize
 POST /api/recognize
 GET /api/health
 POST /api/health/check
+GET /production-errors
+GET /api/production-errors
+GET /api/production-errors/image
+POST /api/production-errors/import
+POST /api/production-errors/review
+POST /api/production-errors/publish
 """)
 
 

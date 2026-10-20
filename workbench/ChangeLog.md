@@ -2,6 +2,13 @@
 
 ## 2026-10-20
 
+- Added the production error review routes to `docs/lab-openapi.yaml`: the page
+  `/production-errors`, `GET /api/production-errors`, `GET /api/production-errors/image`,
+  and `POST /api/production-errors/{import,review,publish}`, with the tag
+  `production-errors` and the request schemas. The server served them since the port of
+  2026-10-20, but the document and the inventory of `test_lab_openapi` did not list them.
+  The document now has 124 paths and 142 operations.
+
 - Fixed the rank histograms of `/runs` ("How far from R@1", "Where the slug of a negative
   photo landed"). The box had a fixed height of 74 px, but the highest column (count, bar
   of 60 px, label) is about 93 px, so the count of the highest bar overlapped the note

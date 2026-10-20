@@ -44,6 +44,8 @@ tags:
     description: Interactive recognition with an embedding pipeline.
   - name: health
     description: Lab status and endpoint checks.
+  - name: production-errors
+    description: The local queue of reviewed production recognition errors.
   - name: images
     description: Stored and prepared image files.
 
@@ -1918,6 +1920,90 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /production-errors:
+    get:
+      tags: [pages, production-errors]
+      operationId: showProductionErrorsPage
+      summary: Show the review queue of production recognition errors.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /api/production-errors:
+    get:
+      tags: [production-errors]
+      operationId: listProductionErrors
+      summary: List the newest 1,000 queued requests with their candidates and feedback.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/production-errors/image:
+    get:
+      tags: [production-errors, images]
+      operationId: getProductionErrorImage
+      summary: Read the quarantined image of one queued request.
+      parameters:
+        - { name: source, in: query, required: true, schema: { type: string } }
+        - { name: request_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/production-errors/import:
+    post:
+      tags: [production-errors]
+      operationId: importProductionError
+      summary: Import one request snapshot with its image.
+      description: >-
+        The image is at most 10 MiB and its SHA-256 MUST equal image_sha256. A repeated
+        import of the same request and image answers duplicate true; the same request
+        with another image is refused. Only the slug, rank, and score of a candidate and
+        the recognition fields of the feedback are stored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductionErrorImport" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/production-errors/review:
+    post:
+      tags: [production-errors]
+      operationId: reviewProductionError
+      summary: Review or reject one queued request.
+      description: >-
+        A review assigns the purpose reference or benchmark and an identity: an Active
+        catalogue slug, or null after an explicit no-match review (benchmark alone). A
+        published request cannot change.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductionErrorReview" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/production-errors/publish:
+    post:
+      tags: [production-errors]
+      operationId: publishProductionError
+      summary: Publish one reviewed request to a test set or as a reference image.
+      description: >-
+        A benchmark request becomes a positive photo of the test set (default
+        production-reviewed). A reference request becomes an additional image of its wine
+        with the image type; index_update_required is then true.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductionErrorPublish" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
 components:
   parameters:
     Slug:
@@ -2368,3 +2454,51 @@ components:
       properties:
         kind: { type: string, enum: [vlm, embedding, sam3, remote] }
         name: { type: string }
+    ProductionErrorImport:
+      type: object
+      required: [source, request_id, image_sha256, image_base64, candidates, feedback]
+      properties:
+        source: { type: string, pattern: "^[A-Za-z0-9_.:-]{1,160}$" }
+        request_id: { type: string, pattern: "^[A-Za-z0-9_.:-]{1,160}$" }
+        image_sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        image_base64: { type: string, contentEncoding: base64 }
+        candidates:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            required: [slug]
+            properties:
+              slug: { type: string }
+              rank: { type: integer }
+              score: { type: number }
+        feedback:
+          type: object
+          properties:
+            match: {}
+            selected_slug: { type: [string, "null"] }
+            selected_rank: { type: [integer, "null"] }
+            at: { type: string }
+            quality_issues: {}
+    ProductionErrorReview:
+      type: object
+      required: [source, request_id, reviewer, note]
+      properties:
+        source: { type: string }
+        request_id: { type: string }
+        identity: { type: [string, "null"] }
+        purpose: { type: string, enum: [reference, benchmark] }
+        reviewer: { type: string, maxLength: 160 }
+        note: { type: string, maxLength: 4000 }
+        reject: { type: boolean }
+    ProductionErrorPublish:
+      type: object
+      required: [source, request_id]
+      properties:
+        source: { type: string }
+        request_id: { type: string }
+        set: { type: string, default: production-reviewed }
+        image_type:
+          type: string
+          enum: [full_front, label_front, full_back, label_back]
+          default: full_front
