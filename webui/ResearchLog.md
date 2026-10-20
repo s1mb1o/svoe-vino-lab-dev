@@ -1,5 +1,18 @@
 # Research log
 
+## 2026-10-20 — Shelf Lens APK publication input
+
+The owner supplied `/Users/ashmelev/Downloads/shelf-lens-1.0.apk`.
+Android build tools 36.0.0 verified the APK signature.
+Package: `com.alolalab.shelflens`. Version: `1.0` (code 2). Minimum SDK: 29. Target SDK: 36.
+The application label is «Полка вина». The APK supports arm64-v8a and armeabi-v7a.
+The APK uses an Android Debug certificate. The manifest does not set the debuggable flag.
+The page identifies it as a test version.
+The file contains 96,856,959 bytes.
+SHA-256: `ea5ccbbebedd783514e74a2f2803e2da10597268bb1d618e5220119101afabac`.
+Certificate SHA-256: `51e1b759a4a8a5757acf78a5802f2bf3c2115b2b2ad0f4cc3c7013b41f778131`.
+Physical-device installation is outside this publication check.
+
 ## 2026-10-20 — Email code input alignment
 
 The six-box grid keeps its existing 384 px maximum width and uses automatic inline margins to center within the account form. Narrow layouts retain the full available width. Vue style compilation passed; browser verification remains manual.

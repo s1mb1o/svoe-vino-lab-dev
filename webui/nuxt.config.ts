@@ -18,6 +18,7 @@ export default defineNuxtConfig({
   vite: { worker: { format: 'es' } },
   runtimeConfig: {
     androidApkPath: defaultAndroidApkPath,
+    shelfLensApkPath: '',
     predictionMode: 'mock',
     predictionEndpoint: '',
     dinnerLensEndpoint: '',

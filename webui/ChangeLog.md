@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-20 — Shelf Lens Android download
+
+- Add APK download actions to `/shelf-lens`. Keep the video demonstration.
+- Show version 1.0, Android 10+, the 96.9 MB download size, and test-build status. Add installation guidance.
+- Stream the supplied APK through a separate fixed download route. Support GET and HEAD. Reject missing or wrong-size files.
+- Read the physical file path from `NUXT_SHELF_LENS_APK_PATH`. Keep APK bytes outside Git.
+
 ## 2026-10-20 — Explain mobile recognition speed
 
 - Show an internet-speed notice beside photo upload controls before selection and during recognition.

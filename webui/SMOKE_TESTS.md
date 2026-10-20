@@ -11,6 +11,12 @@
 
 ## Shelf Lens landing
 
+- Confirm that both Android download actions target `/downloads/shelf-lens-1.0.apk`.
+- Confirm version 1.0, test-build status, Android 10+, and the APK size in both themes.
+- Verify GET and HEAD headers, complete download SHA-256, and attachment filename.
+- Confirm that missing or wrong-size configured files return 404. Unknown APK names MUST return 404.
+- Confirm that the existing Android scanner APK route remains separate.
+
 1. Open `/shelf-lens` without an age confirmation. Confirm the shared age gate.
 2. Open the page from `/ideas`, `/hackaton`, the footer, and `/sitemap`.
 3. Check both themes at 320, 390, 768, and 1280 CSS pixels. Confirm readable text and no horizontal page overflow.
