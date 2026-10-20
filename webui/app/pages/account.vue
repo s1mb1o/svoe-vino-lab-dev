@@ -530,7 +530,7 @@ onBeforeUnmount(() => {
         <p v-if="notice" class="account-notice">{{ notice }}</p>
         <form class="account-form" @submit.prevent="verifyCode">
           <label for="account-code">Код из 6 цифр</label>
-          <input id="account-code" v-model="code" class="ym-disable-keys account-code" type="text" name="one-time-code" autocomplete="one-time-code" inputmode="numeric" pattern="\d{6}" maxlength="6" required :disabled="busy">
+          <EmailCodeInput id="account-code" v-model="code" :disabled="busy" />
           <button class="button primary" type="submit" :disabled="busy || code.length !== 6">Войти</button>
         </form>
         <div class="account-links">

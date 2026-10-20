@@ -32,7 +32,7 @@ import urllib.parse
 from contextlib import closing
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 import embeddings
 import lab_pages
@@ -149,7 +149,10 @@ def store_upload(data, upload_dir=None):
             image_format = image.format
             image.load()
     except (OSError, ValueError, Image.DecompressionBombError) as exc:
-        raise RecognizeError(400, "the body is not an image that Pillow can read: %s" % exc)
+        # The text of UnidentifiedImageError names the buffer (`<_io.BytesIO object at …>`).
+        reason = ("the file is not a known image format"
+                  if isinstance(exc, UnidentifiedImageError) else exc)
+        raise RecognizeError(400, "the body is not an image that Pillow can read: %s" % reason)
     extension = EXTENSIONS.get(image_format, str(image_format or "bin").lower())
     digest = hashlib.sha256(data).hexdigest()
     directory = upload_dir or UPLOAD_DIR

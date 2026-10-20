@@ -29,8 +29,8 @@ const settle=async()=>{for(let i=0;i<20;i++)await Promise.resolve()};
 
 @unittest.skipUnless(shutil.which("node"), "Node.js required")
 class ComparisonUiTest(unittest.TestCase):
-    def run_js(self, check, *, dom=False):
-        source = SETUP + (DOM if dom else "") + (SCRIPT if dom else MODEL)
+    def run_js(self, check, *, dom=False, dom_text=DOM):
+        source = SETUP + (dom_text if dom else "") + (SCRIPT if dom else MODEL)
         result = subprocess.run(
             [
                 "node",
@@ -123,6 +123,19 @@ class ComparisonUiTest(unittest.TestCase):
         self.run_js(
             "await settle();const before=requests.length;node('#groups').handlers.click({target:{closest:()=>({disabled:true,dataset:{group:'both_fail'}})}});await settle();assert.equal(requests.length,before);",
             dom=True,
+        )
+
+    def test_one_requested_run_takes_the_baseline_from_its_testset(self):
+        # The `Compare runs` link of /runs gives `b` alone. The newest run of another test
+        # set MUST NOT become the baseline.
+        dom = DOM.replace("search:''", "search:'?b=m1'").replace(
+            "runs:[run('b'),run('a')]",
+            "runs:[run('f2',{set:'my-failed-2',started:'2026-10-03'}),run('m1'),"
+            "run('m2',{started:'2026-09-30'})]")
+        self.run_js(
+            "await settle();assert.equal(node('#testset').value,'my');"
+            "assert.equal(state.b,'m1');assert.equal(state.a,'m2');",
+            dom=True, dom_text=dom,
         )
 
     def test_automatic_run_defaults_do_not_inherit_common_case_opt_in(self):

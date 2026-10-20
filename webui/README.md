@@ -36,6 +36,7 @@ Read [the page contract](docs/crocodile-landing.md).
 - Open the Android application landing page at `/android`.
 - Download the versioned Android APK from a configurable URL.
 - Open the iPhone application landing page at `/iphone`.
+- Open the Telegram and MAX bot landing pages at `/telegram-bot` and `/max-bot`.
 - Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
 - Open the project PowerPoint and PDF files from two adjacent links at `/presentation`.
 - Explore ideas beyond recognition at `/ideas`, in implemented, demo, and mock order.
@@ -81,6 +82,7 @@ npm run dev
 Open [the photo search page](http://127.0.0.1:8153/).
 Open [the Android application page](http://127.0.0.1:8153/android).
 Open [the iPhone application page](http://127.0.0.1:8153/iphone).
+Open [the Telegram bot page](http://127.0.0.1:8153/telegram-bot) and [the MAX bot page](http://127.0.0.1:8153/max-bot).
 Open [the hackathon landing page](http://127.0.0.1:8153/hackaton).
 This page is intended for organizers who receive its direct URL.
 Public navigation and the sitemap do not list it. `robots.txt` disallows its path.
@@ -207,6 +209,15 @@ The page does not offer a direct application download.
 The TestFlight release is not public.
 The release action links to the public GitHub issue for status updates.
 Read [the iPhone landing page specification](docs/iphone-landing.md).
+
+## Bot landing pages
+
+`/telegram-bot` presents `@ChtoZaVinoBot`. `/max-bot` presents the MAX bot `@se14697933_bot`.
+`/max` is the MAX mini app of «Винный дневник». Do not use it for a landing page.
+`app/components/BotLanding.vue` renders both pages with the `/iphone` layout.
+`app/data/botLandings.ts` holds the content.
+The hero chat is an HTML example, not a platform screenshot.
+Read [the bot landing page specification](docs/bot-landing.md).
 
 Run the browser check against a production server:
 

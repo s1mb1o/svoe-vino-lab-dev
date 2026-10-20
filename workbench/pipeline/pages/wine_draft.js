@@ -2,7 +2,7 @@
 const wineDraft = (() => {
   const state = {generation: 0, recognizing: false, checking: false, timer: null,
     recognition: null, search: null, matches: [], edits: new Map(), automatic: new Map(),
-    lastFile: null, returnFocus: null, selected: null};
+    typed: new Map(), lastFile: null, returnFocus: null, selected: null};
   const form = $("#wine-form");
   const labels = {exact: "Exact same wine", different_vintage: "Same wine · different year",
     unknown_vintage: "Same wine · year missing on one card", similar: "Similar wine"};
@@ -194,11 +194,18 @@ const wineDraft = (() => {
   }
   form.addEventListener("input", event => {
     const name = event.target.name;
-    if (name) { state.edits.set(name, (state.edits.get(name) || 0) + 1); state.automatic.delete(name); }
+    if (name) {
+      state.edits.set(name, (state.edits.get(name) || 0) + 1); state.automatic.delete(name);
+      state.typed.set(name, event.target.value);
+    }
     schedule();
   });
   form.addEventListener("change", event => {
     const name = event.target.name;
+    // A field fires `change` when it loses the focus, often at a press on a similar card.
+    // A value that the `input` events already gave has its search: a new search would
+    // empty the list under the pointer, and the click would not land.
+    if (name && state.typed.get(name) === event.target.value) return;
     if (name) { state.edits.set(name, (state.edits.get(name) || 0) + 1); state.automatic.delete(name); }
     schedule();
   });

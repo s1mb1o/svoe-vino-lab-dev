@@ -25,6 +25,13 @@ class QueueRoutesTest(unittest.TestCase):
     def test_page_and_list(self):
         self.assertEqual(self.request(method='GET')[0],200)
         self.assertEqual(R.respond(self.server,'GET','/production-errors',None,lab_server.open_database)[0],200)
+    def test_head_answers_as_get(self):
+        # The lab OpenAPI document promises GET status and headers for HEAD.
+        self.request('/import',self.record)
+        for path in ('','/image?source=test&request_id=request'):
+            self.assertEqual(self.request(path,method='HEAD')[:3:2],self.request(path,method='GET')[:3:2])
+        self.assertEqual(R.respond(self.server,'HEAD','/production-errors',None,lab_server.open_database)[0],200)
+        self.assertEqual(self.request('/import',{},method='HEAD')[0],405)
     def test_import_review_publish_and_image(self):
         self.assertEqual(self.request('/import',self.record)[0],200)
         self.assertEqual(self.request('/image?source=test&request_id=request',method='GET')[1],self.data)

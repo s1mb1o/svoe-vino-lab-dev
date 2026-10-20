@@ -507,13 +507,29 @@ class RunRoutesTest(unittest.TestCase):
              "image_sha256": "7" * 64, "predicted_slug": "wine-b", "latency_ms": 0},
         ])
 
+    def test_expected_export_of_more_accepted_slugs_uses_the_query_slug(self):
+        rows = [
+            {"query_id": "q-000001", "image_path": "wine-b/01.webp", "image_sha256": "1" * 64,
+             "slug": "wine-b", "truth": ["wine-a", "wine-b"], "label": "positive"},
+            {"query_id": "q-000002", "image_path": "wine-a/01.webp", "image_sha256": "1" * 64,
+             "slug": "wine-a", "truth": ["wine-a", "wine-b"], "label": "positive"},
+        ]
+        (self.runs / MOCK_RUN / "queries.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in rows))
+        status, _, body = self.request("/api/run-expected?id=" + MOCK_RUN)
+        self.assertEqual(status, 200)
+        self.assertEqual([json.loads(line)["predicted_slug"] for line in body.splitlines()],
+                         ["wine-b", "wine-a"])
+
     def test_expected_export_rejects_missing_or_invalid_truth(self):
         path = self.runs / MOCK_RUN / "queries.jsonl"
         self.assertEqual(self.request("/api/run-expected?id=" + MOCK_RUN)[0], 404)
         base = {"query_id": "q-1", "image_path": "a.webp", "image_sha256": "1" * 64}
-        for truth in (None, "wine-a", ["wine-a", "wine-b"], [""]):
-            with self.subTest(truth=truth):
-                path.write_text(json.dumps(dict(base, truth=truth)) + "\n")
+        for truth, slug in ((None, None), ("wine-a", None), (["wine-a", "wine-b"], None),
+                            (["wine-a", "wine-b"], "wine-c"), ([""], None),
+                            (["wine-a", ""], "wine-a")):
+            with self.subTest(truth=truth, slug=slug):
+                path.write_text(json.dumps(dict(base, truth=truth, slug=slug)) + "\n")
                 status, data = self.get_json("/api/run-expected?id=" + MOCK_RUN)
                 self.assertEqual(status, 409)
                 self.assertIn("cannot export queries.jsonl", data["error"])

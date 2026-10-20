@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-10-20 — Integrate comparison with current main
+
+- Integrate the F04 journey and saved-wine picker with main `5cd2cecf`, as the owner requested.
+- Preserve the current label guide, bot landing pages, email-code boxes, and workbench fixes.
+- Retain both sets of documentation entries when resolving the three merge conflicts.
+- Record the checks of the combined source in `docs/f04-main-integration-2026-10-20.md`.
+
 ## 2026-10-20 — Choose the second comparison wine from saved wines
 
 - Add «Сравнить с сохранённым» below a real single-bottle result. Add «Выбрать из сохранённых» to the second comparison card.
@@ -17,6 +24,39 @@
 - Add at most 50 public device copies in IndexedDB. Keep notes, photos, account responses, and tokens outside the store. Invalidate pending writes on account reset. Separate server success from local failure.
 - Preserve the public comparison pair through login. Require an explicit save after return.
 - Add source, anchor, failure, browser, and physical Android checks. Read `docs/f04-acceptance-2026-10-20.md` for evidence and remaining release gates. No deployment or main merge is included.
+
+## 2026-10-20 — Separate boxes for the email code
+
+- The email sign-in form shows six rounded digit boxes. Each box uses the existing paper,
+  border, and text colors. The active box uses the theme accent and a visible caret.
+- `EmailCodeInput.vue` retains one labeled native field for keyboard editing, paste, and
+  `one-time-code` autofill. A click selects a filled digit or moves to the next empty box.
+  Pasted codes can contain spaces or separators. Leading zeros are preserved.
+- The form still requires six digits and an explicit sign-in action. Busy state and code
+  reset on a new email request use the existing account state.
+- Validation: type checking passes; all 140 account tests pass. A local Chromium check
+  passes typing, replacement, arrow keys, Backspace, selection, non-digit filtering,
+  paste, autofill-style input, Enter, busy state, and reset. Light and dark layouts fit
+  at 320, 390, 768, and 1440 px. Real device autofill was not tested.
+
+## 2026-10-20 — Telegram and MAX bot landing pages
+
+- Owner request: landing pages for both bots with feature lists, in the style of `/android` and `/iphone`.
+- New routes `/telegram-bot` and `/max-bot`. `/max` stays the MAX mini app of «Винный дневник»
+  (owner choice of the paths).
+- `BotLanding.vue` uses the `/iphone` layout: hero, 8 features, 4 steps, «Винный дневник»,
+  commands, final action. `app/data/botLandings.ts` holds the content of both bots.
+- The hero shows an example chat in HTML, labeled «Пример переписки · не снимок экрана». It uses
+  the real bot texts and the existing «Абрау-Дюрсо Пино Нуар» image. Screen readers get one text
+  alternative.
+- The features are those of GitHub `main` (owner choice). The production MAX bot (`3e7c20d2`) does
+  not send diary history records yet. See `docs/bot-landing.md`.
+- Secondary text uses `--ink` 75 % on `--paper` instead of `--muted` (3.93:1 in the light theme).
+- `/sitemap` and `public/sitemap.xml` list both pages in «Приложения». The header and the footer
+  name the bot on its page. New icon `message` for MAX.
+- `tests/bot-landing.test.ts`. 572 tests pass, 26 skipped; type checks and the build pass.
+  Chromium: 385 checks at 320, 390, 768, 1024, and 1440 px in both themes.
+- Codex review (gpt-6.1-sol, xhigh reasoning): no actionable defects.
 
 ## 2026-10-20 — Bottle preview on `/dish`; Android link in the footer
 

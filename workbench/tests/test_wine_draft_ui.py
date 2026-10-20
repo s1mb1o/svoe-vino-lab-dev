@@ -97,6 +97,15 @@ const flush=()=>{const pending=[...timers.values()];timers.clear();for(const f o
  assert.equal(requests.filter(r=>r.url==='/api/wine-draft-recognize').length,requests.slice(0,count).filter(r=>r.url==='/api/wine-draft-recognize').length);
  const staleSave=controller.beforeSave();await tick();const oldSearch=requests.at(-1);field('name').value='Changed during check';form.fire('input',field('name'));
  reply(oldSearch,{matches:[],conflicts:[],total:0,acknowledgement:'stale'});await assert.rejects(staleSave,/draft changed/);
+ // The `change` after the `input` events of the same text keeps the similar cards, so the
+ // press on a card that took the focus from the field lands.
+ field('producer').value='Typed again';form.fire('input',field('producer'));flush();await tick();
+ reply(requests.at(-1),{matches:[match],total:1,conflicts:[]});await tick();
+ const searches=requests.length;form.fire('change',field('producer'));
+ assert(node('#wine-similar-list').innerHTML.includes('Exact same wine'));
+ assert.equal(timers.size,0);flush();await tick();assert.equal(requests.length,searches);
+ field('producer').value='Changed by paste';form.fire('change',field('producer'));
+ assert.equal(node('#wine-similar-list').innerHTML,'');assert.equal(timers.size,1);
  controller.reset();assert.equal(node('#wine-recognition-status').textContent,'');
  console.log('Draft controller scenarios passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

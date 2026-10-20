@@ -360,9 +360,14 @@ LABEL_DETAIL = {key: value for key, value in DETAIL.items() if key != "bottle"}
 DETAIL_CFG = dict(CFG, details=True)
 
 
+# The owner messages stay in the git-ignored `internal/` of the lab. A checkout of the
+# repository has no such file; the template test below checks the prompts against plan 29.
+OWNER_MESSAGES = ROOT.parent / "internal" / "owner-messages.md"
+
+
 def owner_prompts():
     """Return the two prompts of the owner message of 2026-09-25T19:14:31+0300."""
-    text = (ROOT.parent / "internal" / "owner-messages.md").read_text(encoding="utf-8")
+    text = OWNER_MESSAGES.read_text(encoding="utf-8")
     entry = text[text.index("## 2026-09-25T19:14:31+0300"):]
     entry = entry[:entry.index("\n## ", 5)]
     return re.findall(r"```\n(.*?)\n```", entry, re.S)
@@ -373,6 +378,7 @@ def detail_validator(kind, key="bottle"):
 
 
 class DetailPromptTest(unittest.TestCase):
+    @unittest.skipUnless(OWNER_MESSAGES.is_file(), "no internal/owner-messages.md in this checkout")
     def test_the_bottle_prompts_are_the_prompts_of_the_owner(self):
         package, label = owner_prompts()
         self.assertEqual(DI.detail_prompt("package", "bottle"), package)

@@ -1899,8 +1899,10 @@ function stats() {
   const nullRow = ROWS.find(isNullRow), drawerRow = ROWS.find(isDrawerRow);
   const noMatch = nullRow ? nullRow.photos.length : 0;
   const held = drawerRow ? drawerRow.photos.length : 0;
+  // A set with no verdict and no mark has no chips, and so no separator of its own.
+  const chips = testsetStatChips(all);
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
-    testsetStatChips(all) + ` &middot; ` +
+    (chips ? chips + ` &middot; ` : "") +
     `<button class="stat-chip" type="button" data-testset-stat="filter:done" aria-pressed="${$("#filter").value === "done"}">${doneWines}/${reviewRows().length} wines done</button>` +
     (noMatch ? ` &middot; <b>${noMatch}</b> <span class="muted">in No Match</span>` : "") +
     (held ? ` &middot; <b>${held}</b> <span class="muted">in the Drawer</span>` : "") +

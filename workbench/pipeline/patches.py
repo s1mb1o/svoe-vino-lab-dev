@@ -23,7 +23,7 @@ import hashlib
 import io
 import os
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 import derive
 import imagestore
@@ -83,7 +83,10 @@ def read_image(data):
                                  % (size[0], size[1], MAX_PIXELS))
             image.load()
     except (OSError, ValueError, SyntaxError) as exc:
-        raise PatchError(400, "Pillow cannot read the image: %s" % exc)
+        # The text of UnidentifiedImageError names the buffer (`<_io.BytesIO object at …>`).
+        reason = ("the file is not a known image format"
+                  if isinstance(exc, UnidentifiedImageError) else exc)
+        raise PatchError(400, "Pillow cannot read the image: %s" % reason)
     if image_format not in FORMATS:
         raise PatchError(400, "the image is %s; a patch MUST be JPEG, PNG, or WebP"
                          % image_format)

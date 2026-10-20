@@ -11,10 +11,15 @@ import unittest
 from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
+import sys
 
-import lab_server
-import labdb
-import run_compare as compare
+# The modules of the lab are in `pipeline/`. Another test module adds it too, but this
+# module also runs alone (`-p test_run_compare.py`).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "pipeline"))
+
+import lab_server  # noqa: E402
+import labdb  # noqa: E402
+import run_compare as compare  # noqa: E402
 
 
 def query(number, **extra):

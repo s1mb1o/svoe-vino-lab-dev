@@ -82,7 +82,7 @@ class PipelineListTest(RoutesTest):
     def test_the_page_keeps_the_navigation_of_the_server(self):
         import lab_server  # noqa: E402  (here alone: the NAV of the pages)
         body = self.get("/recognize")[1]
-        nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
+        nav = re.search(r'<nav class="nav"[^>]*>(.*?)</nav>', body, re.S).group(1)
         self.assertEqual(re.findall(r'href="([^"]*)"', nav), [href for href, _ in lab_server.NAV])
         self.assertIn('class="on"\n      href="/recognize"', nav)
 

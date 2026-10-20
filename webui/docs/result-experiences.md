@@ -5,10 +5,11 @@ Status: Product-line guide updated on 2026-10-16. See `plans/01_product-line-map
 ## Scope
 
 The portal MUST show a mandatory age confirmation before it shows the application.
-The portal MUST show four follow-up actions after it resolves wine metadata.
-The food, label, and taste actions retain their documented demonstration limits.
+The portal MUST show up to four follow-up actions after it resolves wine metadata. The label action is conditional on supplied metadata.
+The food and taste actions retain their documented demonstration limits.
+The label action uses the resolved wine metadata and the local reference dictionary.
 The product-line action MUST use the verified local producer graph when a graph exists.
-All four actions MUST run in the browser.
+All available actions MUST run in the browser.
 The actions MUST NOT call a retailer, geolocation, taste, recommendation, or product-line API.
 The actions MAY use the resolved wine metadata in the browser.
 
@@ -26,7 +27,7 @@ The negative action MUST show a blocked state.
 
 ## Result actions
 
-The result MUST show these actions:
+The result MUST show these actions, with the label action hidden when all supported fields are empty:
 
 1. `Подобрать блюда`.
 2. `Рассказать об этикетке`.
@@ -36,7 +37,7 @@ The result MUST show these actions:
 Each action MUST open one native dialog.
 The dialog MUST close with its close control, Escape, and a backdrop click.
 The dialog MUST return focus to the action that opened it.
-Each demonstration dialog MUST identify demonstration content.
+Each demonstration dialog MUST identify demonstration content. The label guide identifies its term references instead.
 The product-line dialog MUST identify its source snapshot.
 The product-line dialog MUST distinguish recognized wines from preview selections.
 
@@ -59,10 +60,18 @@ The dialog MUST NOT request location or show a store.
 
 ## Label explanation
 
-The dialog MUST show the grape varieties from the resolved wine metadata.
-The dialog MUST use Syrah and Viognier as a fixed explanation example.
-The copy MUST state that this example is not a claim about the recognized wine.
-The copy MUST explain why variety information changes the expected wine style.
+The dialog MUST show each grape variety from the resolved wine metadata with a linked reference note.
+Multiple distinct varieties MUST receive separate notes and a short explanation of blending.
+Aliases for one variety MUST NOT turn a single-variety wine into a blend.
+The guide MUST explain sweetness from the explicit category, and region from the explicit region field.
+It MAY explain a supplied alcohol value. Missing and placeholder fields MUST be hidden without a missing-data message.
+If all supported fields are empty, the label action MUST be hidden.
+The guide MUST preserve source values. It MUST NOT infer vintage, proportions, production method, geographical status or a variety's role from the wine name or slug.
+Grape-style notes MUST describe a variety generally, separately from the supplied wine values.
+An unrecognized supplied name MUST retain its value and a general term reference without invented variety-specific claims.
+Every reference link MUST use an explicitly listed Russian publisher or scientific institution.
+The guide MUST run locally without an LLM or a reference lookup request. Photograph OCR is outside this implementation.
+Dictionary scope and source review are recorded in `label-guide-sources.md`.
 
 ## Taste passport
 

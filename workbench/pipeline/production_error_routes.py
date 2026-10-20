@@ -18,16 +18,18 @@ def handles(route):
 
 def respond(server, method, path, read_body, open_database):
     route = urllib.parse.urlsplit(path).path
-    if route == '/production-errors' and method == 'GET':
+    # HEAD answers as GET, as on each documented GET route; the server sends no body.
+    read = method in ('GET', 'HEAD')
+    if route == '/production-errors' and read:
         return 200, lab_pages.page('production-errors.html'), 'text/html; charset=utf-8', 'no-store'
     try:
-        with closing(open_database(server.db_path, write=method != 'GET')) as conn, conn:
-            if method != 'GET':
+        with closing(open_database(server.db_path, write=not read)) as conn, conn:
+            if not read:
                 conn.execute('PRAGMA foreign_keys=ON')
                 conn.execute('BEGIN IMMEDIATE')
-            if route == '/api/production-errors' and method == 'GET':
+            if route == '/api/production-errors' and read:
                 body = {'records': errors.list_queue(conn)}
-            elif route == '/api/production-errors/image' and method == 'GET':
+            elif route == '/api/production-errors/image' and read:
                 q = urllib.parse.parse_qs(urllib.parse.urlsplit(path).query)
                 row = errors.get(conn, q.get('source', [''])[0], q.get('request_id', [''])[0])
                 return 200, errors.image_path(conn, row['image_sha256'], row['extension']).read_bytes(), 'image/' + ('jpeg' if row['extension'] == 'jpg' else row['extension']), 'no-store'

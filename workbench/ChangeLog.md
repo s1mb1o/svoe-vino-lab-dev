@@ -2,6 +2,115 @@
 
 ## 2026-10-20
 
+- Checked the fixes of 2026-10-20 in a browser (headless Chromium) on a test instance with a
+  copy of the lab database and outbound HTTP blocked: 20 of 20 checks pass, one for each
+  fix (for example the 9-photo grid is 636 px with no scroll bar, a photo row is 170 px, and
+  4 rows are 698 px), plus all pages in light and dark mode with no page error. The full
+  suite: 2,573 tests, 12 failures and errors that do not come from these fixes (9 also on a
+  clean copy of the lab, and the 3 re-rank parity failures of the port).
+
+- Fixed four tests that failed on a clean checkout or when run alone.
+  `test_describe_images.DetailPromptTest` read `../internal/owner-messages.md`, which the lab
+  keeps out of git; the test now skips when the file is absent (the template test checks the
+  prompts against plan 29). `test_recognize_routes` searched `<nav class="nav">`, but the
+  navigation now has `aria-label="Main navigation"`. `test_run_compare` and
+  `test_testset_from_compare` imported the lab modules before `pipeline/` was on the import
+  path, so they passed only after another test module. Tests: the four files pass alone
+  (29, 15, 12, and 75 tests, 1 skipped).
+
+- Added the production error review routes to `docs/lab-openapi.yaml`: the page
+  `/production-errors`, `GET /api/production-errors`, `GET /api/production-errors/image`,
+  and `POST /api/production-errors/{import,review,publish}`, with the tag
+  `production-errors` and the request schemas. The server served them since the port of
+  2026-10-20, but the document and the inventory of `test_lab_openapi` did not list them.
+  The document now has 124 paths and 142 operations. After the Codex review: the review
+  schema requires `identity` and `purpose` unless `reject` is true, as the route does; the
+  image answer lists GIF and BMP too; and `HEAD` of the three GET routes now answers as
+  `GET`, as the document promises for each GET route (before, HEAD answered HTTP 405 after
+  it opened a write connection). Tests: `test_production_error_routes` (1 new).
+
+- Fixed the rank histograms of `/runs` ("How far from R@1", "Where the slug of a negative
+  photo landed"). The box had a fixed height of 74 px, but the highest column (count, bar
+  of 60 px, label) is about 93 px, so the count of the highest bar overlapped the note
+  above the histogram. The box now grows with its highest column.
+
+- Fixed the statistics line of `/testset` for a set with no verdict and no mark. It showed
+  an empty separator: `labelled 0/2 photos ·  · 0/2 wines done`. The separator of the stat
+  chips now stands only when there is a chip.
+
+- Fixed two error texts with Python internals. An upload that Pillow cannot identify (for
+  example a PDF dropped on the Drawer) answered "Pillow cannot read the image: cannot
+  identify image file <_io.BytesIO object at 0x…>"; the test-set upload, the patch,
+  alternative-photo, and Add wine uploads (`patches.read_image`), and `/recognize` now say
+  "the file is not a known image format". `GET /api/testset-autotag` with no `set` answered
+  HTTP 404 "no test set None"; it now answers HTTP 400 "name the set: ?set=<set>", as the
+  run routes do. Tests: `test_patches`, `test_testset_routes` (new assertions).
+
+- Fixed the arrow keys in the dialogs `New testset`, `Re-run`, and `Merge wine` of `/runs`.
+  Their key handlers stopped each key but did not prevent its default action, so ↓, ↑,
+  Page Down, and the other scroll keys scrolled the page behind the dialog. A scroll key
+  now stays in the dialog, unless a field of the dialog uses it: a text field, a list, or
+  an editable area uses each scroll key, a radio button uses the arrow keys alone (the Codex
+  review found that Page Down on a radio button still scrolled the page), and a checkbox or
+  a button uses none. Space still presses a button. Tests: `test_runs_loading` (1 new).
+
+- Fixed the height of `Alternative photos` (SMOKE AH1, AH2). The move buttons `→M` and `→P`
+  of plan 95 made each photo about 172 px high, but the grid kept `max-height: 620px`: a
+  wine with 9 photos got a scroll bar of 21 px, and a wine with many photos showed about 3.5
+  rows instead of 4. The type and move buttons are now 18 px high, and the limit is 4 rows
+  of card, type buttons, and move buttons (698 px).
+
+- Fixed the first click on a card of `Similar wines` in the dialog `Add wine`. After an edit
+  of a field, the press on a card took the focus from the field; its `change` event called
+  a new search, which emptied the list at once, so the click did not land and the card
+  opened only at the second click. A `change` now starts a search only when the value
+  differs from the value that the `input` events of the field already searched. Tests:
+  `test_wine_draft_ui` (new steps; they fail with the old code), `test_wine_draft`.
+
+- Fixed the check of the name field `New testset name` of `/runs/compare`. The browser
+  compiles a `pattern` attribute with the flag `v`, which refuses `[a-z0-9_-]` (a hyphen
+  at the end of a class), so the console showed "not a valid regular expression" and the
+  browser skipped the check. The pattern is now `[a-z0-9_\-]+`; the server check was and is
+  the same. New test: each `pattern` attribute of each page compiles with the flag `v`.
+
+- Fixed the default baseline of `/runs/compare`. The link `Compare runs →` of `/runs` gives
+  the open run as `b` alone; with the `Testset` filter `All`, the page took the newest run of
+  any test set as baseline A, so the comparison often opened with "Dataset snapshots
+  differ" and 0 differences. One requested run now sets the test set, so A is the newest
+  other run of the same test set. Tests: `test_run_compare_ui` 26 (1 new; it fails with the
+  old code).
+
+- Fixed the dialog `Failed details` of the Dataset page. Opened from the VLM watcher dialog
+  (`View N failed details`), it lay behind that dialog: both modals have `z-index: 50`, and
+  the watcher dialog came later in the page. The focus went into the hidden dialog, its
+  links could not be clicked, and one Escape closed both dialogs. The markup of `Failed
+  details` now comes after the watcher dialog and before the image preview, and Escape
+  closes the top dialog alone. Tests: `test_lab_pages` (1 new), `test_lab_server` 71.
+
+- Fixed the patch slot of the Dataset page. While a patch upload or a `Clear` ran (with
+  SAM3, up to a minute), the slot still showed "Drop an image here", with no candidate, no
+  file name, and no `Processing…` or `Clearing…`. `applyPendingPatch` called `render()`,
+  and `render()` keeps a card with a pending patch or the focus as it is (since the card
+  deferral of 2026-10-06, commit `104cc292`). The function now replaces the card of the
+  wine with `renderCard` at the start and at the end. Tests: `test_dataset_dom_rendering` 5
+  (1 new; it fails with the old code).
+
+- Fixed the links into `/runs` (`Open run` and the bars of `/runs/charts`, `Inspect steps` of
+  `/runs/compare`). When the stored filter `Pipeline` or `Testset` of `/runs` hid the linked
+  run, the page opened another run, rewrote the hash, and opened no step popup. The page now
+  clears the filter that hides the linked run and stores the header. Found by the workbench
+  test of 2026-10-20.
+
+- Fixed `Export expected.jsonl` of `/runs` (`GET /api/run-expected`). It answered HTTP 409
+  "truth MUST be a list with at most one slug" for each run made after the manual accepted
+  answers of 2026-10-14: an image with more positive assignments in one test set has more
+  accepted slugs in `truth` (152 queries of `my`, 34 of `my-failed-2`). Such a row now
+  exports the `slug` of the query itself, which is one of the accepted slugs, so each
+  assignment keeps its own expected answer. A truth with more slugs that does not hold the
+  query `slug` is still refused. Found by the workbench test of 2026-10-20
+  (`reports/workbench-test-2026-10-20/` of the workspace). Tests: `test_run_routes` 25 (1
+  new); a real run of `my` exports 3,409 rows.
+
 - Removed from `AGENTS.md` the rules for `docs/owner-messages.md` and `ACTIVE_WORK.md`
   (owner message of 2026-10-20): the section "Messages of the project owner" (rules 1 to 8),
   the section "Work of the sessions" (rules 13 to 21), and the `ACTIVE_WORK.md` steps of

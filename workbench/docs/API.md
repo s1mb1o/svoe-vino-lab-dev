@@ -468,12 +468,16 @@ Errors: `400` for an invalid run identifier or a path outside the runs directory
 Export every saved row of `runs/<id>/queries.jsonl` in prediction format.
 The five fields and their order equal the `predictions.jsonl` export.
 `predicted_slug` is the one saved truth slug. It is `null` when the saved truth is
-empty, including no-match and negative queries. `latency_ms` is `0` for every row.
+empty, including no-match and negative queries. When the saved truth holds more than one
+accepted slug (an image with more positive assignments in one test set), `predicted_slug`
+is the `slug` of the query itself, which is one of the accepted slugs. `latency_ms` is `0`
+for every row.
 
 The route uses the same stable order and the same `official-test-2026-10-01` filename
 and query-ID conversion as `GET /api/run-predictions`. Page filters, sorting, and
 pagination do not affect the export. The route does not change a run file or call a
-model. It rejects a truth value that is not a list or that contains more than one slug.
+model. It rejects a truth value that is not a list, a truth slug that is not a non-empty
+string, and a truth with more than one slug that does not hold the `slug` of the query.
 
 The content type is `application/x-ndjson; charset=utf-8`.
 Errors: `400` for an invalid run identifier or a path outside the runs directory;

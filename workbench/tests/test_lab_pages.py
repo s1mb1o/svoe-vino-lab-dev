@@ -1,6 +1,11 @@
 """Tests of `pipeline/lab_pages.py`: the theme mark and the optional marks of the shared
 step view (plan 55)."""
+import html
+import json
 import os
+import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -64,6 +69,35 @@ class RealPagesTest(unittest.TestCase):
             text = lab_pages.page(name)
             for mark in (THEME,) + tuple(mark for mark, _ in lab_pages.PARTS):
                 self.assertNotIn(mark, text, name)
+
+
+class DatasetDialogOrderTest(unittest.TestCase):
+    """The modals of the Dataset page share one z-index, so the later one is on top."""
+
+    def test_failed_details_lie_above_the_vlm_dialog_and_below_the_image_preview(self):
+        text = lab_pages.page("dataset.html")
+        places = [text.index('id="%s"' % name)
+                  for name in ("vlm-modal", "detail-failures-modal", "image-preview-modal")]
+        self.assertEqual(places, sorted(places))
+        self.assertRegex(text, r'closeDetailFailures\(\);\s*else if \(event\.key === "Escape" '
+                               r'&& !\$\("#vlm-modal"\)\.hidden\) closeVlm\(\);')
+
+
+class PatternAttributeTest(unittest.TestCase):
+    """A browser compiles a `pattern` attribute with the flag `v` and skips the check of a
+    pattern that does not compile, for example `[a-z_-]`."""
+
+    @unittest.skipUnless(shutil.which("node"), "Node.js required")
+    def test_each_pattern_attribute_compiles_with_the_v_flag(self):
+        patterns = [html.unescape(value)
+                    for name in sorted(os.listdir(lab_pages.PAGES_DIR)) if name.endswith(".html")
+                    for value in re.findall(r'\bpattern="([^"]*)"', lab_pages.page(name))]
+        self.assertTrue(patterns)
+        script = ("for (const p of JSON.parse(process.argv[1])) "
+                  "new RegExp('^(?:' + p + ')$', 'v');")
+        result = subprocess.run(["node", "-e", script, json.dumps(patterns)],
+                                capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":
