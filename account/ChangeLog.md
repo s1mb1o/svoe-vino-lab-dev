@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 2026-10-20 — Temporary test code
+
+Owner request for testing: `ACCOUNT_TEST_CODE` (6 digits, empty = off). The email login accepts it for any
+address, in place of the emailed code; a link of an address does not. The challenge, its expiry, and the rate
+limits still apply. The start and each use log a warning without the address. Remove it after the tests. 154 tests.
+
 ## 2026-10-20 — Review fixes for the diary lists
 
 Review of the plan 07 commit `614cc635`. Fixed:

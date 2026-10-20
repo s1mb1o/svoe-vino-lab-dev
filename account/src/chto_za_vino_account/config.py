@@ -67,6 +67,9 @@ class Settings:
     yandex: YandexSettings | None
     max: MaxSettings | None
     telegram_bot_username: str
+    # Owner request of 2026-10-20, temporary: a fixed code that the email login accepts for any
+    # address (testing). Empty: off. Remove it after the tests.
+    test_code: str = field(default="", repr=False)
     consumers: dict[str, str] = field(default_factory=dict, repr=False)
 
     @property
@@ -145,6 +148,9 @@ class Settings:
                 max_age_seconds=max_age,
             )
 
+        test_code = get("ACCOUNT_TEST_CODE")
+        if test_code and not re.fullmatch(r"[0-9]{6}", test_code):
+            raise ValueError("ACCOUNT_TEST_CODE must be 6 digits")
         telegram_bot_username = get("TELEGRAM_BOT_USERNAME")
         if telegram_bot_username and not re.fullmatch(r"[A-Za-z0-9_]{5,64}", telegram_bot_username):
             raise ValueError("TELEGRAM_BOT_USERNAME is not a valid bot username")
@@ -168,6 +174,7 @@ class Settings:
             yandex=yandex,
             max=max_settings,
             telegram_bot_username=telegram_bot_username,
+            test_code=test_code,
         )
         settings.validate()
         return settings

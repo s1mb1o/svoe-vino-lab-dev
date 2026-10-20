@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from conftest import WEB_TOKEN
+import pytest
+from conftest import WEB_TOKEN, Harness
 
+from chto_za_vino_account.config import Settings
 from chto_za_vino_account.mailer import build_message
 
 
@@ -16,6 +18,33 @@ def verify(harness, challenge_id, code, **kwargs):
         json={"challenge_id": challenge_id, "code": code},
         **kwargs,
     )
+
+
+def test_test_code_opens_the_email_login_of_any_address(env, caplog):
+    env["ACCOUNT_TEST_CODE"] = "111111"
+    harness = Harness(env)
+    try:
+        with caplog.at_level("WARNING", logger="chto_za_vino_account"):
+            challenge = start(harness).json()["challenge_id"]
+            assert harness.last_code() != "111111"
+            result = verify(harness, challenge, "111111").json()
+        assert result["status"] == "signup_required"
+        assert "Email login with ACCOUNT_TEST_CODE" in caplog.text
+        assert "anna@example.ru" not in caplog.text.lower()
+        challenge = start(harness, email="boris@example.ru").json()["challenge_id"]
+        wrong = verify(harness, challenge, "222222").json()
+        assert wrong["error"] == "invalid_code"
+    finally:
+        harness.close()
+
+
+def test_test_code_is_off_by_default_and_checked(harness, env):
+    challenge = start(harness).json()["challenge_id"]
+    if harness.last_code() != "111111":
+        assert verify(harness, challenge, "111111").json()["error"] == "invalid_code"
+    env["ACCOUNT_TEST_CODE"] = "11111a"
+    with pytest.raises(ValueError, match="ACCOUNT_TEST_CODE"):
+        Settings.from_env(env)
 
 
 def test_code_mail_has_a_large_code_in_html(harness):

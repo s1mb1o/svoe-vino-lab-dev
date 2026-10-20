@@ -169,6 +169,8 @@ class AccountService:
         self.settings = settings
         self.db = db
         self.dispatcher = dispatcher
+        if settings.test_code:
+            LOG.warning("ACCOUNT_TEST_CODE is set: the email login accepts it for any address")
         self.yandex = yandex
         self.clock = clock
         self.email_resend = SlidingWindow(1, 60, clock)
@@ -415,6 +417,14 @@ class AccountService:
         LOG.info("Email challenge created (%s)", purpose)
         return challenge_id, EMAIL_CODE_TTL
 
+    def _test_code(self, purpose: str, code: str) -> bool:
+        """The temporary test code (ACCOUNT_TEST_CODE) opens the email login, never a link."""
+        test = self.settings.test_code
+        if not test or purpose != "login" or not equal(test, code):
+            return False
+        LOG.warning("Email login with ACCOUNT_TEST_CODE")
+        return True
+
     def email_verify(
         self, challenge_id: str, code: str, session: Session | None
     ) -> AuthResult | Linked:
@@ -432,7 +442,9 @@ class AccountService:
                 session is None or session.user_id != row["user_id"]
             ):
                 error = AccountError("invalid_challenge", 400, "Request a new code")
-            elif not equal(row["code_mac"], code_mac(self.settings.code_key, challenge_id, code)):
+            elif not equal(
+                row["code_mac"], code_mac(self.settings.code_key, challenge_id, code)
+            ) and not self._test_code(row["purpose"], code):
                 db.execute(
                     "UPDATE email_challenges SET attempts = attempts + 1 WHERE id_hash = ?",
                     (row["id_hash"],),
