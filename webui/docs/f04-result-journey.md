@@ -75,6 +75,12 @@ The generation and source-check commands need the checked-in catalog sources and
 ## Offline copy
 
 An explicit successful save can create a separate public-card copy on the device.
+The original photo-result pin also creates this copy without opening alternatives or comparison.
+After the server save succeeds, it requests the exact public card from the pinned snapshot.
+The lookup has a four-second timeout. A lookup failure preserves the server save and reports that the device copy is unavailable.
+The same pin offers «Сохранить копию на устройстве» for an existing saved wine or a failed copy.
+The copy does not depend on the optional result metadata response.
+An account reset during the lookup invalidates the pending copy.
 IndexedDB stores at most 50 copies.
 The oldest copy is removed first. The server diary is unchanged.
 The copy contains the exact slug, public card fields, catalog version, and snapshot time.

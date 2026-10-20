@@ -1,5 +1,33 @@
 # Research log
 
+## 2026-10-20 — Original result pin and public device copy
+
+Main `969b58eb` supplied an offline card only to alternative and comparison pins.
+The original recognition-result pin saved to the diary but did not create a device copy.
+The original pin now requests one exact public card after a successful server save.
+The dedicated route resolves the ID and version from the existing pinned F04 snapshot.
+The route does not use alternative ranking or depend on optional result metadata.
+The lookup has a four-second timeout. A lookup or storage failure preserves the diary save and exposes retry.
+An account generation and owner/epoch check rejects a response after account reset.
+Existing saved wines can use the explicit copy action on the original pin.
+No automatic copy of the complete saved list is added.
+
+Validation on 2026-10-20:
+
+- `npm test`: 30 files passed. 601 tests passed. 26 existing tests skipped. Tests that start loopback servers ran with local network permission.
+- `npm run typecheck` and `npm run build`: passed.
+- `npm run test:f04`: passed in Chromium and WebKit. The report finished at 14:05:47 Moscow with no page errors.
+- The new browser cases verify the exact public-card route, original save before alternatives, lookup failure and timeout, explicit retry, offline reload, existing saved copy, unavailable result metadata, denied storage, and an account switch during lookup.
+- The existing alternative, comparison, diary status/note, logout, account deletion, login continuation, and cache-isolation checks also pass.
+- `npm run test:bundle`: passed. `/`: 165.0 KB gzip. `/shelf`: 165.2 KB gzip. All 25 producer-map chunks remain lazy.
+- The existing PWA browser check passed against the same build. Warmed offline reload returns HTTP 200 from the service worker. API requests remain unavailable offline. The worker update waits.
+- `git diff --check` and browser-script syntax checks passed.
+
+Evidence root: `/private/tmp/f04-result-offline-20261020`.
+The accepted browser report is `browser-verified/browser-report.json` in that directory.
+The browser run uses the real account service with isolated SQLite and memory mail. The test-code override is disabled.
+Recognition uses a deterministic upstream fixture. No recognition-accuracy, production-deployment, or new physical-phone claim is made.
+
 ## 2026-10-20 — Saved wine as the second comparison card
 
 Owner request: choose the second wine from saved wines.

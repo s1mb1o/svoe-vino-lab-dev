@@ -9,7 +9,7 @@ import { useDiary } from '~/composables/useDiary'
 import type { Wine } from '#shared/catalog'
 import type { ComparisonPair } from '#shared/alternatives'
 
-const props = defineProps<{ slug: string; source: SavedSource; wineName?: string; offlineCard?: { wine: Wine; version: string }; returnPair?: ComparisonPair }>()
+const props = defineProps<{ slug: string; source: SavedSource; wineName?: string; offlineCard?: { wine: Wine; version: string }; allowOfflineCopy?: boolean; returnPair?: ComparisonPair }>()
 const diary = useDiary()
 const offline = useOfflineCards()
 const comparison = useWineComparison()
@@ -78,9 +78,10 @@ async function toggle() {
 }
 
 async function saveOffline() {
-  if (!props.offlineCard) return
+  if (!props.offlineCard && !props.allowOfflineCopy) return
   try {
-    await offline.save(props.offlineCard.wine, props.offlineCard.version)
+    if (props.offlineCard) await offline.save(props.offlineCard.wine, props.offlineCard.version)
+    else await offline.saveFromCatalog(props.slug)
     offlineNote.value = 'Доступно офлайн на этом устройстве.'
   } catch {
     offlineNote.value = 'Сохранено в дневнике. Копия для офлайн-открытия недоступна.'
@@ -165,7 +166,7 @@ async function remove() {
       </template>
       <p v-if="error" class="pin-error" role="alert">{{ error }}</p>
       <p v-if="offlineNote" role="status">{{ offlineNote }}</p>
-      <button v-if="status && offlineCard" class="text-button" :disabled="busy" @click="retryOffline">Сохранить копию на устройстве</button>
+      <button v-if="status && (offlineCard || allowOfflineCopy)" class="text-button" :disabled="busy" @click="retryOffline">Сохранить копию на устройстве</button>
     </div>
   </div>
 </template>

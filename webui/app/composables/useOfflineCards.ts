@@ -47,6 +47,19 @@ export function useOfflineCards() {
     if (!cards.value.some(card => card.slug === wine.slug)) throw new Error('Local copy was not retained')
     channel?.postMessage('write')
   }
+  async function saveFromCatalog(slug: string) {
+    const owner = session.value, gen = generation
+    if (!owner || !navigator.onLine) throw new Error('Offline save unavailable')
+    const response = await fetch(`/api/wines/${encodeURIComponent(slug)}/offline`, {
+      cache: 'no-store', signal: AbortSignal.timeout(4000),
+    })
+    if (!response.ok) throw new Error('Public card unavailable')
+    const card = await response.json() as Pick<OfflineCard, 'wine' | 'version'>
+    // A public lookup must not transfer a pending copy to a different account.
+    if (gen !== generation || session.value?.owner !== owner.owner || session.value?.epoch !== owner.epoch) throw new Error('Account changed')
+    if (card?.wine?.slug !== slug) throw new Error('Public card ID mismatch')
+    await save(card.wine, card.version)
+  }
   async function remove(slug: string) {
     const owner = session.value
     if (!owner) return
@@ -63,5 +76,5 @@ export function useOfflineCards() {
     catch { error.value = 'Не удалось очистить копии на устройстве.' }
   }
   const hasStoredCards = async () => !localStorage.getItem(OFFLINE_REVOKED) && (await storage().list()).cards.length > 0
-  return { cards, session, error, refresh, setOwner, save, remove, clear, hasStoredCards }
+  return { cards, session, error, refresh, setOwner, save, saveFromCatalog, remove, clear, hasStoredCards }
 }
