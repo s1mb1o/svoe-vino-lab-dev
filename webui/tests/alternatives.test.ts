@@ -24,10 +24,29 @@ describe('strict other-producer alternatives', () => {
     expect(rankAlternatives(base, [candidate()], { color: 'Белое' })).toEqual([])
     expect(rankAlternatives(base, [candidate()], { sweetness: 'sweet' })).toEqual([])
   })
+  it('uses an explicit filter when the corresponding source fact is unknown', () => {
+    const unknown = { ...base, color: '', sweetness: null }
+    expect(rankAlternatives(unknown, [candidate()])).toEqual([])
+    expect(rankAlternatives(unknown, [candidate()], { color: 'Красное', sweetness: 'dry' })).toHaveLength(1)
+  })
+  it.each([
+    ['kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125', 'dry'],
+    ['shato-pino-grand-reserve-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135', 'dry'],
+    ['shato-pino-pino-gridzhio-beloe-suhoe-12', 'dry'],
+    ['appassimento', 'sweet'],
+    ['abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12', 'brut'],
+  ])('returns other-producer alternatives for the reported wine %s', (slug, sweetness) => {
+    const wines = snapshot.wines as AlternativeWine[]
+    const wine = wines.find(wine => wine.slug === slug)!
+    expect(wine.sweetness).toBe(sweetness)
+    const results = rankAlternatives(wine, wines)
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.every(result => result.wine.sweetness === sweetness)).toBe(true)
+  })
   it('preserves exact accepted IDs and producer exclusion across the whole pinned catalog', () => {
     const wines = snapshot.wines as AlternativeWine[]
     const slugs = new Set(wines.map(wine => wine.slug))
-    expect(slugs.size).toBe(2093)
+    expect(slugs.size).toBe(2025)
     for (const wine of wines) for (const result of rankAlternatives(wine, wines)) {
       expect(slugs.has(result.wine.slug)).toBe(true)
       expect(result.wine.producerId).toBeTruthy()

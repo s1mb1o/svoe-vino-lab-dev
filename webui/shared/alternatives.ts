@@ -20,9 +20,9 @@ export const alternativeStyleLine = (wine: Wine) => [...new Set([wine.color, ALT
 // Bounded similar-style slice of the legacy rankAlternatives flow.
 // Eligibility is strict. A diversity score cannot override producer exclusion.
 export function rankAlternatives(base: AlternativeWine, wines: readonly AlternativeWine[], filters: AlternativeFilters = {}): AlternativeResult[] {
-  if (!base.producerId || !base.color || !base.sweetness) return []
   const color = filters.color || base.color
   const sugar = filters.sweetness || base.sweetness
+  if (!base.producerId || !color || !sugar) return []
   const grapes = new Set(base.grapes.map(normalizedFact))
   const seen = new Set([base.canonicalId])
   const eligible: Array<AlternativeResult & { score: number }> = []

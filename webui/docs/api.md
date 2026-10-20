@@ -125,6 +125,9 @@ Each result contains a public card, supported `reasons`, and explicit `missing` 
 Success uses `Cache-Control: no-store`.
 Producer exclusion and explicit filters run before ranking.
 An empty result keeps the constraints.
+Sweetness comes from the checked-in source portal category snapshot, with explicit source-name fallback.
+Missing source color or sweetness can be supplied with the corresponding filter; otherwise the response explains the missing fact.
+Builds check that the alternatives snapshot matches the selected catalog and category provenance.
 Read [the F04 contract](f04-result-journey.md) for comparison and offline storage.
 
 ## Public card for a device copy

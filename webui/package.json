@@ -26,9 +26,11 @@
     "test:producer-maps": "node scripts/check-producer-maps-browser.mjs",
     "test:bundle": "node scripts/check-product-line-bundle.mjs",
     "line-maps:index": "node scripts/generate-product-line-index.mjs",
-    "prebuild": "node scripts/prepare-dinner-decoder.mjs && vitest run tests/product-line-registry.test.ts tests/product-line-map.test.ts tests/product-line-index.test.ts",
+    "prebuild": "node scripts/generate-alternative-catalog.mjs --check && node scripts/prepare-dinner-decoder.mjs && vitest run tests/product-line-registry.test.ts tests/product-line-map.test.ts tests/product-line-index.test.ts",
     "alternatives:catalog": "node scripts/generate-alternative-catalog.mjs",
+    "alternatives:categories": "node scripts/fetch-catalog-categories.mjs",
     "alternatives:check": "node scripts/generate-alternative-catalog.mjs --check",
+    "test:alternatives": "node scripts/check-alternatives-api.mjs",
     "test:f04": "node scripts/check-f04-browser.mjs"
   },
   "dependencies": {
