@@ -1,5 +1,15 @@
 # Change log
 
+## 2026-10-20 — Android 0.3.0 release assessment verification
+
+- Extend `ASSESSMENT.md` with the recorded release host tests, website tests, signed-APK acceptance, replay parity, and sampled resource limits.
+- Record 46.56/84.58/89.67% Top-1/5/10 on 668 hard assignments and request median/P95 1372/1832 ms.
+- Keep the separate Eval.zip result at 86/100 accepted, with 14 mismatches and comparison status `FAIL`.
+- Record publication source `40a54074` and time `2026-10-20T19:22:28Z`. Keep the test-key and missing full-`my` custom-default limits explicit.
+- Pass the portable Android checker: 32 file hashes, 23 result series, 15,364 hard-cohort observations, and 100 Eval.zip observations. Pass all eight verifier tests.
+- Hash the archived signed APK. Match all 753111053 bytes and the full SHA-256 against the committed contract and saved publication receipt.
+- Preserve the existing research assessment and historical results. Run no new device inference, build, browser acceptance, or live download.
+
 ## 2026-10-20 — Android research preservation and assessment
 
 - Consolidate the complete Pixel research in `ANDROID-RESEARCH-AND-RESULTS-20261020.md`.

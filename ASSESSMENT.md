@@ -7,6 +7,7 @@
 | Checked at commit | `7cb1044c1338f32b714e63c47b9b341872e51f37`, plus the existing working-tree changes described below |
 | Account test follow-up | `121c7f081eccd6289e8824d992d7251711c797e4`; 159 tests passed on 2026-10-20 |
 | Android research follow-up | GitHub `main` source `a92a2304`; Android implementation `7ce50c2e`; recorded release 0.3.0 and portable research evidence. Other component rows retain their earlier review scope. |
+| Android release verification | Release and portable evidence at `906bd778`; Android source `7ce50c2e`; website publication source `40a54074`. Archive hash and saved publication receipt checked on 2026-10-20. |
 | Date of the last check | 2026-10-20 |
 | Scope | The local checkout at review time. The review includes the existing MCP and alternatives changes. It does not establish the state of remote `main` or a running service. |
 | Task | Task #10 «Сканер российских вин с описанием на платформе Свое Вино» ([docs/task-10-specification.pdf](docs/task-10-specification.pdf)) |
@@ -54,6 +55,10 @@ It updates F-44, F-79 to F-85, F-88, F-89, and F-91. F-125 indexes the complete 
 It runs the portable research checker and its eight focused tests.
 It does not repeat device inference, change a model, or repeat the other component suites.
 The Android build and device results below are recorded checks of the identified release.
+The release verification uses the committed evidence at `906bd778`.
+It repeats the portable checker and its eight tests.
+It also hashes the archived signed APK and compares the saved public download receipt.
+It does not install the APK, repeat device inference, or repeat the live download.
 
 | Check executed on 2026-10-20 | Result | Evidence or boundary |
 |---|---|---|
@@ -66,8 +71,9 @@ The Android build and device results below are recorded checks of the identified
 | Restore `workbench/db-export/` into a temporary SQLite file | Passed; schema 36; 29 tables; 90,661 rows | F-36. The restored catalogue has 2,366 wines. |
 | Compare the matcher bundle files with `manifest.json` | All 5 payload SHA-256 values matched | F-32. This checks stored files without model inference. |
 | `python3 research/retrieval-20261020/verify.py` | Passed | 58 file hashes; 5,432 recipes; 39 profiles; 53 exact recipes; 281 compact metric rows; 930 printed recalls. F-112 states the limits. |
-| `python3 research/android-20261020/verify.py` | Passed | 23 result series; 15,364 hard-cohort observations; 100 Eval.zip observations; count, latency, paired-change, and production Top-1 parity checks. F-125 states the limits. |
+| `python3 research/android-20261020/verify.py` | Passed; 32 package file hashes match | 23 result series; 15,364 hard-cohort observations; 100 Eval.zip observations; count, latency, paired-change, and production Top-1 parity checks. F-125 states the limits. |
 | `python3 -m unittest discover -s research/android-20261020 -p 'test_*.py' -v` | 8 tests passed | Rejects invalid latency, duplicate query IDs, inconsistent Top-k flags, hits on errors, and unpaired comparisons. No device or model is used. |
+| Hash the archived signed 0.3.0 APK and compare the saved publication receipt | Passed; 753111053 bytes and the full SHA-256 match | [Release contract and committed receipt](research/android-20261020/provenance/release-contract.json), F-85. The local archive and external receipt paths are in the release record. No new live download was made. |
 
 The account follow-up installed the locked runtime and development dependencies in a separate virtual environment.
 The environment uses Python 3.13.7, pytest 9.1.1, httpx2 2.14.0, and Ruff 0.17.1.
@@ -153,12 +159,33 @@ Some suites need files that are not in Git:
 | R@1 / R@5 | 74.15% / 92.94% | Internal set `my` | `siglip2-p512-as-is` (default of [matcher/config.yaml](matcher/config.yaml)) | [BENCHMARKS.md](BENCHMARKS.md) |
 | R@1 with the 3 s budget | 93.65% (59 of 63 positive photos), 0 errors, p50 1,353 ms, max 2,905 ms | Organizers' photos (lab set `official-real-photos`, 84 photos), labels by the team | `cascade-p512-rot5` with `fast_answer` and a local FP8 VLM on an RTX 4090 host (F-66) | [workbench/ResearchLog.md](workbench/ResearchLog.md) 2026-10-01 |
 | Top-1 / Top-5 / Top-10 on the phone | 69.09% / 87.10% / 90.03%, median 924 ms | Internal set `my`: 2,970 positive assignments of 3,409 queries | Android, SigLIP2 Base NaFlex p512, full photo, Pixel 8 GPU (F-89) | [android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md](android/docs/reports/2026-10-19_pixel8-base-p512-full-my.md) |
-| Top-1 / Top-5 / Top-10, selected mobile pipeline | 46.56% / 84.58% / 89.67%, 311/565/599 of 668; release replay median/P95 1372/1832 ms | Development-selected `my-failed-2`, 668 assignments and 627 images | Android 0.3.0 DIS-768 cropped custom + Base p512; re-ranking off (F-80, F-125) | [android/docs/releases/0.3.0.md](android/docs/releases/0.3.0.md), [research evidence](research/android-20261020/README.md) |
-| Accepted Top-1 on a separate Android regression set | 86/100: 81 exact and 5 alternatives; median/P95 1660/2039 ms | Original 100-image Eval.zip cohort | Android 0.3.0 default; debug evaluator endpoint | [Android research results](ANDROID-RESEARCH-AND-RESULTS-20261020.md). Fourteen mismatches remain. No request failed. |
+| Top-1 / Top-5 / Top-10, selected mobile pipeline | 46.56% / 84.58% / 89.67%, 311/565/599 of 668; release replay median/P95 1372/1832 ms; zero request errors | Development-selected `my-failed-2`, 668 assignments and 627 images | Android 0.3.0 DIS-768 cropped custom + Base p512; re-ranking off (F-80, F-125) | [android/docs/releases/0.3.0.md](android/docs/releases/0.3.0.md), [research evidence](research/android-20261020/README.md) |
+| Accepted Top-1 on a separate Android regression set | 86/100: 81 exact and 5 alternatives; median/P95 1660/2039 ms | Original 100-image Eval.zip cohort | Android 0.3.0 default; debug evaluator endpoint | [Android research results](ANDROID-RESEARCH-AND-RESULTS-20261020.md). Fourteen mismatches remain. Comparison status is `FAIL`: the checker requires 100 accepted results. No request failed. |
 
 The 95/100 value is an internal check of the team. It is not an official jury result ([README.md](README.md)).
 
 The phone row and the workbench rows of the set `my` use different query cohorts. Do not compare these percentages directly.
+
+### Android 0.3.0 release acceptance
+
+These are saved release checks from [the 0.3.0 record](android/docs/releases/0.3.0.md).
+The APK uses Android source `7ce50c2e`. The website publication uses `40a54074`.
+The portable [release contract](research/android-20261020/provenance/release-contract.json) retains the artifact identity and public receipt.
+
+| Recorded check | Result | Boundary |
+|---|---|---|
+| Host tests | 71 debug Android tests, 68 release Android tests, 10 pack-export tests, and 54 benchmark-tool tests passed. Release lint and both APK builds passed. | Recorded release validation. These suites were not repeated in this documentation check. |
+| Published website | 622 tests passed on macOS and Linux; 26 tests skipped. Type checking passed. Browser checks passed at 320, 390, and 1440 pixels in both system themes. | Separate from the earlier 616-test Web UI run above. Skipped tests are not passes. |
+| Production custom replay | 668/668 responses; zero errors; all 668 Top-1 predictions match the frozen experiment. | Pixel 8, Android 17/API 37, DIS GPU and SigLIP2 GPU. Re-ranking stayed off. |
+| Standard replay | 30/30 responses; zero errors; 30 identical Top-1 predictions; median/P95 603/1038 ms. | First 30 original assignments. This sample is not a complete quality benchmark. |
+| Custom resource sampling | Peak PSS 1,855,637 KiB; maximum thermal status 1; maximum battery temperature 41.1 C. | Sampled during the replay. Request timings include debug embedding serialization. They do not measure camera-to-result UI time. |
+| Exact signed APK acceptance | Streamed installation passed. Gallery input accepted `eval_photo_001.webp` without conversion. Recognition showed «Пино Нуар. Семейный резерв» and «Сходство: 88%». History stored the result. | A same-key update retained the standard Settings choice, history, and age consent. The final choice was restored to DIS-768 custom. The release was non-debuggable and exposed no HTTP control. |
+
+Publication completed at `2026-10-20T19:22:28Z` on [the Android page](https://chtozavino.ru/android).
+Staged and public complete downloads matched the signed APK identity in F-85.
+The release has a test-key signature.
+The separate Eval.zip comparison remains `FAIL` with 86 accepted results and 14 mismatches.
+No full-`my` result for the 0.3.0 custom default is recorded.
 
 ## Criterion 1: search result accuracy (50/100)
 
@@ -923,10 +950,10 @@ The phone row and the workbench rows of the set `my` use different query cohorts
 #### F-85 Android release 0.3.0 and historical releases
 
 - **Claim:** Release 0.3.0, version code 7, uses `com.alolalab.chtozavino`, Android 9 minimum, and arm64. The recorded `/android` publication offers `chtozavino-0.3.0-release-test-signed.apk`. Staged and public complete downloads match all 753111053 bytes and SHA-256 `89cb5863cc25c82dd424adb1d59ccb694f7ae0a7dbc1d7bd877c1001a05e5e7a`.
-- **Status:** Deployed on 2026-10-20. The exact signed release was installed and checked on Pixel 8 after the DIS-512 benchmark finished.
+- **Status:** Deployed at `2026-10-20T19:22:28Z` through website source `40a54074`. The exact signed release was installed and checked on Pixel 8 after the DIS-512 benchmark finished.
 - **Entry point:** [android/app/build.gradle.kts](android/app/build.gradle.kts), [webui/shared/android.ts](webui/shared/android.ts), [release record](android/docs/releases/0.3.0.md).
-- **Proof:** The release record identifies the APK, model pack, certificate, source commits, 71 debug tests, 68 release tests, 10 exporter tests, and signed-release UI acceptance. The custom replay preserves 668/668 Top-1 predictions. Eval.zip accepts 86/100 predictions and retains 14 mismatches.
-- **Verify:** Read the release record and run the portable checker in F-125. Historical GitHub release `android-v0.1.4` remains separate evidence.
+- **Proof:** The release record identifies the APK, model pack, certificate, source commits, and host and signed-release checks in the release acceptance table above. The [portable release contract](research/android-20261020/provenance/release-contract.json) retains the public download receipt. The custom replay preserves 668/668 Top-1 predictions. Eval.zip accepts 86/100 predictions and retains 14 mismatches. Its comparison status is `FAIL`.
+- **Verify:** Read the release record and run the portable checker in F-125. The assessment check also hashes the archived signed APK and compares the saved public receipt. Both match the byte count and SHA-256 above. This is a check of saved files, not a new public download. Historical GitHub release `android-v0.1.4` remains separate evidence.
 - **Limits:** This is a test-key signature, not a production-key signature. The public pack omits optional YOLO. No new 0.3.0 GitHub release tag is claimed. The old application ID remains a separate installation. Same-ID updates preserve history, but history does not automatically migrate from the old ID. No full-`my` result for the custom default is recorded.
 
 #### F-87 Multi-shot recognition
@@ -1224,6 +1251,10 @@ It does not reassess the other component feature rows.
 The Android-only follow-up uses `a92a2304` and identified saved measurements.
 Its release statements cite recorded 0.3.0 acceptance, not a new deployment in this documentation task.
 Its portable package verifies derived summaries without publishing reference answers or repeating inference.
+The release verification reads that package and the release record at `906bd778`.
+The archived signed APK hash and the saved publication receipt agree with the committed release contract.
+The host, device, and browser acceptance results remain recorded release evidence.
+Eval.zip remains `FAIL` with 14 mismatches. No full-`my` custom-default result is recorded.
 This file does not assess other branches or verify the state of remote `main`.
 Historical branch and release names inside linked reports identify the source of those checks.
 They do not establish that the same source is deployed now.
