@@ -52,7 +52,7 @@ import os
 import re
 import time
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 import comments
 import favorites
@@ -862,7 +862,10 @@ def read_upload(data):
                                         "pixels" % (size[0], size[1], UPLOAD_PIXELS))
             image.load()
     except (OSError, ValueError, SyntaxError) as exc:
-        raise TestsetError(400, "Pillow cannot read the image: %s" % exc)
+        # The text of UnidentifiedImageError names the buffer (`<_io.BytesIO object at …>`).
+        reason = ("the file is not a known image format"
+                  if isinstance(exc, UnidentifiedImageError) else exc)
+        raise TestsetError(400, "Pillow cannot read the image: %s" % reason)
     if image_format not in UPLOAD_FORMATS:
         raise TestsetError(400, "the image is %s; a photo MUST be JPEG, PNG, WebP, GIF, or "
                                 "BMP" % image_format)

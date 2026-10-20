@@ -332,7 +332,8 @@ class PatchRouteTest(unittest.TestCase):
         gif = io.BytesIO()
         Image.new("RGB", (4, 4)).save(gif, "GIF")
         cases = (("wine-b", b"", 400, "no image"),
-                 ("wine-b", b"not an image", 400, "Pillow cannot read"),
+                 ("wine-b", b"not an image", 400,
+                  "Pillow cannot read the image: the file is not a known image format"),
                  ("wine-b", picture()[:60], 400, "Pillow cannot read"),
                  ("wine-b", gif.getvalue(), 400, "JPEG, PNG, or WebP"),
                  ("wine-x", picture(), 404, "no wine with the slug wine-x"),
@@ -341,6 +342,7 @@ class PatchRouteTest(unittest.TestCase):
             status, out = self.upload(slug, data)
             self.assertEqual(status, code, (slug, text))
             self.assertIn(text, out["error"])
+            self.assertNotIn("BytesIO", out["error"])
         self.assertEqual(self.remove("wine-x")[0], 404)
         self.assertEqual(self.patch_rows(), {})
         self.assertFalse((self.root / "images" / "patched").exists())

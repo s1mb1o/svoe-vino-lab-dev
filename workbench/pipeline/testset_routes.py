@@ -219,6 +219,8 @@ def respond(server, method, path, read_body, open_database, card_images):
     if route == AUTOTAG:
         if method in ("GET", "HEAD"):
             set_name = (urllib.parse.parse_qs(parts.query).get("set") or [None])[0]
+            if not set_name:
+                return _error(400, "name the set: ?set=<set>")
             with closing(open_database(server.db_path)) as conn:
                 try:
                     testsets._check_set(conn, set_name)

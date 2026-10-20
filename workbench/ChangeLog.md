@@ -2,6 +2,14 @@
 
 ## 2026-10-20
 
+- Fixed two error texts with Python internals. An upload that Pillow cannot identify (for
+  example a PDF dropped on the Drawer) answered "Pillow cannot read the image: cannot
+  identify image file <_io.BytesIO object at 0x…>"; the test-set upload, the patch,
+  alternative-photo, and Add wine uploads (`patches.read_image`), and `/recognize` now say
+  "the file is not a known image format". `GET /api/testset-autotag` with no `set` answered
+  HTTP 404 "no test set None"; it now answers HTTP 400 "name the set: ?set=<set>", as the
+  run routes do. Tests: `test_patches`, `test_testset_routes` (new assertions).
+
 - Fixed the arrow keys in the dialogs `New testset`, `Re-run`, and `Merge wine` of `/runs`.
   Their key handlers stopped each key but did not prevent its default action, so ↓, ↑,
   Page Down, and the other scroll keys scrolled the page behind the dialog. A scroll key

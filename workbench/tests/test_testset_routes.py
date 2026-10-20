@@ -354,6 +354,8 @@ class TestsetRoutesTest(unittest.TestCase):
             str(Path(__file__).resolve().parents[1] / "config.yaml"), self.db, "my")
 
         self.assertEqual(self.request("/api/testset-autotag?set=missing")[0], 404)
+        status, text = self.request("/api/testset-autotag")
+        self.assertEqual((status, json.loads(text)), (400, {"error": "name the set: ?set=<set>"}))
         self.assertEqual(self.request("/api/testset-autotag", "POST",
                                       {"set": "missing"})[0], 404)
         self.assertEqual(self.request("/api/testset-autotag", "PUT", b"{}")[0], 405)
