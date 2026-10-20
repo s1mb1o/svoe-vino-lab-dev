@@ -1,5 +1,8 @@
 # Manual tests of the account service
 
+Testers: the temporary test code 111111 is described in
+[../docs/testing-with-test-code.md](../docs/testing-with-test-code.md).
+
 These tests need real things that the automatic tests (`./scripts/verify.sh`) cannot use:
 the gx10 host and its Docker networks, real mailboxes, a real Yandex account, other LAN
 hosts, phones, and real waiting time. A person runs them.
