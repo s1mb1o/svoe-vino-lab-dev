@@ -1,5 +1,22 @@
 # Research log
 
+## 2026-10-20 — Email code boxes
+
+- The owner supplied the current account screen and a six-box reference. The implementation
+  uses six visible cells with the existing theme variables instead of the reference blue.
+- One native input retains the existing label, numeric keyboard hint, six-digit validation,
+  and `autocomplete="one-time-code"`. The visual cells are hidden from assistive technology.
+  The field and visual digit content retain Metrika exclusion classes.
+- Native selection drives the active cell and selected cells. Pointer input selects one
+  existing digit. Arrow keys, Backspace, Delete, and select-all remain native operations.
+- The input handler restores the caret after the parent model update. Assigning the model
+  and reading it immediately can read the previous prop and move the caret to the end.
+- A full pasted code replaces the value from any cell. Shorter pasted text edits the native
+  selection. Non-digits are removed before truncation, and leading zeros remain strings.
+- Chromium checks used intercepted account replies and `test@example.com`. No email was
+  sent. The checks covered both themes at four widths. Device autofill was not tested;
+  the browser check supplied a complete value through the native input event.
+
 ## 2026-10-20 — Bot landing pages
 
 - `/max` is the MAX mini app (`definePageMeta({ alias: ['/max'] })` in `pages/account.vue`).

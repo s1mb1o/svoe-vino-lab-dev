@@ -1,5 +1,19 @@
 # Change log
 
+## 2026-10-20 — Separate boxes for the email code
+
+- The email sign-in form shows six rounded digit boxes. Each box uses the existing paper,
+  border, and text colors. The active box uses the theme accent and a visible caret.
+- `EmailCodeInput.vue` retains one labeled native field for keyboard editing, paste, and
+  `one-time-code` autofill. A click selects a filled digit or moves to the next empty box.
+  Pasted codes can contain spaces or separators. Leading zeros are preserved.
+- The form still requires six digits and an explicit sign-in action. Busy state and code
+  reset on a new email request use the existing account state.
+- Validation: type checking passes; all 140 account tests pass. A local Chromium check
+  passes typing, replacement, arrow keys, Backspace, selection, non-digit filtering,
+  paste, autofill-style input, Enter, busy state, and reset. Light and dark layouts fit
+  at 320, 390, 768, and 1440 px. Real device autofill was not tested.
+
 ## 2026-10-20 — Telegram and MAX bot landing pages
 
 - Owner request: landing pages for both bots with feature lists, in the style of `/android` and `/iphone`.

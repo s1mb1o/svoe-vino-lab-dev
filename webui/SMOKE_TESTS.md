@@ -1,5 +1,22 @@
 # Smoke tests
 
+## Email code boxes
+
+1. Open `/account` and request an email code. Confirm six separate rounded boxes, the
+   existing theme colors, and the label «Код из 6 цифр».
+2. Click the first box and type three digits. Confirm one digit per box and the accent
+   focus border and caret on the fourth box. Confirm «Войти» is disabled.
+3. Enter all six digits. Confirm «Войти» is enabled. Click a filled box and replace its
+   digit. Check arrow keys, Backspace, Delete, and select-all.
+4. Paste a full code with spaces, including a leading zero. Confirm all six digits and
+   their order. Confirm non-digit input cannot enable submission.
+5. Press Enter. Confirm the existing verification request receives the six-digit string
+   and the input is disabled while the request is pending.
+6. Select «Изменить адрес» and request another code. Confirm all six boxes are empty.
+7. Check 320, 390, 768, and 1440 px in both themes. Confirm all boxes fit without horizontal
+   scrolling. Check one labeled field in the accessibility tree and one keyboard Tab stop.
+8. On a real phone, check the numeric keyboard and the email-code autofill suggestion.
+
 ## Telegram and MAX bot landing pages
 
 1. Open `/telegram-bot` in a new browser profile. Confirm that the 18+ gate blocks interaction.
