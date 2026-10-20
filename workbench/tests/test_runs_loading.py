@@ -65,6 +65,32 @@ const resolveHint=(id,slug)=>pending.get('/api/run-clusters?id='+id)({json:async
         result = subprocess.run([node, "-e", script, str(ROOT)], capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_a_scroll_key_in_a_dialog_does_not_scroll_the_page(self):
+        script = r'''
+const fs = require('fs'), vm = require('vm'), assert = require('assert');
+const root=process.argv[1];
+const acorn=require(require.resolve('acorn',{paths:[root+'/webui']}));
+const html=fs.readFileSync(root+'/workbench/pipeline/pages/runs.html','utf8');
+const source=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+  .map(m=>m[1]).find(s=>s.includes('function keepScrollInDialog('));
+const code=acorn.parse(source,{ecmaVersion:'latest'}).body.filter(n=>
+  n.type==='FunctionDeclaration'&&n.id.name==='keepScrollInDialog'||
+  n.type==='VariableDeclaration'&&n.declarations.some(d=>d.id.name==='PAGE_SCROLL_KEYS'))
+  .map(n=>source.slice(n.start,n.end)).join('\n')+'\nthis.keep=keepScrollInDialog;';
+const ctx=vm.createContext({Set});vm.runInContext(code,ctx);
+const press=(key,field)=>{const ev={key,prevented:false,preventDefault(){this.prevented=true;},
+  target:{closest:selector=>field&&selector.includes(field)?{}:null}};ctx.keep(ev);return ev.prevented;};
+for(const key of ['ArrowDown','ArrowUp','PageDown','End']) assert(press(key,null),key);
+assert(!press(' ',null),'Space presses a button');assert(!press('Enter',null));assert(!press('a',null));
+assert(!press('ArrowDown','input'),'a radio button or a text field keeps its arrow keys');
+assert(!press('End','textarea'));
+'''
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("Node is required for page behavior checks")
+        result = subprocess.run([node, "-e", script, str(ROOT)], capture_output=True, text=True, timeout=60)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

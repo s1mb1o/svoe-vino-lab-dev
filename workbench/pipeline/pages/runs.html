@@ -1107,9 +1107,19 @@ $("#wm-cancel").addEventListener("click", closeWineMerge);
 $("#wm-dlg").addEventListener("click", ev => {
   if (ev.target.id === "wm-dlg") closeWineMerge();
 });
+/* The key handlers of the dialogs stop each key, so the keys of the page do not act. A key
+   that scrolls MUST NOT scroll the page behind the dialog either, unless a field of the
+   dialog uses it (a text field, a radio button, a list). Space stays: it presses a button. */
+const PAGE_SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+  "PageUp", "PageDown", "Home", "End"]);
+function keepScrollInDialog(ev) {
+  if (PAGE_SCROLL_KEYS.has(ev.key)
+      && !ev.target.closest?.("input, select, textarea, [contenteditable]")) ev.preventDefault();
+}
 document.addEventListener("keydown", ev => {
   if (!WM) return;
   ev.stopPropagation();
+  keepScrollInDialog(ev);
   if (ev.key === "Escape") { ev.preventDefault(); closeWineMerge(); }
 }, true);
 
@@ -1631,6 +1641,7 @@ $("#nts-dlg").addEventListener("click", ev => { if (ev.target === $("#nts-dlg"))
 window.addEventListener("keydown", ev => {
   if ($("#nts-dlg").hidden) return;
   ev.stopPropagation();
+  keepScrollInDialog(ev);
   if (ev.key === "Escape") { ev.preventDefault(); closeNts(); }
   else if (ev.key === "Enter" && ev.target === $("#nts-name")) { ev.preventDefault(); createNts(); }
 }, true);
@@ -1854,6 +1865,7 @@ $("#rr-status").addEventListener("click", ev => {
 window.addEventListener("keydown", ev => {
   if ($("#rr-dlg").hidden) return;
   ev.stopPropagation();
+  keepScrollInDialog(ev);
   if (ev.key === "Escape") { ev.preventDefault(); closeRr(); }
   else if (ev.key === "Enter" && [$("#rr-device-ip"), $("#rr-endpoint")].includes(ev.target)) {
     ev.preventDefault(); startRr();
