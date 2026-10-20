@@ -1,0 +1,86 @@
+[
+  {
+    "case_key": "main-selector-imagegen-diverse-v3-20261020:GP11",
+    "figure": "GP11-comparison.jpg",
+    "figure_sha256": "deb74a1f33d7d0de17226db67530524dbf0c152aa6299cd519bda97c6403d436",
+    "frozen_bundle_commit": "0127f6a867a40a60112a45ade58122a7713d26e1",
+    "sources": [
+      {
+        "path_in_frozen_bundle": "images/diverse-v3--GP11.png",
+        "sha256": "24a3db375ff990a9ad6ff4300374e523f77de2be241fde8bb3ff07de0ee6ca06"
+      },
+      {
+        "path_in_frozen_bundle": "target-overlays/diverse-v3--GP11.jpg",
+        "sha256": "739f2ac0e46f028575b1340203bbf845081cc6af8436aa283f4b8d629d80fc6c"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--GP11-scene-v1.png",
+        "sha256": "5398d41846576e0afb0a9a889a86f165ed46883b873acdd5fd52caaf03d0e564"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--GP11-semantic-v2.png",
+        "sha256": "e13ba387fece600284ad0120b36af1c5c72516b5b8d85b785bae7a1dd755e2df"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--GP11-dis-v1.png",
+        "sha256": "554552ddeb6239bb045d0f83c1ff4d2ffc91264abd616c55c47f55d9f7fbf326"
+      }
+    ]
+  },
+  {
+    "case_key": "main-selector-imagegen-diverse-v3-20261020:SP01",
+    "figure": "SP01-comparison.jpg",
+    "figure_sha256": "a5ad181762abe05976e303d30fe1b4488d60974900453226d5f0c349a991ff70",
+    "frozen_bundle_commit": "0127f6a867a40a60112a45ade58122a7713d26e1",
+    "sources": [
+      {
+        "path_in_frozen_bundle": "images/diverse-v3--SP01.png",
+        "sha256": "a18ab976255722bbd457b3cf9b3d5d4d493f90c8a79493228f9b87df4ce9c0a1"
+      },
+      {
+        "path_in_frozen_bundle": "target-overlays/diverse-v3--SP01.jpg",
+        "sha256": "6f8e2eca6af42528b8fa41981878ce3e8e23e67fa931533480901df412617155"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--SP01-scene-v1.png",
+        "sha256": "d6fffbd29edd1f14e0b7b4a111a397d4df268c5d9d7659f91711d0e53e7f1f29"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--SP01-semantic-v2.png",
+        "sha256": "157d5a6f8dff671d4950f70e14ff4ec296fe2996863b27aebde096b1881280f0"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--SP01-dis-v1.png",
+        "sha256": "f9ddfbfec8c359cac0de0a16fb9b17b9fbdcb195d180ad2180eb375118c469bc"
+      }
+    ]
+  },
+  {
+    "case_key": "main-selector-imagegen-diverse-v3-20261020:PN02",
+    "figure": "PN02-comparison.jpg",
+    "figure_sha256": "55fe35ae8158fb03a7f0d8cf4ed635d38017c28e7b7e7e46e9e86b73dca165fe",
+    "frozen_bundle_commit": "0127f6a867a40a60112a45ade58122a7713d26e1",
+    "sources": [
+      {
+        "path_in_frozen_bundle": "images/diverse-v3--PN02.png",
+        "sha256": "d3329fbf2c50c9398e591ac86c2050d8f9d532d11d5442c1fde271ceeb79f238"
+      },
+      {
+        "path_in_frozen_bundle": "target-overlays/diverse-v3--PN02.jpg",
+        "sha256": "0a828409f01b036b78526151f54296c16a96349fbdddfbaecbe0f0e28d286cbe"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--PN02-scene-v1.png",
+        "sha256": "def11c2cd280735e357fc26ab8e721984bd96e6f9b289fd0de4e4fc9557ceaa1"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--PN02-semantic-v2.png",
+        "sha256": "7edbcbd4d247edd0198fd67f4560a6d698fcd1cf769304b7fabaa2d663a8eaec"
+      },
+      {
+        "path_in_frozen_bundle": "crops/diverse-v3--PN02-dis-v1.png",
+        "sha256": "8a87df07ed73c3c078393a76d54135ef027993e5d1d9b1b4c14a723ec630ac6c"
+      }
+    ]
+  }
+]
