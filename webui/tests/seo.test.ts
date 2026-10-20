@@ -40,6 +40,8 @@ describe('search discovery', () => {
     const sitemap = await source('public/sitemap.xml')
     expect(robots).toContain('Sitemap: https://chtozavino.ru/sitemap.xml')
     expect(robots).toContain('Disallow: /api/')
+    expect(robots).not.toContain('/hackaton')
+    expect(sitemap).toContain('<loc>https://chtozavino.ru/hackaton</loc>')
     expect(sitemap).toContain('<loc>https://chtozavino.ru/</loc>')
     expect(sitemap).toContain('<loc>https://chtozavino.ru/shelf</loc>')
   })

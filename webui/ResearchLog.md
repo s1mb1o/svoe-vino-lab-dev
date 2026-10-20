@@ -1,5 +1,14 @@
 # Research log
 
+## 2026-10-20 — Hackathon page indexing
+
+The owner requested removal of the `/hackaton` crawler exclusion and asked to make the page visible.
+This reverses the 2026-09-29 decision «Hackathon direct URL».
+The page now has no `robots.txt` rule, no robots metadata, and no `X-Robots-Tag` header.
+Both sitemaps list the page in the «Приложения» group. The sitemap test checks it against the noindex rules.
+Search engines can show the page after they crawl it again. The change does not request reindexing.
+The presentation page still has no link to `/hackaton`. The owner did not request a change there.
+
 ## 2026-10-20 — Vector product logo
 
 The header, age gate, and favicon used a 171,311-byte SVG that embeds the 640 by 640 PNG (SEO-002).

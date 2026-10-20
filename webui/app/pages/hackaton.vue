@@ -10,7 +10,6 @@ const description = 'Три способа узнать российское в�
 useSeoMeta({
   title,
   description,
-  robots: 'noindex, nofollow, noarchive',
   ogType: 'website',
   ogTitle: title,
   ogDescription: description,

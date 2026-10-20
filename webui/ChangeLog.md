@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-10-20 — Make the hackathon page indexable
+
+- Remove `Disallow: /hackaton` from `robots.txt`.
+- Remove the `noindex, nofollow, noarchive` robots metadata and `X-Robots-Tag` header from `/hackaton`.
+- List `/hackaton` as «Все приложения» in the XML sitemap and on `/sitemap`.
+
 ## 2026-10-20 — Vector product logo
 
 - Replace `public/icons/product-logo.svg` and the shared `assets/product-logo-640x640.svg` with a vector redraw (SEO-002).

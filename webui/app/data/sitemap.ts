@@ -27,6 +27,7 @@ export const sitemapSections: { id: string; title: string; pages: SitemapPage[] 
   {
     id: 'applications', title: 'Приложения',
     pages: [
+      { path: '/hackaton', label: 'Все приложения', icon: 'scan', description: 'Одно фото — три способа узнать вино: веб-приложение, Android без интернета и бот в Telegram.' },
       { path: '/shelf-lens', label: 'Shelf Lens', icon: 'shelf', description: 'Видео винной полки: распознавание, рейтинг в дополненной реальности и планограмма выкладки.' },
       { path: '/android', label: 'Android', icon: 'android', description: 'Приложение для Android. Распознавание без интернета, QR-коды и штрихкоды.' },
       { path: '/iphone', label: 'iPhone', icon: 'phone', description: 'Нативное приложение для iPhone. Распознавание на устройстве, QR-коды и штрихкоды.' },

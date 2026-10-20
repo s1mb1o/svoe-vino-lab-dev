@@ -10,7 +10,7 @@ Audit date: **20 October 2026**. Market: Russia; language: Russian; engines: Goo
 
 Production has a sound discovery foundation: SSR content, real navigation links, 16 sitemap URLs returning 200, distinct titles/descriptions and route canonicals. No sitewide indexing outage or field Core Web Vitals failure was established. Immediate work concerns avoidable image loading, useful task explanations and inconsistent indexing directives across the sitemap/application/edge. The current Android 0.3.0 artifact contract is verified. Producer details are intentionally noindex; expanding their search reach needs an editorial/product and Russian-law decision.
 
-**Status after the audit (source, not production):** SEO-002 is fixed on `main` in `efee5427`. The shared logo SVG is a 2,810-byte vector. The live site changes after the next Web UI release.
+**Status after the audit (source, not production):** SEO-002 is fixed on `main` in `efee5427`. The shared logo SVG is a 2,810-byte vector. The live site changes after the next Web UI release. SEO-007 no longer applies: the owner made `/hackaton` indexable (commit «webui: make /hackaton indexable»).
 
 ## Scope, confidence and evidence
 

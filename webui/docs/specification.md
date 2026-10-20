@@ -67,11 +67,10 @@ The page MUST provide a canonical link, Open Graph metadata, Twitter card metada
 and JSON-LD for `WebSite` and `WebApplication`.
 The page MUST NOT provide wine `Product` metadata.
 The portal MUST provide `robots.txt` and a `sitemap.xml` for discoverable pages.
-The organizers' `/hackaton` page MUST remain available through its direct URL.
-Public navigation and the sitemap MUST NOT link to `/hackaton`.
-`robots.txt` MUST disallow `/hackaton`.
-The page MUST send `noindex, nofollow, noarchive` in HTML metadata and the `X-Robots-Tag` header.
-These crawler instructions do not provide access control.
+The organizers' `/hackaton` page MUST be indexable.
+`robots.txt` MUST NOT disallow `/hackaton`.
+The page MUST NOT send `noindex` in HTML metadata or the `X-Robots-Tag` header.
+Both sitemaps MUST list `/hackaton`.
 Compatibility redirects from `/wines` and `/wines/<slug>` MUST be permanent.
 Static reference assets SHOULD use a bounded public cache policy.
 

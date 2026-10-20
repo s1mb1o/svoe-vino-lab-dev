@@ -168,7 +168,7 @@ The page groups links into wine search, catalog, applications, games, project in
 The legal links come from `app/data/legal.ts`.
 The XML sitemap remains at `/sitemap.xml`. It includes `/sitemap`.
 The HTML index and the XML sitemap list the same pages. A test checks this.
-The HTML index and XML sitemap omit the direct-access `/hackaton` page and all `noindex` pages: `/account`, `/max`, and each producer map under `/lineup/`.
+The HTML index and XML sitemap list `/hackaton`. They omit all `noindex` pages: `/account`, `/max`, and each producer map under `/lineup/`.
 The page list is in `app/data/sitemap.ts`.
 
 ## Legal pages
