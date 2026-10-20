@@ -214,7 +214,7 @@ describe('saved wine routes', () => {
       : { status: 200, body: { items: [{ slug: SLUG, wine: { name: 'Брют' }, status: 'disliked', source: 'lineup', added_at: '2026-10-19T10:00:00Z', updated_at: '2026-10-20T10:00:00Z', in_history: false }] } }
     expect(await (await call('/api/account/saved/slugs')).json()).toEqual({ items: [{ slug: SLUG, status: 'liked' }] })
     expect(await (await call('/api/account/saved')).json()).toEqual({
-      items: [{ slug: SLUG, wine: { name: 'Брют' }, status: 'disliked', source: 'lineup', addedAt: '2026-10-19T10:00:00Z', updatedAt: '2026-10-20T10:00:00Z', inHistory: false }],
+      items: [{ slug: SLUG, wine: { name: 'Брют' }, status: 'disliked', source: 'lineup', addedAt: '2026-10-19T10:00:00Z', updatedAt: '2026-10-20T10:00:00Z', inHistory: false, note: null }],
     })
   })
 
@@ -229,6 +229,24 @@ describe('saved wine routes', () => {
     await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'dinner_lens', change: true }) })
     expect(lookups).toEqual([])
     expect(JSON.parse(seen[0]!.body)).toEqual({ status: 'liked', source: 'dinner_lens' })
+  })
+
+  it('passes a normalized note on and refuses a long one', async () => {
+    reply = request => ({ status: 200, body: { slug: SLUG, status: 'liked', source: 'photo', note: JSON.parse(request.body).note || null } })
+    const saved = await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'photo', change: true, note: '  Пили на ужин\r\nс уткой\u0007  ' }) })
+    expect(await saved.json()).toMatchObject({ slug: SLUG, note: 'Пили на ужин\nс уткой' })
+    expect(JSON.parse(seen[0]!.body)).toEqual({ status: 'liked', source: 'photo', note: 'Пили на ужин\nс уткой' })
+    seen = []
+    const cleared = await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'photo', change: true, note: '' }) })
+    expect(await cleared.json()).toMatchObject({ note: null })
+    expect(JSON.parse(seen[0]!.body)).toEqual({ status: 'liked', source: 'photo', note: '' })
+    seen = []
+    const long = await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'photo', change: true, note: 'я'.repeat(2001) }) })
+    expect(long.status).toBe(400)
+    expect(await long.json()).toEqual({ error: 'invalid_note' })
+    const longest = await call(`/api/account/saved/${SLUG}`, { method: 'PUT', ...json({ status: 'liked', source: 'photo', change: true, note: 'я'.repeat(2000) }) })
+    expect(longest.status).toBe(200)
+    expect(seen).toHaveLength(1)
   })
 
   it('gives a snapshot to a wine that a status change added again', async () => {

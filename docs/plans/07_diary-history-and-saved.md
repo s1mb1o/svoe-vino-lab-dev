@@ -74,7 +74,9 @@ Decisions of this plan (the owner can change them):
 - D11. No manual «Я пробовал это вино» history entry (#71 open decision 2). The saved statuses
   «Понравилось» and «Не понравилось» record tasting.
 - D12. Line map products without a vino-svoe.ru card (`wine_slug: null`) have no pin (#64 open
-  decision 2). No personal notes in v1 (#64 open decision 3).
+  decision 2). Notes: changed by the owner on 2026-10-20 ("use right part for keeping notes"): a
+  saved wine has a private note of at most 2,000 characters in the right half of its card. Only the
+  person sees it; it never goes to Metrika, logs, or application tokens.
 - D13. The bots record in the background with one attempt and a 2-second timeout, as the site.
   The outbox of plan 05 stays for photo searches (#48), which carry images.
 - D14. Ratings of #48 come later. A saved status is not a rating.
@@ -215,7 +217,7 @@ Outline: not saved. Filled: saved. `aria-label` «Сохранить вино» 
   pins of the page. The header still makes no account call.
 - 401: the logged-out panel (D3). 404 `account_disabled` or 503: no pin.
 - The panel is a non-modal dialog under the pin: the four statuses as radio buttons, «Убрать из
-  сохранённых», and «Все сохранённые» (link to `/account?tab=saved`). Escape and a click outside
+  сохранённых», and «Все сохранённые» (link to `/account`). Escape and a click outside
   close it. Focus goes back to the pin.
 - A failed write shows «Не удалось сохранить» in the panel. The page stays as it is.
 
@@ -242,8 +244,9 @@ Places:
 
 ### `/account`
 
-Tabs «История», «Сохранённые», «Настройки» (`role="tablist"`). The tab is in the query
-(`?tab=history|saved|settings`). No slug goes into a page URL.
+Tabs «Сохранённые», «История», «Настройки» (`role="tablist"`). «Сохранённые» is the first tab and
+the default (owner, 2026-10-20). The tab is in the query (`?tab=history|settings`; `?tab=saved` also
+works). No slug goes into a page URL.
 
 «История»:
 
@@ -258,7 +261,10 @@ Tabs «История», «Сохранённые», «Настройки» (`ro
 
 «Сохранённые»:
 
-- Status filter with counts («Все», four statuses), and the same text, color, and sugar filters.
+- Status filter with counts («Все», four statuses), and the same text, color, and sugar filters. The
+  text filter also searches the notes.
+- The right half of a card is the note («Заметка»). It saves 1 s after the last key and on blur
+  (`PUT /api/account/saved/[slug]` with `change: true` and `note`). Schema 006 adds `saved_wines.note`.
 - Row: bottle, name, producer, color and sugar, the status selector, «Добавлено 19 октября», the
   source («Из истории», «Из поиска по фото», «С полки», «С карты линейки», «Из «Вино к блюду»»),
   «На «Свое Вино»», «Убрать».

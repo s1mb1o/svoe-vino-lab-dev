@@ -76,25 +76,26 @@ const newTokenConfig = computed(() => newToken.value ? mcpClientConfig(newToken.
 // A server route renders the QR code of the fixed mini-app link (no code inside).
 const MAX_QR_URL = '/api/account/max/qr.svg'
 
-// Tabs of the diary (plan 07). The tab is in the query; no wine slug goes into the page URL.
+// Tabs of the diary (plan 07). «Сохранённые» is the first tab and the default (owner, 2026-10-20).
+// The tab is in the query; no wine slug goes into the page URL.
 // The MAX mini app keeps the settings view: its host has no list routes.
 type Tab = 'history' | 'saved' | 'settings'
 const TABS: Array<{ key: Tab; label: string }> = [
-  { key: 'history', label: 'История' },
   { key: 'saved', label: 'Сохранённые' },
+  { key: 'history', label: 'История' },
   { key: 'settings', label: 'Настройки' },
 ]
 const tab = computed<Tab>(() => {
   if (maxApp.value) return 'settings'
   const value = route.query.tab
-  return value === 'saved' || value === 'settings' ? value : 'history'
+  return value === 'history' || value === 'settings' ? value : 'saved'
 })
 const diary = useDiary()
 const saveHistory = computed(() => user.value?.save_history !== false)
 
 function selectTab(key: Tab, focus = false) {
   const query = { ...route.query }
-  if (key === 'history') delete query.tab
+  if (key === 'saved') delete query.tab
   else query.tab = key
   void router.replace({ query })
   if (focus) nextTick(() => document.getElementById(`account-tab-${key}`)?.focus())
@@ -579,13 +580,13 @@ onBeforeUnmount(() => {
             @keydown="tabKey($event, index)"
           >{{ item.label }}</button>
         </div>
-        <div v-if="tab === 'history'" id="account-panel-history" role="tabpanel" aria-labelledby="account-tab-history" class="account-tabpanel">
-          <p class="account-hint">Вина, которые вы нашли по фото на сайте и в привязанных Telegram и MAX. Одна запись на вино в день.</p>
-          <DiaryHistory @settings="selectTab('settings', true)" />
-        </div>
-        <div v-else-if="tab === 'saved'" id="account-panel-saved" role="tabpanel" aria-labelledby="account-tab-saved" class="account-tabpanel">
+        <div v-if="tab === 'saved'" id="account-panel-saved" role="tabpanel" aria-labelledby="account-tab-saved" class="account-tabpanel">
           <p class="account-hint">Вина, отмеченные значком <AppIcon name="pin" class="diary-inline-icon" />. Удаление из истории их не затрагивает.</p>
           <DiarySaved />
+        </div>
+        <div v-else-if="tab === 'history'" id="account-panel-history" role="tabpanel" aria-labelledby="account-tab-history" class="account-tabpanel">
+          <p class="account-hint">Вина, которые вы нашли по фото на сайте и в привязанных Telegram и MAX. Одна запись на вино в день.</p>
+          <DiaryHistory @settings="selectTab('settings', true)" />
         </div>
         <div v-else :id="maxApp ? undefined : 'account-panel-settings'" :role="maxApp ? undefined : 'tabpanel'" :aria-labelledby="maxApp ? undefined : 'account-tab-settings'" class="account-tabpanel">
         <template v-if="!maxApp">

@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import logging
+
 from conftest import Harness
 
 from chto_za_vino_account import diary
 from chto_za_vino_account.cli import merge
 
 
-def save(harness, session, slug, status="not_tasted", source="photo", snapshot=None):
-    body = {"status": status, "source": source}
+def save(harness, session, slug, status="not_tasted", source="photo", snapshot=None, **extra):
+    body = {"status": status, "source": source, **extra}
     if snapshot is not None:
         body["wine_snapshot"] = snapshot
     return harness.web("PUT", f"/v1/me/saved/{slug}", session=session, json=body)
@@ -46,6 +48,7 @@ def test_add_change_and_remove(harness):
         "added_at": "2027-01-15T08:01:01Z",
         "updated_at": "2027-01-15T08:01:01Z",
         "in_history": False,
+        "note": None,
     }
     harness.clock.advance(60)
     changed = save(harness, session, "wine-a", status="liked", source="dinner_lens")
@@ -71,6 +74,71 @@ def test_a_change_merges_the_snapshot(harness):
     assert changed.json()["wine"] == full | {"name": "Вино 2021"}
     kept = save(harness, session, "wine-a", status="want", snapshot={"grapes": []})
     assert kept.json()["wine"] == full | {"name": "Вино 2021"}
+
+
+def test_a_note_on_a_saved_wine(harness):
+    session = harness.email_session("anna@example.ru")
+    added = save(harness, session, "wine-a", note="Купить к Новому году")
+    assert added.status_code == 201
+    assert added.json()["note"] == "Купить к Новому году"
+    assert saved(harness, session)[0]["note"] == "Купить к Новому году"
+    slugs = harness.web("GET", "/v1/me/saved/slugs", session=session).json()
+    assert slugs == {"items": [{"slug": "wine-a", "status": "not_tasted"}]}
+    # No note in the body keeps the stored note.
+    kept = save(harness, session, "wine-a", status="liked")
+    assert kept.json()["note"] == "Купить к Новому году"
+    changed = save(harness, session, "wine-a", status="liked", note="Понравилось с уткой")
+    assert changed.json()["note"] == "Понравилось с уткой"
+    for empty in ("", "  \n\t ", None):
+        save(harness, session, "wine-a", status="liked", note="временно")
+        cleared = save(harness, session, "wine-a", status="liked", note=empty)
+        assert cleared.status_code == 200, empty
+        assert cleared.json()["note"] is None, empty
+    assert save(harness, session, "wine-b", note="   ").json()["note"] is None
+
+
+def test_note_normalization_and_length(harness):
+    session = harness.email_session("anna@example.ru")
+    lines = save(harness, session, "wine-a", note="\r\n Строка 1\r\nСтрока 2\rСтрока\t3 \n")
+    assert lines.json()["note"] == "Строка 1\nСтрока 2\nСтрока\t3"
+    longest = save(harness, session, "wine-a", note="я" * 2000)
+    assert longest.json()["note"] == "я" * 2000
+    padded = save(harness, session, "wine-a", note="  " + "я" * 2000 + "\r\n")
+    assert padded.status_code == 200
+    # 1,000 Windows line breaks are 1,000 characters after normalization.
+    crlf = save(harness, session, "wine-a", note="я\r\n" * 1000)
+    assert crlf.status_code == 200
+    assert len(crlf.json()["note"]) == 1999
+    too_long = save(harness, session, "wine-a", note="я" * 2001)
+    assert too_long.status_code == 422
+    assert too_long.json() == {"error": "invalid_request", "fields": ["note"]}
+    assert saved(harness, session)[0]["note"] == "я\n" * 999 + "я"
+
+
+def test_a_note_with_a_control_character_is_refused_without_echo(harness):
+    session = harness.email_session("anna@example.ru")
+    save(harness, session, "wine-a", note="Старая заметка")
+    for char in ("\x00", "\x07", "\x0b", "\x1b", "\x7f", "\x85"):
+        for note in (f"секрет{char}тайна", f"{char}секрет-тайна"):
+            response = save(harness, session, "wine-a", note=note)
+            assert response.status_code == 422, repr(note)
+            assert response.json() == {"error": "invalid_request", "fields": ["note"]}
+            assert "секрет" not in response.text
+    assert saved(harness, session)[0]["note"] == "Старая заметка"
+    other = save(harness, session, "wine-a", note=5)
+    assert other.json() == {"error": "invalid_request", "fields": ["note"]}
+
+
+def test_notes_never_go_to_the_log(harness, caplog):
+    caplog.set_level(logging.DEBUG)
+    session = harness.email_session("anna@example.ru")
+    save(harness, session, "wine-a", note="секретная-заметка-1")
+    save(harness, session, "wine-a", status="liked", note="секретная-заметка-2")
+    save(harness, session, "wine-a", note="секретная\x07заметка-3")
+    saved(harness, session)
+    harness.web("DELETE", "/v1/me/saved/wine-a", session=session)
+    assert "Saved wine added (photo)" in caplog.text
+    assert "секретная" not in caplog.text
 
 
 def test_list_and_slugs_are_newest_first(harness):
@@ -222,3 +290,33 @@ def test_the_operator_merge_moves_both_lists(harness: Harness, env: dict[str, st
         "wine-z": ("want", "dinner_lens"),
     }
     assert harness.web("GET", "/v1/me", session=remove).status_code == 401
+
+
+def test_the_operator_merge_keeps_the_notes(harness: Harness, env: dict[str, str]) -> None:
+    first = harness.yandex_login("5561").json()
+    keep = harness.signup(first["signup_ticket"], "alex").json()["session"]["token"]
+    remove = harness.email_session("alex@example.ru", "alex22")
+    # Older rows first, then the rows that win: (winner, its note, the other note).
+    save(harness, keep, "both-notes", note="старое keep")
+    save(harness, remove, "winner-silent", note="заметка remove")
+    save(harness, keep, "keep-wins-silent")
+    save(harness, keep, "no-notes")
+    harness.clock.advance(10)
+    save(harness, remove, "both-notes", note="новое remove")
+    save(harness, keep, "winner-silent", status="liked")
+    save(harness, remove, "keep-wins-silent", note="заметка remove 2")
+    harness.clock.advance(10)
+    save(harness, keep, "keep-wins-silent", status="want")
+    save(harness, remove, "no-notes", status="want")
+    save(harness, remove, "only-remove", note="перенесено")
+
+    assert merge(env["ACCOUNT_DATABASE"], "alex", "alex22") == 0
+
+    notes = {i["slug"]: (i["status"], i["note"]) for i in saved(harness, keep)}
+    assert notes == {
+        "both-notes": ("not_tasted", "новое remove"),
+        "winner-silent": ("liked", "заметка remove"),
+        "keep-wins-silent": ("want", "заметка remove 2"),
+        "no-notes": ("want", None),
+        "only-remove": ("not_tasted", "перенесено"),
+    }

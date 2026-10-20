@@ -344,12 +344,14 @@ def test_account_deletion_removes_both_lists(harness, env):
         "PUT",
         "/v1/me/saved/wine-b",
         session=session,
-        json={"status": "want", "source": "lineup"},
+        json={"status": "want", "source": "lineup", "note": "личная-заметка-анны"},
     )
     assert harness.web("DELETE", "/v1/me", session=session).status_code == 204
     with sqlite3.connect(env["ACCOUNT_DATABASE"]) as db:
         for table in ("history_wines", "history_days", "saved_wines"):
             assert db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] == 0  # noqa: S608
+        dump = "\n".join(db.iterdump())
+    assert "личная-заметка-анны" not in dump
 
 
 def test_no_user_id_or_slug_in_the_info_log(harness, caplog):

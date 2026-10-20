@@ -72,6 +72,10 @@ export function accountErrorMessage(body: Partial<AccountErrorBody> | undefined)
       return 'Сеанс завершён. Войдите ещё раз.'
     case 'provider_already_linked':
       return 'Этот мессенджер уже привязан. Обновите страницу.'
+    case 'invalid_note':
+      return 'Заметка: не больше 2000 символов.'
+    case 'saved_full':
+      return 'В сохранённых уже 500 вин. Уберите лишние.'
     case 'too_many_tokens':
       return 'Можно иметь не больше 5 активных токенов. Отзовите ненужный токен.'
     case 'invalid_name':

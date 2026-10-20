@@ -4,8 +4,11 @@ The history (issue #71) keeps one date for each wine and calendar day in Europe/
 site records a photo or shelf match. A linked Telegram or MAX chat records its own matches.
 The saved list (issue #64) is independent: a wine stays saved when it leaves the history.
 
-The API layer checks the slugs, the sources, the statuses, and the wine snapshots. This module
-gets valid values and a snapshot as a dict of the fields that have a value.
+The API layer checks the slugs, the sources, the statuses, the wine snapshots, and the notes.
+This module gets valid values and a snapshot as a dict of the fields that have a value.
+
+A saved wine can have a personal note. A note is the person's own text: it never goes to the
+log, not even at the debug level, and not to the application API.
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ import json
 import logging
 import re
 import sqlite3
+import unicodedata
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any
@@ -31,6 +35,8 @@ HISTORY_WINES_LIMIT = 2000
 HISTORY_DAYS_LIMIT = 366
 SAVED_LIMIT = 500
 SNAPSHOT_BYTES = 2048
+NOTE_LENGTH = 2000
+NOTE_CONTROLS_ALLOWED = frozenset("\n\t")
 
 SLUG_PATTERN = r"^[a-z0-9](?:[a-z0-9_-]{0,198}[a-z0-9])?$"
 DAY_PATTERN = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
@@ -74,6 +80,24 @@ def card_day(at: int | None, now: int) -> str:
     if at is None or not now - CARD_PAST_SECONDS <= at <= now + CARD_FUTURE_SECONDS:
         return moscow_day(now)
     return moscow_day(at)
+
+
+def normalize_note(value: str) -> str:
+    """The note as stored: line breaks as "\\n", no whitespace at the ends.
+
+    An empty result clears the note. Control characters other than a line break and a tab, and
+    a note longer than NOTE_LENGTH characters, give ValueError. The message never holds the text.
+    The check runs before the strip, so a control character at an end is refused, not removed.
+    """
+    text = value.replace("\r\n", "\n").replace("\r", "\n")
+    if any(
+        unicodedata.category(char) == "Cc" and char not in NOTE_CONTROLS_ALLOWED for char in text
+    ):
+        raise ValueError("The note has a control character")
+    text = text.strip()
+    if len(text) > NOTE_LENGTH:
+        raise ValueError(f"The note has more than {NOTE_LENGTH} characters")
+    return text
 
 
 def snapshot_json(snapshot: dict[str, Any]) -> str:
@@ -161,7 +185,7 @@ HISTORY_QUERY = (
 # The history snapshot fills in when the saved wine has none.
 SAVED_QUERY = (
     "SELECT s.wine_slug, COALESCE(s.wine_snapshot, w.wine_snapshot) AS snapshot, s.status, "
-    "s.source, s.added_at, s.updated_at, w.wine_slug IS NOT NULL AS in_history "
+    "s.source, s.added_at, s.updated_at, w.wine_slug IS NOT NULL AS in_history, s.note "
     "FROM saved_wines s "
     "LEFT JOIN history_wines w ON w.user_id = s.user_id AND w.wine_slug = s.wine_slug "
     "WHERE s.user_id = :user AND (:slug IS NULL OR s.wine_slug = :slug) "
@@ -230,6 +254,7 @@ class Diary:
             "added_at": iso(row["added_at"]),
             "updated_at": iso(row["updated_at"]),
             "in_history": bool(row["in_history"]),
+            "note": row["note"],
         }
 
     @staticmethod
@@ -435,16 +460,18 @@ class Diary:
         status: str,
         source: str,
         snapshot: dict[str, Any] | None,
+        note: str | None = None,
     ) -> tuple[dict[str, Any], bool]:
         """Add a wine or change its status. Returns the saved wine and True for a new wine.
 
-        A change keeps the source and the time of the addition.
+        A change keeps the source and the time of the addition. `note` is a normalized note:
+        None keeps the stored note, an empty string clears it.
         """
         now = self._now()
         with self.db.transaction() as db:
             self._save_history(db, user_id)  # Refuses a deleted account before the insert.
             current = db.execute(
-                "SELECT wine_snapshot FROM saved_wines WHERE user_id = ? AND wine_slug = ?",
+                "SELECT wine_snapshot, note FROM saved_wines WHERE user_id = ? AND wine_slug = ?",
                 (user_id, slug),
             ).fetchone()
             created = current is None
@@ -458,15 +485,25 @@ class Diary:
                     )
                 db.execute(
                     "INSERT INTO saved_wines (user_id, wine_slug, status, source, wine_snapshot, "
-                    "added_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (user_id, slug, status, source, merged_snapshot(None, snapshot), now, now),
+                    "added_at, updated_at, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        user_id,
+                        slug,
+                        status,
+                        source,
+                        merged_snapshot(None, snapshot),
+                        now,
+                        now,
+                        note or None,
+                    ),
                 )
             else:
                 merged = merged_snapshot(current["wine_snapshot"], snapshot)
+                kept_note = current["note"] if note is None else note or None
                 db.execute(
-                    "UPDATE saved_wines SET status = ?, updated_at = ?, wine_snapshot = ? "
-                    "WHERE user_id = ? AND wine_slug = ?",
-                    (status, now, merged, user_id, slug),
+                    "UPDATE saved_wines SET status = ?, updated_at = ?, wine_snapshot = ?, "
+                    "note = ? WHERE user_id = ? AND wine_slug = ?",
+                    (status, now, merged, kept_note, user_id, slug),
                 )
             row = db.execute(SAVED_QUERY, {"user": user_id, "slug": slug}).fetchone()
         if created:

@@ -232,6 +232,9 @@ Use the session `S` of test 2.3. `W=wine-slug-of-a-real-catalog-wine`.
   -d '{"status":"want","source":"history"}'` gives HTTP 201; the same call with `"liked"` gives
   200 with the first `added_at`. `DELETE /v1/me/history/$W` keeps the saved wine with
   `"in_history":false`.
+- [ ] **9.5a Note.** The same `PUT` with `"note":"Купить к ужину"` shows the note. A `PUT` without
+  `note` keeps it; `"note":""` clears it. `docker logs <container> 2>&1 | grep -c 'Купить'`
+  prints `0`.
 - [ ] **9.6 Telegram chat** (needs the Telegram bot with plan 07 and a linked Telegram). Send a
   bottle photo to the bot. The history shows the wine with the source `telegram`. «❌ Не совпало»
   removes the date of today. A selected alternative is recorded, and the rejected wine has no

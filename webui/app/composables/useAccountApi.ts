@@ -71,8 +71,8 @@ export function useAccountApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
     setSaveHistory: (saveHistory: boolean) => request<{ user: AccountUser }>('PATCH', '/api/account/me', { saveHistory }),
     saved: () => request<{ items: SavedItem[] }>('GET', '/api/account/saved'),
     savedSlugs: () => request<{ items: Array<{ slug: string; status: SavedStatus }> }>('GET', '/api/account/saved/slugs'),
-    putSaved: (slug: string, status: SavedStatus, source: SavedSource, change = false) =>
-      request<SavedItem>('PUT', `/api/account/saved/${encodeURIComponent(slug)}`, { status, source, ...(change ? { change: true } : {}) }),
+    putSaved: (slug: string, status: SavedStatus, source: SavedSource, change = false, note?: string) =>
+      request<SavedItem>('PUT', `/api/account/saved/${encodeURIComponent(slug)}`, { status, source, ...(change ? { change: true } : {}), ...(note === undefined ? {} : { note }) }),
     deleteSaved: (slug: string) => request<{ status: string }>('DELETE', `/api/account/saved/${encodeURIComponent(slug)}`),
   }
 }

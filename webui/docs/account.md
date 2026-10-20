@@ -8,7 +8,7 @@ Service: [`../../account/README.md`](../../account/README.md).
 - The header link «Дневник» (phones: an icon with `aria-label="Винный дневник"`) goes to `/account`.
 - `/account` has login by email code, login with Yandex ID, the sign-up step, the logged-in view,
   logout, and account deletion.
-- The logged-in view has three tabs: «История», «Сохранённые», «Настройки» (plan
+- The logged-in view has three tabs: «Сохранённые» (the default), «История», «Настройки» (plan
   [`07_diary-history-and-saved.md`](../../docs/plans/07_diary-history-and-saved.md), issues #71 and
   #64). Photos of searches, ratings, preferences, and onboarding come later (#48).
 
@@ -141,7 +141,8 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
   (`change: true`) makes no catalogue request.
 - The list routes accept service answers of up to 2 MiB (2,000 history wines).
 - Wine slugs go only into API paths, never into page URLs. The tab is in `?tab=`. The vino-svoe.ru
-  links of the lists have `ym-disable-tracklink`.
+  links of the lists have `ym-disable-tracklink`. `/account` opens «Сохранённые»; `?tab=history` and `?tab=settings`
+  open the other tabs.
 - The MAX mini-app host does not allow the list routes (its Caddy block and `MAX_HOST_ROUTES` are
   unchanged). The mini app shows only the settings view.
 
@@ -175,7 +176,7 @@ Plan 05, issue #50. MAX is a linked messenger. MAX login (`MAX_LOGIN_ENABLED`) s
 | `DELETE /api/account/history/[slug]/days/[day]` | `DELETE /v1/me/history/{slug}/days/{met_on}` | `{status: 'removed'}` |
 | `GET /api/account/saved` | `GET /v1/me/saved` | `{items: [SavedItem]}` |
 | `GET /api/account/saved/slugs` | `GET /v1/me/saved/slugs` | `{items: [{slug, status}]}` |
-| `PUT /api/account/saved/[slug]` | `PUT /v1/me/saved/{slug}` | `SavedItem`; body `{status, source, change?}`; 409 `saved_full` |
+| `PUT /api/account/saved/[slug]` | `PUT /v1/me/saved/{slug}` | `SavedItem` (with `note`); body `{status, source, change?, note?}` up to 12 KiB; note at most 2,000 characters, `''` clears it; 400 `invalid_note`, 409 `saved_full` |
 | `DELETE /api/account/saved/[slug]` | `DELETE /v1/me/saved/{slug}` | `{status: 'removed'}` |
 | `GET /api/app/v1/profile` | `GET /v1/app/profile` | Bearer application token; profile |
 | `GET /api/app/v1/wines` | `GET /v1/app/wines` | Bearer application token; `{items, next_cursor}` |

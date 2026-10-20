@@ -2,10 +2,10 @@
 
 ## «Винный дневник»: history and saved wines
 
-1. Log in on `/account`. Confirm the tabs «История», «Сохранённые», «Настройки» and that «Настройки»
-   has the switch «Записывать найденные вина» (on).
+1. Log in on `/account`. Confirm the tabs «Сохранённые» (open), «История», «Настройки» and that
+   «Настройки» has the switch «Записывать найденные вина» (on).
 2. Find a wine by photo on `/`. Confirm «Записано в историю дневника» on the result card and a pin in
-   the card heading. Open «История»: the wine is the first row with the bottle, name, producer,
+   the card heading. Open «История»: the wine is the first row with the whole bottle, name, producer,
    color, sugar, «Сайт», and «Встреч: 1».
 3. Find the same wine again. Confirm «Уже в истории дневника за сегодня» and still one date.
 4. Press «Убрать» on the result card. Confirm the wine is gone from «История».
@@ -14,6 +14,7 @@
 6. Pin a wine on the product line map, on a Dinner Lens card, and in a shelf bottle dialog.
    Confirm the sources in «Сохранённые».
 7. Remove the pinned wine from «История». Confirm it stays in «Сохранённые».
+   Type a note in the right half of its card. Confirm «Заметка сохранена», reload, and confirm the note.
 8. In «История», use each filter. Confirm the count line «Показано N из M».
 9. «Очистить историю» → «Очистить». Confirm the empty state and that «Сохранённые» did not change.
 10. Turn the switch off, find a wine: no note on the card, no row. Turn it on again.

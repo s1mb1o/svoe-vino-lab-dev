@@ -119,8 +119,9 @@ def merge(database: str, keep: str, remove: str) -> int:
     History: the union of the dates. For a date in both accounts, the date with the earlier
     first time stays. A wine gets the earliest and the latest time of its dates, and the
     snapshot of `keep` (the snapshot of `remove` when `keep` has none). Saved wines: for a wine
-    in both accounts, the row with the later `updated_at` stays. The switch of `keep` stays.
-    The history and saved limits apply again at the next record or save.
+    in both accounts, the row with the later `updated_at` stays with its note; when that row has
+    no note, it gets the note of the other row. The switch of `keep` stays. The history and
+    saved limits apply again at the next record or save.
     """
     path = Path(database)
     if not path.is_file():
@@ -210,15 +211,24 @@ def _merge_lists(db: sqlite3.Connection, keep_id: str, remove_id: str) -> tuple[
     )
     db.execute(
         "INSERT INTO saved_wines (user_id, wine_slug, status, source, wine_snapshot, added_at, "
-        "updated_at) "
-        "SELECT ?, wine_slug, status, source, wine_snapshot, added_at, updated_at "
+        "updated_at, note) "
+        "SELECT ?, wine_slug, status, source, wine_snapshot, added_at, updated_at, note "
         "FROM saved_wines WHERE user_id = ? "
         "ON CONFLICT (user_id, wine_slug) DO UPDATE SET "
         "status = excluded.status, source = excluded.source, "
         "wine_snapshot = COALESCE(excluded.wine_snapshot, saved_wines.wine_snapshot), "
-        "added_at = excluded.added_at, updated_at = excluded.updated_at "
+        "added_at = excluded.added_at, updated_at = excluded.updated_at, "
+        "note = COALESCE(excluded.note, saved_wines.note) "
         "WHERE excluded.updated_at > saved_wines.updated_at",
         (keep_id, remove_id),
+    )
+    # A row of keep that stayed without a note gets the note of the row of remove.
+    db.execute(
+        "UPDATE saved_wines SET note = (SELECT r.note FROM saved_wines r "
+        "WHERE r.user_id = ? AND r.wine_slug = saved_wines.wine_slug) "
+        "WHERE user_id = ? AND note IS NULL AND EXISTS (SELECT 1 FROM saved_wines r "
+        "WHERE r.user_id = ? AND r.wine_slug = saved_wines.wine_slug AND r.note IS NOT NULL)",
+        (remove_id, keep_id, remove_id),
     )
     return wines, saved
 

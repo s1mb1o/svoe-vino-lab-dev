@@ -22,11 +22,18 @@ import httpx
 from fastapi import Depends, FastAPI, Header, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .config import Settings
 from .db import Database
-from .diary import DAY_PATTERN, SLUG_PATTERN, SNAPSHOT_BYTES, Diary, snapshot_json
+from .diary import (
+    DAY_PATTERN,
+    SLUG_PATTERN,
+    SNAPSHOT_BYTES,
+    Diary,
+    normalize_note,
+    snapshot_json,
+)
 from .mailer import Dispatcher, Mailer, ThreadDispatcher, build_mailer
 from .service import (
     AccountError,
@@ -148,6 +155,19 @@ class SavedPut(Strict):
     status: Literal["not_tasted", "want", "liked", "disliked"]
     source: Literal["photo", "shelf", "lineup", "dinner_lens", "history"]
     wine_snapshot: WineSnapshot | None = None
+    # The personal note. Absent: keep the stored note. "", only whitespace, or null: clear it.
+    note: str | None = Field(default=None, repr=False)
+
+    @field_validator("note")
+    @classmethod
+    def clean_note(cls, value: str | None) -> str | None:
+        return None if value is None else normalize_note(value)
+
+    def note_change(self) -> str | None:
+        """The normalized note for the diary: None keeps the stored note, "" clears it."""
+        if "note" not in self.model_fields_set:
+            return None
+        return self.note or ""
 
 
 class BotHistory(Strict):
@@ -480,7 +500,12 @@ def create_app(
         slug: SlugPath, body: SavedPut, session: Annotated[Session, Depends(current_session)]
     ) -> Response:
         item, created = diary.save(
-            session.user_id, slug, body.status, body.source, stored(body.wine_snapshot)
+            session.user_id,
+            slug,
+            body.status,
+            body.source,
+            stored(body.wine_snapshot),
+            body.note_change(),
         )
         return JSONResponse(item, status_code=201 if created else 200)
 

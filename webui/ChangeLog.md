@@ -1,5 +1,17 @@
 # Change log
 
+## 2026-10-20 — Diary: «Сохранённые» first, notes, full bottle thumbnails
+
+- Owner request «use right part for keeping notes»: the right half of a saved wine card is a private
+  note (at most 2,000 characters, saved 1 s after the last key and on blur). The text filter
+  searches the notes. `/privacy` names the notes. The field has `ym-disable-keys` and `ym-hide-content`.
+
+- Owner request: `/account` shows «Сохранённые» as the first tab and opens it by default, then
+  «История» and «Настройки». `?tab=history` opens the history.
+- Owner report with a screenshot: the list rows showed only the top of the bottle. The image box was
+  a grid with an auto-sized row, so `height: 100%` of the image was ignored. The image is now
+  positioned in a 64×128 px box (52×104 px on phones), so the whole bottle shows.
+
 ## 2026-10-20 — «Винный дневник»: history and saved wines
 
 - Plan `docs/plans/07_diary-history-and-saved.md` (issues #71 and #64, owner request of 2026-10-20).

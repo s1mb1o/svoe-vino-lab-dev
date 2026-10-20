@@ -1,5 +1,21 @@
 # ChangeLog
 
+## 2026-10-20 — Notes on saved wines
+
+Owner request: a personal note for each saved wine.
+
+- Schema `006_saved_notes.sql`: `saved_wines.note` (`NULL` for no note). Account deletion removes the notes
+  with the rows.
+- `PUT /v1/me/saved/{slug}` accepts `note`. The service changes `\r\n` and `\r` to `\n`, refuses other
+  control characters than `\n` and `\t` (422, field `note`, never the text), removes the whitespace at the
+  ends, and accepts at most 2,000 characters. No `note` key keeps the stored note; `""`, only whitespace, or
+  `null` clears it. A new saved wine can have a note.
+- `SavedItem` has `note` (a string or `null`) in `GET /v1/me/saved` and in the `PUT` answer.
+  `GET /v1/me/saved/slugs` and `GET /v1/app/wines` have no notes.
+- `merge`: the saved row that wins keeps its note; when it has none, it gets the note of the other row.
+- A note never goes to the log, also not at the debug level.
+- 5 new tests (159 in total).
+
 ## 2026-10-20 — Temporary test code
 
 Owner request for testing: `ACCOUNT_TEST_CODE` (6 digits, empty = off). The email login accepts it for any

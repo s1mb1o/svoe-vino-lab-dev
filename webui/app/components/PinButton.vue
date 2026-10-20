@@ -137,7 +137,7 @@ async function remove() {
         </fieldset>
         <div v-if="status" class="pin-actions">
           <button type="button" class="account-link" @click="remove">Убрать из сохранённых</button>
-          <NuxtLink class="account-link" to="/account?tab=saved">Все сохранённые</NuxtLink>
+          <NuxtLink class="account-link" to="/account">Все сохранённые</NuxtLink>
         </div>
       </template>
       <p v-if="error" class="pin-error" role="alert">{{ error }}</p>

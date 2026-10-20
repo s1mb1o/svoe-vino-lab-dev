@@ -71,6 +71,15 @@ export interface SavedItem {
   addedAt: string
   updatedAt: string
   inHistory: boolean
+  // The person's own note (owner request, 2026-10-20). Private text: never send it to Metrika or logs.
+  note: string | null
+}
+
+export const SAVED_NOTE_MAX = 2000
+
+/** The note as the service stores it: CRLF as LF, no outer spaces, no other control characters. */
+export function normalizeNote(value: string): string {
+  return value.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').trim()
 }
 
 export type HistoryRecordStatus = 'recorded' | 'already' | 'off'
@@ -162,11 +171,11 @@ export interface DiaryFilter {
   sugar: SugarKey | ''
 }
 
-export function matchesFilter(slug: string, wine: DiaryWine | null, filter: DiaryFilter): boolean {
+export function matchesFilter(slug: string, wine: DiaryWine | null, filter: DiaryFilter, extra = ''): boolean {
   if (filter.color && colorKey(wine?.color) !== filter.color) return false
   if (filter.sugar && sugarKey(wine?.sugar) !== filter.sugar) return false
   const query = normalized(filter.text)
   if (!query) return true
-  const haystack = normalized([wine?.name, wine?.producer, wine?.region, slug.replace(/-/g, ' ')].filter(Boolean).join(' '))
+  const haystack = normalized([wine?.name, wine?.producer, wine?.region, slug.replace(/-/g, ' '), extra].filter(Boolean).join(' '))
   return query.split(' ').every(word => haystack.includes(word))
 }

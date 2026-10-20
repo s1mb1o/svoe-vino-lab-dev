@@ -4,7 +4,7 @@
 import type { H3Event } from 'h3'
 import type { Wine } from '#shared/catalog'
 import {
-  DIARY_DAY_PATTERN, DIARY_SLUG_PATTERN, SITE_HISTORY_SOURCES, diarySnapshot, isSavedSource, isSavedStatus,
+  DIARY_DAY_PATTERN, DIARY_SLUG_PATTERN, SAVED_NOTE_MAX, SITE_HISTORY_SOURCES, diarySnapshot, isSavedSource, isSavedStatus, normalizeNote,
   type DiaryWine, type HistoryDay, type HistoryItem, type SavedItem,
 } from '#shared/diary'
 import wines from '../data/wines.json'
@@ -58,7 +58,10 @@ type ServiceHistoryItem = {
 }
 type ServiceSavedItem = {
   slug?: string; wine?: unknown; status?: string; source?: string; added_at?: string; updated_at?: string; in_history?: boolean
+  note?: string | null
 }
+// A note of 2,000 Cyrillic characters is about 4 KB of UTF-8, more than the default 4 KiB body.
+const SAVED_PUT_BYTES = 12 * 1024
 
 function historyView(item: ServiceHistoryItem): HistoryItem {
   const view: HistoryItem = {
@@ -85,6 +88,7 @@ function savedView(item: ServiceSavedItem): SavedItem {
     addedAt: text(item.added_at),
     updatedAt: text(item.updated_at),
     inHistory: item.in_history === true,
+    note: typeof item.note === 'string' && item.note ? item.note : null,
   }
 }
 
@@ -200,13 +204,18 @@ export function savedPutRoute(event: H3Event, source: AccountConfigSource, slug:
     checkOrigin(event, config)
     const session = sessionOf(event)
     const wineSlug = slugParam(slug)
-    const body = await readJson(event)
+    const body = await readJson(event, SAVED_PUT_BYTES)
     if (!isSavedStatus(body.status) || !isSavedSource(body.source)) throw new AccountHttpError(400, 'invalid_request')
+    // The note is optional: absent keeps the stored note, '' clears it.
+    if (body.note !== undefined && (typeof body.note !== 'string' || normalizeNote(body.note).length > SAVED_NOTE_MAX)) {
+      throw new AccountHttpError(400, 'invalid_note')
+    }
+    const note = typeof body.note === 'string' ? { note: normalizeNote(body.note) } : {}
     // A status change of a saved wine keeps the stored snapshot: no catalogue request.
     const lookup = options.lookup ?? defaultWineLookup
     const snapshot = body.change === true ? null : await snapshotFor(wineSlug, lookup)
     const put = (wine: DiaryWine | null) => callAccount<ServiceSavedItem>(config, 'PUT', `/v1/me/saved/${wineSlug}`, {
-      session, body: { status: body.status, source: body.source, ...(wine ? { wine_snapshot: wine } : {}) },
+      session, body: { status: body.status, source: body.source, ...note, ...(wine ? { wine_snapshot: wine } : {}) },
     })
     let answer = await put(snapshot)
     // A page with an old state can send a change for a wine that another tab removed: the service

@@ -22,7 +22,7 @@ of found wines and «Сохранённые». Photos, ratings, and preferences 
 | MAX | Checks the mini-app launch data: signature, age (5 minutes by default, at most 60), single-use `query_id` kept while the launch is valid, signed `ip` against the client address. MAX login is off by default (`MAX_LOGIN_ENABLED`, issue #50). |
 | Telegram | A one-time link code (10 minutes, at most 10 per hour for an account) for `https://t.me/<bot>?start=link_<code>`. The bot reads the diary name, asks the person, then confirms. Telegram never opens a session. |
 | History | One date for each wine and calendar day (Europe/Moscow) with the first source of the day: `photo` or `shelf` (the site), `telegram` or `max` (a linked chat). A repeated match on the same day changes nothing. The switch `save_history` (on by default) stops new records on the site and in the chats. Limits: 2,000 wines and 366 dates for each wine; at a limit the oldest record goes. |
-| Saved | «Сохранённые»: a wine with one of four statuses (`not_tasted`, `want`, `liked`, `disliked`) and the place where the person saved it. Independent of the history. At most 500 wines. |
+| Saved | «Сохранённые»: a wine with one of four statuses (`not_tasted`, `want`, `liked`, `disliked`), the place where the person saved it, and an optional personal note (at most 2,000 characters). Independent of the history. At most 500 wines. |
 | Deletion | Unlink and account deletion need no fresh login; the site asks for a confirmation. An account keeps at least one login method: email or Yandex ID. MAX login does not count. Account deletion removes both diary lists. |
 
 Russian law (149-FZ art. 8 p. 10, KoAP 13.55 since 7 July 2026) forbids login through a
@@ -99,7 +99,7 @@ have the form `{"error": "invalid_request", "fields": [...]}` and never echo the
 | `DELETE /v1/me/history` | web | Clear the history |
 | `GET /v1/me/saved` | web | `{items: [SavedItem]}`, newest `updated_at` first |
 | `GET /v1/me/saved/slugs` | web | `{items: [{slug, status}]}` for the pins of a page |
-| `PUT /v1/me/saved/{slug}` | web | `{status, source, wine_snapshot?}` → `SavedItem`: 201 for a new wine, 200 for a change; 409 `saved_full` |
+| `PUT /v1/me/saved/{slug}` | web | `{status, source, wine_snapshot?, note?}` → `SavedItem`: 201 for a new wine, 200 for a change; 409 `saved_full` |
 | `DELETE /v1/me/saved/{slug}` | web | Remove a saved wine; 404 `not_found` |
 | `POST /v1/bot/history` | telegram-bot, max-bot | `{user_id, slug, wine_snapshot?, replaces?, at?}` → `{status: recorded\|already\|off\|not_linked, met_on?}` |
 | `POST /v1/bot/history/undo` | telegram-bot, max-bot | `{user_id, slug, at?}` → `{status: removed\|absent\|not_linked}` |
@@ -121,7 +121,8 @@ httpOnly cookies. The browser never sees the service.
 ## Diary lists
 
 Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.py). Schema:
-`005_diary_lists.sql`. Times in answers are ISO 8601 UTC.
+`005_diary_lists.sql` and `006_saved_notes.sql` (`saved_wines.note`, `NULL` for no note). Times in
+answers are ISO 8601 UTC.
 
 - Wine slug: `^[a-z0-9](?:[a-z0-9_-]{0,198}[a-z0-9])?$`, in a path and in a body. Date of a path:
   `YYYY-MM-DD`.
@@ -138,7 +139,13 @@ Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.
 - `HistoryItem`: `slug`, `wine` (the snapshot or `null`), `first_met_at`, `last_met_at`,
   `days_count`, `sources` (the distinct sources of the dates, in the order `photo`, `shelf`,
   `telegram`, `max`), `saved_status` (`null` when not saved).
-- `SavedItem`: `slug`, `wine`, `status`, `source`, `added_at`, `updated_at`, `in_history`.
+- `SavedItem`: `slug`, `wine`, `status`, `source`, `added_at`, `updated_at`, `in_history`,
+  `note` (a string or `null`). `GET /v1/me/saved/slugs` and `GET /v1/app/wines` have no notes.
+- Note of a saved wine (`note` in `PUT`): the service changes `\r\n` and `\r` to `\n`, then
+  refuses a control character other than `\n` and `\t`, then removes the whitespace at the
+  ends. At most 2,000 characters after this. No `note` key keeps the stored note. `""`, only
+  whitespace, or `null` clears it. A new saved wine can have a note. A refusal is HTTP 422 with
+  the field name `note` and never holds the text.
 - When one list has no snapshot of a wine, the answer shows the snapshot of the other list.
 - Day: the calendar day in Europe/Moscow. Without the time zone database, the service uses
   UTC+3 (Moscow has no daylight saving time since 2014).
@@ -164,8 +171,8 @@ Plan 07 (issues #71 and #64). Code: [`diary.py`](src/chto_za_vino_account/diary.
   `null`), `first_met_at`, `last_met_at`, `days` (the number of dates), `sources`,
   `saved_status`. The cursor is opaque: it holds `last_met_at` and the slug of the last item in
   at most 184 base64url characters.
-- The log has event names and sources only. Slugs go to the debug level. User IDs never go to
-  the log.
+- The log has event names and sources only. Slugs go to the debug level. User IDs and notes
+  never go to the log.
 
 ## Deployment
 
@@ -200,7 +207,8 @@ The command moves the login methods and the diary lists of `--remove` to `--keep
 same provider. History: the union of the dates; for a date in both accounts, the date with the
 earlier time stays; each wine gets the earliest and the latest time of its dates, and the
 snapshot of `--keep` (or of `--remove` when `--keep` has none). Saved wines: for a wine in both
-accounts, the row with the later `updated_at` stays. The switch of `--keep` stays. The list
+accounts, the row with the later `updated_at` stays with its note; when it has no note, it gets
+the note of the other row. The switch of `--keep` stays. The list
 limits apply again at the next record or save.
 
 Backup. The image has no `sqlite3` program; the service has a command:
