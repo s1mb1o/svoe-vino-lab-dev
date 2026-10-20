@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-10-20 — GitHub release 0.3.0
+
+- Publish `android-v0.3.0` with the existing verified test-signed APK.
+- Pin source `906bd778`. Preserve the APK, models, device state, and website deployment.
+- Include the changelog, benchmark summary, full research report, portable evidence ZIP, and checksums.
+- Verify all uploaded asset digests and the offline checker from the extracted evidence ZIP.
+- Keep the release marked as a prerelease. Keep repository access private.
+- Record release identities and signing, quality, timing, and access limits in `docs/releases/0.3.0.md`.
+
 ## 2026-10-20 — Versioned benchmark comparison in the implementation guide
 
 - Add the matched 72.29% versus 69.09% full-`my` comparison and its latency tradeoff to `docs/naflex-implementations.md`.

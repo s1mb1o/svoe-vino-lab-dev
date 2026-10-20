@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-20 — Android 0.3.0 GitHub release
+
+- Publish GitHub prerelease `android-v0.3.0` with the verified 753111053-byte test-signed APK.
+- Attach release notes, benchmark results, the portable research archive, and SHA-256 checksums.
+- Verify the source tag, every uploaded asset digest, and the checker from the extracted evidence ZIP.
+- Record the private-repository access limit. Keep the website as the public download option.
+- Update Android release records and assessment F-85. Change no runtime, model, benchmark, or website deployment.
+
 ## 2026-10-20 — Android 0.3.0 release assessment verification
 
 - Extend `ASSESSMENT.md` with the recorded release host tests, website tests, signed-APK acceptance, replay parity, and sampled resource limits.
