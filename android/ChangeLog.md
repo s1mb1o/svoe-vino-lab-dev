@@ -16,6 +16,10 @@
 
 ### Two complete production pipelines
 
+- Replayed all 668 custom assignments with exact Top-1 agreement and zero errors.
+- Replayed 30 standard assignments with exact Top-1 agreement and zero errors.
+- Completed Eval.zip: 86/100 accepted results, 100 responses, and zero transport errors.
+- Built and test-signed release 0.3.0. Recorded identities and validation in `docs/releases/0.3.0.md`.
 - Made DIS-768 cropped custom the default and retained full-image standard p512.
 - Added a Russian Settings selector and pipeline-specific accelerator rechecks.
 - Added format 7 with both matched graph/index pairs and shared catalogue images.

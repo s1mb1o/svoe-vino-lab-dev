@@ -280,6 +280,10 @@ Sign this APK with an owner-controlled release key before installation or public
 
 The local release archive is
 `/Volumes/Storage/svoe-vino-final/releases/android/`.
+The current dual-pipeline release is 0.3.0.
+Read [its release record](docs/releases/0.3.0.md) for the test-signed APK,
+both complete pipelines, Pixel parity checks, and the Eval.zip quality result.
+Use `adb install --no-incremental -r <apk>` for a large local installation.
 The archived release file is `chtozavino-0.2.0-release-unsigned.apk`.
 This frozen artifact uses the old ID `chtozavino.alolalab.com`.
 Do not replace this artifact with a new-ID build under the same archive filename.

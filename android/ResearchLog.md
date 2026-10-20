@@ -4,6 +4,13 @@
 
 ### Production promotion
 
+- The main application reproduces all 668 frozen DIS-768 Top-1 results.
+  Maximum common score error is 0.000003400. Median/P95 request time is 1372/1832 ms.
+  The process stayed stable. Re-ranking stayed disabled.
+- A separate Eval.zip regression accepted 86 of 100 results, including five alternatives.
+  All 100 requests completed. Fourteen incorrect results remain quality limitations.
+- The preserved standard path reproduces all 30 sampled Top-1 results.
+  Read `docs/releases/0.3.0.md` for artifact identities and evidence paths.
 - The owner selected both complete pipelines, with DIS-768 cropped custom as the default.
   The alternative retains the original standard graph and original reference bytes.
   Format 7 shares catalogue images and position data. It keeps separate candidate mappings.
