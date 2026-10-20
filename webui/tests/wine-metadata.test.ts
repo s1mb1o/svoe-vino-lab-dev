@@ -29,7 +29,7 @@ describe('source wine metadata', () => {
       color: 'Розовое',
       category: 'сладкое',
       rating: 5,
-      image: `/img/wines/1600/${slug}.webp`,
+      image: `https://media.chtozavino.ru/img/wines/1600/${slug}.webp`,
       alcohol: '10%',
       servingTemperature: '8-10°C',
       pairings: ['Выпечка и десерты', 'Десерты'],
@@ -51,7 +51,7 @@ describe('source wine metadata', () => {
     { ...source, image: { url: '/uploads/../private/bottle.webp' } },
     { ...source, image: null },
   ])('uses the static wine image whatever image the source response names', value => {
-    expect(normalizeSourceWine(value, slug)?.image).toBe(`/img/wines/1600/${slug}.webp`)
+    expect(normalizeSourceWine(value, slug)?.image).toBe(`https://media.chtozavino.ru/img/wines/1600/${slug}.webp`)
   })
 
   it('loads one exact slug from the official JSON API', async () => {
@@ -59,7 +59,7 @@ describe('source wine metadata', () => {
     const wine = await fetchSourceWine(slug, { fetch: request as typeof fetch })
 
     expect(wine?.slug).toBe(slug)
-    expect(wine?.image).toBe(`/img/wines/1600/${slug}.webp`)
+    expect(wine?.image).toBe(`https://media.chtozavino.ru/img/wines/1600/${slug}.webp`)
     expect(request).toHaveBeenCalledWith(`https://api.vino-svoe.ru/v1/wines/${slug}`, expect.objectContaining({
       headers: { accept: 'application/json' },
       redirect: 'error',

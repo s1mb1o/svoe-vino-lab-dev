@@ -1,4 +1,4 @@
-import { sourceWineUrl, type Wine } from './catalog'
+import { sourceWineUrl, wineImageUrl, type Wine } from './catalog'
 
 export const MAX_SHELF_BOTTLES = 100
 export const SHELF_TIMEOUT_MS = 330000
@@ -103,7 +103,7 @@ export function groupCandidateWine(candidate: GroupMatchCandidate): Wine {
     color: card.color || '',
     category: card.sugar || card.category || '',
     rating: 0,
-    image: card.image_url || '',
+    image: wineImageUrl(candidate.slug),
     alcohol: null,
     servingTemperature: null,
     pairings: [],

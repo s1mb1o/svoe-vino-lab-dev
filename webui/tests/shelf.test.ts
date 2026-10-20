@@ -96,6 +96,17 @@ describe('shelf group-match proxy', () => {
     expect(result).toMatchObject({ slug: wine.slug, name: wine.name, source: wine.source, grapes: wine.grapes })
   })
 
+  it.each([
+    'https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/bottle.webp',
+    'https://chtozavino.ru/img/wines/1600/old-slug.webp',
+    null,
+    '',
+  ])('uses the matched slug on the media host regardless of the upstream image: %s', image_url => {
+    const candidate = fixture.bottles[0]!.match
+    const result = groupCandidateWine({ ...candidate, wine: { ...candidate.wine, image_url } })
+    expect(result.image).toBe(`https://media.chtozavino.ru/img/wines/1600/${wine.slug}.webp`)
+  })
+
   it('validates normalized hit areas and complete matcher responses', () => {
     expect(validShelfResult(fixture)).toBe(true)
     expect(validBox([0, 0.2, 1, 0.9])).toBe(true)

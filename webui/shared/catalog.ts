@@ -31,9 +31,9 @@ export function sourceWineUrl(slug: string): string {
   return `https://vino-svoe.ru/wines/${encodeURIComponent(slug)}`
 }
 
-// The static wine images of chtozavino.ru (plan `docs/plans/06_wine-images.md` of the
-// repository). Caddy serves them on the portal origin. A wine with no image has no file.
+// Static wine images are served as image/webp from the media host.
+// A wine with no image has no file.
 export type WineImageSize = 1600 | 400
 export function wineImageUrl(slug: string, size: WineImageSize = 1600): string {
-  return `/img/wines/${size}/${encodeURIComponent(slug)}.webp`
+  return `https://media.chtozavino.ru/img/wines/${size}/${encodeURIComponent(slug)}.webp`
 }
