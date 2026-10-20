@@ -46,10 +46,10 @@ import java.util.List;
  * demonstration without a phone, on the emulator).
  *
  * The detector is in the APK's assets (bottle_yoloxs.onnx; one in the app's external folder
- * takes its place). The recognition API's password is read from api_password.txt pushed to that
- * folder, or comes in the APK: api_password.txt at the root of the repository goes into the
- * build's assets (build.gradle.kts) and from there to the folder at the start. It is never in
- * the code or in git.
+ * takes its place). The recognition API's password comes in the APK: the build puts the
+ * environment variable CHTOZAVINO_API_PASSWORD into the assets as api_password.txt
+ * (build.gradle.kts), and from there it goes to that folder at the start. It is never in the
+ * code or in git.
  */
 public class MainActivity extends ComponentActivity {
     private static final String MODEL = "bottle_yoloxs.onnx";

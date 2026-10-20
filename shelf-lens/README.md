@@ -78,26 +78,49 @@ Android-приложение проходит камерой вдоль полк
 
 ```bash
 android/setup.sh
+export CHTOZAVINO_API_PASSWORD="..."   # обязательно, см. ниже
 cd android
 JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew assembleDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-**Пароль API распознавания** в git не попадает. Приложение получает его одним из двух
-способов:
+**Переменная окружения `CHTOZAVINO_API_PASSWORD` обязательна для сборки APK.** В ней —
+пароль пользователя `evaluator` API распознавания `https://api.chtozavino.ru`. Без неё
+`assembleDebug`, `assembleRelease`, `installDebug` и кнопка Run в Android Studio
+останавливаются с ошибкой `CHTOZAVINO_API_PASSWORD is not set`. Без переменной работают
+`clean`, синхронизация проекта в Android Studio и исследовательская часть.
 
-- **В сборке.** Файл `api_password.txt` (одна строка — пароль) кладётся в каталог
-  `shelf-lens/`, рядом с этим README; git его игнорирует. Если файл на месте, Gradle кладёт его в
-  APK, и приложение при запуске берёт пароль оттуда: такой APK можно сразу отдать участнику
-  команды. Пароль из APK извлекается, поэтому такая сборка не выкладывается в открытый доступ.
-  Без файла APK собирается без пароля.
-- **На телефон.** Для APK без пароля файл кладётся в папку приложения после первого запуска:
+Gradle кладёт пароль в APK (`assets/api_password.txt`), приложение при запуске берёт его
+оттуда. Пароль не попадает в git и в историю сборки Gradle. Пароль извлекается из APK,
+поэтому APK не выкладывается в открытый доступ.
 
-  ```bash
-  adb push api_password.txt /sdcard/Android/data/com.alolalab.shelflens/files/
-  ```
+Как задать переменную:
 
-Пароль нужен только для распознавания: поиск бутылок и карта работают и без него.
+```bash
+# macOS: пароль в Связке ключей.
+export CHTOZAVINO_API_PASSWORD="$(security find-generic-password -s matcher-basic-chtozavino-ru -a evaluator -w)"
+# Linux: из хранилища секретов (libsecret) или из 1Password CLI.
+export CHTOZAVINO_API_PASSWORD="$(secret-tool lookup <атрибут> <значение>)"
+export CHTOZAVINO_API_PASSWORD="$(op read 'op://<хранилище>/<запись>/password')"
+```
+
+```powershell
+# Windows PowerShell.
+$env:CHTOZAVINO_API_PASSWORD = (op read 'op://<хранилище>/<запись>/password')
+```
+
+В CI (например, GitHub Actions) переменная берётся из секрета:
+`env: CHTOZAVINO_API_PASSWORD: ${{ secrets.CHTOZAVINO_API_PASSWORD }}`.
+
+Android Studio передаёт переменную в Gradle, только если Studio запущена из терминала, где
+переменная задана. На macOS запуск из Dock или Finder переменную не передаёт:
+
+```bash
+"/Applications/Android Studio.app/Contents/MacOS/studio" &
+```
+
+После смены пароля на сервере APK собирается и ставится заново: старый APK получает отказ,
+и приложение выключает распознавание.
 
 **Режим отладки** включается долгим нажатием на название на главном экране. В нём видны
 номера бутылок, статистика трекера, таблица бутылок, и проигрываются видео `*.mp4` из

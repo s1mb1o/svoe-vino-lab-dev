@@ -59,30 +59,33 @@ android {
     }
 }
 
-// The recognition API's password: api_password.txt at the root of the repository (git ignores
-// it) goes into the APK's assets when it is there; without it the build carries none.
+// The recognition API's password: the environment variable CHTOZAVINO_API_PASSWORD goes into
+// the APK's assets; a build of the APK without it fails. The password is not an input of the
+// task, so Gradle keeps no copy of it in its build history, and the task runs at every build.
 abstract class PasswordAsset : DefaultTask() {
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.NONE)
-    abstract val password: ConfigurableFileCollection
-
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty
 
+    init {
+        outputs.upToDateWhen { false }
+    }
+
     @TaskAction
-    fun copy() {
+    fun write() {
+        val password = System.getenv("CHTOZAVINO_API_PASSWORD")?.trim()
+        if (password.isNullOrEmpty())
+            throw GradleException("CHTOZAVINO_API_PASSWORD is not set: the APK needs the password of the " +
+                    "recognition API (shelf-lens/README.md, «Сборка и запуск»)")
         val out = outputDir.get().asFile
-        out.deleteRecursively()   // a password taken out of the repository leaves the next build too
+        out.deleteRecursively()
         out.mkdirs()
-        password.files.filter { it.isFile }.forEach { it.copyTo(File(out, "api_password.txt"), overwrite = true) }
+        File(out, "api_password.txt").writeText(password)
     }
 }
 
 androidComponents {
     onVariants { variant ->
-        val task = tasks.register<PasswordAsset>("${variant.name}PasswordAsset") {
-            password.from(rootProject.file("../api_password.txt"))
-        }
+        val task = tasks.register<PasswordAsset>("${variant.name}PasswordAsset")
         variant.sources.assets?.addGeneratedSourceDirectory(task, PasswordAsset::outputDir)
     }
 }
